@@ -39,13 +39,18 @@ jobs:
 
             echo "rd.basic.auth.username=${PROD_RD_BASIC_AUTH_USERNAME}" >> runningdinner-backend/src/main/resources/application-prod.properties
             echo "rd.basic.auth.password=${PROD_RD_BASIC_AUTH_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
-      - run: cd runningdinner-backend && ./mvnw package
+      - run:
+          name: Build + Test
+          command: |
+            cd runningdinner-backend
+            ./mvnw package
       - save_cache:
           paths:
             - ~/.m2
           key: dependencies-{{ checksum "runningdinner-backend/pom.xml" }}
       - run: cp runningdinner-backend/infrastructure/remote/deploy.sh runningdinner-backend/target/deploy.sh
-      - maven/process_test_results
+      - maven/process_test_results:
+          test_results_path: runningdinner-backend/target/surefire-reports
       - run: cd runningdinner-backend/target && tar -cvzf runningdinner.tar.gz runningdinner-2.0.0.jar && cd -
       - store_artifacts:
           path: runningdinner-backend/target/runningdinner.tar.gz
