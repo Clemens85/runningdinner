@@ -1,0 +1,12 @@
+# package directories
+node_modules
+geocode-service/node_modules
+geocode-service/jspm_packages
+
+# Serverless directories
+geocode-service/.serverless
+.serverless
+.idea
+*.iml
+/secrets.dev.yml
+/secrets.prod.yml

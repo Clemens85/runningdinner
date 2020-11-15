@@ -1,0 +1,104 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: geocode-service
+# app and org for use with dashboard.serverless.com
+app: runningdinner-functions
+org: runyourdinner
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  stage: ${opt:stage} #,'dev'}
+  region: eu-central-1
+  environment:
+    BACKEND_BASE_URL: ${self:custom.backendBaseUrl.${self:provider.stage}}
+    GOOGLE_MAPS_API_KEY: ${self:custom.secrets.GOOGLE_MAPS_API_KEY}
+    # NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+custom:
+  secrets: ${file(secrets.${opt:stage, self:provider.stage}.yml)}
+  stages:
+    - dev
+    - prod
+  backendBaseUrl:
+    dev: 'https://localhost/rest'
+    prod: 'https://runyourdinner.eu/rest'
+
+  serverless-offline-sqs:
+    autoCreate: true                 # create queue if not exists
+    apiVersion: '2012-11-05'
+    endpoint: http://0.0.0.0:9324
+    region: eu-central-1
+    accountId: x
+    accessKeyId: root
+    secretAccessKey: root
+    skipCacheInvalidation: false
+
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
+functions:
+  update-sqs:
+    handler: geocode-service/handlerSqs.update
+    events:
+      - sqs:
+          batchSize: 1
+          queueName: geocode
+          arn:
+            Fn::Join:
+              - ':'
+              - - arn
+                - aws
+                - sqs
+                - Ref: AWS::Region
+                - Ref: AWS::AccountId
+                - geocode
+#      - sqs: arn:aws:sqs:eu-central-1:x:geocode #-${self:provider.stage}
+
+#  update-http:
+#    handler: geocode-service/handlerHttp.update
+#    events:
+#      - http:
+#          path: geocode/{adminId}/participants/{participantId}
+#          method: get
+#          cors: true
+
+#      - websocket: $connect
+#      - s3: ${env:BUCKET}
+#      - schedule: rate(10 minutes)
+#      - sns: greeter-topic
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+
+package:
+  individually: true
+
+plugins:
+  - serverless-plugin-reducer
+  - serverless-offline-sqs
+  - serverless-offline
+  - serverless-secrets-plugin
