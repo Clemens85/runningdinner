@@ -1,12 +1,20 @@
+## Overview
+
+Contains a quite simple lambda for geocoding addresses, that is invoked by SQS events which are sent from backend application.
+
 ## Run locally
 
 ``serverless offline start --stage dev``
 
+This mocks a local SQS.
+
 ## Deploy
+
+``serverless decrypt --stage prod --password 'MY_PASSWORD' ``
 
 ``serverless deploy --stage prod``
 
-## Links
+## Helpful Links
 
 https://github.com/softwaremill/elasticmq
 

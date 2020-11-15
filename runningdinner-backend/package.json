@@ -49,7 +49,6 @@
     "select2": "3.4.5",
     "ui-select": "0.19.6",
     "aws-sdk": "^2.568.0"
-
   },
   "scripts": {
     "clean": "rm -rf node_modules && npm install",
