@@ -16,7 +16,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - dependencies-{{ checksum "pom.xml" }} # appends cache key with a hash of pom.xml file
+            - dependencies-{{ checksum "runningdinner-backend/pom.xml" }} # appends cache key with a hash of pom.xml file
             - dependencies- # fallback in case previous cache key is not found
       - attach_workspace:
           at: runningdinner-backend/src/main/resources
@@ -43,7 +43,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.m2
-          key: dependencies-{{ checksum "pom.xml" }}
+          key: dependencies-{{ checksum "runningdinner-backend/pom.xml" }}
       - run: cp runningdinner-backend/infrastructure/remote/deploy.sh runningdinner-backend/target/deploy.sh
       - maven/process_test_results
       - run: cd runningdinner-backend/target && tar -cvzf runningdinner.tar.gz runningdinner-2.0.0.jar && cd -
@@ -62,14 +62,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - npm-deps-{{ checksum "package.json" }}
+            - npm-deps-{{ checksum "runningdinner-backend/package.json" }}
             - npm-deps-
       - run: cd runningdinner-backend && npm install
       - run: cd runningdinner-backend && npm run build
       - save_cache:
           paths:
             - ~/usr/local/lib/node_modules
-          key: dependencies-{{ checksum "package.json" }}
+          key: dependencies-{{ checksum "runningdinner-backend/package.json" }}
       - persist_to_workspace:
           root: runningdinner-backend/src/main/resources
           paths:
