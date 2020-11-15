@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "084d9d8c-d640-4a25-a65b-e429f6679886",
+		"name": "Requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Demo-Teilnehmer anlegen",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{baseurl}}/rest/runningdinnerservice/v1/runningdinner/__ADMINID__/example/participants",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"rest",
+						"runningdinnerservice",
+						"v1",
+						"runningdinner",
+						"__ADMINID__",
+						"example",
+						"participants"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EMail als Bounce ḱennzeichnen (DEV)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{baseurl}}/rest/dev/messagejobservice/v1/runningdinner/__ADMINID__/messagejob/__MESSAGEJOBID__/__EMAIL__/simulate-suppression",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"rest",
+						"dev",
+						"messagejobservice",
+						"v1",
+						"runningdinner",
+						"__ADMINID__",
+						"messagejob",
+						"__MESSAGEJOBID__",
+						"__EMAIL__",
+						"simulate-suppression"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

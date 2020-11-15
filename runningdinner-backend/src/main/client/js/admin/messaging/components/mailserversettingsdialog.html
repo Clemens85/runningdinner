@@ -1,0 +1,70 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" ng-click="ui.cancel()">
+        <span aria-hidden="true">&times;</span><span class="sr-only">{{ 'close' | translate }}</span>
+    </button>
+    <h4 class="modal-title" id="mailServerSettingsModal" translate="mails_mailserver_settings"></h4>
+</div>
+
+<div class="modal-body">
+    <form class="form-horizontal" form-validate prefix="mailServerSettings.">
+        <div class="form-group">
+            <label for="mailServer" class="control-label col-xs-4" translate="mails_mailserver_settings_host"></label>
+            <div class="col-xs-8">
+                <input type="text" class="form-control" id="mailServer" placeholder="" autocomplete="off" ng-model="mailServerSettings.mailServer" focus-on="init">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="mailServerPort" class="control-label col-xs-4" translate="mails_mailserver_settings_port"></label>
+            <div class="col-xs-4">
+                <input type="text" class="form-control" id="mailServerPort" placeholder="" autocomplete="off" ng-model="mailServerSettings.mailServerPort">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="username" class="control-label col-xs-4" translate="mails_mailserver_settings_username"></label>
+            <div class="col-xs-8">
+                <input type="text" class="form-control" id="username" placeholder="" autocomplete="off" ng-model="mailServerSettings.username">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password" class="control-label col-xs-4" translate="mails_mailserver_settings_password"></label>
+            <div class="col-xs-8">
+                <input type="password" class="form-control" id="password" placeholder="" ng-model="mailServerSettings.password">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="from" class="control-label col-xs-4" translate="mails_mailserver_settings_from"></label>
+            <div class="col-xs-8">
+                <input type="email" class="form-control" id="from" placeholder="" autocomplete="off" ng-model="mailServerSettings.from">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-offset-4 col-xs-8">
+                <div class="checkbox">
+                    <label><input type="checkbox" id="useTls" ng-model="mailServerSettings.useTls"> {{ 'mails_mailserver_settings_tls' | translate }}</label>
+                </div>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div class="form-group">
+            <label for="testEmailAddress" class="control-label col-xs-4" translate="mails_mailserver_settings_testaddress"></label>
+            <div class="col-xs-8">
+                <input type="email" class="form-control" id="testEmailAddress" placeholder="" ng-model="testEmailAddress"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-offset-4 col-xs-8">
+                <button class="btn btn-primary" ng-click="ui.checkMailConnection(testEmailAddress)" ng-class="ui.isCheckingMailConnection() ? 'disabled' : ''">
+                    {{ 'mails_mailserver_settings_connection_test' | translate }}
+                </button>
+                <img src="./images/ajax-loader.gif" id="check-ajax-loader" ng-class="ui.isCheckingMailConnection() ? 'show-inline' : 'hidden'" />
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-danger" ng-click="ui.cancel()">{{ 'cancel' | translate }}</button>
+    <button type="submit" class="btn btn-success" ng-click="ui.save()">{{ 'save' | translate }}</button>
+</div>

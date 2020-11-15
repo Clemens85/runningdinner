@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- <include resource="org/springframework/boot/logging/logback/base.xml"/> -->
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%d{yyyy-MM-dd} %d{HH:mm:ss.SSS} %-5level [%thread] %logger{10} : %msg [%X{req.method} %X{req.requestURI}?%X{req.queryString} %X{req.remoteHost}] %n</Pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+
+    <appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>server.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- monthly rollover -->
+            <FileNamePattern>server.%d{yyyy-MM}.log</FileNamePattern>
+            <maxHistory>6</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <Pattern>%d{yyyy-MM-dd} %d{HH:mm:ss.SSS} %-5level [%thread] %logger{10} : %msg [%X{req.method} %X{req.requestURI}?%X{req.queryString} %X{req.remoteHost}] %n</Pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+
+    <appender name="jsonFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>server-log.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Hourly rollover -->
+            <FileNamePattern>server-log.%d{yyyy-MM-dd_HH}_%i.json</FileNamePattern>
+            <maxHistory>3</maxHistory>
+            <maxFileSize>${LOG_MAX_FILE_SIZE:-200MB}</maxFileSize>
+            <totalSizeCap>${LOG_TOTAL_SIZE_CAP:-500MB}</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"></encoder>
+    </appender>
+
+	<logger name="org.runningdinner" level="INFO" additivity="false">
+        <appender-ref ref="dailyRollingFileAppender" />
+        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="jsonFileAppender"/>
+	</logger>
+
+    <root>
+        <level value="WARN" />
+        <appender-ref ref="dailyRollingFileAppender" />
+        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="jsonFileAppender"/>
+    </root>
+
+</configuration>

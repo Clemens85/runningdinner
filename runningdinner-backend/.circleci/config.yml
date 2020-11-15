@@ -1,0 +1,139 @@
+version: 2.1
+
+orbs:
+  maven: circleci/maven@1.0.3
+
+jobs:
+  build_test_backend:
+    docker:
+      - image: circleci/openjdk:8-jdk-stretch
+      - image: circleci/postgres:9.6
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: runningdinner
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - dependencies-{{ checksum "pom.xml" }} # appends cache key with a hash of pom.xml file
+            - dependencies- # fallback in case previous cache key is not found
+      - attach_workspace:
+          at: src/main/resources
+      - run:
+          name: Setup application-prod.properties # Not very nice, but sufficient for now
+          command: |
+            echo "aws.sqs.geocode.url=${PROD_AWS_SQS_GEOCODE_URL}" >> src/main/resources/application-prod.properties
+
+            echo "sendgrid.api.key=${PROD_SENDGRID_API_KEY}" >> src/main/resources/application-prod.properties
+
+            echo 'host.context.url=https://runyourdinner.eu' >> src/main/resources/application-prod.properties
+
+            echo "spring.datasource.password=${PROD_SPRING_DATASOURCE_PASSWORD}" >> src/main/resources/application-prod.properties
+            echo "spring.datasource.username=${PROD_SPRING_DATASOURCE_USERNAME}" >> src/main/resources/application-prod.properties
+            echo "spring.datasource.url=${PROD_SPRING_DATASOURCE_URL}" >> src/main/resources/application-prod.properties
+
+            echo "spring.flyway.password=${PROD_SPRING_FLYWAY_PASSWORD}" >> src/main/resources/application-prod.properties
+            echo "spring.flyway.user=${PROD_SPRING_FLYWAY_USER}" >> src/main/resources/application-prod.properties
+            echo "spring.flyway.url=${PROD_SPRING_FLYWAY_URL}" >> src/main/resources/application-prod.properties
+
+            echo "rd.basic.auth.username=${PROD_RD_BASIC_AUTH_USERNAME}" >> src/main/resources/application-prod.properties
+            echo "rd.basic.auth.password=${PROD_RD_BASIC_AUTH_PASSWORD}" >> src/main/resources/application-prod.properties
+      - run: ./mvnw package
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: dependencies-{{ checksum "pom.xml" }}
+      - run: cp infrastructure/remote/deploy.sh target/deploy.sh
+      - maven/process_test_results
+      - run: cd target && tar -cvzf runningdinner.tar.gz runningdinner-2.0.0.jar && cd -
+      - store_artifacts:
+          path: target/runningdinner.tar.gz
+      - persist_to_workspace:
+          root: target
+          paths:
+            - runningdinner.tar.gz
+            - deploy.sh
+
+  build_webclient:
+    docker:
+      - image: cimg/node:current
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package.json" }}
+            - npm-deps-
+      - run: npm install
+      - run: npm run build
+      - save_cache:
+          paths:
+            - ~/usr/local/lib/node_modules
+          key: dependencies-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: src/main/resources
+          paths:
+            - static
+
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - checkout
+      - attach_workspace:
+          at: target
+      - add_ssh_keys:
+          fingerprints:
+            - "f8:85:06:d1:12:e5:0f:76:e6:dd:30:7b:41:f0:af:5e"
+      - run:
+          name: Allow SSH Access
+          command: |
+            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+            infrastructure/remote/allow-ssh-access.sh
+      - run: touch ssh-access-granted.txt
+      - run:
+          name: Upload artifacts
+          command: |
+            chmod +x target/deploy.sh
+            scp target/deploy.sh target/runningdinner.tar.gz $SSH_USER@$SSH_HOST:~/upload
+      - run:
+          name: Run Deploy script
+          command: |
+            ssh $SSH_USER@$SSH_HOST "ls -la ~/upload"
+      - run:
+          name: Check App is healthy
+          command: |
+            curl -XGET https://runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+      - run:
+          name: Remove SSH Access
+          command: |
+            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+            if [[ -f "ssh-access-granted.txt" ]] ; then
+              echo "Removing ssh access..."
+              infrastructure/remote/remove-ssh-access.sh
+            else
+              echo "Do not remove ssh access due to ssh-access-granted.txt did not exist..."
+            fi
+          when: always
+
+workflows:
+  build_test_deploy_app:
+    jobs:
+      - build_webclient
+      - build_test_backend:
+          requires:
+            - build_webclient
+      - confirm-deployment:
+          type: approval
+          filters:
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - build_test_backend
+            - confirm-deployment
+          filters:
+            branches:
+              only: master

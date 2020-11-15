@@ -1,0 +1,233 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h2 class="global-feature-headline">{{ ctrl.headline }}</h2>
+  </div>
+</div>
+
+<div class="row">
+
+  <form form-validate prefix="ctrl.dinnerRouteMessage." name="ctrl.dinnerRouteMessageForm" ng-model-options="{ allowInvalid: true }"
+        ng-if="ctrl.messageType === 'DINNER_ROUTE'" style="margin-top:-20px;">
+
+    <div class="col-xs-12 col-sm-7 col-lg-8 padding-horizontal-large">
+      <h3 class="feature-headline">
+        <span><i class="fa fa-envelope feature-icon" aria-hidden="true"></i></span>
+        {{ 'mails_message' | translate }}
+      </h3>
+      <div class="row feature-text">
+        <div class="form-group col-xs-12">
+          <label class="control-label" for="subject" translate="mails_subject"></label>
+          <input type="text" class="form-control" name="subject" id="subject" ng-model="ctrl.dinnerRouteMessage.subject"
+                 placeholder="{{ 'mails_subject' | translate}}" focus-on="init">
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+      </div>
+      <div class="row feature-text">
+        <div class="form-group col-xs-12">
+          <label class="control-label" for="message" translate="content"></label>
+          <span class="help-block">
+            {{ 'mails_template_help' | translate}}: {firstname}, {lastname}, {route}, {routelink}
+            <help-icon text="'mails_template_help_description'"></help-icon>
+          </span>
+          <textarea class="form-control" rows="10" id="message" name="message" ng-model="ctrl.dinnerRouteMessage.message"></textarea>
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+      </div>
+      <div class="row feature-text">
+        <div class="form-group col-xs-12 col-lg-6">
+          <label class="control-label" for="selfTemplate" translate="mails_senddinnerroute_self"></label>
+          <span class="help-block">
+                <span translate="mails_template_replacement_route_host"></span><br/>
+                {{ 'mails_template_help' | translate }}: {firstname}, {lastname}, {meal}, {mealtime}, {mealspecifics}
+            </span>
+          <textarea class="form-control" rows="4" id="selfTemplate" name="selfTemplate" ng-model="ctrl.dinnerRouteMessage.selfTemplate"></textarea>
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+        <div class="form-group col-xs-12 col-lg-6">
+          <label class="control-label" for="hostsTemplate" translate="mails_senddinnerroute_hosts"></label>
+          <span class="help-block">
+                <span translate="mails_template_replacement_route_guest"></span><br/>
+                {{ 'mails_template_help' | translate }}: {firstname}, {lastname}, {meal}, {mealtime}, {hostaddress}
+            </span>
+          <textarea class="form-control" rows="4" id="hostsTemplate" name="hostsTemplate" ng-model="ctrl.dinnerRouteMessage.hostsTemplate"></textarea>
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+      </div>
+      <div class="row pull-right feature-text">
+        <div class="col-xs-12">
+          <button class='btn btn-primary' translate="preview" ng-click="ctrl.previewMails()"></button>
+          <button type="submit" class="btn btn-success" ng-click="ctrl.sendMails()" promise-btn>
+            {{ 'messages_send_general' | translate }}
+          </button>
+        </div>
+      </div>
+    </div> <!-- end col-xs-8 -->
+
+    <div class="col-xs-12 col-sm-5 col-lg-4 padding-horizontal-large">
+
+      <div class="row margin-bottom-large">
+        <div class="col-xs-12">
+
+          <h3 class="feature-headline">
+            <span><i class="fa fa-users feature-icon" aria-hidden="true"></i></span>
+            <span translate="teams_selection"></span>
+          </h3>
+          <div class="form-group">
+            <label class="control-label" for="teamSelection" translate="team_selection_text"></label>
+            <ui-select id="teamSelection"
+                       name="teamSelection"
+                       ng-model="ctrl.dinnerRouteMessage.teamSelection"
+                       search-enabled="false"
+                       class="form-control-ui-select"
+                       style="max-width:400px;">
+              <ui-select-match placeholder="{{ 'select_prompt' | translate }}">
+                <span ng-bind-html="$select.selected.label" class="teaser"></span>
+              </ui-select-match>
+              <ui-select-choices repeat="teamSelectionChoice.value as teamSelectionChoice in ctrl.teamSelectionChoices">
+                <span ng-bind-html="teamSelectionChoice.label"></span>
+              </ui-select-choices>
+            </ui-select>
+            <span class="help-block validation-error ng-hide"></span>
+            <div class="margin-top">
+              <span ng-if="ctrl.isAllTeamsSelected()" translate="team_selection_all_text" translate-values="{ numTeams: '{{ ctrl.teams.length }}' }"></span>
+              <div ng-if="ctrl.customSelectedTeams.length > 0">
+                <div>
+                  <strong translate="team_selection_single_selection_text"></strong>
+                  <a href ng-click="ctrl.openCustomSelectionDialog()"><strong>({{ 'change' | translate }} <i class="fa fa-edit"></i>)</strong></a>
+                </div>
+                <div class="margin-top">
+                  <div ng-repeat="customSelectedTeam in ctrl.customSelectedTeams">{{ customSelectedTeam | teamNameMembers }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <message-jobs-overview admin-id="ctrl.adminId" message-type="ctrl.messageType"></message-jobs-overview>
+        </div>
+      </div>
+
+    </div> <!-- end col-xs-4 -->
+
+  </form>
+
+
+  <form form-validate prefix="ctrl.teamMessage."  name="ctrl.teamMessageForm" ng-model-options="{ allowInvalid: true }"
+        ng-if="ctrl.messageType === 'TEAM'" style="margin-top:-20px;">
+
+    <div class="col-xs-12 col-sm-7 col-lg-8 padding-horizontal-large">
+      <h3 class="feature-headline">
+        <span><i class="fa fa-envelope feature-icon" aria-hidden="true"></i></span>
+        {{ 'mails_message' | translate }}
+      </h3>
+      <div class="row feature-text">
+        <div class="form-group col-xs-12">
+          <label class="control-label" for="subject" translate="mails_subject"class="control-label" ></label>
+          <input type="text" class="form-control" id="subject" name="subject" ng-model="ctrl.teamMessage.subject"
+                 placeholder="{{ 'mails_subject' | translate}}" focus-on="init">
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+      </div>
+      <div class="row feature-text">
+        <div class="form-group col-xs-12">
+          <label class="control-label" for="message" translate="content"></label>
+          <span class="help-block">
+            {{ 'mails_template_help' | translate}}: {firstname}, {lastname}, {meal}, {mealtime}, {host}, {partner}, {managehostlink}
+            <help-icon text="'mails_template_help_description'"></help-icon>
+          </span>
+          <textarea class="form-control" rows="10" id="message" name="message" ng-model="ctrl.teamMessage.message"></textarea>
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+      </div>
+      <div class="row feature-text">
+        <div class="form-group col-xs-12 col-lg-6">
+          <label class="control-label" for="hostMessagePartTemplate" translate="mails_sendteams_host"></label>
+          <span class="help-block" translate="mails_template_replacement_host"></span>
+          <textarea class="form-control" rows="3" id="hostMessagePartTemplate" name="hostMessagePartTemplate"
+                    ng-model="ctrl.teamMessage.hostMessagePartTemplate"></textarea>
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+        <div class="form-group col-xs-12 col-lg-6">
+          <label class="control-label" for="nonHostMessagePartTemplate" translate="mails_sendteams_nonhost"></label>
+          <span class="help-block" translate="mails_template_replacement_nonhost"></span>
+          <textarea class="form-control" rows="3" id="nonHostMessagePartTemplate" name="nonHostMessagePartTemplate"
+                    ng-model="ctrl.teamMessage.nonHostMessagePartTemplate"></textarea>
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+      </div>
+      <div class="row pull-right feature-text">
+        <div class="col-xs-12">
+          <button class='btn btn-primary' translate="preview" ng-click="ctrl.previewMails()"></button>
+          <button type="submit" class="btn btn-success" ng-click="ctrl.sendMails()" promise-btn>
+            {{ 'messages_send_general' | translate }}
+          </button>
+        </div>
+      </div>
+    </div> <!-- end col-xs-8 -->
+
+
+    <div class="col-xs-12 col-sm-5 col-lg-4 padding-horizontal-large">
+
+      <div class="row margin-bottom-large">
+        <div class="col-xs-12">
+
+          <h3 class="feature-headline">
+            <span><i class="fa fa-users feature-icon" aria-hidden="true"></i></span>
+            <span translate="teams_selection"></span>
+          </h3>
+          <div class="form-group">
+            <label class="control-label" for="teamSelection" translate="team_selection_text"></label>
+            <ui-select id="teamSelection"
+                       name="teamSelection"
+                       ng-model="ctrl.teamMessage.teamSelection"
+                       search-enabled="false"
+                       class="form-control-ui-select"
+                       style="max-width:400px;">
+              <ui-select-match placeholder="{{ 'select_prompt' | translate }}">
+                <span ng-bind-html="$select.selected.label" class="teaser"></span>
+              </ui-select-match>
+              <ui-select-choices repeat="teamSelectionChoice.value as teamSelectionChoice in ctrl.teamSelectionChoices">
+                <span ng-bind-html="teamSelectionChoice.label"></span>
+              </ui-select-choices>
+            </ui-select>
+            <span class="help-block validation-error ng-hide"></span>
+            <div class="margin-top">
+              <span ng-if="ctrl.isAllTeamsSelected()" translate="team_selection_all_text" translate-values="{ numTeams: '{{ ctrl.teams.length }}' }"></span>
+              <div ng-if="ctrl.customSelectedTeams.length > 0">
+                <div>
+                  <strong translate="team_selection_single_selection_text"></strong>
+                  <a href ng-click="ctrl.openCustomSelectionDialog()"><strong>({{ 'change' | translate }} <i class="fa fa-edit"></i>)</strong></a>
+                </div>
+                <div class="margin-top">
+                  <div ng-repeat="customSelectedTeam in ctrl.customSelectedTeams">{{ customSelectedTeam | teamNameMembers }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <message-jobs-overview admin-id="ctrl.adminId" message-type="ctrl.messageType"></message-jobs-overview>
+        </div>
+      </div>
+
+    </div> <!-- end col-xs-4 -->
+
+  </form>
+
+</div>
+
+<div class="row margin-top margin-bottom">
+  <div class="col-xs-12 padding-horizontal-large feature-text">
+    <div class="pull-left">
+      <a href ng-click="gotoState('admin.teams')">&lt;&lt; {{ 'back' | translate }}</a>
+    </div>
+  </div>
+</div>

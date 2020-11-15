@@ -1,0 +1,9 @@
+<span ng-if="$ctrl.statusResult === 'SENDING_NOT_FINISHED'">
+  <i class="fa fa-refresh fa-spin fa-fw"></i> <span class="hidden-xs hidden-sm hidden-md" translate="SENDING_NOT_FINISHED"></span>
+</span>
+<span ng-if="$ctrl.statusResult === 'SENDING_FINISHED_SUCCESS'" class="text-success">
+  <i class="fa fa-check"></i> <span class="hidden-xs hidden-sm hidden-md" translate="SENDING_FINISHED_SUCCESS"></span>
+</span>
+<span ng-if="$ctrl.statusResult === 'SENDING_FINISHED_FAILURE'" class="text-danger">
+  <i class="fa fa-exclamation"></i> <span class="hidden-xs hidden-sm hidden-md" translate="SENDING_FINISHED_FAILURE"></span>
+</span>

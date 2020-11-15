@@ -1,0 +1,39 @@
+<div>
+  <h3 class="feature-headline">
+    <span><i class="fa fa-check feature-icon" aria-hidden="true"></i></span>
+    {{ 'checklist' | translate }}
+  </h3>
+  <div>
+    <div class="list-group checklist" ng-show="!$ctrl.loading && $ctrl.checkList">
+      <div class="list-group-item" ng-class="{ 'done': $ctrl.checkList.dinnerCreated }">
+        <i class="fa fa-floppy-o fa-fw"></i> <span>{{ 'checklist_create_dinner' | translate }}</span>
+        <span class="pull-right" ng-if="$ctrl.checkList.dinnerCreated"><i class="fa fa-check"></i></span>
+      </div>
+      <div class="list-group-item" ng-class="{ 'done': $ctrl.checkList.endOfRegistrationDate }" ng-if="!$ctrl.closedDinner">
+        <i class="fa fa-stop fa-fw"></i> <span>{{ 'checklist_end_of_registrationdate' | translate }}</span>
+        <span class="pull-right" ng-if="$ctrl.checkList.endOfRegistrationDate"><i class="fa fa-check"></i></span>
+        <em class="pull-right text-muted small hidden-xs"
+            ng-if="!$ctrl.checkList.endOfRegistrationDate"
+            translate="checklist_end_of_registrationdate_days_left" translate-values="{ days: '{{ $ctrl.getDaysFromTodayTillEndOfRegistration() }}'}">
+        </em>
+      </div>
+      <div class="list-group-item" ng-class="{ 'done': $ctrl.checkList.participantMessagesSent }">
+        <i class="fa fa-envelope fa-fw"></i> <span>{{ 'checklist_send_participant_messages' | translate }}</span>
+        <span class="pull-right" ng-if="$ctrl.checkList.participantMessagesSent"><i class="fa fa-check"></i></span>
+      </div>
+      <div class="list-group-item" ng-class="{ 'done': $ctrl.checkList.teamArrangementsCreated }">
+        <i class="fa fa-users fa-fw"></i> <span>{{ 'checklist_create_teamarrangements' | translate }}</span>
+        <span class="pull-right" ng-if="$ctrl.checkList.teamArrangementsCreated"><i class="fa fa-check"></i></span>
+      </div>
+      <div class="list-group-item" ng-class="{ 'done': $ctrl.checkList.teamMessagesSent }">
+        <i class="fa fa-envelope fa-fw"></i> <span>{{ 'checklist_send_team_messages' | translate }}</span>
+        <span class="pull-right" ng-if="$ctrl.checkList.teamMessagesSent"><i class="fa fa-check"></i></span>
+      </div>
+      <div class="list-group-item" ng-class="{ 'done': $ctrl.checkList.dinnerRouteMessagesSent }">
+        <i class="fa fa-envelope fa-fw"></i> <span>{{ 'checklist_send_dinnerroute_messages' | translate }}</span>
+        <span class="pull-right" ng-if="$ctrl.checkList.dinnerRouteMessagesSent"><i class="fa fa-check"></i></span>
+      </div>
+    </div>
+    <loading-spinner loading="$ctrl.loading"></loading-spinner>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="row schedule margin-bottom">
+  <div ng-repeat="scheduleItem in scheduleItems" class="col-xs-4 schedule-place complete" ng-class="{'active':$last}">
+    <div class="text-center schedule-host-team">
+      <div ng-if="scheduleItem.current === true" class="schedule-team-panel-current"
+           ng-class="{'team-cancelled-bg' : isTeamCancelled(scheduleItem.hostTeam)}">
+        <i class="fa fa-home fa-lg"></i> Team {{ scheduleItem.hostTeam.teamNumber }}
+      </div>
+      <div ng-if="scheduleItem.current === false" class="schedule-team-panel-other-hosts"
+           ng-class="{'team-cancelled-bg' : isTeamCancelled(scheduleItem.hostTeam)}">
+        <i class="fa fa-home fa-lg"></i>
+        <a href team-info-popup team-number="{{ scheduleItem.hostTeam.teamNumber }}"
+          translate="team" translate-values="{ teamNumber: '{{ scheduleItem.hostTeam.teamNumber }}'}"></a>
+      </div>
+    </div>
+    <div class="progress">
+      <div class="progress-bar"></div>
+    </div>
+    <span class="schedule-meal"
+          ng-class="{'current-team': scheduleItem.current === true, 'team-cancelled-bg' : isTeamCancelled(scheduleItem.hostTeam)}">
+      <div>{{ scheduleItem.hostTeam.meal.label }}</div>
+      <div><small><i class="fa fa-clock-o"></i> {{ scheduleItem.hostTeam.meal.time | date:'HH:mm' }} Uhr</small></div>
+    </span>
+    <div class="schedule-guest-teams text-center" ng-if="scheduleItem.current === true">
+      <div ng-repeat="guestTeam in scheduleItem.guestTeams" class="schedule-team-panel-current-guests"
+           ng-class="{'team-cancelled-bg' : isTeamCancelled(guestTeam)}">
+        <i class="fa fa-angle-up fa-lg"></i>
+        <a href team-info-popup team-number="{{ guestTeam.teamNumber }}" tabindex="0"
+           translate="team" translate-values="{ teamNumber: '{{ guestTeam.teamNumber }}'}"></a>
+      </div>
+    </div>
+    <div class="schedule-guest-teams text-center" ng-if="scheduleItem.current === false">
+      <div class="schedule-team-panel-current" ng-class="{'team-cancelled-bg' : isTeamCancelled(scheduleItem.currentGuestTeam)}">
+        <i class="fa fa-angle-up fa-lg"></i>
+        <span translate="team" translate-values="{ teamNumber: '{{ scheduleItem.currentGuestTeam.teamNumber }}'}"></span>
+      </div>
+      <div class="schedule-team-panel-other-guests" ng-repeat="otherGuestTeam in scheduleItem.otherGuestTeams"
+           ng-class="{'team-cancelled-bg' : isTeamCancelled(otherGuestTeam)}">
+        <i class="fa fa-angle-up fa-lg"></i>
+        <a href team-info-popup team-number="{{ otherGuestTeam.teamNumber }}" tabindex="0"
+           translate="team" translate-values="{ teamNumber: '{{ otherGuestTeam.teamNumber }}'}"></a>
+      </div>
+    </div>
+  </div>
+
+</div>

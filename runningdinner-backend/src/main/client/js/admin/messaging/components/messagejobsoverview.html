@@ -1,0 +1,37 @@
+<div class="feature-text">
+  <h3 class="feature-headline">
+    <span><i class="fa fa-database feature-icon" aria-hidden="true"></i></span>
+    <span translate="protocols"></span>
+  </h3>
+  <loading-spinner loading-function="$ctrl.findMessageJobsByTypePromise" loading-text="loading"></loading-spinner>
+  <div ng-if="$ctrl.loadingData === false && $ctrl.messageJobs.length === 0" class="row">
+    <div class="col-xs-12"><i translate="protocols_empty"></i></div>
+  </div>
+
+  <div class="col-xs-12">
+    <div class="list-group" ng-if="$ctrl.messageJobs.length > 0">
+      <div class="row list-group-item clickable"
+           ng-repeat="messageJob in $ctrl.messageJobs"
+           ng-click="$ctrl.openInNewWindow(messageJob)">
+        <div class="col-xs-1 col-lg-4 pull-left" style="padding-left:0; padding-right:0;">
+          <sending-status message-object="messageJob"></sending-status>
+        </div>
+        <div class="col-xs-6 col-lg-4">
+          <span translate="protocols_messages_size_text" translate-values="{ numberOfMessageTasks: '{{ messageJob.numberOfMessageTasks }}' }"></span>
+        </div>
+        <div class="col-xs-5 col-lg-4 pull-right">{{ messageJob.createdAt | localDateTime }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="margin-top" ng-if="$ctrl.lastPollDate">
+    <span class="pull-left" ng-if="$ctrl.messageJobs.length > 0">
+      <span>Info</span>
+      <help-icon text="'synchronize_messagejobs_help'"></help-icon>
+    </span>
+    <span class="pull-right">
+      <i translate="protocols_last_update_text" translate-values="{ lastPollDate: '{{ $ctrl.lastPollDate | localDateTimeSeconds }}' }"> }}</i>
+    </span>
+  </div>
+
+</div>

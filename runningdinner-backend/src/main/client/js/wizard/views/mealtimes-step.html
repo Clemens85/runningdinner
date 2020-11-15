@@ -1,0 +1,23 @@
+<h3 translate="time_setup"></h3>
+
+<form form-validate prefix="ctrl.dinner.options." class="wizard-form" name="mealTimesForm" ng-model-options="{ allowInvalid: true }">
+  <div class="row">
+    <div class="col-xs-offset-3 col-xs-6 col-sm-2 col-sm-offset-0" ng-repeat="meal in ctrl.dinner.options.meals">
+      <div class="pull-right">
+        <label>{{ meal.label }}</label>
+      </div>
+      <div class="clearfix">&nbsp;</div>
+      <div uib-timepicker ng-model="meal.time"
+           hour-step="1" minute-step="30" show-meridian="false"
+           class="pull-right">
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="row" ng-if="!ctrl.isDinnerCreated()">
+  <div class="wizard-button-row" ng-class="ctrl.getDynamicMealTimesButtonRowColumnClasses()">
+    <button ng-click="ctrl.submitMealTimes(true)" class="btn btn-success btn-lg pull-right">{{ 'next' | translate }}</button>
+    <a href ng-click="ctrl.submitMealTimes(false)" class="back-link pull-right">{{ 'back' | translate }}</a>
+  </div>
+</div>

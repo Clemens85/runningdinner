@@ -1,0 +1,98 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h2 ng-if="ctrl.runningDinner" class="global-feature-headline">
+      {{ ctrl.details.title }}
+      <small>
+        <span class="padding-horizontal-small">in</span>
+        <strong>{{ ctrl.location }}</strong>
+        <span class="padding-horizontal-small" translate="on_date"></span> <strong>{{ ctrl.details.date | localDate }}</strong>
+      </small>
+      <i class="fa fa-fw"
+         ng-class="{ 'fa-lock': ctrl.isClosedDinner(ctrl.runningDinner),
+                     'fa-eye': ctrl.isPublicVisibleDinner(ctrl.runningDinner),
+                     'fa-unlock': ctrl.isOpenDinner(ctrl.runningDinner) }">
+      </i>
+    </h2>
+  </div>
+
+  <div class="col-xs-12 hidden-xs" ng-if="ctrl.isOpenDinner(ctrl.runningDinner)">
+    <h4 style="margin-top:-10px;"> <span translate="hidden_link_text"></span>
+      <a ng-href="{{ ctrl.publicSettings.publicDinnerUrl }}" target="_blank"><em ng-bind="ctrl.publicSettings.publicDinnerUrl"></em></a>
+      <help-icon text="'open_dinner_link_help'"></help-icon>
+    </h4>
+  </div>
+
+</div>
+
+
+<div class="row">
+
+  <div class="col-xs-12 col-lg-4 padding-horizontal-large">
+    <h3 class="feature-headline">
+      <span><i class="fa fa-clock-o feature-icon" aria-hidden="true"></i></span>
+      <span translate="time_schedule"></span>
+    </h3>
+    <div class="row feature-text">
+      <div class="col-xs-8">
+        <div ng-repeat="meal in ctrl.meals"><strong>{{ meal.label }}</strong></div>
+      </div>
+      <div class="col-xs-4">
+        <div ng-repeat="meal in ctrl.meals" class="clearfix">
+          <span class="pull-right">{{ meal.time | date:'HH:mm' }} {{ 'uhr' | translate }} <span ng-if="!ctrl.isAllMealsOnSameDay()"> {{ meal.time | localDate }}</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="row feature-text">
+      <div class="col-xs-4 col-xs-offset-8 margin-top">
+        <a class="btn btn-success pull-right" translate="label_edit" ng-click="ctrl.openEditMealTimesDialog()"></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-lg-4 padding-horizontal-large" ng-if="ctrl.runningDinner">
+    <h3 class="feature-headline">
+      <span><i class="fa fa-bar-chart-o feature-icon" aria-hidden="true"></i></span>
+      <span translate="overview"></span>
+    </h3>
+    <div class="feature-text">
+      <div><strong translate="registration_type"></strong></div>
+      <div>{{ ctrl.details.registrationType | registrationType }}</div>
+      <div ng-if="!ctrl.isClosedDinner(ctrl.runningDinner)">
+        <div class="margin-top-small">
+          <strong translate="public_dinner_link" ng-if="ctrl.isPublicVisibleDinner(ctrl.runningDinner)"></strong>
+          <span ng-if="ctrl.isOpenDinner(ctrl.runningDinner)">
+            <strong translate="hidden_link"></strong> <help-icon text="'open_dinner_link_help'"></help-icon>
+          </span>
+        </div>
+        <div class="teaser">
+          <a ng-href="{{ ctrl.publicSettings.publicDinnerUrl }}" target="_blank">{{ ctrl.publicSettings.publicDinnerUrl }}</a>
+        </div>
+        <div class="margin-top-small"><strong translate="public_end_of_registration_date"></strong></div>
+        <div>{{ ctrl.publicSettings.endOfRegistrationDate | localDate }}</div>
+        <div class="margin-top-small"><strong translate="public_title"></strong></div>
+        <div>{{ ctrl.getTeaser(ctrl.publicSettings.title) }}</div>
+        <div class="margin-top-small"><strong translate="public_description"></strong></div>
+        <div ng-bind-html="ctrl.getTeaser(ctrl.publicSettings.description)"></div>
+        <div class="margin-top-small" ng-if="ctrl.publicSettings.registrationDeactivated === true"><i translate="registration_deactivated_text"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-lg-4 padding-horizontal-large">
+    <checklist-view check-list="ctrl.checkList" closed-dinner="ctrl.isClosedDinner(ctrl.runningDinner)"
+                    loading="ctrl.activitiesLoading"
+                    running-dinner="ctrl.runningDinner"></checklist-view>
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-xs-12 col-lg-8 padding-horizontal-large">
+    <admin-activity-view admin-activities="ctrl.adminActivities" loading="ctrl.activitiesLoading"></admin-activity-view>
+  </div>
+
+  <div class="col-xs-12 col-lg-4 padding-horizontal-large" ng-if="ctrl.runningDinner && !ctrl.isClosedDinner(ctrl.runningDinner)">
+    <participant-activity-view admin-id="ctrl.adminId"></participant-activity-view>
+    <div class="bottom-spacer"></div>
+  </div>
+</div>

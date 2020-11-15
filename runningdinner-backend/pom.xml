@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.runningdinner</groupId>
+	<artifactId>runningdinner</artifactId>
+	<version>2.0.0</version>
+
+	<name>runningdinner</name>
+	<description></description>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.2.RELEASE</version>
+		<relativePath/>
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.8</java.version>
+		<!--  <hibernate.version>5.1.6.Final</hibernate.version> --> 
+		<sendgrid.version>3.1.0</sendgrid.version>
+		<assertj.version>3.4.1</assertj.version>
+		<postgresql.version>42.2.1</postgresql.version>
+
+		<!-- Flyway Plugin Settings -->
+		<flyway.user>postgres</flyway.user>
+		<flyway.password>root</flyway.password>
+		<flyway.schemas>runningdinner</flyway.schemas>
+		<flyway.driver>org.postgresql.Driver</flyway.driver>
+		<flyway.url>jdbc:postgresql://localhost:5432/runningdinner</flyway.url>
+		<flyway.cleanDisabled>false</flyway.cleanDisabled>
+		<flyway.placeholders.runningdinner-database-name>runningdinner</flyway.placeholders.runningdinner-database-name>
+		<flyway.placeholders.runningdinner-schema-name>runningdinner</flyway.placeholders.runningdinner-schema-name>
+		<flyway.placeholders.runningdinner-user-name>runningdinner</flyway.placeholders.runningdinner-user-name>
+		<flyway.placeholders.runningdinner-user-password>runningdinner</flyway.placeholders.runningdinner-user-password>
+	</properties>
+	
+	<dependencies>
+	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-java8</artifactId>
+		</dependency>
+		
+	    <dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-devtools</artifactId>
+        	<optional>true</optional>
+    	</dependency>
+    	
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+
+		<dependency>
+		    <groupId>com.fasterxml.jackson.datatype</groupId>
+		    <artifactId>jackson-datatype-jsr310</artifactId>
+		    <exclusions>
+			    <exclusion>
+			    	<groupId>com.fasterxml.jackson.core</groupId>
+			    	<artifactId>jackson-annotations</artifactId>
+			    </exclusion>
+		    </exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-collections4</artifactId>
+		    <version>4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.flywaydb</groupId>
+    		<artifactId>flyway-core</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
+		
+		<dependency>
+ 			<groupId>org.assertj</groupId>
+  			<artifactId>assertj-core</artifactId>
+  			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+      		<groupId>org.awaitility</groupId>
+      		<artifactId>awaitility</artifactId>
+      		<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		
+		<dependency>
+		    <groupId>org.postgresql</groupId>
+		    <artifactId>postgresql</artifactId>
+		</dependency>
+
+		<!-- Used for serialization -->
+		<dependency>
+			<groupId>com.esotericsoftware.kryo</groupId>
+			<artifactId>kryo</artifactId>
+			<version>2.22</version>
+		</dependency>
+		
+  		<dependency>
+            <groupId>org.owasp.antisamy</groupId>
+            <artifactId>antisamy</artifactId>
+            <version>1.4.5</version>
+      </dependency>
+        
+   	<dependency>
+		<groupId>org.jsoup</groupId>
+		<artifactId>jsoup</artifactId>
+		<version>1.8.3</version>
+	</dependency>
+	
+   	<dependency>
+		<groupId>net.logstash.logback</groupId>
+		<artifactId>logstash-logback-encoder</artifactId>
+		<version>6.2</version>
+	</dependency>
+
+    <!-- See https://github.com/lukas-krecan/ShedLock -->
+    <dependency>
+      <groupId>net.javacrumbs.shedlock</groupId>
+      <artifactId>shedlock-spring</artifactId>
+      <version>2.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>net.javacrumbs.shedlock</groupId>
+      <artifactId>shedlock-provider-jdbc-template</artifactId>
+      <version>2.1.0</version>
+    </dependency>
+		
+		<!-- Excel parsing -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-scratchpad</artifactId>
+			<version>3.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml-schemas</artifactId>
+			<version>3.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>openxml4j</artifactId>
+			<version>1.0-beta</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+
+		</dependency>
+		
+		<dependency>
+			<groupId>com.sendgrid</groupId>
+			<artifactId>sendgrid-java</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sqs -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-sqs</artifactId>
+			<version>1.11.683</version>
+		</dependency>
+        <dependency>
+              <groupId>org.apache.httpcomponents</groupId>
+              <artifactId>httpclient</artifactId>
+          </dependency>
+
+	</dependencies>
+
+	<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+		<plugin>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-maven-plugin</artifactId>
+			<!-- <version>${flyway.version}</version>-->
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<!-- <version>2.22.1</version> -->
+			<configuration>
+				<useSystemClassLoader>false</useSystemClassLoader>
+			</configuration>
+		</plugin>
+		<plugin>
+			<!-- See https://github.com/divinespear/jpa-schema-maven-plugin -->
+			<groupId>io.github.divinespear</groupId>
+			<artifactId>jpa-schema-maven-plugin</artifactId>
+			<version>0.2.1</version>
+			<configuration>
+				<format>true</format>
+				<databaseAction>none</databaseAction>
+				<scriptAction>create</scriptAction>
+				<vendor>hibernate</vendor>
+				<properties>
+					<hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</hibernate.dialect>
+				</properties>
+				<packageToScan>
+					<string>org.runningdinner</string>
+				</packageToScan>
+				<jdbcDriver>org.postgresql.Driver</jdbcDriver>
+				<jdbcUrl>jdbc:postgresql://localhost:5432/runningdinner</jdbcUrl>
+				<jdbcUser>runningdinner</jdbcUser>
+				<jdbcPassword>runningdinner</jdbcPassword>
+			</configuration>
+			<dependencies>
+				<dependency>
+					<groupId>org.hibernate.javax.persistence</groupId>
+					<artifactId>hibernate-jpa-2.1-api</artifactId>
+					<version>1.0.0.Final</version>
+				</dependency>
+				<dependency>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-entitymanager</artifactId>
+					<version>${hibernate.version}</version>
+				</dependency>
+			</dependencies>
+		</plugin>
+
+	</plugins>
+
+	</build>
+
+</project>

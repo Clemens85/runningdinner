@@ -1,0 +1,18 @@
+<div>
+    <div class="form-group">
+        <label translate="mails_mailserver_settings"></label><br/>
+        <div class="btn-group">
+            <button popover="{{ 'mails_mailserver_standard_tooltip' | translate }}" class="btn" ng-class="getMailServerTypeClass('standard')"
+                    ng-click="setMailServerType('standard')" popover-placement="top" popover-trigger="focus">
+                {{ 'mails_mailserver_standard' | translate }}
+            </button>
+            <button popover="{{ 'mails_mailserver_custom_tooltip' | translate }}" class="btn" ng-class="getMailServerTypeClass('custom')"
+                    ng-click="setMailServerType('custom')" popover-placement="top" popover-trigger="focus">
+                {{ 'mails_mailserver_custom' | translate }}
+            </button>
+        </div>
+    </div>
+    <div ng-show="isCustomMailServerType()">
+        <a href translate="mails_mailserver_settings_edit" ng-click="openMailServerSettingsDialog()"></a>
+    </div>
+</div>

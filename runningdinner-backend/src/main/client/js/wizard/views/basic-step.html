@@ -1,0 +1,85 @@
+<h3 translate="basic_settings"></h3>
+
+<form name="ctrl.basicStepsForm" form-validate prefix="ctrl.dinner.basicDetails." ng-model-options="{ allowInvalid: true }">
+
+  <div class="row margin-top">
+    <div class="form-group">
+      <div class="col-xs-12 col-md-6">
+        <label class="control-label" for="registrationType" translate="registration_type"></label>
+        <div class="multiline-select">
+          <ui-select ng-model="ctrl.dinner.basicDetails.registrationType"
+                     name="registrationType"
+                     search-enabled="false"
+                     id="registrationType" class="form-control-ui-select"
+                     style="max-width:350px;">
+            <ui-select-match placeholder="Sichtbarkeit auswählen...">
+              <span ng-bind-html="$select.selected.label" class="teaser"></span>
+            </ui-select-match>
+            <ui-select-choices repeat="registrationType.value as registrationType in ctrl.registrationTypes">
+              <div ng-bind-html="registrationType.label" class="teaser"></div>
+            </ui-select-choices>
+          </ui-select>
+          <span class="help-block validation-error ng-hide"></span>
+        </div>
+        <span class="help-block" ng-bind-html="ctrl.getRegistrationTypeDescription(ctrl.dinner.basicDetails.registrationType)"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row margin-top">
+    <div class="form-group">
+      <div class="col-xs-12 col-md-4">
+        <label class="control-label" for="title">{{ 'title' | translate }}</label>
+        <help-icon text="'title_help'"></help-icon>
+        <input type="text" class="form-control" id="title" name="title" ng-model="ctrl.dinner.basicDetails.title">
+      </div>
+      <div class="col-xs-12">
+        <span class="help-block validation-error ng-hide"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row margin-top">
+    <div class="form-group col-md-1">
+      <label class="control-label" for="zip">{{ 'zip' | translate }}</label>
+      <help-icon text="'zip_help'"></help-icon>
+      <input type="text" class="form-control" id="zip" name="zip" ng-model="ctrl.dinner.basicDetails.zip" positive-numbers-only>
+      <span class="help-block validation-error ng-hide"></span>
+    </div>
+    <div class="form-group col-md-3">
+      <label class="control-label" for="city">{{ 'city' | translate }}</label>
+      <input type="text" class="form-control" id="city" name="city" ng-model="ctrl.dinner.basicDetails.city">
+      <span class="help-block validation-error ng-hide"></span>
+    </div>
+    <div class="form-group col-md-2">
+      <label class="control-label" for="date">{{ 'date' | translate }}</label>
+      <p class="input-group">
+        <input type="text" class="form-control" uib-datepicker-popup="{{ ctrl.datepicker.dateFormat }}"
+               name="date" ng-model="ctrl.dinner.basicDetails.date"
+               is-open="ctrl.datepicker.dinnerDateCalendarOpened"
+               minDate="ctrl.datepicker.today()" show-button-bar="false" id="date"
+               ng-click="ctrl.datepicker.openDinnerDateCalendar()"/>
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default" ng-click="ctrl.datepicker.openDinnerDateCalendar()"><i class="glyphicon glyphicon-calendar"></i></button>
+        </span>
+      </p>
+      <span class="help-block validation-error ng-hide"></span>
+    </div>
+  </div>
+
+  <div class="row margin-top">
+    <div class="col-xs-12 col-md-6">
+      <label class="control-label" translate="event_language_label"></label>
+      <language-switch current-language="ctrl.dinner.basicDetails.languageCode" on-change-language="ctrl.changeEventLanguage"></language-switch>
+      <span class="help-block" translate="event_language_help">
+      </span>
+    </div>
+  </div>
+
+</form>
+
+<div class="row" ng-if="!ctrl.isDinnerCreated()">
+  <div class="col-md-2 col-md-offset-4 wizard-button-row">
+    <button ng-click="ctrl.submitBasicDetails()" class="btn btn-success btn-lg pull-right">{{ 'next' | translate }}</button>
+  </div>
+</div>

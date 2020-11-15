@@ -1,0 +1,188 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h2 class="global-feature-headline" translate="settings"></h2>
+  </div>
+</div>
+
+
+<div class="row">
+
+  <div class="col-xs-12" ng-if="!ctrl.dinner.cancellationDate">
+    <div class="pull-right padding-right-medium">
+      <applink-container><a href ng-click="ctrl.cancelEvent(ctrl.dinner)"><span translate="settings_cancel_event"></span></a></applink-container>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-md-offset-1 col-md-5 margin-right-medium">
+    <h3 class="feature-headline">
+      <span><i class="fa fa-pencil feature-icon" aria-hidden="true"></i></span>
+      {{ 'settings_basics' | translate }}
+    </h3>
+    <div class="row feature-text">
+      <div class="col-xs-12">
+        <form form-validate prefix="ctrl.dinner." name="ctrl.basicDetailsForm" ng-model-options="{ allowInvalid: true }">
+
+          <div class="form-group col-xs-12 col-md-8">
+            <label class="control-label" for="date">{{ 'date' | translate }}</label>
+            <p class="input-group">
+              <input type="text" class="form-control" uib-datepicker-popup="{{ ctrl.datepicker.dateFormat }}"
+                     name="basicDetails.date" ng-model="ctrl.dinner.basicDetails.date"
+                     is-open="ctrl.datepicker.dinnerDateCalendarOpened"
+                     minDate="ctrl.datepicker.today()" show-button-bar="false" id="date"
+                     ng-click="ctrl.datepicker.openDinnerDateCalendar()"/>
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="ctrl.datepicker.openDinnerDateCalendar()"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+            <span class="help-block validation-error ng-hide"></span>
+          </div>
+
+          <div class="col-xs-12 col-md-8">
+            <label class="control-label" for="registrationType" translate="registration_type"></label>
+            <div class="multiline-select">
+              <ui-select ng-model="ctrl.dinner.basicDetails.registrationType"
+                         name="basicDetails.registrationType"
+                         search-enabled="false"
+                         id="registrationType" class="form-control-ui-select"
+                         style="max-width:350px;">
+                <ui-select-match placeholder="Sichtbarkeit auswählen...">
+                  <span ng-bind-html="$select.selected.label" class="teaser"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="registrationType.value as registrationType in ctrl.registrationTypes">
+                  <div ng-bind-html="registrationType.label" class="teaser"></div>
+                </ui-select-choices>
+              </ui-select>
+              <span class="help-block validation-error ng-hide"></span>
+            </div>
+            <span class="help-block" ng-bind-html="ctrl.getRegistrationTypeDescription(ctrl.dinner.basicDetails.registrationType)"></span>
+          </div>
+
+          <div class="form-group margin-top">
+            <div class="col-xs-12 col-md-8">
+              <label class="control-label" for="title">{{ 'title' | translate }}</label>
+              <help-icon text="'title_help'"></help-icon>
+              <input type="text" class="form-control" id="title" name="basicDetails.title" ng-model="ctrl.dinner.basicDetails.title">
+            </div>
+            <div class="col-xs-12">
+              <span class="help-block validation-error ng-hide"></span>
+            </div>
+          </div>
+
+          <div class="form-group col-xs-6 col-md-3 margin-top">
+            <label class="control-label" for="zip">{{ 'zip' | translate }}</label>
+            <help-icon text="'zip_help'"></help-icon>
+            <input type="text" class="form-control" id="zip" name="basicDetails.zip" ng-model="ctrl.dinner.basicDetails.zip" positive-numbers-only>
+            <span class="help-block validation-error ng-hide"></span>
+          </div>
+          <div class="form-group col-xs-6 col-md-5 margin-top">
+            <label class="control-label" for="city">{{ 'city' | translate }}</label>
+            <input type="text" class="form-control" id="city" name="basicDetails.city" ng-model="ctrl.dinner.basicDetails.city">
+            <span class="help-block validation-error ng-hide"></span>
+          </div>
+
+          <div class="checkbox col-xs-12 col-md-8">
+            <label>
+              <input type="checkbox" ng-model="ctrl.dinner.options.teamPartnerWishDisabled">
+              <span translate="team_partner_wish_disabled"></span>
+              <help-icon text="'team_partner_wish_disabled_help'"></help-icon>
+            </label>
+          </div>
+
+          <div class="form-group col-xs-12 col-md-6 margin-top">
+            <label class="control-label" translate="event_language_label"></label>
+            <language-switch current-language="ctrl.dinner.basicDetails.languageCode" on-change-language="ctrl.changeEventLanguage"></language-switch>
+            <span class="help-block" translate="event_language_help"></span>
+          </div>
+
+          <div class="col-xs-12 col-md-8 margin-top">
+            <button class="btn btn-lg btn-success pull-right hidden-xs hidden-sm hidden-md" ng-click="ctrl.saveBasicDetails()" promise-btn>{{ 'save' | translate }}</button>
+            <button class="btn btn-lg btn-success hidden-lg" style="width:100%;" ng-click="ctrl.saveBasicDetails()" promise-btn>{{ 'save' | translate }}</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-md-5" ng-if="ctrl.dinnerPristine && !ctrl.isClosedDinner(ctrl.dinnerPristine)">
+    <h3 class="feature-headline">
+      <span><i class="fa fa-pencil feature-icon" aria-hidden="true"></i></span> {{ 'settings_public_registration' | translate }}
+    </h3>
+    <div class="row feature-text">
+      <div class="col-xs-12">
+        <form form-validate prefix="ctrl.dinner.publicSettings." class="wizard-form" name="ctrl.publicSettingsForm" ng-model-options="{ allowInvalid: true }">
+
+          <div class="form-group">
+            <div class="col-xs-12">
+              <label for="public_title" translate="public_title"></label>
+              <help-icon text="'public_title_help'"></help-icon>
+              <input type="text" class="form-control" id="public_title" name="title" ng-model="ctrl.dinner.publicSettings.title">
+              <span class="help-block validation-error ng-hide"></span>
+            </div>
+          </div>
+
+          <div class="form-group col-xs-12 col-md-8 margin-top">
+            <label for="endOfRegistrationDate" translate="public_end_of_registration_date"></label>
+            <help-icon text="'endOfRegistrationDate_help'"></help-icon>
+            <p class="input-group">
+              <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" ng-model="ctrl.dinner.publicSettings.endOfRegistrationDate"
+                     is-open="ctrl.datepicker.endOfRegistrationDateCalendarOpened" minDate="datepicker.today()"
+                     show-button-bar="false" id="endOfRegistrationDate" name="endOfRegistrationDate"
+                     ng-click="ctrl.datepicker.openEndOfRegistrationDateCalendar()"/>
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="ctrl.datepicker.openEndOfRegistrationDateCalendar()">
+                  <i class="glyphicon glyphicon-calendar"></i>
+                </button>
+              </span>
+            </p>
+            <span class="help-block validation-error ng-hide"></span>
+          </div>
+
+          <div class="form-group col-xs-12" ng-if="ctrl.dinner.publicSettings.registrationDeactivated === true">
+            <label class="team-cancelled-text" translate="registration_deactivated_text"></label>
+          </div>
+
+          <div class="form-group col-xs-12">
+            <label for="description" translate="public_description"></label>
+            <textarea class="form-control" rows="10" id="description" name="description" ng-model="ctrl.dinner.publicSettings.description"></textarea>
+            <span class="help-block validation-error ng-hide"></span>
+          </div>
+
+          <div class="form-group col-xs-12 margin-top">
+            <label for="publicContactName" translate="public_contact_name"></label>
+            <help-icon text="'public_contact_name_help'"></help-icon>
+            <input type="text" class="form-control" id="publicContactName" name="publicContactName" ng-model="ctrl.dinner.publicSettings.publicContactName">
+            <span class="help-block validation-error ng-hide"></span>
+          </div>
+
+          <div class="form-group col-xs-12 margin-top">
+            <label for="publicContactEmail" translate="public_contact_email"></label>
+            <help-icon text="'public_contact_email_help'"></help-icon>
+            <input type="text" class="form-control" id="publicContactEmail" name="publicContactEmail" ng-model="ctrl.dinner.publicSettings.publicContactEmail">
+            <span class="help-block validation-error ng-hide"></span>
+          </div>
+
+          <div class="form-group col-xs-12 margin-top">
+            <label for="publicContactMobileNumber" translate="public_contact_mobile_number"></label>
+            <help-icon text="'public_contact_mobile_number_help'"></help-icon>
+            <input type="text" class="form-control" id="publicContactMobileNumber" name="publicContactMobileNumber" ng-model="ctrl.dinner.publicSettings.publicContactMobileNumber">
+            <span class="help-block validation-error ng-hide"></span>
+          </div>
+
+          <div class="col-xs-12 margin-top">
+            <button class="btn btn-lg btn-success pull-right hidden-xs hidden-sm hidden-md"
+                    ng-click="ctrl.savePublicSettings()" promise-btn>{{ 'save' | translate }}</button>
+            <button class="btn btn-lg btn-success hidden-lg" style="width:100%;"
+                    ng-click="ctrl.savePublicSettings()" promise-btn>{{ 'save' | translate }}</button>
+            <button ng-click="ctrl.updateRegistrationActiveState(true)" class="btn btn-link btn-lg pull-right"
+                    ng-if="ctrl.dinner.publicSettings.registrationDeactivated === true" promise-btn>{{ 'activate_registration' | translate }}...</button>
+            <button ng-click="ctrl.updateRegistrationActiveState(false)" class="btn btn-link btn-lg pull-right"
+                    ng-if="ctrl.dinner.publicSettings.registrationDeactivated === false" promise-btn>{{ 'deactivate_registration' | translate }}...</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

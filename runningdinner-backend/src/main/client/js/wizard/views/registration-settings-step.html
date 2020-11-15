@@ -1,0 +1,74 @@
+<h3 translate="public_settings"></h3>
+<form form-validate prefix="ctrl.dinner.publicSettings." class="wizard-form" name="ctrl.publicSettingsForm" ng-model-options="{ allowInvalid: true }">
+  <div class="row margin-top">
+    <div class="form-group">
+      <div class="col-xs-9 col-lg-5">
+        <label for="title" translate="public_title"></label>
+        <help-icon text="'public_title_help'"></help-icon>
+        <input type="text" class="form-control" id="title" name="title" ng-model="ctrl.dinner.publicSettings.title">
+        <span class="help-block validation-error ng-hide"></span>
+      </div>
+    </div>
+  </div>
+  <div class="row margin-top">
+    <div class="form-group col-xs-9 col-lg-2 col-md-3">
+      <label for="endOfRegistrationDate" translate="public_end_of_registration_date"></label>
+      <help-icon text="'endOfRegistrationDate_help'"></help-icon>
+      <p class="input-group">
+        <input type="text" class="form-control" uib-datepicker-popup="{{ ctrl.datepicker.dateFormat }}" ng-model="ctrl.dinner.publicSettings.endOfRegistrationDate"
+               is-open="ctrl.datepicker.endOfRegistrationDateCalendarOpened" minDate="datepicker.today()"
+               show-button-bar="false" id="endOfRegistrationDate" name="endOfRegistrationDate"
+               ng-click="ctrl.datepicker.openEndOfRegistrationDateCalendar()"/>
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="ctrl.datepicker.openEndOfRegistrationDateCalendar()">
+              <i class="glyphicon glyphicon-calendar"></i>
+            </button>
+        </span>
+      </p>
+      <span class="help-block validation-error ng-hide"></span>
+    </div>
+  </div>
+  <div class="row margin-top">
+    <div class="form-group col-xs-12 col-lg-7">
+      <label for="description" translate="public_description"></label>
+      <textarea class="form-control" rows="10" id="description" name="description" ng-model="ctrl.dinner.publicSettings.description"></textarea>
+      <span class="help-block validation-error ng-hide"></span>
+      <!--<div rich-text-editor ng-model="dinner.participants.description" id="description"></div>-->
+    </div>
+  </div>
+
+  <div class="row margin-top">
+    <div class="form-group col-xs-9 col-lg-5">
+      <label for="publicContactName" translate="public_contact_name"></label>
+      <help-icon text="'public_contact_name_help'"></help-icon>
+      <input type="text" class="form-control" id="publicContactName" name="publicContactName" ng-model="ctrl.dinner.publicSettings.publicContactName">
+      <span class="help-block validation-error ng-hide"></span>
+    </div>
+  </div>
+
+  <div class="row margin-top">
+    <div class="form-group col-xs-9 col-lg-5">
+      <label for="publicContactEmail" translate="public_contact_email"></label>
+      <help-icon text="'public_contact_email_help'"></help-icon>
+      <input type="text" class="form-control" id="publicContactEmail" name="publicContactEmail" ng-model="ctrl.dinner.publicSettings.publicContactEmail">
+      <span class="help-block validation-error ng-hide"></span>
+    </div>
+  </div>
+
+  <div class="row margin-top">
+    <div class="form-group col-xs-9 col-lg-5">
+      <label for="publicContactMobileNumber" translate="public_contact_mobile_number"></label>
+      <help-icon text="'public_contact_mobile_number_help'"></help-icon>
+      <input type="text" class="form-control" id="publicContactMobileNumber" name="publicContactMobileNumber" ng-model="ctrl.dinner.publicSettings.publicContactMobileNumber">
+      <span class="help-block validation-error ng-hide"></span>
+    </div>
+  </div>
+
+</form>
+
+<div class="row" ng-if="!ctrl.isDinnerCreated()">
+  <div class="col-xs-12 col-lg-7 wizard-button-row">
+    <button ng-click="ctrl.submitPublicSettings(true)" class="btn btn-success btn-lg pull-right">{{ 'next' | translate }}</button>
+    <a href ng-click="ctrl.submitPublicSettings(false)" class="back-link pull-right">{{ 'back' | translate }}</a>
+  </div>
+</div>

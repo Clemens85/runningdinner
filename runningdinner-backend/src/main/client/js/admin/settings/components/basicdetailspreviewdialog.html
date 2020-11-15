@@ -1,0 +1,55 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" ng-click="ctrl.cancel()">
+    <span aria-hidden="true">&times;</span><span class="sr-only">{{ 'close' | translate }}</span>
+  </button>
+  <h4 class="modal-title">Vorschau</h4>
+</div>
+
+<div class="modal-body">
+  <div class="row">
+
+    <div class="col-xs-12" ng-if="ctrl.changeInDateWithExistingParticipants">
+      <callout headline="'attention'" icon="fa-info" type="info">
+        <span>
+          Du bist im Begriff das Datum deines Events zu ändern und hast schon Teilnehmer in deinem Event.<br>
+          Denk bitte daran deine Teilnehmer (z.B. via Rundmail) darüber zu informieren sofern diese noch nicht bescheid wissen.<br>
+          Dies kannst du - wenn gewünscht - direkt nach Speichern deiner Einstellungen tun.
+        </span>
+      </callout>
+    </div>
+
+    <div class="col-xs-12" ng-if="ctrl.changedFromClosedToPublicOrOpen && !ctrl.changeInDateWithExistingParticipants">
+      <callout headline="'attention'" icon="fa-info" type="info">
+        <span ng-if="ctrl.dinnerDirty.basicDetails.registrationType === 'PUBLIC'">
+          Du bist im Begriff dein Event zu veröffentlichen, daher solltest du nach dem Speichern deiner Änderungen noch die öffentlichen
+          Einstellungen anzupassen.
+        </span>
+        <span ng-if="ctrl.dinnerDirty.basicDetails.registrationType === 'OPEN'">
+          Du bist im Begriff dein Event zu öffnen, so dass sich Teilnehmer (via geheimem Link) selbst anmelden können,
+          daher kannst du nach dem Speichern deiner Änderungen noch die öffentlichen Einstellungen anpassen. <br>
+          Zudem kannst du den generierten geheimen Anmeldungs-Link (siehe Dashboard) in deinem Bekanntenkreis weitergeben.
+        </span>
+      </callout>
+    </div>
+
+    <div class="col-xs-12" ng-if="ctrl.changedFromPublicOrOpenToClosed && !ctrl.changeInDateWithExistingParticipants">
+      <callout headline="'attention'" icon="fa-info" type="info">
+        <span>
+          Nachdem du deine Änderungen gespeichert hast, wird sich kein Teilnehmer mehr selbst registrieren können, sondern du musst
+          alle Teilnehmer manuell hinzufügen.
+        </span>
+      </callout>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="submit" class="btn btn-default" ng-click="ctrl.cancel()">{{ 'cancel' | translate }}</button>
+  <button ng-if="!ctrl.showNextButton" ng-click="ctrl.save()" class="btn btn-success" promise-btn>
+    {{ 'save' | translate }}
+  </button>
+  <button ng-if="ctrl.showNextButton" ng-click="ctrl.next()" class="btn btn-success" promise-btn>
+    {{ 'next' | translate }}
+  </button>
+</div>

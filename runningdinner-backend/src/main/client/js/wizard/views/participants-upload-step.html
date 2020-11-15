@@ -1,0 +1,106 @@
+<h3>{{ 'label_participant_upload' | translate }}</h3>
+
+<form novalidate form-validate prefix="dinner.participantUploadSettings." class="wizard-form" ui-backdrop="upload.isUploadFileControlsActivated() == false" ng-if="!isDinnerCreated()">
+    <h4>Schritt 1: <button class="btn btn-primary btn-lg" ui-trigger-click="#fileUpload"><i class="fa fa-plus"></i> {{ 'label_participant_upload' | translate }}</button></h4>
+    <h4>Oder alternativ:
+      <button ng-click="skipParticipantUpload()" class="btn btn-primary btn-lg">Weiter ohne Upload</button>
+    </h4>
+    <div class="row">
+        <div class="form-group col-xs-6">
+            <a href ng-click=upload.goBackToPreviousWizardStep() class="back-link">Zurück</a>
+            <span class="help-block" translate="label_participant_upload_info" style="display:inline-block;"></span>
+            <input id="fileUpload" type="file" nv-file-select uploader="upload.uploader" multiple style="display:none;"/>
+        </div>
+    </div>
+    <div class="row" ng-if="upload.isUploading()">
+        <div class="col-xs-6">
+            <span>Bitte warten, Datei wird hochgeladen... </span><img src="./images/ajax-loader.gif" class="show-inline" />
+        </div>
+    </div>
+</form>
+
+<form novalidate form-validate prefix="dinner." class="form-inline" ng-if="upload.isFileUploadedSuccess() && !upload.isUploading()">
+    <div class="row" ui-backdrop="upload.isColumnMappingControlsActivated() == false">
+        <div class="col-xs-12">
+            <h4>Schritt 2: Einstellungen für {{ upload.fileName }}</h4>
+            <div class="form-group">
+                <label class="control-label" for="firstRow" translate="label_participant_upload_first_row"></label>
+                <input class="form-control" id="firstRow" ng-model="dinner.participantUploadSettings.parsingConfiguration.firstRow" />
+            </div>
+            <div class="form-group">
+                &nbsp;<a href><i class="fa fa-question-circle fa-lg"></i></a>
+            </div>
+            <div class="row margin-top">
+                <div class="col-xs-12">
+                    <div class="list-group-item col-xs-12" style="border:0;">
+                        <div class="col-xs-1" ng-repeat="columnMapping in dinner.participantUploadSettings.parsingConfiguration.columnMappings">
+                            <ui-select ng-model="columnMapping.mappingSelection" search-enabled="false" class="form-control-ui-select">
+                                <ui-select-match placeholder="Feld auswählen...">{{ $select.selected.label }}</ui-select-match>
+                                <ui-select-choices repeat="columnMappingOption as columnMappingOption in upload.columnMappingOptions">
+                                    <span ng-bind-html="columnMappingOption.label"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <!--<span>{{ previewRow.rowNumber }}</span>-->
+                    <div ng-repeat="previewRow in upload.previewRows" class="list-group-item col-xs-12" ng-class="previewRow.rowNumber == dinner.participantUploadSettings.parsingConfiguration.firstRow ? 'warning' : ''">
+                        <div ng-repeat="column in previewRow.columns" class="col-xs-1">{{ column }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row margin-top">
+                <div class="col-xs-12">
+                    <button ng-click="submitParticipantsUpload(true)" class="btn btn-lg btn-primary pull-right">Vorschau</button>
+                    <a href ng-click="upload.activateUploadFileControls()" class="back-link pull-right">{{ 'back' | translate }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 translate="Schritt 3: Vorschau" ng-if="upload.isFileUploadedSuccess() && upload.isFileUploadParsedSuccess()"></h4>
+    <div class="row" ng-if="upload.isFileUploadedSuccess() && upload.isFileUploadParsedSuccess()">
+        <div class="col-xs-12">
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>Nr</th>
+                    <th>Name</th>
+                    <th>Strasse + Haus-Nr</th>
+                    <th>PLZ + Stadt</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="participant in upload.result.participants" ng-class="participant.assignable === false ? 'warning' : ''">
+                    <td>{{ participant.participantNumber }}</td>
+                    <td>{{ participant | fullname }}</td>
+                    <td>{{ participant | streetWithNr }}</td>
+                    <td>{{ participant | zipWithCity }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row margin-top" ng-if="upload.isFileUploadedSuccess() && upload.isFileUploadParsedSuccess()">
+        <div class="col-xs-12">
+            <div class="alert alert-{{ upload.getParticipantsAssignableStatus() }} alert-dismissible" role="alert" style="background:none;">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <i class="fa fa-check"></i> {{ upload.getParticipantsAssignableStatusMessage() }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="upload.isFileUploadedSuccess() && upload.result.error != null">
+        <div class="col-xs-12">
+        </div>
+    </div>
+
+</form>
+
+<div class="row margin-bottom" ng-if="upload.isFileUploadedSuccess() && upload.isFileUploadParsedSuccess()" ng-if="!isDinnerCreated()">
+    <div class="col-xs-12 wizard-button-row">
+        <button ng-click="submitParticipantsUpload(true)" class="btn btn-success btn-lg pull-right">{{ 'next' | translate }}</button>
+        <a href ng-click="upload.activateColumnMappingControls()" class="back-link pull-right">{{ 'back' | translate }}</a>
+    </div>
+</div>

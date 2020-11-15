@@ -1,0 +1,17 @@
+<div class="row margin-left-medium margin-right-medium">
+  <div class="col-xs-12">
+    <h3 class="global-feature-headline" translate="registration_activation_title"></h3>
+    <callout headline="'registration_activation_congratulation_title'" icon="fa-check" ng-if="ctrl.activationSucceeded">
+      <span translate="registration_activation_congratulation_text"
+            translate-values="{ adminEmail: '{{ ctrl.dinnerEvent.adminEmail }}', publicDinnerTitle: '{{ ctrl.dinnerEvent.publicSettings.title }}', publicDinnerUrl: '{{ ctrl.dinnerEvent.publicSettings.publicDinnerUrl }}'}"></span>
+    </callout>
+    <callout headline="'registration_activation_error_title'" icon="fa-exclamation-triangle" type="danger" ng-if="!ctrl.activationSucceeded && ctrl.activationFailed">
+      <span ng-if="!ctrl.validationErrorMessage"
+            translate="registration_activation_error_text" translate-values="{ adminEmail: '{{ ctrl.activationErrorEmail }}'}"></span>
+      <span ng-if="ctrl.validationErrorMessage" ng-bind="ctrl.validationErrorMessage"></span>
+    </callout>
+  </div>
+  <div class="col-xs-12" ng-if="ctrl.loading">
+    <loading-spinner loading="ctrl.loading"></loading-spinner>
+  </div>
+</div>

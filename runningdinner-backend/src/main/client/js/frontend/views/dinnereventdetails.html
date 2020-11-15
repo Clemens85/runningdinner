@@ -1,0 +1,85 @@
+<div class="row" ng-if="vm.dinnerEvent.found">
+  <div class="col-xs-12">
+    <frontend-notification running-dinner="vm.dinnerEvent"></frontend-notification>
+  </div>
+</div>
+<div class="row margin-top margin-right-medium">
+  <div class="col-xs-12">
+    <span class="pull-right"><feedback></feedback></span>
+  </div>
+</div>
+
+<div class="row margin-left-medium margin-right-medium">
+
+  <div class="col-xs-12" ui-content-height>
+
+    <div class="col-xs-12 padding-top-xlarge text-center" ng-if="!vm.dinnerEvent.found">
+      <loading-spinner loading="vm.dinnerEvent.loading"></loading-spinner>
+      <p class="text-center" ng-hide="vm.dinnerEvent.loading" translate="dinner_event_not_found_text"></p>
+    </div>
+
+    <div class="col-xs-12 col-md-6" ng-class="vm.hideDetailsOnRegistrationForSmallDevicesClass" ng-if="vm.dinnerEvent.found">
+      <div>
+        <h2 class="global-feature-headline">{{ vm.dinnerEvent.publicSettings.title }}</h2>
+        <address>
+          <p><strong><i class="fa fa-map-marker text-color-success" aria-hidden="true"></i> {{ vm.dinnerEvent.locationText }}</strong></p>
+          <p><strong><i class="fa fa-calendar text-color-success" aria-hidden="true"></i> {{ vm.dinnerEvent.date | localDate }}</strong></p>
+        </address>
+      </div>
+
+      <div class="margin-top-large">
+        <h4 class="feature-headline" translate="schedule"></h4>
+        <div>
+          <div ng-repeat="meal in vm.dinnerEvent.meals" class="margin-top-small">
+            <i class="fa fa-clock-o text-color-success" aria-hidden="true"></i> <span>{{ meal.time | date:'HH:mm' }} {{ 'uhr' | translate }}: {{ meal.label }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="margin-top-large">
+        <h4 class="feature-headline" translate="description"></h4>
+        <div>
+          <p ng-bind-html="vm.dinnerEvent.publicSettings.description"></p>
+        </div>
+      </div>
+
+      <div class="margin-top-large" ng-if="vm.dinnerEvent.publicContactInfoAvailable">
+        <h4 class="feature-headline" translate="contact"></h4>
+        <div ng-if="vm.dinnerEvent.publicSettings.publicContactName">
+          <span translate="organizer"></span>:
+          <span ng-bind-html="vm.dinnerEvent.publicSettings.publicContactName"></span>
+        </div>
+        <div ng-if="vm.dinnerEvent.publicSettings.publicContactEmail" class="padding-top-small">
+          <span translate="email"></span>:
+          <a class="actionlink" ng-href="mailto:{{ vm.dinnerEvent.publicSettings.publicContactEmail }}">
+            <span ng-bind-html="vm.dinnerEvent.publicSettings.publicContactEmail"></span>
+          </a>
+        </div>
+        <div ng-if="vm.dinnerEvent.publicSettings.publicContactMobileNumber" class="padding-top-small">
+          <span translate="mobile"></span>:
+          <span ng-bind-html="vm.dinnerEvent.publicSettings.publicContactMobileNumber"></span>
+        </div>
+      </div>
+
+      <div class="margin-top-large">
+        <h4 class="feature-headline margin-top" translate="registration"></h4>
+        <p translate="dinner_event_deadline_text"
+           translate-values="{ endOfRegistrationDate: '{{ vm.dinnerEvent.publicSettings.endOfRegistrationDate | localDate }}' }"></p>
+      </div>
+
+     <div class="margin-top-large" ng-show="vm.showButtons">
+        <a ui-sref="frontend.eventdetails.registration({ publicDinnerId: vm.dinnerEvent.publicDinnerId })"
+          ng-hide="vm.registrationButtonHidden" class="btn btn-success btn-lg pull-right">
+          <span translate="goto_registration"></span>
+        </a>
+        <div ng-show="vm.dinnerEvent.registrationDateExpired"><em translate="registration_date_expired"></em></div>
+        <div ng-show="vm.dinnerEvent.publicSettings.registrationDeactivated"><em translate="registration_deactivated_text"></em></div>
+        <a ui-sref="frontend.events" ng-hide="vm.participantSubscribed" class="back-link pull-right">{{ 'back' | translate }}</a>
+     </div>
+   </div>
+
+   <div class="col-xs-12 col-md-6 border-left" ui-view="registration-form"></div>
+
+ </div>
+
+</div>

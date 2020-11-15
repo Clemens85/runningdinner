@@ -1,0 +1,77 @@
+<div class="row" ng-if="$ctrl.mealSpecificsOfGuestTeams && $ctrl.mealSpecificsOfGuestTeams.length > 0">
+  <div class="col-xs-12 text-color-dinner-card-current">
+    <h2 ng-bind-html="$ctrl.mealSpecificsOfGuestTeams"></h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-4 col-xs-12" ng-repeat="team in $ctrl.teams">
+
+    <h3 class="feature-headline">
+      <span ng-class="$ctrl.getHeadlineClass(team)">
+        ({{ $index + 1 }}) {{ team.meal.label }}
+        <small ng-if="$ctrl.isCurrentTeam(team)" class="padding-left-small" style="font-weight: bold;"> {{ 'with_you' | translate }}</small>
+      </span>
+    </h3>
+    <div class="feature-text" ng-class="$ctrl.getAlertClass(team)">
+      <p ng-if="!$ctrl.isTeamCancelled(team)"><strong translate="host"></strong>: <span>{{ team.hostTeamMember | fullname }}</span></p>
+      <address ng-if="!$ctrl.isTeamCancelled(team)">
+        <strong translate="address"></strong><br>
+        <span ng-bind="team.hostTeamMember.street"></span> <span ng-bind="team.hostTeamMember.streetNr"></span><br>
+        <span ng-bind="team.hostTeamMember.zip"></span> <span ng-bind="team.hostTeamMember.cityName"></span><br>
+        <em ng-if="team.hostTeamMember.addressRemarks" ng-bind="team.hostTeamMember.addressRemarks"></em>
+      </address>
+      <h4 ng-if="$ctrl.isTeamCancelled(team)" class="team-cancelled-text margin-top" translate="cancelled"></h4>
+      <p ng-if="!$ctrl.isTeamCancelled(team)">
+        <strong translate="time"></strong>: <span>{{ team.meal.time | date:'HH:mm' }}</span> {{ 'uhr' | translate }}
+      </p>
+    </div>
+  </div>
+
+<!-- zoom-to-include-markers="true" -->
+  <div class="col-xs-12">
+    <div map-lazy-load="https://maps.google.com/maps/api/js?key=AIzaSyB46NpYyjomUcb-N3_9XjMfSrLEbBbvCaQ">
+      <ng-map style="height: 450px; display:block;"
+              default-style="false"
+              zoom="12">
+        <marker ng-repeat="team in $ctrl.teams"
+                id="t{{ team.teamNumber }}"
+                position="{{ team.hostMarkerPosition }}"
+                on-click="$ctrl.showTeamInfoOnMap(team)"
+                title="{{ team | teamNameMembers }}"
+                centered="true"
+                icon="{{ team.markerIcon }}">
+        </marker>
+        <marker animation="DROP"
+                position="current-location"
+                icon="{{ ctrl.currentPositionMarkerIcon }}">
+        </marker>
+
+        <shape ng-if="$ctrl.teamPaths"
+               name="polyline"
+               path="{{ $ctrl.teamPaths }}"
+               geodesic="true"
+               stroke-color="#286090"
+               stroke-opacity="1.0"
+               stroke-weight="2">
+        </shape>
+
+        <info-window id="team-map-details">
+          <div ng-non-bindable="">
+            <h4>{{ $ctrl.selectedTeamInfo.meal.label }}</h4>
+            <p>{{ 'host' | translate }}: {{ $ctrl.selectedTeamInfo.hostTeamMember | fullname }}</p>
+            <address>
+              <span translate="address"></span>:<br>
+              <span ng-bind="$ctrl.selectedTeamInfo.hostTeamMember.street"></span> <span ng-bind="$ctrl.selectedTeamInfo.hostTeamMember.streetNr"></span><br>
+              <span ng-bind="$ctrl.selectedTeamInfo.hostTeamMember.zip"></span> <span ng-bind="$ctrl.selectedTeamInfo.hostTeamMember.cityName"></span><br>
+              <em ng-if="$ctrl.selectedTeamInfo.hostTeamMember.addressRemarks" ng-bind="$ctrl.selectedTeamInfo.hostTeamMember.addressRemarks"></em>
+            </address>
+            <p>{{ 'time' | translate }}: {{ $ctrl.selectedTeamInfo.meal.time | date:'HH:mm' }} {{ 'uhr' | translate }}</p>
+          </div>
+        </info-window>
+
+      </ng-map>
+    </div>
+
+  </div>
+</div>

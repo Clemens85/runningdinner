@@ -1,0 +1,17 @@
+<h3 translate="done"></h3>
+
+<form novalidate class="wizard-form">
+  <div class="row">
+    <div class="col-md-6 col-xs-12 form-group">
+      <label for="link" translate="administration_link"></label>
+      <p id="link"><strong ng-bind="ctrl.dinner.administrationUrl"></strong></p>
+      <span class="help-block">{{ 'administration_link_help' | translate }}</span>
+    </div>
+  </div>
+</form>
+
+<div class="row margin-top">
+  <div class="col-xs-12">
+    <a ng-href="{{ ctrl.dinner.administrationUrl }}" style="text-decoration: underline;"><strong>{{ 'administration_link_open' | translate }}</strong></a>
+  </div>
+</div>

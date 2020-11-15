@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h3 translate="change_team_host_title"></h3>
+    <h5 translate="change_team_host_help"></h5>
+  </div>
+</div>
+
+<loading-spinner loading-function="ctrl.findTeamPromise" loading-text="loading"></loading-spinner>
+
+<div class="row" ng-if="ctrl.team">
+  <div class="col-xs-12">
+
+    <div class="row margin-top">
+      <div class="col-xs-12">
+        <table class="table table-hover">
+          <tbody>
+          <tr ng-repeat="teamMember in ctrl.team.teamMembers">
+            <td style="vertical-align: middle">
+              <strong>{{ teamMember | fullname }}</strong>
+              <strong class="text-danger"
+                    ng-if="teamMember.id === ctrl.currentHostTeamMemberId && ctrl.teamHostChanged === true"> *</strong>
+            </td>
+            <td align="left" ng-click="ctrl.changeTeamHost(teamMember)" ng-if="teamMember.id !== ctrl.currentHostTeamMemberId" class="clickable">
+              <p><i class="fa fa-square-o fa-3x" aria-hidden="true"></i></p>
+            </td>
+            <td ng-if="teamMember.id === ctrl.currentHostTeamMemberId">
+              <p class="text-success"><i class="fa fa-check-square-o fa-3x" aria-hidden="true"></i></p>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row margin-top">
+      <div class="col-xs-12">
+        <label for="comment" translate="change_team_host_comment"></label>
+        <span class="help-block">{{ 'change_team_host_comment_help' | translate }}</span>
+        <textarea class="form-control" rows="3" id="comment" ng-model="ctrl.changeTeamHostRequest.comment"></textarea>
+      </div>
+    </div>
+
+    <div class="row margin-top margin-bottom">
+      <div class="col-xs-12 margin-top margin-bottom">
+        <button type="submit" class="btn btn-lg btn-success pull-right"
+                ng-disabled="ctrl.teamHostChanged === false"
+                ng-click="ctrl.saveTeamHostChange()" promise-btn>
+          {{ 'change_team_host_button' | translate }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="row" ng-if="ctrl.loadingTeamFailed === true">
+  <div class="col-xs-12">
+    <callout type="danger" headline="'change_team_host_loading_error_title'" icon="fa-exclamation">
+      <span translate="change_team_host_loading_error_text"></span>
+    </callout>
+  </div>
+</div>

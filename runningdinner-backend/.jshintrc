@@ -1,0 +1,43 @@
+{
+  // enforcing options
+  "bitwise"       : true,     // true: Prohibit bitwise operators (&, |, ^, etc.)
+  "curly"         : true,     // true: Require {} for every new block or scope
+  "eqeqeq"        : true,     // true: Require triple equals (===) for comparison
+  "noarg"         : true,     // true: Prohibit use of `arguments.caller` and `arguments.callee`
+  "undef"         : true,     // true: Require all non-global variables to be declared (prevents global leaks)
+  "unused"        : "vars",   // Unused variables: true = all variables, last function parameter
+  "strict"        : true,     // true: Requires all functions run in ES5 Strict Mode
+  "maxdepth"      : 10,       // {int} Max depth of nested blocks (within functions)
+  "maxstatements" : 150,      // {int} Max number statements per function
+  "maxcomplexity" : 15,       // {int} Max cyclomatic complexity per function
+
+  // relaxing options
+  "asi"           : false,    // true: Tolerate Automatic Semicolon Insertion (no semicolons)
+  "boss"          : false,    // true: Tolerate assignments where comparisons would be expected
+  "debug"         : false,    // true: Allow debugger statements e.g. browser breakpoints.
+  "eqnull"        : true,     // true: Tolerate use of `== null`
+  "funcscope"     : false,    // true: Tolerate defining variables inside control statements
+  "loopfunc"      : false,    // true: Tolerate functions being defined in loops
+  "sub"           : true,    // true: Tolerate using `[]` notation when it can still be expressed in dot notation
+  "-W014"         : true,     // Get rid of "Bad line breaking before '{a}'." Caused by our code formatter.
+
+  // environments
+  "browser"       : true,     // Web Browser (window, document, etc)
+  "devel"         : true,     // Development/debugging (alert, confirm, etc)
+  "jasmine"       : false,    // Jasmine
+  "jquery"        : false,    // jQuery
+  "mocha"         : true,     // Mocha
+
+  "esversion": 6,
+
+  // Custom Globals
+  "globals"       : {         // additional predefined global variables
+    "angular": true,
+    "jasmine": true
+  },
+  "predef": [
+    "module",
+    "inject",
+    "expect"
+  ]
+}

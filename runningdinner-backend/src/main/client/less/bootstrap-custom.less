@@ -1,0 +1,100 @@
+@var-margin-standard: 15px;
+
+@list-group-active-color: @text-color;
+@list-group-active-bg: @table-bg-active;
+@list-group-hover-bg: @table-bg-active;
+@list-group-active-border: @input-border;
+
+.list-group-item, .list-group-item.active {
+  border-color: @input-border;
+
+  .active {
+    border-color: @input-border;
+  }
+}
+
+.list-group-item.first {
+  border-top: none ! important;
+}
+
+.list-group-item:hover {
+  background-color: @list-group-hover-bg ! important;
+}
+
+@var-gutter-width: 30px;
+
+@var-color-base1: #eee;
+@var-color-base2: #ddd;
+@var-color-base3: #ccc;
+@var-color-base4: #bbb;
+@var-color-base5: #aaa;
+@var-color-base6: #999;
+@var-color-base7: #888;
+@var-color-base8: #777;
+@var-color-base9: #666;
+@var-color-base10: #555;
+@var-color-base11: #444;
+@var-color-base12: #333;
+
+@var-color-dark: #000;
+@var-color-bright: #fff;
+
+@var-color-darkgreen: #6db33f;
+
+@var-border-radius-base: 2px;
+
+@var-padding-base-vertical: 9px;
+@var-padding-base-horizontal: 10px;
+
+
+.mix-rounded(@radius: @var-border-radius-base) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  border-radius: @radius;
+}
+
+.mix-gutter(@gutter: @var-gutter-width) {
+  .row,
+  &.row {
+    margin-left: (-1 * @gutter);
+    margin-right: (-1 * @gutter);
+
+    > [class^='col-'] {
+      padding: @gutter;
+    }
+  }
+}
+
+
+label {
+  color: @var-color-base9;
+}
+
+a, .btn-link {
+  color: @var-color-base9;
+  &:hover, &:active, &:focus {
+    color: @var-color-base9;
+  }
+}
+
+body {
+  font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif ! important;
+}
+
+// Used for preventing keyboard showing up in mobile view (seems not to cause any harm)
+.ui-select-container .ui-select-search, .ui-select-container .ui-select-focusser {
+  visibility: hidden;
+}
+
+.ui-select-toggle { z-index: 1; padding-right: 4px; }
+.caret { z-index: -1; }
+
+// Two styles that are needed due to navbar-fixed usage in navbar (in xs-view we don't show brand above navbar, therefore we need to reduce
+// the padding for xs)
+.body-padding-admin-xs {
+  padding-top: 70px;
+}
+.body-padding-admin-lg {
+  padding-top: 140px;
+}
+

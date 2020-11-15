@@ -1,0 +1,53 @@
+<div class="container-fluid">
+
+  <div class="row margin-top">
+    <div class="col-xs-12">
+      <span class="pull-right"><feedback></feedback></span>
+    </div>
+  </div>
+
+  <div class="row margin-left-medium margin-right-medium">
+    <div class="col-xs-12">
+
+
+      <div class="row">
+        <div class="col-xs-12 col-md-6">
+          <h2 class="global-feature-headline" translate="public_dinner_events_headline"></h2>
+        </div>
+      </div>
+
+      <div class="row" ng-if="!vm.dinnerEvents || vm.dinnerEvents.length == 0">
+        <div class="col-xs-12" ng-if="vm.dinnerEventsLoading">
+          <loading-spinner loading="vm.dinnerEventsLoading"></loading-spinner>
+        </div>
+        <div class="col-xs-12" ng-if="!vm.dinnerEventsLoading">
+          <callout headline="'public_dinner_events_empty_headline'">
+            <span translate="public_dinner_events_empty_text"></span><br/>
+            <applink-container><a ui-sref="frontend.create"><span translate="public_dinner_events_empty_goto_wizard"></span></a></applink-container>
+          </callout>
+        </div>
+      </div>
+
+      <div class="row" ng-if="vm.dinnerEvents && vm.dinnerEvents.length > 0">
+        <div class="col-xs-12 col-sm-5 col-lg-4 dinner-event-card margin-right margin-bottom-xlarge" ng-repeat="dinnerEvent in vm.dinnerEvents">
+          <h3 class="feature-headline">{{ dinnerEvent.publicSettings.title }}</h3>
+          <p class="padding-top-medium" ng-bind-html="dinnerEvent.publicDescriptionTeaser"></p>
+          <div class="margin-top">
+            <a class="btn btn-success" ng-href="{{ vm.getDinnerEventDetailsLink(dinnerEvent) }}">Mehr...</a>
+          </div>
+          <div class="dinner-event-card-footer">
+            <div>
+              <span class="pull-left padding-top-medium padding-bottom-medium">
+                <i class="fa fa-map-marker text-color-success" aria-hidden="true"></i> {{ vm.getLocation(dinnerEvent) }}
+              </span>
+              <span class="pull-right padding-top-medium padding-bottom-medium">
+                <i class="fa fa-calendar text-color-success" aria-hidden="true"></i> {{ dinnerEvent.date | localDate }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

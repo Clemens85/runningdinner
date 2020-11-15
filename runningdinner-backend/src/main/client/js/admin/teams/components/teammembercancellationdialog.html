@@ -1,0 +1,34 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" ng-click="ctrl.cancel()">
+    <span aria-hidden="true">&times;</span><span class="sr-only">{{ 'close' | translate }}</span>
+  </button>
+  <h4 class="modal-title" translate="team_member_cancel"
+      translate-values="{ teamMemberToCancel: '{{ ctrl.teamMemberToCancel | fullname }}'}"></h4>
+</div>
+
+<div class="modal-body">
+  <div class="row">
+    <div class="col-xs-12" ng-if="!ctrl.cancelWholeTeam">
+      <span translate='team_member_cancel_info'
+            translate-values="{ teamMemberToCancel: '{{ ctrl.teamMemberToCancel | fullname }}', remainingTeamMemberNames: '{{ ctrl.remainingTeamMemberNames }}' }">
+      </span>
+      <span ng-if="ctrl.teamMemberToCancelIsHost === true">
+        <br>
+        <strong translate="attention"></strong> <span translate="team_member_cancel_host_info"></span>
+      </span>
+    </div>
+    <div class="col-xs-12" ng-if="ctrl.cancelWholeTeam === true" translate="team_member_cancel_whole_team"
+         translate-values="{ teamMemberToCancel: '{{ ctrl.teamMemberToCancel | fullname }}' }">
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="submit" class="btn btn-link" ng-click="ctrl.cancel()">{{ 'cancel' | translate }}</button>
+  <button type="submit" class="btn btn-danger" ng-if="!ctrl.cancelWholeTeam" ng-click="ctrl.cancelTeamMember()" promise-btn>
+    <span translate="team_member_cancel_delete"></span>
+  </button>
+  <button type="submit" class="btn btn-danger" ng-if="ctrl.cancelWholeTeam === true" ng-click="ctrl.gotoCancelTeamDialog()">
+    <span translate="team_member_cancel_goto_team_cancel"></span>
+  </button>
+</div>

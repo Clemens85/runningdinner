@@ -1,0 +1,68 @@
+<h3 translate="details"></h3>
+
+<form form-validate prefix="ctrl.dinner.options." class="wizard-form" name="ctrl.optionsForm" ng-model-options="{ allowInvalid: true }">
+  <div class="row">
+    <div class="form-group col-xs-6 col-lg-2">
+      <label for="teamSize" translate="team_size"></label>
+      <input type="text" class="form-control" id="teamSize" ng-model="ctrl.dinner.options.teamSize" readonly>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <div class="col-xs-12 col-lg-4">
+      <div class="checkbox">
+          <label>
+              <input type="checkbox" ng-model="ctrl.dinner.options.forceEqualDistributedCapacityTeams">
+              {{ 'team_distribution_force_equl_hosting' | translate }}
+              <help-icon text="'team_distribution_help'"></help-icon>
+          </label>
+      </div>
+
+      <div class="form-group margin-top-large">
+        <label for="genderAspect" translate="gender_aspects"></label>
+        <div>
+            <ui-select ng-model="ctrl.dinner.options.genderAspects"
+                       search-enabled="false" id="genderAspect"
+                       class="form-control-ui-select"
+                       style="max-width:300px;">
+                <ui-select-match placeholder="Wähle Geschlechter-Verteilung">
+                  <span ng-bind-html="$select.selected.label"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="genderAspect.value as genderAspect in ctrl.genderAspects">
+                    <span ng-bind-html="genderAspect.label"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+        <span class="help-block" ng-if="ctrl.dinner.options.genderAspects && ctrl.dinner.options.genderAspects !== 'IGNORE_GENDER'" translate="gender_aspects_help"></span>
+      </div>
+
+      <div class="checkbox margin-top-large">
+        <label>
+          <input type="checkbox" ng-model="ctrl.dinner.options.teamPartnerWishDisabled">
+          <span translate="team_partner_wish_disabled"></span>
+          <help-icon text="'team_partner_wish_disabled_help'"></help-icon>
+        </label>
+      </div>
+
+    </div>
+
+    <div class="col-xs-12 col-lg-3">
+      <label translate="meals">Speisen</label>
+      <span class="help-block" translate="meals_help"></span>
+      <div ng-repeat="meal in ctrl.dinner.options.meals" class="input-group margin-bottom">
+        <input type="text" class="form-control" ng-model="meal.label" />
+        <span ng-if="$last" class="input-group-btn"><button ng-click="ctrl.removeMeal()" class="btn btn-danger" type="button">-</button></span>
+      </div>
+      <i class="fa fa-plus"></i>&nbsp; <a class="clickable" ng-click="ctrl.addMeal()"><span translate="add"></span></a>
+    </div>
+
+  </div>
+</form>
+
+<div class="row" ng-if="!ctrl.isDinnerCreated()">
+    <div class="col-xs-12 col-lg-7 wizard-button-row">
+        <button ng-click="ctrl.submitOptions(true)" class="btn btn-success btn-lg pull-right">{{ 'next' | translate }}</button>
+        <a href ng-click="ctrl.submitOptions(false)" class="back-link pull-right">{{ 'back' | translate }}</a>
+    </div>
+</div>
