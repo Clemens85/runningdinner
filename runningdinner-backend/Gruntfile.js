@@ -37,6 +37,10 @@ module.exports = function (grunt) {
       }
     },
 
+    env: {
+      GOOGLE_MAPS_KEY_JS: grunt.option('GOOGLE_MAPS_KEY_JS')
+    },
+
     concat: {
       options: {
         process: function (src, filepath) {
@@ -151,6 +155,22 @@ module.exports = function (grunt) {
             '@@buildno@@': Date.now
           }
         }
+      },
+      "google-maps-key": {
+        files: [
+          {
+            expand: true,
+            src: '**/*.{js,html}',
+            cwd: '<%= distDir %>',
+            dest: '<%= distDir %>'
+          }
+        ],
+        options: {
+          prefix: '',
+          variables: {
+            '@@googlemapskey@@': '<%= env.GOOGLE_MAPS_KEY_JS %>'
+          }
+        }
       }
     },
 
@@ -203,16 +223,7 @@ module.exports = function (grunt) {
         src: ['**'],
         dest: '<%= distDir %>/images/',
         filter: 'isFile'
-      }/*,
-
-       'jquery-ui-theme-images': {
-       expand: true,
-       flatten: false,
-       cwd: '<%= vendorDir %>/jquery-ui/themes/smoothness/images',
-       src: ['**'],
-       dest: '<%= distCssDir %>/images/',
-       filter: 'isFile'
-       }*/
+      }
     },
 
 
@@ -283,12 +294,13 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-replace');
   grunt.loadNpmTasks('grunt-gitinfo');
   grunt.loadNpmTasks('grunt-http-server');
+  grunt.loadNpmTasks('grunt-env');
 
   // load gitinfo
   grunt.task.run('gitinfo');
 
-  grunt.registerTask('build-dev', ['clean', 'less', 'copy', 'jshint', 'concat', 'replace:buildno-dev']);
-  grunt.registerTask('build', ['clean', 'less', 'copy', 'jshint', 'concat', 'replace:buildno', 'compress-app-js', 'compress-app-css']);
+  grunt.registerTask('build-dev', ['clean', 'env', 'less', 'copy', 'jshint', 'concat', 'replace:buildno-dev', 'replace:google-maps-key']);
+  grunt.registerTask('build', ['clean', 'less', 'copy', 'jshint', 'concat', 'replace:buildno', 'replace:google-maps-key', 'compress-app-js', 'compress-app-css']);
   grunt.registerTask('default', ['clean', 'build-dev', 'watch']);
 
   grunt.registerTask('compress-app-js', 'Minify javascript of app', ['ngAnnotate', 'uglify:app-js']);
