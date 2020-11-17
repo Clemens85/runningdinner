@@ -22,6 +22,7 @@
 /application.pid
 /application.port
 /*.log
+/**/server-log*
 /mocked_mails
 /schema-export.sql
 /**/mongo-volume/*
