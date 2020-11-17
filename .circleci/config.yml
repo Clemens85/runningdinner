@@ -36,9 +36,6 @@ jobs:
             echo "spring.flyway.password=${PROD_SPRING_FLYWAY_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
             echo "spring.flyway.user=${PROD_SPRING_FLYWAY_USER}" >> runningdinner-backend/src/main/resources/application-prod.properties
             echo "spring.flyway.url=${PROD_SPRING_FLYWAY_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
-
-            echo "rd.basic.auth.username=${PROD_RD_BASIC_AUTH_USERNAME}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "rd.basic.auth.password=${PROD_RD_BASIC_AUTH_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
       - run:
           name: Build + Test
           command: |
@@ -70,7 +67,11 @@ jobs:
             - npm-deps-{{ checksum "runningdinner-backend/package.json" }}
             - npm-deps-
       - run: cd runningdinner-backend && npm install
-      - run: cd runningdinner-backend && npm run build
+      - run:
+          name: Build webclient
+          command: |
+            export GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
+            cd runningdinner-backend && npm run build
       - save_cache:
           paths:
             - ~/usr/local/lib/node_modules
@@ -126,8 +127,10 @@ jobs:
 workflows:
   build_test_deploy_app:
     jobs:
-      - build_webclient
+      - build_webclient:
+          context: workspace
       - build_test_backend:
+          context: workspace
           requires:
             - build_webclient
       - confirm-deployment:

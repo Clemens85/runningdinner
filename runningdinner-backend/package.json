@@ -53,7 +53,7 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules && npm install",
-    "build": "grunt build",
+    "build": "grunt build --GOOGLE_MAPS_KEY_JS=${GOOGLE_MAPS_KEY_JS}",
     "build:dev": "grunt default --GOOGLE_MAPS_KEY_JS=${GOOGLE_MAPS_KEY_JS:-EMPTY}"
   }
 }

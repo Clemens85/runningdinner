@@ -300,7 +300,7 @@ module.exports = function (grunt) {
   grunt.task.run('gitinfo');
 
   grunt.registerTask('build-dev', ['clean', 'env', 'less', 'copy', 'jshint', 'concat', 'replace:buildno-dev', 'replace:google-maps-key']);
-  grunt.registerTask('build', ['clean', 'less', 'copy', 'jshint', 'concat', 'replace:buildno', 'replace:google-maps-key', 'compress-app-js', 'compress-app-css']);
+  grunt.registerTask('build', ['clean', 'env', 'less', 'copy', 'jshint', 'concat', 'replace:buildno', 'replace:google-maps-key', 'compress-app-js', 'compress-app-css']);
   grunt.registerTask('default', ['clean', 'build-dev', 'watch']);
 
   grunt.registerTask('compress-app-js', 'Minify javascript of app', ['ngAnnotate', 'uglify:app-js']);
