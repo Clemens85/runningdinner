@@ -15,8 +15,6 @@ public interface RunningDinnerRepository extends JpaRepository<RunningDinner, UU
 
 	RunningDinner findByAdminId(final String adminId);
 
-	List<RunningDinner> findByDateAfter(LocalDate startDate);
-	
 	RunningDinner findByPublicSettingsPublicIdAndRegistrationTypeInAndCancellationDateIsNull(String publicId, Collection<RegistrationType> registrationTypes);
 
 	List<RunningDinner> findAllByRegistrationTypeAndDateAfterAndRunningDinnerTypeAndCancellationDateIsNullOrderByDateAsc(RegistrationType registrationType, 

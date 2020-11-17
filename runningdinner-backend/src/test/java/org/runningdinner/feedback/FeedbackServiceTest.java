@@ -48,7 +48,7 @@ public class FeedbackServiceTest {
   private MailSenderMockInMemory mailSenderInMemory;
   
   @Before
-  public void setUp() throws NoPossibleRunningDinnerException {
+  public void setUp() {
 
     this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
     this.mailSenderInMemory.setUp();

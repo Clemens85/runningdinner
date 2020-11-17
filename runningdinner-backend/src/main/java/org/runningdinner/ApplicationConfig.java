@@ -107,7 +107,7 @@ public class ApplicationConfig /*extends WebMvcConfigurerAdapter*/ {
   
 
   @Bean
-  public FilterRegistrationBean<AntiSamyFilter> jwtFilter() {
+  public FilterRegistrationBean<AntiSamyFilter> antiSamyFilter() {
 
     FilterRegistrationBean<AntiSamyFilter> registrationBean = new FilterRegistrationBean<>();
     registrationBean.setFilter(new AntiSamyFilter());

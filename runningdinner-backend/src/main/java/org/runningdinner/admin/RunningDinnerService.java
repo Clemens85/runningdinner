@@ -101,8 +101,8 @@ public class RunningDinnerService implements ApplicationContextAware {
    * 
    * @param runningDinnerInfo Basic detail infos about the running dinner to create
    * @param runningDinnerConfig The options of the running dinner
-   * @param participants All participants of the dinner
-   * @param newUuid A unique identifier that is used for retrieving this running dinner later on
+   * @param email
+   * @param runningDinnerType
    * @return
    */
   @Transactional

@@ -22,7 +22,6 @@ public class AsyncConfig extends AsyncConfigurerSupport {
     executor.setMaxPoolSize(100);
     executor.setQueueCapacity(1);
     executor.setThreadNamePrefix("CustomAsyncPool-");
-//    executor.setAllowCoreThreadTimeOut(true);
     executor.initialize();
     return executor;
   }

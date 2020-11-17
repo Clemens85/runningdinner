@@ -4,7 +4,6 @@
 /.springBeans
 /npm-debug.log
 /*.iml
-/startderby.bat
 /src/main/client/vendor
 /src/main/client/css/*.css
 /src/main/resources/static
@@ -23,7 +22,6 @@
 /application.pid
 /application.port
 /*.log
-/**/*.xls
 /mocked_mails
 /schema-export.sql
 /**/mongo-volume/*
