@@ -106,7 +106,7 @@ jobs:
       - run:
           name: Run Deploy script
           command: |
-            ssh $SSH_USER@$SSH_HOST "ls -la ~/upload"
+            ssh $SSH_USER@$SSH_HOST "./upload/deploy.sh"
       - run:
           name: Check App is healthy
           command: |
@@ -123,6 +123,23 @@ jobs:
               echo "Do not remove ssh access due to ssh-access-granted.txt did not exist..."
             fi
           when: always
+
+  deploy_runningdinner_functions:
+    docker:
+      - image: cimg/node:current
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "runningdinner-functions/package.json" }}
+            - npm-deps-
+      - run:
+          name: Deploy runningdinner-functions lambda(s)
+          command: |
+            cd runningdinner-functions
+            npm install
+            serverless decrypt --stage prod --password '$PROD_GEOCODE_SECRETS_PASSWORD'
+            serverless deploy --stage prod
 
 workflows:
   build_test_deploy_app:
@@ -145,3 +162,11 @@ workflows:
           filters:
             branches:
               only: main
+      - deploy_runningdinner_functions:
+          context: workspace
+          requires:
+            - confirm-deployment
+          filters:
+            branches:
+              only: main
+
