@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -29,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.amazonaws.services.sqs.model.MessageAttributeValue;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ApplicationTest
@@ -55,7 +58,7 @@ public class ParticipantServiceTest {
   private QueueProviderMockInMemory queueProvider;
 
   @Before
-  public void setUp() throws NoPossibleRunningDinnerException {
+  public void setUp() {
 
     this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, TOTAL_NUMBER_OF_PARTICIPANTS);
     this.queueProvider = (QueueProviderMockInMemory) queueProviderFactoryService.getQueueProvider();
@@ -134,18 +137,27 @@ public class ParticipantServiceTest {
     List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
     Participant firstParticipant = participants.get(0);
     
-    assertThat(queueProvider.getMessageRequests()).isEmpty();
-    
     firstParticipant.getAddress().setStreet("New Street");
     participantService.updateParticipant(runningDinner.getAdminId(), firstParticipant.getId(), firstParticipant);
     
     Awaitility
       .await()
       .atMost(3, TimeUnit.SECONDS)
-      .untilAsserted(() ->  assertThat(queueProvider.getMessageRequests()).hasSize(1));
+      .untilAsserted(() -> assertThat(queueProvider.getMessageRequests()).isNotEmpty());
 
-    Map<String, MessageAttributeValue> messageAttributes = queueProvider.getMessageRequests().get(0).getMessageAttributes();
-    assertThat(messageAttributes.get("participantId").getStringValue()).isEqualTo(firstParticipant.getId().toString());
+    List<Map<String, MessageAttributeValue>> allSentMessageEntries = queueProvider
+                                                                      .getMessageRequests()
+                                                                      .stream().map(SendMessageRequest::getMessageAttributes)
+                                                                      .collect(Collectors.toList());
+    
+    Set<String> participantIdsInMessageEntries = allSentMessageEntries
+                                                  .stream()
+                                                  .map(entry -> entry.get("participantId"))
+                                                  .filter(Objects::nonNull)
+                                                  .map(MessageAttributeValue::getStringValue)
+                                                  .collect(Collectors.toSet());
+    
+    assertThat(participantIdsInMessageEntries).contains(firstParticipant.getId().toString());
   }
 
   private void assertParticipantListSizeAndNumbers(List<Participant> resultList, int expectedTotalNumberOfParticipants) {
