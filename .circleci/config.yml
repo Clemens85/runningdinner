@@ -145,13 +145,17 @@ jobs:
           name: Deploy runningdinner-functions lambda(s)
           command: |
             cd runningdinner-functions
-            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+            # export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+            # export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
             echo "GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_KEY_JS}" > secrets.prod.yml
             # I don't know whiy the encrypt/decrypt does not work... hence use the workaround above for now...
             # serverless decrypt --stage prod --password '${PROD_GEOCODE_SECRETS_PASSWORD}'
             export SERVERLESS_ACCESS_KEY=$PROD_SERVERLESS_ACCESS_KEY
+            echo "Configuring serverless..."
+            serverless config credentials --provider aws --key ${$PROD_AWS_ACCESS_KEY_ID} --secret ${PROD_AWS_SECRET_ACCESS_KEY} --stage prod
+            echo "Performing serverless login..."
             serverless login
+            echo "Starting deploy..."
             serverless deploy --stage prod
       - save_cache:
           paths:
