@@ -145,7 +145,7 @@ jobs:
           name: Deploy runningdinner-functions lambda(s)
           command: |
             cd runningdinner-functions
-            ls -la
+            echo "Test: ${PROD_GEOCODE_SECRETS_PASSWORD}"
             serverless decrypt --stage prod --password '${PROD_GEOCODE_SECRETS_PASSWORD}'
             serverless deploy --stage prod
       - save_cache:
