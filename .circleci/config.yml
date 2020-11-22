@@ -52,7 +52,7 @@ jobs:
       - store_artifacts:
           path: runningdinner-backend/target/runningdinner.tar.gz
       - store_artifacts:
-          path: runningdinner-backend/infrastructure/deployment/deploy.sh
+          path: runningdinner-backend/target/deploy.sh
       - persist_to_workspace:
           root: runningdinner-backend/target
           paths:
