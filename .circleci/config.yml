@@ -145,8 +145,9 @@ jobs:
           name: Deploy runningdinner-functions lambda(s)
           command: |
             cd runningdinner-functions
-            echo "Test: ${PROD_GEOCODE_SECRETS_PASSWORD}"
-            serverless decrypt --stage prod --password '${PROD_GEOCODE_SECRETS_PASSWORD}'
+            echo "GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_KEY_JS}" > secrets.prod.yml
+            # I don't know whiy the encrypt/decrypt does not work... hence use the workaround above for now...
+            # serverless decrypt --stage prod --password '${PROD_GEOCODE_SECRETS_PASSWORD}'
             serverless deploy --stage prod
       - save_cache:
           paths:
