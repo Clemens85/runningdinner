@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailSenderFactory;
@@ -31,7 +31,6 @@ public class FeedbackServiceTest {
   private static final int TOTAL_NUMBER_OF_PARTICIPANTS = 22;
 
   private static final LocalDate DINNER_DATE = LocalDate.now().plusDays(7);
-
   
   @Autowired
   private FeedbackService feedbackService;
@@ -65,11 +64,9 @@ public class FeedbackServiceTest {
     
     feedbackMailSchedulerService.deliverFeedback(result);
     
-    Set<SimpleMailMessage> messages = mailSenderInMemory.getMessages();
-    assertThat(messages).hasSize(1);
-    SimpleMailMessage message = messages.iterator().next();
+    SimpleMailMessage message = getSentMessageContainingText("WizardPage");
     
-    assertEmailContainsFeedbackData(message, "WizardPage");
+    assertEmailContainsFeedbackData(message);
   }
   
   @Test
@@ -84,16 +81,25 @@ public class FeedbackServiceTest {
     
     feedbackMailSchedulerService.deliverFeedback(result);
     
-    Set<SimpleMailMessage> messages = mailSenderInMemory.getMessages();
-    assertThat(messages).hasSize(1);
-    SimpleMailMessage message = messages.iterator().next();
-    
-    assertEmailContainsFeedbackData(message, "AdminPage");
+    SimpleMailMessage message = getSentMessageContainingText("AdminPage");
+    assertEmailContainsFeedbackData(message);
     
     assertThat(message.getText()).contains(runningDinner.getId().toString());
   }
   
-  private static void assertEmailContainsFeedbackData(SimpleMailMessage emailMessage, String expectedPageName) {
+  private SimpleMailMessage getSentMessageContainingText(String expectedMessage) {
+    
+    Set<SimpleMailMessage> messages = mailSenderInMemory.getMessages();
+    assertThat(messages).isNotEmpty();
+    Optional<SimpleMailMessage> result = messages
+                                            .stream()
+                                            .filter(message -> message.getText().contains(expectedMessage))
+                                            .findFirst();
+    assertThat(result).as("Expecting to find " + expectedMessage + " in " + messages).isPresent();
+    return result.get();
+  }
+  
+  private static void assertEmailContainsFeedbackData(SimpleMailMessage emailMessage) {
     
     assertThat(emailMessage.getReplyTo()).isEqualTo(SENDER_EMAIL);
     assertThat(emailMessage.getSubject()).isEqualTo("Feedback received from " + SENDER_EMAIL);
@@ -101,7 +107,6 @@ public class FeedbackServiceTest {
     
     String text = emailMessage.getText();
     assertThat(text).contains(MESSAGE_CONTENT);
-    assertThat(text).contains(expectedPageName);
     assertThat(text).contains(SENDER_IP);
 
   }
