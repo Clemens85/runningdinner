@@ -83,7 +83,7 @@ jobs:
           paths:
             - static
 
-  deploy:
+  deploy_runningdinner_app:
     machine:
       enabled: true
     steps:
@@ -157,7 +157,8 @@ workflows:
           filters:
             branches:
               only: main
-      - deploy:
+      - deploy_runningdinner_app:
+          context: workspace
           requires:
             - build_test_backend
             - confirm-app-deployment
