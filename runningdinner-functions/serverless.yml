@@ -23,19 +23,18 @@ org: runyourdinner
 provider:
   name: aws
   runtime: nodejs12.x
-
-  # stage: ${opt:stage} #,'dev'}
+  stage: prod
   region: eu-central-1
   environment:
-    BACKEND_BASE_URL: ${self:custom.backendBaseUrl.${opt.stage}}
+    BACKEND_BASE_URL: ${self:custom.backendBaseUrl.${opt:stage, self:provider.stage}}
     GOOGLE_MAPS_API_KEY: ${self:custom.secrets.GOOGLE_MAPS_API_KEY}
     # NODE_TLS_REJECT_UNAUTHORIZED: 0
 
 custom:
-  secrets: ${file(secrets.${opt:stage}.yml)}
-#  stages:
-#    - dev
-#    - prod
+  secrets: ${file(secrets.${opt:stage, self:provider.stage}.yml)}
+  stages:
+    - dev
+    - prod
   backendBaseUrl:
     dev: 'https://localhost/rest'
     prod: 'https://runyourdinner.eu/rest'
