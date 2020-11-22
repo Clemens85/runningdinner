@@ -152,7 +152,7 @@ jobs:
             # serverless decrypt --stage prod --password '${PROD_GEOCODE_SECRETS_PASSWORD}'
             export SERVERLESS_ACCESS_KEY=$PROD_SERVERLESS_ACCESS_KEY
             echo "Configuring serverless..."
-            serverless config credentials --provider aws --key ${$PROD_AWS_ACCESS_KEY_ID} --secret ${PROD_AWS_SECRET_ACCESS_KEY} --stage prod
+            serverless config credentials --provider aws --key '${$PROD_AWS_ACCESS_KEY_ID}' --secret '${PROD_AWS_SECRET_ACCESS_KEY}' --stage prod
             echo "Performing serverless login..."
             serverless login
             echo "Starting deploy..."
