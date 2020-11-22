@@ -136,10 +136,15 @@ jobs:
             - npm-deps-{{ checksum "runningdinner-functions/package.json" }}
             - npm-deps-
       - run:
+          name: Install serverless framework and all needed dependencies
+          command: |
+            cd runningdinner-functions
+            npm install -g serverless@1.58.0
+            npm install
+      - run:
           name: Deploy runningdinner-functions lambda(s)
           command: |
             cd runningdinner-functions
-            npm install
             serverless decrypt --stage prod --password '$PROD_GEOCODE_SECRETS_PASSWORD'
             serverless deploy --stage prod
       - save_cache:
