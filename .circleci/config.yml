@@ -139,7 +139,7 @@ jobs:
           name: Install serverless framework and all needed dependencies
           command: |
             cd runningdinner-functions
-            npm install -g serverless@1.58.0
+            sudo npm install -g serverless@1.58.0
             npm install
       - run:
           name: Deploy runningdinner-functions lambda(s)
