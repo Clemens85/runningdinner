@@ -142,6 +142,10 @@ jobs:
             npm install
             serverless decrypt --stage prod --password '$PROD_GEOCODE_SECRETS_PASSWORD'
             serverless deploy --stage prod
+      - save_cache:
+          paths:
+            - ~/usr/local/lib/node_modules
+          key: dependencies-{{ checksum "runningdinner-functions/package.json" }}
 
 workflows:
   build_test_deploy_app:
