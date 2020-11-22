@@ -45,12 +45,14 @@ jobs:
           paths:
             - ~/.m2
           key: dependencies-{{ checksum "runningdinner-backend/pom.xml" }}
-      - run: cp runningdinner-backend/infrastructure/remote/deploy.sh runningdinner-backend/target/deploy.sh
+      - run: cp runningdinner-backend/infrastructure/deployment/deploy.sh runningdinner-backend/target/deploy.sh
       - maven/process_test_results:
           test_results_path: runningdinner-backend/target/surefire-reports
       - run: cd runningdinner-backend/target && tar -cvzf runningdinner.tar.gz runningdinner-2.0.0.jar && cd -
       - store_artifacts:
           path: runningdinner-backend/target/runningdinner.tar.gz
+      - store_artifacts:
+          path: runningdinner-backend/infrastructure/deployment/deploy.sh
       - persist_to_workspace:
           root: runningdinner-backend/target
           paths:
@@ -96,7 +98,7 @@ jobs:
           command: |
             export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
             export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
-            runningdinner-backend/infrastructure/remote/allow-ssh-access.sh
+            runningdinner-backend/infrastructure/deployment/allow-ssh-access.sh
       - run: touch ssh-access-granted.txt
       - run:
           name: Upload artifacts
@@ -118,7 +120,7 @@ jobs:
             export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
             if [[ -f "ssh-access-granted.txt" ]] ; then
               echo "Removing ssh access..."
-              runningdinner-backend/infrastructure/remote/remove-ssh-access.sh
+              runningdinner-backend/infrastructure/deployment/remove-ssh-access.sh
             else
               echo "Do not remove ssh access due to ssh-access-granted.txt did not exist..."
             fi
