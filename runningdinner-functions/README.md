@@ -10,6 +10,8 @@ This mocks a local SQS.
 
 ## Deploy
 
+``serverless login``
+
 ``serverless decrypt --stage prod --password 'MY_PASSWORD' ``
 
 ``serverless deploy --stage prod``
