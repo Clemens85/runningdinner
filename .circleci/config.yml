@@ -2,6 +2,8 @@ version: 2.1
 
 orbs:
   maven: circleci/maven@1.0.3
+  serverless-framework: circleci/serverless-framework@1.0.1
+  aws-cli: circleci/aws-cli@1.3.1
 
 jobs:
   build_test_backend:
@@ -165,6 +167,23 @@ jobs:
             - ~/usr/local/lib/node_modules
           key: dependencies-{{ checksum "runningdinner-functions/package.json" }}
 
+  deploy_runningdinner_functions-v2:
+    executor: serverless/default
+    steps:
+      - checkout
+      - aws-cli/setup
+#      - run:
+#          command: |
+#            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+#            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+      - serverless/setup:
+          app-name: runningdinner-functions
+          org-name: runningdinner
+      - run:
+          command: |
+            serverless deploy -v --stage prod
+          name: deploy
+
 workflows:
   build_test_deploy_app:
     jobs:
@@ -195,8 +214,12 @@ workflows:
           filters:
             branches:
               only: main
-      - deploy_runningdinner_functions:
+      - deploy_runningdinner_functions-v2:
           context: workspace
+          environment:
+            AWS_ACCESS_KEY_ID: $PROD_AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $PROD_AWS_SECRET_ACCESS_KEY
+            SERVERLESS_ACCESS_KEY: $PROD_SERVERLESS_ACCESS_KEY
           requires:
             - confirm-functions-deployment
           filters:
