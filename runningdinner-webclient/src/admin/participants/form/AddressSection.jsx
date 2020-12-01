@@ -47,6 +47,7 @@ export default function AddressSection() {
             <TextInput fullWidth
                        variant="filled"
                        name="cityName"
+                       required
                        label={cityName}/>
           </Grid>
           <Grid item xs={12} md={4}>
