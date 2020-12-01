@@ -1,7 +1,7 @@
 import React from 'react'
 import LocalDate from '../../shared/date/LocalDate'
 import AddressLocation from '../../shared/AddressLocation'
-import {PageTitle} from "../../common/theme/typography/Tags";
+import {PageTitle} from "common/theme/typography/Tags";
 
 export default class DashboardTitle extends React.Component {
   render() {

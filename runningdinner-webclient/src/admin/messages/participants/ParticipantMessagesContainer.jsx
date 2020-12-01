@@ -13,13 +13,13 @@ import debounce from 'lodash/debounce';
 import {PARTICIPANT_MESSAGE_VALIDATION_SCHEMA} from "../../../shared/admin/ValidationSchemas";
 import MessageSubject from "../MessageSubject";
 import Fetch from "../../../common/Fetch";
-import {PageTitle} from "../../../common/theme/typography/Tags";
+import {PageTitle} from "common/theme/typography/Tags";
 
 export default function ParticipantMessagesContainer({adminId}) {
 
   return <Fetch asyncFunction={ParticipantService.findParticipantsAsync}
                 parameters={[adminId]}
-                render={(result) => <ParticipantMessages adminId={adminId} participants={result.participants}/>} />
+                render={(resultObj) => <ParticipantMessages adminId={adminId} participants={resultObj.result.participants}/>} />
 }
 
 function ParticipantMessages({adminId, participants}) {

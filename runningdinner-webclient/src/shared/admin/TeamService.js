@@ -104,11 +104,11 @@ export default class TeamService {
     return false;
   }
 
-  static async  cancelTeamDryRunAsync(adminId, team, replacementParticipants) {
+  static async cancelTeamDryRunAsync(adminId, team, replacementParticipants) {
     return TeamService._performTeamCancellationAsync(adminId, team, replacementParticipants, true);
   }
 
-  static async  cancelTeamAsync(adminId, team, replacementParticipants) {
+  static async cancelTeamAsync(adminId, team, replacementParticipants) {
     return TeamService._performTeamCancellationAsync(adminId, team, replacementParticipants, false);
   }
 

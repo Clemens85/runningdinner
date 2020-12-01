@@ -13,9 +13,8 @@ import {DndProvider} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {exchangeEntityInList, findEntityById} from "../../shared/Utils";
 import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
-import {useDisclosure} from "../../shared/hooks/DisclosureHook";
-import {useSnackbar} from "notistack";
-import {PageTitle} from "../../common/theme/typography/Tags";
+import {useDisclosure} from "shared/DisclosureHook";
+import {PageTitle} from "common/theme/typography/Tags";
 import {useQuery} from "common/hooks/QueryHook";
 import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "common/NavigationService";
 
@@ -31,14 +30,13 @@ const TeamsContainer = ({runningDinner}) => {
 
   return <Fetch asyncFunction={TeamService.findTeamsAsync}
                 parameters={[adminId]}
-                render={result => <Teams teamId={teamId} teamMemberIdToCancel={teamMemberIdToCancel}
-                                         incomingTeams={result.teams} runningDinner={runningDinner} />} />;
+                render={resultObj => <Teams teamId={teamId} teamMemberIdToCancel={teamMemberIdToCancel}
+                                         incomingTeams={resultObj.result.teams} runningDinner={runningDinner} />} />;
 };
 
 
 function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
 
-  const {t} = useTranslation(['admin', 'common']);
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -46,7 +44,6 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
   const [showTeamDetails, setShowTeamDetails] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState();
   const {isOpen: isChangeTeamHostDialogOpen, close: closeChangeTeamHostDialog, open: openChangeTeamHostDialog, data: teamForChangeTeamHostDialog} = useDisclosure();
-  const {enqueueSnackbar} = useSnackbar();
 
   const history = useHistory();
 
@@ -61,6 +58,7 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
 
   const { adminId } = runningDinner;
   const showTeamsList = !isSmallDevice || !showTeamDetails;
+  const teamsExisting = teams.length > 0;
 
   function handleTeamClick(team) {
     history.push(`/admin/${adminId}/teams/${team.id}`);
@@ -102,19 +100,9 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
     openTeamDetails(team)
   };
 
-  const handleTeamMemberCancelled = (updatedTeam) => {
-    updateTeamStateInList(updatedTeam);
-  };
-
   const handleOpenChangeTeamHostDialog = (team) => {
     openChangeTeamHostDialog(team);
   };
-  const handleTeamHostChanged = (team) => {
-    enqueueSnackbar(t("team_host_saved"), {variant: "success"});
-    updateTeamStateInList(team);
-  };
-
-  const teamsExisting = teams.length > 0;
 
   if (!teamsExisting) {
     return (
@@ -138,8 +126,11 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
             }
             <Grid item xs={12} md={5}>
               { showTeamDetails
-                  ? <TeamDetails team={selectedTeam} runningDinner={runningDinner} onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
-                                 teamMemberIdToCancel={teamMemberIdToCancel} onTeamMemberCancelled={handleTeamMemberCancelled}/>
+                  ? <TeamDetails team={selectedTeam}
+                                 runningDinner={runningDinner}
+                                 onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
+                                 teamMemberIdToCancel={teamMemberIdToCancel}
+                                 onUpdateTeamState={updateTeamStateInList} />
                   : <EmptyDetails labelI18n='teams_no_selection' />
               }
             </Grid>
@@ -149,7 +140,7 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
                                                                onClose={closeChangeTeamHostDialog}
                                                                team={teamForChangeTeamHostDialog}
                                                                adminId={adminId}
-                                                               onTeamHostChanged={handleTeamHostChanged} /> }
+                                                               onTeamHostChanged={updateTeamStateInList} /> }
       </DndProvider>
   );
 }

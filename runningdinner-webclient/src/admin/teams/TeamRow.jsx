@@ -10,6 +10,7 @@ import HomeRoundedIcon from '@material-ui/icons/HomeRounded';
 import {makeStyles} from "@material-ui/core/styles";
 import TeamService from "shared/admin/TeamService";
 import {CancelledTeamMember} from "admin/teams/CancelledTeamMember";
+import {CONSTANTS} from "shared/Constants";
 
 const useParticipantStyles = makeStyles(() => ({
   cellPadding: {
@@ -45,21 +46,24 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
     onOpenChangeTeamHostDialog(team);
   };
 
+  const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
 
   return (
       <TableRow hover className={classes.tableRowCursor} onClick={() => onClick(team)} selected={selected}>
         <TableCell>{teamNumber}</TableCell>
-        <TableCell>{ teamMemberNames }</TableCell>
+        <TableCell>{isCancelled ? <CancelledTeamMember /> : teamMemberNames }</TableCell>
         <Hidden xsDown>
-          <TableCell>{ teamMemberSeats }</TableCell>
-          <TableCell>{ teamMemberGenders }</TableCell>
+          <TableCell>{!isCancelled && teamMemberSeats}</TableCell>
+          <TableCell>{!isCancelled && teamMemberGenders}</TableCell>
         </Hidden>
         <TableCell>{meal.label}</TableCell>
         <Hidden xsDown>
           <TableCell>
-            <Button color="primary" startIcon={<HomeRoundedIcon />}
-                    disableRipple={true} disableElevation={true} onClick={handleOpenChangeTeamHostDialog}
-                    style={{ backgroundColor: 'transparent' }}><Fullname {...hostTeamMember} /></Button>
+            {!isCancelled &&
+                <Button color="primary" startIcon={<HomeRoundedIcon/>}
+                        disableRipple={true} disableElevation={true} onClick={handleOpenChangeTeamHostDialog}
+                        style={{backgroundColor: 'transparent'}}><Fullname {...hostTeamMember} /></Button>
+            }
           </TableCell>
         </Hidden>
       </TableRow>

@@ -7,6 +7,12 @@ This repo is WIP and not yet live into production.
 
 There is also (not yet pushed) a local mobile client based upon React Native, which tries to reuse some of the React code in here.
 
+## Config
+
+Before starting you should provide an environment variable for the backend URL like so:
+
+``REACT_APP_BACKEND_BASE_URL=https://localhost/rest``
+
 ## Available Scripts
 
 In the project directory, you can run:

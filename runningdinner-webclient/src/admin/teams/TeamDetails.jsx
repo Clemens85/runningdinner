@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Button, Grid, Paper} from "@material-ui/core";
+import {Box, Button, Grid, Hidden, Paper} from "@material-ui/core";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import Time from "../../shared/date/Time";
@@ -8,11 +8,11 @@ import Fullname from "../../shared/Fullname";
 import ValueTranslate from "../../shared/i18n/ValueTranslate";
 import ParticipantService from "../../shared/admin/ParticipantService";
 import TeamSchedule from "./TeamSchedule";
-import {Subtitle} from "../../common/theme/typography/Tags";
+import {Subtitle} from "common/theme/typography/Tags";
 import TeamNr from "../../shared/TeamNr";
 import LinkAction from "common/theme/LinkAction";
 import {findEntityById} from "shared/Utils";
-import {useDisclosure} from "shared/hooks/DisclosureHook";
+import {useDisclosure} from "shared/DisclosureHook";
 import {CANCEL_WHOLE_TEAM_RESULT, TeamMemberCancelDialog} from "admin/teams/cancellation/TeamMemberCancelDialog";
 import VerticalMenuThreeDots from "common/menu/VerticalMenuThreeDots";
 import TeamService from "shared/admin/TeamService";
@@ -20,13 +20,17 @@ import {CancelledTeamMember} from "admin/teams/CancelledTeamMember";
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import {Span} from "common/theme/typography/Tags";
 import {TeamCancelDialog} from "admin/teams/cancellation/TeamCancelDialog";
+import {CONSTANTS} from "shared/Constants";
 
-export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, onOpenChangeTeamHostDialog, onTeamMemberCancelled}) {
+export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, onOpenChangeTeamHostDialog, onUpdateTeamState}) {
 
   const {t} = useTranslation('common');
 
   const {adminId, sessionData} = runningDinner;
   const {teamMembers, meal, hostTeamMember} = team;
+
+  const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
+  const isReplaced = team.status === CONSTANTS.TEAM_STATUS.REPLACED;
 
   const passedTeamMemberToCancel = findEntityById(teamMembers, teamMemberIdToCancel);
 
@@ -37,8 +41,7 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
 
   const {isOpen: isTeamCancelDialogOpen,
          close: closeTeamCancelDialog,
-         open: openTeamCancelDialog,
-         data: teamToCancel} = useDisclosure(false);
+         open: openTeamCancelDialog} = useDisclosure(false);
 
   let teamMembersDisplay = teamMembers.map(participant => <TeamMember key={participant.id} participant={participant}
                                                                         onOpenTeamMemberCancelDialog={() => openTeamMemberCancelDialog(participant) }/>);
@@ -54,7 +57,7 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
     if (closeResult === CANCEL_WHOLE_TEAM_RESULT) {
       handleOpenTeamCancelDialog();
     } else if (closeResult && closeResult.teamNumber) {
-      onTeamMemberCancelled(closeResult); // closeResult === the updated team
+      onUpdateTeamState(closeResult); // closeResult === the updated team
     }
   };
 
@@ -66,9 +69,24 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
     openTeamCancelDialog();
   };
 
-  const handleCloseTeamCancelDialog = () => {
+  const handleCloseTeamCancelDialog = (closeResult) => {
     closeTeamCancelDialog();
+    if (closeResult && closeResult.teamNumber) {
+      onUpdateTeamState(closeResult); // closeResult === the updated team
+    }
   };
+
+  const handleNotifyAffectedTeamsCancellation = () => {
+
+  };
+
+  let actionMenuItems = [
+    { label: t("admin:team_message"), onClick: handleOpenSingleTeamMessage },
+    { label: t("admin:team_cancel"), onClick: handleOpenTeamCancelDialog }
+  ];
+  if (isCancelled) {
+    actionMenuItems = [{ label: t("admin:team_notify_cancellation"), onClick: handleNotifyAffectedTeamsCancellation }];
+  }
 
   return (
       <Paper elevation={3}>
@@ -80,27 +98,35 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
               <MealAtTime meal={meal} />
             </Grid>
             <Grid item xs={1}>
-              <VerticalMenuThreeDots entries={[
-                { label: t("admin:team_message"), onClick: handleOpenSingleTeamMessage },
-                { label: t("admin:team_cancel"), onClick: handleOpenTeamCancelDialog }
-              ]}/>
+              <VerticalMenuThreeDots entries={actionMenuItems}/>
             </Grid>
+            { isReplaced &&
+              <Grid item xs={12}>
+                <Box mt={1}>
+                  <cite><Span i18n="admin:team_replaced_text" /></cite>
+                </Box>
+              </Grid> }
           </Grid>
 
-          <Box mt={2}>
-            <Grid container>
-              <Grid item xs={12}>
-                <FormFieldset>{t('team_members')}</FormFieldset>
-              </Grid>
-            </Grid>
-            { teamMembersDisplay }
-            <Grid container>
-              <Grid item>
-                <Paragraph i18n="admin:teams_host" parameters={{ host: hostTeamMemberName }} html={true}/> &nbsp; (<LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}>{t('change')}</LinkAction>)
-              </Grid>
-            </Grid>
-            <NoValidTeamHost team={team} numSeatsNeededForHost={sessionData.numSeatsNeededForHost}/>
-          </Box>
+          {isCancelled
+              ? <Box mt={2}><CancelledTeamMember /></Box>
+              : <Box mt={2}>
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <FormFieldset>{t('team_members')}</FormFieldset>
+                    </Grid>
+                  </Grid>
+                  {teamMembersDisplay}
+                  <Grid container>
+                    <Grid item>
+                      <Box mt={1}>
+                      <Paragraph i18n="admin:teams_host" parameters={{host: hostTeamMemberName}} html={true}/> &nbsp; (<LinkAction
+                        onClick={() => onOpenChangeTeamHostDialog(team)}>{t('change')}</LinkAction>)
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  <NoValidTeamHost team={team} numSeatsNeededForHost={sessionData.numSeatsNeededForHost}/>
+                </Box> }
 
           <Box mt={2}>
             <Grid container>
@@ -126,7 +152,7 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
         { isTeamCancelDialogOpen && <TeamCancelDialog isOpen={isTeamCancelDialogOpen}
                                                       onClose={handleCloseTeamCancelDialog}
                                                       teamToCancel={team}
-                                                      adminId={adminId} /> }
+                                                      runningDinner={runningDinner} /> }
 
       </Paper>
   );
@@ -155,11 +181,19 @@ function TeamMember({participant, onOpenTeamMemberCancelDialog}) {
   const numSeatsDisplay = numSeats > -1 ? t('participant_seats', { numSeats }) : t('no_information');
 
   return (
-      <Grid container>
-        <Grid item xs={3}><Fullname {...participant}/></Grid>
-        <Grid item xs={3}>{numSeatsDisplay}</Grid>
-        <Grid item xs={3}><ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{'undefined': 'unknown'}}/></Grid>
-        <Grid item xs={3}><Button color="secondary" onClick={onOpenTeamMemberCancelDialog}>{t('admin:participant_cancel')}</Button></Grid>
+      <Grid container alignItems="center">
+        <Grid item xs={6} sm={4}><Fullname {...participant}/></Grid>
+        <Grid item xs={2} sm={2}>{numSeatsDisplay}</Grid>
+        <Hidden xsDown>
+          <Grid item xs={3} sm={2}>
+            <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{'undefined': 'unknown'}}/>
+          </Grid>
+        </Hidden>
+        <Grid item xs={4} sm={4}>
+          <Box justifyContent="flex-end">
+            <Button color="secondary" onClick={onOpenTeamMemberCancelDialog}>{t('admin:participant_cancel')}</Button>
+          </Box>
+        </Grid>
       </Grid>
   );
 }

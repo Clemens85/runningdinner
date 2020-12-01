@@ -14,13 +14,15 @@ import Paragraph from "../../common/theme/typography/Paragraph";
 import {findEntityById} from "../../shared/Utils";
 import TeamService from "../../shared/admin/TeamService";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
-import {Subtitle} from "../../common/theme/typography/Tags";
+import {Subtitle} from "common/theme/typography/Tags";
+import {useSnackbar} from "notistack";
 
 
 export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHostChanged}) => {
 
   const {t} = useTranslation(['admin', 'common']);
   const [selectedHostTeamMember, setSelectedHostTeamMember] = useState(team.hostTeamMember);
+  const {enqueueSnackbar} = useSnackbar();
 
   const { teamNumber, teamMembers } = team;
 
@@ -28,6 +30,7 @@ export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHost
     const updatedTeam = await TeamService.updateTeamHostAsync(adminId, team, selectedHostTeamMember);
     onClose();
     onTeamHostChanged(updatedTeam);
+    enqueueSnackbar(t("team_host_saved"), {variant: "success"});
   };
 
   function handleTeamHostChange(changeEvt) {

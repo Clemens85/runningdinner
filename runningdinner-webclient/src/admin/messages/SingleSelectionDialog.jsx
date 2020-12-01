@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import { Grid, DialogContent, Dialog, Checkbox, FormControlLabel } from '@material-ui/core';
+import { Grid, DialogContent, Dialog } from '@material-ui/core';
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import {findEntityById} from "../../shared/Utils";
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
-import Fullname from "../../shared/Fullname";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {useTranslation} from "react-i18next";
+import SelectableEntity from "admin/common/SelectableEntity";
 
 export const SingleSelectionDialog = ({selectableEntities, customSelectedEntities, open, onClose}) => {
 
@@ -76,23 +76,5 @@ function SingleSelectionDialogView ({selectableEntities, onSelectionChange, open
         </DialogContent>
         <DialogActionsPanel onOk={onOk} onCancel={onCancel} okLabel="Ok" cancelLabel={t('common:cancel')}  />
       </Dialog>
-  );
-};
-
-function SelectableEntity({entity, onSelectionChange}) {
-
-  const fullName = <Fullname {...entity} />;
-
-  const handleChange = changeEvt => {
-    const selected = changeEvt.target.checked;
-    onSelectionChange(entity, selected);
-  };
-
-  const selected = !!entity.selected;
-
-  return (
-      <FormControlLabel label={fullName} control={
-        <Checkbox color="primary" onChange={handleChange} checked={selected} />
-      } />
   );
 }

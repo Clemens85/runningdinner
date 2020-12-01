@@ -23,5 +23,5 @@ export {default as ValueTranslate} from "../src/shared/i18n/ValueTranslate.jsx";
 
 export * from "../src/shared/gender/GenderUtils";
 
-export * from "../src/shared/hooks/DebounceHook";
+export * from "src/shared/DebounceHook";
 

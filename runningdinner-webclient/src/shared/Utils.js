@@ -49,9 +49,17 @@ export function mapValidationIssuesToErrorObjects(incomingErrorObj) {
   if (!incomingErrorObj) {
     return result;
   }
+  return mapIssuesToErrorObjects(incomingErrorObj, 406);
+}
+
+export function mapIssuesToErrorObjects(incomingErrorObj, restrictToStatus) {
+  const result = [];
+  if (!incomingErrorObj) {
+    return result;
+  }
 
   const errorResponse = incomingErrorObj.response ? incomingErrorObj.response : incomingErrorObj;
-  if (errorResponse.status === 406 && errorResponse.data.issues && errorResponse.data.issues.length > 0) {
+  if (errorResponse.data.issues && errorResponse.data.issues.length > 0 && (!restrictToStatus || errorResponse.status === restrictToStatus)) {
     const issues = errorResponse.data.issues;
     for (var i = 0; i < issues.length; i++) {
       result.push({
@@ -114,6 +122,7 @@ export function removeEntityFromList(entityList, entity) {
   }
   const result = cloneDeep(entityList);
   remove(result, [ 'id', entity.id ]);
+  return result;
 }
 
 export const isClient = !!(

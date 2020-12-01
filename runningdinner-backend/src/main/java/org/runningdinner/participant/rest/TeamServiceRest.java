@@ -118,7 +118,7 @@ public class TeamServiceRest {
   }
 	
   @RequestMapping(value = "/runningdinner/{adminId}/team/{teamId}/{participantId}/cancel", method = RequestMethod.PUT)
-  public TeamTO cancelTeam(@PathVariable("adminId") String adminId, @PathVariable("teamId") UUID teamId, @PathVariable("participantId") UUID participantId) {
+  public TeamTO cancelTeamMember(@PathVariable("adminId") String adminId, @PathVariable("teamId") UUID teamId, @PathVariable("participantId") UUID participantId) {
   
     Team result = teamService.cancelTeamMember(adminId, teamId, participantId);
     return new TeamTO(result);

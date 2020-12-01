@@ -30,6 +30,11 @@ export const CONSTANTS = {
     "CUSTOM_SELECTION": "CUSTOM_SELECTION"
   },
 
+  "TEAM_STATUS": {
+    "REPLACED": "REPLACED",
+    "CANCELLED": "CANCELLED",
+  },
+
   "VALIDATION_ISSUE_CONSTANTS": {
     "TEAM_NO_TEAM_MEMBERS_LEFT": "team_no_team_members_left",
     "PARTICIPANT_ASSINGED_IN_TEAM": "participant_assigned_in_team"

@@ -71,6 +71,11 @@ export default class ParticipantService {
     return response.data;
   }
 
+  static async findNotAssignedParticipantsAsync(adminId) {
+    const { participants } = await ParticipantService.findParticipantsAsync(adminId);
+    const result = ParticipantService.getNotAssignableParticipants(participants);
+    return result;
+  }
 
   /**
    * Deletes the passed participant for the passed dinner admin id.
@@ -90,6 +95,14 @@ export default class ParticipantService {
       return '';
     }
     return participant.firstnamePart + ' ' + participant.lastname;
+  }
+
+  static getFullnameList(participants) {
+    if (!participants || participants.length === 0) {
+      return '';
+    }
+    const participantNames = participants.map(p => ParticipantService.getFullname(p));
+    return participantNames.join(', ');
   }
 
   static newEmptyParticipantInstance() {

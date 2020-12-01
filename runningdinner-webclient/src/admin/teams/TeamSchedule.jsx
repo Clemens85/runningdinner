@@ -5,7 +5,7 @@ import {Box, makeStyles, Button, Grid, Paper, Popover} from "@material-ui/core";
 import sortBy from 'lodash/sortBy';
 import Time from "../../shared/date/Time";
 import Paragraph from "../../common/theme/typography/Paragraph";
-import {SmallTitle, Span, Title} from "../../common/theme/typography/Tags";
+import {SmallTitle, Span, Title} from "common/theme/typography/Tags";
 import clsx from "clsx";
 import {isSameEntity} from "../../shared/Utils";
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
@@ -20,6 +20,9 @@ import {
 import LinkIntern from "common/theme/LinkIntern";
 import LinkExtern from "common/theme/LinkExtern";
 import {generateTeamPath} from "common/NavigationService";
+import {CONSTANTS} from "shared/Constants";
+import {PrimaryDangerButtonAsync} from "common/theme/PrimaryDangerButtonAsync";
+import Hidden from "@material-ui/core/Hidden";
 
 const useStyles = makeStyles((theme) => ({
   schedulePaper: {
@@ -34,6 +37,11 @@ const useStyles = makeStyles((theme) => ({
   schedulePaperActive: {
     backgroundColor: theme.palette.primary.main,
     color: 'white'
+  },
+  schedulePaperActiveDanger: {
+    backgroundColor: theme.palette.secondary.main,
+    color: 'white',
+    borderColor: theme.palette.secondary.main,
   },
   scheduleRowHostTeam: {
     textAlign: 'right'
@@ -77,7 +85,7 @@ export default function TeamSchedule({team, adminId}) {
 
   return <Fetch asyncFunction={TeamService.findTeamMeetingPlanAsync}
                 parameters={[adminId, teamId]}
-                render={result => <TeamScheduleView teamMeetingPlan={result} adminId={adminId} />} />;
+                render={resultObj => <TeamScheduleView teamMeetingPlan={resultObj.result} adminId={adminId} />} />;
 }
 
 
@@ -102,15 +110,24 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
   };
 
   const renderScheduleRowLinkToRoute = () => {
+
+    const isCancelled = activeTeam.status === CONSTANTS.TEAM_STATUS.CANCELLED;
+    if (isCancelled) {
+      return null;
+    }
     return (
         <Grid container spacing={spacing} justify={"center"} alignItems={"center"}>
-          <Grid item xs={xs} md={md} className={classes.scheduleRowHostTeam} />
-          <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams}>
+          <Hidden xsDown>
+            <Grid item xs={xs} md={md} className={classes.scheduleRowHostTeam} />
+          </Hidden>
+          <Grid item xs={12} md={md} className={classes.scheduleRowGuestTeams}>
             <Box mt={1}>
               <LinkExtern href="https://www.google.de" title={t('teams_show_dinnerroute')}/>
             </Box>
           </Grid>
-          <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams} />
+          <Hidden xsDown>
+            <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams} />
+          </Hidden>
         </Grid>
     );
   };
@@ -155,6 +172,8 @@ function ScheduledMeal({hostTeam, meal, guestTeams, currentTeam, xs, md, adminId
   const highlightMeal = isSameEntity(activeMeal, meal);
   const highlightHostTeam = isSameEntity(currentTeam, hostTeam);
 
+  const hostTeamIsCancelled = hostTeam.status === CONSTANTS.TEAM_STATUS.CANCELLED;
+
   const renderGuestTems = () => {
     const guestTeamNodes = [];
     for (let i = 0; i < guestTeams.length; i++) {
@@ -176,7 +195,8 @@ function ScheduledMeal({hostTeam, meal, guestTeams, currentTeam, xs, md, adminId
         { highlightHostTeam ? <CurrentTeamButton team={hostTeam}/> : <MeetedTeamButton team={hostTeam} adminId={adminId} /> }
       </Grid>
       <Grid item xs={xs} md={md}>
-        <Paper elevation={3} className={clsx(classes.schedulePaper, highlightMeal && classes.schedulePaperActive)}>
+        <Paper elevation={3}
+               className={clsx(classes.schedulePaper, (highlightMeal && !hostTeamIsCancelled) && classes.schedulePaperActive, hostTeamIsCancelled && classes.schedulePaperActiveDanger)}>
           <SmallTitle>{meal.label}</SmallTitle>
           <Paragraph><Time date={meal.time} /></Paragraph>
         </Paper>
@@ -195,14 +215,16 @@ function MeetedTeamButton({team, adminId}) {
     popupId: team.id,
   });
 
+  const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
   const { teamMembers, teamNumber, id } = team;
-  const teamMemberNodes = teamMembers.map(participant => <Span key={participant.id}><Fullname {...participant} /></Span>);
+  const teamMemberNodes = isCancelled ? null : teamMembers.map(participant => <Span key={participant.id}><Fullname {...participant} /></Span>);
 
   const teamPath = generateTeamPath(adminId, id);
 
   return (
     <>
-      <Button variant="outlined" size="medium" {...bindTrigger(popupState)}><TeamNr {...team} /></Button>
+      { !isCancelled && <Button variant="outlined" size="medium" {...bindTrigger(popupState)}><TeamNr {...team} /></Button> }
+      { isCancelled && <PrimaryDangerButtonAsync variant="outlined" size="medium" {...bindTrigger(popupState)}><TeamNr {...team} /></PrimaryDangerButtonAsync> }
       <Popover
           {...bindPopover(popupState)}
           anchorOrigin={{
@@ -232,10 +254,20 @@ function MeetedTeamButton({team, adminId}) {
 
 function CurrentTeamButton({team}) {
 
+  const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
   const classes = useStyles();
   return (
-    <PrimaryButton variant="contained" className={classes.currentTeamButton} disableRipple={true} disableElevation={true}><TeamNr {...team} /></PrimaryButton>
-  );
+      <>
+        { isCancelled
+            ? <PrimaryDangerButtonAsync size="medium" variant="contained" className={classes.currentTeamButton} disableRipple={true} disableElevation={true}>
+                <TeamNr {...team} />
+              </PrimaryDangerButtonAsync>
+            : <PrimaryButton variant="contained" className={classes.currentTeamButton} disableRipple={true} disableElevation={true}>
+                <TeamNr {...team} />
+              </PrimaryButton>
+        }
+      </>
+   );
 }
 
 /**

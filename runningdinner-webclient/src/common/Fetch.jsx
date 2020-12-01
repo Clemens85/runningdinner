@@ -12,8 +12,7 @@ const Fetch = (props) => {
   if (error) { return <div>{error.message}</div>; }
   if (loading) { return <LinearProgress color="secondary" />; }
 
-  const mergedResult = { ...result, reFetch: () => { return asyncResult.execute(parameters); }};
-
+  const mergedResult = { result, reFetch: () => { return asyncResult.execute(parameters); }};
   return props.render(mergedResult);
 };
 
