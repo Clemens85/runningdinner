@@ -41,7 +41,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts start",
+    "start": "HTTPS=true SSL_CRT_FILE=../runningdinner-backend/infrastructure/local/ssl/cert.pem SSL_KEY_FILE=../runningdinner-backend/infrastructure/local/ssl/key.pem react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
