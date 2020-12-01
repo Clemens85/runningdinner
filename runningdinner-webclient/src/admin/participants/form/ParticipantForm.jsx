@@ -76,7 +76,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
     } catch(e) {
       const validationErrors = mapValidationIssuesToErrorObjects(e);
       setError(validationErrors);
-      enqueueSnackbar("Ein paar Eingaben sind noch nicht ganz korrekt, bitte prüfe die Einträge in den rot markierten Feldern.", {variant: "error"});
+      enqueueSnackbar(t("validation_error_desc"), {variant: "error"});
     }
   };
 
