@@ -52,7 +52,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose})
       }
       onClose(cancelledOrReplacedTeam);
     } catch (e) {
-      handleError(e, true);
+      handleError(e);
     }
   };
 
@@ -77,7 +77,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose})
       teamCancellationPreviewResponse.replacementParticipants = replacementParticipants;
       setTeamCancelPreview(teamCancellationPreviewResponse);
     } catch (e) {
-      handleError(e, true);
+      handleError(e);
     }
   };
 

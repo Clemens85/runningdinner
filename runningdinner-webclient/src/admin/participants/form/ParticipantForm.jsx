@@ -10,8 +10,7 @@ import {PARTICIPANT_VALIDATION_SCHEMA} from "../../../shared/admin/ValidationSch
 import FillWithExampleDataLink from "./FillWithExampleDataLink";
 import {
   isNewEntity,
-  mapNullFieldsToEmptyStrings,
-  mapValidationIssuesToErrorObjects
+  mapNullFieldsToEmptyStrings
 } from "../../../shared/Utils";
 import {useSnackbar} from "notistack";
 import {PrimaryButton} from "../../../common/theme/PrimaryButton";
@@ -19,6 +18,7 @@ import {DeleteParticipantDialog} from "../delete/DeleteParticipantDialog";
 import {FormContext, useForm} from "react-hook-form";
 import {useTranslation} from "react-i18next";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
+import useHttpErrorHandler from "common/HttpErrorHandlerHook";
 
 const useStyles = makeStyles((theme) => ({
   buttonSpacingLeft: {
@@ -36,6 +36,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
   const classes = useStyles();
   const {enqueueSnackbar} = useSnackbar();
+  const { handleFormValidationErrors, validationErrors } = useHttpErrorHandler();
 
   const formMethods = useForm({
     defaultValues: ParticipantService.newEmptyParticipantInstance(),
@@ -74,9 +75,8 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
       enqueueSnackbar(ParticipantService.getFullname(savedParticipant) + " erfolgreich gespeichert", {variant: "success"});
       onParticipantSaved(savedParticipant);
     } catch(e) {
-      const validationErrors = mapValidationIssuesToErrorObjects(e);
+      handleFormValidationErrors(e);
       setError(validationErrors);
-      enqueueSnackbar(t("validation_error_desc"), {variant: "error"});
     }
   };
 
