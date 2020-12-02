@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useState} from "react";
 import ParticipantService from "../ParticipantService";
 import get from 'lodash/get';
+import find from 'lodash/find';
 import {useTranslation} from "react-i18next";
 
 function useParticipantsListInfo(participants, runningDinnerSessionData) {
@@ -36,8 +37,8 @@ function useParticipantsListInfo(participants, runningDinnerSessionData) {
           show: true
         };
       } else {
-        const {minSizeNeeded, missingParticipants} = _getInfoForNotEnoughParticipants();
-        if (missingParticipants >= 1) {
+        const {minSizeNeeded, missingParticipants, teamsAlreadyGenerated} = _getInfoForNotEnoughParticipants();
+        if (missingParticipants >= 1 && !teamsAlreadyGenerated) {
           result = {
             title: t('participants_not_enough'),
             message: t('participants_too_few_text', { minSizeNeeded: minSizeNeeded, missingParticipants: missingParticipants }),
@@ -55,9 +56,11 @@ function useParticipantsListInfo(participants, runningDinnerSessionData) {
     const numParticipants = participants ? participants.length : 0;
     const minSizeNeeded = get(runningDinnerSessionData, 'assignableParticipantSizes.minimumParticipantsNeeded', '') || '';
     const missingParticipants = minSizeNeeded !== '' ? (minSizeNeeded - numParticipants) : '';
+    const teamsAlreadyGenerated = !!find(participants, 'teamId'); // If at least one participant has teamId set, then we know that there were enough participants
     return {
       minSizeNeeded,
-      missingParticipants
+      missingParticipants,
+      teamsAlreadyGenerated
     };
   }
 
