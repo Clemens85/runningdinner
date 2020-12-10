@@ -32,6 +32,12 @@ export default class MessageService {
     return response.data;
   }
 
+  static async sendTeamPartnerWishInvitationAsync(adminId, participantId) {
+    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/teampartnerwish/${participantId}`);
+    const response = await axios.put(url);
+    return response.data;
+  }
+
   static getMailMessageForSelectedParticipant(participantMailMessageTemplate, participantToUse) {
     let participantMailMessage = participantMailMessageTemplate;
     participantMailMessage = mapEmptySelectionStringToNull(participantMailMessage);

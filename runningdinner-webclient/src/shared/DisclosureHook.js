@@ -2,23 +2,28 @@ import {useState} from "react";
 
 export function useDisclosure(initialOpenStatus, initialData) {
 
-  const [openInternal, setOpenInternal] = useState(initialOpenStatus || false);
-  const [dataInternal, setDataInternal] = useState(initialData);
+  const [disclosureState, setDisclosureState] = useState({
+    open: initialOpenStatus || false,
+    data: initialData
+  });
 
   function open(optionalIsOpenParameter) {
-    setOpenInternal(true);
-    if (optionalIsOpenParameter) {
-      setDataInternal(optionalIsOpenParameter);
-    } else {
-      setDataInternal(null);
-    }
+    setDisclosureState({
+      open: true,
+      data: optionalIsOpenParameter ? optionalIsOpenParameter : null
+    });
   }
 
   function close() {
-    setOpenInternal(false);
-    setDataInternal(null);
+    setDisclosureState({
+      open: false,
+      data: null
+    });
   }
 
-  return { isOpen: !!openInternal, open, close, data: dataInternal };
+  return { isOpen: !!disclosureState.open,
+          open,
+          close,
+          data: disclosureState.data };
 
 }

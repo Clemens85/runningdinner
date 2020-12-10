@@ -13,6 +13,11 @@ import {useTranslation} from "react-i18next";
 import { Helmet } from 'react-helmet-async';
 import {EmptyDetails} from "../common/EmptyDetails";
 import Fetch from "../../common/Fetch";
+import {TeamPartnerWishDialog} from "admin/participants/teampartnerwish/TeamPartnerWishDialog";
+import {useDisclosure} from "shared/DisclosureHook";
+import {
+  CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION
+} from "admin/participants/teampartnerwish/TeamPartnerWishAction";
 
 export default function ParticipantsContainer({runningDinner}) {
 
@@ -40,6 +45,11 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
   const [participants, setParticipants] = useState(incomingParticipants);
   const [hasSearchText, setHasSearchText] = useState(false);
 
+  const { isOpen: isTeamPartnerWishDialogOpen,
+          close: closeTeamPartnerWishDialog,
+          open: openTeamPartnerWishDialog,
+          data: teamPartnerWishInfo } = useDisclosure(false);
+
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -65,8 +75,27 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
   }
 
   function onParticipantSaved(updatedParticipant) {
-    handleParticipantChange();
+    ParticipantService.findTeamPartnerWishInfoAsync(adminId, updatedParticipant)
+        .then((teamPartnerWishInfo) => {
+          if (teamPartnerWishInfo.relevant) {
+            openTeamPartnerWishDialog(teamPartnerWishInfo);
+          } else {
+            handleParticipantChange();
+          }
+        });
   }
+
+  const handleTeamPartnerWishDialogResult = (teamPartnerWishAction) => {
+    closeTeamPartnerWishDialog();
+    if (teamPartnerWishAction.type === CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION) {
+      const newParticipant = teamPartnerWishAction.resultPayload; // Has only email and teamPartnerWish filled
+      editParticipant(newParticipant);
+    } else {
+      handleParticipantChange();
+    }
+    // Other actions needs no treatment in here
+  };
+
   function onParticipantDeleted(deletedParticipant) {
     handleParticipantChange();
   }
@@ -121,6 +150,10 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
           </Grid>
         </Grid>
         <StickyActionButton onClick={onNewParticipant} />
+        { isTeamPartnerWishDialogOpen && <TeamPartnerWishDialog runningDinner={runningDinner}
+                                                                isOpen={isTeamPartnerWishDialogOpen}
+                                                                onClose={handleTeamPartnerWishDialogResult}
+                                                                teamPartnerWishInfo={teamPartnerWishInfo} /> }
       </>
   );
 };

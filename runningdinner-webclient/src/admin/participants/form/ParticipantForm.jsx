@@ -68,7 +68,6 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
       id: !isNewEntity(participant) ?  participant.id : null,
       ...values
     };
-    console.log(`Updating ${JSON.stringify(participantToSave)}`);
     clearError();
     try {
       const savedParticipant = await ParticipantService.saveParticipantAsync(adminId, participantToSave);
@@ -95,10 +94,10 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
               <Grid container justify={"space-between"} alignItems={"baseline"}>
                 <Grid item xs={12} md={8}>
-                  <ParticipantFormHeadline></ParticipantFormHeadline>
+                  <ParticipantFormHeadline />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  <FillWithExampleDataLink></FillWithExampleDataLink>
+                  <FillWithExampleDataLink />
                 </Grid>
               </Grid>
 

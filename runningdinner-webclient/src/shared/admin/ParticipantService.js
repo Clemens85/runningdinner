@@ -83,11 +83,18 @@ export default class ParticipantService {
    * @param adminId
    * @returns {*} Returns the deleted participant so that caller can take further actions (e.g. refresh view e.g.)
    */
-  static async deleteParticipantAsync(participant, adminId) {
+  static async deleteParticipantAsync(adminId, participant) {
     const { id } = participant;
     const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participant/${id}`);
     await axios.delete(url);
     return participant;
+  }
+
+  static async findTeamPartnerWishInfoAsync(adminId, participant) {
+    var statesToIncludeQueryParam = `?relevantState=${CONSTANTS.TEAM_PARTNER_WISH_STATE.NOT_EXISTING}&relevantState=${CONSTANTS.TEAM_PARTNER_WISH_STATE.EXISTS_EMPTY_TEAM_PARTNER_WISH}`;
+    const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participant/${participant.id}/team-partner-wish${statesToIncludeQueryParam}`);
+    const response = await axios.get(url);
+    return response.data;
   }
 
   static getFullname(participant) {

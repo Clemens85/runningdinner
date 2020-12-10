@@ -19,7 +19,7 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
 
   const deleteParticipant = async () => {
     try {
-      const deletedParticipant = await ParticipantService.deleteParticipantAsync(participant, adminId);
+      const deletedParticipant = await ParticipantService.deleteParticipantAsync(adminId, participant);
       enqueueSnackbar(ParticipantService.getFullname(participant) + " erfolgreich gelöscht", {variant: "success"});
       onClose(deletedParticipant);
     } catch (e) {

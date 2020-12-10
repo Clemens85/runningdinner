@@ -83,6 +83,8 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 
 
 ## Helpful React Links
+https://medium.com/better-programming/making-a-basic-header-responsive-with-materialui-and-react-2198fac923c8
+
 https://scotch.io/tutorials/7-ways-to-implement-conditional-rendering-in-react-applications <br />
 https://medium.com/better-programming/demystifying-react-hooks-a0b56a6254c2<br/>
 https://medium.com/better-programming/how-to-fetch-data-from-an-api-with-react-hooks-9e7202b8afcd<br/>
