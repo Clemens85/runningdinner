@@ -26,6 +26,7 @@ public class MailSenderMockFile implements MailSender {
 
 	public MailSenderMockFile() {
 		this.mailMockDir = System.getProperty("MailMockDir", System.getProperty("java.io.tmpdir"));
+		LOGGER.info("Using {} for storing mocked mail messages", mailMockDir);
 	}
 
 	@Override

@@ -32,8 +32,9 @@ export default class MessageService {
     return response.data;
   }
 
-  static async sendTeamPartnerWishInvitationAsync(adminId, participantId) {
-    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/teampartnerwish/${participantId}`);
+  static async sendTeamPartnerWishInvitationAsync(adminId, participant) {
+    const {id} = participant;
+    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/teampartnerwish/${id}`);
     const response = await axios.put(url);
     return response.data;
   }
