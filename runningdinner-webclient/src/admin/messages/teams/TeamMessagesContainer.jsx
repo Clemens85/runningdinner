@@ -89,7 +89,7 @@ function TeamMessagesView({adminId}) {
                       <Grid item xs={12}>
                         <TeamSelection />
                         <MessageSubject onMessageSubjectChange={handleMessageSubjectChange}/>
-                        <MessageContent templates={templates} onMessageContentChange={handleMessageContentChange}/>
+                        <MessageContent templates={templates} onMessageContentChange={handleMessageContentChange} rows={15}/>
                       </Grid>
                       <Grid container justify="flex-end">
                         <Grid item>

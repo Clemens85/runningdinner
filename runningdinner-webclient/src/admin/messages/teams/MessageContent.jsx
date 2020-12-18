@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
 import debounce from 'lodash/debounce';
 
-export default function MessageContent({templates, onMessageContentChange}) {
+export default function MessageContent({templates, onMessageContentChange, rows}) {
 
   console.log('Rendering MessageContent');
 
@@ -67,7 +67,7 @@ export default function MessageContent({templates, onMessageContentChange}) {
                     required
                     variant="filled"
                     multiline
-                    rows={7}
+                    rows={rows}
                     name="message"
                     label="Nachricht" />
       </Box>

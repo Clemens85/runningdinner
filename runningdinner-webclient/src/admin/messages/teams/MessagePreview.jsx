@@ -12,7 +12,7 @@ const MessagePreview = ({adminId}) => {
 
   console.log('Rendering MessagePreview');
 
-  const {previewLoading, previewMessage, subject, teams, selectedTeamForPreview, isMailMessageValid} = useTeamMessagesState();
+  const {previewLoading, previewMessages, subject, teams, selectedTeamForPreview, isMailMessageValid} = useTeamMessagesState();
   const dispatch = useTeamMessagesDispatch();
 
   const handleSelectionChange = newSelectedRecipientId => dispatch(newAction(CHANGE_PREVIEW_RECIPIENT, newSelectedRecipientId));
@@ -28,6 +28,17 @@ const MessagePreview = ({adminId}) => {
     );
   }
 
+
+  const previewMessageNodes = previewMessages.map((previewMessage, index) =>
+      <Box mt={1}>
+        <PaperGrey variant={"outlined"} square>
+          <Box p={1} style={{overflowX: 'scroll'}} key={index}>
+            <Title>{subject}</Title>
+            <Span>{parse(previewMessage.message)}</Span>
+          </Box>
+        </PaperGrey>
+      </Box>);
+
   return (
       <Box>
         <Box mb={2}>
@@ -35,16 +46,8 @@ const MessagePreview = ({adminId}) => {
         </Box>
 
         <PreviewSelection recipients={teams} selectedRecipient={selectedTeamForPreview} onSelectionChange={handleSelectionChange}/>
-
-        <Box mt={1}>
-          <PaperGrey variant={"outlined"} square>
-            <Box p={1} style={{overflowX: 'scroll'}}>
-              <Title>{subject}</Title>
-              <Span>{parse(previewMessage)}</Span>
-            </Box>
-            { previewLoading && <LinearProgress color="secondary" /> }
-          </PaperGrey>
-        </Box>
+        { previewLoading && <LinearProgress color="secondary" /> }
+        { previewMessageNodes }
 
         {/* TODO */}
         <SendToMeButton adminId={adminId} messageObj={{}} selectedRecipient={selectedTeamForPreview} />

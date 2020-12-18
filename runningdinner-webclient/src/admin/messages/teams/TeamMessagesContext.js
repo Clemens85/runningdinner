@@ -45,7 +45,7 @@ const INITIAL_STATE = {
 
   selectedTeamForPreview: null,
   previewLoading: false,
-  previewMessage: '',
+  previewMessages: [],
   isMailMessageValid: false
 };
 
@@ -103,7 +103,7 @@ function teamMessagesReducer(state, action) {
       return { ...state, previewLoading: true }
     }
     case FINISHED_LOADING_PREVIEW: {
-      return { ...state, previewMessage: action.payload, previewLoading: false, isMailMessageValid: true }
+      return { ...state, previewMessages: action.payload, previewLoading: false, isMailMessageValid: true }
     }
     case UPDATE_MESSAGE_CONTENT: {
       const result = { ...state, message: action.payload };
@@ -207,8 +207,7 @@ async function updatePreviewMessageAsync(adminId, updatedMessageSubject, updated
       nonHostMessagePartTemplate: nonHostMessagePartTemplate
     };
     const response = await MessageService.getTeamMailPreviewAsync(adminId, teamMailMessage, selectedRecipient);
-    const previewObj = response.previewMessageList[0];
-    setPreviewMessageContentAsync(previewObj.message, dispatch);
+    setPreviewMessagesAsync(response.previewMessageList, dispatch);
   } catch (error) {
     dispatch(newAction(ERROR, error));
   }
@@ -222,8 +221,8 @@ const updateMessageSubjectPreviewAsync = debounce((subject, dispatch) => {
   dispatch(newAction(UPDATE_MESSAGE_SUBJECT, subject));
 }, 150);
 
-const setPreviewMessageContentAsync = debounce((message, dispatch) => {
-  dispatch(newAction(FINISHED_LOADING_PREVIEW, message));
+const setPreviewMessagesAsync = debounce((messages, dispatch) => {
+  dispatch(newAction(FINISHED_LOADING_PREVIEW, messages));
 }, 150);
 
 
