@@ -1,11 +1,18 @@
 
 export const TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM = "teamMemberIdToCancel";
 
-export function generateTeamPath(adminId, teamId) {
+function generateTeamPath(adminId, teamId) {
   return `/admin/${adminId}/teams/${teamId}`;
 }
-
-export function generateParticipantCancellationPath(adminId, participant) {
+function generateTeamMessagesPath(adminId) {
+  return `/admin/${adminId}/teams/messages`;
+}
+function generateParticipantCancellationPath(adminId, participant) {
   return `${generateTeamPath(adminId, participant.teamId)}?${TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM}=${participant.id}`;
 }
 
+export {
+  generateTeamPath,
+  generateTeamMessagesPath,
+  generateParticipantCancellationPath
+};

@@ -1,10 +1,10 @@
-import Fullname from "shared/Fullname";
 import {Checkbox, FormControlLabel} from "@material-ui/core";
 import React from "react";
+import useRecipientName from "shared/admin/messages/RecipientNameHook";
 
 function SelectableEntity({entity, onSelectionChange, disabled}) {
 
-  const fullName = <Fullname {...entity} />;
+  const {recipientName} = useRecipientName(entity);
 
   const handleChange = changeEvt => {
     const selected = changeEvt.target.checked;
@@ -14,7 +14,7 @@ function SelectableEntity({entity, onSelectionChange, disabled}) {
   const selected = !!entity.selected;
 
   return (
-      <FormControlLabel disabled={disabled} label={fullName} control={
+      <FormControlLabel disabled={disabled} label={recipientName} control={
         <Checkbox color="primary" disabled={disabled} onChange={handleChange} checked={selected} />
       } />
   );

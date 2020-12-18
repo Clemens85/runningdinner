@@ -50,7 +50,9 @@ function SingleSelectionDialogView ({selectableEntities, onSelectionChange, open
   const {t} = useTranslation(['common']);
 
   const selectableEntityControls = selectableEntities.map(entity =>
-    <SelectableEntity entity={entity} onSelectionChange={onSelectionChange} key={entity.id} />
+    <SelectableEntity entity={entity}
+                      onSelectionChange={onSelectionChange}
+                      key={entity.id} />
   );
 
   const numEntities = selectableEntityControls.length;
@@ -60,7 +62,7 @@ function SingleSelectionDialogView ({selectableEntities, onSelectionChange, open
   const entitiesRightCol = selectableEntityControls.slice(halfNumEntities + remainder);
 
   return (
-      <Dialog open={open} onClose={onCancel} aria-labelledby="form-dialog-title">
+      <Dialog open={open} onClose={onCancel} aria-labelledby="form-dialog-title" maxWidth={"md"} fullWidth={true}>
         <DialogTitleCloseable id="edit-meals-dialog-title" onClose={onCancel}>
           {t('common:single_selection')}
         </DialogTitleCloseable>

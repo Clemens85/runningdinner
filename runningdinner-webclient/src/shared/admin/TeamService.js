@@ -9,13 +9,13 @@ export default class TeamService {
   static async findTeamsAsync(adminId) {
     const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}?filterCancelledTeams=false`);
     const response = await axios.get(url);
-    return response.data;
+    return response.data ? response.data.teams : []; // The backend API provides a result which contains the teams as own attribute
   }
 
   static async findTeamsNotCancelledAsync(adminId) {
     const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}?filterCancelledTeams=true`);
     const response = await axios.get(url);
-    return response.data;
+    return response.data ? response.data.teams : []; // The backend API provides a result which contains the teams as own attribute
   }
 
   static async createTeamArrangementsAsync(adminId) {
@@ -127,6 +127,10 @@ export default class TeamService {
     const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/team/${team.id}/cancel`);
     const response = await axios.put(url, teamCancellationData);
     return response.data;
+  }
+
+  static isTeam(entity) {
+    return entity && entity.teamNumber;
   }
 
 }

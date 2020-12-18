@@ -31,6 +31,14 @@ export function isStringEmpty(s) {
   return !s || s.length === 0;
 }
 
+export function isArrayNotEmpty(arr) {
+  return arr && arr.length > 0;
+}
+
+export function isArrayEmpty(arr) {
+  return !isArrayNotEmpty(arr);
+}
+
 export function isNewEntity(entity) {
 
   if (!entity) {

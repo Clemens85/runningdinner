@@ -9,7 +9,8 @@ import {AdminContext} from "./AdminContext";
 import LanguageSwitch from "../common/i18n/LanguageSwitch";
 import TeamsContainer from "./teams/TeamsContainer";
 import ParticipantsContainer from "./participants/ParticipantsContainer";
-import ParticipantMessagesContainer from "./messages/participants/ParticipantMessagesContainer";
+import ParticipantMessagesContainer from "admin/messages/participants/ParticipantMessagesContainer";
+import { TeamMessagesContainer } from "admin/messages/teams/TeamMessagesContainer";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -102,10 +103,14 @@ const AdminApp = () =>  {
               <ParticipantMessagesContainer adminId={adminId}/>
             </Route>
             <Route path={`${path}/participants/:participantId`}>
-              <ParticipantsContainer runningDinner={runningDinner}></ParticipantsContainer>
+              <ParticipantsContainer runningDinner={runningDinner} />
             </Route>
             <Route path={`${path}/participants`}>
-              <ParticipantsContainer runningDinner={runningDinner}></ParticipantsContainer>
+              <ParticipantsContainer runningDinner={runningDinner} />
+            </Route>
+
+            <Route path={`${path}/teams/messages`}>
+              <TeamMessagesContainer adminId={adminId} />
             </Route>
             <Route path={`${path}/teams/:teamId`}>
               <TeamsContainer runningDinner={runningDinner} />
@@ -114,8 +119,7 @@ const AdminApp = () =>  {
               <TeamsContainer runningDinner={runningDinner} />
             </Route>
             <Route path="/">
-              <Dashboard runningDinner={runningDinner}
-                         onRuningDinnerUpdate={(updatedRunningDinner) => setRunningDinner(updatedRunningDinner)}></Dashboard>
+              <Dashboard runningDinner={runningDinner} onRuningDinnerUpdate={(updatedRunningDinner) => setRunningDinner(updatedRunningDinner)} />
             </Route>
           </Switch>
         </Container>

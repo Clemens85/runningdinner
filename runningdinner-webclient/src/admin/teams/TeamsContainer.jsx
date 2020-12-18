@@ -16,7 +16,8 @@ import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
 import {useDisclosure} from "shared/DisclosureHook";
 import {PageTitle} from "common/theme/typography/Tags";
 import {useQuery} from "common/hooks/QueryHook";
-import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "common/NavigationService";
+import {generateTeamMessagesPath, TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "common/NavigationService";
+import LinkIntern from "common/theme/LinkIntern";
 
 const TeamsContainer = ({runningDinner}) => {
 
@@ -31,7 +32,7 @@ const TeamsContainer = ({runningDinner}) => {
   return <Fetch asyncFunction={TeamService.findTeamsAsync}
                 parameters={[adminId]}
                 render={resultObj => <Teams teamId={teamId} teamMemberIdToCancel={teamMemberIdToCancel}
-                                         incomingTeams={resultObj.result.teams} runningDinner={runningDinner} />} />;
+                                         incomingTeams={resultObj.result} runningDinner={runningDinner} />} />;
 };
 
 
@@ -46,6 +47,7 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
   const {isOpen: isChangeTeamHostDialogOpen, close: closeChangeTeamHostDialog, open: openChangeTeamHostDialog, data: teamForChangeTeamHostDialog} = useDisclosure();
 
   const history = useHistory();
+  const {t} = useTranslation('admin');
 
   useEffect(() => {
     if (teamId) {
@@ -119,10 +121,15 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
           <TeamsTitle/>
           <Grid container spacing={2}>
             { showTeamsList &&
-                <Grid item xs={12} md={7}>
-                  <TeamsList teams={teams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}
-                             onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} selectedTeam={selectedTeam} />
-                </Grid>
+                <>
+                  <Grid item xs={12} md={7}>
+                    <LinkIntern pathname={generateTeamMessagesPath(adminId)}>{t('messages_send_teams')}</LinkIntern>
+                  </Grid>
+                  <Grid item xs={12} md={7}>
+                    <TeamsList teams={teams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}
+                               onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} selectedTeam={selectedTeam} />
+                  </Grid>
+                </>
             }
             <Grid item xs={12} md={5}>
               { showTeamDetails
