@@ -24,6 +24,7 @@ import MessageService, {MESSAGE_TYPE_PARTICIPANTS, MESSAGE_TYPE_TEAMS} from "sha
 import {MessagePreview} from "admin/messages/MessagePreview";
 import {PARTICIPANT_MESSAGE_VALIDATION_SCHEMA, TEAM_MESSAGE_VALIDATION_SCHEMA} from "shared/admin/ValidationSchemas";
 import {useSnackbar} from "notistack";
+import useHttpErrorHandler from "common/HttpErrorHandlerHook";
 
 const TeamMessages = ({adminId}) => {
   const exampleMessage = MessageService.getExampleTeamMessage();
@@ -54,6 +55,7 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
   const {t} = useTranslation(['admin', 'common']);
 
   const {enqueueSnackbar} = useSnackbar();
+  const {handleFormValidationErrors, validationErrors} = useHttpErrorHandler();
 
   const {loadingData, messageType} = useMessagesState();
   const dispatch = useMessagesDispatch();
@@ -73,7 +75,7 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
       await MessageService.sendMessagesAsync(adminId, values, messageType,false);
       enqueueSnackbar('Nachrichten erfolgreich versandt', { variant: 'success'});
     } catch(e) {
-      const validationErrors = mapValidationIssuesToErrorObjects(e);
+      handleFormValidationErrors(e);
       setError(validationErrors);
     }
   };
