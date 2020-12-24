@@ -15,7 +15,7 @@ import {
   useMessagesDispatch,
   useMessagesState,
   FINISH_EDIT_CUSTOM_SELECTED_RECIPIENTS
-} from "admin/messages/teams/MessagesContext";
+} from "admin/messages/MessagesContext";
 import useTeamSelectionOptions from "shared/admin/messages/TeamSelectionOptionsHook";
 import {useFormContext} from "react-hook-form";
 import useRecipientName from "shared/admin/messages/RecipientNameHook";

@@ -1,111 +1,80 @@
-import React, {useEffect, useState} from "react";
-import {PaperGrey} from "../../common/theme/PaperGrey";
+import React from "react";
+import {PaperGrey} from "common/theme/PaperGrey";
 import { Box, FormControl, Typography, InputLabel, Select, MenuItem, LinearProgress } from "@material-ui/core";
-import ParticipantService from "../../shared/admin/ParticipantService";
-import {findEntityById, isStringEmpty} from "../../shared/Utils";
-import MessageService from "../../shared/admin/MessageService";
 import parse from 'html-react-parser';
-import SendToMeButton from "./SendToMeButton";
+import SendToMeButton from "admin/messages/SendToMeButton";
+import {Span, Subtitle, Title} from "common/theme/typography/Tags";
+import {isArrayEmpty} from "shared/Utils";
+import {CHANGE_PREVIEW_RECIPIENT, newAction, useMessagesDispatch, useMessagesState} from "admin/messages/MessagesContext";
+import useRecipientName from "shared/admin/messages/RecipientNameHook";
 
-const MessagePreview = ({adminId, participants, messageObj}) => {
+const MessagePreview = ({adminId}) => {
 
-  console.log('Rendering MessagePreview');
+  const {previewLoading, previewMessages, subject, recipients, selectedRecipientForPreview, isMailMessageValid} = useMessagesState();
+  const dispatch = useMessagesDispatch();
 
-  const [selectedParticipant, setSelectedParticipant] = useState(participants ? participants[0] : null);
-  const [previewMessage, setPreviewMessage] = useState('');
-  const [previewLoading, setPreviewLoading] = useState(false);
+  const handleSelectionChange = newSelectedRecipientId => dispatch(newAction(CHANGE_PREVIEW_RECIPIENT, newSelectedRecipientId));
 
-  useEffect(() => {
-    setPreviewMessage(messageObj.message);
-    // eslint-disable-next-line
-  }, []);
-  useEffect(() => {
-    updatePreviewMessage(messageObj.subject, messageObj.message);
-    // eslint-disable-next-line
-  }, [messageObj.message, messageObj.subject, selectedParticipant]);
-
-
-  function handleSelectionChange(id) {
-    const foundParticipant = findEntityById(participants, id);
-    setSelectedParticipant(foundParticipant);
-  }
-
-  function updatePreviewMessage(updatedMessageSubject, updatedMessageText) {
-    if (!isMailMessageValid(updatedMessageSubject, updatedMessageText)) {
-      return;
-    }
-
-    setPreviewLoading(true);
-    const participantMailMessage = {
-      subject: updatedMessageSubject,
-      message: updatedMessageText
-    };
-    MessageService
-        .getParticipantMailPreviewAsync(adminId, participantMailMessage, selectedParticipant)
-        .then(response => {
-          const previewObj = response.previewMessageList[0];
-          setPreviewMessage(previewObj.message);
-        })
-        .finally(() => setPreviewLoading(false));
-  }
-
-  function isMailMessageValid(subject, message) {
-    return selectedParticipant && !isStringEmpty(subject) && !isStringEmpty(message);
-  }
-
-  if (!isMailMessageValid(messageObj.subject, messageObj.message)) {
+  if (!isMailMessageValid) {
     return (
         <Box>
           <Box mb={2}>
-            <Typography variant={"h5"}>Vorschau</Typography>
+            <Subtitle i18n="common:preview" />
           </Box>
           <Typography variant={"subtitle1"}>Um die Vorschau zu sehen, muss Betreff und Nachricht ausgefüllt sein.</Typography>
         </Box>
     );
   }
 
-  return (
-    <Box>
-      <Box mb={2}>
-        <Typography variant={"h5"}>Vorschau</Typography>
-      </Box>
 
-      <PreviewSelection participants={participants} selectedParticipant={selectedParticipant} onSelectionChange={handleSelectionChange}/>
-
-      <Box mt={1}>
+  const previewMessageNodes = previewMessages.map((previewMessage, index) =>
+      <Box mt={1} key={index}>
         <PaperGrey variant={"outlined"} square>
           <Box p={1} style={{overflowX: 'scroll'}}>
-            <Typography variant={"h6"}>{messageObj.subject}</Typography>
-            <Typography variant={"body2"}>
-              {parse(previewMessage)}
-            </Typography>
+            <Title>{subject}</Title>
+            <Span>{parse(previewMessage.message)}</Span>
           </Box>
-          { previewLoading && <LinearProgress color="secondary" /> }
         </PaperGrey>
+      </Box>);
+
+  return (
+      <Box>
+        <Box mb={2}>
+          <Subtitle i18n="common:preview" />
+        </Box>
+
+        <PreviewSelection recipients={recipients} selectedRecipient={selectedRecipientForPreview} onSelectionChange={handleSelectionChange}/>
+        { previewLoading && <LinearProgress color="secondary" /> }
+        { previewMessageNodes }
+
+        {/* TODO */}
+        <SendToMeButton adminId={adminId} messageObj={{}} selectedRecipient={selectedRecipientForPreview} />
+
       </Box>
-
-      <SendToMeButton adminId={adminId} messageObj={messageObj} selectedParticipant={selectedParticipant} />
-
-    </Box>
 
   );
 };
 
-function PreviewSelection({participants, selectedParticipant, onSelectionChange}) {
+function PreviewSelection({recipients, selectedRecipient, onSelectionChange}) {
+
+  const {getRecipientName} = useRecipientName();
 
   function handleChange(changeEvent) {
-    const selectedParticipantId = changeEvent.target.value;
-    onSelectionChange(selectedParticipantId);
+    const newSelectedRecipientId = changeEvent.target.value;
+    onSelectionChange(newSelectedRecipientId);
   }
 
-  if (!participants || participants.length === 0) {
+  if (isArrayEmpty(recipients)) {
     return null;
   }
+  const selectionOptions = recipients
+      .map(recipient =>
+          <MenuItem value={recipient.id} key={recipient.id}>
+            {getRecipientName(recipient)}
+          </MenuItem>
+      );
 
-  const selectionOptions = participants
-      .map(participant => <MenuItem value={participant.id} key={participant.id}>{ParticipantService.getFullname(participant)}</MenuItem>);
-
-  const selectedValue = selectedParticipant ? selectedParticipant.id : '';
+  const selectedValue = selectedRecipient ? selectedRecipient.id : '';
 
   const selectionLabel = 'Auswahl für Vorschau';
   return (
@@ -122,4 +91,6 @@ function PreviewSelection({participants, selectedParticipant, onSelectionChange}
   )
 }
 
-export default MessagePreview;
+export {
+  MessagePreview
+};

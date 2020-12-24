@@ -9,7 +9,7 @@ import {AdminContext} from "./AdminContext";
 import LanguageSwitch from "../common/i18n/LanguageSwitch";
 import TeamsContainer from "./teams/TeamsContainer";
 import ParticipantsContainer from "./participants/ParticipantsContainer";
-import {ParticipantMessages, TeamMessages} from "admin/messages/teams/MessagesContainer";
+import {ParticipantMessages, TeamMessages} from "admin/messages/MessagesContainer";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {

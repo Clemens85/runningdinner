@@ -7,7 +7,7 @@ import {MessageJobsOverview} from "admin/messages/messagejobs/MessageJobsOvervie
 import MessageHeadline from "admin/messages/MessageHeadline";
 import {PrimaryButton} from "common/theme/PrimaryButton";
 import MessageSubject from "admin/messages/MessageSubject";
-import MessageContent from "admin/messages/teams/MessageContent";
+import MessageContent from "admin/messages/MessageContent";
 import {mapValidationIssuesToErrorObjects} from "shared/Utils";
 import {
   MessagesFetchData,
@@ -18,10 +18,10 @@ import {
   updateNonHostMessagePartTemplatePreviewAsync,
   useMessagesDispatch,
   useMessagesState
-} from "admin/messages/teams/MessagesContext";
-import {RecipientSelection} from "admin/messages/teams/RecipientSelection";
+} from "admin/messages/MessagesContext";
+import {RecipientSelection} from "admin/messages/RecipientSelection";
 import MessageService, {MESSAGE_TYPE_PARTICIPANTS, MESSAGE_TYPE_TEAMS} from "shared/admin/MessageService";
-import {MessagePreview} from "admin/messages/teams/MessagePreview";
+import {MessagePreview} from "admin/messages/MessagePreview";
 import {PARTICIPANT_MESSAGE_VALIDATION_SCHEMA, TEAM_MESSAGE_VALIDATION_SCHEMA} from "shared/admin/ValidationSchemas";
 import {useSnackbar} from "notistack";
 
