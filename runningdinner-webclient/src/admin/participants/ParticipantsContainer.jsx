@@ -29,7 +29,7 @@ export default function ParticipantsContainer({runningDinner}) {
   return <Fetch asyncFunction={ParticipantService.findParticipantsAsync}
                 parameters={[adminId]}
                 render={resultObj => <Participants runningDinner={runningDinner}
-                                                incomingParticipants={resultObj.result.participants}
+                                                incomingParticipants={resultObj.result}
                                                 selectedParticipantId={participantId}
                                                 reFetch={resultObj.reFetch} />} />
 };

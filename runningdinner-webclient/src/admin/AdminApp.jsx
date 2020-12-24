@@ -9,8 +9,7 @@ import {AdminContext} from "./AdminContext";
 import LanguageSwitch from "../common/i18n/LanguageSwitch";
 import TeamsContainer from "./teams/TeamsContainer";
 import ParticipantsContainer from "./participants/ParticipantsContainer";
-import ParticipantMessagesContainer from "admin/messages/participants/ParticipantMessagesContainer";
-import { TeamMessagesContainer } from "admin/messages/teams/TeamMessagesContainer";
+import {ParticipantMessages, TeamMessages} from "admin/messages/teams/MessagesContainer";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -100,7 +99,7 @@ const AdminApp = () =>  {
         <Container maxWidth="xl">
           <Switch>
             <Route path={`${path}/participants/messages`}>
-              <ParticipantMessagesContainer adminId={adminId}/>
+              <ParticipantMessages adminId={adminId} />
             </Route>
             <Route path={`${path}/participants/:participantId`}>
               <ParticipantsContainer runningDinner={runningDinner} />
@@ -110,7 +109,7 @@ const AdminApp = () =>  {
             </Route>
 
             <Route path={`${path}/teams/messages`}>
-              <TeamMessagesContainer adminId={adminId} />
+              <TeamMessages adminId={adminId} />
             </Route>
             <Route path={`${path}/teams/:teamId`}>
               <TeamsContainer runningDinner={runningDinner} />

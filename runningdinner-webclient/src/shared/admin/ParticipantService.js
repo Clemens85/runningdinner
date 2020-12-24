@@ -50,7 +50,8 @@ export default class ParticipantService {
   static async findParticipantsAsync(adminId) {
     const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants`);
     const response = await axios.get(url);
-    return response.data;
+    const { participants } = response.data;
+    return participants;
   }
 
   static async saveParticipantAsync(adminId, participant) {
@@ -72,7 +73,7 @@ export default class ParticipantService {
   }
 
   static async findNotAssignedParticipantsAsync(adminId) {
-    const { participants } = await ParticipantService.findParticipantsAsync(adminId);
+    const participants = await ParticipantService.findParticipantsAsync(adminId);
     const result = ParticipantService.getNotAssignableParticipants(participants);
     return result;
   }

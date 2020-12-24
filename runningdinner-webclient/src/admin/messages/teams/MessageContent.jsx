@@ -5,12 +5,9 @@ import { useFormContext } from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
 import debounce from 'lodash/debounce';
 
-export default function MessageContent({templates, onMessageContentChange, rows}) {
-
-  console.log('Rendering MessageContent');
+export default function MessageContent({templates, onMessageContentChange, name, label, rows, helperText}) {
 
   const { setValue, register } = useFormContext();
-  // const [internalMessageContent, setInternalMessageContent] = useState('');
 
   const contentRef = useRef();
   const [cursorPosition, setCursorPosition] = useState(-1);
@@ -23,8 +20,6 @@ export default function MessageContent({templates, onMessageContentChange, rows}
     if (cursorPosition < 0) {
       updatedValue = currentMessageContent + template;
       setCursorPosition(updatedValue.length);
-      // setValue('message', updatedValue);
-      // setInternalMessageContent(updatedValue);
       return;
     } else {
       let textBeforeCursorPosition = currentMessageContent.substring(0, cursorPosition);
@@ -33,18 +28,15 @@ export default function MessageContent({templates, onMessageContentChange, rows}
       setCursorPosition(cursorPosition + template.length);
     }
 
-    setValue('message', updatedValue);
+    setValue(name, updatedValue);
     onMessageContentChange(updatedValue);
-    // setInternalMessageContent(updatedValue);
   }
 
   const handleMessageContentChange = changeEvt => {
     const changedValue = changeEvt.target.value;
-    // updateInternalMessageContentStateAsync(changedValue);
     onMessageContentChange(changedValue);
   };
 
-  // const updateInternalMessageContentStateAsync = debounce(newVal => setInternalMessageContent(newVal), 100);
 
   const handlePositionUpdate = debounce(() => {
     const updatedCursorPosition = contentRef.current.selectionStart;
@@ -56,20 +48,21 @@ export default function MessageContent({templates, onMessageContentChange, rows}
 
         <MessageTemplates templates={templates} onTemplateClick={handleTemplateClick}/>
 
-        <TextField  inputRef={(ref) => {
-          register(ref);
-          contentRef.current = ref;
-        }}
-                    fullWidth
-                    onClick={handlePositionUpdate}
-                    onKeyDown={handlePositionUpdate}
-                    onChange={handleMessageContentChange}
-                    required
-                    variant="filled"
-                    multiline
-                    rows={rows}
-                    name="message"
-                    label="Nachricht" />
+        <TextField inputRef={(ref) => {
+                                register(ref);
+                                contentRef.current = ref;
+                            }}
+          fullWidth
+          onClick={handlePositionUpdate}
+          onKeyDown={handlePositionUpdate}
+          onChange={handleMessageContentChange}
+          required
+          variant="filled"
+          helperText={helperText}
+          multiline
+          rows={rows}
+          name={name}
+          label={label} />
       </Box>
   );
 

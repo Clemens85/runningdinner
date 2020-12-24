@@ -17,7 +17,7 @@ export default function useTeamsNotExisting(runningDinner) {
 
   let teamsNotExistingInfo = null;
   if (!loading && !error) {
-    teamsNotExistingInfo = calculateTeamsNotExistingInfo(asyncResult.result.participants);
+    teamsNotExistingInfo = calculateTeamsNotExistingInfo(asyncResult.result);
   }
 
   function calculateTeamsNotExistingInfo(participants) {

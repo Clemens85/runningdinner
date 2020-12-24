@@ -5,15 +5,13 @@ import parse from 'html-react-parser';
 import SendToMeButton from "admin/messages/SendToMeButton";
 import {Span, Subtitle, Title} from "common/theme/typography/Tags";
 import {isArrayEmpty} from "shared/Utils";
-import {CHANGE_PREVIEW_RECIPIENT, newAction, useTeamMessagesDispatch, useTeamMessagesState} from "admin/messages/teams/TeamMessagesContext";
+import {CHANGE_PREVIEW_RECIPIENT, newAction, useMessagesDispatch, useMessagesState} from "admin/messages/teams/MessagesContext";
 import useRecipientName from "shared/admin/messages/RecipientNameHook";
 
 const MessagePreview = ({adminId}) => {
 
-  console.log('Rendering MessagePreview');
-
-  const {previewLoading, previewMessages, subject, teams, selectedTeamForPreview, isMailMessageValid} = useTeamMessagesState();
-  const dispatch = useTeamMessagesDispatch();
+  const {previewLoading, previewMessages, subject, recipients, selectedRecipientForPreview, isMailMessageValid} = useMessagesState();
+  const dispatch = useMessagesDispatch();
 
   const handleSelectionChange = newSelectedRecipientId => dispatch(newAction(CHANGE_PREVIEW_RECIPIENT, newSelectedRecipientId));
 
@@ -30,9 +28,9 @@ const MessagePreview = ({adminId}) => {
 
 
   const previewMessageNodes = previewMessages.map((previewMessage, index) =>
-      <Box mt={1}>
+      <Box mt={1} key={index}>
         <PaperGrey variant={"outlined"} square>
-          <Box p={1} style={{overflowX: 'scroll'}} key={index}>
+          <Box p={1} style={{overflowX: 'scroll'}}>
             <Title>{subject}</Title>
             <Span>{parse(previewMessage.message)}</Span>
           </Box>
@@ -45,12 +43,12 @@ const MessagePreview = ({adminId}) => {
           <Subtitle i18n="common:preview" />
         </Box>
 
-        <PreviewSelection recipients={teams} selectedRecipient={selectedTeamForPreview} onSelectionChange={handleSelectionChange}/>
+        <PreviewSelection recipients={recipients} selectedRecipient={selectedRecipientForPreview} onSelectionChange={handleSelectionChange}/>
         { previewLoading && <LinearProgress color="secondary" /> }
         { previewMessageNodes }
 
         {/* TODO */}
-        <SendToMeButton adminId={adminId} messageObj={{}} selectedRecipient={selectedTeamForPreview} />
+        <SendToMeButton adminId={adminId} messageObj={{}} selectedRecipient={selectedRecipientForPreview} />
 
       </Box>
 

@@ -1,53 +1,33 @@
 import BackendConfig from "../BackendConfig";
 import axios from "axios";
 import {CONSTANTS} from "../Constants";
-import {isStringEmpty} from "../Utils";
+import {isArrayEmpty, isStringEmpty} from "../Utils";
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 
-export const ParticipantSelectionChoices = [
-  { value: CONSTANTS.PARTICIPANT_SELECTION.ALL, label: 'Alle' },
-  { value: CONSTANTS.PARTICIPANT_SELECTION.ASSIGNED_TO_TEAM, label: 'Nur Teilnehmer in Teams' },
-  { value: CONSTANTS.PARTICIPANT_SELECTION.NOT_ASSIGNED_TO_TEAM, label: 'Nur Teilnehmer auf Warteliste' },
-  { value: CONSTANTS.PARTICIPANT_SELECTION.CUSTOM_SELECTION, label: 'Einzelauswahl...' }
-];
+export const MESSAGE_TYPE_PARTICIPANTS = "MESSAGE_TYPE_PARTICIPANTS";
+export const MESSAGE_TYPE_TEAMS = "MESSAGE_TYPE_TEAMS";
+export const MESSAGE_TYPE_DINNERROUTE = "MESSAGE_TYPE_DINNERROUTE";
 
 export default class MessageService {
 
-  // TODO: Unify these methods:
-
-  static async sendParticipantMessagesAsync(adminId, participantMailMessage, incomingSendToDinnerOwner) {
-    const sendToDinnerOwner = incomingSendToDinnerOwner === true ? 'true' : 'false';
-    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/participant?sendToDinnerOwner=${sendToDinnerOwner}`);
+  static async sendMessagesAsync(adminId, messageObject, messageType, sendToDinnerOwner) {
+    const sendToDinnerOwnerStr = sendToDinnerOwner === true ? 'true' : 'false';
+    const recipientType = mapRecipientType(messageType);
+    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/${recipientType}?sendToDinnerOwner=${sendToDinnerOwnerStr}`);
     const response = await axios({
       url: url,
       method: 'put',
-      data: mapEmptySelectionStringToNull(participantMailMessage)
-    });
-    return response.data;
-  }
-  static async getParticipantMailPreviewAsync(adminId, participantMailMessageTemplate, participantToUse) {
-    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/participant/preview`);
-    let participantMailMessage = MessageService.getMailMessageForSelectedRecipient(participantMailMessageTemplate, participantToUse);
-    const response = await axios.put(url, participantMailMessage);
-    return response.data;
-  }
-
-  static async sendTeamMessagesAsync(adminId, teamMailMessage, incomingSendToDinnerOwner) {
-    const sendToDinnerOwner = incomingSendToDinnerOwner === true ? 'true' : 'false';
-    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/team?sendToDinnerOwner=${sendToDinnerOwner}`);
-    const response = await axios({
-      url: url,
-      method: 'put',
-      data: mapEmptySelectionStringToNull(teamMailMessage)
+      data: mapEmptySelectionStringToNull(messageObject)
     });
     return response.data;
   }
 
-  static async getTeamMailPreviewAsync(adminId, teamMailMessageTemplate, teamToUse) {
-    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/team/preview`);
-    let teamtMailMessage = MessageService.getMailMessageForSelectedRecipient(teamMailMessageTemplate, teamToUse);
-    const response = await axios.put(url, teamtMailMessage);
+  static async getMessagePreviewAsync(adminId, messageTemplate, recipientToUse, messageType) {
+    const recipientType = mapRecipientType(messageType);
+    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/${recipientType}/preview`);
+    let messageObject = MessageService.getMailMessageForSelectedRecipient(messageTemplate, recipientToUse);
+    const response = await axios.put(url, messageObject);
     return response.data;
   }
 
@@ -98,24 +78,28 @@ export default class MessageService {
     };
   }
 
-  static getNumberOfSelectedParticipants(participants, participantSelection) {
-    if (!participants || participants.length <= 0 || isStringEmpty(participantSelection) || participantSelection === CONSTANTS.PARTICIPANT_SELECTION.CUSTOM_SELECTION) {
+  static getNumberOfSelectedRecipients(recipients, recipientSelection) {
+    if (isArrayEmpty(recipients) || isStringEmpty(recipientSelection) ||
+        recipientSelection === CONSTANTS.PARTICIPANT_SELECTION.CUSTOM_SELECTION || recipientSelection === CONSTANTS.TEAM_SELECTION.CUSTOM_SELECTION) {
       return null;
     }
-
-    if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.ALL) {
-      return participants.length;
+    if (recipientSelection === CONSTANTS.PARTICIPANT_SELECTION.ALL || recipientSelection === CONSTANTS.TEAM_SELECTION.ALL) {
+      return recipients.length;
     }
+    return MessageService._getNumberOfSelectedParticipants(recipients, recipientSelection);
+  }
 
+  static _getNumberOfSelectedParticipants(participants, participantSelection) {
     const assignedParticipants = filter(participants, {'assignmentType': CONSTANTS.ASSIGNMENT_TYPE.ASSIGNED_TO_TEAM});
     var assignedParticipantsSize = assignedParticipants.length;
     if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.ASSIGNED_TO_TEAM) {
       return assignedParticipantsSize;
-    } else if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.ASSIGNED_TO_TEAM) {
+    } else if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.NOT_ASSIGNED_TO_TEAM) {
       return participants.length - assignedParticipantsSize;
     }
     return null;
   }
+
 };
 
 function mapEmptySelectionStringToNull(incomingMailMessage) {
@@ -126,4 +110,15 @@ function mapEmptySelectionStringToNull(incomingMailMessage) {
     return result;
   }
   return incomingMailMessage;
+}
+
+function mapRecipientType(messageType) {
+  if (messageType === MESSAGE_TYPE_PARTICIPANTS) {
+    return "participant"
+  } else if (messageType === MESSAGE_TYPE_TEAMS) {
+    return "team";
+  } else if (messageType === MESSAGE_TYPE_DINNERROUTE) {
+    return "dinnerroute";
+  }
+  throw new Error(`Unknown messageType: ${messageType}`);
 }

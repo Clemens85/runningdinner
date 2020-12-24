@@ -27,3 +27,11 @@ export const PARTICIPANT_MESSAGE_VALIDATION_SCHEMA = Yup.object({
   message: Yup.string().max(2048).required(),
   participantSelection: Yup.string().required()
 });
+
+export const TEAM_MESSAGE_VALIDATION_SCHEMA = Yup.object({
+  subject: Yup.string().max(255).required(),
+  message: Yup.string().max(2048).required(),
+  teamSelection: Yup.string().required(),
+  hostMessagePartTemplate: Yup.string().required(),
+  nonHostMessagePartTemplate: Yup.string().required(),
+});
