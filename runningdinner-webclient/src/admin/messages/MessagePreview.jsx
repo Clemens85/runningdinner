@@ -10,7 +10,7 @@ import useRecipientName from "shared/admin/messages/RecipientNameHook";
 
 const MessagePreview = ({adminId}) => {
 
-  const {previewLoading, previewMessages, subject, recipients, selectedRecipientForPreview, isMailMessageValid} = useMessagesState();
+  const {previewLoading, previewMessages, subject, recipients, selectedRecipientForPreview, isMailMessageValid, messageObject, messageType} = useMessagesState();
   const dispatch = useMessagesDispatch();
 
   const handleSelectionChange = newSelectedRecipientId => dispatch(newAction(CHANGE_PREVIEW_RECIPIENT, newSelectedRecipientId));
@@ -47,8 +47,7 @@ const MessagePreview = ({adminId}) => {
         { previewLoading && <LinearProgress color="secondary" /> }
         { previewMessageNodes }
 
-        {/* TODO */}
-        <SendToMeButton adminId={adminId} messageObj={{}} selectedRecipient={selectedRecipientForPreview} />
+        <SendToMeButton adminId={adminId} messageObj={messageObject} selectedRecipient={selectedRecipientForPreview} messageType={messageType} />
 
       </Box>
 

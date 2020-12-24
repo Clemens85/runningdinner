@@ -39,14 +39,13 @@ const INITIAL_STATE_TEMPLATE = {
   adminId: null,
 
   recipients: [],
-
   recipientSelection: '',
   previousSelection: '',
-
   customSelectedRecipients: [],
   showCustomSelectionDialog: false,
 
   messageType: '',
+  messageObject: null,
 
   selectedRecipientForPreview: null,
   previewLoading: false,
@@ -111,22 +110,26 @@ function messagesReducer(state, action) {
       return { ...state, previewMessages: action.payload, previewLoading: false, isMailMessageValid: true }
     }
     case UPDATE_MESSAGE_CONTENT: {
-      const result = { ...state, message: action.payload };
+      const result =  { ...state };
+      result.messageObject.message = action.payload;
       setFirstRecipientForPreviewIfNeeded(result);
       return result;
     }
     case UPDATE_MESSAGE_SUBJECT: {
-      const result =  { ...state, subject: action.payload };
+      const result =  { ...state };
+      result.messageObject.subject = action.payload;
       setFirstRecipientForPreviewIfNeeded(result);
       return result;
     }
     case UPDATE_MESSAGE_NONHOST_MESSAGE_PART_TEMPLATE: {
-      const result =  { ...state, nonHostMessagePartTemplate: action.payload };
+      const result =  { ...state };
+      result.messageObject.nonHostMessagePartTemplate = action.payload;
       setFirstRecipientForPreviewIfNeeded(result);
       return result;
     }
     case UPDATE_MESSAGE_HOST_MESSAGE_PART_TEMPLATE: {
-      const result =  { ...state, hostMessagePartTemplate: action.payload };
+      const result =  { ...state };
+      result.messageObject.hostMessagePartTemplate = action.payload;
       setFirstRecipientForPreviewIfNeeded(result);
       return result;
     }
@@ -173,7 +176,8 @@ function createInitialState(messageType) {
   } else {
     throw new Error("Unknown messageType: " + messageType);
   }
-  return Object.assign(result, messageObject);
+  result.messageObject = messageObject;
+  return result;
 }
 
 function MessagesFetchData(props) {
@@ -181,7 +185,8 @@ function MessagesFetchData(props) {
   const dispatch = useMessagesDispatch();
   const { adminId } = props;
 
-  const {messageType, message, subject, hostMessagePartTemplate, nonHostMessagePartTemplate, selectedRecipientForPreview} = useMessagesState();
+  const { messageType, messageObject, selectedRecipientForPreview } = useMessagesState();
+  const { message, subject, hostMessagePartTemplate, nonHostMessagePartTemplate } = messageObject;
 
   React.useEffect(() => {
     fetchMessagesDataAsync(adminId, messageType, dispatch);
@@ -189,7 +194,7 @@ function MessagesFetchData(props) {
   }, []);
 
   React.useEffect( () => {
-    updatePreviewMessageAsync(adminId, subject, message, hostMessagePartTemplate, nonHostMessagePartTemplate, selectedRecipientForPreview, messageType, dispatch);
+    updatePreviewMessageAsync(adminId, messageObject, messageType, selectedRecipientForPreview, dispatch);
     // eslint-disable-next-line
   }, [message, subject, hostMessagePartTemplate, nonHostMessagePartTemplate, selectedRecipientForPreview]);
 
@@ -229,15 +234,12 @@ async function fetchMessagesDataAsync(adminId, messageType, dispatch) {
 }
 
 async function updatePreviewMessageAsync(adminId,
-                                         updatedMessageSubject,
-                                         updatedMessageText,
-                                         hostMessagePartTemplate,
-                                         nonHostMessagePartTemplate,
-                                         selectedRecipient,
+                                         messageObject,
                                          messageType,
+                                         selectedRecipient,
                                          dispatch) {
 
-  if (!isMailMessageValid(updatedMessageSubject, updatedMessageText, selectedRecipient)) {
+  if (!isMailMessageValid(messageObject, messageType, selectedRecipient)) {
     dispatch(newAction(UPDATE_MAIL_MESSAGE_VALID, false));
     return;
   }
@@ -245,12 +247,6 @@ async function updatePreviewMessageAsync(adminId,
   dispatch(newAction(START_LOADING_PREVIEW));
 
   try {
-    const messageObject = {
-      subject: updatedMessageSubject,
-      message: updatedMessageText,
-      hostMessagePartTemplate: hostMessagePartTemplate,
-      nonHostMessagePartTemplate: nonHostMessagePartTemplate
-    };
     const response = await MessageService.getMessagePreviewAsync(adminId, messageObject, selectedRecipient, messageType);
     setPreviewMessagesAsync(response.previewMessageList, dispatch);
   } catch (error) {
@@ -278,8 +274,16 @@ const setPreviewMessagesAsync = debounce((messages, dispatch) => {
 }, 150);
 
 
-function isMailMessageValid(subject, message, selectedRecipient) {
-  return selectedRecipient && !isStringEmpty(subject) && !isStringEmpty(message);
+function isMailMessageValid(messageObject, messageType, selectedRecipient) {
+  const {subject, message} = messageObject;
+  const alwaysRequiredFieldsValid = selectedRecipient && !isStringEmpty(subject) && !isStringEmpty(message);
+  if (!alwaysRequiredFieldsValid) {
+    return false;
+  }
+  if (messageType === MESSAGE_TYPE_TEAMS) {
+    return !isStringEmpty(messageObject.hostMessagePartTemplate) && !isStringEmpty(messageObject.nonHostMessagePartTemplate);
+  }
+  return true;
 }
 
 export {
