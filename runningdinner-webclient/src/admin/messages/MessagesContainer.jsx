@@ -8,7 +8,6 @@ import MessageHeadline from "admin/messages/MessageHeadline";
 import {PrimaryButton} from "common/theme/PrimaryButton";
 import MessageSubject from "admin/messages/MessageSubject";
 import MessageContent from "admin/messages/MessageContent";
-import {mapValidationIssuesToErrorObjects} from "shared/Utils";
 import {
   MessagesFetchData,
   MessagesProvider,

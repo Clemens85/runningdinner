@@ -13,6 +13,13 @@ export function formatLocalDate(date, locale) {
   return format(date, 'dd.MM.yyyy');
 }
 
+export function formatLocalDateWithSeconds(date, locale) {
+  if (!date) {
+    return date;
+  }
+  return format(date, 'dd.MM.yyyy HH:mm:ss');
+}
+
 export function deserializeArrayToDate(incomingObj) {
 
   if (!incomingObj || !Array.isArray(incomingObj) || incomingObj.length < 3 || incomingObj.length > 7) {

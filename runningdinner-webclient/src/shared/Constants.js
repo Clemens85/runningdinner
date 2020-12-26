@@ -40,6 +40,20 @@ export const CONSTANTS = {
     "CANCELLED": "CANCELLED",
   },
 
+
+  "SENDING_STATUS": {
+    "QUEUED": "QUEUED",
+    "SENDING_STARTED": "SENDING_STARTED",
+    "SENDING_FINISHED": "SENDING_FINISHED"
+  },
+
+  // Own constants just for client to aggregate sending-status and result:
+  "SENDING_STATUS_RESULT": {
+    "SENDING_FINISHED_SUCCESS": "SENDING_FINISHED_SUCCESS",
+    "SENDING_FINISHED_FAILURE": "SENDING_FINISHED_FAILURE",
+    "SENDING_NOT_FINISHED": 'SENDING_NOT_FINISHED'
+  },
+
   "VALIDATION_ISSUE_CONSTANTS": {
     "TEAM_NO_TEAM_MEMBERS_LEFT": "team_no_team_members_left",
     "PARTICIPANT_ASSINGED_IN_TEAM": "participant_assigned_in_team"

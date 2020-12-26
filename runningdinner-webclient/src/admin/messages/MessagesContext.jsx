@@ -23,6 +23,8 @@ const UPDATE_MESSAGE_SUBJECT = "UPDATE_MESSAGE_SUBJECT";
 const UPDATE_MESSAGE_HOST_MESSAGE_PART_TEMPLATE = "UPDATE_MESSAGE_HOST_MESSAGE_PART_TEMPLATE";
 const UPDATE_MESSAGE_NONHOST_MESSAGE_PART_TEMPLATE = "UPDATE_MESSAGE_NONHOST_MESSAGE_PART_TEMPLATE";
 const UPDATE_MAIL_MESSAGE_VALID = "UPDATE_MAIL_MESSAGE_VALID";
+const UPDATE_RECIPIENTS = "UPDATE_RECIPIENTS";
+const UPDATE_MESSAGEJOBS = "UPDATE_MESSAGEJOBS";
 
 const START_LOADING_PREVIEW = "START_LOADING_PREVIEW";
 const FINISHED_LOADING_PREVIEW = "FINISHED_LOADING_PREVIEW";
@@ -50,7 +52,11 @@ const INITIAL_STATE_TEMPLATE = {
   selectedRecipientForPreview: null,
   previewLoading: false,
   previewMessages: [],
-  isMailMessageValid: false
+  isMailMessageValid: false,
+
+  messageJobs: [],
+  messageJobsLoading: true,
+  lastPollDate: new Date()
 };
 
 const MessagesContext = React.createContext(INITIAL_STATE_TEMPLATE);
@@ -62,10 +68,16 @@ function messagesReducer(state, action) {
       return { ...state, loadingData: true, error: undefined, recipients: [] };
     }
     case FINISHED_LOADING_DATA: {
-      return { ...state, loadingData: false, error: undefined, recipients: action.payload }
+      return { ...state, loadingData: false, error: undefined };
     }
     case ERROR: {
       return { ...state, loadingData: false, error: action.payload };
+    }
+    case UPDATE_MESSAGEJOBS: {
+      return { ...state, messageJobs: action.payload, messageJobsLoading: false, lastPollDate: new Date() };
+    }
+    case UPDATE_RECIPIENTS: {
+      return { ...state, recipients: action.payload };
     }
     case ADMIN_ID: {
       return { ...state, adminId: action.payload };
@@ -226,8 +238,12 @@ async function fetchMessagesDataAsync(adminId, messageType, dispatch) {
   dispatch(newAction(ADMIN_ID, adminId));
   try {
     const recipientsRequest = messageType === MESSAGE_TYPE_PARTICIPANTS ? ParticipantService.findParticipantsAsync(adminId) : TeamService.findTeamsNotCancelledAsync(adminId);
+    const messageJobsRequest = MessageService.findMessageJobsByAdminIdAndTypeAsync(adminId, messageType);
     const recipients = await recipientsRequest;
-    dispatch(newAction(FINISHED_LOADING_DATA, recipients));
+    const messageJobs = await messageJobsRequest;
+    dispatch(newAction(UPDATE_RECIPIENTS,recipients));
+    dispatch(newAction(UPDATE_MESSAGEJOBS, messageJobs));
+    dispatch(newAction(FINISHED_LOADING_DATA));
   } catch (error) {
     dispatch(newAction(ERROR, error));
   }

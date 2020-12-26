@@ -4,12 +4,20 @@ import {CONSTANTS} from "../Constants";
 import {isArrayEmpty, isStringEmpty} from "../Utils";
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
+import get from 'lodash/get';
 
-export const MESSAGE_TYPE_PARTICIPANTS = "MESSAGE_TYPE_PARTICIPANTS";
-export const MESSAGE_TYPE_TEAMS = "MESSAGE_TYPE_TEAMS";
-export const MESSAGE_TYPE_DINNERROUTE = "MESSAGE_TYPE_DINNERROUTE";
+
+export const MESSAGE_TYPE_PARTICIPANTS = "PARTICIPANT";
+export const MESSAGE_TYPE_TEAMS = "TEAM";
+export const MESSAGE_TYPE_DINNERROUTE = "DINNER_ROUTE";
 
 export default class MessageService {
+
+  static async findMessageJobsByAdminIdAndTypeAsync(adminId, messageType) {
+    const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs?messageType=${messageType}`);
+    const response = await axios.get(url);
+    return response.data;
+  }
 
   static async sendMessagesAsync(adminId, messageObject, messageType, sendToDinnerOwner) {
     const sendToDinnerOwnerStr = sendToDinnerOwner === true ? 'true' : 'false';
@@ -49,6 +57,30 @@ export default class MessageService {
       mailMessage.customSelectedTeamIds = [recipientForPreview.id];
     }
     return mailMessage;
+  }
+
+  static getStatusResult(messageJobOrTask) {
+
+    var sendingStatus = messageJobOrTask.sendingStatus;
+    if (sendingStatus !== CONSTANTS.SENDING_STATUS.SENDING_FINISHED) {
+      return CONSTANTS.SENDING_STATUS_RESULT.SENDING_NOT_FINISHED;
+    }
+
+    var sendingFailed = get(messageJobOrTask, "sendingFailed", null);
+    if (!sendingFailed) {
+      sendingFailed = get(messageJobOrTask, 'sendingResult.delieveryFailed', null);
+      if (sendingFailed === true) {
+        sendingFailed = "TRUE";
+      } else {
+        sendingFailed = "FALSE";
+      }
+    }
+
+    if (sendingFailed === 'TRUE') {
+      return CONSTANTS.SENDING_STATUS_RESULT.SENDING_FINISHED_FAILURE;
+    } else {
+      return CONSTANTS.SENDING_STATUS_RESULT.SENDING_FINISHED_SUCCESS;
+    }
   }
 
   static getExampleParticipantMessage() {
@@ -100,7 +132,7 @@ export default class MessageService {
     return null;
   }
 
-};
+}
 
 function mapEmptySelectionStringToNull(incomingMailMessage) {
   if (isStringEmpty(incomingMailMessage)) {
