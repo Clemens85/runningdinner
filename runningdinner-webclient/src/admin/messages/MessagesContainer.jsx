@@ -24,6 +24,7 @@ import {MessagePreview} from "admin/messages/MessagePreview";
 import {PARTICIPANT_MESSAGE_VALIDATION_SCHEMA, TEAM_MESSAGE_VALIDATION_SCHEMA} from "shared/admin/ValidationSchemas";
 import {useSnackbar} from "notistack";
 import useHttpErrorHandler from "common/HttpErrorHandlerHook";
+import {enhanceMessageObjectWithCustomSelectedRecipients} from "./MessagesContext";
 
 const TeamMessages = ({adminId}) => {
   const exampleMessage = MessageService.getExampleTeamMessage();
@@ -56,7 +57,7 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
   const {enqueueSnackbar} = useSnackbar();
   const {handleFormValidationErrors, validationErrors} = useHttpErrorHandler();
 
-  const {loadingData, messageType} = useMessagesState();
+  const {loadingData, messageType, customSelectedRecipients} = useMessagesState();
   const dispatch = useMessagesDispatch();
 
   const formMethods = useForm({
@@ -71,7 +72,8 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
     clearError();
     console.log(`SendMessages with ${JSON.stringify(values)}`);
     try {
-      await MessageService.sendMessagesAsync(adminId, values, messageType,false);
+      const messageObj = enhanceMessageObjectWithCustomSelectedRecipients(values, messageType, customSelectedRecipients);
+      await MessageService.sendMessagesAsync(adminId, messageObj, messageType, false);
       enqueueSnackbar('Nachrichten erfolgreich versandt', { variant: 'success'});
     } catch(e) {
       handleFormValidationErrors(e);
@@ -153,7 +155,7 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
 
               <Grid item xs={12} lg={5}>
                 <Grid item xs={12}>
-                  <MessageJobsOverview />
+                  <MessageJobsOverview adminId={adminId} />
                 </Grid>
                 <Grid item xs={12}>
                   <Box mt={3}>

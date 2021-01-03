@@ -1,7 +1,7 @@
 import React from "react";
-import {Box, Button, Hidden, Paper, TableCell, TableRow} from "@material-ui/core";
+import {Box, LinearProgress, Paper, TableCell, TableRow} from "@material-ui/core";
 import {Span, Subtitle} from "../../../common/theme/typography/Tags";
-import {useMessagesState} from "../MessagesContext";
+import {queryNotFinishedMessageJobsAsync, useMessagesDispatch, useMessagesState} from "../MessagesContext";
 import {isArrayEmpty} from "../../../shared/Utils";
 import Grid from "@material-ui/core/Grid";
 import LocalDate from "../../../shared/date/LocalDate";
@@ -15,13 +15,23 @@ import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 
-function MessageJobsOverview() {
+function MessageJobsOverview({adminId}) {
 
-  const {messageJobs, lastPollDate} = useMessagesState();
+  const {messageJobs, messageType, lastPollDate, messageJobsLoading} = useMessagesState();
+  const dispatch = useMessagesDispatch();
+
+  React.useEffect(() => {
+    if (!messageJobsLoading) {
+      queryNotFinishedMessageJobsAsync(adminId, messageJobs, messageType, dispatch);
+    }
+  }, [messageJobs, adminId, messageType, lastPollDate, messageJobsLoading, dispatch]);
 
   const lastPollDateFormatted = DateUtils.formatLocalDateWithSeconds(lastPollDate);
-
   const classes = useCommonStyles();
+
+  if (messageJobsLoading) {
+    return <LinearProgress color="secondary" />;
+  }
 
   return (
       <Paper elevation={3}>
@@ -53,7 +63,7 @@ function MessageJobsOverview() {
 function MessageJobsTable({messageJobs}) {
 
   const messageJobRows = messageJobs
-                          .map(mesageJob => <MessageJobRow key={mesageJob.id} messageJob={mesageJob}/>);
+                          .map(messageJob => <MessageJobRow key={messageJob.id} messageJob={messageJob}/>);
 
   return (
       <TableContainer component={Paper}>

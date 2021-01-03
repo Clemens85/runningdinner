@@ -5,6 +5,8 @@ import {findEntityById, isArrayNotEmpty, isStringEmpty} from "shared/Utils";
 import MessageService, {MESSAGE_TYPE_DINNERROUTE, MESSAGE_TYPE_PARTICIPANTS, MESSAGE_TYPE_TEAMS} from "shared/admin/MessageService";
 import debounce from 'lodash/debounce';
 import ParticipantService from "shared/admin/ParticipantService";
+import find from "lodash/find";
+import cloneDeep from "lodash/cloneDeep";
 
 // See https://kentcdodds.com/blog/how-to-use-react-context-effectively
 
@@ -24,6 +26,9 @@ const UPDATE_MESSAGE_HOST_MESSAGE_PART_TEMPLATE = "UPDATE_MESSAGE_HOST_MESSAGE_P
 const UPDATE_MESSAGE_NONHOST_MESSAGE_PART_TEMPLATE = "UPDATE_MESSAGE_NONHOST_MESSAGE_PART_TEMPLATE";
 const UPDATE_MAIL_MESSAGE_VALID = "UPDATE_MAIL_MESSAGE_VALID";
 const UPDATE_RECIPIENTS = "UPDATE_RECIPIENTS";
+
+const START_LOADING_MESSAGEJOBS = "START_LOADING_MESSAGEJOBS";
+const FINISHED_LOADING_MESSAGEJOBS = "FINISHED_LOADING_MESSAGEJOBS";
 const UPDATE_MESSAGEJOBS = "UPDATE_MESSAGEJOBS";
 
 const START_LOADING_PREVIEW = "START_LOADING_PREVIEW";
@@ -55,7 +60,7 @@ const INITIAL_STATE_TEMPLATE = {
   isMailMessageValid: false,
 
   messageJobs: [],
-  messageJobsLoading: true,
+  messageJobsLoading: false,
   lastPollDate: new Date()
 };
 
@@ -73,8 +78,14 @@ function messagesReducer(state, action) {
     case ERROR: {
       return { ...state, loadingData: false, error: action.payload };
     }
+    case START_LOADING_MESSAGEJOBS: {
+      return { ...state, messageJobsLoading: true };
+    }
+    case FINISHED_LOADING_MESSAGEJOBS: {
+      return { ...state, messageJobsLoading: false };
+    }
     case UPDATE_MESSAGEJOBS: {
-      return { ...state, messageJobs: action.payload, messageJobsLoading: false, lastPollDate: new Date() };
+      return { ...state, messageJobs: action.payload, lastPollDate: new Date() };
     }
     case UPDATE_RECIPIENTS: {
       return { ...state, recipients: action.payload };
@@ -234,19 +245,27 @@ function useMessagesDispatch() {
 }
 
 async function fetchMessagesDataAsync(adminId, messageType, dispatch) {
-  dispatch(newAction(START_LOADING_DATA));
   dispatch(newAction(ADMIN_ID, adminId));
+  dispatch(newAction(START_LOADING_DATA));
   try {
     const recipientsRequest = messageType === MESSAGE_TYPE_PARTICIPANTS ? ParticipantService.findParticipantsAsync(adminId) : TeamService.findTeamsNotCancelledAsync(adminId);
-    const messageJobsRequest = MessageService.findMessageJobsByAdminIdAndTypeAsync(adminId, messageType);
+    fetchMessageJobsAsync(adminId, messageType, dispatch);
     const recipients = await recipientsRequest;
-    const messageJobs = await messageJobsRequest;
     dispatch(newAction(UPDATE_RECIPIENTS,recipients));
-    dispatch(newAction(UPDATE_MESSAGEJOBS, messageJobs));
     dispatch(newAction(FINISHED_LOADING_DATA));
   } catch (error) {
     dispatch(newAction(ERROR, error));
   }
+}
+
+function fetchMessageJobsAsync(adminId, messageType, dispatch) {
+  dispatch(newAction(START_LOADING_MESSAGEJOBS));
+  return MessageService.findMessageJobsByAdminIdAndTypeAsync(adminId, messageType)
+                        .then((messageJobs) => {
+                            dispatch(newAction(UPDATE_MESSAGEJOBS, messageJobs));
+                            dispatch(newAction(FINISHED_LOADING_MESSAGEJOBS));
+                        })
+                        .catch((error) => dispatch(newAction(ERROR, error)));
 }
 
 async function updatePreviewMessageAsync(adminId,
@@ -289,6 +308,33 @@ const setPreviewMessagesAsync = debounce((messages, dispatch) => {
   dispatch(newAction(FINISHED_LOADING_PREVIEW, messages));
 }, 150);
 
+const enhanceMessageObjectWithCustomSelectedRecipients = (messageObj, messageTye, customSelectedRecipients) => {
+  const customSelectedRecipientIds = isArrayNotEmpty(customSelectedRecipients) ? customSelectedRecipients.map(recipient => recipient.id) : [];
+  const result = cloneDeep(messageObj);
+  if (messageTye === MESSAGE_TYPE_PARTICIPANTS) {
+    result.customSelectedParticipantIds = customSelectedRecipientIds;
+  } else {
+    result.customSelectedTeamIds = customSelectedRecipientIds;
+  }
+  return result;
+};
+
+const queryNotFinishedMessageJobsAsync = debounce((adminId, messageJobs, messageType, dispatch) => {
+  if (isArrayNotEmpty(messageJobs) && isOneMessageJobNotFinished(messageJobs)) {
+    MessageService.findMessageJobsByAdminIdAndTypeAsync(adminId, messageType)
+        .then((messageJobs) => {
+          dispatch(newAction(UPDATE_MESSAGEJOBS, messageJobs));
+        });
+  }
+}, 1500);
+
+function isOneMessageJobNotFinished(messageJobs) {
+  const messageJobNotFinished = find(messageJobs, function(messageJob) {
+    const status = MessageService.getStatusResult(messageJob);
+    return status === CONSTANTS.SENDING_STATUS_RESULT.SENDING_NOT_FINISHED;
+  });
+  return messageJobNotFinished;
+}
 
 function isMailMessageValid(messageObject, messageType, selectedRecipient) {
   const {subject, message} = messageObject;
@@ -311,5 +357,7 @@ export {
   updateMessageContentPreviewAsync,
   updateMessageSubjectPreviewAsync,
   updateNonHostMessagePartTemplatePreviewAsync,
-  updateHostMessagePartTemplatePreviewAsync
+  updateHostMessagePartTemplatePreviewAsync,
+  queryNotFinishedMessageJobsAsync,
+  enhanceMessageObjectWithCustomSelectedRecipients
 };

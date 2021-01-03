@@ -66,7 +66,7 @@ export default class MessageService {
       return CONSTANTS.SENDING_STATUS_RESULT.SENDING_NOT_FINISHED;
     }
 
-    var sendingFailed = get(messageJobOrTask, "sendingFailed", null);
+    let sendingFailed = get(messageJobOrTask, "sendingFailed", null);
     if (!sendingFailed) {
       sendingFailed = get(messageJobOrTask, 'sendingResult.delieveryFailed', null);
       if (sendingFailed === true) {
