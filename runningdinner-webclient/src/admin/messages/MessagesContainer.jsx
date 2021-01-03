@@ -9,8 +9,9 @@ import {PrimaryButton} from "common/theme/PrimaryButton";
 import MessageSubject from "admin/messages/MessageSubject";
 import MessageContent from "admin/messages/MessageContent";
 import {
+  ADD_MESSAGEJOB,
   MessagesFetchData,
-  MessagesProvider,
+  MessagesProvider, newAction,
   updateHostMessagePartTemplatePreviewAsync,
   updateMessageContentPreviewAsync,
   updateMessageSubjectPreviewAsync,
@@ -22,7 +23,6 @@ import {RecipientSelection} from "admin/messages/RecipientSelection";
 import MessageService, {MESSAGE_TYPE_PARTICIPANTS, MESSAGE_TYPE_TEAMS} from "shared/admin/MessageService";
 import {MessagePreview} from "admin/messages/MessagePreview";
 import {PARTICIPANT_MESSAGE_VALIDATION_SCHEMA, TEAM_MESSAGE_VALIDATION_SCHEMA} from "shared/admin/ValidationSchemas";
-import {useSnackbar} from "notistack";
 import useHttpErrorHandler from "common/HttpErrorHandlerHook";
 import {enhanceMessageObjectWithCustomSelectedRecipients} from "./MessagesContext";
 
@@ -54,7 +54,6 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
 
   const {t} = useTranslation(['admin', 'common']);
 
-  const {enqueueSnackbar} = useSnackbar();
   const {handleFormValidationErrors, validationErrors} = useHttpErrorHandler();
 
   const {loadingData, messageType, customSelectedRecipients} = useMessagesState();
@@ -73,8 +72,8 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
     console.log(`SendMessages with ${JSON.stringify(values)}`);
     try {
       const messageObj = enhanceMessageObjectWithCustomSelectedRecipients(values, messageType, customSelectedRecipients);
-      await MessageService.sendMessagesAsync(adminId, messageObj, messageType, false);
-      enqueueSnackbar('Nachrichten erfolgreich versandt', { variant: 'success'});
+      const newMessageJob = await MessageService.sendMessagesAsync(adminId, messageObj, messageType, false);
+      dispatch(newAction(ADD_MESSAGEJOB, newMessageJob));
     } catch(e) {
       handleFormValidationErrors(e);
       setError(validationErrors);

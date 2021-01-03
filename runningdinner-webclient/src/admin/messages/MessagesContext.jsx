@@ -14,6 +14,7 @@ export const RECIPIENTS_SELECTION_CHANGE = "RECIPIENTS_SELECTION_CHANGE";
 export const START_EDIT_CUSTOM_SELECTED_RECIPIENTS = "START_EDIT_CUSTOM_SELECTED_RECIPIENTS";
 export const FINISH_EDIT_CUSTOM_SELECTED_RECIPIENTS = "FINISH_EDIT_CUSTOM_SELECTED_RECIPIENTS";
 export const CHANGE_PREVIEW_RECIPIENT = "CHANGE_PREVIEW_RECIPIENT";
+export const ADD_MESSAGEJOB = "ADD_MESSAGEJOB";
 
 const START_LOADING_DATA = "START_LOADING_DATA";
 const FINISHED_LOADING_DATA = "FINISHED_LOADING_DATA";
@@ -86,6 +87,10 @@ function messagesReducer(state, action) {
     }
     case UPDATE_MESSAGEJOBS: {
       return { ...state, messageJobs: action.payload, lastPollDate: new Date() };
+    }
+    case ADD_MESSAGEJOB: {
+      const resultingMessageJobs = state.messageJobs.concat(action.payload);
+      return { ...state, messageJobs: resultingMessageJobs};
     }
     case UPDATE_RECIPIENTS: {
       return { ...state, recipients: action.payload };
