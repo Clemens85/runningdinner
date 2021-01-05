@@ -25,8 +25,10 @@ import {MessagePreview} from "admin/messages/MessagePreview";
 import {PARTICIPANT_MESSAGE_VALIDATION_SCHEMA, TEAM_MESSAGE_VALIDATION_SCHEMA} from "shared/admin/ValidationSchemas";
 import useHttpErrorHandler from "common/HttpErrorHandlerHook";
 import {enhanceMessageObjectWithCustomSelectedRecipients} from "./MessagesContext";
+import {Helmet} from "react-helmet-async";
 
 const TeamMessages = ({adminId}) => {
+  const {t} = useTranslation(['admin']);
   const exampleMessage = MessageService.getExampleTeamMessage();
   const templates = ['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'];
   return (
@@ -34,17 +36,24 @@ const TeamMessages = ({adminId}) => {
         <MessagesFetchData adminId={adminId}>
           <MessagesView adminId={adminId} exampleMessage={exampleMessage} validationSchema={TEAM_MESSAGE_VALIDATION_SCHEMA} templates={templates}/>
         </MessagesFetchData>
+        <Helmet>
+          <title>{t('admin:mails_send_teams_title')}</title>
+        </Helmet>
       </MessagesProvider>
   );
 };
 
 const ParticipantMessages = ({adminId}) => {
+  const {t} = useTranslation(['admin']);
   const exampleMessage = MessageService.getExampleParticipantMessage();
   const templates = ['{firstname}', '{lastname}'];
   return (
       <MessagesProvider messageType={MESSAGE_TYPE_PARTICIPANTS}>
         <MessagesFetchData adminId={adminId}>
           <MessagesView adminId={adminId} exampleMessage={exampleMessage} validationSchema={PARTICIPANT_MESSAGE_VALIDATION_SCHEMA} templates={templates}/>
+          <Helmet>
+            <title>{t('admin:mails_send_participants_title')}</title>
+          </Helmet>
         </MessagesFetchData>
       </MessagesProvider>
   );
