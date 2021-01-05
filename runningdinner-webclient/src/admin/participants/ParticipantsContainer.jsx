@@ -124,7 +124,8 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
         <Box mb={2}>
           { !showParticipantsList
             ? <Button onClick={() => setShowParticipantForm(false)}>{t('common:back')}</Button>
-            : <ParticipantsListHeader numberOfParticipants={numberOfParticipants}
+            : <ParticipantsListHeader adminId={adminId}
+                                      numberOfParticipants={numberOfParticipants}
                                       searchableParticipants={incomingParticipants}
                                       onParticipantSearchChanged={handleParticipantSearchChange} />
           }

@@ -5,18 +5,18 @@ import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon"
 import AddressLocation from "../../../shared/AddressLocation";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
 import NumSeats from "./NumSeats";
-import useTableStyles from "../../../common/theme/TableStyles";
+import useCommonStyles from "common/theme/CommonStyles";
 
 export default function ParticipantRow({participant, selected, onClick, runningDinnerSessionData}) {
 
-  const classes = useTableStyles();
+  const classes = useCommonStyles();
 
   const {participantNumber} = participant;
   const {gender} = participant;
   const {email} = participant;
 
   return (
-      <TableRow hover className={classes.tableRowCursor} onClick={() => onClick(participant)} selected={selected}>
+      <TableRow hover className={classes.cursorPointer} onClick={() => onClick(participant)} selected={selected}>
         <TableCell>{participantNumber}</TableCell>
         <TableCell><Fullname {...participant}></Fullname></TableCell>
         <Hidden xsDown>

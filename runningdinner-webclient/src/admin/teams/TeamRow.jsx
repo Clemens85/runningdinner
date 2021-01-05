@@ -1,6 +1,5 @@
 import { TableRow, TableCell, Hidden, Button } from "@material-ui/core";
 import React from "react";
-import useTableStyles from "../../common/theme/TableStyles";
 import NumSeats from "../participants/list/NumSeats";
 import Fullname from "../../shared/Fullname";
 import ParticipantGenderTooltip from "../../common/gender/ParticipantGenderTooltip";
@@ -11,6 +10,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import TeamService from "shared/admin/TeamService";
 import {CancelledTeamMember} from "admin/teams/CancelledTeamMember";
 import {CONSTANTS} from "shared/Constants";
+import useCommonStyles from "common/theme/CommonStyles";
 
 const useParticipantStyles = makeStyles(() => ({
   cellPadding: {
@@ -21,7 +21,7 @@ const useParticipantStyles = makeStyles(() => ({
 
 export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTeamHostDialog, selected, runningDinnerSessionData, teamSize}) {
 
-  const classes = useTableStyles();
+  const classes = useCommonStyles();
   const participantClasses = useParticipantStyles();
 
   const {teamNumber, teamMembers, meal, hostTeamMember } = team;
@@ -49,7 +49,7 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
   const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
 
   return (
-      <TableRow hover className={classes.tableRowCursor} onClick={() => onClick(team)} selected={selected}>
+      <TableRow hover className={classes.cursorPointer} onClick={() => onClick(team)} selected={selected}>
         <TableCell>{teamNumber}</TableCell>
         <TableCell>{isCancelled ? <CancelledTeamMember /> : teamMemberNames }</TableCell>
         <Hidden xsDown>

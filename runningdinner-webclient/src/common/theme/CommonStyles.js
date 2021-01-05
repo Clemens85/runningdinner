@@ -6,6 +6,9 @@ const useCommonStyles = makeStyles((theme) => ({
   },
   textAlignRight: {
     textAlign: 'right'
+  },
+  cursorPointer: {
+    cursor: "pointer"
   }
 }));
 

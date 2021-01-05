@@ -16,7 +16,7 @@ import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
 import {useDisclosure} from "shared/DisclosureHook";
 import {PageTitle} from "common/theme/typography/Tags";
 import {useQuery} from "common/hooks/QueryHook";
-import {generateTeamMessagesPath, TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "common/NavigationService";
+import {generateTeamMessagesPath, generateTeamPath, TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "common/NavigationService";
 import LinkIntern from "common/theme/LinkIntern";
 
 const TeamsContainer = ({runningDinner}) => {
@@ -63,7 +63,7 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
   const teamsExisting = teams.length > 0;
 
   function handleTeamClick(team) {
-    history.push(`/admin/${adminId}/teams/${team.id}`);
+    history.push(generateTeamPath(adminId, team.id));
   }
 
   function openTeamDetails(team) {

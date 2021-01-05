@@ -14,6 +14,7 @@ import useCommonStyles from "../../../common/theme/CommonStyles";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
+import {generateMessageJobDetailsPath} from "common/NavigationService";
 
 function MessageJobsOverview({adminId}) {
 
@@ -40,7 +41,7 @@ function MessageJobsOverview({adminId}) {
             <Subtitle i18n="admin:protocols" />
           </Box>
           { isArrayEmpty(messageJobs) && <i><Span i18n="admin:protocols_empty"/></i> }
-          { !isArrayEmpty(messageJobs) && <MessageJobsTable messageJobs={messageJobs}/> }
+          { !isArrayEmpty(messageJobs) && <MessageJobsTable adminId={adminId} messageJobs={messageJobs}/> }
           <Box mt={2}>
             <Grid container justify="space-between">
               { !isArrayEmpty(messageJobs) &&
@@ -60,10 +61,10 @@ function MessageJobsOverview({adminId}) {
   );
 }
 
-function MessageJobsTable({messageJobs}) {
+function MessageJobsTable({adminId, messageJobs}) {
 
   const messageJobRows = messageJobs
-                          .map(messageJob => <MessageJobRow key={messageJob.id} messageJob={messageJob}/>);
+                          .map(messageJob => <MessageJobRow key={messageJob.id} messageJob={messageJob} adminId={adminId}/>);
 
   return (
       <TableContainer component={Paper}>
@@ -76,16 +77,16 @@ function MessageJobsTable({messageJobs}) {
   );
 }
 
-function MessageJobRow({messageJob}) {
+function MessageJobRow({adminId, messageJob}) {
 
   const classes = useCommonStyles();
 
   const handleMessageJobClick = () => {
-
+    window.open(generateMessageJobDetailsPath(adminId, messageJob.id), '_blank');
   };
 
   return (
-      <TableRow hover onClick={handleMessageJobClick}>
+      <TableRow hover onClick={handleMessageJobClick} className={classes.cursorPointer}>
         <TableCell><MessageJobStatus messageJobOrTask={messageJob} /></TableCell>
         <TableCell>
           <Span i18n="admin:protocols_messages_size_text" parameters={{ numberOfMessageTasks: messageJob.numberOfMessageTasks }} />
