@@ -87,7 +87,9 @@ function MessageJobRow({adminId, messageJob}) {
 
   return (
       <TableRow hover onClick={handleMessageJobClick} className={classes.cursorPointer}>
-        <TableCell><MessageJobStatus messageJobOrTask={messageJob} /></TableCell>
+        <TableCell>
+          <MessageJobStatus messageJobOrTask={messageJob} />
+        </TableCell>
         <TableCell>
           <Span i18n="admin:protocols_messages_size_text" parameters={{ numberOfMessageTasks: messageJob.numberOfMessageTasks }} />
         </TableCell>

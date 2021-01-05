@@ -4,7 +4,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import {useDebounce} from "shared/DebounceHook";
 import ParticipantService from "../../../shared/admin/ParticipantService";
 import {useTranslation} from "react-i18next";
-import {Link as RouterLink, useRouteMatch} from "react-router-dom";
+import {Link as RouterLink} from "react-router-dom";
 import {PageTitle} from "common/theme/typography/Tags";
 import {generateParticipantMessagesPath} from "common/NavigationService";
 import {isStringEmpty} from "shared/Utils";
@@ -13,8 +13,6 @@ export default function ParticipantsListHeader({adminId, numberOfParticipants, s
 
   const [search, setSearch] = useState({ searchText: '', isSearching: false });
   const debouncedSearchText = useDebounce(search.searchText, 400);
-
-  const {url} = useRouteMatch();
 
   const {t} = useTranslation(['admin', 'common']);
 
