@@ -67,7 +67,7 @@ function MessageJobsTable({adminId, messageJobs}) {
                           .map(messageJob => <MessageJobRow key={messageJob.id} messageJob={messageJob} adminId={adminId}/>);
 
   return (
-      <TableContainer component={Paper}>
+      <TableContainer>
         <Table size={"small"}>
           <TableBody>
             { messageJobRows }
@@ -93,7 +93,9 @@ function MessageJobRow({adminId, messageJob}) {
         <TableCell>
           <Span i18n="admin:protocols_messages_size_text" parameters={{ numberOfMessageTasks: messageJob.numberOfMessageTasks }} />
         </TableCell>
-        <TableCell className={classes.textAlignRight}><LocalDate date={messageJob.createdAt} /> <Time date={messageJob.createdAt} /></TableCell>
+        <TableCell className={classes.textAlignRight}>
+          <LocalDate date={messageJob.createdAt} /> <Time date={messageJob.createdAt} />
+        </TableCell>
       </TableRow>
   );
 }
