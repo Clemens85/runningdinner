@@ -2,7 +2,7 @@ import React from "react";
 import { format } from 'date-fns';
 import {useTranslation} from "react-i18next";
 
-export default function Time({date}) {
+function Time({date}) {
   const {t} = useTranslation('common');
   if (!date) {
     return null;
@@ -12,3 +12,7 @@ export default function Time({date}) {
       <>{formattedTime} {t('uhr')}</>
   );
 }
+
+export {
+  Time
+};

@@ -3,7 +3,6 @@ import Fetch from "../../common/Fetch";
 import TeamService from "../../shared/admin/TeamService";
 import {Box, makeStyles, Button, Grid, Paper, Popover} from "@material-ui/core";
 import sortBy from 'lodash/sortBy';
-import Time from "../../shared/date/Time";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {SmallTitle, Span, Title} from "common/theme/typography/Tags";
 import clsx from "clsx";
@@ -11,7 +10,6 @@ import {isSameEntity} from "../../shared/Utils";
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import TeamNr from "../../shared/TeamNr";
 import {useTranslation} from "react-i18next";
-import Fullname from "../../shared/Fullname";
 import {
   usePopupState,
   bindTrigger,
@@ -23,6 +21,8 @@ import {generateTeamPath} from "common/NavigationService";
 import {CONSTANTS} from "shared/Constants";
 import {PrimaryDangerButtonAsync} from "common/theme/PrimaryDangerButtonAsync";
 import Hidden from "@material-ui/core/Hidden";
+import {Time} from "shared/date/Time";
+import {Fullname} from "shared/Fullname";
 
 const useStyles = makeStyles((theme) => ({
   schedulePaper: {

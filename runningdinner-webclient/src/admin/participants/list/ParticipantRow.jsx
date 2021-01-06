@@ -1,11 +1,11 @@
 import React from 'react'
 import { TableRow, TableCell, Hidden } from "@material-ui/core";
-import Fullname from "../../../shared/Fullname";
 import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon";
-import AddressLocation from "../../../shared/AddressLocation";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
 import NumSeats from "./NumSeats";
 import useCommonStyles from "common/theme/CommonStyles";
+import {AddressLocation} from "shared/AddressLocation";
+import {Fullname} from "shared/Fullname";
 
 export default function ParticipantRow({participant, selected, onClick, runningDinnerSessionData}) {
 

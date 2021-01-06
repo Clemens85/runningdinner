@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function AddressLocation(props) {
+function AddressLocation(props) {
 
   const location = props.zip + ' ' + props.cityName;
 
@@ -16,3 +16,7 @@ export default function AddressLocation(props) {
       <>{location}</>
   );
 }
+
+export {
+  AddressLocation
+};

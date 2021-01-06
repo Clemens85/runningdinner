@@ -4,10 +4,7 @@ import {Span, Subtitle} from "../../../common/theme/typography/Tags";
 import {queryNotFinishedMessageJobsAsync, useMessagesDispatch, useMessagesState} from "../MessagesContext";
 import {isArrayEmpty} from "../../../shared/Utils";
 import Grid from "@material-ui/core/Grid";
-import LocalDate from "../../../shared/date/LocalDate";
-import Time from "../../../shared/date/Time";
 import {MessageJobStatus} from "./MessageJobStatus";
-import * as DateUtils from "../../../shared/date/DateUtils";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import HelpIconTooltip from "../../../common/theme/HelpIconTooltip";
 import useCommonStyles from "../../../common/theme/CommonStyles";
@@ -15,6 +12,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import {generateMessageJobDetailsPath} from "common/NavigationService";
+import {LocalDate} from "shared/date/LocalDate";
+import {Time} from "shared/date/Time";
+import {formatLocalDateWithSeconds} from "shared/date/DateUtils";
 
 function MessageJobsOverview({adminId}) {
 
@@ -27,7 +27,7 @@ function MessageJobsOverview({adminId}) {
     }
   }, [messageJobs, adminId, messageType, lastPollDate, messageJobsLoading, dispatch]);
 
-  const lastPollDateFormatted = DateUtils.formatLocalDateWithSeconds(lastPollDate);
+  const lastPollDateFormatted = formatLocalDateWithSeconds(lastPollDate);
   const classes = useCommonStyles();
 
   if (messageJobsLoading) {

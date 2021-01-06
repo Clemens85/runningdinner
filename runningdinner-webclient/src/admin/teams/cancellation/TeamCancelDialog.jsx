@@ -23,9 +23,9 @@ import useTeamName from "shared/admin/teams/TeamNameHook";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import Fullname from "shared/Fullname";
 import Paragraph from "common/theme/typography/Paragraph";
 import useHttpErrorHandler from "common/HttpErrorHandlerHook";
+import {Fullname} from "shared/Fullname";
 
 export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}) => {
 

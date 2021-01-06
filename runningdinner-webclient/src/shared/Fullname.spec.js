@@ -1,7 +1,7 @@
 import React from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils";
-import Fullname from "./Fullname";
+import {Fullname} from "shared/Fullname";
 
 let container = null;
 beforeEach(() => {

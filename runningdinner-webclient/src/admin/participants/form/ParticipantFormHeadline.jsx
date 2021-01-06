@@ -1,9 +1,9 @@
 import React from 'react'
-import Fullname from "../../../shared/Fullname";
 import {isStringEmpty} from "../../../shared/Utils";
 import {useFormContext} from "react-hook-form";
 import {useTranslation} from "react-i18next";
 import {Subtitle} from "common/theme/typography/Tags";
+import {Fullname} from "shared/Fullname";
 
 export default function ParticipantFormHeadline() {
 

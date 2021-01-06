@@ -2,9 +2,7 @@ import React from "react";
 import {Box, Button, Grid, Hidden, Paper} from "@material-ui/core";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
-import Time from "../../shared/date/Time";
 import FormFieldset from "../../common/theme/FormFieldset";
-import Fullname from "../../shared/Fullname";
 import ValueTranslate from "../../shared/i18n/ValueTranslate";
 import ParticipantService from "../../shared/admin/ParticipantService";
 import TeamSchedule from "./TeamSchedule";
@@ -21,6 +19,8 @@ import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import {Span} from "common/theme/typography/Tags";
 import {TeamCancelDialog} from "admin/teams/cancellation/TeamCancelDialog";
 import {CONSTANTS} from "shared/Constants";
+import {Time} from "shared/date/Time";
+import {Fullname} from "shared/Fullname";
 
 export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, onOpenChangeTeamHostDialog, onUpdateTeamState}) {
 

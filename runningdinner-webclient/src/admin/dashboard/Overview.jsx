@@ -1,11 +1,11 @@
 import React from 'react'
 import OverviewItem from "./OverviewItem";
 import RunningDinnerService from "../../shared/admin/RunningDinnerService";
-import LocalDate from "../../shared/date/LocalDate";
 import { Card, CardContent, Link }  from "@material-ui/core";
 import {useTranslation} from "react-i18next";
 import ValueTranslate from "../../shared/i18n/ValueTranslate";
 import {Subtitle} from "common/theme/typography/Tags";
+import {LocalDate} from "shared/date/LocalDate";
 
 export default function Overview({runningDinner}) {
 

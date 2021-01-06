@@ -1,7 +1,6 @@
 import { TableRow, TableCell, Hidden, Button } from "@material-ui/core";
 import React from "react";
 import NumSeats from "../participants/list/NumSeats";
-import Fullname from "../../shared/Fullname";
 import ParticipantGenderTooltip from "../../common/gender/ParticipantGenderTooltip";
 import ParticipantGenderIcon from "../../common/gender/ParticipantGenderIcon";
 import {useDrag, useDrop} from "react-dnd";
@@ -11,6 +10,7 @@ import TeamService from "shared/admin/TeamService";
 import {CancelledTeamMember} from "admin/teams/CancelledTeamMember";
 import {CONSTANTS} from "shared/Constants";
 import useCommonStyles from "common/theme/CommonStyles";
+import {Fullname} from "shared/Fullname";
 
 const useParticipantStyles = makeStyles(() => ({
   cellPadding: {
