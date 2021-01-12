@@ -28,3 +28,4 @@
 /**/mongo-volume/*
 
 /server-log.json
+/infrastructure/local/verdaccio/storage/*

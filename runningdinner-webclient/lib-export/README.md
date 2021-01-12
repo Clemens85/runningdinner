@@ -22,10 +22,12 @@ https://stackoverflow.com/questions/33460420/babel-loader-jsx-syntaxerror-unexpe
 Verdaccio als lokaler NPM Proxy (Derzeit In-Memory als Docker-Service):
 => Erreichbar unter http://localhost:4873/
 
+Ggfalls folgender Befehl ausführen vor erstmaligem docker-compose up:
+`sudo chown -R 10001:65533 verdaccio/`
 
 `npm adduser --registry http://localhost:4873`
 => Damit gibt es neuen User für Publishing<br/>
-=> Leider gibt es noch das docker-compose Problem mit Permissions!
+=> Publishen ist anonym möglich oder mit vorgefertigem User ()
 
 `npm publish`
 
