@@ -1,8 +1,8 @@
 import BackendConfig from "../BackendConfig";
 import axios from "axios";
 import cloneDeep from "lodash/cloneDeep";
-import {isSameEntity} from "shared/Utils";
-import ParticipantService from "shared/admin/ParticipantService";
+import {isSameEntity} from "../Utils";
+import ParticipantService from "./ParticipantService";
 
 export default class TeamService {
 

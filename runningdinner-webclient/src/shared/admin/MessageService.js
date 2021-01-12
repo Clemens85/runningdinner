@@ -6,12 +6,11 @@ import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 import get from 'lodash/get';
 
-
 export const MESSAGE_TYPE_PARTICIPANTS = "PARTICIPANT";
 export const MESSAGE_TYPE_TEAMS = "TEAM";
 export const MESSAGE_TYPE_DINNERROUTE = "DINNER_ROUTE";
 
-export default class MessageService {
+class MessageService {
 
   static async findMessageJobsByAdminIdAndTypeAsync(adminId, messageType) {
     const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs?messageType=${messageType}`);
@@ -154,3 +153,7 @@ function mapRecipientType(messageType) {
   }
   throw new Error(`Unknown messageType: ${messageType}`);
 }
+
+export {
+  MessageService
+};

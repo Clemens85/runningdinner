@@ -19,7 +19,7 @@ import {
 import useTeamSelectionOptions from "shared/admin/messages/TeamSelectionOptionsHook";
 import {useFormContext} from "react-hook-form";
 import useRecipientName from "shared/admin/messages/RecipientNameHook";
-import MessageService, {MESSAGE_TYPE_PARTICIPANTS} from "shared/admin/MessageService";
+import {MESSAGE_TYPE_PARTICIPANTS, MessageService} from "shared/admin/MessageService";
 import useParticipantSelectionOptions from "shared/admin/messages/ParticipantSelectionOptionsHook";
 
 function RecipientSelection() {

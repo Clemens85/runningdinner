@@ -4,9 +4,9 @@ import {CONSTANTS} from "../../../shared/Constants";
 import DoneIcon from '@material-ui/icons/Done';
 import ErrorIcon from '@material-ui/icons/Error';
 import {Hidden} from "@material-ui/core";
-import MessageService from "../../../shared/admin/MessageService";
 import Grid from "@material-ui/core/Grid";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import {MessageService} from "shared/admin/MessageService";
 
 function MessageJobStatus({messageJobOrTask}) {
 

@@ -17,6 +17,21 @@ Links:<br>
 https://www.valentinog.com/blog/babel/<br>
 https://stackoverflow.com/questions/33460420/babel-loader-jsx-syntaxerror-unexpected-token
 
+## NPM Publish
+
+Verdaccio als lokaler NPM Proxy (Derzeit In-Memory als Docker-Service):
+=> Erreichbar unter http://localhost:4873/
+
+
+`npm adduser --registry http://localhost:4873`
+=> Damit gibt es neuen User für Publishing<br/>
+=> Leider gibt es noch das docker-compose Problem mit Permissions!
+
+`npm publish`
+
+`npm version patch`
+<br/> => Erzeugt neue Minor-Version in package.json (siehe auch https://stackoverflow.com/questions/13059991/update-package-json-version-automatically/51417386) 
+
 ## Nützliche Links
 https://stackoverflow.com/questions/41289200/output-an-es-module-using-webpack !!!
 

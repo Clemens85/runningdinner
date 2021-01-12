@@ -1,6 +1,6 @@
 {
   "name": "runningdinner-shared",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -36,5 +36,8 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-peer-deps-external": "^2.2.3",
     "rollup-plugin-uglify": "^6.0.4"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:4873"
   }
 }
