@@ -5,7 +5,7 @@ import EditMealsDialog from "./EditMealsDialog";
 import RunningDinnerService from "../../shared/admin/RunningDinnerService";
 import {useTranslation} from "react-i18next";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
-import {Subtitle} from "common/theme/typography/Tags";
+import {Subtitle} from "../../common/theme/typography/Tags";
 import {useSnackbar} from "notistack";
 
 export default function MealsList({meals, adminId, onRuningDinnerUpdate}) {

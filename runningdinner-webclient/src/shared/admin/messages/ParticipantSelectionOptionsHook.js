@@ -1,4 +1,4 @@
-import {CONSTANTS} from "shared/Constants";
+import {CONSTANTS} from "../../Constants";
 import {useTranslation} from "react-i18next";
 
 function useParticipantSelectionOptions() {

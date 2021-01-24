@@ -6,21 +6,21 @@ import FormFieldset from "../../common/theme/FormFieldset";
 import ValueTranslate from "../../shared/i18n/ValueTranslate";
 import ParticipantService from "../../shared/admin/ParticipantService";
 import TeamSchedule from "./TeamSchedule";
-import {Subtitle} from "common/theme/typography/Tags";
+import {Subtitle} from "../../common/theme/typography/Tags";
 import TeamNr from "../../shared/TeamNr";
-import LinkAction from "common/theme/LinkAction";
-import {findEntityById} from "shared/Utils";
-import {useDisclosure} from "shared/DisclosureHook";
-import {CANCEL_WHOLE_TEAM_RESULT, TeamMemberCancelDialog} from "admin/teams/cancellation/TeamMemberCancelDialog";
-import VerticalMenuThreeDots from "common/menu/VerticalMenuThreeDots";
-import TeamService from "shared/admin/TeamService";
-import {CancelledTeamMember} from "admin/teams/CancelledTeamMember";
+import LinkAction from "../../common/theme/LinkAction";
+import {findEntityById} from "../../shared/Utils";
+import {useDisclosure} from "../../shared/DisclosureHook";
+import {CANCEL_WHOLE_TEAM_RESULT, TeamMemberCancelDialog} from "./cancellation/TeamMemberCancelDialog";
+import VerticalMenuThreeDots from "../../common/menu/VerticalMenuThreeDots";
+import TeamService from "../../shared/admin/TeamService";
+import {CancelledTeamMember} from "./CancelledTeamMember";
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
-import {Span} from "common/theme/typography/Tags";
-import {TeamCancelDialog} from "admin/teams/cancellation/TeamCancelDialog";
-import {CONSTANTS} from "shared/Constants";
-import {Time} from "shared/date/Time";
-import {Fullname} from "shared/Fullname";
+import {Span} from "../../common/theme/typography/Tags";
+import {TeamCancelDialog} from "./cancellation/TeamCancelDialog";
+import {CONSTANTS} from "../../shared/Constants";
+import {Time} from "../../shared/date/Time";
+import {Fullname} from "../../shared/Fullname";
 
 export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, onOpenChangeTeamHostDialog, onUpdateTeamState}) {
 

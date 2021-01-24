@@ -14,7 +14,7 @@ import Paragraph from "../../common/theme/typography/Paragraph";
 import {findEntityById} from "../../shared/Utils";
 import TeamService from "../../shared/admin/TeamService";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
-import {Subtitle} from "common/theme/typography/Tags";
+import {Subtitle} from "../../common/theme/typography/Tags";
 import {useSnackbar} from "notistack";
 
 

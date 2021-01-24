@@ -1,6 +1,6 @@
-import ParticipantService from "shared/admin/ParticipantService";
-import useTeamNameMembers from "shared/admin/teams/TeamNameMembersHook";
-import TeamService from "shared/admin/TeamService";
+import ParticipantService from "../ParticipantService";
+import useTeamNameMembers from "../teams/TeamNameMembersHook";
+import TeamService from "../TeamService";
 
 function useRecipientName(recipient) {
 

@@ -6,7 +6,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {useTranslation} from "react-i18next";
-import SelectableEntity from "admin/common/SelectableEntity";
+import SelectableEntity from "../common/SelectableEntity";
 
 export const SingleSelectionDialog = ({selectableEntities, customSelectedEntities, open, onClose}) => {
 

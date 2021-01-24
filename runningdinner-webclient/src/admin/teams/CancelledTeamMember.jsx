@@ -1,6 +1,6 @@
 import React from "react";
 import {useTranslation} from "react-i18next";
-import useTeamStyles from "common/theme/TeamStyles";
+import useTeamStyles from "../../common/theme/TeamStyles";
 
 export function CancelledTeamMember() {
 

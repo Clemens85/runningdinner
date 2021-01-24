@@ -1,13 +1,13 @@
 import {Box, Grid, LinearProgress, Paper} from "@material-ui/core";
-import {PageTitle} from "common/theme/typography/Tags";
+import {PageTitle} from "../../common/theme/typography/Tags";
 import {FormContext, useForm} from "react-hook-form";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {MessageJobsOverview} from "admin/messages/messagejobs/MessageJobsOverview";
-import MessageHeadline from "admin/messages/MessageHeadline";
-import {PrimaryButton} from "common/theme/PrimaryButton";
-import MessageSubject from "admin/messages/MessageSubject";
-import MessageContent from "admin/messages/MessageContent";
+import {MessageJobsOverview} from "./messagejobs/MessageJobsOverview";
+import MessageHeadline from "./MessageHeadline";
+import {PrimaryButton} from "../../common/theme/PrimaryButton";
+import MessageSubject from "./MessageSubject";
+import MessageContent from "./MessageContent";
 import {
   ADD_MESSAGEJOB,
   MessagesFetchData,
@@ -19,12 +19,12 @@ import {
   updateNonHostMessagePartTemplatePreviewAsync,
   useMessagesDispatch,
   useMessagesState
-} from "admin/messages/MessagesContext";
-import {RecipientSelection} from "admin/messages/RecipientSelection";
-import {MESSAGE_TYPE_PARTICIPANTS, MESSAGE_TYPE_TEAMS, MessageService} from "shared/admin/MessageService";
-import {MessagePreview} from "admin/messages/MessagePreview";
-import {PARTICIPANT_MESSAGE_VALIDATION_SCHEMA, TEAM_MESSAGE_VALIDATION_SCHEMA} from "shared/admin/ValidationSchemas";
-import useHttpErrorHandler from "common/HttpErrorHandlerHook";
+} from "./MessagesContext";
+import {RecipientSelection} from "./RecipientSelection";
+import {MESSAGE_TYPE_PARTICIPANTS, MESSAGE_TYPE_TEAMS, MessageService} from "../../shared/admin/MessageService";
+import {MessagePreview} from "./MessagePreview";
+import {PARTICIPANT_MESSAGE_VALIDATION_SCHEMA, TEAM_MESSAGE_VALIDATION_SCHEMA} from "../../shared/admin/ValidationSchemas";
+import useHttpErrorHandler from "../../common/HttpErrorHandlerHook";
 import {enhanceMessageObjectWithCustomSelectedRecipients} from "./MessagesContext";
 import {Helmet} from "react-helmet-async";
 

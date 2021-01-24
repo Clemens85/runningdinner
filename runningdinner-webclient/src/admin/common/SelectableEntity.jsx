@@ -1,6 +1,6 @@
 import {Checkbox, FormControlLabel} from "@material-ui/core";
 import React from "react";
-import useRecipientName from "shared/admin/messages/RecipientNameHook";
+import useRecipientName from "../../shared/admin/messages/RecipientNameHook";
 
 function SelectableEntity({entity, onSelectionChange, disabled}) {
 

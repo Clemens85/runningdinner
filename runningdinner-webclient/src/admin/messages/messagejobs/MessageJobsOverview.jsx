@@ -11,10 +11,10 @@ import useCommonStyles from "../../../common/theme/CommonStyles";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
-import {generateMessageJobDetailsPath} from "common/NavigationService";
-import {LocalDate} from "shared/date/LocalDate";
-import {Time} from "shared/date/Time";
-import {formatLocalDateWithSeconds} from "shared/date/DateUtils";
+import {generateMessageJobDetailsPath} from "../../../common/NavigationService";
+import {LocalDate} from "../../../shared/date/LocalDate";
+import {Time} from "../../../shared/date/Time";
+import {formatLocalDateWithSeconds} from "../../../shared/date/DateUtils";
 
 function MessageJobsOverview({adminId}) {
 

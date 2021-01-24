@@ -1,12 +1,9 @@
-import Chip from "@material-ui/core/Chip";
 import React from "react";
-import {makeStyles} from "@material-ui/core/styles";
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
-import HelpIconTooltip from "common/theme/HelpIconTooltip";
-import Paragraph from "common/theme/typography/Paragraph";
+import {makeStyles, Box, Grid, Chip} from "@material-ui/core";
+import HelpIconTooltip from "../../common/theme/HelpIconTooltip";
+import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
-import {isArrayEmpty} from "shared/Utils";
+import {isArrayEmpty} from "../../shared/Utils";
 
 const useStyles = makeStyles((theme) => ({
   chip: {

@@ -1,7 +1,7 @@
 import React from 'react'
 import Box from "@material-ui/core/Box";
 import {useTranslation} from "react-i18next";
-import TextInputWatchable from "common/input/TextInputWatchable";
+import TextInputWatchable from "../../common/input/TextInputWatchable";
 
 export default function MessageSubject({onMessageSubjectChange}) {
 

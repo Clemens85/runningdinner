@@ -1,10 +1,10 @@
 import React from "react";
-import TeamService from "shared/admin/TeamService";
-import {CONSTANTS} from "shared/Constants";
-import {findEntityById, isArrayNotEmpty, isStringEmpty} from "shared/Utils";
-import {MESSAGE_TYPE_DINNERROUTE, MESSAGE_TYPE_PARTICIPANTS, MESSAGE_TYPE_TEAMS, MessageService} from "shared/admin/MessageService";
+import TeamService from "../../shared/admin/TeamService";
+import {CONSTANTS} from "../../shared/Constants";
+import {findEntityById, isArrayNotEmpty, isStringEmpty} from "../../shared/Utils";
+import {MESSAGE_TYPE_DINNERROUTE, MESSAGE_TYPE_PARTICIPANTS, MESSAGE_TYPE_TEAMS, MessageService} from "../../shared/admin/MessageService";
 import debounce from 'lodash/debounce';
-import ParticipantService from "shared/admin/ParticipantService";
+import ParticipantService from "../../shared/admin/ParticipantService";
 import find from "lodash/find";
 import cloneDeep from "lodash/cloneDeep";
 

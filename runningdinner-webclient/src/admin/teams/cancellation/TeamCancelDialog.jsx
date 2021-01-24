@@ -1,31 +1,31 @@
 import {useTranslation} from "react-i18next";
-import ParticipantService from "shared/admin/ParticipantService";
+import ParticipantService from "../../../shared/admin/ParticipantService";
 import {
   Dialog,
   DialogContent,
   Box, Grid,
 } from "@material-ui/core";
-import {DialogTitleCloseable} from "common/theme/DialogTitleCloseable";
+import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React, {useState} from "react";
-import TeamService from "shared/admin/TeamService";
-import DialogActionsPanel from "common/theme/DialogActionsPanel";
-import {SmallTitle, Span} from "common/theme/typography/Tags";
+import TeamService from "../../../shared/admin/TeamService";
+import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
+import {SmallTitle, Span} from "../../../common/theme/typography/Tags";
 import {useSnackbar} from "notistack";
 import {Alert, AlertTitle} from "@material-ui/lab";
-import Fetch from "common/Fetch";
-import useNumberOfAssignableParticipantsToReplaceTeam from "shared/admin/teams/NumberOfAssignableParticipantsToReplaceTeamHook";
-import SelectableEntity from "admin/common/SelectableEntity";
+import Fetch from "../../../common/Fetch";
+import useNumberOfAssignableParticipantsToReplaceTeam from "../../../shared/admin/teams/NumberOfAssignableParticipantsToReplaceTeamHook";
+import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from "lodash/cloneDeep";
 import take from "lodash/take";
-import {findEntityById, removeEntityFromList} from "shared/Utils";
-import {CONSTANTS} from "shared/Constants";
-import useTeamName from "shared/admin/teams/TeamNameHook";
+import {findEntityById, removeEntityFromList} from "../../../shared/Utils";
+import {CONSTANTS} from "../../../shared/Constants";
+import useTeamName from "../../../shared/admin/teams/TeamNameHook";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import Paragraph from "common/theme/typography/Paragraph";
-import useHttpErrorHandler from "common/HttpErrorHandlerHook";
-import {Fullname} from "shared/Fullname";
+import Paragraph from "../../../common/theme/typography/Paragraph";
+import useHttpErrorHandler from "../../../common/HttpErrorHandlerHook";
+import {Fullname} from "../../../shared/Fullname";
 
 export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}) => {
 

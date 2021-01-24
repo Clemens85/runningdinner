@@ -5,7 +5,7 @@ import external from "rollup-plugin-peer-deps-external";
 import { uglify } from "rollup-plugin-uglify";
 
 import packageJSON from "./package.json";
-const input = "./index.js";
+const input = "../src/shared/index.js";
 const minifyExtension = pathToFile => pathToFile.replace(/\.js$/, ".min.js");
 
 export default [

@@ -1,13 +1,13 @@
 import React from "react";
 import { Box, MenuItem, Typography, IconButton } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
-import {isStringEmpty} from "shared/Utils";
-import SelectWatchable from "common/input/SelectWatchable";
-import {CONSTANTS} from "shared/Constants";
-import {SingleSelectionDialog} from "admin/messages/SingleSelectionDialog";
-import {isArrayNotEmpty} from "shared/Utils";
+import {isStringEmpty} from "../../shared/Utils";
+import SelectWatchable from "../../common/input/SelectWatchable";
+import {CONSTANTS} from "../../shared/Constants";
+import {SingleSelectionDialog} from "./SingleSelectionDialog";
+import {isArrayNotEmpty} from "../../shared/Utils";
 import {useTranslation} from "react-i18next";
-import {SmallTitle, Span} from "common/theme/typography/Tags";
+import {SmallTitle, Span} from "../../common/theme/typography/Tags";
 import {
   START_EDIT_CUSTOM_SELECTED_RECIPIENTS,
   newAction,
@@ -15,12 +15,12 @@ import {
   useMessagesDispatch,
   useMessagesState,
   FINISH_EDIT_CUSTOM_SELECTED_RECIPIENTS
-} from "admin/messages/MessagesContext";
-import useTeamSelectionOptions from "shared/admin/messages/TeamSelectionOptionsHook";
+} from "./MessagesContext";
+import useTeamSelectionOptions from "../../shared/admin/messages/TeamSelectionOptionsHook";
 import {useFormContext} from "react-hook-form";
-import useRecipientName from "shared/admin/messages/RecipientNameHook";
-import {MESSAGE_TYPE_PARTICIPANTS, MessageService} from "shared/admin/MessageService";
-import useParticipantSelectionOptions from "shared/admin/messages/ParticipantSelectionOptionsHook";
+import useRecipientName from "../../shared/admin/messages/RecipientNameHook";
+import {MESSAGE_TYPE_PARTICIPANTS, MessageService} from "../../shared/admin/MessageService";
+import useParticipantSelectionOptions from "../../shared/admin/messages/ParticipantSelectionOptionsHook";
 
 function RecipientSelection() {
 

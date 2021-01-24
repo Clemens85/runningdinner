@@ -18,7 +18,7 @@ import {DeleteParticipantDialog} from "../delete/DeleteParticipantDialog";
 import {FormContext, useForm} from "react-hook-form";
 import {useTranslation} from "react-i18next";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
-import useHttpErrorHandler from "common/HttpErrorHandlerHook";
+import useHttpErrorHandler from "../../../common/HttpErrorHandlerHook";
 
 const useStyles = makeStyles((theme) => ({
   buttonSpacingLeft: {

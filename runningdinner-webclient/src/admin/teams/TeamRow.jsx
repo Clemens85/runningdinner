@@ -6,11 +6,11 @@ import ParticipantGenderIcon from "../../common/gender/ParticipantGenderIcon";
 import {useDrag, useDrop} from "react-dnd";
 import HomeRoundedIcon from '@material-ui/icons/HomeRounded';
 import {makeStyles} from "@material-ui/core/styles";
-import TeamService from "shared/admin/TeamService";
-import {CancelledTeamMember} from "admin/teams/CancelledTeamMember";
-import {CONSTANTS} from "shared/Constants";
-import useCommonStyles from "common/theme/CommonStyles";
-import {Fullname} from "shared/Fullname";
+import TeamService from "../../shared/admin/TeamService";
+import {CancelledTeamMember} from "./CancelledTeamMember";
+import {CONSTANTS} from "../../shared/Constants";
+import useCommonStyles from "../../common/theme/CommonStyles";
+import {Fullname} from "../../shared/Fullname";
 
 const useParticipantStyles = makeStyles(() => ({
   cellPadding: {

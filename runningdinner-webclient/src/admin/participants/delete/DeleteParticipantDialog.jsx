@@ -5,11 +5,11 @@ import ParticipantService from "../../../shared/admin/ParticipantService";
 import {useSnackbar} from "notistack";
 import {useTranslation} from "react-i18next";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
-import {Span} from "common/theme/typography/Tags";
-import {findItemBy, isStringEmpty, mapValidationIssuesToErrorObjects} from "shared/Utils";
+import {Span} from "../../../common/theme/typography/Tags";
+import {findItemBy, isStringEmpty, mapValidationIssuesToErrorObjects} from "../../../shared/Utils";
 import {useHistory} from "react-router-dom";
-import {generateParticipantCancellationPath} from "common/NavigationService";
-import {CONSTANTS} from "shared/Constants";
+import {generateParticipantCancellationPath} from "../../../common/NavigationService";
+import {CONSTANTS} from "../../../shared/Constants";
 
 export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) => {
 

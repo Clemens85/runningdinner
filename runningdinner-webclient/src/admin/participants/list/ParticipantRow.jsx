@@ -3,9 +3,9 @@ import { TableRow, TableCell, Hidden } from "@material-ui/core";
 import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
 import NumSeats from "./NumSeats";
-import useCommonStyles from "common/theme/CommonStyles";
-import {AddressLocation} from "shared/AddressLocation";
-import {Fullname} from "shared/Fullname";
+import useCommonStyles from "../../../common/theme/CommonStyles";
+import {AddressLocation} from "../../../shared/AddressLocation";
+import {Fullname} from "../../../shared/Fullname";
 
 export default function ParticipantRow({participant, selected, onClick, runningDinnerSessionData}) {
 

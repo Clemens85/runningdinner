@@ -1,5 +1,5 @@
-import ParticipantService from "shared/admin/ParticipantService";
-import {MessageService} from "shared/admin/MessageService";
+import ParticipantService from "../../../shared/admin/ParticipantService";
+import {MessageService} from "../../../shared/admin/MessageService";
 
 export const CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION = "CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION";
 export const UPDATE_PARTICIPANT_TEAM_PARTNER_WISH_ACTION = "UPDATE_PARTICIPANT_TEAM_PARTNER_WISH_ACTION";

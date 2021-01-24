@@ -1,5 +1,5 @@
-import useTeamName from "shared/admin/teams/TeamNameHook";
-import ParticipantService from "shared/admin/ParticipantService";
+import useTeamName from "./TeamNameHook";
+import ParticipantService from "../ParticipantService";
 
 function useTeamNameMembers(team) {
 

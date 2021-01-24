@@ -1,28 +1,28 @@
 import {useTranslation} from "react-i18next";
-import ParticipantService from "shared/admin/ParticipantService";
+import ParticipantService from "../../../shared/admin/ParticipantService";
 import {
   Dialog,
   DialogContent,
   Box, DialogActions, useTheme, useMediaQuery, makeStyles,
 } from "@material-ui/core";
-import {DialogTitleCloseable} from "common/theme/DialogTitleCloseable";
+import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React from "react";
-import {Span} from "common/theme/typography/Tags";
-import SecondaryButton from "common/theme/SecondaryButton";
-import {PrimarySuccessButtonAsync} from "common/theme/PrimarySuccessButtonAsync";
-import RunningDinnerService from "shared/admin/RunningDinnerService";
-import {CONSTANTS} from "shared/Constants";
+import {Span} from "../../../common/theme/typography/Tags";
+import SecondaryButton from "../../../common/theme/SecondaryButton";
+import {PrimarySuccessButtonAsync} from "../../../common/theme/PrimarySuccessButtonAsync";
+import RunningDinnerService from "../../../shared/admin/RunningDinnerService";
+import {CONSTANTS} from "../../../shared/Constants";
 import {
   handleTeamPartnerWishAction,
   newParticipantTeamPartnerWishAction,
   noTeamPartnerWishAction,
   sendInvitationTeamPartnerWishAction,
   updateMatchingParticipantTeamPartnerWishAction
-} from "admin/participants/teampartnerwish/TeamPartnerWishAction";
+} from "./TeamPartnerWishAction";
 import {useSnackbar} from "notistack";
-import {SecondaryButtonAsync} from "common/theme/SecondaryButtonAsync";
+import {SecondaryButtonAsync} from "../../../common/theme/SecondaryButtonAsync";
 import Grid from "@material-ui/core/Grid";
-import useCommonStyles from "common/theme/CommonStyles";
+import useCommonStyles from "../../../common/theme/CommonStyles";
 
 export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpen, onClose}) => {
 

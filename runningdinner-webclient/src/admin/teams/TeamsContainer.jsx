@@ -13,11 +13,11 @@ import {DndProvider} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {exchangeEntityInList, findEntityById} from "../../shared/Utils";
 import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
-import {useDisclosure} from "shared/DisclosureHook";
-import {PageTitle} from "common/theme/typography/Tags";
-import {useQuery} from "common/hooks/QueryHook";
-import {generateTeamMessagesPath, generateTeamPath, TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "common/NavigationService";
-import LinkIntern from "common/theme/LinkIntern";
+import {useDisclosure} from "../../shared/DisclosureHook";
+import {PageTitle} from "../../common/theme/typography/Tags";
+import {useQuery} from "../../common/hooks/QueryHook";
+import {generateTeamMessagesPath, generateTeamPath, TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "../../common/NavigationService";
+import LinkIntern from "../../common/theme/LinkIntern";
 
 const TeamsContainer = ({runningDinner}) => {
 

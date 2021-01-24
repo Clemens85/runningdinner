@@ -1,5 +1,5 @@
 import {useSnackbar} from "notistack";
-import {mapIssuesToErrorObjects, mapValidationIssuesToErrorObjects} from "shared/Utils";
+import {mapIssuesToErrorObjects, mapValidationIssuesToErrorObjects} from "../shared/Utils";
 import React from 'react';
 import {useTranslation} from "react-i18next";
 

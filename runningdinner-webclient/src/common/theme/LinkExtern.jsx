@@ -1,5 +1,5 @@
 import {Link} from "@material-ui/core";
-import {SmallTitle} from "common/theme/typography/Tags";
+import {SmallTitle} from "./typography/Tags";
 import React from "react";
 
 export default function LinkExtern(props) {

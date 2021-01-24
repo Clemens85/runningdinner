@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react'
 import { Typography, Grid, TextField, Box, InputAdornment, Link } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
-import {useDebounce} from "shared/DebounceHook";
+import {useDebounce} from "../../../shared/DebounceHook";
 import ParticipantService from "../../../shared/admin/ParticipantService";
 import {useTranslation} from "react-i18next";
 import {Link as RouterLink} from "react-router-dom";
-import {PageTitle} from "common/theme/typography/Tags";
-import {generateParticipantMessagesPath} from "common/NavigationService";
-import {isStringEmpty} from "shared/Utils";
+import {PageTitle} from "../../../common/theme/typography/Tags";
+import {generateParticipantMessagesPath} from "../../../common/NavigationService";
+import {isStringEmpty} from "../../../shared/Utils";
 
 export default function ParticipantsListHeader({adminId, numberOfParticipants, searchableParticipants, onParticipantSearchChanged}) {
 

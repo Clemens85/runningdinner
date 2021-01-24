@@ -1,18 +1,18 @@
 import {useTranslation} from "react-i18next";
-import ParticipantService from "shared/admin/ParticipantService";
+import ParticipantService from "../../../shared/admin/ParticipantService";
 import {
   Dialog,
   DialogContent,
   Box,
 } from "@material-ui/core";
-import {DialogTitleCloseable} from "common/theme/DialogTitleCloseable";
+import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React from "react";
-import {findItemBy, isSameEntity, mapValidationIssuesToErrorObjects} from "shared/Utils";
-import TeamService from "shared/admin/TeamService";
-import DialogActionsPanel from "common/theme/DialogActionsPanel";
-import {Span} from "common/theme/typography/Tags";
+import {findItemBy, isSameEntity, mapValidationIssuesToErrorObjects} from "../../../shared/Utils";
+import TeamService from "../../../shared/admin/TeamService";
+import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
+import {Span} from "../../../common/theme/typography/Tags";
 import {useSnackbar} from "notistack";
-import {CONSTANTS} from "shared/Constants";
+import {CONSTANTS} from "../../../shared/Constants";
 
 export const CANCEL_WHOLE_TEAM_RESULT = "cancelWholeTeam";
 

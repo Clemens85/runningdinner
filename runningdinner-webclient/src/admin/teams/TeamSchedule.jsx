@@ -4,7 +4,7 @@ import TeamService from "../../shared/admin/TeamService";
 import {Box, makeStyles, Button, Grid, Paper, Popover} from "@material-ui/core";
 import sortBy from 'lodash/sortBy';
 import Paragraph from "../../common/theme/typography/Paragraph";
-import {SmallTitle, Span, Title} from "common/theme/typography/Tags";
+import {SmallTitle, Span, Title} from "../../common/theme/typography/Tags";
 import clsx from "clsx";
 import {isSameEntity} from "../../shared/Utils";
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
@@ -15,14 +15,14 @@ import {
   bindTrigger,
   bindPopover,
 } from 'material-ui-popup-state/hooks';
-import LinkIntern from "common/theme/LinkIntern";
-import LinkExtern from "common/theme/LinkExtern";
-import {generateTeamPath} from "common/NavigationService";
-import {CONSTANTS} from "shared/Constants";
-import {PrimaryDangerButtonAsync} from "common/theme/PrimaryDangerButtonAsync";
+import LinkIntern from "../../common/theme/LinkIntern";
+import LinkExtern from "../../common/theme/LinkExtern";
+import {generateTeamPath} from "../../common/NavigationService";
+import {CONSTANTS} from "../../shared/Constants";
+import {PrimaryDangerButtonAsync} from "../../common/theme/PrimaryDangerButtonAsync";
 import Hidden from "@material-ui/core/Hidden";
-import {Time} from "shared/date/Time";
-import {Fullname} from "shared/Fullname";
+import {Time} from "../../shared/date/Time";
+import {Fullname} from "../../shared/Fullname";
 
 const useStyles = makeStyles((theme) => ({
   schedulePaper: {

@@ -2,9 +2,9 @@ import React from 'react'
 import {Grid, Box} from "@material-ui/core";
 import {useSnackbar} from "notistack";
 import {useTranslation} from "react-i18next";
-import {SecondaryButtonAsync} from "common/theme/SecondaryButtonAsync";
-import useHttpErrorHandler from "common/HttpErrorHandlerHook";
-import {MessageService} from "shared/admin/MessageService";
+import {SecondaryButtonAsync} from "../../common/theme/SecondaryButtonAsync";
+import useHttpErrorHandler from "../../common/HttpErrorHandlerHook";
+import {MessageService} from "../../shared/admin/MessageService";
 
 export default function SendToMeButton({adminId, messageObj, messageType, selectedRecipient}) {
 

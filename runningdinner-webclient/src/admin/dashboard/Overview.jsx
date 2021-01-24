@@ -4,8 +4,8 @@ import RunningDinnerService from "../../shared/admin/RunningDinnerService";
 import { Card, CardContent, Link }  from "@material-ui/core";
 import {useTranslation} from "react-i18next";
 import ValueTranslate from "../../shared/i18n/ValueTranslate";
-import {Subtitle} from "common/theme/typography/Tags";
-import {LocalDate} from "shared/date/LocalDate";
+import {Subtitle} from "../../common/theme/typography/Tags";
+import {LocalDate} from "../../shared/date/LocalDate";
 
 export default function Overview({runningDinner}) {
 

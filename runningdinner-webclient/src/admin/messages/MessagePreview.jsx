@@ -1,12 +1,12 @@
 import React from "react";
-import {PaperGrey} from "common/theme/PaperGrey";
+import {PaperGrey} from "../../common/theme/PaperGrey";
 import { Box, FormControl, Typography, InputLabel, Select, MenuItem, LinearProgress } from "@material-ui/core";
 import parse from 'html-react-parser';
-import SendToMeButton from "admin/messages/SendToMeButton";
-import {Span, Subtitle, Title} from "common/theme/typography/Tags";
-import {isArrayEmpty} from "shared/Utils";
-import {CHANGE_PREVIEW_RECIPIENT, newAction, useMessagesDispatch, useMessagesState} from "admin/messages/MessagesContext";
-import useRecipientName from "shared/admin/messages/RecipientNameHook";
+import SendToMeButton from "./SendToMeButton";
+import {Span, Subtitle, Title} from "../../common/theme/typography/Tags";
+import {isArrayEmpty} from "../../shared/Utils";
+import {CHANGE_PREVIEW_RECIPIENT, newAction, useMessagesDispatch, useMessagesState} from "./MessagesContext";
+import useRecipientName from "../../shared/admin/messages/RecipientNameHook";
 
 const MessagePreview = ({adminId}) => {
 

@@ -13,11 +13,11 @@ import {useTranslation} from "react-i18next";
 import { Helmet } from 'react-helmet-async';
 import {EmptyDetails} from "../common/EmptyDetails";
 import Fetch from "../../common/Fetch";
-import {TeamPartnerWishDialog} from "admin/participants/teampartnerwish/TeamPartnerWishDialog";
-import {useDisclosure} from "shared/DisclosureHook";
+import {TeamPartnerWishDialog} from "./teampartnerwish/TeamPartnerWishDialog";
+import {useDisclosure} from "../../shared/DisclosureHook";
 import {
   CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION
-} from "admin/participants/teampartnerwish/TeamPartnerWishAction";
+} from "./teampartnerwish/TeamPartnerWishAction";
 
 export default function ParticipantsContainer({runningDinner}) {
 
