@@ -1,0 +1,19 @@
+{
+  "name": "runningdinner",
+  "description": "TODO",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "lerna run clean",
+    "build": "lerna run build",
+    "pub": "lerna publish",
+    "test": "lerna run test"
+  },
+  "devDependencies": {
+    "lerna": "~3.22.0",
+    "typescript": "~4.1.0"
+  }
+}
+

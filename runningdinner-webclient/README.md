@@ -81,6 +81,10 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
 
 
+# Very good about bundle setup and monorepo stuff!
+https://medium.com/swlh/2020-settings-of-react-typescript-project-with-webpack-and-babel-403c92feaa06
+https://dev.to/shnydercom/monorepos-lerna-typescript-cra-and-storybook-combined-4hli
+https://medium.com/@NiGhTTraX/how-to-set-up-a-typescript-monorepo-with-lerna-c6acda7d4559
 
 ## Helpful React Links
 https://medium.com/better-programming/making-a-basic-header-responsive-with-materialui-and-react-2198fac923c8
