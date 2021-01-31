@@ -3,3 +3,5 @@ dist
 *.tsbuildinfo
 *.iml
 .idea
+packages/**/dist/
+packages/**/build
