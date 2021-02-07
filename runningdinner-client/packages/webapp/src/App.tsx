@@ -1,6 +1,5 @@
 import React from 'react';
 import logo from './logo.svg';
-import './App.css';
 import {isStringEmpty} from "@runningdinner/shared";
 
 function App() {
