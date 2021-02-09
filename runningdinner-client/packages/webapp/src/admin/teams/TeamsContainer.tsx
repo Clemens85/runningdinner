@@ -15,33 +15,43 @@ import {PageTitle} from "../../common/theme/typography/Tags";
 import {useQuery} from "../../common/hooks/QueryHook";
 import {generateTeamMessagesPath, generateTeamPath, TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "../../common/NavigationService";
 import LinkIntern from "../../common/theme/LinkIntern";
-import {createTeamArrangementsAsync, exchangeEntityInList, findEntityById, findTeamsAsync, swapTeamMembersAsync, useDisclosure} from "@runningdinner/shared";
+import {createTeamArrangementsAsync, exchangeEntityInList, findEntityById, findTeamsAsync, swapTeamMembersAsync, Team, useDisclosure} from "@runningdinner/shared";
+import {useAdminContext} from "../AdminContext";
 
-const TeamsContainer = ({runningDinner}) => {
+const TeamsContainer = () => {
 
   const query = useQuery();
 
-  const {adminId} = runningDinner;
+  const {runningDinner} = useAdminContext();
 
-  const params = useParams();
+  const params = useParams<Record<string, string>>();
   const teamId = params.teamId;
   const teamMemberIdToCancel = query.get(TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM);
 
   return <Fetch asyncFunction={findTeamsAsync}
-                parameters={[adminId]}
-                render={resultObj => <Teams teamId={teamId} teamMemberIdToCancel={teamMemberIdToCancel}
-                                         incomingTeams={resultObj.result} runningDinner={runningDinner} />} />;
+                parameters={[runningDinner.adminId]}
+                render={(resultObj: { result: Team[]; }) => <Teams teamId={teamId}
+                                                                   teamMemberIdToCancel={teamMemberIdToCancel}
+                                                                   incomingTeams={resultObj.result} />} />;
 };
 
+interface TeamsProps {
+  incomingTeams: Team[];
+  teamId?: string;
+  teamMemberIdToCancel?: string | null;
+}
 
-function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
+function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
+
+  const {runningDinner} = useAdminContext();
 
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
   const [teams, setTeams] = useState(incomingTeams);
   const [showTeamDetails, setShowTeamDetails] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState();
+  const [selectedTeam, setSelectedTeam] = useState<Team>();
+
   const {isOpen: isChangeTeamHostDialogOpen,
          close: closeChangeTeamHostDialog,
          open: openChangeTeamHostDialog,
@@ -63,11 +73,11 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
   const showTeamsList = !isSmallDevice || !showTeamDetails;
   const teamsExisting = teams.length > 0;
 
-  function handleTeamClick(team) {
+  function handleTeamClick(team: Team) {
     history.push(generateTeamPath(adminId, team.id));
   }
 
-  function openTeamDetails(team) {
+  function openTeamDetails(team: Team) {
     setSelectedTeam(team);
     setShowTeamDetails(true);
   }
@@ -77,11 +87,11 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
     setTeams(teamGenerationResult.teams);
   };
 
-  const handleTeamMemberSwap = async(srcParticipantId, destParticipantId) => {
+  const handleTeamMemberSwap = async(srcParticipantId: string, destParticipantId: string) => {
     const teamArrangementListResult = await swapTeamMembersAsync(adminId, srcParticipantId, destParticipantId);
 
     let updatedTeams = teams;
-    for (var i = 0; i < teamArrangementListResult.teams.length; i++) {
+    for (let i = 0; i < teamArrangementListResult.teams.length; i++) {
       const affectedTeam = teamArrangementListResult.teams[i];
       updatedTeams = exchangeEntityInList(updatedTeams, affectedTeam);
     }
@@ -96,14 +106,14 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
     }
   };
 
-  const updateTeamStateInList = (team) => {
+  const updateTeamStateInList = (team: Team) => {
     const updatedTeamsList = exchangeEntityInList(teams, team);
     setTeams(updatedTeamsList);
     handleTeamClick(team);
     openTeamDetails(team)
   };
 
-  const handleOpenChangeTeamHostDialog = (team) => {
+  const handleOpenChangeTeamHostDialog = (team: Team) => {
     openChangeTeamHostDialog(team);
   };
 
@@ -144,11 +154,11 @@ function Teams({runningDinner, incomingTeams, teamId, teamMemberIdToCancel}) {
             </Grid>
           </Grid>
         </Box>
-        { getTeamForChangeTeamHostDialog() && <ChangeTeamHostDialog isOpen={isChangeTeamHostDialogOpen}
-                                                                    onClose={closeChangeTeamHostDialog}
-                                                                    team={getTeamForChangeTeamHostDialog()}
-                                                                    adminId={adminId}
-                                                                    onTeamHostChanged={updateTeamStateInList} /> }
+        { isChangeTeamHostDialogOpen && <ChangeTeamHostDialog isOpen={isChangeTeamHostDialogOpen}
+                                                              onClose={closeChangeTeamHostDialog}
+                                                              team={getTeamForChangeTeamHostDialog()}
+                                                              adminId={adminId}
+                                                              onTeamHostChanged={updateTeamStateInList} /> }
       </DndProvider>
   );
 }

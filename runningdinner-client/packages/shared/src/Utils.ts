@@ -13,7 +13,7 @@ import {BaseEntity} from "./types";
  * @param id
  * @returns {*} the found entity or null
  */
-export function findEntityById(entities: any, id: string) {
+export function findEntityById(entities: any, id?: string) {
 
   if (!entities || !id) {
     return null;
@@ -100,9 +100,9 @@ export function mapNullFieldsToEmptyStrings(obj: any, ...fieldsToIgnore: string[
   return resultObj;
 }
 
-export function exchangeEntityInList<T extends BaseEntity>(entityList?: Array<T>, entity?: T): Array<T> | undefined {
+export function exchangeEntityInList<T extends BaseEntity>(entityList?: Array<T>, entity?: T): Array<T> {
   if (!entity || !entityList) {
-    return entityList;
+    return entityList || [];
   }
   const result = cloneDeep(entityList);
   let entityFoundInList = false;

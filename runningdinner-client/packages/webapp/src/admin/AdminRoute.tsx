@@ -32,10 +32,10 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
           <TeamMessages adminId={adminId} />
         </Route>
         <Route path={`${path}/teams/:teamId`}>
-          <TeamsContainer runningDinner={runningDinner} />
+          <TeamsContainer />
         </Route>
         <Route path={`${path}/teams`}>
-          <TeamsContainer runningDinner={runningDinner} />
+          <TeamsContainer />
         </Route>
         <Route path="/">
           <Dashboard runningDinner={runningDinner}
