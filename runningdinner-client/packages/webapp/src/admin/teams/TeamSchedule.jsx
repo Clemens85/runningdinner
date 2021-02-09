@@ -1,5 +1,5 @@
 import React from "react";
-import Fetch from "../../common/Fetch";
+import { Fetch } from "../../common/Fetch";
 import {Box, Button, Grid, makeStyles, Paper, Popover} from "@material-ui/core";
 import sortBy from 'lodash/sortBy';
 import Paragraph from "../../common/theme/typography/Paragraph";

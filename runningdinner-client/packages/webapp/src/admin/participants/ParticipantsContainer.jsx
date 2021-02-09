@@ -10,7 +10,7 @@ import ParticipantsListInfo from "./list/ParticipantsListInfo";
 import {useTranslation} from "react-i18next";
 import { Helmet } from 'react-helmet-async';
 import {EmptyDetails} from "../common/EmptyDetails";
-import Fetch from "../../common/Fetch";
+import { Fetch } from "../../common/Fetch";
 import {TeamPartnerWishDialog} from "./teampartnerwish/TeamPartnerWishDialog";
 import {
   CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION

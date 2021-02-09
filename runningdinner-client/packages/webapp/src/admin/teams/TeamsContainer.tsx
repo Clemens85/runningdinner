@@ -7,7 +7,7 @@ import {Helmet} from "react-helmet-async";
 import TeamsList from "./TeamsList";
 import {EmptyDetails} from "../common/EmptyDetails";
 import TeamDetails from "./TeamDetails";
-import Fetch from "../../common/Fetch";
+import {Fetch, RenderArg} from "../../common/Fetch";
 import {DndProvider} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
@@ -30,9 +30,9 @@ const TeamsContainer = () => {
 
   return <Fetch asyncFunction={findTeamsAsync}
                 parameters={[runningDinner.adminId]}
-                render={(resultObj: { result: Team[]; }) => <Teams teamId={teamId}
-                                                                   teamMemberIdToCancel={teamMemberIdToCancel}
-                                                                   incomingTeams={resultObj.result} />} />;
+                render={(resultObj: RenderArg<Team[]>) => <Teams teamId={teamId}
+                                                                 teamMemberIdToCancel={teamMemberIdToCancel}
+                                                                 incomingTeams={resultObj.result} />} />;
 };
 
 interface TeamsProps {

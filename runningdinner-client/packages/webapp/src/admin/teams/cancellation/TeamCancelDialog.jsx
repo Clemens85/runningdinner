@@ -10,7 +10,7 @@ import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {SmallTitle, Span} from "../../../common/theme/typography/Tags";
 import {useSnackbar} from "notistack";
 import {Alert, AlertTitle} from "@material-ui/lab";
-import Fetch from "../../../common/Fetch";
+import { Fetch } from "../../../common/Fetch";
 import {
   Fullname,
   CONSTANTS,
