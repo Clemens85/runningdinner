@@ -16,7 +16,7 @@ export interface AdminContextProviderProps extends Parent {
 export const AdminContextProvider = ({children, adminId}: AdminContextProviderProps) => {
 
   const [runningDinner, setRunningDinner] = useState<RunningDinner>();
-  const [loading, setLoading] = useState<boolean>();
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error>();
 
   async function fetchRunningDinner(adminId: string) {

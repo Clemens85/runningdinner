@@ -1,7 +1,7 @@
 import React from 'react'
 import {Chip, Tooltip} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import {canHost, isNumSeatsUnknown} from "@runningdinner/shared";
+import {canHost, isNumSeatsUnknown, Participant, RunningDinnerSessionData} from "@runningdinner/shared";
 
 
 const useChipStyles = makeStyles(() => ({
@@ -10,13 +10,17 @@ const useChipStyles = makeStyles(() => ({
   }
 }));
 
-export default function NumSeats({participant, runningDinnerSessionData}) {
+export interface NumSeatsProps {
+  participant: Participant,
+  runningDinnerSessionData: RunningDinnerSessionData
+}
+
+export default function NumSeats({participant, runningDinnerSessionData}: NumSeatsProps) {
 
   const classes = useChipStyles();
 
   const {numSeatsNeededForHost} = runningDinnerSessionData;
 
-  const canHost = canHost(participant, numSeatsNeededForHost);
   const numSeatsUnknown = isNumSeatsUnknown(participant);
 
   if (numSeatsUnknown) {
@@ -28,8 +32,8 @@ export default function NumSeats({participant, runningDinnerSessionData}) {
   }
 
   const { numSeats } = participant;
-  const color = canHost ? 'primary' : 'secondary';
-  const tooltipLabel = canHost ? 'Genügend Sitzplätze vorhanden' : 'Sitzplatz-Kapazität nicht ausreichend';
+  const color = canHost(participant, numSeatsNeededForHost) ? 'primary' : 'secondary';
+  const tooltipLabel = canHost(participant, numSeatsNeededForHost) ? 'Genügend Sitzplätze vorhanden' : 'Sitzplatz-Kapazität nicht ausreichend';
 
   return (
       <Tooltip title={tooltipLabel} aria-label={tooltipLabel} placement="top-end">

@@ -43,7 +43,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
     validationSchema: PARTICIPANT_VALIDATION_SCHEMA,
     mode: 'onBlur'
   });
-  const { handleSubmit, clearError, setError, formState, reset } = formMethods;
+  const { handleSubmit, clearErrors, setError, formState, reset } = formMethods;
   const { isSubmitting } = formState;
 
   const initValues = React.useCallback(participant => {
@@ -54,8 +54,8 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
       participantToEdit = mapNullFieldsToEmptyStrings(participantToEdit, "assignmentType");
     }
     reset(participantToEdit);
-    clearError();
-  }, [reset, clearError]);
+    clearErrors();
+  }, [reset, clearErrors]);
 
   useEffect(() => {
     initValues(participant);
@@ -68,14 +68,14 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
       id: !isNewEntity(participant) ?  participant.id : null,
       ...values
     };
-    clearError();
+    clearErrors();
     try {
       const savedParticipant = await saveParticipantAsync(adminId, participantToSave);
       enqueueSnackbar(getFullname(savedParticipant) + " erfolgreich gespeichert", {variant: "success"});
       onParticipantSaved(savedParticipant);
     } catch(e) {
       handleFormValidationErrors(e);
-      setError(validationErrors);
+      validationErrors.forEach(validationError => setError(validationError));
     }
   };
 

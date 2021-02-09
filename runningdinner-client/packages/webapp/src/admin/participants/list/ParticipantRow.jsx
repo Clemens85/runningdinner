@@ -17,16 +17,16 @@ export default function ParticipantRow({participant, selected, onClick, runningD
   return (
       <TableRow hover className={classes.cursorPointer} onClick={() => onClick(participant)} selected={selected}>
         <TableCell>{participantNumber}</TableCell>
-        <TableCell><Fullname {...participant}></Fullname></TableCell>
+        <TableCell><Fullname {...participant} /></TableCell>
         <Hidden xsDown>
           <TableCell>
             <ParticipantGenderTooltip gender={gender}>
-              <ParticipantGenderIcon gender={gender}></ParticipantGenderIcon>
+              <ParticipantGenderIcon gender={gender} />
             </ParticipantGenderTooltip>
           </TableCell>
           <TableCell>{email}</TableCell>
-          <TableCell><AddressLocation {...participant}></AddressLocation></TableCell>
-          <TableCell><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData}></NumSeats></TableCell>
+          <TableCell><AddressLocation {...participant} /></TableCell>
+          <TableCell><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} /></TableCell>
         </Hidden>
       </TableRow>
   );

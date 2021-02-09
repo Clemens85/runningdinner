@@ -80,11 +80,11 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
     validationSchema: validationSchema,
     mode: 'onBlur'
   });
-  const { handleSubmit, clearError, setError, formState } = formMethods;
+  const { handleSubmit, clearErrors, setError, formState } = formMethods;
   const { isSubmitting } = formState;
 
   const handleSendMessages = async (values) => {
-    clearError();
+    clearErrors();
     console.log(`SendMessages with ${JSON.stringify(values)}`);
     try {
       const messageObj = enhanceMessageObjectWithCustomSelectedRecipients(values, messageType, customSelectedRecipients);
@@ -92,7 +92,7 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
       dispatch(newAction(ADD_MESSAGEJOB, newMessageJob));
     } catch(e) {
       handleFormValidationErrors(e);
-      setError(validationErrors);
+      validationErrors.forEach(validationError => setError(validationError));
     }
   };
 

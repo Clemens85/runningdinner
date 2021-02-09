@@ -15,21 +15,21 @@ const ParticipantGenderIcon = React.forwardRef( (props, ref) => {
   if (gender === CONSTANTS.GENDER.MALE) {
     return (
         <IconButton onClick={onClick} {...props} component="span" ref={ref}>
-          <Icon className={"fas fa-mars"}></Icon>
+          <Icon className={"fas fa-mars"} />
         </IconButton>
     );
   }
   if (gender === CONSTANTS.GENDER.FEMALE) {
     return (
         <IconButton onClick={onClick} {...props} component="span" ref={ref}>
-          <Icon className={"fas fa-venus"}></Icon>
+          <Icon className={"fas fa-venus"} />
         </IconButton>
     );
   }
   if (gender === CONSTANTS.GENDER.UNDEFINED) {
     return (
         <IconButton onClick={onClick} {...props} component="span" ref={ref}>
-          <Icon className={"fas fa-genderless"}></Icon>
+          <Icon className={"fas fa-genderless"} />
         </IconButton>
     );
   }

@@ -34,12 +34,6 @@ export default function ParticipantGenderSelection(props) {
 
   const {label} = props;
 
-  // let genderDescriptionI18nKey = 'gender_' + gender.toLowerCase();
-  // if (genderDescriptionI18nKey === 'gender_undefined') {
-  //   genderDescriptionI18nKey = 'gender_unknown';
-  // }
-  // const genderDescription = t(genderDescriptionI18nKey);
-
   return (
       <>
         <Typography variant="caption" display="block">
@@ -49,14 +43,14 @@ export default function ParticipantGenderSelection(props) {
           <Grid item>
             <Box>
               <ParticipantGenderTooltip gender={CONSTANTS.GENDER.MALE}>
-                <ParticipantGenderIcon color={iconColors.MALE} gender={CONSTANTS.GENDER.MALE} onClick={() => setGender(CONSTANTS.GENDER.MALE)}></ParticipantGenderIcon>
+                <ParticipantGenderIcon color={iconColors.MALE} gender={CONSTANTS.GENDER.MALE} onClick={() => setGender(CONSTANTS.GENDER.MALE)} />
               </ParticipantGenderTooltip>
             </Box>
           </Grid>
           <Grid item>
             <Box>
               <ParticipantGenderTooltip gender={CONSTANTS.GENDER.UNDEFINED}>
-                <ParticipantGenderIcon color={iconColors.UNDEFINED} gender={CONSTANTS.GENDER.UNDEFINED} onClick={() => setGender(CONSTANTS.GENDER.UNDEFINED)}></ParticipantGenderIcon>
+                <ParticipantGenderIcon color={iconColors.UNDEFINED} gender={CONSTANTS.GENDER.UNDEFINED} onClick={() => setGender(CONSTANTS.GENDER.UNDEFINED)} />
               </ParticipantGenderTooltip>
             </Box>
           </Grid>
@@ -71,7 +65,9 @@ export default function ParticipantGenderSelection(props) {
           </Grid>
           <Grid item>
             <Box ml={2}>
-              <Typography variant={"caption"}><ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{'undefined': 'unknown'}}/></Typography>
+              <Typography variant={"caption"}>
+                <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{'undefined': 'unknown'}}/>
+              </Typography>
             </Box>
           </Grid>
         </Grid>

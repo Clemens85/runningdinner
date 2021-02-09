@@ -52,7 +52,7 @@ export default function PersonalDataSection() {
                         label={mobileNr}/>
           </Grid>
           <Grid item xs={12} md={6}>
-            <ParticipantGenderSelection label="Geschlecht" name="gender" id="gender"></ParticipantGenderSelection>
+            <ParticipantGenderSelection label="Geschlecht" name="gender" id="gender" />
           </Grid>
           <Grid item xs={12} md={6}>
             <Controller as={NumberTextInputEmptyValue} name="age" control={control} variant="filled" emptyValue={0} fullWidth label={age} />

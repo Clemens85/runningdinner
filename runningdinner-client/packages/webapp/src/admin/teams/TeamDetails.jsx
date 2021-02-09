@@ -203,8 +203,7 @@ function TeamMember({participant, onOpenTeamMemberCancelDialog}) {
 
 function NoValidTeamHost({team, numSeatsNeededForHost}) {
 
-  const hasEnoughSeats = hasEnoughSeats(team, numSeatsNeededForHost);
-  if (hasEnoughSeats) {
+  if (hasEnoughSeats(team, numSeatsNeededForHost)) {
     return null;
   }
 

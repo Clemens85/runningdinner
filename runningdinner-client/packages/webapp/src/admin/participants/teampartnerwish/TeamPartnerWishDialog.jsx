@@ -31,24 +31,24 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
   const fullname = getFullname(participant);
   const {adminId} = runningDinner;
 
-  const isClosedDinner = isClosedDinner(runningDinner);
+  const isClosed = isClosedDinner(runningDinner);
   const teamPartnerWishNotExisting = teamPartnerWishInfo.state === CONSTANTS.TEAM_PARTNER_WISH_STATE.NOT_EXISTING;
   const teamPartnerWishIsEmpty = teamPartnerWishInfo.state === CONSTANTS.TEAM_PARTNER_WISH_STATE.EXISTS_EMPTY_TEAM_PARTNER_WISH;
 
   const showCreateNewParticipantButton = teamPartnerWishNotExisting;
-  const showSendTeamPartnerWishInvitationButton = !isClosedDinner && teamPartnerWishNotExisting;
+  const showSendTeamPartnerWishInvitationButton = !isClosed && teamPartnerWishNotExisting;
   const showUpdateTeamPartnerWishButton = teamPartnerWishIsEmpty;
 
   const renderTeamPartnerWishNotExisting = () => {
     return (
       <>
         <Span i18n="admin:team_partner_wish_not_existing_text" parameters={{ teamPartnerWish: participant.teamPartnerWish }} html={true} /><br />
-        { !isClosedDinner &&
+        { !isClosed &&
           <>
             <Span i18n="admin:team_partner_wish_not_existing_send_email_text" html={true} />
             <Span i18n="admin:team_partner_wish_not_existing_create_public_text" html={true} />
           </> }
-        { isClosedDinner && <Span i18n="admin:team_partner_wish_not_existing_create_closed_text" />}
+        { isClosed && <Span i18n="admin:team_partner_wish_not_existing_create_closed_text" />}
       </>
     );
   };
