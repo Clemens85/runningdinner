@@ -12,34 +12,35 @@ const languageDetectionOptions = {
   lookupQuerystring: 'lang'
 };
 
-i18n
-    .use(LanguageDetector)
-    .use(initReactI18next)
-    .init({
-      detection: languageDetectionOptions,
-      resources: {
-        en: {
-          common: Common_en,
-          admin: Admin_en
+
+export function setupI18n() {
+  i18n
+      .use(LanguageDetector)
+      .use(initReactI18next)
+      .init({
+        detection: languageDetectionOptions,
+        resources: {
+          en: {
+            common: Common_en,
+            admin: Admin_en
+          },
+          de: {
+            common: Common_de,
+            admin: Admin_de
+          }
         },
-        de: {
-          common: Common_de,
-          admin: Admin_de
+        fallbackLng: "de",
+        debug: true,
+        // lng: "de",
+        whitelist: ['de', 'en'],
+
+        // have a common namespace used around the full app
+        defaultNS: "common",
+
+        keySeparator: false, // we use content as keys
+
+        interpolation: {
+          escapeValue: false
         }
-      },
-      fallbackLng: "de",
-      debug: true,
-      // lng: "de",
-      whitelist: ['de', 'en'],
-
-      // have a common namespace used around the full app
-      defaultNS: "common",
-
-      keySeparator: false, // we use content as keys
-
-      interpolation: {
-        escapeValue: false
-      }
-    });
-
-export default i18n;
+      });
+}

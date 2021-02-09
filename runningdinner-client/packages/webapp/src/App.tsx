@@ -1,31 +1,29 @@
 import React from 'react';
-import logo from './logo.svg';
-import {isStringEmpty} from "@runningdinner/shared";
+import {HelmetProvider} from "react-helmet-async";
+import {Route, BrowserRouter as Router, Switch} from "react-router-dom";
+import AdminApp from "./admin/AdminApp";
+import LandingApp from "./landing/LandingApp";
+import { ThemeProvider } from '@material-ui/core/styles';
+import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
 
 function App() {
-  const isEmpty = isStringEmpty("");
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <p>
-          {isEmpty && <span>String is empty!</span>}
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <HelmetProvider>
+        <Router>
+          <Switch>
+            <Route path="/admin/:adminId">
+              <ThemeProvider theme={runningDinnerTheme}>
+                <AdminApp />
+              </ThemeProvider>
+            </Route>
+            <Route path="/">
+              <LandingApp />
+            </Route>
+          </Switch>
+        </Router>
+      </HelmetProvider>
   );
+
 }
 
 export default App;

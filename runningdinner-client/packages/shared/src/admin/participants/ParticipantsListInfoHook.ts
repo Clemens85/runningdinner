@@ -19,7 +19,7 @@ const emptyParticipantListInfo: ParticipantListInfo = {
   show: false
 };
 
-function useParticipantsListInfo(participants: Participant[], runningDinnerSessionData: RunningDinnerSessionData): ParticipantListInfo {
+export function useParticipantsListInfo(participants: Participant[], runningDinnerSessionData: RunningDinnerSessionData): ParticipantListInfo {
 
   const [participantInfo, setParticipantInfo] = useState<ParticipantListInfo>(emptyParticipantListInfo);
 
@@ -86,5 +86,3 @@ function useParticipantsListInfo(participants: Participant[], runningDinnerSessi
 
   return participantInfo;
 }
-
-export default useParticipantsListInfo;

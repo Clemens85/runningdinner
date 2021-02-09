@@ -1,4 +1,4 @@
-import BackendConfig from "../BackendConfig";
+import { BackendConfig } from "../BackendConfig";
 import axios from "axios";
 import cloneDeep from "lodash/cloneDeep";
 import {isSameEntity} from "../Utils";

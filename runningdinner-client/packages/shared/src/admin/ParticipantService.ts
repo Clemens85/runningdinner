@@ -3,7 +3,7 @@ import clone from 'lodash/clone';
 import filter from 'lodash/filter';
 import lowerCase from 'lodash/lowerCase';
 import includes from 'lodash/includes';
-import BackendConfig from "../BackendConfig";
+import { BackendConfig } from "../BackendConfig";
 import {isNewEntity} from "../Utils";
 import {Participant, TeamPartnerWishInfo} from "../types";
 import {CONSTANTS} from "../Constants";

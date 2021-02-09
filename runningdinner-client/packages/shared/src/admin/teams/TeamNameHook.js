@@ -1,6 +1,6 @@
 import {useTranslation} from "react-i18next";
 
-function useTeamName(team) {
+export function useTeamName(team) {
   const {t} = useTranslation(['admin']);
 
   function getTeamName(team) {
@@ -11,8 +11,4 @@ function useTeamName(team) {
 
   return { teamName, getTeamName };
 }
-
-export default useTeamName;
-
-
 

@@ -9,7 +9,7 @@ export interface NumberOfParticipants {
   hasNotEnoughtParticipantsForDinner: boolean;
 }
 
-function useNumberOfParticipants(participants: Participant[], runningDinnerSessionData: RunningDinnerSessionData): NumberOfParticipants {
+export function useNumberOfParticipants(participants: Participant[], runningDinnerSessionData: RunningDinnerSessionData): NumberOfParticipants {
 
   const [numberOfParticipants, setNumberOfParticipants] = useState<NumberOfParticipants>({
     numberOfParticipantsTotal: 0,
@@ -48,6 +48,4 @@ function useNumberOfParticipants(participants: Participant[], runningDinnerSessi
 
   return numberOfParticipants;
 }
-
-export default useNumberOfParticipants;
 

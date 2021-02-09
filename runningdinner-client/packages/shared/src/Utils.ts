@@ -169,6 +169,11 @@ export function isStringEmpty(s?: string) {
   return !s || s.length === 0;
 }
 
+export function isStringNotEmpty(s?: string): s is string {
+  return !isStringEmpty(s);
+}
+
+
 export function isArrayNotEmpty<T>(arr?: Array<T>): arr is Array<T> {
   return Array.isArray(arr) && arr.length > 0;
 }

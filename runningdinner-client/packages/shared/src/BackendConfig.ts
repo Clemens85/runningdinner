@@ -1,6 +1,6 @@
-import { isStringEmpty } from './Utils';
+import { isStringNotEmpty } from './Utils';
 
-export default class BackendConfig {
+class BackendConfig {
 
   static _baseUrl: string = '/rest';
 
@@ -8,8 +8,8 @@ export default class BackendConfig {
     return this._baseUrl;
   }
 
-  static setBaseUrl(baseUrl: string) {
-    if (!isStringEmpty(baseUrl)) {
+  static setBaseUrl(baseUrl?: string) {
+    if (isStringNotEmpty(baseUrl)) {
       this._baseUrl = baseUrl;
     }
   }
@@ -17,4 +17,8 @@ export default class BackendConfig {
   static buildUrl(urlPart: string) {
     return this.getBaseUrl() + urlPart;
   }
+}
+
+export {
+  BackendConfig
 }

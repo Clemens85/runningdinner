@@ -1,8 +1,8 @@
 import { Team } from "../../types";
 import { getFullnameList } from "../ParticipantService";
-import useTeamName from "./TeamNameHook";
+import { useTeamName } from "./TeamNameHook";
 
-function useTeamNameMembers(team?: Team) {
+export function useTeamNameMembers(team?: Team) {
 
   const {getTeamName} = useTeamName();
 
@@ -16,8 +16,4 @@ function useTeamNameMembers(team?: Team) {
 
   return { teamNameMembers, getTeamNameMembers };
 }
-
-export default useTeamNameMembers;
-
-
 

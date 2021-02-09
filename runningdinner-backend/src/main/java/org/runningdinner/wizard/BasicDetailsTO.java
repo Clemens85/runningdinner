@@ -16,7 +16,33 @@ import org.runningdinner.core.RunningDinnerInfo;
 public class BasicDetailsTO implements RunningDinnerInfo, Serializable {
 
   private static final long serialVersionUID = 1L;
-  
+
+  @NotBlank
+  @SafeHtml
+  @Size(max = 255)
+  private String title;
+
+  @NotBlank
+  @SafeHtml
+  @Size(max = 255)
+  private String city;
+
+  @NotBlank
+  @SafeHtml
+  @Size(max = 16)
+  private String zip;
+
+  @NotNull
+  private LocalDate date;
+
+  @NotNull
+  private RegistrationType registrationType;
+
+  @NotBlank
+  @SafeHtml
+  @Size(max = 16)
+  private String languageCode;
+
   public BasicDetailsTO() {
 
   }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import BackendConfig from "../BackendConfig";
+import { BackendConfig } from "../BackendConfig";
 import cloneDeep from "lodash/cloneDeep";
 import {Meal, RunningDinner} from "../types";
 import {CONSTANTS} from "../Constants";

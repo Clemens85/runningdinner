@@ -1,4 +1,4 @@
-function useNumberOfAssignableParticipantsToReplaceTeam(runningDinner, team, notAssignedParticipants) {
+export function useNumberOfAssignableParticipantsToReplaceTeam(runningDinner, team, notAssignedParticipants) {
 
   const numNotAssignedParticipantsLength = notAssignedParticipants ? notAssignedParticipants.length : 0;
 
@@ -18,5 +18,3 @@ function useNumberOfAssignableParticipantsToReplaceTeam(runningDinner, team, not
            hasEnoughNotAssignedParticipantsToReplaceTeam
   };
 }
-
-export default useNumberOfAssignableParticipantsToReplaceTeam;

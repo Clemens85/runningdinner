@@ -1,9 +1,9 @@
 import { getFullname } from "../ParticipantService";
 import { isTeam } from "../TeamService";
-import useTeamNameMembers from "../teams/TeamNameMembersHook";
+import {useTeamNameMembers} from "../teams/TeamNameMembersHook";
 import {Participant, Team} from "../../types";
 
-function useRecipientName(recipient: Participant | Team) {
+export function useRecipientName(recipient: Participant | Team) {
 
   const {getTeamNameMembers} = useTeamNameMembers();
 
@@ -18,8 +18,4 @@ function useRecipientName(recipient: Participant | Team) {
 
   return { recipientName, getRecipientName };
 }
-
-export default useRecipientName;
-
-
 

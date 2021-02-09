@@ -1,7 +1,7 @@
 import {useTranslation} from "react-i18next";
 import {CONSTANTS} from "../../Constants";
 
-function useParticipantSelectionOptions() {
+export function useParticipantSelectionOptions() {
   const {t} = useTranslation(['admin']);
   return [
     { value: CONSTANTS.PARTICIPANT_SELECTION.ALL, label: t('participant_selection_all') },
@@ -10,5 +10,3 @@ function useParticipantSelectionOptions() {
     { value: CONSTANTS.PARTICIPANT_SELECTION.CUSTOM_SELECTION, label: t('participant_selection_single_selection') }
   ];
 }
-
-export default useParticipantSelectionOptions;

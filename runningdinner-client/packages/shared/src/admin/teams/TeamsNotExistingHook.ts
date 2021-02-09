@@ -15,7 +15,7 @@ export interface TeamsNotExistingInfo {
   infoTeamCreationNotPossibleAndRegistrationStillRunning?: boolean;
 }
 
-export default function useTeamsNotExisting(runningDinner: RunningDinner) {
+export function useTeamsNotExisting(runningDinner: RunningDinner) {
 
   const { adminId } = runningDinner;
 
