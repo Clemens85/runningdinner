@@ -4,7 +4,6 @@ import ParticipantsContainer from "./participants/ParticipantsContainer";
 import TeamsContainer from "./teams/TeamsContainer";
 import Dashboard from "./dashboard/Dashboard";
 import {Route, Switch} from "react-router-dom";
-import {RunningDinner} from "@runningdinner/shared";
 import {useAdminContext} from "./AdminContext";
 
 export interface AdminRouteProps {
@@ -13,7 +12,7 @@ export interface AdminRouteProps {
 
 export const AdminRoute = ({path}: AdminRouteProps) => {
 
-  const {updateRunningDinner, runningDinner} = useAdminContext();
+  const {runningDinner} = useAdminContext();
   const {adminId} = runningDinner;
 
   return (
@@ -38,8 +37,7 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
           <TeamsContainer />
         </Route>
         <Route path="/">
-          <Dashboard runningDinner={runningDinner}
-                     onRuningDinnerUpdate={(updatedRunningDinner: RunningDinner) => updateRunningDinner(updatedRunningDinner)} />
+          <Dashboard runningDinner={runningDinner} />
         </Route>
       </Switch>
   );

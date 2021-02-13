@@ -5,12 +5,25 @@ import DateFnsUtils from '@date-io/date-fns';
 import MealTimeEditControl from "./MealTimeEditControl";
 import cloneDeep from "lodash/cloneDeep";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
-import { withTranslation } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
+import {CallbackHandler, isSameEntity, Meal} from "@runningdinner/shared";
 
-class EditMealsDialog extends React.Component {
 
-  constructor(props) {
+type EditMealsDialogState = {
+  meals: Meal[]
+}
+
+export interface EditMealsDialogProps extends WithTranslation {
+  meals: Meal[];
+  onCancel: CallbackHandler;
+  onSave: CallbackHandler;
+  open: boolean;
+}
+
+class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDialogState> {
+
+  constructor(props: EditMealsDialogProps) {
     super(props);
     this.state = {
       meals: cloneDeep(this.props.meals)
@@ -22,10 +35,10 @@ class EditMealsDialog extends React.Component {
     this._resetState = this._resetState.bind(this);
   }
 
-  handleTimeChange(meal, newTime) {
+  handleTimeChange(meal: Meal, newTime: Date) {
     const meals = cloneDeep(this.state.meals);
-    for (var i = 0; i < meals.length; i++) {
-      if (meals[i].id === meal.id) {
+    for (let i = 0; i < meals.length; i++) {
+      if (isSameEntity(meals[i], meal)) {
         meals[i].time = newTime;
       }
     }
@@ -61,7 +74,7 @@ class EditMealsDialog extends React.Component {
 
     const mealTimeFields = meals.map((meal) =>
         <Grid item xs key={meal.id}>
-          <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => this.handleTimeChange(meal, newValue)}></MealTimeEditControl>
+          <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => this.handleTimeChange(meal, newValue)} />
         </Grid>
     );
 
