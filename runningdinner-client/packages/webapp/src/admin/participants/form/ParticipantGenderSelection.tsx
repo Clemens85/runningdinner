@@ -5,12 +5,12 @@ import Grid from "@material-ui/core/Grid";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
 import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon";
 import {useFormContext} from "react-hook-form";
-import { ValueTranslate, CONSTANTS } from "@runningdinner/shared";
+import {ValueTranslate, CONSTANTS, LabelValue} from "@runningdinner/shared";
 
 // See: https://levelup.gitconnected.com/getting-forms-right-in-react-3c0f15420d61
-export default function ParticipantGenderSelection(props) {
+export default function ParticipantGenderSelection(props: LabelValue) {
 
-  const fieldName = props.name;
+  const {label, value: fieldName} = props;
 
   const { setValue, register, getValues } = useFormContext();
   const [ internalValue, setInternalValue ] = useState(getValues(fieldName));
@@ -31,8 +31,6 @@ export default function ParticipantGenderSelection(props) {
     FEMALE: gender === CONSTANTS.GENDER.FEMALE ? 'primary' : 'default',
     UNDEFINED: gender === CONSTANTS.GENDER.UNDEFINED ? 'primary' : 'default'
   };
-
-  const {label} = props;
 
   return (
       <>

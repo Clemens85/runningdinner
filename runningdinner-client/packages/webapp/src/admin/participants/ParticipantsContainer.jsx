@@ -27,9 +27,9 @@ export default function ParticipantsContainer({runningDinner}) {
   return <Fetch asyncFunction={findParticipantsAsync}
                 parameters={[adminId]}
                 render={resultObj => <Participants runningDinner={runningDinner}
-                                                incomingParticipants={resultObj.result}
-                                                selectedParticipantId={participantId}
-                                                reFetch={resultObj.reFetch} />} />
+                                                   incomingParticipants={resultObj.result}
+                                                   selectedParticipantId={participantId}
+                                                    reFetch={resultObj.reFetch} />} />
 };
 
 const Participants = ({runningDinner, incomingParticipants, selectedParticipantId, reFetch}) => {

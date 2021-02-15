@@ -1,4 +1,4 @@
-import {BaseEntity, GenderAspects, SelectOption} from "./Base";
+import {BaseEntity, GenderAspects, LabelValue} from "./Base";
 
 export interface RunningDinnerBasicDetails {
   registrationType: string;
@@ -45,9 +45,9 @@ export interface RunningDinnerPublicSettings {
 }
 
 export interface RunningDinnerSessionData {
-  genders: SelectOption[];
-  registrationTypes: SelectOption[];
-  genderAspects: SelectOption[];
+  genders: LabelValue[];
+  registrationTypes: LabelValue[];
+  genderAspects: LabelValue[];
   numSeatsNeededForHost: number;
   assignableParticipantSizes: AssignableParticipantSizes;
 }

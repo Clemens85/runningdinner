@@ -17,7 +17,7 @@ export interface RunningDinnerRelated extends BaseEntity {
   adminId: string;
 }
 
-export interface SelectOption {
+export interface LabelValue {
   label: string;
   value: string;
   description: string;

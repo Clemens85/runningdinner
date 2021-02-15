@@ -7,9 +7,10 @@ import MealSpecificsSection from "./MealSpecificsSection";
 import MiscSection from "./MiscSection";
 import FillWithExampleDataLink from "./FillWithExampleDataLink";
 import {
+  CallbackHandler,
   getFullname,
   isNewEntity,
-  mapNullFieldsToEmptyStrings, newEmptyParticipantInstance,
+  mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant,
   PARTICIPANT_VALIDATION_SCHEMA, saveParticipantAsync
 } from "@runningdinner/shared";
 import {useSnackbar} from "notistack";
@@ -19,6 +20,7 @@ import {FormProvider, useForm} from "react-hook-form";
 import {useTranslation} from "react-i18next";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
 import useHttpErrorHandler from "../../../common/HttpErrorHandlerHook";
+import {yupResolver} from "@hookform/resolvers";
 
 const useStyles = makeStyles((theme) => ({
   buttonSpacingLeft: {
@@ -26,9 +28,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+export interface ParticipantFormProps {
+  participant: Participant;
+  adminId: string;
+  onParticipantSaved: CallbackHandler;
+  onParticipantDeleted: CallbackHandler
+}
+
 // Validation, see: https://www.reactnativeschool.com/build-and-validate-forms-with-formik-and-yup/handling-server-errors
 // and: https://github.com/jaredpalmer/formik/issues/150 and https://github.com/jaredpalmer/formik/issues/33
-export default function ParticipantForm({participant, adminId, onParticipantSaved, onParticipantDeleted}) {
+export default function ParticipantForm({participant, adminId, onParticipantSaved, onParticipantDeleted}: ParticipantFormProps) {
 
   const {t} = useTranslation('common');
 
@@ -40,8 +49,8 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
   const formMethods = useForm({
     defaultValues: newEmptyParticipantInstance(),
-    validationSchema: PARTICIPANT_VALIDATION_SCHEMA,
-    mode: 'onBlur'
+    resolver: yupResolver(PARTICIPANT_VALIDATION_SCHEMA),
+    mode: 'onTouched'
   });
   const { handleSubmit, clearErrors, setError, formState, reset } = formMethods;
   const { isSubmitting } = formState;
@@ -79,7 +88,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
     }
   };
 
-  function onDeleteDialogClosed(deletedParticipant) {
+  function onDeleteDialogClosed(deletedParticipant: Participant) {
     setOpenDeleteDialog(false);
     if (deletedParticipant) {
       onParticipantDeleted(deletedParticipant);
