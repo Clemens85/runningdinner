@@ -28,11 +28,11 @@ import {
   MessageType,
   PARTICIPANT_MESSAGE_VALIDATION_SCHEMA,
   sendMessagesAsync,
-  TEAM_MESSAGE_VALIDATION_SCHEMA
+  TEAM_MESSAGE_VALIDATION_SCHEMA, useBackendIssueHandler
 } from "@runningdinner/shared";
-import useHttpErrorHandler from "../../common/HttpErrorHandlerHook";
 import {enhanceMessageObjectWithCustomSelectedRecipients} from "./MessagesContext";
 import {Helmet} from "react-helmet-async";
+import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 
 const TeamMessages = ({adminId}) => {
   const {t} = useTranslation(['admin']);
@@ -70,7 +70,8 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
 
   const {t} = useTranslation(['admin', 'common']);
 
-  const {handleFormValidationErrors, validationErrors} = useHttpErrorHandler();
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+  const {applyValidationIssuesToForm} = useBackendIssueHandler();
 
   const {loadingData, messageType, customSelectedRecipients} = useMessagesState();
   const dispatch = useMessagesDispatch();
@@ -85,14 +86,13 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
 
   const handleSendMessages = async (values) => {
     clearErrors();
-    console.log(`SendMessages with ${JSON.stringify(values)}`);
     try {
       const messageObj = enhanceMessageObjectWithCustomSelectedRecipients(values, messageType, customSelectedRecipients);
       const newMessageJob = await sendMessagesAsync(adminId, messageObj, messageType, false);
       dispatch(newAction(ADD_MESSAGEJOB, newMessageJob));
     } catch(e) {
-      handleFormValidationErrors(e);
-      validationErrors.forEach(validationError => setError(validationError));
+      applyValidationIssuesToForm(e, setError);
+      showHttpErrorDefaultNotification(e);
     }
   };
 

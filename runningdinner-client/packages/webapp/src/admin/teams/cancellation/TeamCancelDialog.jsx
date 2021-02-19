@@ -23,7 +23,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Paragraph from "../../../common/theme/typography/Paragraph";
-import useHttpErrorHandler from "../../../common/HttpErrorHandlerHook";
+import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 
 export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}) => {
 
@@ -34,7 +34,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose})
 
   const {adminId} = runningDinner;
   const {enqueueSnackbar} = useSnackbar();
-  const { handleError } = useHttpErrorHandler();
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
 
   const {getTeamName} = useTeamName();
 
@@ -50,7 +50,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose})
       }
       onClose(cancelledOrReplacedTeam);
     } catch (e) {
-      handleError(e);
+      showHttpErrorDefaultNotification(e);
     }
   };
 
@@ -75,7 +75,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose})
       teamCancellationPreviewResponse.replacementParticipants = replacementParticipants;
       setTeamCancelPreview(teamCancellationPreviewResponse);
     } catch (e) {
-      handleError(e);
+      showHttpErrorDefaultNotification(e);
     }
   };
 
