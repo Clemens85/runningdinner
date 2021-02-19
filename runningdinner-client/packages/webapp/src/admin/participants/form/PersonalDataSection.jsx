@@ -69,7 +69,6 @@ export default function PersonalDataSection() {
                         fullWidth />
                 }
             />
-            {/*<Controller as={NumberTextInputEmptyValue} name="age" control={control} variant="filled" emptyValue={0} fullWidth label={age} />*/}
           </Grid>
         </Grid>
       </>
