@@ -1,6 +1,6 @@
 import React from "react";
 import {CallbackHandler, CONSTANTS} from "@runningdinner/shared";
-import {Icon, IconButton, IconButtonProps} from "@material-ui/core";
+import {Icon, IconButton} from "@material-ui/core";
 
 export interface ParticipantGenderIconProps {
   gender: string;

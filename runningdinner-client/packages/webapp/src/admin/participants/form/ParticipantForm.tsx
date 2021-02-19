@@ -11,7 +11,7 @@ import {
   getFullname,
   isNewEntity,
   mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant,
-  PARTICIPANT_VALIDATION_SCHEMA, saveParticipantAsync
+  PARTICIPANT_VALIDATION_SCHEMA, saveParticipantAsync, useBackendIssueHandler
 } from "@runningdinner/shared";
 import {useSnackbar} from "notistack";
 import {PrimaryButton} from "../../../common/theme/PrimaryButton";
@@ -19,8 +19,8 @@ import {DeleteParticipantDialog} from "../delete/DeleteParticipantDialog";
 import {FormProvider, useForm} from "react-hook-form";
 import {useTranslation} from "react-i18next";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
-import useHttpErrorHandler from "../../../common/HttpErrorHandlerHook";
-import {yupResolver} from "@hookform/resolvers";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 
 const useStyles = makeStyles((theme) => ({
   buttonSpacingLeft: {
@@ -45,7 +45,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
   const classes = useStyles();
   const {enqueueSnackbar} = useSnackbar();
-  const { handleFormValidationErrors, validationErrors } = useHttpErrorHandler();
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
 
   const formMethods = useForm({
     defaultValues: newEmptyParticipantInstance(),
@@ -54,6 +54,8 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
   });
   const { handleSubmit, clearErrors, setError, formState, reset } = formMethods;
   const { isSubmitting } = formState;
+
+  const {applyValidationIssuesToForm} = useBackendIssueHandler();
 
   const initValues = React.useCallback(participant => {
     let participantToEdit = participant;
@@ -72,9 +74,9 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
   const showDeleteBtn = !!participant;
 
-  const updateParticipant = async(values) => {
+  const updateParticipant = async(values: Participant) => {
     const participantToSave = {
-      id: !isNewEntity(participant) ?  participant.id : null,
+      id: !isNewEntity(participant) ?  participant.id : undefined,
       ...values
     };
     clearErrors();
@@ -83,8 +85,8 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
       enqueueSnackbar(getFullname(savedParticipant) + " erfolgreich gespeichert", {variant: "success"});
       onParticipantSaved(savedParticipant);
     } catch(e) {
-      handleFormValidationErrors(e);
-      validationErrors.forEach(validationError => setError(validationError));
+      applyValidationIssuesToForm(e, setError);
+      showHttpErrorDefaultNotification(e);
     }
   };
 

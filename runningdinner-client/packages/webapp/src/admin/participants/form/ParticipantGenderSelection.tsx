@@ -13,7 +13,8 @@ export default function ParticipantGenderSelection(props: LabelValue) {
   const {label, value: fieldName} = props;
 
   const { setValue, register, getValues } = useFormContext();
-  const [ internalValue, setInternalValue ] = useState(getValues(fieldName));
+  const initialFieldValue = getValues(fieldName);
+  const [ internalValue, setInternalValue ] = useState(initialFieldValue);
 
   const setGender = React.useCallback(newGender => {
     setValue(fieldName, newGender);
@@ -61,13 +62,14 @@ export default function ParticipantGenderSelection(props: LabelValue) {
               </ParticipantGenderTooltip>
             </Box>
           </Grid>
-          <Grid item>
-            <Box ml={2}>
-              <Typography variant={"caption"}>
-                <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{'undefined': 'unknown'}}/>
-              </Typography>
-            </Box>
-          </Grid>
+          { gender &&
+            <Grid item>
+              <Box ml={2}>
+                <Typography variant={"caption"}>
+                  <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{'undefined': 'unknown'}}/>
+                </Typography>
+              </Box>
+            </Grid> }
         </Grid>
       </>
   );

@@ -13,6 +13,8 @@ export * from "./gender/GenderUtils";
 export * from "./date";
 export * from "./admin";
 
+export * from './issue';
+
 // TODO Add possibility to include JSON files
 export * from "./i18n";
 
