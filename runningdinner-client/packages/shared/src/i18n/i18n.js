@@ -12,6 +12,8 @@ const languageDetectionOptions = {
   lookupQuerystring: 'lang'
 };
 
+export const COMMON_NAMESPACE = "common";
+export const ADMIN_NAMESPACE = "admin";
 
 export function setupI18n() {
   i18n

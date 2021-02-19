@@ -1,7 +1,7 @@
 import React from 'react'
 import Grid from "@material-ui/core/Grid";
 import ParticipantGenderSelection from "./ParticipantGenderSelection";
-import NumberTextInputEmptyValue from "../../../common/input/NumberTextInputEmptyValue";
+import {NumberTextInputEmptyValue} from "../../../common/input/NumberTextInputEmptyValue";
 import FormFieldset from "../../../common/theme/FormFieldset";
 import {Controller, useFormContext} from "react-hook-form";
 import TextInput from "../../../common/input/TextInput";
@@ -55,7 +55,21 @@ export default function PersonalDataSection() {
             <ParticipantGenderSelection label="Geschlecht" value="gender" id="gender" />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Controller as={NumberTextInputEmptyValue} name="age" control={control} variant="filled" emptyValue={0} fullWidth label={age} />
+            <Controller
+                name="age"
+                control={control}
+                render={props =>
+                    <NumberTextInputEmptyValue
+                        variant="filled"
+                        name="age"
+                        label={age}
+                        onChange={newVal => props.onChange(newVal)}
+                        value={props.value}
+                        emptyValue={0}
+                        fullWidth />
+                }
+            />
+            {/*<Controller as={NumberTextInputEmptyValue} name="age" control={control} variant="filled" emptyValue={0} fullWidth label={age} />*/}
           </Grid>
         </Grid>
       </>

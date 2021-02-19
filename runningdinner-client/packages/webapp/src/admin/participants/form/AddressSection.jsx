@@ -2,7 +2,7 @@ import React from 'react'
 import Grid from "@material-ui/core/Grid";
 import FormFieldset from "../../../common/theme/FormFieldset";
 import {Controller, useFormContext} from "react-hook-form";
-import NumberTextInputEmptyValue from "../../../common/input/NumberTextInputEmptyValue";
+import {NumberTextInputEmptyValue} from "../../../common/input/NumberTextInputEmptyValue";
 import TextInput from "../../../common/input/TextInput";
 import {useTranslation} from "react-i18next";
 
