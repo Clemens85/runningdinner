@@ -63,6 +63,21 @@ export function mapBackendIssuesToIssues(
   };
 }
 
+export function findIssueByMessage(issues: Issues, message: string) {
+  const issuesArr = issues.issuesWithoutField.concat(issues.issuesFieldRelated);
+  return findIssueByMessageInArr(issuesArr, message);
+}
+
+function findIssueByMessageInArr(issues: Issue[], message: string) {
+  const messageLowerCase = message.toLowerCase();
+  for (let i = 0; i < issues.length; i++) {
+    const issueMessage = issues[i].error.message ? issues[i].error.message.toLowerCase() : undefined;
+    if (issueMessage === messageLowerCase) {
+      return issues[i];
+    }
+  }
+}
+
 function mapBackendIssueToIssue(
     issue: BackendIssue,
     shouldFocus?: boolean

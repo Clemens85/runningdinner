@@ -5,7 +5,13 @@ import {useSnackbar} from "notistack";
 import {useTranslation} from "react-i18next";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {Span} from "../../../common/theme/typography/Tags";
-import {findItemBy, isStringEmpty, mapValidationIssuesToErrorObjects, CONSTANTS, deleteParticipantAsync, getFullname} from "@runningdinner/shared";
+import {
+  isStringEmpty,
+  CONSTANTS,
+  deleteParticipantAsync,
+  getFullname,
+  useBackendIssueHandler, findIssueByMessage
+} from "@runningdinner/shared";
 import {useHistory} from "react-router-dom";
 import {generateParticipantCancellationPath} from "../../../common/NavigationService";
 
@@ -13,6 +19,7 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
 
   const {t} = useTranslation(['admin', 'common']);
   const {enqueueSnackbar} = useSnackbar();
+  const {getIssuesUntranslated} = useBackendIssueHandler();
   const history = useHistory();
 
   const deleteParticipant = async () => {
@@ -21,8 +28,8 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
       enqueueSnackbar(getFullname(participant) + " erfolgreich gelöscht", {variant: "success"});
       onClose(deletedParticipant);
     } catch (e) {
-      const validationIssues = mapValidationIssuesToErrorObjects(e);
-      if (findItemBy(validationIssues, "message", CONSTANTS.VALIDATION_ISSUE_CONSTANTS.PARTICIPANT_ASSINGED_IN_TEAM)) {
+      const issues = getIssuesUntranslated(e);
+      if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.PARTICIPANT_ASSINGED_IN_TEAM)) {
         onClose(null);
         cancelTeamMember(adminId, participant);
       }

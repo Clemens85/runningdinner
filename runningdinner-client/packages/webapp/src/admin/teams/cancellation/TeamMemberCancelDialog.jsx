@@ -6,16 +6,25 @@ import {
 } from "@material-ui/core";
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React from "react";
-import {CONSTANTS, findItemBy, getFullname, getTeamMemberCancelInfo, isSameEntity, mapValidationIssuesToErrorObjects} from "@runningdinner/shared";
+import {
+  CONSTANTS, findIssueByMessage,
+  getFullname,
+  getTeamMemberCancelInfo,
+  isSameEntity,
+  useBackendIssueHandler
+} from "@runningdinner/shared";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {Span} from "../../../common/theme/typography/Tags";
 import {useSnackbar} from "notistack";
+import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 
 export const CANCEL_WHOLE_TEAM_RESULT = "cancelWholeTeam";
 
 export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpen, onClose}) => {
 
   const {t} = useTranslation(['admin', 'common']);
+  const {getIssuesUntranslated} = useBackendIssueHandler();
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
 
   const teamMemberToCancelIsHost = isSameEntity(team.hostTeamMember, teamMemberToCancel);
   const teamMemberToCancelFullname = getFullname(teamMemberToCancel);
@@ -30,13 +39,12 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
       enqueueSnackbar(t("admin:team_cancel_member_success_text", { fullname: teamMemberToCancelFullname }),  {variant: "success"});
       onClose(updatedTeam);
     } catch (e) {
-      const validationIssues = mapValidationIssuesToErrorObjects(e);
-      if (findItemBy(validationIssues, "message", CONSTANTS.VALIDATION_ISSUE_CONSTANTS.TEAM_NO_TEAM_MEMBERS_LEFT)) {
+      const issues = getIssuesUntranslated(e);
+      if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.TEAM_NO_TEAM_MEMBERS_LEFT)) {
         navigateToCancelWholeTeam();
         return;
       }
-      // TODO: What happens with other errors?!
-      throw e;
+      showHttpErrorDefaultNotification(e);
     }
   };
 

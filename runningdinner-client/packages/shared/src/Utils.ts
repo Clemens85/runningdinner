@@ -3,7 +3,6 @@ import filter from "lodash/filter";
 import cloneDeep from "lodash/cloneDeep";
 import remove from "lodash/remove";
 import isArray from "lodash/isArray";
-import find from 'lodash/find';
 import {BaseEntity} from "./types";
 
 
@@ -41,45 +40,6 @@ export function isNewEntity(entity: any): boolean {
   }
   var len = id.length;
   return !len || len <= 0;
-}
-
-export interface FormError {
-  name: string;
-  message: string
-}
-
-export function mapValidationIssuesToErrorObjects(incomingErrorObj?: any): FormError[] {
-  const result: FormError[] = [];
-  if (!incomingErrorObj) {
-    return result;
-  }
-  return mapIssuesToErrorObjects(incomingErrorObj, 406);
-}
-
-export function mapIssuesToErrorObjects(incomingErrorObj?: any, restrictToStatus?: number): FormError[] {
-  const result: FormError[] = [];
-  if (!incomingErrorObj) {
-    return result;
-  }
-
-  const errorResponse = incomingErrorObj.response ? incomingErrorObj.response : incomingErrorObj;
-  if (errorResponse.data.issues && errorResponse.data.issues.length > 0 && (!restrictToStatus || errorResponse.status === restrictToStatus)) {
-    const issues = errorResponse.data.issues;
-    for (let i = 0; i < issues.length; i++) {
-      result.push({
-        name: issues[i].field,
-        message: issues[i].message
-      });
-    }
-  }
-  return result;
-}
-
-export function findItemBy(list: any, key: string, value: any) {
-  if (!list || !key) {
-    return undefined;
-  }
-  return find(list, [key, value]);
 }
 
 export function mapNullFieldsToEmptyStrings(obj: any, ...fieldsToIgnore: string[]) {
