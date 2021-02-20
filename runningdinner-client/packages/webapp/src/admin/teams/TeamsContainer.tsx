@@ -15,8 +15,18 @@ import {PageTitle} from "../../common/theme/typography/Tags";
 import {useQuery} from "../../common/hooks/QueryHook";
 import {generateTeamMessagesPath, generateTeamPath, TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "../../common/NavigationService";
 import LinkIntern from "../../common/theme/LinkIntern";
-import {createTeamArrangementsAsync, exchangeEntityInList, findEntityById, findTeamsAsync, swapTeamMembersAsync, Team, useDisclosure} from "@runningdinner/shared";
+import {
+  createTeamArrangementsAsync,
+  exchangeEntityInList,
+  findEntityById,
+  findTeamsAsync,
+  getFullname,
+  swapTeamMembersAsync,
+  Team,
+  useDisclosure
+} from "@runningdinner/shared";
 import {useAdminContext} from "../AdminContext";
+import {useSnackbar} from "notistack";
 
 const TeamsContainer = () => {
 
@@ -59,6 +69,8 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
 
   const history = useHistory();
   const {t} = useTranslation('admin');
+
+  const {enqueueSnackbar} = useSnackbar();
 
   useEffect(() => {
     if (teamId) {
@@ -104,6 +116,13 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
         openTeamDetails(selectedTeamWhichIsAffected);
       }
     }
+
+    const allParticipants = teamArrangementListResult.teams
+                                  .flatMap(t => t.teamMembers);
+    const srcTeamMember = findEntityById(allParticipants, srcParticipantId);
+    const destTeamMember = findEntityById(allParticipants, destParticipantId);
+    const successNotfication = t('team_swap_success_text', { fullnameSrc: getFullname(srcTeamMember), fullnameDest: getFullname(destTeamMember) });
+    enqueueSnackbar(successNotfication, { variant: 'success'});
   };
 
   const updateTeamStateInList = (team: Team) => {
