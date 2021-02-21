@@ -40,11 +40,7 @@ export const EXAMPLE_PARTICIPANT: Participant = {
   street: 'Musterstraße',
   streetNr: '1',
   age: 25,
-  numberSeats: 6,
-  vegetarian: false,
-  gluten: false,
-  lactose: false,
-  vegan: false,
+  numberSeats: 6
 };
 
 export async function findParticipantsAsync(adminId: string): Promise<Participant[]> {
