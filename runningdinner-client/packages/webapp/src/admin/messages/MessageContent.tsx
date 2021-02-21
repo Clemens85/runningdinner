@@ -5,16 +5,26 @@ import { useFormContext } from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
 import debounce from 'lodash/debounce';
 
-export default function MessageContent({templates, onMessageContentChange, name, label, rows, helperText}) {
+export interface MessageContentProps {
+  templates: string[];
+  onMessageContentChange: (changedVal: string) => unknown;
+  name: string;
+  label: string;
+  rows?: number;
+  helperText?: string;
+}
+
+export default function MessageContent({templates, onMessageContentChange, name, label, rows, helperText}: MessageContentProps) {
 
   const { setValue, register } = useFormContext();
 
   const contentRef = useRef();
   const [cursorPosition, setCursorPosition] = useState(-1);
 
-  function handleTemplateClick(template) {
+  function handleTemplateClick(template: string) {
 
-    const currentMessageContent = contentRef.current.value;
+    // @ts-ignore
+    const currentMessageContent = contentRef?.current?.value;
 
     let updatedValue;
     if (cursorPosition < 0) {
@@ -32,14 +42,15 @@ export default function MessageContent({templates, onMessageContentChange, name,
     onMessageContentChange(updatedValue);
   }
 
-  const handleMessageContentChange = changeEvt => {
+  const handleMessageContentChange = (changeEvt: React.ChangeEvent<HTMLInputElement>) => {
     const changedValue = changeEvt.target.value;
     onMessageContentChange(changedValue);
   };
 
 
   const handlePositionUpdate = debounce(() => {
-    const updatedCursorPosition = contentRef.current.selectionStart;
+    // @ts-ignore
+    const updatedCursorPosition = contentRef?.current?.selectionStart;
     setCursorPosition(updatedCursorPosition);
   }, 100);
 

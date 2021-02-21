@@ -13,7 +13,7 @@ export default function SendToMeButton({adminId, messageObj, messageType, select
   const {showHttpErrorDefaultNotification} = useNotificationHttpError();
 
   const handleSendToMe = () => {
-    const message = getMailMessageForSelectedRecipient(messageObj, selectedRecipient);
+    const message = getMailMessageForSelectedRecipient(messageObj, messageType, selectedRecipient);
     sendMessagesAsync(adminId, message, messageType, true)
         .then(() => enqueueSnackbar(t('mails_send_to_dinner_owner'), {variant: 'success'}))
         .catch((error) => showHttpErrorDefaultNotification(error));

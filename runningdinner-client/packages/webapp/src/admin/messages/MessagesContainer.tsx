@@ -23,18 +23,26 @@ import {
 import {RecipientSelection} from "./RecipientSelection";
 import {MessagePreview} from "./MessagePreview";
 import {
+  BaseMessage,
   getExampleParticipantMessage,
   getExampleTeamMessage,
   MessageType,
   PARTICIPANT_MESSAGE_VALIDATION_SCHEMA,
   sendMessagesAsync,
-  TEAM_MESSAGE_VALIDATION_SCHEMA, useBackendIssueHandler
+  TEAM_MESSAGE_VALIDATION_SCHEMA,
+  useBackendIssueHandler
 } from "@runningdinner/shared";
 import {enhanceMessageObjectWithCustomSelectedRecipients} from "./MessagesContext";
 import {Helmet} from "react-helmet-async";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
+import {yupResolver} from "@hookform/resolvers/yup";
 
-const TeamMessages = ({adminId}) => {
+
+export interface BaseMessagesProps {
+  adminId: string;
+}
+
+export function TeamMessages({adminId}: BaseMessagesProps) {
   const {t} = useTranslation(['admin']);
   const exampleMessage = getExampleTeamMessage();
   const templates = ['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'];
@@ -48,9 +56,9 @@ const TeamMessages = ({adminId}) => {
         </Helmet>
       </MessagesProvider>
   );
-};
+}
 
-const ParticipantMessages = ({adminId}) => {
+export function ParticipantMessages({adminId}: BaseMessagesProps) {
   const {t} = useTranslation(['admin']);
   const exampleMessage = getExampleParticipantMessage();
   const templates = ['{firstname}', '{lastname}'];
@@ -64,9 +72,15 @@ const ParticipantMessages = ({adminId}) => {
         </MessagesFetchData>
       </MessagesProvider>
   );
-};
+}
 
-function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
+interface MessagesViewProps<T extends BaseMessage> extends BaseMessagesProps {
+  exampleMessage: T;
+  validationSchema: any;
+  templates: string[];
+}
+
+function MessagesView<T extends BaseMessage>({adminId, exampleMessage, validationSchema, templates}: MessagesViewProps<T>) {
 
   const {t} = useTranslation(['admin', 'common']);
 
@@ -77,14 +91,15 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
   const dispatch = useMessagesDispatch();
 
   const formMethods = useForm({
+    // @ts-ignore
     defaultValues: exampleMessage,
-    validationSchema: validationSchema,
+    resolver: yupResolver(validationSchema),
     mode: 'onBlur'
   });
   const { handleSubmit, clearErrors, setError, formState } = formMethods;
   const { isSubmitting } = formState;
 
-  const handleSendMessages = async (values) => {
+  const handleSendMessages = async (values: T) => {
     clearErrors();
     try {
       const messageObj = enhanceMessageObjectWithCustomSelectedRecipients(values, messageType, customSelectedRecipients);
@@ -96,15 +111,16 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
     }
   };
 
-  const handleMessageContentChange = content => updateMessageContentPreviewAsync(content, dispatch);
-  const handleMessageSubjectChange = subject => updateMessageSubjectPreviewAsync(subject, dispatch);
-  const handleNonHostMessagePartTemplateChange = changedValue => updateNonHostMessagePartTemplatePreviewAsync(changedValue, dispatch);
-  const handleHostMessagePartTemplateChange = changedValue => updateHostMessagePartTemplatePreviewAsync(changedValue, dispatch);
+  const handleMessageContentChange = (content: string) => updateMessageContentPreviewAsync(content, dispatch);
+  const handleMessageSubjectChange = (subject: string) => updateMessageSubjectPreviewAsync(subject, dispatch);
+  const handleNonHostMessagePartTemplateChange = (changedValue: string) => updateNonHostMessagePartTemplatePreviewAsync(changedValue, dispatch);
+  const handleHostMessagePartTemplateChange = (changedValue: string) => updateHostMessagePartTemplatePreviewAsync(changedValue, dispatch);
 
   if (loadingData) {
     return <LinearProgress color="secondary" />;
   }
 
+  // @ts-ignore
   return (
       <>
         <Grid container>
@@ -155,6 +171,7 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
                       <Grid container justify="flex-end">
                         <Grid item>
                           <Box mt={3}>
+                            {/* @ts-ignore */}
                             <PrimaryButton onClick={handleSubmit(handleSendMessages)}
                                            disabled={isSubmitting}
                                            size="large">
@@ -190,8 +207,3 @@ function MessagesView({adminId, exampleMessage, validationSchema, templates}) {
       </>
   );
 }
-
-export {
-  TeamMessages,
-  ParticipantMessages
-};

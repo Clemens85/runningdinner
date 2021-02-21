@@ -1,19 +1,87 @@
 import React from "react";
 import {
+  BaseMessage,
+  BaseTeamMessage,
+  CONSTANTS,
   findEntityById,
+  findMessageJobsByAdminIdAndTypeAsync,
+  findParticipantsAsync,
+  findTeamsNotCancelledAsync,
+  getExampleParticipantMessage,
+  getExampleTeamMessage,
+  getMessagePreviewAsync,
+  getStatusResult,
   isArrayNotEmpty,
   isStringEmpty,
-  CONSTANTS,
+  MessageJob,
   MessageType,
-  getExampleTeamMessage,
-  getExampleParticipantMessage,
-  findMessageJobsByAdminIdAndTypeAsync, getMessagePreviewAsync, getStatusResult, findParticipantsAsync, findTeamsNotCancelledAsync
+  Parent,
+  ParticipantMessage,
+  PreviewMessage,
+  Recipient,
+  TeamMessage
 } from "@runningdinner/shared";
 import debounce from 'lodash/debounce';
 import find from "lodash/find";
 import cloneDeep from "lodash/cloneDeep";
 
 // See https://kentcdodds.com/blog/how-to-use-react-context-effectively
+
+type Dispatch = (action: Action) => void;
+
+interface Action {
+  type: string;
+  payload?: any;
+}
+
+type MessagesState = {
+  loadingData: boolean;
+  adminId: string;
+
+  recipients: Recipient[];
+  recipientSelection: string;
+  previousSelection: string;
+  customSelectedRecipients?: Recipient[];
+  showCustomSelectionDialog: boolean;
+
+  messageType: MessageType;
+  messageObject: BaseMessage;
+
+  selectedRecipientForPreview: Recipient | undefined;
+  previewLoading: boolean;
+  previewMessages: [];
+  isMailMessageValid: boolean;
+
+  messageJobs: MessageJob[];
+  messageJobsLoading: boolean;
+  lastPollDate: Date;
+
+  error?: unknown;
+};
+
+const INITIAL_STATE_TEMPLATE: MessagesState = {
+  loadingData: false,
+  adminId: '',
+
+  recipients: [],
+  recipientSelection: '',
+  previousSelection: '',
+  customSelectedRecipients: [],
+  showCustomSelectionDialog: false,
+
+  messageType: MessageType.MESSAGE_TYPE_PARTICIPANTS, // Will be overridden
+  messageObject: getExampleParticipantMessage(), // Will be overridden
+
+  selectedRecipientForPreview: undefined,
+  previewLoading: false,
+  previewMessages: [],
+  isMailMessageValid: false,
+
+  messageJobs: [],
+  messageJobsLoading: false,
+  lastPollDate: new Date()
+};
+
 
 export const RECIPIENTS_SELECTION_CHANGE = "RECIPIENTS_SELECTION_CHANGE";
 export const START_EDIT_CUSTOM_SELECTED_RECIPIENTS = "START_EDIT_CUSTOM_SELECTED_RECIPIENTS";
@@ -40,40 +108,17 @@ const UPDATE_MESSAGEJOBS = "UPDATE_MESSAGEJOBS";
 const START_LOADING_PREVIEW = "START_LOADING_PREVIEW";
 const FINISHED_LOADING_PREVIEW = "FINISHED_LOADING_PREVIEW";
 
-function newAction(type, payload) {
+function newAction(type: string, payload?: any) {
   return {
     type,
     payload
   };
 }
 
-const INITIAL_STATE_TEMPLATE = {
-  loadingData: false,
-  adminId: null,
+const MessagesContext = React.createContext<MessagesState>(INITIAL_STATE_TEMPLATE);
+const MessagesDispatchContext = React.createContext<Dispatch | undefined>(undefined);
 
-  recipients: [],
-  recipientSelection: '',
-  previousSelection: '',
-  customSelectedRecipients: [],
-  showCustomSelectionDialog: false,
-
-  messageType: '',
-  messageObject: null,
-
-  selectedRecipientForPreview: null,
-  previewLoading: false,
-  previewMessages: [],
-  isMailMessageValid: false,
-
-  messageJobs: [],
-  messageJobsLoading: false,
-  lastPollDate: new Date()
-};
-
-const MessagesContext = React.createContext(INITIAL_STATE_TEMPLATE);
-const MessagesDispatchContext = React.createContext(undefined);
-
-function messagesReducer(state, action) {
+function messagesReducer(state: MessagesState, action: Action): MessagesState {
   switch (action.type) {
     case START_LOADING_DATA: {
       return { ...state, loadingData: true, error: undefined, recipients: [] };
@@ -121,7 +166,7 @@ function messagesReducer(state, action) {
       const customSelectedEntities = action.payload;
       const result = { ...state, showCustomSelectionDialog: false};
       if (isArrayNotEmpty(customSelectedEntities)) {
-        result.customSelectedRecipients = customSelectedEntities;
+        result.customSelectedRecipients = (customSelectedEntities as Recipient[]);
       } else {
         result.customSelectedRecipients = [];
         result.recipientSelection = isStringEmpty(result.previousSelection) ? CONSTANTS.TEAM_SELECTION.ALL : result.previousSelection;
@@ -156,13 +201,13 @@ function messagesReducer(state, action) {
     }
     case UPDATE_MESSAGE_NONHOST_MESSAGE_PART_TEMPLATE: {
       const result =  { ...state };
-      result.messageObject.nonHostMessagePartTemplate = action.payload;
+      (result.messageObject as TeamMessage).nonHostMessagePartTemplate = action.payload;
       setFirstRecipientForPreviewIfNeeded(result);
       return result;
     }
     case UPDATE_MESSAGE_HOST_MESSAGE_PART_TEMPLATE: {
       const result =  { ...state };
-      result.messageObject.hostMessagePartTemplate = action.payload;
+      (result.messageObject as TeamMessage).hostMessagePartTemplate = action.payload;
       setFirstRecipientForPreviewIfNeeded(result);
       return result;
     }
@@ -172,13 +217,17 @@ function messagesReducer(state, action) {
   }
 }
 
-function setFirstRecipientForPreviewIfNeeded(state) {
+function setFirstRecipientForPreviewIfNeeded(state: MessagesState) {
   if (!state.selectedRecipientForPreview && isArrayNotEmpty(state.recipients)) { // Ensure we have a preselected recipient for preview
     state.selectedRecipientForPreview = state.recipients[0];
   }
 }
 
-function MessagesProvider(props) {
+export interface MessagesProviderProps extends Parent {
+  messageType: MessageType;
+}
+
+function MessagesProvider(props: MessagesProviderProps) {
 
   const [state, dispatch] = React.useReducer(
       messagesReducer,
@@ -194,7 +243,7 @@ function MessagesProvider(props) {
   );
 }
 
-function createInitialState(messageType) {
+function createInitialState(messageType: MessageType): MessagesState {
   const result = {
     ...INITIAL_STATE_TEMPLATE,
     messageType: messageType
@@ -213,13 +262,21 @@ function createInitialState(messageType) {
   return result;
 }
 
-function MessagesFetchData(props) {
+
+export interface MessagesFetchDataProps extends Parent {
+  adminId: string;
+}
+
+function MessagesFetchData(props: MessagesFetchDataProps) {
 
   const dispatch = useMessagesDispatch();
   const { adminId } = props;
 
   const { messageType, messageObject, selectedRecipientForPreview } = useMessagesState();
-  const { message, subject, hostMessagePartTemplate, nonHostMessagePartTemplate } = messageObject;
+  const { message, subject } = messageObject;
+
+  const hostMessagePartTemplate = messageType === MessageType.MESSAGE_TYPE_TEAMS ? (messageObject as TeamMessage).hostMessagePartTemplate : undefined;
+  const nonHostMessagePartTemplate = messageType === MessageType.MESSAGE_TYPE_TEAMS ? (messageObject as TeamMessage).nonHostMessagePartTemplate : undefined;
 
   React.useEffect(() => {
     fetchMessagesDataAsync(adminId, messageType, dispatch);
@@ -227,7 +284,7 @@ function MessagesFetchData(props) {
   }, []);
 
   React.useEffect( () => {
-    updatePreviewMessageAsync(adminId, messageObject, messageType, selectedRecipientForPreview, dispatch);
+    updatePreviewMessageAsync(adminId, messageObject, messageType, dispatch, selectedRecipientForPreview);
     // eslint-disable-next-line
   }, [message, subject, hostMessagePartTemplate, nonHostMessagePartTemplate, selectedRecipientForPreview]);
 
@@ -254,7 +311,7 @@ function useMessagesDispatch() {
   return context;
 }
 
-async function fetchMessagesDataAsync(adminId, messageType, dispatch) {
+async function fetchMessagesDataAsync(adminId: string, messageType: MessageType, dispatch: Dispatch) {
   dispatch(newAction(ADMIN_ID, adminId));
   dispatch(newAction(START_LOADING_DATA));
   try {
@@ -268,7 +325,7 @@ async function fetchMessagesDataAsync(adminId, messageType, dispatch) {
   }
 }
 
-function fetchMessageJobsAsync(adminId, messageType, dispatch) {
+function fetchMessageJobsAsync(adminId: string, messageType: MessageType, dispatch: Dispatch) {
   dispatch(newAction(START_LOADING_MESSAGEJOBS));
   return findMessageJobsByAdminIdAndTypeAsync(adminId, messageType)
             .then((messageJobs) => {
@@ -278,11 +335,11 @@ function fetchMessageJobsAsync(adminId, messageType, dispatch) {
             .catch((error) => dispatch(newAction(ERROR, error)));
 }
 
-async function updatePreviewMessageAsync(adminId,
-                                         messageObject,
-                                         messageType,
-                                         selectedRecipient,
-                                         dispatch) {
+async function updatePreviewMessageAsync<T extends BaseMessage>(adminId: string,
+                                                                messageObject: T,
+                                                                messageType: MessageType,
+                                                                dispatch: Dispatch,
+                                                                selectedRecipient?: Recipient) {
 
   if (!isMailMessageValid(messageObject, messageType, selectedRecipient)) {
     dispatch(newAction(UPDATE_MAIL_MESSAGE_VALID, false));
@@ -292,6 +349,7 @@ async function updatePreviewMessageAsync(adminId,
   dispatch(newAction(START_LOADING_PREVIEW));
 
   try {
+    // @ts-ignore
     const response = await getMessagePreviewAsync(adminId, messageObject, selectedRecipient, messageType);
     setPreviewMessagesAsync(response.previewMessageList, dispatch);
   } catch (error) {
@@ -314,22 +372,24 @@ const updateHostMessagePartTemplatePreviewAsync = debounce((content, dispatch) =
   dispatch(newAction(UPDATE_MESSAGE_HOST_MESSAGE_PART_TEMPLATE, content));
 }, 150);
 
-const setPreviewMessagesAsync = debounce((messages, dispatch) => {
+const setPreviewMessagesAsync = debounce((messages: PreviewMessage[], dispatch: Dispatch) => {
   dispatch(newAction(FINISHED_LOADING_PREVIEW, messages));
 }, 150);
 
-const enhanceMessageObjectWithCustomSelectedRecipients = (messageObj, messageTye, customSelectedRecipients) => {
+function enhanceMessageObjectWithCustomSelectedRecipients<T extends BaseMessage> (messageObj: T, messageTye: MessageType, customSelectedRecipients?: Recipient[]) {
   const customSelectedRecipientIds = isArrayNotEmpty(customSelectedRecipients) ? customSelectedRecipients.map(recipient => recipient.id) : [];
   const result = cloneDeep(messageObj);
   if (messageTye === MessageType.MESSAGE_TYPE_PARTICIPANTS) {
-    result.customSelectedParticipantIds = customSelectedRecipientIds;
+    // @ts-ignore
+    (result as ParticipantMessage).customSelectedParticipantIds = customSelectedRecipientIds;
   } else {
-    result.customSelectedTeamIds = customSelectedRecipientIds;
+    // @ts-ignore
+    (result as BaseTeamMessage).customSelectedTeamIds = customSelectedRecipientIds;
   }
   return result;
-};
+}
 
-const queryNotFinishedMessageJobsAsync = debounce((adminId, messageJobs, messageType, dispatch) => {
+const queryNotFinishedMessageJobsAsync = debounce((adminId: string, messageJobs: MessageJob[], messageType: MessageType, dispatch: Dispatch) => {
   if (isArrayNotEmpty(messageJobs) && isOneMessageJobNotFinished(messageJobs)) {
     findMessageJobsByAdminIdAndTypeAsync(adminId, messageType)
         .then((messageJobs) => {
@@ -338,22 +398,22 @@ const queryNotFinishedMessageJobsAsync = debounce((adminId, messageJobs, message
   }
 }, 1500);
 
-function isOneMessageJobNotFinished(messageJobs) {
-  const messageJobNotFinished = find(messageJobs, function(messageJob) {
+function isOneMessageJobNotFinished(messageJobs: MessageJob[]) {
+  return find(messageJobs, function(messageJob) {
     const status = getStatusResult(messageJob);
     return status === CONSTANTS.SENDING_STATUS_RESULT.SENDING_NOT_FINISHED;
   });
-  return messageJobNotFinished;
 }
 
-function isMailMessageValid(messageObject, messageType, selectedRecipient) {
+function isMailMessageValid<T extends BaseMessage>(messageObject: T, messageType: MessageType, selectedRecipient?: Recipient) {
   const {subject, message} = messageObject;
   const alwaysRequiredFieldsValid = selectedRecipient && !isStringEmpty(subject) && !isStringEmpty(message);
   if (!alwaysRequiredFieldsValid) {
     return false;
   }
   if (messageType === MessageType.MESSAGE_TYPE_TEAMS) {
-    return !isStringEmpty(messageObject.hostMessagePartTemplate) && !isStringEmpty(messageObject.nonHostMessagePartTemplate);
+    const teamMessageObject = (messageObject as unknown as TeamMessage);
+    return !isStringEmpty(teamMessageObject.hostMessagePartTemplate) && !isStringEmpty(teamMessageObject.nonHostMessagePartTemplate);
   }
   return true;
 }

@@ -1,22 +1,24 @@
-import { BackendConfig } from "../BackendConfig";
+import {BackendConfig} from "../BackendConfig";
 import axios from "axios";
 import {isArrayEmpty, isStringEmpty} from "../Utils";
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 import get from 'lodash/get';
 import {
+  BaseEntity,
   BaseMessage,
   BaseTeamMessage,
   MessageJob,
   MessageTask,
   MessageType,
+  Participant,
   ParticipantMessage,
   ParticipantSelection,
-  PreviewMessageList, SendingStatus,
+  PreviewMessageList,
+  SendingStatus,
   TeamMessage,
   TeamSelection
 } from "../types";
-import {BaseEntity, Participant} from "../types";
 import {CONSTANTS} from "../Constants";
 
 export async function findMessageJobsByAdminIdAndTypeAsync(adminId: string, messageType: MessageType): Promise<MessageJob> {
@@ -97,7 +99,8 @@ export function getExampleParticipantMessage(): ParticipantMessage {
   return {
     subject: '',
     message: 'Hallo {firstname} {lastname},\n\n' +
-             ' *DEIN TEXT*'
+             ' *DEIN TEXT*',
+    participantSelection: ParticipantSelection.ALL
   };
 }
 
@@ -115,7 +118,8 @@ export function getExampleTeamMessage(): TeamMessage {
         '\n' +
         '{host}',
     hostMessagePartTemplate: 'Es wird vorgeschlagen, dass du als Gastgeber fungierst. Wenn dies nicht in Ordnung ist, dann sprecht euch bitte ab und gebt uns Rückmeldung wer als neuer Gastgeber fungieren soll.',
-    nonHostMessagePartTemplate: 'Als Gastgeber wurde {partner} vorgeschlagen.'
+    nonHostMessagePartTemplate: 'Als Gastgeber wurde {partner} vorgeschlagen.',
+    teamSelection: TeamSelection.ALL
   };
 }
 

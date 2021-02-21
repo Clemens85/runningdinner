@@ -1,4 +1,6 @@
 import {FuzzyBoolean, RunningDinnerRelated} from "./Base";
+import { Participant } from "./Participant";
+import { Team } from "./Team";
 
 export enum MessageType {
   MESSAGE_TYPE_PARTICIPANTS = "PARTICIPANT",
@@ -90,3 +92,5 @@ export interface DinnerRouteMessage extends BaseTeamMessage {
   selfTemplate: string;
   hostsTemplate: string;
 }
+
+export type Recipient = Team | Participant;

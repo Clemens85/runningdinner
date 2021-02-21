@@ -11,7 +11,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function MessageTemplates({templates, onTemplateClick}) {
+export interface MessageTemplatesProps {
+  onTemplateClick: (template: string) => unknown;
+  templates: string[];
+}
+
+function MessageTemplates({templates, onTemplateClick}: MessageTemplatesProps) {
 
   const {t} = useTranslation('admin');
 
@@ -31,7 +36,12 @@ function MessageTemplates({templates, onTemplateClick}) {
   );
 }
 
-function MessageTemplate({template, onClick}) {
+
+interface MessageTemplateProps {
+  template: string;
+  onClick: (template: string) => unknown;
+}
+function MessageTemplate({template, onClick}: MessageTemplateProps) {
   const classes = useStyles();
   return (
     <Chip onClick={() => onClick(template)} label={template} className={classes.chip} />
