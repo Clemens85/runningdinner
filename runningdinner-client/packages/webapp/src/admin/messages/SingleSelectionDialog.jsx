@@ -7,6 +7,7 @@ import filter from 'lodash/filter';
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {useTranslation} from "react-i18next";
 import SelectableEntity from "../common/SelectableEntity";
+import Box from "@material-ui/core/Box";
 
 export const SingleSelectionDialog = ({selectableEntities, customSelectedEntities, open, onClose}) => {
 
@@ -50,9 +51,10 @@ function SingleSelectionDialogView ({selectableEntities, onSelectionChange, open
   const {t} = useTranslation(['common']);
 
   const selectableEntityControls = selectableEntities.map(entity =>
-    <SelectableEntity entity={entity}
-                      onSelectionChange={onSelectionChange}
-                      key={entity.id} />
+      <Box key={entity.id} >
+        <SelectableEntity entity={entity}
+                          onSelectionChange={onSelectionChange} />
+      </Box>
   );
 
   const numEntities = selectableEntityControls.length;
