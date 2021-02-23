@@ -6,6 +6,11 @@ export function isAfterInDays(a: Date, b: Date): boolean {
   return days > 0;
 }
 
+export function getDaysBetweenDates(a: Date, b: Date): number {
+  const days = differenceInCalendarDays(a, b);
+  return days;
+}
+
 export function formatLocalDate(date: Date | undefined, locale?: string): (string | undefined) {
   if (!date) {
     return undefined;

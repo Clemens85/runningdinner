@@ -1,12 +1,19 @@
 import React from 'react'
 import MealItem from "./MealItem";
-import { Card, CardContent, CardActions, List, Grid } from "@material-ui/core";
+import {Card, CardActions, CardContent, Grid, List} from "@material-ui/core";
 import EditMealsDialog from "./EditMealsDialog";
 import {useTranslation} from "react-i18next";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import {useSnackbar} from "notistack";
-import {CallbackHandler, Meal, updateMealTimesAsync} from "@runningdinner/shared";
+import {
+  CallbackHandler,
+  findAdminActivitiesAction,
+  Meal,
+  updateMealTimesAsync,
+  useDashboardDispatch,
+  useDashboardState
+} from "@runningdinner/shared";
 
 export interface MealsListProps {
   meals: Meal[];
@@ -17,6 +24,8 @@ export interface MealsListProps {
 export default function MealsList({meals, adminId, onRunningDinnerUpdate}: MealsListProps) {
 
   const {enqueueSnackbar} = useSnackbar();
+  const {loading, dashboardAdminActivities} = useDashboardState();
+  const dispatch = useDashboardDispatch();
 
   const mealItems = meals.map((meal) =>
       <MealItem {...meal} key={meal.id} />
@@ -30,6 +39,7 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate}: Meals
       updateMealTimesAsync(adminId, mealsToUpdate)
         .then(updatedRunningDinner => onRunningDinnerUpdate(updatedRunningDinner))
         .then(handleUpdateSuccess)
+        .then(() => findAdminActivitiesAction(adminId, dispatch))
         .catch((errorResponse) => handleUpdateError(errorResponse));
   }
 
@@ -58,11 +68,12 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate}: Meals
           </Grid>
         </CardActions>
 
-        <EditMealsDialog open={editMealsDialogOpen}
-                         onSave={(mealsToUpdate) => updateMeals(mealsToUpdate)}
-                         meals={meals}
-                         onCancel={() => setEditMealsDialogOpen(false)}>
-        </EditMealsDialog>
+        { !loading && <EditMealsDialog open={editMealsDialogOpen}
+                                       dashboardAdminActivities={dashboardAdminActivities}
+                                       onSave={(mealsToUpdate) => updateMeals(mealsToUpdate)}
+                                       meals={meals}
+                                       onCancel={() => setEditMealsDialogOpen(false)}>
+                     </EditMealsDialog> }
 
       </Card>
   );

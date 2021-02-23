@@ -5,6 +5,7 @@ import TeamsContainer from "./teams/TeamsContainer";
 import Dashboard from "./dashboard/Dashboard";
 import {Route, Switch} from "react-router-dom";
 import {useAdminContext} from "./AdminContext";
+import {DashboardStateProvider} from "@runningdinner/shared";
 
 export interface AdminRouteProps {
   path: string;
@@ -37,7 +38,9 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
           <TeamsContainer />
         </Route>
         <Route path="/">
-          <Dashboard runningDinner={runningDinner} />
+          <DashboardStateProvider>
+            <Dashboard runningDinner={runningDinner} />
+          </DashboardStateProvider>
         </Route>
       </Switch>
   );

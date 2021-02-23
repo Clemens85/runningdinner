@@ -9,9 +9,7 @@ const DialogActionsPanel = ({onOk, okLabel, danger, onCancel, cancelLabel, paddi
   return (
       <DialogActions>
         <Box p={padding}>
-          <SecondaryButton onClick={onCancel}>{cancelLabel}</SecondaryButton>
-          { danger ? <PrimaryDangerButtonAsync onClick={onOk} size={"medium"}>{okLabel}</PrimaryDangerButtonAsync>
-                    : <PrimarySuccessButtonAsync onClick={onOk} size={"medium"}>{okLabel}</PrimarySuccessButtonAsync> }
+          {children}
         </Box>
       </DialogActions>
   );

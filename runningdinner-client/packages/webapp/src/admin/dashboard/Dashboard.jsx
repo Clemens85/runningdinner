@@ -5,6 +5,7 @@ import Overview from "./Overview";
 import { Grid}  from "@material-ui/core";
 import Checklist from "./Checklist";
 import {useAdminContext} from "../AdminContext";
+import {findAdminActivitiesAction, useDashboardDispatch} from "@runningdinner/shared";
 
 export default function Dashboard(props) {
 
@@ -13,6 +14,12 @@ export default function Dashboard(props) {
   const { meals } = runningDinner.options;
 
   const {updateRunningDinner} = useAdminContext();
+
+  const dispatch = useDashboardDispatch();
+
+  React.useEffect(() => {
+    findAdminActivitiesAction(adminId, dispatch);
+  }, [dispatch, adminId]);
 
   return (
       <div>
@@ -27,7 +34,7 @@ export default function Dashboard(props) {
             <Overview runningDinner={runningDinner} />
           </Grid>
           <Grid item xs={12} md={3}>
-            <Checklist />
+            <Checklist runningDinner={runningDinner} />
           </Grid>
         </Grid>
       </div>

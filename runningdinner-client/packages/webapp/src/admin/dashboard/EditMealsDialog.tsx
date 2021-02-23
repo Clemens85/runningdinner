@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, Grid } from '@material-ui/core';
+import {Box, Dialog, DialogContent, Grid} from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import MealTimeEditControl from "./MealTimeEditControl";
@@ -7,7 +7,15 @@ import cloneDeep from "lodash/cloneDeep";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import { withTranslation, WithTranslation } from 'react-i18next';
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
-import {CallbackHandler, isSameEntity, Meal} from "@runningdinner/shared";
+import {
+  CallbackHandler,
+  DashboardAdminActivities,
+  isMessageActivityContained,
+  isSameEntity,
+  Meal
+} from "@runningdinner/shared";
+import Alert from "@material-ui/lab/Alert";
+import {AlertTitle} from "@material-ui/lab";
 
 
 type EditMealsDialogState = {
@@ -19,6 +27,7 @@ export interface EditMealsDialogProps extends WithTranslation {
   onCancel: CallbackHandler;
   onSave: CallbackHandler;
   open: boolean;
+  dashboardAdminActivities: DashboardAdminActivities;
 }
 
 class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDialogState> {
@@ -66,11 +75,12 @@ class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDia
 
   render() {
 
-    const { open } = this.props;
+    const { open, dashboardAdminActivities } = this.props;
 
     const meals = this.state.meals;
-
     const {t} = this.props;
+
+    const showMessagesAlreadySentInfo = isMessageActivityContained(dashboardAdminActivities.activities);
 
     const mealTimeFields = meals.map((meal) =>
         <Grid item xs key={meal.id}>
@@ -82,6 +92,13 @@ class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDia
         <Dialog open={open} onClose={this.triggerCancel} aria-labelledby="form-dialog-title">
           <DialogTitleCloseable id="edit-meals-dialog-title" onClose={this.triggerCancel}>{t('time_schedule_edit')}</DialogTitleCloseable>
           <DialogContent>
+            { showMessagesAlreadySentInfo &&
+              <Box my={2}>
+                <Alert severity={"info"}>
+                  <AlertTitle>{t('attention')}</AlertTitle>
+                  {t('admin:attention_mealtimes_messages_already_sent')}
+                </Alert>
+              </Box> }
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container spacing={2}>
                 {mealTimeFields}

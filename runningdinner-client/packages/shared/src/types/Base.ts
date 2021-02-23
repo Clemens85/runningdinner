@@ -29,6 +29,11 @@ export enum GenderAspects {
   IGNORE_GENDE0R = "IGNORE_GENDE0R"
 }
 
+export enum RelatedEntityType {
+  MESSAGE_JOB = "MESSAGE_JOB",
+  PARTICIPANT = "PARTICIPANT"
+}
+
 export type CallbackHandler = (...args: any[]) => unknown;
 
 export type CallbackHandlerAsync = (...args: any[]) => Promise<unknown>;
