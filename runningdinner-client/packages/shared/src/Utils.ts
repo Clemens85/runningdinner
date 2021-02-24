@@ -12,7 +12,7 @@ import {BaseEntity} from "./types";
  * @param id
  * @returns {*} the found entity or null
  */
-export function findEntityById(entities: any, id?: string) {
+export function findEntityById(entities: any, id?: string | null) {
 
   if (!entities || !id) {
     return null;

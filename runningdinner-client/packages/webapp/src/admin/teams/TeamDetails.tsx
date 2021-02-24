@@ -22,12 +22,21 @@ import {
   generateCancelledTeamMembersAsNumberArray,
   getFullname,
   hasEnoughSeats,
-  useDisclosure
+  useDisclosure, Team, Meal, Participant, NoopFunction, CallbackHandler
 } from "@runningdinner/shared";
+import {useAdminContext} from "../AdminContext";
 
-export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, onOpenChangeTeamHostDialog, onUpdateTeamState}) {
+export interface TeamDetailsProps {
+  team: Team;
+  teamMemberIdToCancel: string | null;
+  onOpenChangeTeamHostDialog: (team: Team) => unknown;
+  onUpdateTeamState: (team: Team) => unknown;
+}
+
+export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTeamHostDialog, onUpdateTeamState}: TeamDetailsProps) {
 
   const {t} = useTranslation('common');
+  const {runningDinner} = useAdminContext();
 
   const {adminId, sessionData} = runningDinner;
   const {teamMembers, meal, hostTeamMember} = team;
@@ -40,7 +49,7 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
   const {isOpen: isTeamMemberCancelDialogOpen,
          close: closeTeamMemberCancelDialog,
          open: openTeamMemberCancelDialog,
-         data: teamMemberToCancel} = useDisclosure(!!passedTeamMemberToCancel, passedTeamMemberToCancel);
+         getIsOpenData: getTeamMemberToCancel} = useDisclosure(!!passedTeamMemberToCancel, passedTeamMemberToCancel);
 
   const {isOpen: isTeamCancelDialogOpen,
          close: closeTeamCancelDialog,
@@ -50,12 +59,12 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
                                                                         onOpenTeamMemberCancelDialog={() => openTeamMemberCancelDialog(participant) }/>);
   const cancelledTeamMembers = generateCancelledTeamMembersAsNumberArray(team, runningDinner.options.teamSize);
   teamMembersDisplay = teamMembersDisplay.concat(
-      cancelledTeamMembers.map(cancelledTeamMember => <TeamMember key={cancelledTeamMember} participant={null} onOpenTeamMemberCancelDialog={() => {}} />)
+      cancelledTeamMembers.map(cancelledTeamMember => <TeamMember key={cancelledTeamMember} onOpenTeamMemberCancelDialog={NoopFunction} />)
   );
 
   const hostTeamMemberName = getFullname(hostTeamMember);
 
-  const handleCloseTeamMemberCancelDialog = (closeResult) => {
+  const handleCloseTeamMemberCancelDialog = (closeResult?: any) => { // TODO
     closeTeamMemberCancelDialog();
     if (closeResult === CANCEL_WHOLE_TEAM_RESULT) {
       handleOpenTeamCancelDialog();
@@ -72,7 +81,7 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
     openTeamCancelDialog();
   };
 
-  const handleCloseTeamCancelDialog = (closeResult) => {
+  const handleCloseTeamCancelDialog = (closeResult?: Team) => {
     closeTeamCancelDialog();
     if (closeResult && closeResult.teamNumber) {
       onUpdateTeamState(closeResult); // closeResult === the updated team
@@ -98,7 +107,7 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
           <Grid container>
             <Grid item xs={11}>
               <Subtitle><TeamNr {...team} /></Subtitle>
-              <MealAtTime meal={meal} />
+              <MealAtTime {...meal} />
             </Grid>
             <Grid item xs={1}>
               <VerticalMenuThreeDots entries={actionMenuItems}/>
@@ -146,11 +155,11 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
 
         </Box>
 
-        { teamMemberToCancel && <TeamMemberCancelDialog isOpen={isTeamMemberCancelDialogOpen}
-                                                        onClose={handleCloseTeamMemberCancelDialog}
-                                                        team={team}
-                                                        adminId={adminId}
-                                                        teamMemberToCancel={teamMemberToCancel} /> }
+        { isTeamMemberCancelDialogOpen && <TeamMemberCancelDialog isOpen={isTeamMemberCancelDialogOpen}
+                                                                  onClose={handleCloseTeamMemberCancelDialog}
+                                                                  team={team}
+                                                                  adminId={adminId}
+                                                                  teamMemberToCancel={getTeamMemberToCancel()} /> }
 
         { isTeamCancelDialogOpen && <TeamCancelDialog isOpen={isTeamCancelDialogOpen}
                                                       onClose={handleCloseTeamCancelDialog}
@@ -161,14 +170,19 @@ export default function TeamDetails({team, runningDinner, teamMemberIdToCancel, 
   );
 }
 
-function MealAtTime({meal}) {
+function MealAtTime({label, time}: Meal) {
   const {t} = useTranslation('common');
   return (
-      <Paragraph>{meal.label} {t('at_time')} <Time date={meal.time}/></Paragraph>
+      <Paragraph>{label} {t('at_time')} <Time date={time}/></Paragraph>
   );
 }
 
-function TeamMember({participant, onOpenTeamMemberCancelDialog}) {
+interface TeamMemberProps {
+  participant?: Participant;
+  onOpenTeamMemberCancelDialog: CallbackHandler;
+}
+
+function TeamMember({participant, onOpenTeamMemberCancelDialog}: TeamMemberProps) {
 
   const {t} = useTranslation(['common', 'admin']);
 
@@ -201,7 +215,12 @@ function TeamMember({participant, onOpenTeamMemberCancelDialog}) {
   );
 }
 
-function NoValidTeamHost({team, numSeatsNeededForHost}) {
+interface NoValidTeamHostProps {
+  team: Team;
+  numSeatsNeededForHost: number;
+}
+
+function NoValidTeamHost({team, numSeatsNeededForHost}: NoValidTeamHostProps) {
 
   if (hasEnoughSeats(team, numSeatsNeededForHost)) {
     return null;

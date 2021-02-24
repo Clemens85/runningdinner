@@ -48,7 +48,7 @@ const TeamsContainer = () => {
 interface TeamsProps {
   incomingTeams: Team[];
   teamId?: string;
-  teamMemberIdToCancel?: string | null;
+  teamMemberIdToCancel: string | null;
 }
 
 function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
@@ -59,7 +59,6 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
   const [teams, setTeams] = useState(incomingTeams);
-  const [showTeamDetails, setShowTeamDetails] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team>();
 
   const {isOpen: isChangeTeamHostDialogOpen,
@@ -82,7 +81,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   }, [teamId, teams, selectedTeam]);
 
   const { adminId } = runningDinner;
-  const showTeamsList = !isSmallDevice || !showTeamDetails;
+  const showTeamsList = !isSmallDevice || !selectedTeam;
   const teamsExisting = teams.length > 0;
 
   function handleTeamClick(team: Team) {
@@ -91,7 +90,6 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
 
   function openTeamDetails(team: Team) {
     setSelectedTeam(team);
-    setShowTeamDetails(true);
   }
 
   const handleGenerateTeams = async () => {
@@ -162,9 +160,8 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
                 </>
             }
             <Grid item xs={12} md={5}>
-              { showTeamDetails
+              { selectedTeam
                   ? <TeamDetails team={selectedTeam}
-                                 runningDinner={runningDinner}
                                  onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
                                  teamMemberIdToCancel={teamMemberIdToCancel}
                                  onUpdateTeamState={updateTeamStateInList} />
