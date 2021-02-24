@@ -22,7 +22,7 @@ import {
   generateCancelledTeamMembersAsNumberArray,
   getFullname,
   hasEnoughSeats,
-  useDisclosure, Team, Meal, Participant, NoopFunction, CallbackHandler
+  useDisclosure, Team, Meal, Participant, NoopFunction, CallbackHandler, RunningDinnerSessionData
 } from "@runningdinner/shared";
 import {useAdminContext} from "../AdminContext";
 
@@ -39,7 +39,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
   const {runningDinner} = useAdminContext();
 
   const {adminId, sessionData} = runningDinner;
-  const {teamMembers, meal, hostTeamMember} = team;
+  const {teamMembers, meal} = team;
 
   const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
   const isReplaced = team.status === CONSTANTS.TEAM_STATUS.REPLACED;
@@ -88,8 +88,6 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
     actionMenuItems = [{ label: t("admin:team_notify_cancellation"), onClick: handleNotifyAffectedTeamsCancellation }];
   }
 
-  const hostTeamMemberName = getFullname(hostTeamMember);
-
   return (
       <Paper elevation={3}>
         <Box p={2}>
@@ -110,8 +108,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
               </Grid> }
           </Grid>
 
-          {isCancelled
-              ? <Box mt={2}><CancelledTeamMember /></Box>
+          { isCancelled ? <Box mt={2}><CancelledTeamMember /></Box>
               : <Box mt={2}>
                   <Grid container>
                     <Grid item xs={12}>
@@ -119,15 +116,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
                     </Grid>
                   </Grid>
                   {teamMemberNodes}
-                  <Grid container>
-                    <Grid item>
-                      <Box mt={1}>
-                      <Paragraph i18n="admin:teams_host" parameters={{host: hostTeamMemberName}} html={true}/> &nbsp; (<LinkAction
-                        onClick={() => onOpenChangeTeamHostDialog(team)}>{t('change')}</LinkAction>)
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  <NoValidTeamHost team={team} numSeatsNeededForHost={sessionData.numSeatsNeededForHost}/>
+                  <TeamHostInfo sessionData={sessionData} team={team} onOpenChangeTeamHostDialog={onOpenChangeTeamHostDialog}/>
                 </Box> }
 
           <Box mt={2}>
@@ -169,6 +158,8 @@ interface TeamMemberProps {
   onUpdateTeamState: (team: Team) => unknown;
   onOpenTeamCancelDialog: CallbackHandler;
 }
+
+
 
 function TeamMember({teamMember, adminId, team, passedTeamMemberToCancel, onUpdateTeamState, onOpenTeamCancelDialog}: TeamMemberProps) {
 
@@ -221,6 +212,35 @@ function TeamMember({teamMember, adminId, team, passedTeamMemberToCancel, onUpda
   );
 }
 
+interface TeamHostInfoProps {
+  team: Team;
+  onOpenChangeTeamHostDialog: (team: Team) => unknown;
+  sessionData: RunningDinnerSessionData;
+}
+
+function TeamHostInfo({team, sessionData, onOpenChangeTeamHostDialog}: TeamHostInfoProps) {
+
+  const {t} = useTranslation('common');
+
+  const {hostTeamMember} = team;
+  const hostTeamMemberName = getFullname(hostTeamMember);
+
+  return (
+    <Box mt={1}>
+      <Grid container spacing={1} alignContent={"center"}>
+        <Grid item alignItems={"center"}>
+          <Paragraph i18n="admin:teams_host" parameters={{host: hostTeamMemberName}} html={true}/>
+        </Grid>
+        <Grid item alignItems={"center"}>
+          <LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}><Span>({t('change')})</Span></LinkAction>
+        </Grid>
+      </Grid>
+      <NoValidTeamHost team={team} numSeatsNeededForHost={sessionData.numSeatsNeededForHost}/>
+    </Box>
+  );
+}
+
+
 interface NoValidTeamHostProps {
   team: Team;
   numSeatsNeededForHost: number;
@@ -233,9 +253,12 @@ function NoValidTeamHost({team, numSeatsNeededForHost}: NoValidTeamHostProps) {
   }
 
   return (
-      <Grid container>
-        <Grid item xs={12}>
-          <ErrorOutlineOutlinedIcon /> <Span i18n={'admin:teams_no_valid_host'} />
+      <Grid container spacing={1} alignItems={"center"}>
+        <Grid item>
+          <ErrorOutlineOutlinedIcon color={"secondary"} />
+        </Grid>
+        <Grid item>
+          <Span i18n={'admin:teams_no_valid_host'} color={"secondary"}/>
         </Grid>
       </Grid>
   );
