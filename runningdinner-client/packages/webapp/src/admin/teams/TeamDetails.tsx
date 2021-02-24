@@ -6,7 +6,7 @@ import FormFieldset from "../../common/theme/FormFieldset";
 import TeamSchedule from "./TeamSchedule";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import LinkAction from "../../common/theme/LinkAction";
-import {CANCEL_WHOLE_TEAM_RESULT, TeamMemberCancelDialog} from "./cancellation/TeamMemberCancelDialog";
+import {TeamMemberCancelDialog, TeamMemberCancelDialogResult} from "./cancellation/TeamMemberCancelDialog";
 import VerticalMenuThreeDots from "../../common/menu/VerticalMenuThreeDots";
 import {CancelledTeamMember} from "./CancelledTeamMember";
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
@@ -46,39 +46,27 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
 
   const passedTeamMemberToCancel = findEntityById(teamMembers, teamMemberIdToCancel);
 
-  const {isOpen: isTeamMemberCancelDialogOpen,
-         close: closeTeamMemberCancelDialog,
-         open: openTeamMemberCancelDialog,
-         getIsOpenData: getTeamMemberToCancel} = useDisclosure(!!passedTeamMemberToCancel, passedTeamMemberToCancel);
-
   const {isOpen: isTeamCancelDialogOpen,
          close: closeTeamCancelDialog,
          open: openTeamCancelDialog} = useDisclosure(false);
 
-  let teamMembersDisplay = teamMembers.map(participant => <TeamMember key={participant.id} participant={participant}
-                                                                        onOpenTeamMemberCancelDialog={() => openTeamMemberCancelDialog(participant) }/>);
+  let teamMemberNodes = teamMembers.map(participant => <TeamMember key={participant.id}
+                                                                    adminId={adminId}
+                                                                    teamMember={participant}
+                                                                    team={team}
+                                                                    passedTeamMemberToCancel={passedTeamMemberToCancel}
+                                                                    onOpenTeamCancelDialog={openTeamCancelDialog}
+                                                                    onUpdateTeamState={onUpdateTeamState} />);
   const cancelledTeamMembers = generateCancelledTeamMembersAsNumberArray(team, runningDinner.options.teamSize);
-  teamMembersDisplay = teamMembersDisplay.concat(
-      cancelledTeamMembers.map(cancelledTeamMember => <TeamMember key={cancelledTeamMember} onOpenTeamMemberCancelDialog={NoopFunction} />)
-  );
-
-  const hostTeamMemberName = getFullname(hostTeamMember);
-
-  const handleCloseTeamMemberCancelDialog = (closeResult?: any) => { // TODO
-    closeTeamMemberCancelDialog();
-    if (closeResult === CANCEL_WHOLE_TEAM_RESULT) {
-      handleOpenTeamCancelDialog();
-    } else if (closeResult && closeResult.teamNumber) {
-      onUpdateTeamState(closeResult); // closeResult === the updated team
-    }
-  };
+  const cancelledTeamMemberNodes = cancelledTeamMembers.map(cancelledTeamMember => <TeamMember key={cancelledTeamMember}
+                                                                                               adminId={adminId}
+                                                                                               team={team}
+                                                                                               onOpenTeamCancelDialog={NoopFunction}
+                                                                                               onUpdateTeamState={NoopFunction}/>);
+  teamMemberNodes = teamMemberNodes.concat(cancelledTeamMemberNodes);
 
   const handleOpenSingleTeamMessage = () => {
     alert('handleOpenSingleTeamMessage');
-  };
-
-  const handleOpenTeamCancelDialog = () => {
-    openTeamCancelDialog();
   };
 
   const handleCloseTeamCancelDialog = (closeResult?: Team) => {
@@ -94,11 +82,13 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
 
   let actionMenuItems = [
     { label: t("admin:team_message"), onClick: handleOpenSingleTeamMessage },
-    { label: t("admin:team_cancel"), onClick: handleOpenTeamCancelDialog }
+    { label: t("admin:team_cancel"), onClick: openTeamCancelDialog }
   ];
   if (isCancelled) {
     actionMenuItems = [{ label: t("admin:team_notify_cancellation"), onClick: handleNotifyAffectedTeamsCancellation }];
   }
+
+  const hostTeamMemberName = getFullname(hostTeamMember);
 
   return (
       <Paper elevation={3}>
@@ -128,7 +118,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
                       <FormFieldset>{t('team_members')}</FormFieldset>
                     </Grid>
                   </Grid>
-                  {teamMembersDisplay}
+                  {teamMemberNodes}
                   <Grid container>
                     <Grid item>
                       <Box mt={1}>
@@ -155,12 +145,6 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
 
         </Box>
 
-        { isTeamMemberCancelDialogOpen && <TeamMemberCancelDialog isOpen={isTeamMemberCancelDialogOpen}
-                                                                  onClose={handleCloseTeamMemberCancelDialog}
-                                                                  team={team}
-                                                                  adminId={adminId}
-                                                                  teamMemberToCancel={getTeamMemberToCancel()} /> }
-
         { isTeamCancelDialogOpen && <TeamCancelDialog isOpen={isTeamCancelDialogOpen}
                                                       onClose={handleCloseTeamCancelDialog}
                                                       teamToCancel={team}
@@ -178,15 +162,23 @@ function MealAtTime({label, time}: Meal) {
 }
 
 interface TeamMemberProps {
-  participant?: Participant;
-  onOpenTeamMemberCancelDialog: CallbackHandler;
+  teamMember?: Participant;
+  adminId: string;
+  team: Team;
+  passedTeamMemberToCancel?: Participant;
+  onUpdateTeamState: (team: Team) => unknown;
+  onOpenTeamCancelDialog: CallbackHandler;
 }
 
-function TeamMember({participant, onOpenTeamMemberCancelDialog}: TeamMemberProps) {
+function TeamMember({teamMember, adminId, team, passedTeamMemberToCancel, onUpdateTeamState, onOpenTeamCancelDialog}: TeamMemberProps) {
 
   const {t} = useTranslation(['common', 'admin']);
 
-  if (!participant) {
+  const {isOpen: isTeamMemberCancelDialogOpen,
+         close: closeTeamMemberCancelDialog,
+         open: openTeamMemberCancelDialog} = useDisclosure(!!passedTeamMemberToCancel, passedTeamMemberToCancel);
+
+  if (!teamMember) {
     return (
       <Grid container>
         <Grid item xs={12}><CancelledTeamMember /></Grid>
@@ -194,12 +186,21 @@ function TeamMember({participant, onOpenTeamMemberCancelDialog}: TeamMemberProps
     );
   }
 
-  const { numSeats, gender } = participant;
+  const handleCloseTeamMemberCancelDialog = (closeResult?: TeamMemberCancelDialogResult) => {
+    closeTeamMemberCancelDialog();
+    if (closeResult?.mustCancelWholeTeam) {
+      onOpenTeamCancelDialog();
+    } else if (closeResult?.teamAfterCancel) {
+      onUpdateTeamState(closeResult.teamAfterCancel);
+    }
+  };
+
+  const { numSeats, gender } = teamMember;
   const numSeatsDisplay = numSeats > -1 ? t('participant_seats', { numSeats }) : t('no_information');
 
   return (
       <Grid container alignItems="center">
-        <Grid item xs={6} sm={4}><Fullname {...participant}/></Grid>
+        <Grid item xs={6} sm={4}><Fullname {...teamMember}/></Grid>
         <Grid item xs={2} sm={2}>{numSeatsDisplay}</Grid>
         <Hidden xsDown>
           <Grid item xs={3} sm={2}>
@@ -208,9 +209,14 @@ function TeamMember({participant, onOpenTeamMemberCancelDialog}: TeamMemberProps
         </Hidden>
         <Grid item xs={4} sm={4}>
           <Box justifyContent="flex-end">
-            <Button color="secondary" onClick={onOpenTeamMemberCancelDialog}>{t('admin:participant_cancel')}</Button>
+            <Button color="secondary" onClick={() => openTeamMemberCancelDialog()}>{t('admin:participant_cancel')}</Button>
           </Box>
         </Grid>
+        { isTeamMemberCancelDialogOpen && <TeamMemberCancelDialog isOpen={isTeamMemberCancelDialogOpen}
+                                                                  onClose={handleCloseTeamMemberCancelDialog}
+                                                                  team={team}
+                                                                  adminId={adminId}
+                                                                  teamMemberToCancel={teamMember} /> }
       </Grid>
   );
 }

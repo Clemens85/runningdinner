@@ -7,10 +7,13 @@ import {
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React from "react";
 import {
+  cancelTeamMemberAsync,
   CONSTANTS, findIssueByMessage,
   getFullname,
   getTeamMemberCancelInfo,
   isSameEntity,
+  Participant,
+  Team,
   useBackendIssueHandler
 } from "@runningdinner/shared";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
@@ -18,9 +21,20 @@ import {Span} from "../../../common/theme/typography/Tags";
 import {useSnackbar} from "notistack";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 
-export const CANCEL_WHOLE_TEAM_RESULT = "cancelWholeTeam";
+export interface TeamMemberCancelDialogProps {
+  adminId: string;
+  team: Team;
+  teamMemberToCancel: Participant;
+  isOpen: boolean;
+  onClose: (result?: TeamMemberCancelDialogResult) => unknown;
+}
 
-export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpen, onClose}) => {
+export interface TeamMemberCancelDialogResult {
+  teamAfterCancel?: Team;
+  mustCancelWholeTeam?: boolean;
+}
+
+export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpen, onClose}: TeamMemberCancelDialogProps) => {
 
   const {t} = useTranslation(['admin', 'common']);
   const {getIssuesUntranslated} = useBackendIssueHandler();
@@ -33,11 +47,11 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
 
   const {enqueueSnackbar} = useSnackbar();
 
-  const cancelTeamMemberAsync = async() => {
+  const handleCancelTeamMember = async() => {
     try  {
-      const updatedTeam = await cancelTeamMemberAsync(adminId, team.id, teamMemberToCancel.id);
+      const teamAfterCancel = await cancelTeamMemberAsync(adminId, team.id!, teamMemberToCancel.id!);
       enqueueSnackbar(t("admin:team_cancel_member_success_text", { fullname: teamMemberToCancelFullname }),  {variant: "success"});
-      onClose(updatedTeam);
+      onClose({ teamAfterCancel });
     } catch (e) {
       const issues = getIssuesUntranslated(e);
       if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.TEAM_NO_TEAM_MEMBERS_LEFT)) {
@@ -49,7 +63,7 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
   };
 
   const navigateToCancelWholeTeam = () => {
-    onClose(CANCEL_WHOLE_TEAM_RESULT);
+    onClose({ mustCancelWholeTeam: true });
   };
 
   const renderContent = () => {
@@ -84,17 +98,21 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
     );
   };
 
+  const cancelDialog = () => {
+    onClose();
+  }
+
   if (!isOpen) {
     return null;
   }
   return (
-      <Dialog open={true} onClose={onClose} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true}>
-        <DialogTitleCloseable onClose={onClose}>{t('team_member_cancel', {teamMemberToCancel: teamMemberToCancelFullname})}</DialogTitleCloseable>
+      <Dialog open={true} onClose={cancelDialog} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true}>
+        <DialogTitleCloseable onClose={cancelDialog}>{t('team_member_cancel', {teamMemberToCancel: teamMemberToCancelFullname})}</DialogTitleCloseable>
         <DialogContent>
           { renderContent() }
         </DialogContent>
-        { !cancelWholeTeam && <DialogActionsPanel onOk={cancelTeamMemberAsync} onCancel={onClose} okLabel={t('admin:team_member_cancel_delete')} cancelLabel={t('common:cancel')} danger={true}/> }
-        { cancelWholeTeam && <DialogActionsPanel onOk={navigateToCancelWholeTeam} onCancel={onClose} okLabel={t('admin:team_member_cancel_goto_team_cancel')} cancelLabel={t('common:cancel')} danger={true}/>}
+        { !cancelWholeTeam && <DialogActionsPanel onOk={handleCancelTeamMember} onCancel={cancelDialog} okLabel={t('admin:team_member_cancel_delete')} cancelLabel={t('common:cancel')} danger={true}/> }
+        { cancelWholeTeam && <DialogActionsPanel onOk={navigateToCancelWholeTeam} onCancel={cancelDialog} okLabel={t('admin:team_member_cancel_goto_team_cancel')} cancelLabel={t('common:cancel')} danger={true}/>}
       </Dialog>
   );
 };
