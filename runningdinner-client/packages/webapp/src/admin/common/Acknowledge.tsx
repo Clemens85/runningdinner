@@ -23,8 +23,6 @@ export default function Acknowledge() {
   const urlParams = useParams<Record<string, string>>();
   const {acknowledgeId} = urlParams;
 
-  console.log('Running through Acknowledge')
-
   const {loading, error, result} = useAsync(acknowledgeRunningDinnerAsync, [adminId, acknowledgeId]);
 
   React.useEffect(() => {
