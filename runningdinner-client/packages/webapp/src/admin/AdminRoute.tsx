@@ -6,6 +6,7 @@ import Dashboard from "./dashboard/Dashboard";
 import {Route, Switch} from "react-router-dom";
 import {useAdminContext} from "./AdminContext";
 import {DashboardStateProvider} from "@runningdinner/shared";
+import Acknowledge from "./common/Acknowledge";
 
 export interface AdminRouteProps {
   path: string;
@@ -36,6 +37,9 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
         </Route>
         <Route path={`${path}/teams`}>
           <TeamsContainer />
+        </Route>
+        <Route path={`${path}/:acknowledgeId/acknowledge`}>
+          <Acknowledge />
         </Route>
         <Route path="/">
           <DashboardStateProvider>

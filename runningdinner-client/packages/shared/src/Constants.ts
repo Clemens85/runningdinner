@@ -89,4 +89,6 @@ export const CONSTANTS = {
     "DEMO": "DEMO"
   },
 
+  "GLOBAL_ADMIN_EMAIL": 'runyourdinner@gmail.com',
+
 };

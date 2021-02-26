@@ -1,13 +1,17 @@
 import {Link} from "@material-ui/core";
 import {Link as RouterLink} from "react-router-dom";
 import React from "react";
+import {Parent} from "@runningdinner/shared";
 
-export default function LinkIntern(props) {
+export interface LinkInternProps extends Parent {
+  pathname: string;
+}
 
-  const {pathname} = props;
+export default function LinkIntern({pathname, children}: LinkInternProps) {
+
   return (
       <Link to={{ pathname: pathname}} component={RouterLink} color="primary">
-        {props.children}
+        {children}
       </Link>
   );
 }

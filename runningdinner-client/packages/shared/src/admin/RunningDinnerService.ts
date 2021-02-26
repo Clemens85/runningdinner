@@ -20,6 +20,12 @@ export async function updateMealTimesAsync(adminId: string, meals: Array<Meal>):
   return response.data;
 }
 
+export async function acknowledgeRunningDinnerAsync(adminId: string, acknowledgeId: string): Promise<RunningDinner> {
+  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/acknowledge/${acknowledgeId}`);
+  const response = await axios.put<RunningDinner>(url);
+  return response.data;
+}
+
 export function isClosedDinner(dinner: RunningDinner): boolean {
   const registrationType = dinner.basicDetails.registrationType;
   return registrationType === CONSTANTS.REGISTRATION_TYPE.CLOSED;
@@ -40,3 +46,4 @@ export function isAcknowledgeRequired(runningDinner: RunningDinner) {
 export function isNotificationRequired(runningDinner: RunningDinner): boolean {
   return isAcknowledgeRequired(runningDinner) || !!runningDinner.cancellationDate || runningDinner.runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO;
 }
+

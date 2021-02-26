@@ -148,7 +148,7 @@
 	"registration_not_yet_confirmed": "Anmeldung noch nicht bestätigt",
 	"runningdinner_acknowledge_congratulation_text": "Herzlichen Glückwunsch, du hast dich soeben als Ersteller dieses Running Dinner Events bestätigt. Damit kannst du alle Features (inkl. Nachrichtenversand) nutzen!",
 	"runningdinner_acknowledge_congratulation_title": "Bestätigung erfolgreich",
-	"runningdinner_acknowledge_error_text": "Leider ist ein Fehler beim Versuch der Bestätigung deines Dinner Events aufgetreten. Versuche es bitte später erneut. <br/>Falls der Fehler immer noch auftritt wende dich bitte an <a href='mailto:{{ adminEmail }}'>{{ adminEmail }}</a>.",
+	"runningdinner_acknowledge_error_text": "Leider ist ein Fehler beim Versuch der Bestätigung deines Dinner Events aufgetreten. Versuche es bitte später erneut. <br/>Falls der Fehler immer noch auftritt wende dich bitte an <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />.",
 	"runningdinner_acknowledge_error_title": "Fehler bei Bestätigung",
 	"runningdinner_acknowledge_title": "Running Dinner Event bestätigen",
 

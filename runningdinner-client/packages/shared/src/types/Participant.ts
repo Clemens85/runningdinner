@@ -22,6 +22,7 @@ export interface Participant extends BaseEntity {
   addressRemarks: string;
   teamPartnerWish: string;
   notes: string;
+  teamId?: string;
 }
 
 export enum TeamPartnerWishState {

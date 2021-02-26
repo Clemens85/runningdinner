@@ -147,7 +147,7 @@
 	"registration_not_yet_confirmed": "Registration not yet confirmed",
 	"runningdinner_acknowledge_congratulation_text": "Congratulations, you have successfully confirmed your created running dinner event. Now you can use all features (also sending messages)!",
 	"runningdinner_acknowledge_congratulation_title": "Successful Confirmation",
-	"runningdinner_acknowledge_error_text": "Unfortunately there occurred an error while trying to confirm your running dinner event. Please try it again later.<br />If this error still occurrs, then write a message to <a href='mailto:{{ adminEmail }}'>{{ adminEmail }}</a>.",
+	"runningdinner_acknowledge_error_text": "Unfortunately there occurred an error while trying to confirm your running dinner event. Please try it again later.<br />If this error still occurrs, then write a message to <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />.",
 	"runningdinner_acknowledge_error_title": "Confirmation failed",
 	"runningdinner_acknowledge_title": "Confirmation of Running Dinner Event",
 
