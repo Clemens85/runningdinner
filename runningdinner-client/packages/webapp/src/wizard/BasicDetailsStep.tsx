@@ -2,10 +2,10 @@ import React from 'react';
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {Controller, FormProvider, useForm} from "react-hook-form";
-import {FetchStatus, getByValue, RunningDinnerBasicDetails, useBackendIssueHandler, validateBasicDetails} from "@runningdinner/shared";
+import {FetchStatus, getByValue, Parent, RunningDinnerBasicDetails, useBackendIssueHandler, validateBasicDetails} from "@runningdinner/shared";
 import {useWizardSelector} from "./WizardStore";
 import {getNextNavigationStepSelector, getRegistrationTypesSelector, getRunningDinnerBasicDetailsSelector, updateBasicDetails} from './WizardSlice';
-import Grid from "@material-ui/core/Grid";
+import Grid, {GridSize} from "@material-ui/core/Grid";
 import FormTextField from "../common/input/FormTextField";
 import FormSelect from "../common/input/FormSelect";
 import {Box, FormHelperText, FormLabel, MenuItem} from "@material-ui/core";
@@ -16,6 +16,9 @@ import {KeyboardDatePicker} from "@material-ui/pickers";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {useDispatch} from "react-redux";
 import {useHistory} from "react-router-dom";
+import {Breakpoint} from "@material-ui/core/styles/createBreakpoints";
+import FormDatePicker from "../common/input/FormDatePicker";
+import useWizardNavigation from "./WizardNavigationHook";
 
 export default function BasicDetailsStep() {
 
@@ -26,7 +29,7 @@ export default function BasicDetailsStep() {
   const nextNavigationStep = useWizardSelector(getNextNavigationStepSelector);
 
   const dispatch = useDispatch();
-  const history = useHistory();
+  const {navigateToWizardStep} = useWizardNavigation();
 
   const formMethods = useForm({
     defaultValues: basicDetails,
@@ -53,7 +56,7 @@ export default function BasicDetailsStep() {
     try {
       await validateBasicDetails(basicDetails);
       dispatch(updateBasicDetails(basicDetails));
-      history.push(nextNavigationStep!.value);
+      navigateToWizardStep(nextNavigationStep);
     } catch(e) {
       applyValidationIssuesToForm(e, setError);
       showHttpErrorDefaultNotification(e);
@@ -108,27 +111,7 @@ export default function BasicDetailsStep() {
                              fullWidth/>
             </Grid>
             <Grid item xs={12} md={3}>
-              <Controller
-                  name="date"
-                  control={control}
-                  render={props =>
-                      <KeyboardDatePicker
-                          autoOk
-                          variant="inline"
-                          inputVariant={"outlined"}
-                          format="dd.MM.yyyy"
-                          id="date"
-                          label={t('common:date' )}
-                          value={props.value}
-                          onChange={(newDate) => props.onChange(newDate)}
-                          disablePast={true}
-                          invalidDateMessage={"Ungültiges Datum"}
-                          KeyboardButtonProps={{
-                            'aria-label': t('common:date'),
-                          }}
-                      />
-                  }
-              />
+              <FormDatePicker name={"date"} label={t('common:date' )} inputVariant={"outlined"} />
             </Grid>
           </SpacingGrid>
 
@@ -162,3 +145,17 @@ export default function BasicDetailsStep() {
     </div>
   );
 }
+
+// interface WizardGridItemProps extends Parent, Partial<Record<Breakpoint, GridSize>> {
+//
+// }
+// function ResponsiveGridItem(props: WizardGridItemProps) {
+//
+//   const { xs = 12, md = 6, sm, lg, xl } = props;
+//
+//   return (
+//     <Grid item xs={xs} md={md} sm={sm} lg={lg} xl={xl}>
+//       {props.children}
+//     </Grid>
+//   );
+// }

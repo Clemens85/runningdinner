@@ -21,7 +21,7 @@ export default function WizardAppContainer() {
   const query = useQuery();
   const demoDinner = !!query.get("demoDinner");
 
-  const locale = useDatePickerLocale();
+  const { locale } = useDatePickerLocale();
 
   return (
       <Provider store={wizardStore}>
