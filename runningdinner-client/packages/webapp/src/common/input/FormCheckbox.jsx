@@ -2,7 +2,7 @@ import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
 import {Checkbox, FormControlLabel, FormHelperText} from "@material-ui/core";
 
-const CheckboxWithLabel = ({name, label}) => {
+const FormCheckbox = ({name, label}) => {
 
   const {control, errors} = useFormContext();
 
@@ -18,5 +18,5 @@ const CheckboxWithLabel = ({name, label}) => {
       </>
   );
 };
-export default CheckboxWithLabel;
+export default FormCheckbox;
 

@@ -4,7 +4,7 @@ import ParticipantGenderSelection from "./ParticipantGenderSelection";
 import {NumberTextInputEmptyValue} from "../../../common/input/NumberTextInputEmptyValue";
 import FormFieldset from "../../../common/theme/FormFieldset";
 import {Controller, useFormContext} from "react-hook-form";
-import TextInput from "../../../common/input/TextInput";
+import FormTextField from "../../../common/input/FormTextField";
 import {useTranslation} from "react-i18next";
 
 export default function PersonalDataSection() {
@@ -24,32 +24,32 @@ export default function PersonalDataSection() {
         <FormFieldset>{t('base_data')}</FormFieldset>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
-            <TextInput name="firstnamePart"
-                       label={firstname}
-                       required
-                       variant="filled"
-                       fullWidth/>
+            <FormTextField name="firstnamePart"
+                           label={firstname}
+                           required
+                           variant="filled"
+                           fullWidth/>
           </Grid>
           <Grid item xs={12} md={6}>
-            <TextInput  required
-                        variant="filled"
-                        fullWidth
-                        name="lastname"
-                        label={lastname}/>
+            <FormTextField required
+                           variant="filled"
+                           fullWidth
+                           name="lastname"
+                           label={lastname}/>
           </Grid>
           <Grid item xs={12} md={6}>
-            <TextInput  required
-                        fullWidth
-                        variant="filled"
-                        name="email"
-                        label={email}
-                        type="email"/>
+            <FormTextField required
+                           fullWidth
+                           variant="filled"
+                           name="email"
+                           label={email}
+                           type="email"/>
           </Grid>
           <Grid item xs={12} md={6}>
-            <TextInput  name="mobileNumber"
-                        fullWidth
-                        variant="filled"
-                        label={mobileNr}/>
+            <FormTextField name="mobileNumber"
+                           fullWidth
+                           variant="filled"
+                           label={mobileNr}/>
           </Grid>
           <Grid item xs={12} md={6}>
             <ParticipantGenderSelection label="Geschlecht" value="gender" id="gender" />

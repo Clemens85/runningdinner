@@ -20,7 +20,7 @@ export interface RunningDinnerRelated extends BaseEntity {
 export interface LabelValue {
   label: string;
   value: string;
-  description: string;
+  description?: string;
 }
 
 export enum GenderAspects {

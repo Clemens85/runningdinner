@@ -5,22 +5,26 @@ import AdminApp from "./admin/AdminApp";
 import LandingApp from "./landing/LandingApp";
 import { ThemeProvider } from '@material-ui/core/styles';
 import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
+import WizardApp from './wizard/WizardApp';
 
 function App() {
   return (
       <HelmetProvider>
-        <Router>
-          <Switch>
-            <Route path="/admin/:adminId">
-              <ThemeProvider theme={runningDinnerTheme}>
+        <ThemeProvider theme={runningDinnerTheme}>
+          <Router>
+            <Switch>
+              <Route path="/admin/:adminId">
                 <AdminApp />
-              </ThemeProvider>
-            </Route>
-            <Route path="/">
-              <LandingApp />
-            </Route>
-          </Switch>
-        </Router>
+              </Route>
+              <Route path="/running-dinner-wizard">
+                <WizardApp />
+              </Route>
+              <Route path="/">
+                <LandingApp />
+              </Route>
+            </Switch>
+          </Router>
+        </ThemeProvider>
       </HelmetProvider>
   );
 

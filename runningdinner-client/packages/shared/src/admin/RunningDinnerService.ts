@@ -3,7 +3,7 @@ import { BackendConfig } from "../BackendConfig";
 import cloneDeep from "lodash/cloneDeep";
 import {Meal, RunningDinner} from "../types";
 import {CONSTANTS} from "../Constants";
-import { getDaysBetweenDates } from '../date';
+import {getDaysBetweenDates} from '../date';
 
 export async function findRunningDinnerAsync(adminId: string): Promise<RunningDinner> {
   const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}`);
@@ -46,4 +46,5 @@ export function isAcknowledgeRequired(runningDinner: RunningDinner) {
 export function isNotificationRequired(runningDinner: RunningDinner): boolean {
   return isAcknowledgeRequired(runningDinner) || !!runningDinner.cancellationDate || runningDinner.runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO;
 }
+
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import {AppBar, Grid, Hidden, IconButton, Link, makeStyles, Toolbar, Typography} from "@material-ui/core";
-import LanguageSwitch from "../common/i18n/LanguageSwitch";
+import {LanguageSwitch} from "../common/i18n/LanguageSwitch";
 import {Link as RouterLink} from "react-router-dom";
 import MenuIcon from '@material-ui/icons/Menu';
 import AdminNotificationBar from "./common/AdminNotificationBar";

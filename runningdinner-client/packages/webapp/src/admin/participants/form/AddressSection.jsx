@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import FormFieldset from "../../../common/theme/FormFieldset";
 import {Controller, useFormContext} from "react-hook-form";
 import {NumberTextInputEmptyValue} from "../../../common/input/NumberTextInputEmptyValue";
-import TextInput from "../../../common/input/TextInput";
+import FormTextField from "../../../common/input/FormTextField";
 import {useTranslation} from "react-i18next";
 
 export default function AddressSection() {
@@ -23,41 +23,41 @@ export default function AddressSection() {
         <FormFieldset>{t('address')}</FormFieldset>
         <Grid container spacing={2}>
           <Grid item xs={12} md={8}>
-            <TextInput fullWidth
-                       variant="filled"
-                       required
-                       name="street"
-                       label={street}/>
+            <FormTextField fullWidth
+                           variant="filled"
+                           required
+                           name="street"
+                           label={street}/>
           </Grid>
           <Grid item xs={12} md={4}>
-            <TextInput fullWidth
-                       variant="filled"
-                       required
-                       name="streetNr"
-                       label={streetNr}/>
+            <FormTextField fullWidth
+                           variant="filled"
+                           required
+                           name="streetNr"
+                           label={streetNr}/>
           </Grid>
           <Grid item xs={12} md={4}>
-            <TextInput fullWidth
-                       variant="filled"
-                       required
-                       name="zip"
-                       label={zip}/>
+            <FormTextField fullWidth
+                           variant="filled"
+                           required
+                           name="zip"
+                           label={zip}/>
           </Grid>
           <Grid item xs={12} md={8}>
-            <TextInput fullWidth
-                       variant="filled"
-                       name="cityName"
-                       required
-                       label={cityName}/>
+            <FormTextField fullWidth
+                           variant="filled"
+                           name="cityName"
+                           required
+                           label={cityName}/>
           </Grid>
           <Grid item xs={12} md={4}>
             <Controller as={NumberTextInputEmptyValue} name="numSeats" control={control} variant="filled" emptyValue={0} fullWidth label={numberSeats} />
           </Grid>
           <Grid item xs={12} md={8}>
-            <TextInput fullWidth
-                       variant="filled"
-                       name="addressRemarks"
-                       label={addressRemarks}/>
+            <FormTextField fullWidth
+                           variant="filled"
+                           name="addressRemarks"
+                           label={addressRemarks}/>
           </Grid>
         </Grid>
       </>

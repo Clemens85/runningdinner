@@ -1,3 +1,10 @@
+# TODO:
+https://ansonlowzf.com/how-to-build-a-material-ui-navbar bzw.:
+https://codesandbox.io/s/add-hide-on-scroll-and-back-to-top-features-to-material-ui-navbar-pmn11?fontsize=14&hidenavigation=1&theme=dark&file=/src/components/SideDrawer.jsx
+
+https://medium.com/@tsubasakondo_36683/create-responsive-drawer-menu-with-react-material-ui-617a42764b69
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

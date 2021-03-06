@@ -1,4 +1,4 @@
-import {format, parse} from 'date-fns';
+import {add, format, parse, sub} from 'date-fns';
 import { getMonth, getDate, getYear, getHours, getMinutes, getSeconds, differenceInCalendarDays} from 'date-fns';
 
 export function isAfterInDays(a: Date, b: Date): boolean {
@@ -9,6 +9,18 @@ export function isAfterInDays(a: Date, b: Date): boolean {
 export function getDaysBetweenDates(a: Date, b: Date): number {
   const days = differenceInCalendarDays(a, b);
   return days;
+}
+
+export function minusDays(date: Date, days: number): Date {
+  return sub(date, {
+    days
+  });
+}
+
+export function plusDays(date: Date, days: number): Date {
+  return add(date, {
+    days
+  });
 }
 
 export function formatLocalDate(date: Date | undefined, locale?: string): (string | undefined) {

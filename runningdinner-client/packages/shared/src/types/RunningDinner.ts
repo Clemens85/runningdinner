@@ -39,7 +39,7 @@ export interface RunningDinnerPublicSettings {
   publicContactName: string;
   publicContactEmail: string;
   publicContactMobileNumber: string;
-  registrationDeactivated: boolean;
+  registrationDeactivated?: boolean;
   publicDinnerId: string;
   publicDinnerUrl: string;
 }
