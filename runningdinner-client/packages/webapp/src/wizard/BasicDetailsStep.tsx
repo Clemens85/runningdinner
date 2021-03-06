@@ -43,7 +43,7 @@ export default function BasicDetailsStep() {
     reset(basicDetails);
     clearErrors();
     // eslint-disable-next-line
-  }, [reset, clearErrors]);
+  }, [reset, clearErrors, basicDetails]);
 
   const selectedRegistrationTypeValue = watch('registrationType');
 
