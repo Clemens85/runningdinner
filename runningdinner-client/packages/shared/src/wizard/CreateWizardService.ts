@@ -46,10 +46,12 @@ export interface WizardState {
 
   fetchRegistrationTypesStatus: FetchStatus;
   fetchRegistrationTypesError?: HttpError;
+  fetchGenderAspectsStatus: FetchStatus;
+  fetchGenderAspectsError?: HttpError;
 }
 
 
-export const BasicsNavigationStep: LabelValue = { label: 'wizard_step_basics', value: '/' };
+export const BasicDetailsNavigationStep: LabelValue = { label: 'wizard_step_basics', value: '/' };
 export const OptionsNavigationStep: LabelValue = { label: 'wizard_step_options', value: '/options' };
 export const MealTimesNavigationStep: LabelValue = { label: 'wizard_step_mealtimes', value: '/mealtimes' };
 export const PublicRegistrationNavigationStep: LabelValue = { label: 'wizard_step_public_registration', value: '/registration-settings' };
@@ -57,7 +59,7 @@ export const ParticipantPreviewNavigationStep: LabelValue = { label: 'wizard_ste
 export const FinishNavigationStep: LabelValue = { label: 'wizard_step_finish', value: '/finish' };
 
 export const ALL_NAVIGATION_STEPS: LabelValue[] = [
-  BasicsNavigationStep,
+  BasicDetailsNavigationStep,
   OptionsNavigationStep,
   MealTimesNavigationStep,
   PublicRegistrationNavigationStep,
@@ -110,7 +112,10 @@ const initialState: WizardState = {
       registrationTypes: []
     }
   },
+
   fetchRegistrationTypesStatus: FetchStatus.IDLE,
+  fetchGenderAspectsStatus: FetchStatus.IDLE,
+
   navigationSteps: ALL_NAVIGATION_STEPS,
   nextNavigationStep: OptionsNavigationStep
 };

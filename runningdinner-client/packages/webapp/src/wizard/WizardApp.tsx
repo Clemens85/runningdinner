@@ -7,7 +7,7 @@ import OptionsStep from "./OptionsStep";
 import {Provider, useDispatch} from "react-redux";
 import {wizardStore} from "./WizardStore";
 import {useQuery} from "../common/hooks/QueryHook";
-import {fetchRegistrationTypes, updateRunningDinnerType} from "./WizardSlice";
+import {fetchGenderAspects, fetchRegistrationTypes, updateRunningDinnerType} from "./WizardSlice";
 import {MealTimesNavigationStep, OptionsNavigationStep, RunningDinnerType} from "@runningdinner/shared";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
@@ -50,6 +50,7 @@ function WizardApp({demoDinner}: WizardAppProps) {
 
   React.useEffect(() => {
     dispatch(fetchRegistrationTypes());
+    dispatch(fetchGenderAspects());
   }, [dispatch]);
 
   return (

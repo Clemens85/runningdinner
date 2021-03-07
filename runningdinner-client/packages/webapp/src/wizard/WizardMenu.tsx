@@ -5,7 +5,7 @@ import {useWizardSelector} from "./WizardStore";
 import {getNavigationStepsSelector, isLoadingDataSelector} from "./WizardSlice";
 import {useTranslation} from "react-i18next";
 import {
-  BasicsNavigationStep,
+  BasicDetailsNavigationStep,
   FinishNavigationStep,
   MealTimesNavigationStep,
   OptionsNavigationStep,
@@ -55,7 +55,7 @@ export default function WizardMenu() {
   const classes = useStyles();
 
   const navigationStepIconMap: Record<string, any> = {
-    [BasicsNavigationStep.value]: <EditIcon />,
+    [BasicDetailsNavigationStep.value]: <EditIcon />,
     [OptionsNavigationStep.value]: <SettingsIcon />,
     [MealTimesNavigationStep.value]: <ScheduleIcon />,
     [PublicRegistrationNavigationStep.value]: <ListIcon />,

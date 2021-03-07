@@ -30,7 +30,7 @@ export default function WizardButtons({onSubmitData}: WizardButtonsProps) {
   };
 
   const handlePrevious = async(values: unknown) => {
-    const canProceed = await onSubmitData(values);
+    const canProceed = true;//await onSubmitData(values);
     if (canProceed) {
       navigateToWizardStep(previousNavigationStep);
     }
