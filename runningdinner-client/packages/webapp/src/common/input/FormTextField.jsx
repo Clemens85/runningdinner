@@ -1,8 +1,10 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
+import {styled} from "@material-ui/core";
+import {spacing} from "@material-ui/system";
 
-const FormTextField = ({name, label, ...other}) => {
+const FormTextFieldInternal = ({name, label, ...other}) => {
 
   const {control, errors} = useFormContext();
 
@@ -23,5 +25,6 @@ const FormTextField = ({name, label, ...other}) => {
                   label={label} />
   );
 };
-export default FormTextField;
 
+const FormTextField = styled(FormTextFieldInternal)(spacing);
+export default FormTextField;

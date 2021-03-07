@@ -21,10 +21,6 @@ export function LanguageSwitch() {
     i18n.changeLanguage(newLanguage);
   }
 
-  function isLanguageSelected(lang: string) {
-    return i18n.language === lang;
-  }
-
   return <LanguageSwitchButtons selectedLanguage={i18n.language} onClick={handleClick} />
 }
 

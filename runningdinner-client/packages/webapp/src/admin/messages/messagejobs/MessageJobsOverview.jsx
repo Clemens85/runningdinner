@@ -6,12 +6,12 @@ import {isArrayEmpty, Time, LocalDate, formatLocalDateWithSeconds} from "@runnin
 import Grid from "@material-ui/core/Grid";
 import {MessageJobStatus} from "./MessageJobStatus";
 import Paragraph from "../../../common/theme/typography/Paragraph";
-import HelpIconTooltip from "../../../common/theme/HelpIconTooltip";
 import useCommonStyles from "../../../common/theme/CommonStyles";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import {generateMessageJobDetailsPath} from "../../../common/NavigationService";
+import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
 
 function MessageJobsOverview({adminId}) {
 
@@ -45,7 +45,7 @@ function MessageJobsOverview({adminId}) {
                 <Grid item>
                   <Grid container alignItems="center" spacing={1}>
                     <Grid item><Span>Info</Span></Grid>
-                    <Grid item><HelpIconTooltip content={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' /></Grid>
+                    <Grid item><HelpIconTooltip title={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' /></Grid>
                   </Grid>
                 </Grid> }
               <Grid item className={classes.textAlignRight}>

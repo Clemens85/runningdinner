@@ -1,7 +1,8 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
-import {FormControl, InputLabel, FormHelperText, Select, SelectProps} from "@material-ui/core";
+import {FormControl, InputLabel, FormHelperText, Select, SelectProps, styled} from "@material-ui/core";
 import {isStringNotEmpty} from "@runningdinner/shared";
+import {spacing} from "@material-ui/system";
 
 export interface SelectWatchableProps extends SelectProps {
   name: string;
@@ -9,7 +10,7 @@ export interface SelectWatchableProps extends SelectProps {
   helperText?: string;
 }
 
-export default function FormSelect({name, label, children, helperText, fullWidth, variant, ...other}: SelectWatchableProps) {
+function FormSelectInternal({name, label, children, helperText, fullWidth, variant, ...other}: SelectWatchableProps) {
 
   const {errors, control} = useFormContext();
 
@@ -39,3 +40,5 @@ export default function FormSelect({name, label, children, helperText, fullWidth
   );
 }
 
+const FormSelect = styled(FormSelectInternal)(spacing);
+export default FormSelect;

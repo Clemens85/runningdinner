@@ -1,6 +1,6 @@
 import React from "react";
 import {makeStyles, Box, Grid, Chip} from "@material-ui/core";
-import HelpIconTooltip from "../../common/theme/HelpIconTooltip";
+import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import {isArrayEmpty} from "@runningdinner/shared";
@@ -30,7 +30,7 @@ function MessageTemplates({templates, onTemplateClick}: MessageTemplatesProps) {
         <Grid item><Box component={"span"} pr={1}>{t('mails_template_help')}: </Box></Grid>
         <Grid item>{messageTemplateNodes}</Grid>
         <Grid item>
-          <HelpIconTooltip content={<Paragraph i18n='admin:mails_template_help_description'/>} placement='right' />
+          <HelpIconTooltip title={<Paragraph i18n='admin:mails_template_help_description'/>} placement='right' />
         </Grid>
       </Grid>
   );

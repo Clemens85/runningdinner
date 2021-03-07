@@ -1,8 +1,9 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
-import {Checkbox, FormControlLabel, FormHelperText} from "@material-ui/core";
+import {Checkbox, FormControlLabel, FormHelperText, styled} from "@material-ui/core";
+import {spacing} from "@material-ui/system";
 
-const FormCheckbox = ({name, label}) => {
+const FormCheckboxInternal = ({name, label}) => {
 
   const {control, errors} = useFormContext();
 
@@ -18,5 +19,7 @@ const FormCheckbox = ({name, label}) => {
       </>
   );
 };
-export default FormCheckbox;
 
+
+const FormCheckbox = styled(FormCheckboxInternal)(spacing);
+export default FormCheckbox;
