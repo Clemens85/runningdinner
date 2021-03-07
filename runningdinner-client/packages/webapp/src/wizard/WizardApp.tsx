@@ -8,7 +8,7 @@ import {Provider, useDispatch} from "react-redux";
 import {wizardStore} from "./WizardStore";
 import {useQuery} from "../common/hooks/QueryHook";
 import {fetchRegistrationTypes, updateRunningDinnerType} from "./WizardSlice";
-import {RunningDinnerType} from "@runningdinner/shared";
+import {MealTimesNavigationStep, OptionsNavigationStep, RunningDinnerType} from "@runningdinner/shared";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import {MuiPickersUtilsProvider} from "@material-ui/pickers";
@@ -17,7 +17,7 @@ import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
 
 export default function WizardAppContainer() {
 
-  const {t, i18n} = useTranslation('wizard');
+  const {t} = useTranslation('wizard');
   const query = useQuery();
   const demoDinner = !!query.get("demoDinner");
 
@@ -57,10 +57,10 @@ function WizardApp({demoDinner}: WizardAppProps) {
         <WizardMenu />
         <Container maxWidth="xl">
           <Switch>
-            <Route path={`${path}/options`}>
+            <Route path={`${path}${OptionsNavigationStep.value}`}>
               <OptionsStep/>
             </Route>
-            <Route path={`${path}/mealtimes`}>
+            <Route path={`${path}${MealTimesNavigationStep.value}`}>
               TODO
             </Route>
             <Route path="/">

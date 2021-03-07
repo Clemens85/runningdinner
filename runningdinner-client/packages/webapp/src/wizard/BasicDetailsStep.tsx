@@ -87,7 +87,7 @@ export default function BasicDetailsStep() {
             </SpacingGrid>
           </SpacingGrid>
           <SpacingGrid container mt={3}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <FormTextField name="title"
                              label={t('common:title' )}
                              required
@@ -96,27 +96,27 @@ export default function BasicDetailsStep() {
             </Grid>
           </SpacingGrid>
           <SpacingGrid container mt={3} spacing={3}>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={1}>
               <FormTextField name="zip"
                              label={t('common:zip' )}
                              required
                              variant="outlined"
                              fullWidth/>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={3}>
               <FormTextField name="city"
                              label={t('common:city' )}
                              required
                              variant="outlined"
                              fullWidth/>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
               <FormDatePicker name={"date"} label={t('common:date' )} inputVariant={"outlined"} />
             </Grid>
           </SpacingGrid>
 
           <SpacingGrid container mt={3}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <FormLabel>{t('common:event_language_label')}</FormLabel>
               <Box my={1}>
                 <Controller
@@ -133,7 +133,7 @@ export default function BasicDetailsStep() {
           </SpacingGrid>
 
           <SpacingGrid container justify={"flex-end"} my={3}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <PrimaryButton disabled={isSubmitting} size={"large"} onClick={handleSubmit(handleNext)}>
                 {t('common:next')}
               </PrimaryButton>

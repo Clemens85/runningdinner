@@ -49,21 +49,20 @@ export interface WizardState {
 }
 
 
-export const BasicsStep: LabelValue = { label: 'wizard_step_basics', value: '/' };
-export const OptionsStep: LabelValue = { label: 'wizard_step_options', value: '/options' };
-export const MealTimesStep: LabelValue = { label: 'wizard_step_mealtimes', value: '/mealtimes' };
-export const PublicRegistrationStep: LabelValue = { label: 'wizard_step_public_registration', value: '/registration-settings' };
-// const BasisStep: LabelValue = { label: 'wizard_step_participant_preview', value: '/participants-preview' },
-// const BasisStep: LabelValue = { label: 'wizard_step_finish', value: '/finish' }
+export const BasicsNavigationStep: LabelValue = { label: 'wizard_step_basics', value: '/' };
+export const OptionsNavigationStep: LabelValue = { label: 'wizard_step_options', value: '/options' };
+export const MealTimesNavigationStep: LabelValue = { label: 'wizard_step_mealtimes', value: '/mealtimes' };
+export const PublicRegistrationNavigationStep: LabelValue = { label: 'wizard_step_public_registration', value: '/registration-settings' };
+export const ParticipantPreviewNavigationStep: LabelValue = { label: 'wizard_step_participant_preview', value: '/participants-preview' };
+export const FinishNavigationStep: LabelValue = { label: 'wizard_step_finish', value: '/finish' };
 
-
-const initialNavigationSteps: LabelValue[] = [
-  BasicsStep,
-  OptionsStep,
-  MealTimesStep,
-  PublicRegistrationStep,
-  { label: 'wizard_step_participant_preview', value: '/participants-preview' },
-  { label: 'wizard_step_finish', value: '/finish' }
+export const ALL_NAVIGATION_STEPS: LabelValue[] = [
+  BasicsNavigationStep,
+  OptionsNavigationStep,
+  MealTimesNavigationStep,
+  PublicRegistrationNavigationStep,
+  ParticipantPreviewNavigationStep,
+  FinishNavigationStep
 ];
 
 const initialState: WizardState = {
@@ -112,8 +111,8 @@ const initialState: WizardState = {
     }
   },
   fetchRegistrationTypesStatus: FetchStatus.IDLE,
-  navigationSteps: initialNavigationSteps,
-  nextNavigationStep: OptionsStep
+  navigationSteps: ALL_NAVIGATION_STEPS,
+  nextNavigationStep: OptionsNavigationStep
 };
 
 export function setDefaultEndOfRegistrationDate(runningDinner: RunningDinner) {

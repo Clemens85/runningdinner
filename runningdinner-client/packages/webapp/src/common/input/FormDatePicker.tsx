@@ -31,6 +31,7 @@ export default function FormDatePicker({name, label, helperText, ...other}: Form
                   <KeyboardDatePicker
                       {...Object.assign({}, props, other)}
                       autoOk
+                      disableToolbar
                       variant="inline"
                       format={dateFormat}
                       id={name}

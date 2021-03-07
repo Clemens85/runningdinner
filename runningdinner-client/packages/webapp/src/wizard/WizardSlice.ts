@@ -1,14 +1,16 @@
 import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
-  BasicsStep,
   FetchStatus,
-  findRegistrationTypesAsync, MealTimesStep, OptionsStep,
+  fillDemoDinnerValues,
+  findRegistrationTypesAsync,
+  MealTimesNavigationStep,
+  newInitialWizardState,
+  OptionsNavigationStep,
   RunningDinnerBasicDetails,
   RunningDinnerType,
   setDefaultEndOfRegistrationDate
 } from "@runningdinner/shared";
 import {WizardRootState} from "./WizardStore";
-import {fillDemoDinnerValues, newInitialWizardState} from "@runningdinner/shared";
 
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
@@ -34,8 +36,8 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
       .addCase(updateBasicDetails, (state, action) => {
         state.runningDinner.basicDetails = {...action.payload};
         setDefaultEndOfRegistrationDate(state.runningDinner);
-        state.nextNavigationStep = MealTimesStep;
-        state.previousNavigationStep = OptionsStep;
+        state.nextNavigationStep = MealTimesNavigationStep;
+        state.previousNavigationStep = OptionsNavigationStep;
       })
       .addCase(fetchRegistrationTypes.fulfilled, (state, action) => {
         state.runningDinner.sessionData.registrationTypes = action.payload;
@@ -54,12 +56,15 @@ export const getNavigationStepsSelector = (state: WizardRootState) => state.navi
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;
 export const getNextNavigationStepSelector = (state: WizardRootState) => state.nextNavigationStep;
+export const isLoadingDataSelector = (state: WizardRootState) => {
+  return state.fetchRegistrationTypesStatus === FetchStatus.LOADING;
+};
 
 export const getRegistrationTypesSelector = (state: WizardRootState) => {
   return {
     status: state.fetchRegistrationTypesStatus,
     registrationTypes: state.runningDinner.sessionData.registrationTypes
   };
-}
+};
 
 // TODO
