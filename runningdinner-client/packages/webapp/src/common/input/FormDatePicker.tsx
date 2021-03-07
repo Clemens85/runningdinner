@@ -26,18 +26,18 @@ export default function FormDatePicker({name, label, helperText, ...other}: Form
         <Controller
             name={name}
             control={control}
-            render={props =>
+            render={({ref, ...remainder}) =>
                 <>
                   <KeyboardDatePicker
-                      {...Object.assign({}, props, other)}
+                      {...Object.assign({}, remainder, other)}
                       autoOk
                       disableToolbar
+                      error={hasErrors}
                       variant="inline"
                       format={dateFormat}
                       id={name}
                       label={label}
-                      value={props.value}
-                      onChange={(newDate) => props.onChange(newDate)}
+                      onChange={(newDate) => remainder.onChange(newDate)}
                       invalidDateMessage={"Ungültiges Datum"}
                       KeyboardButtonProps={{
                         'aria-label': label,

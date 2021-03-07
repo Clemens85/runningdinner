@@ -16,8 +16,6 @@ import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {useDispatch} from "react-redux";
 import FormDatePicker from "../common/input/FormDatePicker";
 import useWizardNavigation from "./WizardNavigationHook";
-import {HelpIconTooltip} from "../common/theme/HelpIconTooltip";
-import Paragraph from "../common/theme/typography/Paragraph";
 
 export default function BasicDetailsStep() {
 
@@ -87,28 +85,22 @@ export default function BasicDetailsStep() {
           </SpacingGrid>
           <SpacingGrid container mt={3}>
             <Grid item xs={12} md={4}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <FormTextField name="title"
+              <FormTextField name="title"
                              label={t('common:title' )}
                              required
+                             helperText={t("common:title_help")}
                              variant="outlined"
-                             fullWidth
-                             pr={1}/>
-                <HelpIconTooltip title={<Paragraph i18n='common:title_help'/>} placement={"right"} />
-              </div>
+                             fullWidth />
             </Grid>
           </SpacingGrid>
           <SpacingGrid container mt={3} spacing={3}>
             <Grid item xs={12} md={2}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <FormTextField name="zip"
-                               label={t('common:zip' )}
-                               required
-                               variant="outlined"
-                               pr={1}
-                               fullWidth/>
-                <HelpIconTooltip title={<Paragraph i18n='common:zip_help'/>} placement={"right"} />
-              </div>
+              <FormTextField name="zip"
+                             label={t('common:zip' )}
+                             required
+                             variant="outlined"
+                             helperText={t("common:zip_help")}
+                             fullWidth/>
             </Grid>
             <Grid item xs={12} md={3}>
               <FormTextField name="city"

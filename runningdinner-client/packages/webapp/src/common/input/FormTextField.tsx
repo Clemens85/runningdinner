@@ -1,10 +1,15 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
-import TextField from "@material-ui/core/TextField";
+import TextField, {TextFieldProps} from "@material-ui/core/TextField";
 import {styled} from "@material-ui/core";
 import {spacing} from "@material-ui/system";
 
-const FormTextFieldInternal = ({name, label, ...other}) => {
+export type FormTextFieldProps = Omit<TextFieldProps, "name"> & {
+  name: string;
+  label: string;
+};
+
+const FormTextFieldInternal = ({name, label, ...other}: FormTextFieldProps) => {
 
   const {control, errors} = useFormContext();
 
@@ -16,6 +21,7 @@ const FormTextFieldInternal = ({name, label, ...other}) => {
   }
 
   return (
+      // @ts-ignore
       <Controller as={TextField}
                   control={control}
                   {... other}
