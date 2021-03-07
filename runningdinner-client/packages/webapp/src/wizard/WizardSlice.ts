@@ -2,10 +2,8 @@ import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
   FetchStatus,
   fillDemoDinnerValues,
-  findRegistrationTypesAsync,
-  MealTimesNavigationStep,
+  findRegistrationTypesAsync, LabelValue,
   newInitialWizardState,
-  OptionsNavigationStep,
   RunningDinnerBasicDetails,
   RunningDinnerType,
   setDefaultEndOfRegistrationDate
@@ -15,6 +13,9 @@ import {WizardRootState} from "./WizardStore";
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
 export const updateBasicDetails = createAction<RunningDinnerBasicDetails>('updateBasicDetails');
+export const setNextNavigationStep = createAction<LabelValue | undefined>('setNextNavigationStep');
+export const setPreviousNavigationStep = createAction<LabelValue | undefined>('setPreviousNavigationStep');
+
 export const fetchRegistrationTypes = createAsyncThunk(
     'fetchRegistrationTypes',
     // Declare the type your function argument here:
@@ -36,8 +37,12 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
       .addCase(updateBasicDetails, (state, action) => {
         state.runningDinner.basicDetails = {...action.payload};
         setDefaultEndOfRegistrationDate(state.runningDinner);
-        state.nextNavigationStep = MealTimesNavigationStep;
-        state.previousNavigationStep = OptionsNavigationStep;
+      })
+      .addCase(setNextNavigationStep, (state, action) => {
+        state.nextNavigationStep = action.payload;
+      })
+      .addCase(setPreviousNavigationStep, (state, action) => {
+        state.previousNavigationStep = action.payload;
       })
       .addCase(fetchRegistrationTypes.fulfilled, (state, action) => {
         state.runningDinner.sessionData.registrationTypes = action.payload;
@@ -55,7 +60,12 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
 export const getNavigationStepsSelector = (state: WizardRootState) => state.navigationSteps;
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;
-export const getNextNavigationStepSelector = (state: WizardRootState) => state.nextNavigationStep;
+export const getNavigationStepSelector = (state: WizardRootState) => {
+  return {
+    nextNavigationStep: state.nextNavigationStep,
+    previousNavigationStep: state.previousNavigationStep
+  };
+}
 export const isLoadingDataSelector = (state: WizardRootState) => {
   return state.fetchRegistrationTypesStatus === FetchStatus.LOADING;
 };

@@ -2,20 +2,19 @@ import React from 'react';
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {Controller, FormProvider, useForm} from "react-hook-form";
-import {FetchStatus, getByValue, RunningDinnerBasicDetails, useBackendIssueHandler, validateBasicDetails} from "@runningdinner/shared";
+import {FetchStatus, getByValue, OptionsNavigationStep, RunningDinnerBasicDetails, useBackendIssueHandler, validateBasicDetails} from "@runningdinner/shared";
 import {useWizardSelector} from "./WizardStore";
-import {getNextNavigationStepSelector, getRegistrationTypesSelector, getRunningDinnerBasicDetailsSelector, updateBasicDetails} from './WizardSlice';
+import {getRegistrationTypesSelector, getRunningDinnerBasicDetailsSelector, setNextNavigationStep, setPreviousNavigationStep, updateBasicDetails} from './WizardSlice';
 import Grid from "@material-ui/core/Grid";
 import FormTextField from "../common/input/FormTextField";
 import FormSelect from "../common/input/FormSelect";
 import {Box, FormHelperText, FormLabel, MenuItem} from "@material-ui/core";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
-import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {LanguageSwitchButtons} from "../common/i18n/LanguageSwitch";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {useDispatch} from "react-redux";
 import FormDatePicker from "../common/input/FormDatePicker";
-import useWizardNavigation from "./WizardNavigationHook";
+import WizardButtons from "./WizardButtons";
 
 export default function BasicDetailsStep() {
 
@@ -23,18 +22,15 @@ export default function BasicDetailsStep() {
 
   const basicDetails = useWizardSelector(getRunningDinnerBasicDetailsSelector);
   const {registrationTypes, status} = useWizardSelector(getRegistrationTypesSelector);
-  const nextNavigationStep = useWizardSelector(getNextNavigationStepSelector);
 
   const dispatch = useDispatch();
-  const {navigateToWizardStep} = useWizardNavigation();
 
   const formMethods = useForm({
     defaultValues: basicDetails,
     mode: 'onTouched'
   });
 
-  const { handleSubmit, clearErrors, setError, formState, reset, watch, control } = formMethods;
-  const { isSubmitting } = formState;
+  const { clearErrors, setError, reset, watch, control } = formMethods;
 
   const {applyValidationIssuesToForm} = useBackendIssueHandler();
   const {showHttpErrorDefaultNotification} = useNotificationHttpError();
@@ -45,18 +41,25 @@ export default function BasicDetailsStep() {
     // eslint-disable-next-line
   }, [reset, clearErrors, basicDetails]);
 
+  React.useEffect(() => {
+    dispatch(setNextNavigationStep(OptionsNavigationStep));
+    dispatch(setPreviousNavigationStep(undefined));
+    // eslint-disable-next-line
+  }, [dispatch]);
+
   const selectedRegistrationTypeValue = watch('registrationType');
 
-  const handleNext = async(values: RunningDinnerBasicDetails) => {
+  const submitBasicDetailsAsync = async(values: RunningDinnerBasicDetails) => {
     clearErrors();
     const basicDetails = { ...values };
     try {
       await validateBasicDetails(basicDetails);
       dispatch(updateBasicDetails(basicDetails));
-      navigateToWizardStep(nextNavigationStep);
+      return true;
     } catch(e) {
       applyValidationIssuesToForm(e, setError);
       showHttpErrorDefaultNotification(e);
+      return false;
     }
   };
 
@@ -131,30 +134,10 @@ export default function BasicDetailsStep() {
             </Grid>
           </SpacingGrid>
 
-          <SpacingGrid container justify={"flex-end"} my={3}>
-            <Grid item xs={12} md={4}>
-              <PrimaryButton disabled={isSubmitting} size={"large"} onClick={handleSubmit(handleNext)}>
-                {t('common:next')}
-              </PrimaryButton>
-            </Grid>
-          </SpacingGrid>
+          <WizardButtons onSubmitData={submitBasicDetailsAsync} />
 
         </form>
       </FormProvider>
     </div>
   );
 }
-
-// interface WizardGridItemProps extends Parent, Partial<Record<Breakpoint, GridSize>> {
-//
-// }
-// function ResponsiveGridItem(props: WizardGridItemProps) {
-//
-//   const { xs = 12, md = 6, sm, lg, xl } = props;
-//
-//   return (
-//     <Grid item xs={xs} md={md} sm={sm} lg={lg} xl={xl}>
-//       {props.children}
-//     </Grid>
-//   );
-// }
