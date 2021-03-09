@@ -82,10 +82,10 @@ export default function OptionsStep() {
         <FormProvider {...formMethods}>
           <form>
             <SpacingGrid container spacing={4}>
-              <SpacingGrid item xs={12} md={4}>
+              <SpacingGrid item xs={12} md={6}>
                 <TeamSettings />
               </SpacingGrid>
-              <SpacingGrid item xs={12} md={4}>
+              <SpacingGrid item xs={12} md={6}>
                 <MealSettings />
               </SpacingGrid>
             </SpacingGrid>

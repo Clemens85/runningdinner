@@ -1,6 +1,6 @@
 import React from 'react';
 import WizardMenu from './WizardMenu';
-import {Container} from "@material-ui/core";
+import {Container, Grid} from "@material-ui/core";
 import {Route, Switch, useRouteMatch} from "react-router-dom";
 import BasicDetailsStep from "./BasicDetailsStep";
 import OptionsStep from "./OptionsStep";
@@ -57,17 +57,21 @@ function WizardApp({demoDinner}: WizardAppProps) {
       <>
         <WizardMenu />
         <Container maxWidth="xl">
-          <Switch>
-            <Route path={`${path}${OptionsNavigationStep.value}`}>
-              <OptionsStep/>
-            </Route>
-            <Route path={`${path}${MealTimesNavigationStep.value}`}>
-              TODO
-            </Route>
-            <Route path="/">
-              <BasicDetailsStep/>
-            </Route>
-          </Switch>
+          <Grid container>
+            <Grid item xs={12} md={8}>
+              <Switch>
+                <Route path={`${path}${OptionsNavigationStep.value}`}>
+                  <OptionsStep/>
+                </Route>
+                <Route path={`${path}${MealTimesNavigationStep.value}`}>
+                  TODO
+                </Route>
+                <Route path="/">
+                  <BasicDetailsStep/>
+                </Route>
+              </Switch>
+            </Grid>
+          </Grid>
         </Container>
       </>
   );

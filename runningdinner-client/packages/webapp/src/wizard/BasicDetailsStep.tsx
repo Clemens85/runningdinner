@@ -73,7 +73,7 @@ export default function BasicDetailsStep() {
       <FormProvider {...formMethods}>
         <form>
           <SpacingGrid container>
-            <SpacingGrid item xs={12} md={3}>
+            <SpacingGrid item xs={12} md={6}>
               <FormSelect name="registrationType"
                           variant={"outlined"}
                           label={t('common:registration_type')}
@@ -87,7 +87,7 @@ export default function BasicDetailsStep() {
             </SpacingGrid>
           </SpacingGrid>
           <SpacingGrid container mt={3}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={6}>
               <FormTextField name="title"
                              label={t('common:title' )}
                              required
@@ -97,7 +97,7 @@ export default function BasicDetailsStep() {
             </Grid>
           </SpacingGrid>
           <SpacingGrid container mt={3} spacing={3}>
-            <Grid item xs={12} md={2}>
+            <Grid item xs={12} md={3}>
               <FormTextField name="zip"
                              label={t('common:zip' )}
                              required
@@ -105,20 +105,20 @@ export default function BasicDetailsStep() {
                              helperText={t("common:zip_help")}
                              fullWidth/>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={6}>
               <FormTextField name="city"
                              label={t('common:city' )}
                              required
                              variant="outlined"
                              fullWidth/>
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid item xs={12} md={3}>
               <FormDatePicker name={"date"} label={t('common:date' )} inputVariant={"outlined"} />
             </Grid>
           </SpacingGrid>
 
           <SpacingGrid container mt={3}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12}>
               <FormLabel>{t('common:event_language_label')}</FormLabel>
               <Box my={1}>
                 <Controller
