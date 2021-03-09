@@ -42,7 +42,7 @@ export default function WizardButtons({onSubmitData}: WizardButtonsProps) {
       <SpacingGrid container justify="flex-end" mt={3} className={classes.textAlignRight}>
         <Grid item xs={12}>
           { previousNavigationStep && <SecondaryButton onClick={handleSubmit(handlePrevious)}>{t('back')}</SecondaryButton> }
-          { nextNavigationStep && <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleNext)}>
+          { nextNavigationStep && <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleNext)} ml={1}>
                                     {t('next')}
                                   </PrimaryButton> }
         </Grid>
