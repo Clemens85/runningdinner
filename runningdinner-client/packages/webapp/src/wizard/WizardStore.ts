@@ -3,7 +3,10 @@ import {logger} from "redux-logger";
 import { wizardSlice } from "./WizardSlice";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 
-const middleware = [...getDefaultMiddleware(), logger];
+const customizedMiddleware = getDefaultMiddleware({
+  serializableCheck: false // I want to use Dates in Redux for now (no persistence of store needed for now...)
+})
+const middleware = [...customizedMiddleware, logger];
 
 export const wizardStore = configureStore({reducer: wizardSlice, middleware});
 
