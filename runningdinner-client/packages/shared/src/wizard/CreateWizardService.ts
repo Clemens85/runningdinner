@@ -1,8 +1,8 @@
 import axios from "axios";
 import { BackendConfig } from "../BackendConfig";
-import {GenderAspects, HttpError, LabelValue, RunningDinner, RunningDinnerBasicDetails, RunningDinnerType} from "../types";
+import {GenderAspects, HttpError, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerType} from "../types";
 import {CONSTANTS} from "../Constants";
-import {minusDays, plusDays} from "../date";
+import {minusDays, plusDays, withHourAndMinute} from "../date";
 import {isClosedDinner} from "../admin";
 
 export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
@@ -82,7 +82,7 @@ const initialState: WizardState = {
     },
     options: {
       teamSize: 2,
-      meals: [],
+      meals: newDefaultMeals(new Date()),
       forceEqualDistributedCapacityTeams: true,
       genderAspects: GenderAspects.FORCE_GENDER_MIX,
       considerShortestPaths: false,
@@ -131,4 +131,13 @@ export function setDefaultEndOfRegistrationDate(runningDinner: RunningDinner) {
 
 export function newInitialWizardState(): WizardState {
   return {... initialState};
+}
+
+export function newDefaultMeals(dinnerDate: Date): Meal[] {
+  const meals = [
+    { label: "appetizer", time: withHourAndMinute(dinnerDate, 19, 0) },
+    { label: "main_course", time: withHourAndMinute(dinnerDate, 21, 0) },
+    { label: "dessert", time: withHourAndMinute(dinnerDate, 23, 0) }
+  ];
+  return meals;
 }

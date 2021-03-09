@@ -7,13 +7,14 @@ import {spacing} from "@material-ui/system";
 export type FormTextFieldProps = Omit<TextFieldProps, "name"> & {
   name: string;
   label: string;
+  defaultValue?: unknown;
 };
 
-const FormTextFieldInternal = ({name, label, ...other}: FormTextFieldProps) => {
+const FormTextFieldInternal = ({name, label, defaultValue, ...other}: FormTextFieldProps) => {
 
   const {control, errors} = useFormContext();
 
-  const hasErrors = errors[name] ? true : false;
+  const hasErrors = !!errors[name];
   let helperText = other.helperText;
 
   if (hasErrors) {
@@ -23,6 +24,7 @@ const FormTextFieldInternal = ({name, label, ...other}: FormTextFieldProps) => {
   return (
       // @ts-ignore
       <Controller as={TextField}
+                  defaultValue={defaultValue}
                   control={control}
                   {... other}
                   name={name}

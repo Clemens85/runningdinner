@@ -23,6 +23,12 @@ export function plusDays(date: Date, days: number): Date {
   });
 }
 
+export function withHourAndMinute(date: Date, hour: number, minute: number): Date {
+  const result = new Date(date.getTime());
+  result.setHours(hour, minute, 0, 0);
+  return result;
+}
+
 export function formatLocalDate(date: Date | undefined, locale?: string): (string | undefined) {
   if (!date) {
     return undefined;

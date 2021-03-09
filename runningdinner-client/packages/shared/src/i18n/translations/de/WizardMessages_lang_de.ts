@@ -24,7 +24,7 @@ const Wizard_de: any = {
   gender_aspects: 'Geschlechter-Verteilung',
   gender_aspects_help: 'Nur möglich wenn Geschlecht der Teilnehmer bekannt ist',
 
-  meals_help: 'Du kannst die Namen der Speisen verändern bzw. neue hinzufuegen oder vorhandene entfernen. Es müssen jedoch immer mind. 2 Speisen vorhanden sein',
+  meals_help: 'Du kannst die Namen der Speisen verändern bzw. neue hinzufügen oder vorhandene entfernen. Es müssen jedoch immer mind. 2 Speisen vorhanden sein.',
 
   time_setup: 'Uhrzeiten festlegen',
 
