@@ -1,10 +1,12 @@
 import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
+  applyDinnerDateToMeals,
   FetchStatus,
   fillDemoDinnerValues,
   findGenderAspectsAsync,
-  findRegistrationTypesAsync, HttpError,
+  findRegistrationTypesAsync, HttpError, isClosedDinner,
   LabelValue,
+  Meal,
   newInitialWizardState,
   RunningDinnerBasicDetails, RunningDinnerOptions,
   RunningDinnerType,
@@ -16,6 +18,7 @@ import {WizardRootState} from "./WizardStore";
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
 export const updateBasicDetails = createAction<RunningDinnerBasicDetails>('updateBasicDetails');
 export const updateRunningDinnerOptions = createAction<RunningDinnerOptions>('updateRunningDinnerOptions');
+export const updateMeals = createAction<Meal[]>('updateMeals');
 export const setNextNavigationStep = createAction<LabelValue | undefined>('setNextNavigationStep');
 export const setPreviousNavigationStep = createAction<LabelValue | undefined>('setPreviousNavigationStep');
 
@@ -49,10 +52,14 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
       .addCase(updateBasicDetails, (state, action) => {
         state.runningDinner.basicDetails = {...action.payload};
         setDefaultEndOfRegistrationDate(state.runningDinner);
+        const updatedMeals = applyDinnerDateToMeals(state.runningDinner.options.meals, state.runningDinner.basicDetails.date);
+        state.runningDinner.options.meals = updatedMeals;
       })
       .addCase(updateRunningDinnerOptions, (state, action) => {
         state.runningDinner.options = {...action.payload};
-
+      })
+      .addCase(updateMeals, (state, action) => {
+        state.runningDinner.options.meals = action.payload;
       })
       .addCase(setNextNavigationStep, (state, action) => {
         state.nextNavigationStep = action.payload;
@@ -89,6 +96,7 @@ export const getNavigationStepsSelector = (state: WizardRootState) => state.navi
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;
 export const getRunningDinnerOptionsSelector = (state: WizardRootState) => state.runningDinner.options;
+export const isClosedDinnerSelector = (state: WizardRootState) => isClosedDinner(state.runningDinner);
 export const getNavigationStepSelector = (state: WizardRootState) => {
   return {
     nextNavigationStep: state.nextNavigationStep,
@@ -115,3 +123,5 @@ export const getGenderAspectsSelector = (state: WizardRootState) => {
     genderAspects: state.runningDinner.sessionData.genderAspects
   }
 };
+
+

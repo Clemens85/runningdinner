@@ -1,14 +1,14 @@
 import React from 'react';
 import {PageTitle, Span, Subtitle} from "../common/theme/typography/Tags";
-import {FormProvider, useFieldArray, useForm, useFormContext} from "react-hook-form";
+import {FormProvider, useFieldArray, useForm} from "react-hook-form";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
 import {
+  mapExistingMealTimesToNewMeals,
   BasicDetailsNavigationStep,
   FetchStatus,
   MealTimesNavigationStep,
   RunningDinnerOptions,
   useBackendIssueHandler,
-  validateBasicDetails,
   validateRunningDinnerOptions,
 } from "@runningdinner/shared";
 import FormTextField from "../common/input/FormTextField";
@@ -54,11 +54,7 @@ export default function OptionsStep() {
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   React.useEffect(() => {
-    const optionsWithMealsTranslated = {...options};
-    optionsWithMealsTranslated.meals = optionsWithMealsTranslated
-                                        .meals
-                                        .map(meal => { return {label: t(meal.label, {ns: "common"}), time: meal.time}; });
-    reset(optionsWithMealsTranslated);
+    reset(options);
     clearErrors();
     // eslint-disable-next-line
   }, [reset, clearErrors, options]);
@@ -74,6 +70,7 @@ export default function OptionsStep() {
     clearErrors();
     const optionsToSubmit = { ...values };
     try {
+      optionsToSubmit.meals = mapExistingMealTimesToNewMeals(options.meals, optionsToSubmit.meals.map(meal => meal.label), date);
       await validateRunningDinnerOptions(optionsToSubmit, date);
       dispatch(updateRunningDinnerOptions(optionsToSubmit));
       return true;

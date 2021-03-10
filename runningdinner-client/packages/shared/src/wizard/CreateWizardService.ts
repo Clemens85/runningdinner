@@ -2,8 +2,9 @@ import axios from "axios";
 import { BackendConfig } from "../BackendConfig";
 import {GenderAspects, HttpError, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerType} from "../types";
 import {CONSTANTS} from "../Constants";
-import {minusDays, plusDays, toLocalDateQueryString, withHourAndMinute} from "../date";
+import {getHoursOfDate, getMinutesOfDate, isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute} from "../date";
 import {isClosedDinner} from "../admin";
+import {useTranslation} from "react-i18next";
 
 export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
 
@@ -16,6 +17,63 @@ export async function validateRunningDinnerOptions(options: RunningDinnerOptions
   const dinnerDateQueryStr = toLocalDateQueryString(runningDinnerDate);
   const url = BackendConfig.buildUrl(`/wizardservice/v1/validate/options?runningDinnerDate=${dinnerDateQueryStr}`);
   await axios.put<void>(url, options);
+}
+
+export function setDefaultEndOfRegistrationDate(runningDinner: RunningDinner) {
+  const {date} = runningDinner.basicDetails;
+  if (!isClosedDinner(runningDinner)) {
+    if (!runningDinner.publicSettings.endOfRegistrationDate || runningDinner.publicSettings.endOfRegistrationDate.getTime() > date.getTime()) {
+      runningDinner.publicSettings.endOfRegistrationDate = minusDays(date, DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER);
+    }
+  }
+}
+
+export function newInitialWizardState(): WizardState {
+  return {... initialState};
+}
+
+export function newDefaultMeals(dinnerDate: Date): Meal[] {
+  const meals = [
+    { label: "appetizer", time: withHourAndMinute(dinnerDate, 19, 0) },
+    { label: "main_course", time: withHourAndMinute(dinnerDate, 21, 0) },
+    { label: "dessert", time: withHourAndMinute(dinnerDate, 23, 0) }
+  ];
+  return meals;
+}
+
+export function useMealsTranslated() {
+  const {t} = useTranslation('common');
+  function getMealsTranslated(meals: Meal[]): Meal[] {
+    return meals
+            .map(meal => { return {label: t(meal.label), time: meal.time}; });
+  }
+  return {getMealsTranslated};
+}
+
+export function mapExistingMealTimesToNewMeals(existingMealsWithTime: Meal[], newMeals: string[], runningDinnerDate: Date) {
+  const result = new Array<Meal>();
+  for (let i = 0; i < newMeals.length; i++) {
+    let mealWithTime;
+    if (existingMealsWithTime.length > i) {
+      mealWithTime = {label: newMeals[i], time: existingMealsWithTime[i].time }
+    } else {
+      const time = i > 0 ?
+                      plusHours(result[i - 1].time, 2) : // Previous time + 2h
+                      withHourAndMinute(runningDinnerDate, 19, 0);
+      mealWithTime = { label: newMeals[i], time };
+    }
+    result.push(mealWithTime);
+  }
+  return result;
+}
+
+export function applyDinnerDateToMeals(meals: Meal[], runningDinnerDate: Date) {
+  return meals.map(meal => {
+    if (isSameDay(meal.time, runningDinnerDate)) {
+      return meal;
+    }
+    return {...meal, time: withHourAndMinute(runningDinnerDate, getHoursOfDate(meal.time), getMinutesOfDate(meal.time))}
+  });
 }
 
 export function fillDemoDinnerValues(runningDinner: RunningDinner) {
@@ -126,24 +184,3 @@ const initialState: WizardState = {
   nextNavigationStep: OptionsNavigationStep
 };
 
-export function setDefaultEndOfRegistrationDate(runningDinner: RunningDinner) {
-  const {date} = runningDinner.basicDetails;
-  if (!isClosedDinner(runningDinner)) {
-    if (!runningDinner.publicSettings.endOfRegistrationDate || runningDinner.publicSettings.endOfRegistrationDate.getTime() > date.getTime()) {
-      runningDinner.publicSettings.endOfRegistrationDate = minusDays(date, DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER);
-    }
-  }
-}
-
-export function newInitialWizardState(): WizardState {
-  return {... initialState};
-}
-
-export function newDefaultMeals(dinnerDate: Date): Meal[] {
-  const meals = [
-    { label: "appetizer", time: withHourAndMinute(dinnerDate, 19, 0) },
-    { label: "main_course", time: withHourAndMinute(dinnerDate, 21, 0) },
-    { label: "dessert", time: withHourAndMinute(dinnerDate, 23, 0) }
-  ];
-  return meals;
-}

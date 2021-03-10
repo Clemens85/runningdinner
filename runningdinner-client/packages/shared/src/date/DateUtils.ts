@@ -17,10 +17,28 @@ export function minusDays(date: Date, days: number): Date {
   });
 }
 
+export function isSameDay(a: Date, b: Date) {
+  return getDaysBetweenDates(a, b) === 0;
+}
+
 export function plusDays(date: Date, days: number): Date {
   return add(date, {
     days
   });
+}
+
+export function plusHours(date: Date, hours: number): Date {
+  return add(date, {
+    hours
+  });
+}
+
+export function getHoursOfDate(date: Date) {
+  return getHours(date);
+}
+
+export function getMinutesOfDate(date: Date) {
+  return getMinutes(date);
 }
 
 export function withHourAndMinute(date: Date, hour: number, minute: number): Date {

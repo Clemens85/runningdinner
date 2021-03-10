@@ -5,15 +5,23 @@ import {Route, Switch, useRouteMatch} from "react-router-dom";
 import BasicDetailsStep from "./BasicDetailsStep";
 import OptionsStep from "./OptionsStep";
 import {Provider, useDispatch} from "react-redux";
-import {wizardStore} from "./WizardStore";
+import {useWizardSelector, wizardStore} from "./WizardStore";
 import {useQuery} from "../common/hooks/QueryHook";
-import {fetchGenderAspects, fetchRegistrationTypes, updateRunningDinnerType} from "./WizardSlice";
-import {MealTimesNavigationStep, OptionsNavigationStep, RunningDinnerType} from "@runningdinner/shared";
+import {fetchGenderAspects, fetchRegistrationTypes, getRunningDinnerOptionsSelector, updateMeals, updateRunningDinnerType} from "./WizardSlice";
+import {
+  MealTimesNavigationStep,
+  OptionsNavigationStep,
+  ParticipantPreviewNavigationStep,
+  PublicRegistrationNavigationStep,
+  RunningDinnerType,
+  useMealsTranslated
+} from "@runningdinner/shared";
 import {Helmet} from "react-helmet-async";
 import {useTranslation} from "react-i18next";
 import {MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
+import MealTimesStep from "./MealTimesStep";
 
 export default function WizardAppContainer() {
 
@@ -44,6 +52,10 @@ function WizardApp({demoDinner}: WizardAppProps) {
   const {path} = useRouteMatch();
   const dispatch = useDispatch();
 
+  const {meals} = useWizardSelector(getRunningDinnerOptionsSelector);
+
+  const {getMealsTranslated} = useMealsTranslated();
+
   React.useEffect(() => {
     dispatch(updateRunningDinnerType(demoDinner ? RunningDinnerType.DEMO : RunningDinnerType.STANDARD));
   }, [demoDinner, dispatch]);
@@ -51,6 +63,14 @@ function WizardApp({demoDinner}: WizardAppProps) {
   React.useEffect(() => {
     dispatch(fetchRegistrationTypes());
     dispatch(fetchGenderAspects());
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    if (meals) {
+      const mealsTranslated = getMealsTranslated(meals);
+      dispatch(updateMeals(mealsTranslated));
+    }
+    // eslint-disable-next-line
   }, [dispatch]);
 
   return (
@@ -64,6 +84,12 @@ function WizardApp({demoDinner}: WizardAppProps) {
                   <OptionsStep/>
                 </Route>
                 <Route path={`${path}${MealTimesNavigationStep.value}`}>
+                  <MealTimesStep />
+                </Route>
+                <Route path={`${path}${ParticipantPreviewNavigationStep.value}`}>
+                  TODO
+                </Route>
+                <Route path={`${path}${PublicRegistrationNavigationStep.value}`}>
                   TODO
                 </Route>
                 <Route path="/">

@@ -98,7 +98,7 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
 }
 
 function mapHttpErrorStatusCodeToTranslationKey(httpError: HttpError) {
-  const statusCode = httpError.response.status;
+  const statusCode = httpError?.response?.status;
   if (statusCode === 406) {
     return "validation_error_desc";
   }
