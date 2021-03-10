@@ -43,6 +43,13 @@ export function formatLocalDateWithSeconds(date: Date | undefined, locale?: stri
   return format(date, 'dd.MM.yyyy HH:mm:ss');
 }
 
+export function toLocalDateQueryString(date: Date | undefined) {
+  if (!date) {
+    return '';
+  }
+  return format(date, 'yyyy-MM-dd');
+}
+
 export function deserializeArrayToDate(incomingObj: unknown): Date | unknown {
 
   if (!incomingObj || !Array.isArray(incomingObj) || incomingObj.length < 3 || incomingObj.length > 7) {

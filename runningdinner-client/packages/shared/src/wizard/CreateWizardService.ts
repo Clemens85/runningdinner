@@ -1,8 +1,8 @@
 import axios from "axios";
 import { BackendConfig } from "../BackendConfig";
-import {GenderAspects, HttpError, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerType} from "../types";
+import {GenderAspects, HttpError, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerType} from "../types";
 import {CONSTANTS} from "../Constants";
-import {minusDays, plusDays, withHourAndMinute} from "../date";
+import {minusDays, plusDays, toLocalDateQueryString, withHourAndMinute} from "../date";
 import {isClosedDinner} from "../admin";
 
 export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
@@ -10,6 +10,12 @@ export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
 export async function validateBasicDetails(basicDetails: RunningDinnerBasicDetails) {
   const url = BackendConfig.buildUrl(`/wizardservice/v1/validate/basicdetails`);
   await axios.put<void>(url, basicDetails);
+}
+
+export async function validateRunningDinnerOptions(options: RunningDinnerOptions, runningDinnerDate: Date) {
+  const dinnerDateQueryStr = toLocalDateQueryString(runningDinnerDate);
+  const url = BackendConfig.buildUrl(`/wizardservice/v1/validate/options?runningDinnerDate=${dinnerDateQueryStr}`);
+  await axios.put<void>(url, options);
 }
 
 export function fillDemoDinnerValues(runningDinner: RunningDinner) {

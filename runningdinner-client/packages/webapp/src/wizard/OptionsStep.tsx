@@ -2,12 +2,27 @@ import React from 'react';
 import {PageTitle, Span, Subtitle} from "../common/theme/typography/Tags";
 import {FormProvider, useFieldArray, useForm, useFormContext} from "react-hook-form";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
-import {BasicDetailsNavigationStep, FetchStatus, MealTimesNavigationStep, RunningDinnerOptions, useBackendIssueHandler,} from "@runningdinner/shared";
+import {
+  BasicDetailsNavigationStep,
+  FetchStatus,
+  MealTimesNavigationStep,
+  RunningDinnerOptions,
+  useBackendIssueHandler,
+  validateBasicDetails,
+  validateRunningDinnerOptions,
+} from "@runningdinner/shared";
 import FormTextField from "../common/input/FormTextField";
 import WizardButtons from "./WizardButtons";
 import {Trans, useTranslation} from "react-i18next";
 import {useWizardSelector} from "./WizardStore";
-import {getGenderAspectsSelector, getRunningDinnerOptionsSelector, setNextNavigationStep, setPreviousNavigationStep} from "./WizardSlice";
+import {
+  getGenderAspectsSelector,
+  getRunningDinnerBasicDetailsSelector,
+  getRunningDinnerOptionsSelector,
+  setNextNavigationStep,
+  setPreviousNavigationStep,
+  updateRunningDinnerOptions
+} from "./WizardSlice";
 import {useDispatch} from "react-redux";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import FormCheckbox from "../common/input/FormCheckbox";
@@ -16,20 +31,11 @@ import {Button, IconButton, MenuItem } from '@material-ui/core';
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from '@material-ui/icons/Delete';
 
-// export interface RunningDinnerOptionsNormalized extends RunningDinnerOptions {
-//   mealLabels: string[];
-// }
-//
-// function normalizeRunningDinnerOptions(options: RunningDinnerOptions): RunningDinnerOptionsNormalized {
-//   const result: RunningDinnerOptionsNormalized = {mealLabels: [], ...options};
-//   result.mealLabels = result.meals.map(meal => meal.label);
-//   return result;
-// }
-
 export default function OptionsStep() {
   const {t} = useTranslation(['wizard', 'common']);
 
   const options = useWizardSelector(getRunningDinnerOptionsSelector);
+  const {date} = useWizardSelector(getRunningDinnerBasicDetailsSelector);
 
   const dispatch = useDispatch();
 
@@ -40,8 +46,12 @@ export default function OptionsStep() {
 
   const { clearErrors, setError, reset } = formMethods;
 
-  const {applyValidationIssuesToForm} = useBackendIssueHandler();
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+  const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'wizard'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   React.useEffect(() => {
     const optionsWithMealsTranslated = {...options};
@@ -63,17 +73,15 @@ export default function OptionsStep() {
   const submitOptionsAsync = async(values: RunningDinnerOptions) => {
     clearErrors();
     const optionsToSubmit = { ...values };
-    alert(`Submitted Result: ${JSON.stringify(optionsToSubmit)}`)
-    return false;
-    // try {
-    //   await validateBasicDetails(basicDetails);
-    //   dispatch(updateBasicDetails(basicDetails));
-    //   return true;
-    // } catch(e) {
-    //   applyValidationIssuesToForm(e, setError);
-    //   showHttpErrorDefaultNotification(e);
-    //   return false;
-    // }
+    try {
+      await validateRunningDinnerOptions(optionsToSubmit, date);
+      dispatch(updateRunningDinnerOptions(optionsToSubmit));
+      return true;
+    } catch(e) {
+      applyValidationIssuesToForm(e, setError);
+      showHttpErrorDefaultNotification(e);
+      return false;
+    }
   };
 
   return (
@@ -86,7 +94,7 @@ export default function OptionsStep() {
                 <TeamSettings />
               </SpacingGrid>
               <SpacingGrid item xs={12} md={6}>
-                <MealSettings />
+                <MealSettings runningDinnerDate={date} />
               </SpacingGrid>
             </SpacingGrid>
 
@@ -132,8 +140,11 @@ function TeamSettings() {
 }
 
 
-function MealSettings() {
+interface MealSettingsProps {
+  runningDinnerDate: Date
+}
 
+function MealSettings({runningDinnerDate}: MealSettingsProps) {
 
   const { fields, remove, append} = useFieldArray({
     name: "meals",
@@ -143,7 +154,7 @@ function MealSettings() {
   const {t} = useTranslation('common');
 
   function handleAddMeal() {
-    append({ label: "", time: new Date() }); // TODO
+    append({ label: "", time: runningDinnerDate });
   }
 
   function handleRemoveMeal(index: number) {

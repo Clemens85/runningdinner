@@ -6,7 +6,7 @@ import {
   findRegistrationTypesAsync, HttpError,
   LabelValue,
   newInitialWizardState,
-  RunningDinnerBasicDetails,
+  RunningDinnerBasicDetails, RunningDinnerOptions,
   RunningDinnerType,
   setDefaultEndOfRegistrationDate
 } from "@runningdinner/shared";
@@ -15,6 +15,7 @@ import {WizardRootState} from "./WizardStore";
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
 export const updateBasicDetails = createAction<RunningDinnerBasicDetails>('updateBasicDetails');
+export const updateRunningDinnerOptions = createAction<RunningDinnerOptions>('updateRunningDinnerOptions');
 export const setNextNavigationStep = createAction<LabelValue | undefined>('setNextNavigationStep');
 export const setPreviousNavigationStep = createAction<LabelValue | undefined>('setPreviousNavigationStep');
 
@@ -48,6 +49,10 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
       .addCase(updateBasicDetails, (state, action) => {
         state.runningDinner.basicDetails = {...action.payload};
         setDefaultEndOfRegistrationDate(state.runningDinner);
+      })
+      .addCase(updateRunningDinnerOptions, (state, action) => {
+        state.runningDinner.options = {...action.payload};
+
       })
       .addCase(setNextNavigationStep, (state, action) => {
         state.nextNavigationStep = action.payload;
