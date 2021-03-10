@@ -14,7 +14,14 @@ import { Fetch } from "../../../common/Fetch";
 import {
   Fullname,
   CONSTANTS,
-  useTeamName, useNumberOfAssignableParticipantsToReplaceTeam, findEntityById, removeEntityFromList, cancelTeamDryRunAsync, findNotAssignedParticipantsAsync, getFullnameList
+  useTeamName,
+  useNumberOfAssignableParticipantsToReplaceTeam,
+  findEntityById,
+  removeEntityFromList,
+  cancelTeamDryRunAsync,
+  findNotAssignedParticipantsAsync,
+  getFullnameList,
+  useBackendIssueHandler
 } from "@runningdinner/shared";
 import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from "lodash/cloneDeep";
@@ -34,7 +41,13 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose})
 
   const {adminId} = runningDinner;
   const {enqueueSnackbar} = useSnackbar();
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'admin'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const {getTeamName} = useTeamName();
 

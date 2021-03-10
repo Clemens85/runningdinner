@@ -45,7 +45,13 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
   const classes = useStyles();
   const {enqueueSnackbar} = useSnackbar();
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
+  const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'admin'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const formMethods = useForm({
     defaultValues: newEmptyParticipantInstance(),
@@ -54,8 +60,6 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
   });
   const { handleSubmit, clearErrors, setError, formState, reset } = formMethods;
   const { isSubmitting } = formState;
-
-  const {applyValidationIssuesToForm} = useBackendIssueHandler();
 
   const initValues = React.useCallback(participant => {
     let participantToEdit = participant;

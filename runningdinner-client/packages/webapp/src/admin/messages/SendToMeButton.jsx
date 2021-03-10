@@ -3,14 +3,20 @@ import {Grid, Box} from "@material-ui/core";
 import {useSnackbar} from "notistack";
 import {useTranslation} from "react-i18next";
 import {SecondaryButtonAsync} from "../../common/theme/SecondaryButtonAsync";
-import {getMailMessageForSelectedRecipient, sendMessagesAsync} from "@runningdinner/shared";
+import {getMailMessageForSelectedRecipient, sendMessagesAsync, useBackendIssueHandler} from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 
 export default function SendToMeButton({adminId, messageObj, messageType, selectedRecipient}) {
 
   const {enqueueSnackbar} = useSnackbar();
   const {t} = useTranslation('admin');
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'admin'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const handleSendToMe = () => {
     const message = getMailMessageForSelectedRecipient(messageObj, messageType, selectedRecipient);

@@ -84,8 +84,12 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, validatio
 
   const {t} = useTranslation(['admin', 'common']);
 
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
-  const {applyValidationIssuesToForm} = useBackendIssueHandler();
+  const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'admin'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const {loadingData, messageType, customSelectedRecipients} = useMessagesState();
   const dispatch = useMessagesDispatch();

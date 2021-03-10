@@ -37,8 +37,13 @@ export interface TeamMemberCancelDialogResult {
 export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpen, onClose}: TeamMemberCancelDialogProps) => {
 
   const {t} = useTranslation(['admin', 'common']);
-  const {getIssuesUntranslated} = useBackendIssueHandler();
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
+  const {getIssuesUntranslated, getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'admin'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const teamMemberToCancelIsHost = isSameEntity(team.hostTeamMember, teamMemberToCancel);
   const teamMemberToCancelFullname = getFullname(teamMemberToCancel);

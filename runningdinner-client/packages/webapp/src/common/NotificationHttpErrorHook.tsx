@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import {useSnackbar} from "notistack";
-import {COMMON_ERROR_NAMESPACE, HttpError, isArrayEmpty, isArrayNotEmpty, Issue, isValidationError} from "@runningdinner/shared";
+import {COMMON_ERROR_NAMESPACE, HttpError, isArrayEmpty, isArrayNotEmpty, Issue, Issues, isValidationError} from "@runningdinner/shared";
 import {
   getBackendIssuesFromErrorResponse,
   mapBackendIssuesToIssues
@@ -26,7 +26,7 @@ export interface HttpErrorDefaultNotificationProps {
  * Convenience hook for default error handling on Http errors. This hook simply wraps the {@link useLxNotification} hook for showing notification toasts<br/>
  *
  */
-export function useNotificationHttpError() {
+export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpError) => Issues) {
 
   const {enqueueSnackbar} = useSnackbar();
 
@@ -46,10 +46,14 @@ export function useNotificationHttpError() {
       httpError: HttpError,
       options?: HttpErrorDefaultNotificationProps
   ) {
-    const backendIssues = getBackendIssuesFromErrorResponse(httpError, false);
-    const issues = mapBackendIssuesToIssues(
-        backendIssues
-    );
+
+    let issues;
+    if (getIssuesTranslated) {
+      issues = getIssuesTranslated(httpError);
+    } else {
+      const backendIssues = getBackendIssuesFromErrorResponse(httpError, false);
+      issues = mapBackendIssuesToIssues(backendIssues);
+    }
 
     let optionsToUse = options
         ? options
