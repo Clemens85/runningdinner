@@ -1,12 +1,10 @@
 import React from 'react'
 import {Route, Switch, NavLink} from "react-router-dom";
-import FormArrayIssue from "./FormArrayIssue";
 
 export default function LandingApp(props) {
 
   return (
       <div>
-        <FormArrayIssue />
         <nav>
           <ul>
             <li>
