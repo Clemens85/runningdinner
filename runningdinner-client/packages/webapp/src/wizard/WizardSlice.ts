@@ -4,7 +4,7 @@ import {
   FetchStatus,
   fillDemoDinnerValues,
   findGenderAspectsAsync,
-  findRegistrationTypesAsync, HttpError, isClosedDinner,
+  findRegistrationTypesAsync, getMinimumParticipantsNeeded, HttpError, isClosedDinner,
   LabelValue,
   Meal,
   newInitialWizardState,
@@ -97,6 +97,7 @@ export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDin
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;
 export const getRunningDinnerOptionsSelector = (state: WizardRootState) => state.runningDinner.options;
 export const isClosedDinnerSelector = (state: WizardRootState) => isClosedDinner(state.runningDinner);
+export const getMinimumParticipantsNeededSelector = (state: WizardRootState) => getMinimumParticipantsNeeded(state.runningDinner);
 export const getNavigationStepSelector = (state: WizardRootState) => {
   return {
     nextNavigationStep: state.nextNavigationStep,

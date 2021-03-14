@@ -1,34 +1,47 @@
 import React from 'react';
-import {getRunningDinnerOptionsSelector, isClosedDinnerSelector, setNextNavigationStep, setPreviousNavigationStep} from "./WizardSlice";
+import {
+  getRunningDinnerBasicDetailsSelector,
+  getRunningDinnerOptionsSelector,
+  isClosedDinnerSelector,
+  setNextNavigationStep,
+  setPreviousNavigationStep, updateMeals,
+} from "./WizardSlice";
 import {PageTitle} from "../common/theme/typography/Tags";
-import {FormProvider, useForm} from "react-hook-form";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
 import WizardButtons from "./WizardButtons";
 import {useTranslation} from "react-i18next";
 import {useDispatch} from "react-redux";
 import {
-  BasicDetailsNavigationStep,
-  formatLocalDateWithSeconds,
-  MealTimesNavigationStep,
-  OptionsNavigationStep, ParticipantPreviewNavigationStep, PublicRegistrationNavigationStep,
-  RunningDinnerOptions,
-  validateRunningDinnerOptions
+  Meal, OptionsNavigationStep, ParticipantPreviewNavigationStep, PublicRegistrationNavigationStep, useBackendIssueHandler, validateRunningDinnerOptions,
 } from "@runningdinner/shared";
 import {useWizardSelector} from "./WizardStore";
+import MealTimeEditControl from "../admin/dashboard/MealTimeEditControl";
+import { cloneDeep } from 'lodash';
+import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
+import {FormProvider, useForm} from "react-hook-form";
 
 export default function MealTimesStep() {
 
   const {t} = useTranslation(['wizard', 'common']);
 
-  const {meals} = useWizardSelector(getRunningDinnerOptionsSelector);
+  const options = useWizardSelector(getRunningDinnerOptionsSelector);
+  const {date} = useWizardSelector(getRunningDinnerBasicDetailsSelector);
   const isClosedDinner = useWizardSelector(isClosedDinnerSelector);
+
+  const {meals} = options;
+
+  const [mealsFormState, setMealsFormState] = React.useState(cloneDeep(meals));
+
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'wizard'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const dispatch = useDispatch();
 
-  const formMethods = useForm({
-    defaultValues: {},
-    mode: 'onTouched'
-  });
+  const formMethods = useForm();
 
   React.useEffect(() => {
     dispatch(setNextNavigationStep(isClosedDinner ? ParticipantPreviewNavigationStep : PublicRegistrationNavigationStep));
@@ -36,30 +49,44 @@ export default function MealTimesStep() {
     // eslint-disable-next-line
   }, [dispatch]);
 
-  const { clearErrors, setError, reset } = formMethods;
-
-  const submitMealTimesAsync = async(values: any) => {
-    clearErrors();
-    const mealTimesToSubmit = { ...values };
-    alert(`${mealTimesToSubmit}`);
-    return false;
+  const submitMealTimesAsync = async() => {
+    const optionsToValidate = {...options};
+    optionsToValidate.meals = mealsFormState;
+    try {
+      await validateRunningDinnerOptions(optionsToValidate, date);
+      dispatch(updateMeals(mealsFormState));
+      return true;
+    } catch(e) {
+      showHttpErrorDefaultNotification(e);
+      return false;
+    }
   };
 
-  return (
+  function handleTimeChange(meal: Meal, newTime: Date) {
+    const meals = cloneDeep(mealsFormState);
+    for (let i = 0; i < meals.length; i++) {
+      if (meals[i].label === meal.label) {
+        meals[i].time = newTime;
+      }
+    }
+    setMealsFormState(meals);
+  }
 
+  const mealTimeFields = mealsFormState.map((meal) =>
+      <SpacingGrid item key={meal.label}>
+        <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
+      </SpacingGrid>
+  );
+
+  return (
       <div>
         <PageTitle>{t('time_setup')}</PageTitle>
         <FormProvider {...formMethods}>
-          <form>
-            <SpacingGrid container>
-              <>
-                {meals.map(meal => <div key={meal.label}>{meal.label} - {formatLocalDateWithSeconds(meal.time)}</div>)}
-              </>
-            </SpacingGrid>
+          <SpacingGrid container justify={"space-between"}>
+            {mealTimeFields}
+          </SpacingGrid>
 
-            <WizardButtons onSubmitData={submitMealTimesAsync} />
-
-          </form>
+          <WizardButtons onSubmitData={submitMealTimesAsync} />
         </FormProvider>
       </div>
   );

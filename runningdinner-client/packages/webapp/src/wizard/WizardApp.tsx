@@ -9,6 +9,7 @@ import {useWizardSelector, wizardStore} from "./WizardStore";
 import {useQuery} from "../common/hooks/QueryHook";
 import {fetchGenderAspects, fetchRegistrationTypes, getRunningDinnerOptionsSelector, updateMeals, updateRunningDinnerType} from "./WizardSlice";
 import {
+  FinishNavigationStep,
   MealTimesNavigationStep,
   OptionsNavigationStep,
   ParticipantPreviewNavigationStep,
@@ -22,6 +23,7 @@ import {MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
 import MealTimesStep from "./MealTimesStep";
+import ParticipantPreviewStep from "./ParticipantPreviewStep";
 
 export default function WizardAppContainer() {
 
@@ -87,9 +89,12 @@ function WizardApp({demoDinner}: WizardAppProps) {
                   <MealTimesStep />
                 </Route>
                 <Route path={`${path}${ParticipantPreviewNavigationStep.value}`}>
-                  TODO
+                  <ParticipantPreviewStep />
                 </Route>
                 <Route path={`${path}${PublicRegistrationNavigationStep.value}`}>
+                  TODO
+                </Route>
+                <Route path={`${path}${FinishNavigationStep.value}`}>
                   TODO
                 </Route>
                 <Route path="/">

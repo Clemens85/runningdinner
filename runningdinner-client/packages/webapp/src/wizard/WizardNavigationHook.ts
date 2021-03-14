@@ -9,7 +9,8 @@ export default function useWizardNavigation() {
     if (!wizardStep) {
       return undefined;
     }
-    return `/running-dinner-wizard${wizardStep.value}`;
+    const queryParams = history.location.search;
+    return `/running-dinner-wizard${wizardStep.value}${queryParams}`;
   }
 
   function navigateToWizardStep(wizardStep?: LabelValue) {

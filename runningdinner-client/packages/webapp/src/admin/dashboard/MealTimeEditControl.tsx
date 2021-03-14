@@ -11,6 +11,7 @@ export default function MealTimeEditControl({id, label, time, onHandleTimeChange
   return (
       <KeyboardTimePicker
           margin="normal"
+          ampm={false}
           id={id}
           label={label}
           value={time}

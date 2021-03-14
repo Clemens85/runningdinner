@@ -47,4 +47,8 @@ export function isNotificationRequired(runningDinner: RunningDinner): boolean {
   return isAcknowledgeRequired(runningDinner) || !!runningDinner.cancellationDate || runningDinner.runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO;
 }
 
-
+export function getMinimumParticipantsNeeded(runningDinner: RunningDinner) {
+  const numMeals = runningDinner.options.meals.length;
+  const teamSize = runningDinner.options.teamSize;
+  return numMeals * numMeals * teamSize;
+}
