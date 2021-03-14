@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BackendConfig } from "../BackendConfig";
-import {GenderAspects, HttpError, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerType} from "../types";
+import {GenderAspects, HttpError, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings, RunningDinnerType} from "../types";
 import {CONSTANTS} from "../Constants";
 import {getHoursOfDate, getMinutesOfDate, isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute} from "../date";
 import {isClosedDinner} from "../admin";
@@ -18,6 +18,13 @@ export async function validateRunningDinnerOptions(options: RunningDinnerOptions
   const url = BackendConfig.buildUrl(`/wizardservice/v1/validate/options?runningDinnerDate=${dinnerDateQueryStr}`);
   await axios.put<void>(url, options);
 }
+
+export async function validatePublicSettings(publicSettings: RunningDinnerPublicSettings, runningDinnerDate: Date) {
+  const dinnerDateQueryStr = toLocalDateQueryString(runningDinnerDate);
+  const url = BackendConfig.buildUrl(`/wizardservice/v1/validate/publicsettings?runningDinnerDate=${dinnerDateQueryStr}`);
+  await axios.put<void>(url, publicSettings);
+}
+
 
 export function setDefaultEndOfRegistrationDate(runningDinner: RunningDinner) {
   const {date} = runningDinner.basicDetails;
@@ -121,6 +128,7 @@ export const MealTimesNavigationStep: LabelValue = { label: 'wizard_step_mealtim
 export const PublicRegistrationNavigationStep: LabelValue = { label: 'wizard_step_public_registration', value: '/registration-settings' };
 export const ParticipantPreviewNavigationStep: LabelValue = { label: 'wizard_step_participant_preview', value: '/participants-preview' };
 export const FinishNavigationStep: LabelValue = { label: 'wizard_step_finish', value: '/finish' };
+export const SummaryNavigationStep: LabelValue = { label: 'summary', value: '/summary' };
 
 export const ALL_NAVIGATION_STEPS: LabelValue[] = [
   BasicDetailsNavigationStep,

@@ -14,7 +14,7 @@ import {
   OptionsNavigationStep,
   ParticipantPreviewNavigationStep,
   PublicRegistrationNavigationStep,
-  RunningDinnerType,
+  RunningDinnerType, SummaryNavigationStep,
   useMealsTranslated
 } from "@runningdinner/shared";
 import {Helmet} from "react-helmet-async";
@@ -24,6 +24,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
 import MealTimesStep from "./MealTimesStep";
 import ParticipantPreviewStep from "./ParticipantPreviewStep";
+import PublicRegistrationStep from "./PublicRegistrationStep";
 
 export default function WizardAppContainer() {
 
@@ -92,13 +93,16 @@ function WizardApp({demoDinner}: WizardAppProps) {
                   <ParticipantPreviewStep />
                 </Route>
                 <Route path={`${path}${PublicRegistrationNavigationStep.value}`}>
-                  TODO
+                  <PublicRegistrationStep />
                 </Route>
                 <Route path={`${path}${FinishNavigationStep.value}`}>
                   TODO
                 </Route>
+                <Route path={`${path}${SummaryNavigationStep.value}`}>
+                  TODO
+                </Route>
                 <Route path="/">
-                  <BasicDetailsStep/>
+                  <BasicDetailsStep />
                 </Route>
               </Switch>
             </Grid>

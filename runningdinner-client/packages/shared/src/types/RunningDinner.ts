@@ -20,7 +20,7 @@ export enum RunningDinnerType {
 }
 
 export interface Contract {
-
+  fullname?: string;
 }
 
 export interface RunningDinnerOptions {

@@ -4,11 +4,11 @@ import {
   FetchStatus,
   fillDemoDinnerValues,
   findGenderAspectsAsync,
-  findRegistrationTypesAsync, getMinimumParticipantsNeeded, HttpError, isClosedDinner,
+  findRegistrationTypesAsync, getMinimumParticipantsNeeded, HttpError, isClosedDinner, isStringEmpty, isStringNotEmpty,
   LabelValue,
   Meal,
   newInitialWizardState,
-  RunningDinnerBasicDetails, RunningDinnerOptions,
+  RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings,
   RunningDinnerType,
   setDefaultEndOfRegistrationDate
 } from "@runningdinner/shared";
@@ -17,6 +17,7 @@ import {WizardRootState} from "./WizardStore";
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
 export const updateBasicDetails = createAction<RunningDinnerBasicDetails>('updateBasicDetails');
+export const updatePublicSettings = createAction<RunningDinnerPublicSettings>('updatePublicSettings');
 export const updateRunningDinnerOptions = createAction<RunningDinnerOptions>('updateRunningDinnerOptions');
 export const updateMeals = createAction<Meal[]>('updateMeals');
 export const setNextNavigationStep = createAction<LabelValue | undefined>('setNextNavigationStep');
@@ -61,6 +62,15 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
       .addCase(updateMeals, (state, action) => {
         state.runningDinner.options.meals = action.payload;
       })
+      .addCase(updatePublicSettings, (state, action) => {
+        state.runningDinner.publicSettings = action.payload;
+        if (!isClosedDinner(state.runningDinner) && isStringEmpty(state.runningDinner.email)) {
+          state.runningDinner.email = state.runningDinner.publicSettings.publicContactEmail;
+        }
+        if (isStringNotEmpty(state.runningDinner.publicSettings.publicContactName)) {
+          state.runningDinner.contract.fullname = state.runningDinner.publicSettings.publicContactName;
+        }
+      })
       .addCase(setNextNavigationStep, (state, action) => {
         state.nextNavigationStep = action.payload;
       })
@@ -96,6 +106,7 @@ export const getNavigationStepsSelector = (state: WizardRootState) => state.navi
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;
 export const getRunningDinnerOptionsSelector = (state: WizardRootState) => state.runningDinner.options;
+export const getRunningDinnerPublicSettingsSelector = (state: WizardRootState) => state.runningDinner.publicSettings;
 export const isClosedDinnerSelector = (state: WizardRootState) => isClosedDinner(state.runningDinner);
 export const getMinimumParticipantsNeededSelector = (state: WizardRootState) => getMinimumParticipantsNeeded(state.runningDinner);
 export const getNavigationStepSelector = (state: WizardRootState) => {
