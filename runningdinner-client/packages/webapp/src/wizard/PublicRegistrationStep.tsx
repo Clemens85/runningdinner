@@ -38,7 +38,7 @@ export default function PublicRegistrationStep() {
     mode: 'onTouched'
   });
 
-  const { clearErrors, setError, reset, watch, control } = formMethods;
+  const { clearErrors, setError, reset } = formMethods;
 
   const {applyValidationIssuesToForm} = useBackendIssueHandler();
   const {showHttpErrorDefaultNotification} = useNotificationHttpError();
