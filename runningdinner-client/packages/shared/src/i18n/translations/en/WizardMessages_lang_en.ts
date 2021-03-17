@@ -43,7 +43,7 @@ const Wizard_en: any = {
   adv_text_answer: 'Starting with 25th May 2018, the European Union has added a new law for processing personal data, the so called "Datenschutz-Grundverordnung" (DSGVO)',
   adv_text_help: 'As an event organizer you are responsible for the personal data of your participants in terms of data protection. Due to we cannot ensure that you ' +
       'process the data only for personal and/or family-related purposes, ' +
-      'you need to aggree to the <a href="/resources/AV-Vereinbarung.pdf" class="actionlink" target="_blank">Data Processing Terms (DE)</a>, which provides the legal protection ' +
+      'you need to aggree to the <anchor href="/resources/AV-Vereinbarung.pdf" title="Data Processing Terms (DE)" />, which provides the legal protection ' +
       'for you as the event organizer and us as the service provider.',
   adv_text_address_help: 'In order to be compliant with the Data Processing Terms, you have to enter your address data.<br>\n' +
       '<strong>Important: We will never make your data public and we will use it only for running our service.</strong>',

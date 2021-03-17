@@ -1,10 +1,11 @@
-import {Typography} from "@material-ui/core";
+import {styled, Typography} from "@material-ui/core";
 import React from "react";
 import {isStringEmpty} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import HtmlTranslate from "../../i18n/HtmlTranslate";
+import {spacing} from "@material-ui/system";
 
-export default function Paragraph(props) {
+function ParagraphWithoutSpacing(props) {
 
   let i18n = props.i18n ? props.i18n : '';
   let ns = 'common';
@@ -27,5 +28,7 @@ export default function Paragraph(props) {
   } else {
     return <Typography variant={"body1"} component="p">{t(i18n, parameters)}</Typography>;
   }
-
 }
+
+const Paragraph = styled(ParagraphWithoutSpacing)(spacing);
+export default Paragraph;

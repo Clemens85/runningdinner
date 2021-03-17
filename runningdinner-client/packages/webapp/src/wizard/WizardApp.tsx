@@ -25,6 +25,8 @@ import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
 import MealTimesStep from "./MealTimesStep";
 import ParticipantPreviewStep from "./ParticipantPreviewStep";
 import PublicRegistrationStep from "./PublicRegistrationStep";
+import FinishStep from "./FinishStep";
+import SummaryStep from "./SummaryStep";
 
 export default function WizardAppContainer() {
 
@@ -96,10 +98,10 @@ function WizardApp({demoDinner}: WizardAppProps) {
                   <PublicRegistrationStep />
                 </Route>
                 <Route path={`${path}${FinishNavigationStep.value}`}>
-                  TODO
+                  <FinishStep />
                 </Route>
                 <Route path={`${path}${SummaryNavigationStep.value}`}>
-                  TODO
+                  <SummaryStep />
                 </Route>
                 <Route path="/">
                   <BasicDetailsStep />

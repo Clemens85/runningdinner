@@ -6,7 +6,7 @@ import {spacing} from "@material-ui/system";
 
 export type FormTextFieldProps = Omit<TextFieldProps, "name"> & {
   name: string;
-  label: string;
+  label: React.ReactNode;
   defaultValue?: unknown;
 };
 

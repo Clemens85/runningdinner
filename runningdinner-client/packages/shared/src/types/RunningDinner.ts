@@ -21,6 +21,9 @@ export enum RunningDinnerType {
 
 export interface Contract {
   fullname?: string;
+  streetWithNr?: string;
+  zip?: string;
+  city?: string;
 }
 
 export interface RunningDinnerOptions {

@@ -6,9 +6,7 @@ import { isArrayNotEmpty, isStringEmpty, isStringNotEmpty } from "../Utils";
  * @param httpError The http error object from a request (e.g. axios)
  * @param filterValidationErrorResponseOnly If set to true return only Issues if we a validation error response (406)
  */
-export function getBackendIssuesFromErrorResponse(
-    httpError: HttpError,
-    filterValidationErrorResponseOnly: boolean
+export function getBackendIssuesFromErrorResponse(httpError: HttpError, filterValidationErrorResponseOnly: boolean
 ): BackendIssue[] {
   let result = new Array<BackendIssue>();
 
@@ -39,13 +37,22 @@ export function isValidationError(error: HttpError | Error): boolean {
   return errorResponse?.status === 406;
 }
 
+export function isHttpError(error: any): error is HttpError {
+  return error && "response" in error && "status" in error.response;
+}
+
+export function getAsHttpErrorOrDefault(error: any, defaultHttpError: HttpError): HttpError {
+  if (isHttpError(error)) {
+    return error;
+  }
+  return defaultHttpError;
+}
+
 /**
  * Maps backend issues to an object of type of {@link ApplicationErrors} which itself consists just of items of {@link ApplicationError}, which can then later be used for different error handling scenarios.
  * @param backendIssues
  */
-export function mapBackendIssuesToIssues(
-    backendIssues: BackendIssue[]
-): Issues {
+export function mapBackendIssuesToIssues(backendIssues: BackendIssue[]): Issues {
   const rawErrors = backendIssues.map((issue, index) =>
       mapBackendIssueToIssue(issue, index === 0)
   );
@@ -78,10 +85,7 @@ function findIssueByMessageInArr(issues: Issue[], message: string) {
   }
 }
 
-function mapBackendIssueToIssue(
-    issue: BackendIssue,
-    shouldFocus?: boolean
-): Issue {
+function mapBackendIssueToIssue(issue: BackendIssue, shouldFocus?: boolean): Issue {
   const {
     field,
     message,

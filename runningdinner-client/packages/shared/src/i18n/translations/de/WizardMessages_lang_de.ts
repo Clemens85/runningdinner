@@ -44,7 +44,7 @@ const Wizard_de: any = {
   adv_text_help: 'Da du als Eventveranstalter für die personenbezogenen Daten der Teilnehmer im datenschutzrechtlichen Sinne verantwortlich bist, ' +
       'und wir nicht ausschließen können,\n' +
       'dass du die Daten ausschließlich zur Ausübung persönlicher oder familiärer Tätigkeiten verarbeitest,\n' +
-      'soll die <a href="/resources/AV-Vereinbarung.pdf" class="actionlink" target="_blank">Vereinbarung zur Auftragsdatenverarbeitung</a> uns beide rechtlich absichern.',
+      'soll die <anchor href="/resources/AV-Vereinbarung.pdf" title="Vereinbarung zur Auftragsdatenverarbeitung" /> uns beide rechtlich absichern.',
   adv_text_address_help: 'Hierzu müssen wir auch deine persönlich Anschrift abfragen.<br>\n' +
       '<strong>Wichtig: Wir veröffentlichen deine Daten nicht und verwenden Sie ausschließlich für die Erbringung unserer Dienstleistung.</strong>',
 

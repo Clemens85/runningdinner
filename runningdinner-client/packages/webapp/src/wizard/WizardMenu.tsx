@@ -2,7 +2,7 @@ import React from 'react';
 import WizardMenuNotificationBar from "./WizardMenuNotificationBar";
 import {AppBar, Hidden, LinearProgress, List, ListItem, ListItemIcon, ListItemText, makeStyles, Toolbar, Typography} from "@material-ui/core";
 import {useWizardSelector} from "./WizardStore";
-import {getNavigationStepsSelector, isLoadingDataSelector} from "./WizardSlice";
+import {getLoadingDataErrorSelector, getNavigationStepsSelector, isLoadingDataSelector} from "./WizardSlice";
 import {useTranslation} from "react-i18next";
 import {
   BasicDetailsNavigationStep,
@@ -10,7 +10,7 @@ import {
   MealTimesNavigationStep,
   OptionsNavigationStep,
   ParticipantPreviewNavigationStep,
-  PublicRegistrationNavigationStep
+  PublicRegistrationNavigationStep, useBackendIssueHandler
 } from "@runningdinner/shared";
 import EditIcon from '@material-ui/icons/Edit';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -18,6 +18,7 @@ import ScheduleIcon from '@material-ui/icons/Schedule';
 import ListIcon from '@material-ui/icons/List';
 import DoneIcon from '@material-ui/icons/Done';
 import PeopleIcon from '@material-ui/icons/People';
+import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 
 const useStyles = makeStyles({
   navList: {
@@ -97,6 +98,18 @@ export default function WizardMenu() {
 
 function WizardProgressBar() {
   const showLoadingProgress = useWizardSelector(isLoadingDataSelector);
+
+  const loadingError = useWizardSelector(getLoadingDataErrorSelector);
+
+  const {getIssuesTranslated} = useBackendIssueHandler();
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+
+  React.useEffect(() => {
+    if (loadingError) {
+      showHttpErrorDefaultNotification(loadingError);
+    }
+    // eslint-disable-next-line
+  }, [loadingError]);
 
   return (
     <>

@@ -8,6 +8,11 @@ import {useTranslation} from "react-i18next";
 
 export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
 
+export interface CreateRunningDinnerResponse {
+  runningDinner: RunningDinner;
+  administrationUrl: string;
+}
+
 export async function validateBasicDetails(basicDetails: RunningDinnerBasicDetails) {
   const url = BackendConfig.buildUrl(`/wizardservice/v1/validate/basicdetails`);
   await axios.put<void>(url, basicDetails);
@@ -25,6 +30,11 @@ export async function validatePublicSettings(publicSettings: RunningDinnerPublic
   await axios.put<void>(url, publicSettings);
 }
 
+export async function createRunningDinnerAsync(runningDinner: RunningDinner): Promise<CreateRunningDinnerResponse> {
+  const url = BackendConfig.buildUrl(`/wizardservice/v1/create`);
+  const result = await axios.post<CreateRunningDinnerResponse>(url, runningDinner);
+  return result.data;
+}
 
 export function setDefaultEndOfRegistrationDate(runningDinner: RunningDinner) {
   const {date} = runningDinner.basicDetails;
@@ -110,6 +120,7 @@ export enum FetchStatus {
 
 export interface WizardState {
   runningDinner: RunningDinner;
+  administrationUrl?: string;
   navigationSteps: LabelValue[];
 
   nextNavigationStep?: LabelValue;

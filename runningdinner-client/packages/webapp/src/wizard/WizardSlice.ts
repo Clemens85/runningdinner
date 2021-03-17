@@ -1,14 +1,22 @@
 import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
   applyDinnerDateToMeals,
+  CreateRunningDinnerResponse,
   FetchStatus,
   fillDemoDinnerValues,
   findGenderAspectsAsync,
-  findRegistrationTypesAsync, getMinimumParticipantsNeeded, HttpError, isClosedDinner, isStringEmpty, isStringNotEmpty,
+  findRegistrationTypesAsync, getAsHttpErrorOrDefault,
+  getMinimumParticipantsNeeded,
+  HttpError,
+  isClosedDinner,
+  isStringEmpty,
+  isStringNotEmpty,
   LabelValue,
   Meal,
   newInitialWizardState,
-  RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings,
+  RunningDinnerBasicDetails,
+  RunningDinnerOptions,
+  RunningDinnerPublicSettings,
   RunningDinnerType,
   setDefaultEndOfRegistrationDate
 } from "@runningdinner/shared";
@@ -20,6 +28,7 @@ export const updateBasicDetails = createAction<RunningDinnerBasicDetails>('updat
 export const updatePublicSettings = createAction<RunningDinnerPublicSettings>('updatePublicSettings');
 export const updateRunningDinnerOptions = createAction<RunningDinnerOptions>('updateRunningDinnerOptions');
 export const updateMeals = createAction<Meal[]>('updateMeals');
+export const updateWithCreatedRunningDinner = createAction<CreateRunningDinnerResponse>('updateRunningDinnerCreated');
 export const setNextNavigationStep = createAction<LabelValue | undefined>('setNextNavigationStep');
 export const setPreviousNavigationStep = createAction<LabelValue | undefined>('setPreviousNavigationStep');
 
@@ -27,16 +36,14 @@ export const fetchRegistrationTypes = createAsyncThunk(
     'fetchRegistrationTypes',
     // Declare the type your function argument here:
     async () => {
-      const response = await findRegistrationTypesAsync();
-      return response;
+      return await findRegistrationTypesAsync();
     }
 );
 export const fetchGenderAspects = createAsyncThunk(
     'fetchGenderAspects',
     // Declare the type your function argument here:
     async () => {
-      const response = await findGenderAspectsAsync();
-      return response;
+      return await findGenderAspectsAsync();
     }
 );
 
@@ -71,6 +78,10 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
           state.runningDinner.contract.fullname = state.runningDinner.publicSettings.publicContactName;
         }
       })
+      .addCase(updateWithCreatedRunningDinner, (state, action) => {
+        state.runningDinner = action.payload.runningDinner;
+        state.administrationUrl = action.payload.administrationUrl;
+      })
       .addCase(setNextNavigationStep, (state, action) => {
         state.nextNavigationStep = action.payload;
       })
@@ -81,23 +92,29 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
       .addCase(fetchRegistrationTypes.fulfilled, (state, action) => {
         state.runningDinner.sessionData.registrationTypes = action.payload;
         state.fetchRegistrationTypesStatus = FetchStatus.SUCCEEDED;
+        state.fetchRegistrationTypesError = mapFetchErrorState(state.fetchRegistrationTypesStatus);
       })
       .addCase(fetchRegistrationTypes.pending, (state) => {
         state.fetchRegistrationTypesStatus = FetchStatus.LOADING;
+        state.fetchRegistrationTypesError = mapFetchErrorState(state.fetchRegistrationTypesStatus);
       })
       .addCase(fetchRegistrationTypes.rejected, (state, action) => {
         state.fetchRegistrationTypesStatus = FetchStatus.FAILED;
+        state.fetchRegistrationTypesError = mapFetchErrorState(state.fetchRegistrationTypesStatus, action);
       })
 
       .addCase(fetchGenderAspects.fulfilled, (state, action) => {
         state.runningDinner.sessionData.genderAspects = action.payload;
         state.fetchGenderAspectsStatus = FetchStatus.SUCCEEDED;
+        state.fetchGenderAspectsError = mapFetchErrorState(state.fetchGenderAspectsStatus);
       })
       .addCase(fetchGenderAspects.pending, (state) => {
         state.fetchGenderAspectsStatus = FetchStatus.LOADING;
+        state.fetchGenderAspectsError = mapFetchErrorState(state.fetchGenderAspectsStatus);
       })
-      .addCase(fetchGenderAspects.rejected, (state) => {
+      .addCase(fetchGenderAspects.rejected, (state, action) => {
         state.fetchGenderAspectsStatus = FetchStatus.FAILED;
+        state.fetchGenderAspectsError = mapFetchErrorState(state.fetchGenderAspectsStatus, action);
       })
 });
 
@@ -108,7 +125,9 @@ export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => 
 export const getRunningDinnerOptionsSelector = (state: WizardRootState) => state.runningDinner.options;
 export const getRunningDinnerPublicSettingsSelector = (state: WizardRootState) => state.runningDinner.publicSettings;
 export const isClosedDinnerSelector = (state: WizardRootState) => isClosedDinner(state.runningDinner);
+export const getAdministrationUrlSelector = (state: WizardRootState) => state.administrationUrl!;
 export const getMinimumParticipantsNeededSelector = (state: WizardRootState) => getMinimumParticipantsNeeded(state.runningDinner);
+export const getRunningDinnerSelector = (state: WizardRootState) => state.runningDinner;
 export const getNavigationStepSelector = (state: WizardRootState) => {
   return {
     nextNavigationStep: state.nextNavigationStep,
@@ -136,4 +155,25 @@ export const getGenderAspectsSelector = (state: WizardRootState) => {
   }
 };
 
+// export const getRunningDinnerContractSelector = (state: WizardRootState) => {
+//   return {
+//     email: state.runningDinner.email,
+//     fullname: state.runningDinner.contract.fullname,
+//   }
+// };
 
+// *** Misc **** //
+const GENERIC_HTTP_ERROR: HttpError = { // Will trigger a generic error message (-> useNotificationHttpError)
+  response: {
+    status: 500,
+    data: {}
+  }
+}
+function mapFetchErrorState(fetchStatus: FetchStatus, action?: any): HttpError | undefined {
+  let result = undefined;
+  if (fetchStatus === FetchStatus.FAILED) {
+    result = getAsHttpErrorOrDefault(action?.payload, GENERIC_HTTP_ERROR)
+    console.log(`Fetch error: ${JSON.stringify(action)}`);
+  }
+  return result;
+}
