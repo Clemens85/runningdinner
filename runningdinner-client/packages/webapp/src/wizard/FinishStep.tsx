@@ -61,7 +61,7 @@ export default function FinishStep() {
 
   const submitRunningDinnerAsync = async(values: RunningDinner) => {
     clearErrors();
-    const runningDinnerToSubmit = {...runningDinner};
+    const runningDinnerToSubmit = { ...runningDinner };
     runningDinnerToSubmit.email = values.email;
     // TODO: Contract!
     try {

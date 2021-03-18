@@ -1,11 +1,12 @@
 import React from 'react';
-import {PageTitle, Span} from "../common/theme/typography/Tags";
+import {PageTitle, SmallTitle, Span} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
 import Paragraph from "../common/theme/typography/Paragraph";
 import {useWizardSelector} from "./WizardStore";
 import {getAdministrationUrlSelector} from "./WizardSlice";
 import LinkExtern from "../common/theme/LinkExtern";
+import {Typography} from "@material-ui/core";
 
 export default function SummaryStep() {
 
@@ -25,7 +26,9 @@ export default function SummaryStep() {
 
         <SpacingGrid container>
           <SpacingGrid item xs={12} md={6}>
-            <LinkExtern href={administrationUrl} title={t('wizard:administration_link_open')} />
+            <LinkExtern href={administrationUrl} self={true}>
+              <Typography variant={"body1"} component={"span"}>{t('wizard:administration_link_open')}</Typography>
+            </LinkExtern>
           </SpacingGrid>
         </SpacingGrid>
       </div>
