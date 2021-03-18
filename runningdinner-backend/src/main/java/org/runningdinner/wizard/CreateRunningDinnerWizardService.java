@@ -178,14 +178,8 @@ public class CreateRunningDinnerWizardService {
     validateOptionsTO(runningDinnerAdminTO.getOptions(), runningDinnerAdminTO.getBasicDetails().getDate());
 
     RegistrationType registrationType = runningDinnerAdminTO.getBasicDetails().getRegistrationType();
-    if (registrationType == RegistrationType.CLOSED) {
-      if (runningDinnerAdminTO.getParticipantUploadSettings() == null) {
-        throw new ValidationException(new IssueList(new Issue("error.required.fileupload", IssueType.VALIDATION)));
-      }
-    } else {
-      if (runningDinnerAdminTO.getPublicSettings() == null) {
-        throw new ValidationException(new IssueList(new Issue("error.required.publicsettings", IssueType.VALIDATION)));
-      }
+    if (registrationType != RegistrationType.CLOSED && runningDinnerAdminTO.getPublicSettings() == null) {
+      throw new ValidationException(new IssueList(new Issue("error.required.publicsettings", IssueType.VALIDATION)));
     }
   }
 
