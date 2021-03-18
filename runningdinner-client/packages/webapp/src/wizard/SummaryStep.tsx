@@ -1,5 +1,5 @@
 import React from 'react';
-import {PageTitle, SmallTitle, Span} from "../common/theme/typography/Tags";
+import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
 import Paragraph from "../common/theme/typography/Paragraph";
