@@ -9,6 +9,9 @@ const useCommonStyles = makeStyles((theme) => ({
   },
   cursorPointer: {
     cursor: "pointer"
+  },
+  fullWidth: {
+    width: "100%"
   }
 }));
 
