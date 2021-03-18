@@ -10,6 +10,7 @@ import {
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {Box} from "@material-ui/core";
+import AlertCentered from "../../common/theme/AlertCentered";
 
 export default function AdminNotificationBar() {
 
@@ -43,9 +44,9 @@ export default function AdminNotificationBar() {
   const severity = cancellationDate ? "error" : "info";
   return (
       <>
-        { isOpen && <Alert severity={severity} icon={false} onClose={close}>
+        { isOpen && <AlertCentered severity={severity} icon={false} onClose={close}>
                       {notificationMessage}
-                    </Alert> }
+                    </AlertCentered> }
       </>
   );
 };
