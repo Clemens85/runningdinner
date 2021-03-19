@@ -10,9 +10,10 @@ export interface FormDatePickerProps extends Partial<KeyboardDatePickerProps> {
   name: string;
   label: string;
   helperText?: string;
+  defaultValue?: unknown;
 }
 
-export default function FormDatePicker({name, label, helperText, ...other}: FormDatePickerProps) {
+export default function FormDatePicker({name, label, helperText, defaultValue, ...other}: FormDatePickerProps) {
 
   const {errors, control} = useFormContext();
   const { dateFormat } = useDatePickerLocale();
@@ -25,6 +26,7 @@ export default function FormDatePicker({name, label, helperText, ...other}: Form
       <>
         <Controller
             name={name}
+            defaultValue={defaultValue}
             control={control}
             render={({ref, ...remainder}) =>
                 <>

@@ -24,6 +24,8 @@ export interface Contract {
   streetWithNr?: string;
   zip?: string;
   city?: string;
+  email?: string;
+  newsletterEnabled?: boolean;
 }
 
 export interface RunningDinnerOptions {
@@ -38,7 +40,7 @@ export interface RunningDinnerOptions {
 export interface RunningDinnerPublicSettings {
   title: string;
   description: string;
-  endOfRegistrationDate: Date;
+  endOfRegistrationDate?: Date;
   publicContactName: string;
   publicContactEmail: string;
   publicContactMobileNumber: string;

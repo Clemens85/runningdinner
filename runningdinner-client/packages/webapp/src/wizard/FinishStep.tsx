@@ -11,7 +11,7 @@ import {
 import {useDispatch} from "react-redux";
 import {FormProvider, useForm} from "react-hook-form";
 import {
-  CONSTANTS,
+  CONSTANTS, Contract,
   createRunningDinnerAsync,
   ParticipantPreviewNavigationStep, RunningDinner,
   SummaryNavigationStep,
@@ -61,11 +61,12 @@ export default function FinishStep() {
 
   const submitRunningDinnerAsync = async(values: RunningDinner) => {
     clearErrors();
-    const runningDinnerToSubmit = { ...runningDinner };
-    runningDinnerToSubmit.email = values.email;
-    // TODO: Contract!
+    const runningDinnerToSubmit = { ...runningDinner, email: values.email, contract: values.contract };
+    runningDinnerToSubmit.contract.email = values.email;
     try {
       const createRunningDinnerResponse = await createRunningDinnerAsync(runningDinnerToSubmit);
+      // Backend responds with an empty Contract, but we need it in state, otherwise our form will crash after dispatch
+      createRunningDinnerResponse.runningDinner.contract = runningDinnerToSubmit.contract;
       dispatch(updateWithCreatedRunningDinner(createRunningDinnerResponse));
       return true;
     } catch(e) {
@@ -94,7 +95,7 @@ export default function FinishStep() {
             </SpacingGrid>
           </SpacingGrid>
 
-          { !isDemoDinner && <ContractSettings /> }
+          { !isDemoDinner && <ContractSettings contract={runningDinner.contract} /> }
 
           <WizardButtons onSubmitData={submitRunningDinnerAsync} />
 
@@ -104,7 +105,10 @@ export default function FinishStep() {
   );
 }
 
-function ContractSettings() {
+interface ContractProps {
+  contract: Contract
+}
+function ContractSettings({contract}: ContractProps) {
 
   const {t} = useTranslation(['wizard', 'common']);
 
@@ -136,6 +140,7 @@ function ContractSettings() {
                          label={t('common:fullname' )}
                          required
                          variant="outlined"
+                         defaultValue={contract.fullname}
                          fullWidth/>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -143,6 +148,7 @@ function ContractSettings() {
                          label={t('common:street' )}
                          required
                          variant="outlined"
+                         defaultValue={contract.streetWithNr}
                          fullWidth/>
         </Grid>
       </SpacingGrid>
@@ -153,6 +159,7 @@ function ContractSettings() {
                          label={t('common:zip' )}
                          required
                          variant="outlined"
+                         defaultValue={contract.zip}
                          fullWidth/>
         </Grid>
         <Grid item xs={8}>
@@ -160,13 +167,15 @@ function ContractSettings() {
                          label={t('common:city' )}
                          required
                          variant="outlined"
+                         defaultValue={contract.city}
                          fullWidth/>
         </Grid>
       </SpacingGrid>
 
       <SpacingGrid container mt={3}>
         <Grid item xs={12}>
-          <FormCheckbox name="newsletterEnabled"
+          <FormCheckbox name="contract.newsletterEnabled"
+                        defaultValue={contract.newsletterEnabled}
                         label={
                           <Trans i18nKey="common:newsletter_label" values={{globalAdminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL}} />
                         } />

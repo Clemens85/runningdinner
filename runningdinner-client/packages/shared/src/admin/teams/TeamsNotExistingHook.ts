@@ -46,7 +46,7 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
       numExpectedTeams: numAssignableParticipants / runningDinner.options.teamSize
     };
 
-    if (!isClosedDinner(runningDinner)) {
+    if (!isClosedDinner(runningDinner) && runningDinner.publicSettings.endOfRegistrationDate) {
       result.endOfRegistrationDate = runningDinner.publicSettings.endOfRegistrationDate;
       result.registrationStillRunning = !isAfterInDays(new Date(), result.endOfRegistrationDate);
       if (result.registrationStillRunning) {

@@ -174,7 +174,7 @@ const initialState: WizardState = {
     publicSettings: {
       title: "",
       description: "",
-      endOfRegistrationDate: minusDays(new Date(), DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER),
+      // endOfRegistrationDate: minusDays(new Date(), DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER),
       publicContactName: "",
       publicContactEmail: "",
       publicContactMobileNumber: "",
@@ -182,7 +182,12 @@ const initialState: WizardState = {
       publicDinnerUrl: ""
     },
     contract: {
-
+      fullname: "",
+      zip: "",
+      streetWithNr: "",
+      city: "",
+      email: "",
+      newsletterEnabled: false
     },
     sessionData: { // Must be defined and is abused here for storing some state during wizard
       genderAspects: [],

@@ -8,9 +8,10 @@ export interface SelectWatchableProps extends SelectProps {
   name: string;
   label: string;
   helperText?: string;
+  defaultValue?: unknown;
 }
 
-function FormSelectInternal({name, label, children, helperText, fullWidth, variant, ...other}: SelectWatchableProps) {
+function FormSelectInternal({name, label, children, helperText, fullWidth, variant, defaultValue, ...other}: SelectWatchableProps) {
 
   const {errors, control} = useFormContext();
 
@@ -22,6 +23,7 @@ function FormSelectInternal({name, label, children, helperText, fullWidth, varia
       <>
         <Controller
             name={name}
+            defaultValue={defaultValue}
             control={control}
             render={(props) => (
                 <>

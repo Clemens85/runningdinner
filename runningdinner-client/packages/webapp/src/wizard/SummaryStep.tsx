@@ -17,7 +17,7 @@ export default function SummaryStep() {
       <div>
         <PageTitle>{t('done')}</PageTitle>
         <SpacingGrid container>
-          <SpacingGrid item xs={12} md={6}>
+          <SpacingGrid item xs={12}>
             <Span i18n="wizard:administration_link" />
             <Paragraph><strong>{administrationUrl}</strong></Paragraph>
             <Span i18n="wizard:administration_link_help" />

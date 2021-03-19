@@ -32,7 +32,7 @@ export function isClosedDinner(dinner: RunningDinner): boolean {
 }
 
 export function getDaysFromTodayTillEndOfRegistration(runningDinner: RunningDinner) {
-  if (!isClosedDinner(runningDinner)) {
+  if (!isClosedDinner(runningDinner) && runningDinner.publicSettings.endOfRegistrationDate) {
     const now = new Date();
     const endOfRegistrationDate = new Date(runningDinner.publicSettings.endOfRegistrationDate);
     return getDaysBetweenDates(endOfRegistrationDate, now);
