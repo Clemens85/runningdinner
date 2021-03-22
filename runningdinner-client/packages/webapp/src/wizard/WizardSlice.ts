@@ -1,6 +1,8 @@
 import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
-  applyDinnerDateToMeals,
+  ALL_NAVIGATION_STEPS,
+  ALL_NAVIGATION_STEPS_CLOSED_DINNER,
+  applyDinnerDateToMeals, BasicDetailsNavigationStep,
   CreateRunningDinnerResponse,
   FetchStatus,
   fillDemoDinnerValues,
@@ -18,7 +20,7 @@ import {
   RunningDinnerOptions,
   RunningDinnerPublicSettings,
   RunningDinnerType,
-  setDefaultEndOfRegistrationDate
+  setDefaultEndOfRegistrationDate, SummaryNavigationStep
 } from "@runningdinner/shared";
 import {WizardRootState} from "./WizardStore";
 
@@ -119,7 +121,28 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
 });
 
 // **** Selectors *** //
-export const getNavigationStepsSelector = (state: WizardRootState) => state.navigationSteps;
+export const getAllNavigationStepsSelector = (state: WizardRootState) => {
+  return isClosedDinnerSelector(state) ? ALL_NAVIGATION_STEPS_CLOSED_DINNER : ALL_NAVIGATION_STEPS;
+};
+export const getCurrentNavigationStepSelector = (state: WizardRootState) => {
+  if (!state.nextNavigationStep) {
+    return {
+      currentNavigationStep: SummaryNavigationStep,
+      percentage: 100
+    };
+  }
+  const allCurrentNavigationSteps = getAllNavigationStepsSelector(state);
+  for (let i = 0; i < allCurrentNavigationSteps.length; i++) {
+    if (allCurrentNavigationSteps[i].value === state.nextNavigationStep.value && i > 0) {
+      const currentNavigationStep = allCurrentNavigationSteps[i - 1];
+      return {
+        currentNavigationStep,
+        percentage: (i + 1) * 100 / allCurrentNavigationSteps.length
+      };
+    }
+  }
+  throw new Error(`nextNavigationStep is ${JSON.stringify(state.nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`);
+}
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;
 export const getRunningDinnerOptionsSelector = (state: WizardRootState) => state.runningDinner.options;
@@ -154,13 +177,6 @@ export const getGenderAspectsSelector = (state: WizardRootState) => {
     genderAspects: state.runningDinner.sessionData.genderAspects
   }
 };
-
-// export const getRunningDinnerContractSelector = (state: WizardRootState) => {
-//   return {
-//     email: state.runningDinner.email,
-//     fullname: state.runningDinner.contract.fullname,
-//   }
-// };
 
 // *** Misc **** //
 const GENERIC_HTTP_ERROR: HttpError = { // Will trigger a generic error message (-> useNotificationHttpError)

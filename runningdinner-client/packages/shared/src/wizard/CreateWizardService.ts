@@ -150,6 +150,14 @@ export const ALL_NAVIGATION_STEPS: LabelValue[] = [
   FinishNavigationStep
 ];
 
+export const ALL_NAVIGATION_STEPS_CLOSED_DINNER: LabelValue[] = [
+  BasicDetailsNavigationStep,
+  OptionsNavigationStep,
+  MealTimesNavigationStep,
+  ParticipantPreviewNavigationStep,
+  FinishNavigationStep
+];
+
 const initialState: WizardState = {
   runningDinner: {
     adminId: '',

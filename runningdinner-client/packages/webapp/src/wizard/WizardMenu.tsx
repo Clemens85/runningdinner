@@ -2,11 +2,11 @@ import React from 'react';
 import WizardMenuNotificationBar from "./WizardMenuNotificationBar";
 import {AppBar, Hidden, LinearProgress, List, ListItem, ListItemIcon, ListItemText, makeStyles, Toolbar, Typography} from "@material-ui/core";
 import {useWizardSelector} from "./WizardStore";
-import {getLoadingDataErrorSelector, getNavigationStepsSelector, isLoadingDataSelector} from "./WizardSlice";
+import {getAdministrationUrlSelector, getLoadingDataErrorSelector, getAllNavigationStepsSelector, isLoadingDataSelector, getCurrentNavigationStepSelector} from "./WizardSlice";
 import {useTranslation} from "react-i18next";
 import {
   BasicDetailsNavigationStep,
-  FinishNavigationStep,
+  FinishNavigationStep, isStringEmpty,
   MealTimesNavigationStep,
   OptionsNavigationStep,
   ParticipantPreviewNavigationStep,
@@ -20,7 +20,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import PeopleIcon from '@material-ui/icons/People';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 
-const useStyles = makeStyles({
+const useMenuStyles = makeStyles({
   navList: {
     display: `flex`,
     justifyContent: `space-evenly`,
@@ -49,20 +49,19 @@ const useStyles = makeStyles({
 // TODO: Icon min-Width of navIcon must be set to 24px for sm device size!
 // TODO 2: Wizard Progress must be improved!
 
+const navigationStepIconMap: Record<string, any> = {
+  [BasicDetailsNavigationStep.value]: <EditIcon />,
+  [OptionsNavigationStep.value]: <SettingsIcon />,
+  [MealTimesNavigationStep.value]: <ScheduleIcon />,
+  [PublicRegistrationNavigationStep.value]: <ListIcon />,
+  [ParticipantPreviewNavigationStep.value]: <PeopleIcon />,
+  [FinishNavigationStep.value]: <DoneIcon />
+};
+
 export default function WizardMenu() {
 
-  const navigationSteps = useWizardSelector(getNavigationStepsSelector);
-  const {t} = useTranslation('wizard');
-  const classes = useStyles();
-
-  const navigationStepIconMap: Record<string, any> = {
-    [BasicDetailsNavigationStep.value]: <EditIcon />,
-    [OptionsNavigationStep.value]: <SettingsIcon />,
-    [MealTimesNavigationStep.value]: <ScheduleIcon />,
-    [PublicRegistrationNavigationStep.value]: <ListIcon />,
-    [ParticipantPreviewNavigationStep.value]: <PeopleIcon />,
-    [FinishNavigationStep.value]: <DoneIcon />
-  };
+  const administrationUrl = useWizardSelector(getAdministrationUrlSelector);
+  const classes = useMenuStyles();
 
   return (
       <div>
@@ -77,18 +76,7 @@ export default function WizardMenu() {
         </Toolbar>
         <AppBar position="static" className={classes.appBar}>
           <Toolbar component={"nav"} className={classes.toolBar}>
-            <List component="nav" aria-labelledby="main navigation" className={classes.navList}>
-              {navigationSteps.map(({ label, value }) => (
-                <ListItem key={value} className={classes.navItem}>
-                  <ListItemIcon className={classes.navIcon}>
-                    {navigationStepIconMap[value] || <EditIcon/>}
-                  </ListItemIcon>
-                  <Hidden smDown>
-                    <ListItemText primary={t(label)} />
-                  </Hidden>
-                </ListItem>
-              ))}
-            </List>
+            { isStringEmpty(administrationUrl) && <NavigationLinkList /> }
           </Toolbar>
           <WizardProgressBar />
         </AppBar>
@@ -96,11 +84,34 @@ export default function WizardMenu() {
   );
 }
 
-function WizardProgressBar() {
-  const showLoadingProgress = useWizardSelector(isLoadingDataSelector);
+function NavigationLinkList() {
 
+  const navigationSteps = useWizardSelector(getAllNavigationStepsSelector);
+  const classes = useMenuStyles();
+  const {t} = useTranslation('wizard');
+
+  return (
+    <List component="nav" aria-labelledby="main navigation" className={classes.navList}>
+      {navigationSteps.map(({ label, value }) => (
+          <ListItem key={value} className={classes.navItem}>
+            <ListItemIcon className={classes.navIcon}>
+              {navigationStepIconMap[value]}
+            </ListItemIcon>
+            <Hidden smDown>
+              <ListItemText primary={t(label)} />
+            </Hidden>
+          </ListItem>
+      ))}
+    </List>
+  )
+}
+
+function WizardProgressBar() {
+
+  const showLoadingProgress = useWizardSelector(isLoadingDataSelector);
   const loadingError = useWizardSelector(getLoadingDataErrorSelector);
 
+  const {percentage} = useWizardSelector(getCurrentNavigationStepSelector);
   const {getIssuesTranslated} = useBackendIssueHandler();
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
@@ -115,7 +126,7 @@ function WizardProgressBar() {
     <>
       { showLoadingProgress ?
           <LinearProgress color="secondary" /> :
-          <LinearProgress variant="determinate" value={17 * 2 + 3 } /> }
+          <LinearProgress variant="determinate" value={percentage} /> }
     </>
   );
 
