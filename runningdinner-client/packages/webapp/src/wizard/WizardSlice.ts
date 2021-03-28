@@ -2,19 +2,19 @@ import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
   ALL_NAVIGATION_STEPS,
   ALL_NAVIGATION_STEPS_CLOSED_DINNER,
-  applyDinnerDateToMeals, BasicDetailsNavigationStep,
+  applyDinnerDateToMeals,
   CreateRunningDinnerResponse,
   FetchStatus,
   fillDemoDinnerValues,
   findGenderAspectsAsync,
-  findRegistrationTypesAsync, getAsHttpErrorOrDefault,
+  findRegistrationTypesAsync, FinishNavigationStep, getAsHttpErrorOrDefault,
   getMinimumParticipantsNeeded,
   HttpError,
   isClosedDinner,
   isStringEmpty,
   isStringNotEmpty,
-  LabelValue,
   Meal,
+  NavigationStep,
   newInitialWizardState,
   RunningDinnerBasicDetails,
   RunningDinnerOptions,
@@ -31,8 +31,8 @@ export const updatePublicSettings = createAction<RunningDinnerPublicSettings>('u
 export const updateRunningDinnerOptions = createAction<RunningDinnerOptions>('updateRunningDinnerOptions');
 export const updateMeals = createAction<Meal[]>('updateMeals');
 export const updateWithCreatedRunningDinner = createAction<CreateRunningDinnerResponse>('updateRunningDinnerCreated');
-export const setNextNavigationStep = createAction<LabelValue | undefined>('setNextNavigationStep');
-export const setPreviousNavigationStep = createAction<LabelValue | undefined>('setPreviousNavigationStep');
+export const setNextNavigationStep = createAction<NavigationStep | undefined>('setNextNavigationStep');
+export const setPreviousNavigationStep = createAction<NavigationStep | undefined>('setPreviousNavigationStep');
 
 export const fetchRegistrationTypes = createAsyncThunk(
     'fetchRegistrationTypes',
@@ -125,9 +125,9 @@ export const getAllNavigationStepsSelector = (state: WizardRootState) => {
   return isClosedDinnerSelector(state) ? ALL_NAVIGATION_STEPS_CLOSED_DINNER : ALL_NAVIGATION_STEPS;
 };
 export const getCurrentNavigationStepSelector = (state: WizardRootState) => {
-  if (!state.nextNavigationStep) {
+  if (!state.nextNavigationStep || state.nextNavigationStep.value === SummaryNavigationStep.value) {//isStringNotEmpty(state.administrationUrl)) {
     return {
-      currentNavigationStep: SummaryNavigationStep,
+      currentNavigationStep: FinishNavigationStep,
       percentage: 100
     };
   }
@@ -137,7 +137,7 @@ export const getCurrentNavigationStepSelector = (state: WizardRootState) => {
       const currentNavigationStep = allCurrentNavigationSteps[i - 1];
       return {
         currentNavigationStep,
-        percentage: (i + 1) * 100 / allCurrentNavigationSteps.length
+        percentage: (i + 1) * 100 / (allCurrentNavigationSteps.length + 1) // The last step is not displayed in navbar
       };
     }
   }

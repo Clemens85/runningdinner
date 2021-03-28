@@ -118,6 +118,9 @@ export enum FetchStatus {
   FAILED = "FAILED"
 }
 
+export interface NavigationStep extends LabelValue {
+}
+
 export interface WizardState {
   runningDinner: RunningDinner;
   administrationUrl?: string;
@@ -133,15 +136,15 @@ export interface WizardState {
 }
 
 
-export const BasicDetailsNavigationStep: LabelValue = { label: 'wizard_step_basics', value: '/' };
-export const OptionsNavigationStep: LabelValue = { label: 'wizard_step_options', value: '/options' };
-export const MealTimesNavigationStep: LabelValue = { label: 'wizard_step_mealtimes', value: '/mealtimes' };
-export const PublicRegistrationNavigationStep: LabelValue = { label: 'wizard_step_public_registration', value: '/registration-settings' };
-export const ParticipantPreviewNavigationStep: LabelValue = { label: 'wizard_step_participant_preview', value: '/participants-preview' };
-export const FinishNavigationStep: LabelValue = { label: 'wizard_step_finish', value: '/finish' };
-export const SummaryNavigationStep: LabelValue = { label: 'summary', value: '/summary' };
+export const BasicDetailsNavigationStep: NavigationStep = { label: 'wizard_step_basics', value: '/' };
+export const OptionsNavigationStep: NavigationStep = { label: 'wizard_step_options', value: '/options' };
+export const MealTimesNavigationStep: NavigationStep = { label: 'wizard_step_mealtimes', value: '/mealtimes' };
+export const PublicRegistrationNavigationStep: NavigationStep = { label: 'wizard_step_public_registration', value: '/registration-settings' };
+export const ParticipantPreviewNavigationStep: NavigationStep = { label: 'wizard_step_participant_preview', value: '/participants-preview' };
+export const FinishNavigationStep: NavigationStep = { label: 'wizard_step_finish', value: '/finish' };
+export const SummaryNavigationStep: NavigationStep = { label: 'summary', value: '/summary' };
 
-export const ALL_NAVIGATION_STEPS: LabelValue[] = [
+export const ALL_NAVIGATION_STEPS: NavigationStep[] = [
   BasicDetailsNavigationStep,
   OptionsNavigationStep,
   MealTimesNavigationStep,
@@ -150,7 +153,7 @@ export const ALL_NAVIGATION_STEPS: LabelValue[] = [
   FinishNavigationStep
 ];
 
-export const ALL_NAVIGATION_STEPS_CLOSED_DINNER: LabelValue[] = [
+export const ALL_NAVIGATION_STEPS_CLOSED_DINNER: NavigationStep[] = [
   BasicDetailsNavigationStep,
   OptionsNavigationStep,
   MealTimesNavigationStep,

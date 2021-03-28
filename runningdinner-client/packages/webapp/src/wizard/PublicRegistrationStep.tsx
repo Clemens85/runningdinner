@@ -128,7 +128,6 @@ export default function PublicRegistrationStep() {
               <SpacingGrid item xs={12} md={6}>
                 <FormTextField name="publicContactMobileNumber"
                                label={t('common:public_contact_mobile_number' )}
-                               required
                                helperText={t("common:public_contact_mobile_number_help")}
                                variant="outlined"
                                fullWidth />
