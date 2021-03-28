@@ -137,7 +137,7 @@ export const getCurrentNavigationStepSelector = (state: WizardRootState) => {
       const currentNavigationStep = allCurrentNavigationSteps[i - 1];
       return {
         currentNavigationStep,
-        percentage: (i + 1) * 100 / (allCurrentNavigationSteps.length + 1) // The last step is not displayed in navbar
+        percentage: (i / allCurrentNavigationSteps.length) * 100  // We must use the currentStep (i -1) as factor, but due to we are 0-index-based, we just take i
       };
     }
   }
