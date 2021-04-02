@@ -53,8 +53,15 @@ const useMenuStyles = makeStyles({
   }
 });
 
+
+const useListItemTextStyles = makeStyles(() => ({
+  primary: {
+    fontWeight: 'bold'
+  }
+}));
+
+
 // TODO: Icon min-Width of navIcon must be set to 24px for sm device size!
-// TODO 2: Wizard Progress must be improved!
 
 const navigationStepIconMap: Record<string, any> = {
   [BasicDetailsNavigationStep.value]: <EditIcon />,
@@ -104,9 +111,11 @@ export default function WizardMenu() {
 function NavigationLinkList() {
 
   const navigationSteps = useWizardSelector(getAllNavigationStepsSelector);
-  const { redirectToBeginOfWizard } = useWizardSelector(getCurrentNavigationStepSelector);
+  const { redirectToBeginOfWizard, currentNavigationStep } = useWizardSelector(getCurrentNavigationStepSelector);
   const {navigateToWizardStep} = useWizardNavigation();
-  const classes = useMenuStyles();
+  const menuClasses = useMenuStyles();
+  const listItemTextClasses = useListItemTextStyles();
+
   const {t} = useTranslation('wizard');
 
   React.useEffect(() => { // Ensure that jumping to a step is only possible if all previous steps are run through:
@@ -117,14 +126,15 @@ function NavigationLinkList() {
   }, [redirectToBeginOfWizard]);
 
   return (
-    <List component="nav" aria-labelledby="main navigation" className={classes.navList}>
+    <List component="nav" aria-labelledby="main navigation" className={menuClasses.navList}>
       {navigationSteps.map(({ label, value }) => (
-          <ListItem key={value} className={classes.navItem}>
-            <ListItemIcon className={classes.navIcon}>
+          <ListItem key={value} className={menuClasses.navItem}>
+            <ListItemIcon className={menuClasses.navIcon}>
               {navigationStepIconMap[value]}
             </ListItemIcon>
             <Hidden smDown>
-              <ListItemText primary={t(label)} />
+              { value === currentNavigationStep.value && <ListItemText primary={t(label)} classes={{ primary: listItemTextClasses.primary}} /> }
+              { value !== currentNavigationStep.value && <ListItemText primary={t(label)} /> }
             </Hidden>
           </ListItem>
       ))}
