@@ -5,7 +5,7 @@ import {
   isClosedDinnerSelector,
   setNextNavigationStep,
   setPreviousNavigationStep, updateMeals,
-} from "./WizardSlice";
+} from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
 import WizardButtons from "./WizardButtons";
@@ -14,7 +14,7 @@ import {useDispatch} from "react-redux";
 import {
   Meal, OptionsNavigationStep, ParticipantPreviewNavigationStep, PublicRegistrationNavigationStep, useBackendIssueHandler, validateRunningDinnerOptions,
 } from "@runningdinner/shared";
-import {useWizardSelector} from "./WizardStore";
+import {useWizardSelector} from "@runningdinner/shared";
 import MealTimeEditControl from "../admin/dashboard/MealTimeEditControl";
 import { cloneDeep } from 'lodash';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";

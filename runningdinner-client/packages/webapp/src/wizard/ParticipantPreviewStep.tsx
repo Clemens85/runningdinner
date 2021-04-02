@@ -1,13 +1,13 @@
 import React from 'react';
 import {Trans, useTranslation} from "react-i18next";
-import {useWizardSelector} from "./WizardStore";
+import {useWizardSelector} from "@runningdinner/shared";
 import {
   getMinimumParticipantsNeededSelector,
   isClosedDinnerSelector,
   isDemoDinnerSelector,
   setNextNavigationStep,
   setPreviousNavigationStep,
-} from "./WizardSlice";
+} from "@runningdinner/shared";
 import {
   FinishNavigationStep,
   MealTimesNavigationStep,

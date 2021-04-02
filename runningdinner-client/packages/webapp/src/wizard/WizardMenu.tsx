@@ -1,14 +1,14 @@
 import React from 'react';
 import WizardMenuNotificationBar from "./WizardMenuNotificationBar";
 import {AppBar, Hidden, LinearProgress, List, ListItem, ListItemIcon, ListItemText, makeStyles, Toolbar, Typography} from "@material-ui/core";
-import {useWizardSelector} from "./WizardStore";
+import {useWizardSelector} from "@runningdinner/shared/";
 import {
   getAdministrationUrlSelector,
   getLoadingDataErrorSelector,
   getAllNavigationStepsSelector,
   isLoadingDataSelector,
   getCurrentNavigationStepSelector,
-} from "./WizardSlice";
+} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {
   BasicDetailsNavigationStep,

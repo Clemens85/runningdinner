@@ -7,31 +7,23 @@ import {
   CreateRunningDinnerResponse,
   FetchStatus,
   fillDemoDinnerValues,
-  findGenderAspectsAsync,
-  findRegistrationTypesAsync,
   FinishNavigationStep,
-  getAsHttpErrorOrDefault,
-  getMinimumParticipantsNeeded,
-  HttpError,
-  isClosedDinner,
-  isStringEmpty,
-  isStringNotEmpty,
-  Meal,
   MealTimesNavigationStep,
   NavigationStep,
   newInitialWizardState,
   OptionsNavigationStep,
   PublicRegistrationNavigationStep,
-  RunningDinnerBasicDetails,
-  RunningDinnerOptions,
-  RunningDinnerPublicSettings,
-  RunningDinnerType,
   setDefaultEndOfRegistrationDate,
   SummaryNavigationStep,
   WizardContextData
-} from "@runningdinner/shared";
+} from "./CreateWizardService";
 import {WizardRootState} from "./WizardStore";
 import find from "lodash/find";
+import {RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings, RunningDinnerType, Meal, HttpError} from "../types";
+import {isStringEmpty, isStringNotEmpty} from "../Utils";
+import {findGenderAspectsAsync, findRegistrationTypesAsync} from "../masterdata";
+import {getMinimumParticipantsNeeded, isClosedDinner} from "../admin";
+import { getAsHttpErrorOrDefault } from "../issue";
 
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
@@ -246,6 +238,7 @@ function mapFetchErrorState(fetchStatus: FetchStatus, action?: any): HttpError |
   let result = undefined;
   if (fetchStatus === FetchStatus.FAILED) {
     result = getAsHttpErrorOrDefault(action?.payload, GENERIC_HTTP_ERROR)
+    // @ts-ignore
     console.log(`Fetch error: ${JSON.stringify(action)}`);
   }
   return result;

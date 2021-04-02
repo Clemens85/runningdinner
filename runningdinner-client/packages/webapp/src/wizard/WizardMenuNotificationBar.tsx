@@ -1,6 +1,6 @@
 import React from 'react';
-import {useWizardSelector} from "./WizardStore";
-import {isDemoDinnerSelector} from "./WizardSlice";
+import {useWizardSelector} from "@runningdinner/shared";
+import {isDemoDinnerSelector} from "@runningdinner/shared";
 import {Trans} from "react-i18next";
 import AlertCentered from "../common/theme/AlertCentered";
 

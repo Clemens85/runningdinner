@@ -14,7 +14,7 @@ import {
 import FormTextField from "../common/input/FormTextField";
 import WizardButtons from "./WizardButtons";
 import {Trans, useTranslation} from "react-i18next";
-import {useWizardSelector} from "./WizardStore";
+import {useWizardSelector} from "@runningdinner/shared";
 import {
   getGenderAspectsSelector,
   getRunningDinnerBasicDetailsSelector,
@@ -22,7 +22,7 @@ import {
   setNextNavigationStep,
   setPreviousNavigationStep,
   updateRunningDinnerOptions
-} from "./WizardSlice";
+} from "@runningdinner/shared";
 import {useDispatch} from "react-redux";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import FormCheckbox from "../common/input/FormCheckbox";

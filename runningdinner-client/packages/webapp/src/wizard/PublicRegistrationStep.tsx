@@ -1,13 +1,13 @@
 import React from 'react';
 import {useTranslation} from "react-i18next";
-import {useWizardSelector} from "./WizardStore";
+import {useWizardSelector} from "@runningdinner/shared";
 import {
   getRunningDinnerBasicDetailsSelector,
   getRunningDinnerPublicSettingsSelector,
   setNextNavigationStep,
   setPreviousNavigationStep,
   updatePublicSettings,
-} from "./WizardSlice";
+} from "@runningdinner/shared";
 import {useDispatch} from "react-redux";
 import {FormProvider, useForm} from "react-hook-form";
 import {

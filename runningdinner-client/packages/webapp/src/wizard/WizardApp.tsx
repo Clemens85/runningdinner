@@ -5,9 +5,9 @@ import {Route, Switch, useRouteMatch} from "react-router-dom";
 import BasicDetailsStep from "./BasicDetailsStep";
 import OptionsStep from "./OptionsStep";
 import {Provider, useDispatch} from "react-redux";
-import {useWizardSelector, wizardStore} from "./WizardStore";
+import {useWizardSelector, wizardStore} from "@runningdinner/shared";
 import {useQuery} from "../common/hooks/QueryHook";
-import {fetchGenderAspects, fetchRegistrationTypes, getRunningDinnerOptionsSelector, updateMeals, updateRunningDinnerType} from "./WizardSlice";
+import {fetchGenderAspects, fetchRegistrationTypes, getRunningDinnerOptionsSelector, updateMeals, updateRunningDinnerType} from "@runningdinner/shared";
 import {
   FinishNavigationStep,
   MealTimesNavigationStep,
