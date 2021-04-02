@@ -27,7 +27,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import useWizardNavigation from "./WizardNavigationHook";
 
-const useMenuStyles = makeStyles({
+const useMenuStyles = makeStyles((theme) => ({
   navList: {
     display: `flex`,
     justifyContent: `space-evenly`,
@@ -40,7 +40,12 @@ const useMenuStyles = makeStyles({
     width: 'auto'
   },
   navIcon: {
-    minWidth: "36px",
+    [theme.breakpoints.up('md')]: {
+      minWidth: "36px",
+    },
+    [theme.breakpoints.down('md')]: {
+      minWidth: "24px",
+    },
     color: 'white'
   },
   appBar: {
@@ -51,17 +56,13 @@ const useMenuStyles = makeStyles({
     minHeight: '48px',
     maxHeight: '48px',
   }
-});
-
+}));
 
 const useListItemTextStyles = makeStyles(() => ({
   primary: {
     fontWeight: 'bold'
   }
 }));
-
-
-// TODO: Icon min-Width of navIcon must be set to 24px for sm device size!
 
 const navigationStepIconMap: Record<string, any> = {
   [BasicDetailsNavigationStep.value]: <EditIcon />,
