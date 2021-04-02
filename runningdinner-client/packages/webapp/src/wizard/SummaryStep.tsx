@@ -6,7 +6,7 @@ import Paragraph from "../common/theme/typography/Paragraph";
 import {useWizardSelector} from "@runningdinner/shared";
 import {getAdministrationUrlSelector, setNextNavigationStep, setPreviousNavigationStep} from "@runningdinner/shared";
 import LinkExtern from "../common/theme/LinkExtern";
-import {Typography} from "@material-ui/core";
+import {Box, Typography} from "@material-ui/core";
 import {FinishNavigationStep} from "@runningdinner/shared";
 import {useDispatch} from "react-redux";
 
@@ -29,7 +29,9 @@ export default function SummaryStep() {
           <SpacingGrid item xs={12}>
             <Span i18n="wizard:administration_link" />
             <Paragraph><strong>{administrationUrl}</strong></Paragraph>
-            <Span i18n="wizard:administration_link_help" />
+            <Box my={1}>
+              <Span i18n="wizard:administration_link_help" />
+            </Box>
           </SpacingGrid>
         </SpacingGrid>
 
