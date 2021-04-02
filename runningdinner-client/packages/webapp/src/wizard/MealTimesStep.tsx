@@ -19,6 +19,7 @@ import MealTimeEditControl from "../admin/dashboard/MealTimeEditControl";
 import { cloneDeep } from 'lodash';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {FormProvider, useForm} from "react-hook-form";
+import {useMediaQuery, useTheme} from "@material-ui/core";
 
 export default function MealTimesStep() {
 
@@ -27,6 +28,9 @@ export default function MealTimesStep() {
   const options = useWizardSelector(getRunningDinnerOptionsSelector);
   const {date} = useWizardSelector(getRunningDinnerBasicDetailsSelector);
   const isClosedDinner = useWizardSelector(isClosedDinnerSelector);
+
+  const theme = useTheme();
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
 
   const {meals} = options;
 
@@ -73,16 +77,18 @@ export default function MealTimesStep() {
   }
 
   const mealTimeFields = mealsFormState.map((meal) =>
-      <SpacingGrid item key={meal.label}>
+      <SpacingGrid item key={meal.label} pr={6}>
         <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
       </SpacingGrid>
   );
+
+  const mealTimeFieldsDirection = isSmallDevice ? "column" : "row";
 
   return (
       <div>
         <PageTitle>{t('time_setup')}</PageTitle>
         <FormProvider {...formMethods}>
-          <SpacingGrid container justify={"space-between"}>
+          <SpacingGrid container direction={mealTimeFieldsDirection}>
             {mealTimeFields}
           </SpacingGrid>
 
