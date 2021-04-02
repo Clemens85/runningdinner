@@ -33,13 +33,7 @@ export interface BackendIssueHandlerMethods {
    * @param setSingleFormErrorIntoFormCallback
    * @return {@link ApplicationErrors} which contains all found ApplicationErrors, which might be further interesting for the caller
    */
-  applyValidationIssuesToForm: (
-      httpError: HttpError,
-      setSingleFormErrorIntoFormCallback: (
-          fieldName: any,
-          error: IssueOption
-      ) => unknown
-  ) => Issues;
+  applyValidationIssuesToForm: (httpError: HttpError, setSingleFormErrorIntoFormCallback: (fieldName: any, error: IssueOption) => unknown) => Issues;
 }
 
 /**
@@ -146,25 +140,14 @@ export function useBackendIssueHandler(
 
   const { t } = useTranslation(defaultTranslationResolutionStrategy.namespaces);
 
-  function getIssuesUntranslated(
-      httpError: HttpError,
-      filterValidationErrorResponseOnly: boolean = true
-  ): Issues {
-    const backendIssues = getBackendIssuesFromErrorResponse(
-        httpError,
-        filterValidationErrorResponseOnly
-    );
+  function getIssuesUntranslated(httpError: HttpError, filterValidationErrorResponseOnly: boolean = true): Issues {
+    const backendIssues = getBackendIssuesFromErrorResponse(httpError, filterValidationErrorResponseOnly);
     return mapBackendIssuesToIssues(backendIssues);
   }
 
-  function getIssuesTranslated(
-      httpError: HttpError,
-      filterValidationErrorResponseOnly: boolean = true
-  ): Issues {
-    const issuesRaw = getIssuesUntranslated(
-        httpError,
-        filterValidationErrorResponseOnly
-    );
+  function getIssuesTranslated(httpError: HttpError, filterValidationErrorResponseOnly: boolean = true): Issues {
+
+    const issuesRaw = getIssuesUntranslated(httpError, filterValidationErrorResponseOnly);
 
     const issuesFieldRelated = issuesRaw.issuesFieldRelated.map((issue) =>
         getDefaultApplicationErrorTranslation(issue)
@@ -178,17 +161,8 @@ export function useBackendIssueHandler(
     };
   }
 
-  function applyValidationIssuesToForm(
-      httpError: HttpError,
-      setSingleFormErrorIntoFormCallback: (
-          fieldName: any,
-          error: IssueOption
-      ) => unknown
-  ): Issues {
-    const {
-      issuesFieldRelated,
-      issuesWithoutField,
-    } = getIssuesTranslated(httpError, true);
+  function applyValidationIssuesToForm(httpError: HttpError, setSingleFormErrorIntoFormCallback: (fieldName: any, error: IssueOption) => unknown): Issues {
+    const {issuesFieldRelated, issuesWithoutField} = getIssuesTranslated(httpError, true);
 
     issuesFieldRelated.forEach((issue) =>
         setSingleFormErrorIntoFormCallback(issue.field, issue.error)
