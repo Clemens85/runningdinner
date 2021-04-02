@@ -1,11 +1,11 @@
-import {LabelValue} from "@runningdinner/shared";
+import {NavigationStep} from "@runningdinner/shared";
 import {useHistory} from "react-router-dom";
 
 export default function useWizardNavigation() {
 
   const history = useHistory();
 
-  function generateWizardStepPath(wizardStep?: LabelValue) {
+  function generateWizardStepPath(wizardStep?: NavigationStep) {
     if (!wizardStep) {
       return undefined;
     }
@@ -13,7 +13,7 @@ export default function useWizardNavigation() {
     return `/running-dinner-wizard${wizardStep.value}${queryParams}`;
   }
 
-  function navigateToWizardStep(wizardStep?: LabelValue) {
+  function navigateToWizardStep(wizardStep?: NavigationStep) {
     const path = generateWizardStepPath(wizardStep);
     if (path) {
       history.push(path);

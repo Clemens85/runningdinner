@@ -2,7 +2,7 @@ import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
   ALL_NAVIGATION_STEPS,
   ALL_NAVIGATION_STEPS_CLOSED_DINNER,
-  applyDinnerDateToMeals,
+  applyDinnerDateToMeals, BasicDetailsNavigationStep,
   CreateRunningDinnerResponse,
   FetchStatus,
   fillDemoDinnerValues,
@@ -13,9 +13,9 @@ import {
   isClosedDinner,
   isStringEmpty,
   isStringNotEmpty,
-  Meal,
+  Meal, MealTimesNavigationStep,
   NavigationStep,
-  newInitialWizardState,
+  newInitialWizardState, OptionsNavigationStep, PublicRegistrationNavigationStep,
   RunningDinnerBasicDetails,
   RunningDinnerOptions,
   RunningDinnerPublicSettings,
@@ -23,6 +23,7 @@ import {
   setDefaultEndOfRegistrationDate, SummaryNavigationStep
 } from "@runningdinner/shared";
 import {WizardRootState} from "./WizardStore";
+import find from "lodash/find";
 
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
@@ -64,12 +65,15 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
         setDefaultEndOfRegistrationDate(state.runningDinner);
         const updatedMeals = applyDinnerDateToMeals(state.runningDinner.options.meals, state.runningDinner.basicDetails.date);
         state.runningDinner.options.meals = updatedMeals;
+        state.completedNavigationSteps.push(BasicDetailsNavigationStep);
       })
       .addCase(updateRunningDinnerOptions, (state, action) => {
         state.runningDinner.options = {...action.payload};
+        state.completedNavigationSteps.push(OptionsNavigationStep);
       })
       .addCase(updateMeals, (state, action) => {
         state.runningDinner.options.meals = action.payload;
+        state.completedNavigationSteps.push(MealTimesNavigationStep);
       })
       .addCase(updatePublicSettings, (state, action) => {
         state.runningDinner.publicSettings = action.payload;
@@ -79,10 +83,12 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
         if (isStringNotEmpty(state.runningDinner.publicSettings.publicContactName)) {
           state.runningDinner.contract.fullname = state.runningDinner.publicSettings.publicContactName;
         }
+        state.completedNavigationSteps.push(PublicRegistrationNavigationStep);
       })
       .addCase(updateWithCreatedRunningDinner, (state, action) => {
         state.runningDinner = action.payload.runningDinner;
         state.administrationUrl = action.payload.administrationUrl;
+        state.completedNavigationSteps.push(FinishNavigationStep);
       })
       .addCase(setNextNavigationStep, (state, action) => {
         state.nextNavigationStep = action.payload;
@@ -125,23 +131,43 @@ export const getAllNavigationStepsSelector = (state: WizardRootState) => {
   return isClosedDinnerSelector(state) ? ALL_NAVIGATION_STEPS_CLOSED_DINNER : ALL_NAVIGATION_STEPS;
 };
 export const getCurrentNavigationStepSelector = (state: WizardRootState) => {
-  if (!state.nextNavigationStep || state.nextNavigationStep.value === SummaryNavigationStep.value) {//isStringNotEmpty(state.administrationUrl)) {
-    return {
-      currentNavigationStep: FinishNavigationStep,
-      percentage: 100
+  let result;
+  const allNavigationStepsToRunThrough = getAllNavigationStepsSelector(state);
+  if (!state.nextNavigationStep || state.nextNavigationStep.value === SummaryNavigationStep.value) {
+    result = {
+      currentNavigationStep: isStringNotEmpty(state.administrationUrl) ? SummaryNavigationStep : FinishNavigationStep,
+      percentage: 100,
+      redirectToBeginOfWizard: false
     };
-  }
-  const allCurrentNavigationSteps = getAllNavigationStepsSelector(state);
-  for (let i = 0; i < allCurrentNavigationSteps.length; i++) {
-    if (allCurrentNavigationSteps[i].value === state.nextNavigationStep.value && i > 0) {
-      const currentNavigationStep = allCurrentNavigationSteps[i - 1];
-      return {
-        currentNavigationStep,
-        percentage: (i / allCurrentNavigationSteps.length) * 100  // We must use the currentStep (i -1) as factor, but due to we are 0-index-based, we just take i
-      };
+  } else {
+    for (let i = 0; i < allNavigationStepsToRunThrough.length; i++) {
+      if (allNavigationStepsToRunThrough[i].value === state.nextNavigationStep.value && i > 0) {
+        const currentNavigationStep = allNavigationStepsToRunThrough[i - 1];
+        result = {
+          currentNavigationStep,
+          redirectToBeginOfWizard: false,
+          percentage: (i / allNavigationStepsToRunThrough.length) * 100  // We must use the currentStep (i -1) as factor, but due to we are 0-index-based, we just take i
+        };
+        break;
+      }
     }
   }
-  throw new Error(`nextNavigationStep is ${JSON.stringify(state.nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`);
+  if (!result) {
+    throw new Error(`nextNavigationStep is ${JSON.stringify(state.nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`);
+  }
+  // Algorithm: Check if completedNavigationSteps contains the previous navigation step of the iterated navigation step (till we reach current step)
+  // If not contained in completedNavigationSteps it was not run through!
+  for (let i = 1; i < allNavigationStepsToRunThrough.length; i++) {
+    if (result.currentNavigationStep.value === allNavigationStepsToRunThrough[i].value) {
+      break;
+    }
+    const completedNavigationStep = find(state.completedNavigationSteps, ['value', allNavigationStepsToRunThrough[i-1].value]);
+    if (!completedNavigationStep) {
+      result.redirectToBeginOfWizard = true;
+    }
+  }
+
+  return result;
 }
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;

@@ -124,10 +124,11 @@ export interface NavigationStep extends LabelValue {
 export interface WizardState {
   runningDinner: RunningDinner;
   administrationUrl?: string;
-  navigationSteps: LabelValue[];
+  navigationSteps: NavigationStep[];
 
-  nextNavigationStep?: LabelValue;
-  previousNavigationStep?: LabelValue;
+  nextNavigationStep?: NavigationStep;
+  previousNavigationStep?: NavigationStep;
+  completedNavigationSteps: NavigationStep[];
 
   fetchRegistrationTypesStatus: FetchStatus;
   fetchRegistrationTypesError?: HttpError;
@@ -216,6 +217,7 @@ const initialState: WizardState = {
   fetchGenderAspectsStatus: FetchStatus.IDLE,
 
   navigationSteps: ALL_NAVIGATION_STEPS,
-  nextNavigationStep: OptionsNavigationStep
+  nextNavigationStep: OptionsNavigationStep,
+  completedNavigationSteps: [ParticipantPreviewNavigationStep] // This is not yet completed, but has no relevance to be run through, hence add it always
 };
 

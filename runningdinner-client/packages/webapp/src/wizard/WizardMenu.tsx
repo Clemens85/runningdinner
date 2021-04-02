@@ -2,7 +2,13 @@ import React from 'react';
 import WizardMenuNotificationBar from "./WizardMenuNotificationBar";
 import {AppBar, Hidden, LinearProgress, List, ListItem, ListItemIcon, ListItemText, makeStyles, Toolbar, Typography} from "@material-ui/core";
 import {useWizardSelector} from "./WizardStore";
-import {getAdministrationUrlSelector, getLoadingDataErrorSelector, getAllNavigationStepsSelector, isLoadingDataSelector, getCurrentNavigationStepSelector} from "./WizardSlice";
+import {
+  getAdministrationUrlSelector,
+  getLoadingDataErrorSelector,
+  getAllNavigationStepsSelector,
+  isLoadingDataSelector,
+  getCurrentNavigationStepSelector,
+} from "./WizardSlice";
 import {useTranslation} from "react-i18next";
 import {
   BasicDetailsNavigationStep,
@@ -19,6 +25,7 @@ import ListIcon from '@material-ui/icons/List';
 import DoneIcon from '@material-ui/icons/Done';
 import PeopleIcon from '@material-ui/icons/People';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
+import useWizardNavigation from "./WizardNavigationHook";
 
 const useMenuStyles = makeStyles({
   navList: {
@@ -87,8 +94,17 @@ export default function WizardMenu() {
 function NavigationLinkList() {
 
   const navigationSteps = useWizardSelector(getAllNavigationStepsSelector);
+  const { redirectToBeginOfWizard } = useWizardSelector(getCurrentNavigationStepSelector);
+  const {navigateToWizardStep} = useWizardNavigation();
   const classes = useMenuStyles();
   const {t} = useTranslation('wizard');
+
+  React.useEffect(() => { // Ensure that jumping to a step is only possible if all previous steps are run through:
+    if (redirectToBeginOfWizard) {
+      navigateToWizardStep(BasicDetailsNavigationStep);
+    }
+    // eslint-disable-next-line
+  }, [redirectToBeginOfWizard]);
 
   return (
     <List component="nav" aria-labelledby="main navigation" className={classes.navList}>
