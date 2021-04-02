@@ -38,7 +38,7 @@ export default function FinishStep() {
   const dispatch = useDispatch();
 
   const formMethods = useForm({
-    defaultValues: runningDinner,
+    defaultValues: newFormModel(runningDinner),
     mode: 'onTouched'
   });
 
@@ -48,7 +48,7 @@ export default function FinishStep() {
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   React.useEffect(() => {
-    reset(runningDinner);
+    reset(newFormModel(runningDinner));
     clearErrors();
     // eslint-disable-next-line
   }, [reset, clearErrors, runningDinner]);
@@ -61,8 +61,11 @@ export default function FinishStep() {
 
   const submitRunningDinnerAsync = async(values: RunningDinner) => {
     clearErrors();
-    const runningDinnerToSubmit = { ...runningDinner, email: values.email, contract: values.contract };
-    runningDinnerToSubmit.contract.email = values.email;
+    const runningDinnerToSubmit = {
+        ...runningDinner,
+        email: values.email,
+        contract: { ...values }
+    };
     try {
       const createRunningDinnerResponse = await createRunningDinnerAsync(runningDinnerToSubmit);
       // Backend responds with an empty Contract, but we need it in state, otherwise our form will crash after dispatch
@@ -70,26 +73,11 @@ export default function FinishStep() {
       dispatch(updateWithCreatedRunningDinner(createRunningDinnerResponse));
       return true;
     } catch(e) {
-      setIssuesWithContractPrefixMapped(e);
       applyValidationIssuesToForm(e, setError);
       showHttpErrorDefaultNotification(e);
       return false;
     }
   };
-
-  function setIssuesWithContractPrefixMapped(e: any) {
-    const {issuesFieldRelated} = getIssuesTranslated(e);
-    const result = issuesFieldRelated.map(issue => {
-      const mappedIssue = { ...issue };
-      if (issue.field !== "email") {
-        mappedIssue.field = "contract." + mappedIssue.field;
-      }
-      return mappedIssue;
-    });
-    result.forEach((issue) =>
-      setError(issue.field!, issue.error)
-    );
-  }
 
   return (
 
@@ -151,7 +139,7 @@ function ContractSettings({contract}: ContractProps) {
 
       <SpacingGrid container mt={3} spacing={3}>
         <Grid item xs={12} md={6}>
-          <FormTextField name="contract.fullname"
+          <FormTextField name="fullname"
                          label={t('common:fullname' )}
                          required
                          variant="outlined"
@@ -159,7 +147,7 @@ function ContractSettings({contract}: ContractProps) {
                          fullWidth/>
         </Grid>
         <Grid item xs={12} md={6}>
-          <FormTextField name="contract.streetWithNr"
+          <FormTextField name="streetWithNr"
                          label={t('common:street' )}
                          required
                          variant="outlined"
@@ -170,7 +158,7 @@ function ContractSettings({contract}: ContractProps) {
 
       <SpacingGrid container mt={3} spacing={3}>
         <Grid item xs={4}>
-          <FormTextField name="contract.zip"
+          <FormTextField name="zip"
                          label={t('common:zip' )}
                          required
                          variant="outlined"
@@ -178,9 +166,8 @@ function ContractSettings({contract}: ContractProps) {
                          fullWidth/>
         </Grid>
         <Grid item xs={8}>
-          <FormTextField name="contract.city"
+          <FormTextField name="city"
                          label={t('common:city' )}
-                         required
                          variant="outlined"
                          defaultValue={contract.city}
                          fullWidth/>
@@ -189,7 +176,7 @@ function ContractSettings({contract}: ContractProps) {
 
       <SpacingGrid container mt={3}>
         <Grid item xs={12}>
-          <FormCheckbox name="contract.newsletterEnabled"
+          <FormCheckbox name="newsletterEnabled"
                         defaultValue={contract.newsletterEnabled}
                         label={
                           <Trans i18nKey="common:newsletter_label" values={{globalAdminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL}} />
@@ -198,4 +185,26 @@ function ContractSettings({contract}: ContractProps) {
       </SpacingGrid>
     </>
   );
+}
+
+
+// By accident our email field in Contract has same name as our email field in RunningDinner, hence we can just use this interface as our model
+interface FinishFormModel extends Contract {
+}
+
+/**
+ * Unfortunately our backend deliver contract-issues not with "contract." prefix, but just as flat attribute name.
+ * Hence we create our own flat form model to cope with this.
+ *
+ * @param runningDinner
+ */
+function newFormModel(runningDinner: RunningDinner): FinishFormModel {
+  return {
+    email: runningDinner.email,
+    zip: runningDinner.contract?.zip,
+    city: runningDinner.contract?.city,
+    streetWithNr: runningDinner.contract?.streetWithNr,
+    fullname: runningDinner.contract?.fullname,
+    newsletterEnabled: runningDinner.contract?.newsletterEnabled,
+  }
 }
