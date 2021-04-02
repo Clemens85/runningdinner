@@ -4,14 +4,23 @@ import {useTranslation} from "react-i18next";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
 import Paragraph from "../common/theme/typography/Paragraph";
 import {useWizardSelector} from "./WizardStore";
-import {getAdministrationUrlSelector} from "./WizardSlice";
+import {getAdministrationUrlSelector, setNextNavigationStep, setPreviousNavigationStep} from "./WizardSlice";
 import LinkExtern from "../common/theme/LinkExtern";
 import {Typography} from "@material-ui/core";
+import {FinishNavigationStep} from "@runningdinner/shared";
+import {useDispatch} from "react-redux";
 
 export default function SummaryStep() {
 
   const {t} = useTranslation(['wizard', 'common']);
   const administrationUrl = useWizardSelector(getAdministrationUrlSelector);
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    dispatch(setNextNavigationStep(undefined));
+    dispatch(setPreviousNavigationStep(FinishNavigationStep));
+    // eslint-disable-next-line
+  }, [dispatch]);
 
   return (
       <div>

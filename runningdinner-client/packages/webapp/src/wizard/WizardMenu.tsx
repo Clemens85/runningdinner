@@ -12,11 +12,11 @@ import {
 import {useTranslation} from "react-i18next";
 import {
   BasicDetailsNavigationStep,
-  FinishNavigationStep, isStringEmpty,
+  FinishNavigationStep, isStringEmpty, isStringNotEmpty,
   MealTimesNavigationStep,
   OptionsNavigationStep,
   ParticipantPreviewNavigationStep,
-  PublicRegistrationNavigationStep, useBackendIssueHandler
+  PublicRegistrationNavigationStep, SummaryNavigationStep, useBackendIssueHandler
 } from "@runningdinner/shared";
 import EditIcon from '@material-ui/icons/Edit';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -68,7 +68,17 @@ const navigationStepIconMap: Record<string, any> = {
 export default function WizardMenu() {
 
   const administrationUrl = useWizardSelector(getAdministrationUrlSelector);
+  const { currentNavigationStep } = useWizardSelector(getCurrentNavigationStepSelector);
+  const {navigateToWizardStep} = useWizardNavigation();
   const classes = useMenuStyles();
+
+  React.useEffect(() => { // Disable back button after dinner is created in wizard
+    console.log(`currentStep is ${currentNavigationStep.value}`);
+    if (currentNavigationStep.value !== SummaryNavigationStep.value && isStringNotEmpty(administrationUrl)) {
+      navigateToWizardStep(SummaryNavigationStep);
+    }
+    // eslint-disable-next-line
+  }, [administrationUrl, currentNavigationStep.value]);
 
   return (
       <div>
