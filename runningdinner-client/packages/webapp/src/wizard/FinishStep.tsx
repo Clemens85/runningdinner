@@ -12,7 +12,7 @@ import {useDispatch} from "react-redux";
 import {FormProvider, useForm} from "react-hook-form";
 import {
   CONSTANTS, Contract,
-  createRunningDinnerAsync,
+  createRunningDinnerAsync, CreateRunningDinnerWizardModel,
   ParticipantPreviewNavigationStep, RunningDinner,
   SummaryNavigationStep,
   useBackendIssueHandler,
@@ -198,7 +198,7 @@ interface FinishFormModel extends Contract {
  *
  * @param runningDinner
  */
-function newFormModel(runningDinner: RunningDinner): FinishFormModel {
+function newFormModel(runningDinner: CreateRunningDinnerWizardModel): FinishFormModel {
   return {
     email: runningDinner.email,
     zip: runningDinner.contract?.zip,

@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { BackendConfig } from "../BackendConfig";
 import cloneDeep from "lodash/cloneDeep";
-import {Meal, RunningDinner} from "../types";
+import {Meal, RunningDinner, RunningDinnerOptions} from "../types";
 import {CONSTANTS} from "../Constants";
 import {getDaysBetweenDates} from '../date';
+import {CreateRunningDinnerWizardModel} from "@runningdinner/shared";
 
 export async function findRunningDinnerAsync(adminId: string): Promise<RunningDinner> {
   const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}`);
@@ -26,7 +27,7 @@ export async function acknowledgeRunningDinnerAsync(adminId: string, acknowledge
   return response.data;
 }
 
-export function isClosedDinner(dinner: RunningDinner): boolean {
+export function isClosedDinner(dinner: RunningDinner | CreateRunningDinnerWizardModel): boolean {
   const registrationType = dinner.basicDetails.registrationType;
   return registrationType === CONSTANTS.REGISTRATION_TYPE.CLOSED;
 }
@@ -47,8 +48,8 @@ export function isNotificationRequired(runningDinner: RunningDinner): boolean {
   return isAcknowledgeRequired(runningDinner) || !!runningDinner.cancellationDate || runningDinner.runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO;
 }
 
-export function getMinimumParticipantsNeeded(runningDinner: RunningDinner) {
-  const numMeals = runningDinner.options.meals.length;
-  const teamSize = runningDinner.options.teamSize;
+export function getMinimumParticipantsNeeded(runningDinnerOptions: RunningDinnerOptions) {
+  const numMeals = runningDinnerOptions.meals.length;
+  const teamSize = runningDinnerOptions.teamSize;
   return numMeals * numMeals * teamSize;
 }

@@ -2,25 +2,33 @@ import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
   ALL_NAVIGATION_STEPS,
   ALL_NAVIGATION_STEPS_CLOSED_DINNER,
-  applyDinnerDateToMeals, BasicDetailsNavigationStep,
+  applyDinnerDateToMeals,
+  BasicDetailsNavigationStep,
   CreateRunningDinnerResponse,
   FetchStatus,
   fillDemoDinnerValues,
   findGenderAspectsAsync,
-  findRegistrationTypesAsync, FinishNavigationStep, getAsHttpErrorOrDefault,
+  findRegistrationTypesAsync,
+  FinishNavigationStep,
+  getAsHttpErrorOrDefault,
   getMinimumParticipantsNeeded,
   HttpError,
   isClosedDinner,
   isStringEmpty,
   isStringNotEmpty,
-  Meal, MealTimesNavigationStep,
+  Meal,
+  MealTimesNavigationStep,
   NavigationStep,
-  newInitialWizardState, OptionsNavigationStep, PublicRegistrationNavigationStep,
+  newInitialWizardState,
+  OptionsNavigationStep,
+  PublicRegistrationNavigationStep,
   RunningDinnerBasicDetails,
   RunningDinnerOptions,
   RunningDinnerPublicSettings,
   RunningDinnerType,
-  setDefaultEndOfRegistrationDate, SummaryNavigationStep
+  setDefaultEndOfRegistrationDate,
+  SummaryNavigationStep,
+  WizardContextData
 } from "@runningdinner/shared";
 import {WizardRootState} from "./WizardStore";
 import find from "lodash/find";
@@ -49,7 +57,6 @@ export const fetchGenderAspects = createAsyncThunk(
       return await findGenderAspectsAsync();
     }
 );
-
 
 // *** Reducer *** //
 export const wizardSlice = createReducer(newInitialWizardState(), builder => {
@@ -98,31 +105,23 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
       })
 
       .addCase(fetchRegistrationTypes.fulfilled, (state, action) => {
-        state.runningDinner.sessionData.registrationTypes = action.payload;
-        state.fetchRegistrationTypesStatus = FetchStatus.SUCCEEDED;
-        state.fetchRegistrationTypesError = mapFetchErrorState(state.fetchRegistrationTypesStatus);
+        handleFetchSucceeded(state.registrationTypes, action.payload);
       })
       .addCase(fetchRegistrationTypes.pending, (state) => {
-        state.fetchRegistrationTypesStatus = FetchStatus.LOADING;
-        state.fetchRegistrationTypesError = mapFetchErrorState(state.fetchRegistrationTypesStatus);
+        handleFetchLoading(state.registrationTypes);
       })
       .addCase(fetchRegistrationTypes.rejected, (state, action) => {
-        state.fetchRegistrationTypesStatus = FetchStatus.FAILED;
-        state.fetchRegistrationTypesError = mapFetchErrorState(state.fetchRegistrationTypesStatus, action);
+        handleFetchRejected(state.registrationTypes, action);
       })
 
       .addCase(fetchGenderAspects.fulfilled, (state, action) => {
-        state.runningDinner.sessionData.genderAspects = action.payload;
-        state.fetchGenderAspectsStatus = FetchStatus.SUCCEEDED;
-        state.fetchGenderAspectsError = mapFetchErrorState(state.fetchGenderAspectsStatus);
+        handleFetchSucceeded(state.genderAspects, action.payload);
       })
       .addCase(fetchGenderAspects.pending, (state) => {
-        state.fetchGenderAspectsStatus = FetchStatus.LOADING;
-        state.fetchGenderAspectsError = mapFetchErrorState(state.fetchGenderAspectsStatus);
+        handleFetchLoading(state.genderAspects);
       })
       .addCase(fetchGenderAspects.rejected, (state, action) => {
-        state.fetchGenderAspectsStatus = FetchStatus.FAILED;
-        state.fetchGenderAspectsError = mapFetchErrorState(state.fetchGenderAspectsStatus, action);
+        handleFetchRejected(state.genderAspects, action);
       })
 });
 
@@ -175,7 +174,7 @@ export const getRunningDinnerOptionsSelector = (state: WizardRootState) => state
 export const getRunningDinnerPublicSettingsSelector = (state: WizardRootState) => state.runningDinner.publicSettings;
 export const isClosedDinnerSelector = (state: WizardRootState) => isClosedDinner(state.runningDinner);
 export const getAdministrationUrlSelector = (state: WizardRootState) => state.administrationUrl!;
-export const getMinimumParticipantsNeededSelector = (state: WizardRootState) => getMinimumParticipantsNeeded(state.runningDinner);
+export const getMinimumParticipantsNeededSelector = (state: WizardRootState) => getMinimumParticipantsNeeded(state.runningDinner.options);
 export const getRunningDinnerSelector = (state: WizardRootState) => state.runningDinner;
 export const getNavigationStepSelector = (state: WizardRootState) => {
   return {
@@ -184,27 +183,52 @@ export const getNavigationStepSelector = (state: WizardRootState) => {
   };
 }
 export const isLoadingDataSelector = (state: WizardRootState) => {
-  return state.fetchRegistrationTypesStatus === FetchStatus.LOADING || state.fetchGenderAspectsStatus === FetchStatus.LOADING;
+  const loadingItems = getContextDataItems(state)
+      .filter(item => item.fetchStatus === FetchStatus.LOADING);
+  return loadingItems.length > 0;
 };
 export const getLoadingDataErrorSelector = (state: WizardRootState): HttpError | undefined => {
-  return state.fetchRegistrationTypesError || state.fetchGenderAspectsError;
+  const errorItems = getContextDataItems(state)
+      .filter(item => item.fetchError !== undefined && item.fetchError !== null);
+  return errorItems.length > 0 ? errorItems[0].fetchError : undefined;
 }
+
+const getContextDataItems = (state: WizardRootState): WizardContextData<any>[] => {
+  return [state.registrationTypes, state.genderAspects];
+};
 
 export const getRegistrationTypesSelector = (state: WizardRootState) => {
   return {
-    status: state.fetchRegistrationTypesStatus,
-    registrationTypes: state.runningDinner.sessionData.registrationTypes
+    status: state.registrationTypes.fetchStatus,
+    registrationTypes: state.registrationTypes.content
   };
 };
 
 export const getGenderAspectsSelector = (state: WizardRootState) => {
   return {
-    status: state.fetchGenderAspectsStatus,
-    genderAspects: state.runningDinner.sessionData.genderAspects
+    status: state.genderAspects.fetchStatus,
+    genderAspects: state.genderAspects.content
   }
 };
 
 // *** Misc **** //
+
+function handleFetchSucceeded<T>(contextData: WizardContextData<T>, payload: T) {
+  contextData.content = payload;
+  contextData.fetchStatus = FetchStatus.SUCCEEDED;
+  contextData.fetchError = mapFetchErrorState(FetchStatus.SUCCEEDED);
+}
+
+function handleFetchLoading<T>(contextData: WizardContextData<T>) {
+  contextData.fetchStatus = FetchStatus.LOADING;
+  contextData.fetchError = mapFetchErrorState(FetchStatus.LOADING);
+}
+
+function handleFetchRejected<T>(contextData: WizardContextData<T>, action?: any) {
+  contextData.fetchStatus = FetchStatus.FAILED;
+  contextData.fetchError = mapFetchErrorState(FetchStatus.FAILED, action);
+}
+
 const GENERIC_HTTP_ERROR: HttpError = { // Will trigger a generic error message (-> useNotificationHttpError)
   response: {
     status: 500,

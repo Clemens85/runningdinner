@@ -30,13 +30,13 @@ export async function validatePublicSettings(publicSettings: RunningDinnerPublic
   await axios.put<void>(url, publicSettings);
 }
 
-export async function createRunningDinnerAsync(runningDinner: RunningDinner): Promise<CreateRunningDinnerResponse> {
+export async function createRunningDinnerAsync(runningDinner: CreateRunningDinnerWizardModel): Promise<CreateRunningDinnerResponse> {
   const url = BackendConfig.buildUrl(`/wizardservice/v1/create`);
   const result = await axios.post<CreateRunningDinnerResponse>(url, runningDinner);
   return result.data;
 }
 
-export function setDefaultEndOfRegistrationDate(runningDinner: RunningDinner) {
+export function setDefaultEndOfRegistrationDate(runningDinner: CreateRunningDinnerWizardModel) {
   const {date} = runningDinner.basicDetails;
   if (!isClosedDinner(runningDinner)) {
     if (!runningDinner.publicSettings.endOfRegistrationDate || runningDinner.publicSettings.endOfRegistrationDate.getTime() > date.getTime()) {
@@ -93,7 +93,7 @@ export function applyDinnerDateToMeals(meals: Meal[], runningDinnerDate: Date) {
   });
 }
 
-export function fillDemoDinnerValues(runningDinner: RunningDinner) {
+export function fillDemoDinnerValues(runningDinner: CreateRunningDinnerWizardModel) {
   const dinnerDate = plusDays(new Date(), 30); // 30 days in future
   runningDinner.basicDetails = {
     title: "Demo Running Dinner Event",
@@ -121,8 +121,18 @@ export enum FetchStatus {
 export interface NavigationStep extends LabelValue {
 }
 
+export interface CreateRunningDinnerWizardModel extends Omit<RunningDinner, "sessionData"> {
+
+}
+
+export interface WizardContextData<T> {
+  fetchStatus: FetchStatus;
+  fetchError?: HttpError;
+  content: T;
+}
+
 export interface WizardState {
-  runningDinner: RunningDinner;
+  runningDinner: CreateRunningDinnerWizardModel;
   administrationUrl?: string;
   navigationSteps: NavigationStep[];
 
@@ -130,10 +140,8 @@ export interface WizardState {
   previousNavigationStep?: NavigationStep;
   completedNavigationSteps: NavigationStep[];
 
-  fetchRegistrationTypesStatus: FetchStatus;
-  fetchRegistrationTypesError?: HttpError;
-  fetchGenderAspectsStatus: FetchStatus;
-  fetchGenderAspectsError?: HttpError;
+  registrationTypes: WizardContextData<LabelValue[]>;
+  genderAspects: WizardContextData<LabelValue[]>;
 }
 
 
@@ -200,21 +208,11 @@ const initialState: WizardState = {
       city: "",
       email: "",
       newsletterEnabled: false
-    },
-    sessionData: { // Must be defined and is abused here for storing some state during wizard
-      genderAspects: [],
-      genders: [],
-      numSeatsNeededForHost: 0,
-      assignableParticipantSizes: {
-        minimumParticipantsNeeded: 0,
-        nextParticipantsOffsetSize: 0
-      },
-      registrationTypes: []
     }
   },
 
-  fetchRegistrationTypesStatus: FetchStatus.IDLE,
-  fetchGenderAspectsStatus: FetchStatus.IDLE,
+  registrationTypes: { fetchStatus: FetchStatus.IDLE, content: [] },
+  genderAspects: { fetchStatus: FetchStatus.IDLE, content: [] },
 
   navigationSteps: ALL_NAVIGATION_STEPS,
   nextNavigationStep: OptionsNavigationStep,
