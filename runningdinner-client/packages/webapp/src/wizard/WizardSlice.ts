@@ -1,4 +1,4 @@
-import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
+import {createAction, createAsyncThunk, createReducer, createSelector} from "@reduxjs/toolkit";
 import {
   ALL_NAVIGATION_STEPS,
   ALL_NAVIGATION_STEPS_CLOSED_DINNER,
@@ -129,45 +129,52 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
 export const getAllNavigationStepsSelector = (state: WizardRootState) => {
   return isClosedDinnerSelector(state) ? ALL_NAVIGATION_STEPS_CLOSED_DINNER : ALL_NAVIGATION_STEPS;
 };
-export const getCurrentNavigationStepSelector = (state: WizardRootState) => {
-  let result;
-  const allNavigationStepsToRunThrough = getAllNavigationStepsSelector(state);
-  if (!state.nextNavigationStep || state.nextNavigationStep.value === SummaryNavigationStep.value) {
-    result = {
-      currentNavigationStep: isStringNotEmpty(state.administrationUrl) ? SummaryNavigationStep : FinishNavigationStep,
-      percentage: 100,
-      redirectToBeginOfWizard: false
-    };
-  } else {
-    for (let i = 0; i < allNavigationStepsToRunThrough.length; i++) {
-      if (allNavigationStepsToRunThrough[i].value === state.nextNavigationStep.value && i > 0) {
-        const currentNavigationStep = allNavigationStepsToRunThrough[i - 1];
-        result = {
-          currentNavigationStep,
-          redirectToBeginOfWizard: false,
-          percentage: (i / allNavigationStepsToRunThrough.length) * 100  // We must use the currentStep (i -1) as factor, but due to we are 0-index-based, we just take i
-        };
-        break;
-      }
-    }
-  }
-  if (!result) {
-    throw new Error(`nextNavigationStep is ${JSON.stringify(state.nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`);
-  }
-  // Algorithm: Check if completedNavigationSteps contains the previous navigation step of the iterated navigation step (till we reach current step)
-  // If not contained in completedNavigationSteps it was not run through!
-  for (let i = 1; i < allNavigationStepsToRunThrough.length; i++) {
-    if (result.currentNavigationStep.value === allNavigationStepsToRunThrough[i].value) {
-      break;
-    }
-    const completedNavigationStep = find(state.completedNavigationSteps, ['value', allNavigationStepsToRunThrough[i-1].value]);
-    if (!completedNavigationStep) {
-      result.redirectToBeginOfWizard = true;
-    }
-  }
+export const getCurrentNavigationStepSelector = createSelector(
+    (state: WizardRootState) => getAllNavigationStepsSelector(state),
+    (state: WizardRootState) => state.administrationUrl,
+    (state: WizardRootState) => state.nextNavigationStep,
+    (state: WizardRootState) => state.completedNavigationSteps,
+    (allNavigationStepsToRunThrough, administrationUrl, nextNavigationStep, completedNavigationSteps) => {
 
-  return result;
-}
+      let result;
+      if (!nextNavigationStep || nextNavigationStep.value === SummaryNavigationStep.value) {
+        result = {
+          currentNavigationStep: isStringNotEmpty(administrationUrl) ? SummaryNavigationStep : FinishNavigationStep,
+          percentage: 100,
+          redirectToBeginOfWizard: false
+        };
+      } else {
+        for (let i = 0; i < allNavigationStepsToRunThrough.length; i++) {
+          if (allNavigationStepsToRunThrough[i].value === nextNavigationStep.value && i > 0) {
+            const currentNavigationStep = allNavigationStepsToRunThrough[i - 1];
+            result = {
+              currentNavigationStep,
+              redirectToBeginOfWizard: false,
+              percentage: (i / allNavigationStepsToRunThrough.length) * 100  // We must use the currentStep (i -1) as factor, but due to we are 0-index-based, we just take i
+            };
+            break;
+          }
+        }
+      }
+      if (!result) {
+        throw new Error(`nextNavigationStep is ${JSON.stringify(nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`);
+      }
+      // Algorithm: Check if completedNavigationSteps contains the previous navigation step of the iterated navigation step (till we reach current step)
+      // If not contained in completedNavigationSteps it was not run through!
+      for (let i = 1; i < allNavigationStepsToRunThrough.length; i++) {
+        if (result.currentNavigationStep.value === allNavigationStepsToRunThrough[i].value) {
+          break;
+        }
+        const completedNavigationStep = find(completedNavigationSteps, ['value', allNavigationStepsToRunThrough[i-1].value]);
+        if (!completedNavigationStep) {
+          result.redirectToBeginOfWizard = true;
+        }
+      }
+
+      return result;
+    }
+);
+
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;
 export const getRunningDinnerOptionsSelector = (state: WizardRootState) => state.runningDinner.options;
