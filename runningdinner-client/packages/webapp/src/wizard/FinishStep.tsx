@@ -70,11 +70,26 @@ export default function FinishStep() {
       dispatch(updateWithCreatedRunningDinner(createRunningDinnerResponse));
       return true;
     } catch(e) {
+      setIssuesWithContractPrefixMapped(e);
       applyValidationIssuesToForm(e, setError);
       showHttpErrorDefaultNotification(e);
       return false;
     }
   };
+
+  function setIssuesWithContractPrefixMapped(e: any) {
+    const {issuesFieldRelated} = getIssuesTranslated(e);
+    const result = issuesFieldRelated.map(issue => {
+      const mappedIssue = { ...issue };
+      if (issue.field !== "email") {
+        mappedIssue.field = "contract." + mappedIssue.field;
+      }
+      return mappedIssue;
+    });
+    result.forEach((issue) =>
+      setError(issue.field!, issue.error)
+    );
+  }
 
   return (
 
