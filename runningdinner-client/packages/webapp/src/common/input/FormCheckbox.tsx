@@ -10,9 +10,10 @@ export interface FormCheckboxProps extends Omit<CheckboxProps, "defaultValue"> {
   label: React.ReactNode;
   helperText?: React.ReactNode;
   defaultValue?: unknown;
+  useTableDisplay?: boolean;
 }
 
-const FormCheckboxInternal = ({name, label, helperText, defaultValue, ...rest}: FormCheckboxProps) => {
+const FormCheckboxInternal = ({name, label, helperText, defaultValue, useTableDisplay, ...rest}: FormCheckboxProps) => {
 
   const {control, errors} = useFormContext();
 
@@ -22,11 +23,13 @@ const FormCheckboxInternal = ({name, label, helperText, defaultValue, ...rest}: 
 
   return (
       <FormControl error={hasErrors}>
-        <FormControlLabel label={label} control={
+        <FormControlLabel label={label} style={useTableDisplay ? {display: 'table'}: {}} control={
           <Controller defaultValue={defaultValue} name={name} control={control} render={(props) => (
+            <div style={{display: useTableDisplay ? 'table-cell' : 'inline'}}>
               <Checkbox color="primary" {...rest}
-                        onChange={(e) => props.onChange(e.target.checked)}
-                        checked={props.value} />
+                      onChange={(e) => props.onChange(e.target.checked)}
+                      checked={props.value} />
+            </div>
           )} />
         } />
         { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }

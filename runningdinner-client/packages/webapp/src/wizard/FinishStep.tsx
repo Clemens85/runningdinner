@@ -177,6 +177,7 @@ function ContractSettings({contract}: ContractProps) {
       <SpacingGrid container mt={3}>
         <Grid item xs={12}>
           <FormCheckbox name="newsletterEnabled"
+                        useTableDisplay={true}
                         defaultValue={contract.newsletterEnabled}
                         label={
                           <Trans i18nKey="common:newsletter_label" values={{globalAdminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL}} />
