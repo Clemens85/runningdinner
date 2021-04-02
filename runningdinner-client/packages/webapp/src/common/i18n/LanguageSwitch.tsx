@@ -3,15 +3,41 @@ import { ButtonGroup, Button, makeStyles } from "@material-ui/core";
 import {useTranslation} from "react-i18next";
 import clsx from "clsx";
 
-const useStyles = makeStyles((theme) => ({
-  selectedLanguageBtn: {
+const useLanguageButtonStyles = makeStyles((theme) => ({
+  root: {
     backgroundColor: theme.palette.primary.main,
     color: 'white',
     '&hover': {
-      backgroundColor: theme.palette.primary.main
+      backgroundColor: `theme.palette.primary.main ! important`,
+    },
+    '&active': {
+      backgroundColor: `theme.palette.primary.main ! important`
+    },
+    '&focus': {
+      backgroundColor: `theme.palette.primary.main ! important`
+    },
+    '&visited': {
+      backgroundColor: `theme.palette.primary.main ! important`
     }
   }
 }));
+
+const useButtonGroupStyles = makeStyles({
+  root: {
+    "&:hover": {
+      backgroundColor: "transparent"
+    },
+    '&active': {
+      backgroundColor: "transparent"
+    },
+    '&focus': {
+      backgroundColor: "transparent"
+    },
+    '&visited': {
+      backgroundColor: "transparent"
+    }
+  }
+});
 
 export function LanguageSwitch() {
 
@@ -31,16 +57,27 @@ export interface LanguageSwitchButtonsProps {
 
 export function LanguageSwitchButtons({selectedLanguage, onClick}: LanguageSwitchButtonsProps) {
 
-  const classes = useStyles();
+  const languageButtonClasses = useLanguageButtonStyles();
+  const buttonGroupClasses = useButtonGroupStyles();
 
   function isLanguageSelected(lang: string) {
     return selectedLanguage === lang;
   }
 
   return (
-      <ButtonGroup variant="contained" aria-label="Switch language">
-        <Button className={clsx(isLanguageSelected('de') && classes.selectedLanguageBtn)} onClick={() => onClick('de')}>DE</Button>
-        <Button className={clsx(isLanguageSelected('en') && classes.selectedLanguageBtn)} onClick={() => onClick('en')}>EN</Button>
+      <ButtonGroup variant="contained" aria-label="Switch language" disableRipple className={buttonGroupClasses.root}>
+        <Button className={clsx(isLanguageSelected('de') && languageButtonClasses.root)}
+                onClick={() => onClick('de')}
+                disableFocusRipple
+                disableRipple
+                disableElevation
+                disableTouchRipple>DE</Button>
+        <Button className={clsx(isLanguageSelected('en') && languageButtonClasses.root)}
+                onClick={() => onClick('en')}
+                disableTouchRipple
+                disableRipple
+                disableElevation
+                disableFocusRipple>EN</Button>
       </ButtonGroup>
   );
 }
