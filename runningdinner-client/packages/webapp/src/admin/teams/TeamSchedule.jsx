@@ -10,10 +10,10 @@ import {useTranslation} from "react-i18next";
 import {bindPopover, bindTrigger, usePopupState,} from 'material-ui-popup-state/hooks';
 import LinkIntern from "../../common/theme/LinkIntern";
 import LinkExtern from "../../common/theme/LinkExtern";
-import {generateTeamPath} from "../../common/NavigationService";
 import {PrimaryDangerButtonAsync} from "../../common/theme/PrimaryDangerButtonAsync";
 import Hidden from "@material-ui/core/Hidden";
 import {findTeamMeetingPlanAsync, Fullname, isSameEntity, Time, CONSTANTS, TeamNr} from "@runningdinner/shared";
+import {useAdminNavigation} from "../AdminNavigationHook";
 
 const useStyles = makeStyles((theme) => ({
   schedulePaper: {
@@ -210,6 +210,7 @@ function MeetedTeamButton({team, adminId}) {
   const { teamMembers, teamNumber, id } = team;
   const teamMemberNodes = isCancelled ? null : teamMembers.map(participant => <Span key={participant.id}><Fullname {...participant} /></Span>);
 
+  const {generateTeamPath} = useAdminNavigation();
   const teamPath = generateTeamPath(adminId, id);
 
   return (

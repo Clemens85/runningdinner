@@ -10,8 +10,8 @@ import useCommonStyles from "../../../common/theme/CommonStyles";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
-import {generateMessageJobDetailsPath} from "../../../common/NavigationService";
 import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
+import {useAdminNavigation} from "../../AdminNavigationHook";
 
 function MessageJobsOverview({adminId}) {
 
@@ -77,6 +77,7 @@ function MessageJobsTable({adminId, messageJobs}) {
 function MessageJobRow({adminId, messageJob}) {
 
   const classes = useCommonStyles();
+  const {generateMessageJobDetailsPath} = useAdminNavigation();
 
   const handleMessageJobClick = () => {
     window.open(generateMessageJobDetailsPath(adminId, messageJob.id), '_blank');

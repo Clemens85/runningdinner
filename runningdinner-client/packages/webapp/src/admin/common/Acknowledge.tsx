@@ -9,7 +9,7 @@ import {Trans, useTranslation} from "react-i18next";
 import {LinearProgress} from "@material-ui/core";
 import LinkExtern from "../../common/theme/LinkExtern";
 import {useParams} from "react-router-dom";
-import {useAdminNavigation} from "../../common/AdminNavigationHook";
+import {useAdminNavigation} from "../AdminNavigationHook";
 
 export default function Acknowledge() {
 

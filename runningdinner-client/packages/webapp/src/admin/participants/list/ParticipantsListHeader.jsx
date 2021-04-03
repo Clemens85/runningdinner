@@ -5,7 +5,7 @@ import {useDebounce, isStringEmpty, searchParticipants} from "@runningdinner/sha
 import {useTranslation} from "react-i18next";
 import {Link as RouterLink} from "react-router-dom";
 import {PageTitle} from "../../../common/theme/typography/Tags";
-import {generateParticipantMessagesPath} from "../../../common/NavigationService";
+import {useAdminNavigation} from "../../AdminNavigationHook";
 
 export default function ParticipantsListHeader({adminId, numberOfParticipants, searchableParticipants, onParticipantSearchChanged}) {
 
@@ -13,6 +13,7 @@ export default function ParticipantsListHeader({adminId, numberOfParticipants, s
   const debouncedSearchText = useDebounce(search.searchText, 400);
 
   const {t} = useTranslation(['admin', 'common']);
+  const {generateParticipantMessagesPath} = useAdminNavigation();
 
   function handleSearchTextChange(event) {
     const newSearchText = event.target.value;

@@ -1,4 +1,4 @@
-import {useParams, useHistory} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {Box, Grid, useMediaQuery, useTheme} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
@@ -13,7 +13,6 @@ import {HTML5Backend} from "react-dnd-html5-backend";
 import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
 import {PageTitle} from "../../common/theme/typography/Tags";
 import {useQuery} from "../../common/hooks/QueryHook";
-import {generateTeamMessagesPath, generateTeamPath, TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM} from "../../common/NavigationService";
 import LinkIntern from "../../common/theme/LinkIntern";
 import {
   createTeamArrangementsAsync,
@@ -27,6 +26,7 @@ import {
 } from "@runningdinner/shared";
 import {useAdminContext} from "../AdminContext";
 import {useSnackbar} from "notistack";
+import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../AdminNavigationHook";
 
 const TeamsContainer = () => {
 
@@ -66,7 +66,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
          open: openChangeTeamHostDialog,
          getIsOpenData: getTeamForChangeTeamHostDialog} = useDisclosure();
 
-  const history = useHistory();
+  const {navigateToTeam, generateTeamMessagesPath} = useAdminNavigation();
   const {t} = useTranslation('admin');
 
   const {enqueueSnackbar} = useSnackbar();
@@ -85,7 +85,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   const teamsExisting = teams.length > 0;
 
   function handleTeamClick(team: Team) {
-    history.push(generateTeamPath(adminId, team.id));
+    navigateToTeam(adminId, team.id!);
   }
 
   function openTeamDetails(team: Team) {

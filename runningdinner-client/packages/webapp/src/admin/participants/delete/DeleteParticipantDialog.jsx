@@ -12,15 +12,14 @@ import {
   getFullname,
   useBackendIssueHandler, findIssueByMessage
 } from "@runningdinner/shared";
-import {useHistory} from "react-router-dom";
-import {generateParticipantCancellationPath} from "../../../common/NavigationService";
+import {useAdminNavigation} from "../../AdminNavigationHook";
 
 export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) => {
 
   const {t} = useTranslation(['admin', 'common']);
   const {enqueueSnackbar} = useSnackbar();
   const {getIssuesUntranslated} = useBackendIssueHandler();
-  const history = useHistory();
+  const {navigateToTeamMemberCancellation} = useAdminNavigation();
 
   const deleteParticipant = async () => {
     try {
@@ -37,7 +36,7 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
   };
 
   function cancelTeamMember() {
-    history.push(generateParticipantCancellationPath(adminId, participant));
+    navigateToTeamMemberCancellation(adminId, participant);
   }
 
   function cancel() {
