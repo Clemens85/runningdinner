@@ -84,6 +84,7 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
 
   const classes = useStyles();
   const {t} = useTranslation('admin');
+  const {generateTeamDinnerRoutePath} = useAdminNavigation();
 
   const scheduleItems = buildScheduledMealsWithTeams(teamMeetingPlan);
   const activeTeam = teamMeetingPlan.team;
@@ -113,7 +114,7 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
           </Hidden>
           <Grid item xs={12} md={md} className={classes.scheduleRowGuestTeams}>
             <Box mt={1}>
-              <LinkExtern href="https://www.google.de" title={t('teams_show_dinnerroute')}/>
+              <LinkExtern href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} title={t('teams_show_dinnerroute')}/>
             </Box>
           </Grid>
           <Hidden xsDown>

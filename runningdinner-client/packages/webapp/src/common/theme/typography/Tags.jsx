@@ -54,24 +54,21 @@ function TypographyWrapper(props) {
 
   const {t} = useTranslation(ns);
 
+  const gutterBottom = typeof props.gutterBottom !== 'undefined' ? props.gutterBottom : true;
+
   if (isStringEmpty(i18n)) {
-    return <Typography variant={variant} gutterBottom>{ props.children }</Typography>;
+    return <Typography variant={variant} gutterBottom={gutterBottom}>{ props.children }</Typography>;
   }
 
   const parameters = props.parameters ? props.parameters : {};
 
   // Remove those special params due they might cause JS console errors
-  const normalizedProps = omit(props, ['html', 'ns', 'i18n', 'parameters']);
-      //cloneDeep(props);
-  // delete normalizedProps.html;
-  // delete normalizedProps.ns;
-  // delete normalizedProps.i18n;
-  // delete normalizedProps.parameters;
+  const normalizedProps = omit(props, ['html', 'ns', 'i18n', 'parameters', 'gutterBottom']);
 
   if (props.html === true) {
-    return <Typography variant={variant} gutterBottom {...normalizedProps}><HtmlTranslate i18n={i18n} parameters={parameters} ns={ns} /></Typography>;
+    return <Typography variant={variant} gutterBottom={gutterBottom} {...normalizedProps}><HtmlTranslate i18n={i18n} parameters={parameters} ns={ns} /></Typography>;
   } else {
-    return <Typography variant={variant} gutterBottom {...normalizedProps}>{t(i18n, parameters)}</Typography>;
+    return <Typography variant={variant} gutterBottom={gutterBottom} {...normalizedProps}>{t(i18n, parameters)}</Typography>;
   }
 }
 

@@ -32,6 +32,11 @@ function generateMessagesPath(adminId: string, messageType: string) {
 function generateDashboardPath(adminId: string) {
   return `/admin/${adminId}`;
 }
+
+function generateTeamDinnerRoutePath(adminId: string, teamId: string) {
+  return `${generateTeamPath(adminId, teamId)}/dinnerroute`;
+}
+
 export function useAdminNavigation() {
 
   const history = useHistory();
@@ -52,7 +57,8 @@ export function useAdminNavigation() {
     generateMessageJobDetailsPath,
     generateTeamMemberCancellationPath,
     navigateToTeamMemberCancellation,
-    generateDashboardPath
+    generateDashboardPath,
+    generateTeamDinnerRoutePath
   };
 
 }

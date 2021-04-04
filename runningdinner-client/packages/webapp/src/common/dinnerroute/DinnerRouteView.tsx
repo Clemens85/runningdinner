@@ -1,9 +1,11 @@
 import React from 'react';
 import {DinnerRoute, DinnerRouteTeam, Fullname, isStringNotEmpty, TeamStatus, Time} from "@runningdinner/shared";
-import {Paper} from '@material-ui/core';
+import {Box, makeStyles, Typography} from '@material-ui/core';
 import {SpacingGrid} from '../theme/SpacingGrid';
 import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
+import { SpacingPaper } from '../theme/SpacingPaper';
+import clsx from "clsx";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -14,9 +16,11 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
   const {mealSpecificsOfGuestTeams, teams} = dinnerRoute;
 
   const teamCardNodes = teams.map((team, index) =>
-    <TeamCard dinnerRouteTeam={team}
-              isCurrentTeam={team.teamNumber === dinnerRoute.currentTeam.teamNumber}
-              positionInRoute={index + 1}/>
+    <SpacingGrid item xs={12} md={4} key={team.teamNumber}>
+      <TeamCard dinnerRouteTeam={team}
+                isCurrentTeam={team.teamNumber === dinnerRoute.currentTeam.teamNumber}
+                positionInRoute={index + 1}/>
+    </SpacingGrid>
   );
 
   return (
@@ -26,7 +30,7 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
             <Subtitle>{mealSpecificsOfGuestTeams}</Subtitle>
           </SpacingGrid>
         }
-        <SpacingGrid item xs={12} mb={2}>
+        <SpacingGrid container mb={2} spacing={4}>
           {teamCardNodes}
         </SpacingGrid>
         <SpacingGrid item xs={12} mb={2}>
@@ -43,33 +47,56 @@ interface TeamCardProps {
   isCurrentTeam: boolean;
 }
 
+
+const useTeamCardStyles = makeStyles((theme) => ({
+  teamCardLine: {
+    display: 'flex',
+    alignItems: 'baseline',
+  },
+  marginBottom: {
+    marginBottom: theme.spacing(1)
+  }
+}));
+
+
 function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardProps) {
 
   const {t} = useTranslation(['common']);
   const isCancelled = dinnerRouteTeam.status === TeamStatus.CANCELLED;
   const {hostTeamMember} = dinnerRouteTeam;
+  const teamCardClasses = useTeamCardStyles();
 
   return (
     <>
       <PageTitle>
         ({positionInRoute}) {dinnerRouteTeam.meal.label}
-        { isCurrentTeam && <small>{t('with_you')}</small> }
+        { isCurrentTeam && <Box component={"span"} pl={1}>
+                              <Typography variant={"body2"} component={"span"}>{t('common:with_you')}</Typography>
+                           </Box> }
       </PageTitle>
-      <Paper>
+      <SpacingPaper elevation={3} p={2}>
         {isCancelled && <Subtitle i18n={"cancelled"} />}
         {!isCancelled && (
          <>
-           <SmallTitle i18n="host"/>: <Span><Fullname {...hostTeamMember} /></Span>
-           <address>
-             <SmallTitle i18n="address"/><br />
-             <Span>{hostTeamMember.street}</Span> <Span>{hostTeamMember.streetNr}</Span><br />
-             <Span>{hostTeamMember.zip}</Span> <Span>{hostTeamMember.cityName}</Span><br />
+           <div className={clsx(teamCardClasses.teamCardLine, teamCardClasses.marginBottom)}>
+             <SmallTitle i18n="host"/>:&nbsp; <Span><Fullname {...hostTeamMember} /></Span>
+           </div>
+           {/*<address>*/}
+             <SmallTitle i18n="address" gutterBottom={false}/>
+             <div className={teamCardClasses.teamCardLine}>
+               <Span gutterBottom={false}>{hostTeamMember.street}</Span>&nbsp;<Span gutterBottom={false}>{hostTeamMember.streetNr}</Span>
+             </div>
+             <div className={clsx(teamCardClasses.teamCardLine, teamCardClasses.marginBottom)}>
+               <Span>{hostTeamMember.zip}</Span>&nbsp;<Span>{hostTeamMember.cityName}</Span>
+             </div>
              { isStringNotEmpty(hostTeamMember.addressRemarks) && <em>{hostTeamMember.addressRemarks}</em> }
-           </address>
-           <SmallTitle i18n="time"/>: <Span><Time date={dinnerRouteTeam.meal.time }/></Span>
+           {/*</address>*/}
+           <div className={teamCardClasses.teamCardLine}>
+             <SmallTitle i18n="time"/>: &nbsp; <Span><Time date={dinnerRouteTeam.meal.time }/></Span>
+           </div>
          </>
         )}
-      </Paper>
+      </SpacingPaper>
     </>
   );
 }

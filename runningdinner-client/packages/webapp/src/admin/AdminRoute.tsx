@@ -7,6 +7,7 @@ import {Route, Switch} from "react-router-dom";
 import {useAdminContext} from "./AdminContext";
 import {DashboardStateProvider} from "@runningdinner/shared";
 import Acknowledge from "./common/Acknowledge";
+import TeamDinnerRoute from "./teams/TeamDinnerRoute";
 
 export interface AdminRouteProps {
   path: string;
@@ -31,6 +32,9 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
 
         <Route path={`${path}/teams/messages`}>
           <TeamMessages adminId={adminId} />
+        </Route>
+        <Route path={`${path}/teams/:teamId/dinnerroute`}>
+          <TeamDinnerRoute />
         </Route>
         <Route path={`${path}/teams/:teamId`}>
           <TeamsContainer />
