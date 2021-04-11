@@ -36,7 +36,8 @@
     "@babel/plugin-syntax-jsx": "^7.12.1",
     "@babel/preset-typescript": "7.9.0",
     "@types/lodash": "^4.14.168",
-    "@types/yup": "^0.29.6"
+    "@types/yup": "^0.29.6",
+    "@types/react-geocode": "^0.2.0"
   },
   "publishConfig": {
     "registry": "http://localhost:4873"

@@ -1,6 +1,6 @@
 import { Meal } from "./RunningDinner";
 import {Team, TeamStatus} from "./Team";
-import {Participant} from "@runningdinner/shared";
+import {GeocodingResult, Participant} from "@runningdinner/shared";
 
 export interface DinnerRoute {
   currentTeam: Team;
@@ -13,6 +13,7 @@ export interface DinnerRouteTeam {
   status: TeamStatus;
   meal: Meal;
   hostTeamMember: DinnerRouteTeamHost;
+  geocodingResult?: GeocodingResult;
 }
 
 export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {

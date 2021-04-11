@@ -16,6 +16,8 @@ export * from "./masterdata";
 export * from "./wizard";
 export * from './issue';
 
+export * from './GeocoderHook';
+
 // TODO Add possibility to include JSON files
 export * from "./i18n";
 

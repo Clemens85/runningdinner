@@ -23,6 +23,7 @@ export interface Participant extends BaseEntity {
   teamPartnerWish: string;
   notes: string;
   teamId?: string;
+  geocodingResult?: GeocodingResult;
 }
 
 export enum TeamPartnerWishState {
@@ -38,4 +39,9 @@ export interface TeamPartnerWishInfo {
   state: TeamPartnerWishState;
   subscribedParticipant: Participant;
   matchingParticipant: Participant;
+}
+
+export interface GeocodingResult {
+  lat?: number;
+  lng?: number;
 }

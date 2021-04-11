@@ -1,11 +1,24 @@
 import React from 'react';
-import {DinnerRoute, DinnerRouteTeam, Fullname, isStringNotEmpty, TeamStatus, Time} from "@runningdinner/shared";
-import {Box, makeStyles, Typography} from '@material-ui/core';
+import {
+  createMarkerIconUrl,
+  DinnerRoute,
+  DinnerRouteTeam,
+  Fullname,
+  getCenterPosition,
+  isGeocodingResultValid,
+  isStringNotEmpty,
+  TeamStatus,
+  Time,
+  useGeocoder
+} from "@runningdinner/shared";
+import {Box, LinearProgress, makeStyles, Typography} from '@material-ui/core';
 import {SpacingGrid} from '../theme/SpacingGrid';
 import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
 import { SpacingPaper } from '../theme/SpacingPaper';
 import clsx from "clsx";
+import {GoogleMap, Marker} from '@react-google-maps/api';
+import {LoadScript} from "@react-google-maps/api";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -34,8 +47,7 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
           {teamCardNodes}
         </SpacingGrid>
         <SpacingGrid item xs={12} mb={2}>
-          {/*<Map />*/}
-          TODO
+          <MapContainer dinnerRoute={dinnerRoute} />
         </SpacingGrid>
       </SpacingGrid>
   );
@@ -101,9 +113,56 @@ function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardPro
   );
 }
 
+// https://github.com/JustFly1984/react-google-maps-api/tree/master/packages/react-google-maps-api
+function MapContainer({dinnerRoute}: DinnerRouteProps) {
 
-function Map() {
+  const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_KEY_JS || "";
+  const { i18n } = useTranslation();
+  const {getGeocodePositionsOfTeamHosts} = useGeocoder(googleMapsApiKey, i18n.language);
+
+  const [resolvedDinnerRouteTeams, setResolvedDinnerRouteTeams] = React.useState<DinnerRouteTeam[]>();
+
+  React.useEffect(() => {
+    getGeocodePositionsOfTeamHosts(dinnerRoute.teams)
+        .then(result => setResolvedDinnerRouteTeams(result));
+    // eslint-disable-next-line
+  }, [dinnerRoute]);
+
+  if (!resolvedDinnerRouteTeams) {
+    return <LinearProgress color="secondary" />;
+  }
+  return <MapView dinnerRouteTeams={resolvedDinnerRouteTeams}
+                  currentTeam={dinnerRoute.currentTeam}
+                  googleMapsApiKey={googleMapsApiKey}/>;
+}
+
+interface MapViewProps {
+  dinnerRouteTeams: DinnerRouteTeam[];
+  currentTeam: DinnerRouteTeam;
+  googleMapsApiKey: string;
+}
+function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps) {
+
+  function isCurrentTeam(dinnerRouteTeam: DinnerRouteTeam) {
+    return currentTeam.teamNumber === dinnerRouteTeam.teamNumber;
+  }
+
+  const markerNodes = dinnerRouteTeams
+                        .filter(dinnerRouteTeam => isGeocodingResultValid(dinnerRouteTeam.geocodingResult))
+                        .map((dinnerRouteTeam, index) => <Marker position={dinnerRouteTeam.geocodingResult}
+                                                                                         key={dinnerRouteTeam.teamNumber}
+                                                                                         icon={createMarkerIconUrl(index + 1, isCurrentTeam(dinnerRouteTeam))}/>);
+
+  const centerPosition = getCenterPosition(dinnerRouteTeams, currentTeam);
+
   return (
-      <div>TODO</div>
+      <LoadScript googleMapsApiKey={googleMapsApiKey}>
+        <GoogleMap
+            mapContainerStyle={{height: '400px'}}
+            center={centerPosition}
+            zoom={12}>
+          { markerNodes }
+        </GoogleMap>
+      </LoadScript>
   );
 }

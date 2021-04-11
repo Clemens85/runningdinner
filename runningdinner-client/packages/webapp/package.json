@@ -36,7 +36,9 @@
     "@runningdinner/shared": "*",
     "react-redux": "^7.2.2",
     "redux-logger": "^3.0.6",
-    "@reduxjs/toolkit": "^1.5.0"
+    "@reduxjs/toolkit": "^1.5.0",
+    "@react-google-maps/api": "^2.1.1",
+    "react-geocode": "^0.2.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",
