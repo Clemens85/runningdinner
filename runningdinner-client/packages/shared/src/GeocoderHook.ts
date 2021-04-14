@@ -1,6 +1,6 @@
 import React from "react";
 import Geocode from "react-geocode";
-import {DinnerRouteTeam, GeocodingResult, Participant, TeamStatus} from "./types";
+import {DinnerRouteTeam, GeocodingResult, isSameDinnerRouteTeam, Participant, TeamStatus} from "./types";
 
 export function isGeocodingResultValid(geocodingResult?: GeocodingResult): geocodingResult is GeocodingResult {
   if (!geocodingResult || typeof geocodingResult === 'undefined') {
@@ -18,14 +18,19 @@ export function createMarkerIconUrl(markerNumber: number, isCurrent: boolean): s
   }
   return `https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld=${markerNumber}|${bgColor}|${textColor}`;
 }
+
+export function filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams: DinnerRouteTeam[]) {
+  return dinnerRouteTeams
+            .filter(dinnerRouteTeam => isGeocodingResultValid(dinnerRouteTeam.geocodingResult));
+}
+
 export function getCenterPosition(dinnerRouteTeams: DinnerRouteTeam[], currentTeam: DinnerRouteTeam): GeocodingResult | undefined {
-  const centerPositionCandidates = dinnerRouteTeams
-                                    .filter(dinnerRouteTeam => isGeocodingResultValid(dinnerRouteTeam.geocodingResult));
+  const centerPositionCandidates = filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams);
   if (centerPositionCandidates.length === 0) {
     return undefined;
   }
   for (let i = 0; i < centerPositionCandidates.length; i++) {
-    if (centerPositionCandidates[i].teamNumber === currentTeam.teamNumber) {
+    if (isSameDinnerRouteTeam(centerPositionCandidates[i], currentTeam)) {
       return centerPositionCandidates[i].geocodingResult;
     }
   }

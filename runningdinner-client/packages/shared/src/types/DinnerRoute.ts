@@ -19,3 +19,7 @@ export interface DinnerRouteTeam {
 export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {
 
 }
+
+export function isSameDinnerRouteTeam(a: DinnerRouteTeam, b: DinnerRouteTeam) {
+ return a.teamNumber === b.teamNumber;
+}
