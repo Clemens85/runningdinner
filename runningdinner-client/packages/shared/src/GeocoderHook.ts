@@ -24,6 +24,10 @@ export function filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams: 
             .filter(dinnerRouteTeam => isGeocodingResultValid(dinnerRouteTeam.geocodingResult));
 }
 
+export function isGeocdingResultValidForAllTeams(dinnerRouteTeams: DinnerRouteTeam[]): boolean {
+  return dinnerRouteTeams.length === filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams).length;
+}
+
 export function getCenterPosition(dinnerRouteTeams: DinnerRouteTeam[], currentTeam: DinnerRouteTeam): GeocodingResult | undefined {
   const centerPositionCandidates = filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams);
   if (centerPositionCandidates.length === 0) {

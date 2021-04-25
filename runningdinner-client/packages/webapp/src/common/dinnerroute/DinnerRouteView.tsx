@@ -5,7 +5,7 @@ import {
   DinnerRouteTeam,
   filterDinnerRouteTeamsForValidGeocdingResults,
   Fullname,
-  getCenterPosition, getFullname,
+  getCenterPosition, getFullname, isGeocdingResultValidForAllTeams,
   isSameDinnerRouteTeam,
   isStringNotEmpty,
   TeamStatus,
@@ -24,6 +24,8 @@ import {LoadScript} from "@react-google-maps/api";
 import { cloneDeep } from 'lodash';
 // @ts-ignore
 import useGeolocation from 'react-hook-geolocation'
+import Alert from "@material-ui/lab/Alert";
+import {AlertTitle} from "@material-ui/lab";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -168,6 +170,7 @@ interface DinnerRouteTeamMarkerInfoState {
 function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps) {
 
   const {getTeamName} = useTeamName();
+  const {t} = useTranslation('common');
 
   const [currentLocation, setCurrentLocation] = React.useState<any>();
   useGeolocation({enableHighAccuracy: true}, (updatedGeoLocation: any) => {
@@ -234,28 +237,40 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
     pixelOffset: { width: -8, height: -36 }
   };
 
+  const showWarnings = currentLocation?.error || !isGeocdingResultValidForAllTeams(dinnerRouteTeams);
+
   return (
-      <LoadScript googleMapsApiKey={googleMapsApiKey}>
-        <GoogleMap
-            mapContainerStyle={{height: '400px'}}
-            center={centerPosition}
-            zoom={13}>
-          { markerNodes }
-          {currentLocation && !currentLocation?.error &&
-            <Marker animation="DROP"
-                    icon={"http://www.robotwoods.com/dev/misc/bluecircle.png"}
-                    position={{ lat: currentLocation?.latitude, lng: currentLocation?.longitude }} />
-          }
-          <Polyline options={polyLineOptions} path={paths} />
-          { dinnerRouteTeamMarkerInfoToShow &&
-              <InfoWindow position={dinnerRouteTeamMarkerInfoToShow.dinnerRouteTeam.geocodingResult}
-                          options={infoWindowOptions}
-                          onCloseClick={handleInfoCloseClicked}>
-                <Box p={1} style={{ backgroundColor: '#fff', opacity: 0.75}}>
-                  {dinnerRouteTeamMarkerInfoToShow.content}
-                </Box>
-              </InfoWindow> }
-        </GoogleMap>
-      </LoadScript>
+      <>
+        <Box>
+          <LoadScript googleMapsApiKey={googleMapsApiKey}>
+            <GoogleMap
+                mapContainerStyle={{height: '400px'}}
+                center={centerPosition}
+                zoom={13}>
+              { markerNodes }
+              {currentLocation && !currentLocation?.error &&
+                <Marker animation="DROP"
+                        icon={"http://www.robotwoods.com/dev/misc/bluecircle.png"}
+                        position={{ lat: currentLocation?.latitude, lng: currentLocation?.longitude }} />
+              }
+              <Polyline options={polyLineOptions} path={paths} />
+              { dinnerRouteTeamMarkerInfoToShow &&
+                  <InfoWindow position={dinnerRouteTeamMarkerInfoToShow.dinnerRouteTeam.geocodingResult}
+                              options={infoWindowOptions}
+                              onCloseClick={handleInfoCloseClicked}>
+                    <Box p={1} style={{ backgroundColor: '#fff', opacity: 0.75}}>
+                      {dinnerRouteTeamMarkerInfoToShow.content}
+                    </Box>
+                  </InfoWindow> }
+            </GoogleMap>
+          </LoadScript>
+        </Box>
+        { showWarnings &&  <Box mt={2}>
+                              <Alert severity="warning" variant="outlined">
+                                <AlertTitle>{t('attention')}</AlertTitle>
+                                Die Route kann nicht vollständig dargestellt werden, da es mindestens einen Standort gibt der nicht aufgelöst werden konnte.
+                              </Alert>
+                           </Box>}
+      </>
   );
 }
