@@ -30,10 +30,16 @@ const Span = (props) => {
 };
 
 const PageTitle = (props) => {
+
+  let color = "primary";
+  if (props.color) {
+    color = props.color;
+  }
+
   return (
       <>
         <Box component={"div"} mt={4} mb={4}>
-          <Typography variant="h4" color={"primary"}>{props.children}</Typography>
+          <Typography variant="h4" color={color}>{props.children}</Typography>
           <Divider />
         </Box>
       </>

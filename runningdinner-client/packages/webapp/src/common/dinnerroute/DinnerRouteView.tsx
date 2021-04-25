@@ -85,7 +85,7 @@ function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardPro
 
   return (
     <>
-      <PageTitle>
+      <PageTitle color={isCurrentTeam ? "primary" : "textSecondary"}>
         ({positionInRoute}) {dinnerRouteTeam.meal.label}
         { isCurrentTeam && <Box component={"span"} pl={1}>
                               <Typography variant={"body2"} component={"span"}>{t('common:with_you')}</Typography>
@@ -172,10 +172,19 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
   const {getTeamName} = useTeamName();
   const {t} = useTranslation('common');
 
-  const [currentLocation, setCurrentLocation] = React.useState<any>();
-  useGeolocation({enableHighAccuracy: true}, (updatedGeoLocation: any) => {
-    setCurrentLocation(updatedGeoLocation);
-  });
+  console.log(`Running though MapView`);
+
+  // const [currentLocation, setCurrentLocation] = React.useState<any>();
+  // useGeolocation({enableHighAccuracy: true}, (updatedGeoLocation: any) => {
+  //   setCurrentLocation(updatedGeoLocation);
+  // });
+  // TODO: The code above causes lots of re-renders
+  const currentLocation = {
+    error: "asdf",
+    latitude: 0,
+    longitude: 0
+
+  };
 
   const [dinnerRouteTeamMarkerInfoState, setDinnerRouteTeamMarkerInfoState] = React.useState<DinnerRouteTeamMarkerInfoState[]>(
       dinnerRouteTeams.map(dinnerRouteTeam => {return {dinnerRouteTeam}; })

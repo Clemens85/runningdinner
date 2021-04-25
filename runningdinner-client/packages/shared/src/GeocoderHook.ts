@@ -12,9 +12,9 @@ export function isGeocodingResultValid(geocodingResult?: GeocodingResult): geoco
 
 export function createMarkerIconUrl(markerNumber: number, isCurrent: boolean): string {
   const textColor = '000000';
-  let bgColor = '6db33f';
+  let bgColor = '999999';
   if (isCurrent) {
-    bgColor = '999999';
+    bgColor = '6db33f';
   }
   return `https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld=${markerNumber}|${bgColor}|${textColor}`;
 }
