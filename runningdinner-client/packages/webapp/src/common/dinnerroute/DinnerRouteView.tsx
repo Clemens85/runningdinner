@@ -268,7 +268,7 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
         { showWarnings &&  <Box mt={2}>
                               <Alert severity="warning" variant="outlined">
                                 <AlertTitle>{t('attention')}</AlertTitle>
-                                Die Route kann nicht vollständig dargestellt werden, da es mindestens einen Standort gibt der nicht aufgelöst werden konnte.
+                                {t('dinner_route_geocoding_warning')}
                               </Alert>
                            </Box>}
       </>

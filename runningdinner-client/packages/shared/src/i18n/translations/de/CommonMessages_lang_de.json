@@ -31,6 +31,7 @@
 	"dessert": "Dessert",
 	"details": "Details",
 	"dinner_route": "Dinner-Route",
+	"dinner_route_geocoding_warning": "Die Route kann nicht vollständig dargestellt werden, da es mindestens einen Standort gibt der nicht aufgelöst werden konnte.",
 
 	"email": "Email",
 	"endOfRegistrationDate_help": "Sollte typischerweise ein paar Tage vor dem Veranstaltungstag sein",

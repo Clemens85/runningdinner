@@ -31,6 +31,7 @@
 	"dessert": "Dessert",
 	"details": "Details",
 	"dinner_route": "Dinner-Route",
+	"dinner_route_geocoding_warning": "The route cannot be rendered completely, due to there is at least one position which could not be resolved.",
 
 	"email": "Email",
 	"endOfRegistrationDate_help": "Typically the deadline should be some days before the event.",
