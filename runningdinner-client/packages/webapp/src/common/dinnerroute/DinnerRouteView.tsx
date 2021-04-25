@@ -22,10 +22,9 @@ import clsx from "clsx";
 import {GoogleMap, InfoWindow, Marker, Polyline} from '@react-google-maps/api';
 import {LoadScript} from "@react-google-maps/api";
 import { cloneDeep } from 'lodash';
-// @ts-ignore
-import useGeolocation from 'react-hook-geolocation'
 import Alert from "@material-ui/lab/Alert";
 import {AlertTitle} from "@material-ui/lab";
+import {usePosition} from "../PositionHook";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -174,17 +173,7 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
 
   console.log(`Running though MapView`);
 
-  // const [currentLocation, setCurrentLocation] = React.useState<any>();
-  // useGeolocation({enableHighAccuracy: true}, (updatedGeoLocation: any) => {
-  //   setCurrentLocation(updatedGeoLocation);
-  // });
-  // TODO: The code above causes lots of re-renders
-  const currentLocation = {
-    error: "asdf",
-    latitude: 0,
-    longitude: 0
-
-  };
+  const {longitude, latitude, error} = usePosition(true, {enableHighAccuracy: true});
 
   const [dinnerRouteTeamMarkerInfoState, setDinnerRouteTeamMarkerInfoState] = React.useState<DinnerRouteTeamMarkerInfoState[]>(
       dinnerRouteTeams.map(dinnerRouteTeam => {return {dinnerRouteTeam}; })
@@ -246,7 +235,7 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
     pixelOffset: { width: -8, height: -36 }
   };
 
-  const showWarnings = currentLocation?.error || !isGeocdingResultValidForAllTeams(dinnerRouteTeams);
+  const showWarnings = error || !isGeocdingResultValidForAllTeams(dinnerRouteTeams);
 
   return (
       <>
@@ -257,10 +246,10 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
                 center={centerPosition}
                 zoom={13}>
               { markerNodes }
-              {currentLocation && !currentLocation?.error &&
+              {latitude && longitude && !error &&
                 <Marker animation="DROP"
                         icon={"http://www.robotwoods.com/dev/misc/bluecircle.png"}
-                        position={{ lat: currentLocation?.latitude, lng: currentLocation?.longitude }} />
+                        position={{ lat: latitude, lng: longitude }} />
               }
               <Polyline options={polyLineOptions} path={paths} />
               { dinnerRouteTeamMarkerInfoToShow &&
