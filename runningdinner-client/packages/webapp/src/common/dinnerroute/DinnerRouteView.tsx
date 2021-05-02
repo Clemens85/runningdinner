@@ -24,7 +24,7 @@ import {LoadScript} from "@react-google-maps/api";
 import { cloneDeep } from 'lodash';
 import Alert from "@material-ui/lab/Alert";
 import {AlertTitle} from "@material-ui/lab";
-import {usePosition} from "../PositionHook";
+import {useGeoPosition} from "../GeoPositionHook";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -173,7 +173,7 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
 
   console.log(`Running though MapView`);
 
-  const {longitude, latitude, error} = usePosition(true, {enableHighAccuracy: true});
+  const {longitude: currentPosLng, latitude: currentPosLat, error: currentPosError} = useGeoPosition(true, {enableHighAccuracy: true});
 
   const [dinnerRouteTeamMarkerInfoState, setDinnerRouteTeamMarkerInfoState] = React.useState<DinnerRouteTeamMarkerInfoState[]>(
       dinnerRouteTeams.map(dinnerRouteTeam => {return {dinnerRouteTeam}; })
@@ -235,7 +235,7 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
     pixelOffset: { width: -8, height: -36 }
   };
 
-  const showWarnings = error || !isGeocdingResultValidForAllTeams(dinnerRouteTeams);
+  const showWarnings = currentPosError || !isGeocdingResultValidForAllTeams(dinnerRouteTeams);
 
   return (
       <>
@@ -246,10 +246,10 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
                 center={centerPosition}
                 zoom={13}>
               { markerNodes }
-              {latitude && longitude && !error &&
+              {currentPosLat && currentPosLng && !currentPosError &&
                 <Marker animation="DROP"
                         icon={"http://www.robotwoods.com/dev/misc/bluecircle.png"}
-                        position={{ lat: latitude, lng: longitude }} />
+                        position={{ lat: currentPosLat, lng: currentPosLng }} />
               }
               <Polyline options={polyLineOptions} path={paths} />
               { dinnerRouteTeamMarkerInfoToShow &&

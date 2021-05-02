@@ -20,7 +20,7 @@ export interface Position {
   timestamp?: any
 }
 
-export const usePosition = (watch = false, settings: PositionSettings = defaultSettings) => {
+export const useGeoPosition = (watch = false, settings: PositionSettings = defaultSettings) => {
   const [position, setPosition] = useState<Position>({});
   const [error, setError] = useState<string | null>(null);
 
@@ -52,6 +52,7 @@ export const usePosition = (watch = false, settings: PositionSettings = defaultS
     }
 
     return () => watcher && navigator.geolocation.clearWatch(watcher);
+    // eslint-disable-next-line
   }, [
     settings.enableHighAccuracy,
     settings.timeout,
