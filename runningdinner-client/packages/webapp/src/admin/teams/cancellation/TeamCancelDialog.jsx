@@ -8,7 +8,6 @@ import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React, {useState} from "react";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {SmallTitle, Span} from "../../../common/theme/typography/Tags";
-import {useSnackbar} from "notistack";
 import {Alert, AlertTitle} from "@material-ui/lab";
 import { Fetch } from "../../../common/Fetch";
 import {
@@ -31,6 +30,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
+import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 
 export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}) => {
 
@@ -40,7 +40,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose})
   const [replacementParticipants, setReplacementParticipants] = useState([]);
 
   const {adminId} = runningDinner;
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess} = useCustomSnackbar();
 
   const {getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
@@ -57,9 +57,9 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose})
       const cancelledOrReplacedTeam = teamCancellationResult.team;
       const cancelledOrReplacedTeamName = getTeamName(cancelledOrReplacedTeam);
       if (cancelledOrReplacedTeam.status === CONSTANTS.TEAM_STATUS.REPLACED) {
-        enqueueSnackbar(t("admin:team_cancel_replace_team_members_success", {cancelledOrReplacedTeam: cancelledOrReplacedTeamName}), {variant: "success"});
+        showSuccess(t("admin:team_cancel_replace_team_members_success", {cancelledOrReplacedTeam: cancelledOrReplacedTeamName}));
       } else {
-        enqueueSnackbar(t("admin:team_cancel_success", {cancelledOrReplacedTeam: cancelledOrReplacedTeamName}), {variant: "success"});
+        showSuccess(t("admin:team_cancel_success", {cancelledOrReplacedTeam: cancelledOrReplacedTeamName}));
       }
       onClose(cancelledOrReplacedTeam);
     } catch (e) {

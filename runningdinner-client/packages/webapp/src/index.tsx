@@ -12,7 +12,10 @@ setupI18n();
 ReactDOM.render(
     <React.StrictMode>
       <CssBaseline />
-      <SnackbarProvider maxSnack={3} anchorOrigin={{vertical: 'top', horizontal: 'center'}} autoHideDuration={4500}>
+      <SnackbarProvider maxSnack={3}
+                        anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                        autoHideDuration={4500}
+                        hideIconVariant={true}>
         <App />
       </SnackbarProvider>
     </React.StrictMode>,

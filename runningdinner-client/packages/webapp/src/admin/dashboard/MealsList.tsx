@@ -5,7 +5,6 @@ import EditMealsDialog from "./EditMealsDialog";
 import {useTranslation} from "react-i18next";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
 import {Subtitle} from "../../common/theme/typography/Tags";
-import {useSnackbar} from "notistack";
 import {
   CallbackHandler,
   findAdminActivitiesAction,
@@ -14,6 +13,7 @@ import {
   useDashboardDispatch,
   useDashboardState
 } from "@runningdinner/shared";
+import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 
 export interface MealsListProps {
   meals: Meal[];
@@ -23,7 +23,7 @@ export interface MealsListProps {
 
 export default function MealsList({meals, adminId, onRunningDinnerUpdate}: MealsListProps) {
 
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess, showError} = useCustomSnackbar();
   const {loading, dashboardAdminActivities} = useDashboardState();
   const dispatch = useDashboardDispatch();
 
@@ -45,11 +45,11 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate}: Meals
 
   function handleUpdateSuccess() {
     setEditMealsDialogOpen(false);
-    enqueueSnackbar('Zeitplan erfolgreich gespeichert!', {variant: "success"});
+    showSuccess('Zeitplan erfolgreich gespeichert!');
   }
   function handleUpdateError(errorResponse: Error) {
     const errorReason = errorResponse.message ? errorResponse.message : 'Unknown';
-    enqueueSnackbar(`Fehler beim Speichern: ${errorReason}`, {variant: "error"});
+    showError(`Fehler beim Speichern: ${errorReason}`);
   }
 
   return (

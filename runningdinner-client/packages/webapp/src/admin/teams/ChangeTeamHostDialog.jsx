@@ -13,14 +13,14 @@ import Paragraph from "../../common/theme/typography/Paragraph";
 import {findEntityById, getFullname, updateTeamHostAsync} from "@runningdinner/shared";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {Subtitle} from "../../common/theme/typography/Tags";
-import {useSnackbar} from "notistack";
+import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 
 
 export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHostChanged}) => {
 
   const {t} = useTranslation(['admin', 'common']);
   const [selectedHostTeamMember, setSelectedHostTeamMember] = useState(team.hostTeamMember);
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess} = useCustomSnackbar();
 
   const { teamNumber, teamMembers } = team;
 
@@ -28,7 +28,7 @@ export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHost
     const updatedTeam = await updateTeamHostAsync(adminId, team, selectedHostTeamMember);
     onClose();
     onTeamHostChanged(updatedTeam);
-    enqueueSnackbar(t("team_host_saved"), {variant: "success"});
+    showSuccess(t("team_host_saved"));
   };
 
   function handleTeamHostChange(changeEvt) {

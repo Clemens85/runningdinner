@@ -25,8 +25,8 @@ import {
   useDisclosure
 } from "@runningdinner/shared";
 import {useAdminContext} from "../AdminContext";
-import {useSnackbar} from "notistack";
 import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../AdminNavigationHook";
+import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 
 const TeamsContainer = () => {
 
@@ -69,7 +69,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   const {navigateToTeam, generateTeamMessagesPath} = useAdminNavigation();
   const {t} = useTranslation('admin');
 
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess} = useCustomSnackbar();
 
   useEffect(() => {
     if (teamId) {
@@ -120,7 +120,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
     const srcTeamMember = findEntityById(allParticipants, srcParticipantId);
     const destTeamMember = findEntityById(allParticipants, destParticipantId);
     const successNotfication = t('team_swap_success_text', { fullnameSrc: getFullname(srcTeamMember), fullnameDest: getFullname(destTeamMember) });
-    enqueueSnackbar(successNotfication, { variant: 'success'});
+    showSuccess(successNotfication);
   };
 
   const updateTeamStateInList = (team: Team) => {

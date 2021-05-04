@@ -16,18 +16,18 @@ import {
   sendInvitationTeamPartnerWishAction,
   updateMatchingParticipantTeamPartnerWishAction
 } from "./TeamPartnerWishAction";
-import {useSnackbar} from "notistack";
 import {SecondaryButtonAsync} from "../../../common/theme/SecondaryButtonAsync";
 import Grid from "@material-ui/core/Grid";
 import useCommonStyles from "../../../common/theme/CommonStyles";
 import {getFullname, isClosedDinner, CONSTANTS} from "@runningdinner/shared";
+import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 
 export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpen, onClose}) => {
 
   const participant = teamPartnerWishInfo.subscribedParticipant;
 
   const {t} = useTranslation(['admin', 'common']);
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess} = useCustomSnackbar();
   const fullname = getFullname(participant);
   const {adminId} = runningDinner;
 
@@ -63,7 +63,7 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
   const handleSendInvitationEMail = () => {
     const sendInvitationAction = sendInvitationTeamPartnerWishAction(participant);
     handleTeamPartnerWishAction(adminId, sendInvitationAction).then(result => {
-      enqueueSnackbar(t("admin:participant_teampartnerwish_sent_invitation", {email: participant.teamPartnerWish}), {variant: "success"});
+      showSuccess(t("admin:participant_teampartnerwish_sent_invitation", {email: participant.teamPartnerWish}));
       onClose(result);
     });
   };
@@ -71,10 +71,10 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
   const handleUpdateMatchingParticipant = () => {
     const updateOtherParticipantAction = updateMatchingParticipantTeamPartnerWishAction(participant, teamPartnerWishInfo.matchingParticipant);
     handleTeamPartnerWishAction(adminId, updateOtherParticipantAction).then(result => {
-      enqueueSnackbar(t("admin:participant_teampartnerwish_update_participant", {
+      showSuccess(t("admin:participant_teampartnerwish_update_participant", {
         fullnameThis: getFullname(participant),
         fullnameOther: getFullname(teamPartnerWishInfo.matchingParticipant)
-      }), {variant: "success"});
+      }));
       onClose(result);
     });
   };
@@ -82,7 +82,7 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
   const handleNewParticipant = () => {
     const newParticipantAction = newParticipantTeamPartnerWishAction(participant);
     handleTeamPartnerWishAction(adminId, newParticipantAction).then(result => {
-      enqueueSnackbar(t('admin:participant_teampartnerwish_new_participant'), {variant: "success"});
+      showSuccess(t('admin:participant_teampartnerwish_new_participant'));
       onClose(result);
     });
   };

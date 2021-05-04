@@ -1,7 +1,6 @@
 import React from 'react';
 import { Dialog, DialogContent } from '@material-ui/core';
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
-import {useSnackbar} from "notistack";
 import {useTranslation} from "react-i18next";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {Span} from "../../../common/theme/typography/Tags";
@@ -13,18 +12,19 @@ import {
   useBackendIssueHandler, findIssueByMessage
 } from "@runningdinner/shared";
 import {useAdminNavigation} from "../../AdminNavigationHook";
+import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 
 export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) => {
 
   const {t} = useTranslation(['admin', 'common']);
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess} = useCustomSnackbar();
   const {getIssuesUntranslated} = useBackendIssueHandler();
   const {navigateToTeamMemberCancellation} = useAdminNavigation();
 
   const deleteParticipant = async () => {
     try {
       const deletedParticipant = await deleteParticipantAsync(adminId, participant);
-      enqueueSnackbar(getFullname(participant) + " erfolgreich gelöscht", {variant: "success"});
+      showSuccess(getFullname(participant) + " erfolgreich gelöscht");
       onClose(deletedParticipant);
     } catch (e) {
       const issues = getIssuesUntranslated(e);

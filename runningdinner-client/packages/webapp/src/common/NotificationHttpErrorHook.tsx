@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import {useSnackbar} from "notistack";
 import {COMMON_ERROR_NAMESPACE, HttpError, isArrayEmpty, isArrayNotEmpty, Issue, Issues, isValidationError} from "@runningdinner/shared";
 import {
   getBackendIssuesFromErrorResponse,
   mapBackendIssuesToIssues
 } from "@runningdinner/shared";
+import {useCustomSnackbar} from "./theme/CustomSnackbarHook";
 
 export interface HttpErrorDefaultNotificationProps {
   /**
@@ -28,7 +28,7 @@ export interface HttpErrorDefaultNotificationProps {
  */
 export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpError) => Issues) {
 
-  const {enqueueSnackbar} = useSnackbar();
+  const {showError} = useCustomSnackbar();
 
   const { t } = useTranslation(COMMON_ERROR_NAMESPACE);
 
@@ -70,7 +70,7 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
         showErrorNotification(issues.issuesWithoutField);
       } else if (optionsToUse.showGenericMesssageOnValidationError !== false) {
         const errorMessage = t("validation_error_desc");
-        enqueueSnackbar(errorMessage, { variant: "error"});
+        showError(errorMessage);
       }
       return;
     }
@@ -89,7 +89,7 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
   }
 
   function showErrorNotification(errorItems: Issue[]) {
-    errorItems.forEach((errorItem) => enqueueSnackbar(errorItem.error.message, { variant: "error"}));
+    errorItems.forEach((errorItem) => showError(errorItem.error.message));
   }
 
   return {

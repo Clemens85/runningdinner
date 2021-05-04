@@ -13,7 +13,6 @@ import {
   mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant,
   PARTICIPANT_VALIDATION_SCHEMA, saveParticipantAsync, useBackendIssueHandler
 } from "@runningdinner/shared";
-import {useSnackbar} from "notistack";
 import {PrimaryButton} from "../../../common/theme/PrimaryButton";
 import {DeleteParticipantDialog} from "../delete/DeleteParticipantDialog";
 import {FormProvider, useForm} from "react-hook-form";
@@ -21,6 +20,7 @@ import {useTranslation} from "react-i18next";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
+import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 
 const useStyles = makeStyles((theme) => ({
   buttonSpacingLeft: {
@@ -44,7 +44,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const classes = useStyles();
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess} = useCustomSnackbar();
 
   const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
@@ -86,7 +86,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
     clearErrors();
     try {
       const savedParticipant = await saveParticipantAsync(adminId, participantToSave);
-      enqueueSnackbar(getFullname(savedParticipant) + " erfolgreich gespeichert", {variant: "success"});
+      showSuccess(getFullname(savedParticipant) + " erfolgreich gespeichert");
       onParticipantSaved(savedParticipant);
     } catch(e) {
       applyValidationIssuesToForm(e, setError);

@@ -1,14 +1,14 @@
 import React from 'react'
 import {Grid, Box} from "@material-ui/core";
-import {useSnackbar} from "notistack";
 import {useTranslation} from "react-i18next";
 import {SecondaryButtonAsync} from "../../common/theme/SecondaryButtonAsync";
 import {getMailMessageForSelectedRecipient, sendMessagesAsync, useBackendIssueHandler} from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
+import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 
 export default function SendToMeButton({adminId, messageObj, messageType, selectedRecipient}) {
 
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess} = useCustomSnackbar();
   const {t} = useTranslation('admin');
 
   const {getIssuesTranslated} = useBackendIssueHandler({
@@ -21,7 +21,7 @@ export default function SendToMeButton({adminId, messageObj, messageType, select
   const handleSendToMe = () => {
     const message = getMailMessageForSelectedRecipient(messageObj, messageType, selectedRecipient);
     sendMessagesAsync(adminId, message, messageType, true)
-        .then(() => enqueueSnackbar(t('mails_send_to_dinner_owner'), {variant: 'success'}))
+        .then(() => showSuccess(t('mails_send_to_dinner_owner')))
         .catch((error) => showHttpErrorDefaultNotification(error));
   };
 

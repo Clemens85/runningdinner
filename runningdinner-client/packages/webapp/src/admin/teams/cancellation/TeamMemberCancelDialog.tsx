@@ -18,8 +18,8 @@ import {
 } from "@runningdinner/shared";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {Span} from "../../../common/theme/typography/Tags";
-import {useSnackbar} from "notistack";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
+import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 
 export interface TeamMemberCancelDialogProps {
   adminId: string;
@@ -50,12 +50,12 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
 
   const { cancelWholeTeam, remainingTeamMemberNames } = getTeamMemberCancelInfo(team, teamMemberToCancel);
 
-  const {enqueueSnackbar} = useSnackbar();
+  const {showSuccess} = useCustomSnackbar();
 
   const handleCancelTeamMember = async() => {
     try  {
       const teamAfterCancel = await cancelTeamMemberAsync(adminId, team.id!, teamMemberToCancel.id!);
-      enqueueSnackbar(t("admin:team_cancel_member_success_text", { fullname: teamMemberToCancelFullname }),  {variant: "success"});
+      showSuccess(t("admin:team_cancel_member_success_text", { fullname: teamMemberToCancelFullname }));
       onClose({ teamAfterCancel });
     } catch (e) {
       const issues = getIssuesUntranslated(e);
