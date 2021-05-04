@@ -36,6 +36,7 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
   };
 
   function cancelTeamMember() {
+    cancel();
     navigateToTeamMemberCancellation(adminId, participant);
   }
 

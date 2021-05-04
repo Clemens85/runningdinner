@@ -12,8 +12,6 @@ export function useDynamicFullscreenHeight(containerRef: RefObject<HTMLElement>,
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
 
-  console.log(`Height of browser is ${innerHeight} and paperPosition is ${top}`);
-
   let resultHeight = innerHeight && top && !isSmallDevice ? innerHeight - top - browserOffset : minHeight;
   if (resultHeight < minHeight) {
     resultHeight = minHeight;
