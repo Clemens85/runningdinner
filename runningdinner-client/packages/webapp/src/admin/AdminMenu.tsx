@@ -31,6 +31,8 @@ export const AdminMenu = ({url}: AdminMenuProps) => {
 
   const classes = useStyles();
 
+  const normalizedUrl = url.replace(/\/$/, ""); // Remove last trailing slash (if existing)
+
   return (
       <>
         <AdminNotificationBar />
@@ -51,9 +53,9 @@ export const AdminMenu = ({url}: AdminMenuProps) => {
                           <Typography variant="h6" className={classes.title}>Run Your Dinner Administration</Typography>
                         </Grid>
                         <Grid item>
-                          <Link to={`${url}`} component={RouterLink} color="inherit" className={classes.menuLink}>Dashboard</Link>
-                          <Link to={`${url}/participants`} component={RouterLink} color="inherit" className={classes.menuLink}>Teilnehmer</Link>
-                          <Link to={`${url}/teams`} component={RouterLink} color="inherit" className={classes.menuLink}>Teams</Link>
+                          <Link to={`${normalizedUrl}`} component={RouterLink} color="inherit" className={classes.menuLink}>Dashboard</Link>
+                          <Link to={`${normalizedUrl}/participants`} component={RouterLink} color="inherit" className={classes.menuLink}>Teilnehmer</Link>
+                          <Link to={`${normalizedUrl}/teams`} component={RouterLink} color="inherit" className={classes.menuLink}>Teams</Link>
                         </Grid>
                       </Grid>
                     </Hidden>
