@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   createMarkerIconUrl,
   DinnerRoute,
@@ -24,7 +24,8 @@ import {LoadScript} from "@react-google-maps/api";
 import { cloneDeep } from 'lodash';
 import Alert from "@material-ui/lab/Alert";
 import {AlertTitle} from "@material-ui/lab";
-import {useGeoPosition} from "../GeoPositionHook";
+import {useGeoPosition} from "../hooks/GeoPositionHook";
+import {useDynamicFullscreenHeight} from "../hooks/DynamicFullscreenHeightHook";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -122,8 +123,7 @@ function TeamCardDetails({hostTeamMember, meal}: DinnerRouteTeam) {
   )
 }
 
-
-// https://github.com/JustFly1984/react-google-maps-api/tree/master/packages/react-google-maps-api
+// See https://github.com/JustFly1984/react-google-maps-api/tree/master/packages/react-google-maps-api
 function MapContainer({dinnerRoute}: DinnerRouteProps) {
 
   const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_KEY_JS || "";
@@ -164,8 +164,6 @@ interface DinnerRouteTeamMarkerInfoState {
   content?: React.ReactNode;
 }
 
-// TODO: Use https://github.com/rehooks/window-size/blob/master/index.js and https://github.com/tranbathanhtung/usePosition/blob/master/index.js for
-// dynamically calculating map height
 function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps) {
 
   const {getTeamName} = useTeamName();
@@ -178,6 +176,9 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
   const [dinnerRouteTeamMarkerInfoState, setDinnerRouteTeamMarkerInfoState] = React.useState<DinnerRouteTeamMarkerInfoState[]>(
       dinnerRouteTeams.map(dinnerRouteTeam => {return {dinnerRouteTeam}; })
   );
+
+  const mapContainerRef = useRef(null);
+  const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400);
 
   function isCurrentTeam(dinnerRouteTeam: DinnerRouteTeam) {
     return isSameDinnerRouteTeam(currentTeam, dinnerRouteTeam);
@@ -239,10 +240,10 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
 
   return (
       <>
-        <Box>
+        <div ref={mapContainerRef}>
           <LoadScript googleMapsApiKey={googleMapsApiKey}>
             <GoogleMap
-                mapContainerStyle={{height: '400px'}}
+                mapContainerStyle={{height: `${mapHeight}px`}}
                 center={centerPosition}
                 zoom={13}>
               { markerNodes }
@@ -262,7 +263,7 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
                   </InfoWindow> }
             </GoogleMap>
           </LoadScript>
-        </Box>
+        </div>
         { showWarnings &&  <Box mt={2}>
                               <Alert severity="warning" variant="outlined">
                                 <AlertTitle>{t('attention')}</AlertTitle>
