@@ -22,7 +22,7 @@ import {
   generateCancelledTeamMembersAsNumberArray,
   getFullname,
   hasEnoughSeats,
-  useDisclosure, Team, Meal, Participant, NoopFunction, CallbackHandler, RunningDinnerSessionData
+  useDisclosure, Team, Meal, Participant, NoopFunction, CallbackHandler, RunningDinnerSessionData, isSameEntity
 } from "@runningdinner/shared";
 import {useAdminContext} from "../AdminContext";
 
@@ -167,7 +167,7 @@ function TeamMember({teamMember, adminId, team, passedTeamMemberToCancel, onUpda
 
   const {isOpen: isTeamMemberCancelDialogOpen,
          close: closeTeamMemberCancelDialog,
-         open: openTeamMemberCancelDialog} = useDisclosure(!!passedTeamMemberToCancel, passedTeamMemberToCancel);
+         open: openTeamMemberCancelDialog} = useDisclosure(isSameEntity(passedTeamMemberToCancel, teamMember), passedTeamMemberToCancel);
 
   if (!teamMember) {
     return (
