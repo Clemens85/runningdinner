@@ -39,8 +39,10 @@ export interface TeamCancelDialogProps {
   onClose: (cancelledTeam?: Team) => void
 }
 
-interface TeamCancellationPreviewData extends TeamCancellationResult {
-  replacementParticipants?: Participant[]
+interface TeamCancellationPreviewData {
+  teamCancellationPreviewResult?: TeamCancellationResult
+  replacementParticipants: Participant[],
+  showTeamCancelPreview?: boolean
 }
 
 interface SelectableParticipant extends Participant {
@@ -51,8 +53,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}:
 
   const {t} = useTranslation(['admin', 'common']);
 
-  const [teamCancelPreviewData, setTeamCancelPreviewData] = useState<TeamCancellationPreviewData>();
-  const [replacementParticipants, setReplacementParticipants] = useState<SelectableParticipant[]>([]);
+  const [teamCancelPreviewData, setTeamCancelPreviewData] = useState<TeamCancellationPreviewData>({replacementParticipants: []});
 
   const {adminId} = runningDinner;
   const {showSuccess} = useCustomSnackbar();
@@ -72,7 +73,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}:
 
   const handlePerformCancellation = async() => {
     try {
-      const teamCancellationResult = await cancelTeamAsync(adminId, teamToCancel, replacementParticipants);
+      const teamCancellationResult = await cancelTeamAsync(adminId, teamToCancel, teamCancelPreviewData.replacementParticipants);
       const cancelledOrReplacedTeam = teamCancellationResult.team;
       const cancelledOrReplacedTeamName = getTeamName(cancelledOrReplacedTeam);
       if (cancelledOrReplacedTeam.status === CONSTANTS.TEAM_STATUS.REPLACED) {
@@ -87,37 +88,41 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}:
   };
 
   const handleReplacementParticipantSelectionChange = (incomingParticipant: SelectableParticipant, selected: boolean) => {
-    setReplacementParticipants(prevState => {
+    setTeamCancelPreviewData(prevState => {
       let result = cloneDeep(prevState);
-      const replacementParticipant = findEntityById(result, incomingParticipant.id);
+      let replacementParticipants = result.replacementParticipants;
+      const replacementParticipant = findEntityById(replacementParticipants, incomingParticipant.id);
       if (selected && !replacementParticipant) {
-        result.push(incomingParticipant);
+        replacementParticipants.push(incomingParticipant);
       }
       if (!selected && replacementParticipant) {
-        result = removeEntityFromList(result, replacementParticipant)!;
+        replacementParticipants = removeEntityFromList(replacementParticipants, replacementParticipant)!;
       }
       incomingParticipant.selected = selected;
+      result.replacementParticipants = replacementParticipants;
       return result;
     });
   };
 
   const handleShowPreview = async() => {
     try {
-      const teamCancellationPreviewResponse = await cancelTeamDryRunAsync(adminId, teamToCancel, replacementParticipants);
-      const teamCancellationPreviewData = {
-        ...teamCancellationPreviewResponse,
-        replacementParticipants
-      }
-      setTeamCancelPreviewData(teamCancellationPreviewData);
+      const teamCancellationPreviewResult = await cancelTeamDryRunAsync(adminId, teamToCancel, teamCancelPreviewData.replacementParticipants);
+      setTeamCancelPreviewData({
+        replacementParticipants: teamCancelPreviewData.replacementParticipants,
+        showTeamCancelPreview: true,
+        teamCancellationPreviewResult: teamCancellationPreviewResult
+      });
     } catch (e) {
       showHttpErrorDefaultNotification(e);
     }
   };
 
+  const { showTeamCancelPreview } = teamCancelPreviewData;
+
   return (
       <>
-        { teamCancelPreviewData ?
-              <TeamCancelPreview teamCancelPreview={teamCancelPreviewData}
+        { showTeamCancelPreview ?
+              <TeamCancelPreview teamCancelPreviewData={teamCancelPreviewData}
                                  onPerformCancellation={handlePerformCancellation}
                                  onCancelDialog={onClose} /> :
               <TeamCancelOverview runningDinner={runningDinner}
@@ -227,16 +232,17 @@ function TeamCancelOverviewContent({team, runningDinner, notAssignedParticipants
 
 
 interface TeamCancelPreviewProps {
-  teamCancelPreview: TeamCancellationPreviewData,
+  teamCancelPreviewData: TeamCancellationPreviewData,
   onPerformCancellation: CallbackHandler,
   onCancelDialog: CallbackHandler
 }
 
-function TeamCancelPreview({teamCancelPreview, onPerformCancellation, onCancelDialog}: TeamCancelPreviewProps) {
+function TeamCancelPreview({teamCancelPreviewData, onPerformCancellation, onCancelDialog}: TeamCancelPreviewProps) {
 
   const {t} = useTranslation(['admin', 'common']);
 
-  const {team} = teamCancelPreview;
+  const {teamCancellationPreviewResult, replacementParticipants} = teamCancelPreviewData;
+  const {team, removedParticipants, dinnerRouteMessagesSent, affectedHostTeams, affectedGuestTeams} = teamCancellationPreviewResult!;
   const {teamNumber} = team;
   const {teamName, getTeamName} = useTeamName(team);
 
@@ -266,10 +272,10 @@ function TeamCancelPreview({teamCancelPreview, onPerformCancellation, onCancelDi
             <SmallTitle i18n="admin:team_cancel_replaced_by_text" />
           </Grid>
           <Grid item xs={6}>
-            { renderParticipantList(teamCancelPreview.removedParticipants) }
+            { renderParticipantList(removedParticipants) }
           </Grid>
           <Grid item xs={6}>
-            { renderParticipantList(teamCancelPreview.replacementParticipants || []) }
+            { renderParticipantList(replacementParticipants) }
           </Grid>
         </Grid>
       </Box>
@@ -293,7 +299,6 @@ function TeamCancelPreview({teamCancelPreview, onPerformCancellation, onCancelDi
 
   const renderAffectedTeamsInfo = () => {
 
-    const {dinnerRouteMessagesSent} = teamCancelPreview;
     const cancelledButNoDinnerRouteMessagesSent = !dinnerRouteMessagesSent && !isReplacement;
     const showNotificationHint = dinnerRouteMessagesSent || cancelledButNoDinnerRouteMessagesSent;
 
@@ -306,10 +311,10 @@ function TeamCancelPreview({teamCancelPreview, onPerformCancellation, onCancelDi
           <SmallTitle i18n="admin:affected_guest_teams" />
         </Grid>
         <Grid item xs={6}>
-          { renderAffectedTeamsList(teamCancelPreview.affectedHostTeams) }
+          { renderAffectedTeamsList(affectedHostTeams) }
         </Grid>
         <Grid item xs={6}>
-          { renderAffectedTeamsList(teamCancelPreview.affectedGuestTeams) }
+          { renderAffectedTeamsList(affectedGuestTeams) }
         </Grid>
         {showNotificationHint &&
           <Box mt={2}>
@@ -323,7 +328,7 @@ function TeamCancelPreview({teamCancelPreview, onPerformCancellation, onCancelDi
   };
 
   const handleOk = () => {
-    if (isReplacement && isArrayEmpty(teamCancelPreview.replacementParticipants)) {
+    if (isReplacement && isArrayEmpty(replacementParticipants)) {
       throw new Error("Illegal state: replacementParticipants was empty");
     }
     onPerformCancellation();
