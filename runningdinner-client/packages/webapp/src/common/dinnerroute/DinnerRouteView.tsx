@@ -26,6 +26,7 @@ import Alert from "@material-ui/lab/Alert";
 import {AlertTitle} from "@material-ui/lab";
 import {useGeoPosition} from "../hooks/GeoPositionHook";
 import {useDynamicFullscreenHeight} from "../hooks/DynamicFullscreenHeightHook";
+import {Helmet} from "react-helmet-async";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -44,19 +45,24 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
   );
 
   return (
-      <SpacingGrid container>
-        { isStringNotEmpty(mealSpecificsOfGuestTeams) &&
-          <SpacingGrid item xs={12} mb={2}>
-            <Subtitle>{mealSpecificsOfGuestTeams}</Subtitle>
+      <>
+        <SpacingGrid container>
+          { isStringNotEmpty(mealSpecificsOfGuestTeams) &&
+            <SpacingGrid item xs={12} mb={2}>
+              <Subtitle>{mealSpecificsOfGuestTeams}</Subtitle>
+            </SpacingGrid>
+          }
+          <SpacingGrid container mb={2} spacing={4}>
+            {teamCardNodes}
           </SpacingGrid>
-        }
-        <SpacingGrid container mb={2} spacing={4}>
-          {teamCardNodes}
+          <SpacingGrid item xs={12} mb={2}>
+            <MapContainer dinnerRoute={dinnerRoute} />
+          </SpacingGrid>
         </SpacingGrid>
-        <SpacingGrid item xs={12} mb={2}>
-          <MapContainer dinnerRoute={dinnerRoute} />
-        </SpacingGrid>
-      </SpacingGrid>
+        <Helmet>
+          <title>Run Your Dinner - Dinner Route</title>
+        </Helmet>
+      </>
   );
 }
 
@@ -83,16 +89,21 @@ function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardPro
   const {t} = useTranslation(['common']);
   const isCancelled = dinnerRouteTeam.status === TeamStatus.CANCELLED;
 
+  let teamTitleColor = isCurrentTeam ? "primary" : "textSecondary";
+  if (isCancelled) {
+    teamTitleColor = "error";
+  }
+
   return (
     <>
-      <PageTitle color={isCurrentTeam ? "primary" : "textSecondary"}>
+      <PageTitle color={teamTitleColor}>
         ({positionInRoute}) {dinnerRouteTeam.meal.label}
         { isCurrentTeam && <Box component={"span"} pl={1}>
                               <Typography variant={"body2"} component={"span"}>{t('common:with_you')}</Typography>
                            </Box> }
       </PageTitle>
       <SpacingPaper elevation={3} p={2}>
-        {isCancelled && <Subtitle i18n={"cancelled"} />}
+        {isCancelled && <Subtitle i18n={"cancelled"} color="error" />}
         {!isCancelled && <TeamCardDetails {...dinnerRouteTeam} /> }
       </SpacingPaper>
     </>
