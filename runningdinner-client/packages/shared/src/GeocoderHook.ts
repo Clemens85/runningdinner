@@ -25,7 +25,8 @@ export function filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams: 
 }
 
 export function isGeocdingResultValidForAllTeams(dinnerRouteTeams: DinnerRouteTeam[]): boolean {
-  return dinnerRouteTeams.length === filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams).length;
+  const dinnerRouteTeamsNotCancelled = dinnerRouteTeams.filter(drt => drt.status !== TeamStatus.CANCELLED);
+  return dinnerRouteTeamsNotCancelled.length === filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeamsNotCancelled).length;
 }
 
 export function getCenterPosition(dinnerRouteTeams: DinnerRouteTeam[], currentTeam: DinnerRouteTeam): GeocodingResult | undefined {
@@ -72,7 +73,8 @@ export function useGeocoder(googleMapsApiKey: string, language = 'de') {
     const result = [];
     for (let i = 0; i < asyncResults.length; i++) {
       if (typeof asyncResults[i] === "undefined") {
-        result.push(teams[i]); // Cancelled team can not be geocded
+        result.push(teams[i]); // Cancelled team can not be geocoded
+        continue;
       }
       try {
         const geocodingResult = await asyncResults[i];

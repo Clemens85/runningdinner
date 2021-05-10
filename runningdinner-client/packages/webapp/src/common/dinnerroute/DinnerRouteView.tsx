@@ -5,7 +5,7 @@ import {
   DinnerRouteTeam,
   filterDinnerRouteTeamsForValidGeocdingResults,
   Fullname,
-  getCenterPosition, getFullname, isGeocdingResultValidForAllTeams,
+  getCenterPosition, getFullname, isGeocdingResultValidForAllTeams, isGeocodingResultValid,
   isSameDinnerRouteTeam,
   isStringNotEmpty,
   TeamStatus,
@@ -228,12 +228,20 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
     return resultArr.length > 0 ? resultArr[0] : undefined;
   }
 
-  const markerNodes = filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams)
-                        .map((dinnerRouteTeam, index) => <Marker position={dinnerRouteTeam.geocodingResult}
-                                                                                        title={`${getTeamName(dinnerRouteTeam)} (${getFullname(dinnerRouteTeam.hostTeamMember)})`}
-                                                                                        onClick={() => handleMarkerClick(dinnerRouteTeam)}
-                                                                                        key={dinnerRouteTeam.teamNumber}
-                                                                                        icon={createMarkerIconUrl(index + 1, isCurrentTeam(dinnerRouteTeam))}/>);
+  const markerNodes = [];
+  for (let index = 0; index < dinnerRouteTeams.length; index++) {
+    const dinnerRouteTeam = dinnerRouteTeams[index];
+    if (!isGeocodingResultValid(dinnerRouteTeam.geocodingResult)) {
+      continue;
+    }
+    markerNodes.push(
+        <Marker position={dinnerRouteTeam.geocodingResult}
+                title={`${getTeamName(dinnerRouteTeam)} (${getFullname(dinnerRouteTeam.hostTeamMember)})`}
+                onClick={() => handleMarkerClick(dinnerRouteTeam)}
+                key={dinnerRouteTeam.teamNumber}
+                icon={createMarkerIconUrl(index + 1, isCurrentTeam(dinnerRouteTeam))}/>
+    );
+  }
 
   const centerPosition = getCenterPosition(dinnerRouteTeams, currentTeam);
 
