@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) => ({
 export const StickyActionButton = ({onClick}) => {
   const classes = useStyles();
   return (
-      <Fab color="primary" aria-label="add" className={classes.createParticipantButton}>
-        <AddIcon onClick={onClick} />
+      <Fab color="primary" aria-label="add" className={classes.createParticipantButton} onClick={onClick}>
+        <AddIcon />
       </Fab>
   );
 };
