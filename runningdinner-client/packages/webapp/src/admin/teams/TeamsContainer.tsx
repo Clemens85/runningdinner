@@ -13,7 +13,6 @@ import {HTML5Backend} from "react-dnd-html5-backend";
 import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
 import {PageTitle} from "../../common/theme/typography/Tags";
 import {useQuery} from "../../common/hooks/QueryHook";
-import LinkIntern from "../../common/theme/LinkIntern";
 import {
   createTeamArrangementsAsync,
   exchangeEntityInList,
@@ -27,6 +26,9 @@ import {
 import {useAdminContext} from "../AdminContext";
 import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../AdminNavigationHook";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
+import DropdownButton from "../../common/theme/dropdown/DropdownButton";
+import DropdownButtonItem from "../../common/theme/dropdown/DropdownButtonItem";
+import useCommonStyles from "../../common/theme/CommonStyles";
 
 const TeamsContainer = () => {
 
@@ -66,10 +68,12 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
          open: openChangeTeamHostDialog,
          getIsOpenData: getTeamForChangeTeamHostDialog} = useDisclosure();
 
-  const {navigateToTeam, generateTeamMessagesPath} = useAdminNavigation();
+  const {navigateToTeam} = useAdminNavigation();
   const {t} = useTranslation('admin');
 
   const {showSuccess} = useCustomSnackbar();
+
+  const commonClasses = useCommonStyles();
 
   useEffect(() => {
     if (teamId) {
@@ -150,8 +154,8 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
           <Grid container spacing={2}>
             { showTeamsList &&
                 <>
-                  <Grid item xs={12} md={7}>
-                    <LinkIntern pathname={generateTeamMessagesPath(adminId)}>{t('messages_send_teams')}</LinkIntern>
+                  <Grid item xs={12} md={7} className={commonClasses.textAlignRight}>
+                    <SendTeamMessagsDropdown adminId={adminId} />
                   </Grid>
                   <Grid item xs={12} md={7}>
                     <TeamsList teams={teams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}
@@ -185,8 +189,25 @@ function TeamsTitle() {
   return (
       <>
         <Helmet><title>{t('headline_teams')}</title></Helmet>
-        <Box mb={2}><PageTitle>{t('headline_teams')}</PageTitle></Box>
+        <PageTitle>{t('headline_teams')}</PageTitle>
       </>
+  );
+}
+
+
+interface SendMessagesDropdownProps {
+  adminId: string;
+}
+function SendTeamMessagsDropdown({adminId}: SendMessagesDropdownProps) {
+
+  const {t} = useTranslation('admin');
+  const {navigateToTeamMessages} = useAdminNavigation();
+
+  return (
+    <DropdownButton label={t('messages_send_general')}>
+      <DropdownButtonItem onClick={() => navigateToTeamMessages(adminId)}>{t('messages_send_teams')}</DropdownButtonItem>
+      <DropdownButtonItem onClick={() => navigateToTeamMessages(adminId)}>{t('messages_send_dinnerroutes')}</DropdownButtonItem>
+    </DropdownButton>
   );
 }
 

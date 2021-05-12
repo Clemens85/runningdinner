@@ -49,6 +49,10 @@ export function useAdminNavigation() {
     history.push(generateTeamMemberCancellationPath(adminId, participant));
   }
 
+  function navigateToTeamMessages(adminId: string) {
+    history.push(generateTeamMessagesPath(adminId));
+  }
+
   return {
     generateTeamPath,
     navigateToTeam,
@@ -58,7 +62,8 @@ export function useAdminNavigation() {
     generateTeamMemberCancellationPath,
     navigateToTeamMemberCancellation,
     generateDashboardPath,
-    generateTeamDinnerRoutePath
+    generateTeamDinnerRoutePath,
+    navigateToTeamMessages
   };
 
 }

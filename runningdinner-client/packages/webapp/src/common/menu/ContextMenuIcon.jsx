@@ -2,7 +2,7 @@ import React from "react";
 import {IconButton, Menu, MenuItem} from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
-export default function VerticalMenuThreeDots({entries}) {
+export default function ContextMenuIcon({entries}) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);

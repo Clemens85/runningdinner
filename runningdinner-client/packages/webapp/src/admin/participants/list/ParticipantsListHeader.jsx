@@ -6,6 +6,8 @@ import {useTranslation} from "react-i18next";
 import {Link as RouterLink} from "react-router-dom";
 import {PageTitle} from "../../../common/theme/typography/Tags";
 import {useAdminNavigation} from "../../AdminNavigationHook";
+import Button from "@material-ui/core/Button";
+import useCommonStyles from "../../../common/theme/CommonStyles";
 
 export default function ParticipantsListHeader({adminId, numberOfParticipants, searchableParticipants, onParticipantSearchChanged}) {
 
@@ -14,6 +16,8 @@ export default function ParticipantsListHeader({adminId, numberOfParticipants, s
 
   const {t} = useTranslation(['admin', 'common']);
   const {generateParticipantMessagesPath} = useAdminNavigation();
+
+  const classes = useCommonStyles();
 
   function handleSearchTextChange(event) {
     const newSearchText = event.target.value;
@@ -48,8 +52,10 @@ export default function ParticipantsListHeader({adminId, numberOfParticipants, s
             <Grid item xs={12} sm={5} lg={2}>
               <Typography variant={"subtitle1"}>{numberOfParticipants}</Typography>
             </Grid>
-            <Grid item xs={12} sm={12} lg={2}>
-              <Link to={generateParticipantMessagesPath(adminId)} component={RouterLink} color="primary">{t('messages_send_participants')}</Link>
+            <Grid item xs={12} sm={12} lg={2} className={classes.textAlignRight}>
+              <Button color={"primary"} variant={"outlined"}
+                      to={generateParticipantMessagesPath(adminId)}
+                      component={RouterLink}>{t('messages_send_participants')}</Button>
             </Grid>
           </Grid>
         </Box>

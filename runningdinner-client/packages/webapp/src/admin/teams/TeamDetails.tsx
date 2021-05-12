@@ -7,7 +7,7 @@ import TeamSchedule from "./TeamSchedule";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import LinkAction from "../../common/theme/LinkAction";
 import {TeamMemberCancelDialog, TeamMemberCancelDialogResult} from "./cancellation/TeamMemberCancelDialog";
-import VerticalMenuThreeDots from "../../common/menu/VerticalMenuThreeDots";
+import ContextMenuIcon from "../../common/menu/ContextMenuIcon";
 import {CancelledTeamMember} from "./CancelledTeamMember";
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import {Span} from "../../common/theme/typography/Tags";
@@ -98,7 +98,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
               <MealAtTime {...meal} />
             </Grid>
             <Grid item xs={1}>
-              <VerticalMenuThreeDots entries={actionMenuItems}/>
+              <ContextMenuIcon entries={actionMenuItems}/>
             </Grid>
             { isReplaced &&
               <Grid item xs={12}>
