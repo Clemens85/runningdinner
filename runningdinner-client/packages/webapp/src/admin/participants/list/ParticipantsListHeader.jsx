@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { Typography, Grid, TextField, Box, InputAdornment, Link } from "@material-ui/core";
+import { Typography, Grid, TextField, Box, InputAdornment } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
 import {useDebounce, isStringEmpty, searchParticipants} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";

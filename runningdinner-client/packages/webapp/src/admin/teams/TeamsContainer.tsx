@@ -1,5 +1,5 @@
 import {useParams} from "react-router-dom";
-import {Box, Grid, useMediaQuery, useTheme} from "@material-ui/core";
+import {Box, Grid} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import TeamsNotExisting from "./TeamsNotExisting";
@@ -29,6 +29,7 @@ import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 import DropdownButton from "../../common/theme/dropdown/DropdownButton";
 import DropdownButtonItem from "../../common/theme/dropdown/DropdownButtonItem";
 import useCommonStyles from "../../common/theme/CommonStyles";
+import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 
 const TeamsContainer = () => {
 
@@ -57,9 +58,6 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
 
   const {runningDinner} = useAdminContext();
 
-  const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
-
   const [teams, setTeams] = useState(incomingTeams);
   const [selectedTeam, setSelectedTeam] = useState<Team>();
 
@@ -75,6 +73,8 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
 
   const commonClasses = useCommonStyles();
 
+  const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
+
   useEffect(() => {
     if (teamId) {
       const foundTeam = findEntityById(teams, teamId);
@@ -82,10 +82,10 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
         openTeamDetails(foundTeam);
       }
     }
+    // eslint-disable-next-line
   }, [teamId, teams, selectedTeam]);
 
   const { adminId } = runningDinner;
-  const showTeamsList = !isSmallDevice || !selectedTeam;
   const teamsExisting = teams.length > 0;
 
   function handleTeamClick(team: Team) {
@@ -94,6 +94,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
 
   function openTeamDetails(team: Team) {
     setSelectedTeam(team);
+    setShowDetailsView(true);
   }
 
   const handleGenerateTeams = async () => {
@@ -152,7 +153,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
         <Box>
           <TeamsTitle/>
           <Grid container spacing={2}>
-            { showTeamsList &&
+            { showListView &&
                 <>
                   <Grid item xs={12} md={7} className={commonClasses.textAlignRight}>
                     <SendTeamMessagsDropdown adminId={adminId} />
@@ -164,11 +165,14 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
                 </>
             }
             <Grid item xs={12} md={5}>
-              { selectedTeam
-                  ? <TeamDetails team={selectedTeam}
+              { showDetailsView && selectedTeam
+                  ? <>
+                      { showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}
+                      <TeamDetails team={selectedTeam}
                                  onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
                                  teamMemberIdToCancel={teamMemberIdToCancel}
                                  onUpdateTeamState={updateTeamStateInList} />
+                    </>
                   : <EmptyDetails labelI18n='teams_no_selection' />
               }
             </Grid>
