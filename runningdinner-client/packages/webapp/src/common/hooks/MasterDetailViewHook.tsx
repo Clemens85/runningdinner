@@ -31,7 +31,7 @@ export function BackToListButton({onBackToList}: BackToListButtonProps) {
   const {t} = useTranslation('common');
 
   return (
-      <Box mb={1} mt={-2}>
+      <Box mb={1} mt={1}>
         <Button startIcon={<ChevronLeftIcon />}
                 onClick={onBackToList}>
           {t('back')}

@@ -16,6 +16,7 @@ import {
   CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION
 } from "./teampartnerwish/TeamPartnerWishAction";
 import {findEntityById, findParticipantsAsync, findTeamPartnerWishInfoAsync, useDisclosure} from "@runningdinner/shared";
+import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 
 export default function ParticipantsContainer({runningDinner}) {
 
@@ -38,7 +39,6 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
 
   const { adminId, sessionData } = runningDinner;
 
-  const [showParticipantForm, setShowParticipantForm] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState();
   const [participants, setParticipants] = useState(incomingParticipants);
   const [hasSearchText, setHasSearchText] = useState(false);
@@ -48,8 +48,7 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
           open: openTeamPartnerWishDialog,
           getIsOpenData: getTeamPartnerWishInfo } = useDisclosure(false);
 
-  const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
+  const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
 
   useEffect(() => {
     setParticipants(incomingParticipants);
@@ -63,12 +62,12 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
 
   function editParticipant(participant) {
     setSelectedParticipant(participant);
-    setShowParticipantForm(true);
+    setShowDetailsView(true);
   }
 
   function onNewParticipant() {
     setSelectedParticipant(null);
-    setShowParticipantForm(true);
+    setShowDetailsView(true);
     window.scrollTo(0, 0);
   }
 
@@ -98,7 +97,7 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
     handleParticipantChange();
   }
   function handleParticipantChange() {
-    setShowParticipantForm(false);
+    setShowDetailsView(false);
     reFetch();
   }
 
@@ -112,24 +111,20 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
                                   <ParticipantsListInfo participants={participants} runningDinnerSessionData={sessionData} hasSearchText={hasSearchText}/>
                                </Box>;
 
-  const showParticipantsList = !isSmallDevice || !showParticipantForm;
-
   return (
       <>
         <Helmet>
           <title>{t('common:participants')}</title>
         </Helmet>
-        <Box mb={2}>
-          { !showParticipantsList
-            ? <Button onClick={() => setShowParticipantForm(false)}>{t('common:back')}</Button>
+        { showBackToListViewButton
+            ? <BackToListButton onBackToList={() => setShowDetailsView(false)} />
             : <ParticipantsListHeader adminId={adminId}
                                       numberOfParticipants={numberOfParticipants}
                                       searchableParticipants={incomingParticipants}
                                       onParticipantSearchChanged={handleParticipantSearchChange} />
-          }
-        </Box>
+        }
         <Grid container spacing={2}>
-          { showParticipantsList &&
+          { showListView &&
             <Grid item xs={12} md={7}>
               <ParticipantsList participantsListInfo={participantsListInfo}
                                 participants={participants}
@@ -139,7 +134,7 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
             </Grid>
           }
           <Grid item xs={12} md={5}>
-            { showParticipantForm
+            { showDetailsView
                 ? <ParticipantForm participant={selectedParticipant}
                                    adminId={adminId}
                                    onParticipantSaved={onParticipantSaved}

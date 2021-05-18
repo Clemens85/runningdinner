@@ -151,7 +151,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   return (
       <DndProvider backend={HTML5Backend}>
         <Box>
-          <TeamsTitle/>
+          { !showBackToListViewButton && <TeamsTitle/> }
           <Grid container spacing={2}>
             { showListView &&
                 <>

@@ -36,7 +36,7 @@ export default function ParticipantsListHeader({adminId, numberOfParticipants, s
   }, [debouncedSearchText, searchableParticipants]);
 
   return (
-      <Box component={"div"}>
+      <Box component={"div"} mb={2}>
         <PageTitle>
           {t('common:headline_participantlist')}
         </PageTitle>
