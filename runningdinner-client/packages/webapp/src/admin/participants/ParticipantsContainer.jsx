@@ -3,7 +3,7 @@ import ParticipantsListHeader from "./list/ParticipantsListHeader";
 import ParticipantsList from "./list/ParticipantsList";
 import {useParams} from "react-router-dom";
 import ParticipantForm from "./form/ParticipantForm";
-import { Grid, Box, useMediaQuery, useTheme, Button } from "@material-ui/core";
+import { Grid, Box } from "@material-ui/core";
 import {StickyActionButton} from "../../common/theme/StickyActionButton";
 import NumberOfParticipants from "./list/NumberOfParticipants";
 import ParticipantsListInfo from "./list/ParticipantsListInfo";
@@ -58,6 +58,7 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
         editParticipant(foundSelectedParticipant);
       }
     }
+    // eslint-disable-next-line
   }, [incomingParticipants, selectedParticipantId]);
 
   function editParticipant(participant) {
