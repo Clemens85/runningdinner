@@ -79,8 +79,8 @@ export const AdminMenu = ({url}: AdminMenuProps) => {
                       <MobileNavigation baseUrl={normalizedUrl}/>
                     </Grid>
                   </Hidden>
-                  <Grid item>
-                    <Hidden xsDown>
+                  <Hidden xsDown>
+                    <Grid item>
                       <Grid container alignItems={"center"}>
                         <Grid item>
                           <Typography variant="h6" className={classes.title}>Run Your Dinner Administration</Typography>
@@ -89,8 +89,8 @@ export const AdminMenu = ({url}: AdminMenuProps) => {
                           { navigationItems.map(navigationItem => createLink(navigationItem)) }
                         </Grid>
                       </Grid>
-                    </Hidden>
-                  </Grid>
+                    </Grid>
+                  </Hidden>
                 </Grid>
               </Grid>
               <Grid item>
