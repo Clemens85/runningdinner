@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {makeStyles, Grid, Paper, Box, LinearProgress } from "@material-ui/core";
+import { Grid, Paper, Box, LinearProgress } from "@material-ui/core";
 import ParticipantFormHeadline from "./ParticipantFormHeadline";
 import PersonalDataSection from "./PersonalDataSection";
 import AddressSection from "./AddressSection";
@@ -21,12 +21,7 @@ import {useTranslation} from "react-i18next";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
-
-const useStyles = makeStyles((theme) => ({
-  buttonSpacingLeft: {
-    marginLeft: theme.spacing(2)
-  }
-}));
+import useCommonStyles from "../../../common/theme/CommonStyles";
 
 export interface ParticipantFormProps {
   participant: Participant;
@@ -43,7 +38,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const classes = useStyles();
+  const classes = useCommonStyles();
   const {showSuccess} = useCustomSnackbar();
 
   const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
@@ -112,7 +107,9 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
                   <ParticipantFormHeadline />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  <FillWithExampleDataLink />
+                  <div className={classes.textAlignRight}>
+                    <FillWithExampleDataLink />
+                  </div>
                 </Grid>
               </Grid>
 
@@ -134,7 +131,8 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
               <Grid container justify={"flex-end"}>
                 <Grid item>
                   { showDeleteBtn && <SecondaryButton onClick={() => setOpenDeleteDialog(true)}>{t('delete')}</SecondaryButton> }
-                  <PrimaryButton onClick={handleSubmit(updateParticipant)} disabled={isSubmitting} size={"large"} className={classes.buttonSpacingLeft}>
+                  <PrimaryButton onClick={handleSubmit(updateParticipant)} disabled={isSubmitting} size={"large"}
+                                 className={classes.buttonSpacingLeft}>
                     {t('save')}
                   </PrimaryButton>
                 </Grid>

@@ -12,6 +12,9 @@ const useCommonStyles = makeStyles((theme) => ({
   },
   fullWidth: {
     width: "100%"
+  },
+  buttonSpacingLeft: {
+    marginLeft: theme.spacing(2)
   }
 }));
 
