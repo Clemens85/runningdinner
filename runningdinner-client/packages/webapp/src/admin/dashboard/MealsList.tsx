@@ -24,7 +24,7 @@ export interface MealsListProps {
 
 export default function MealsList({meals, adminId, onRunningDinnerUpdate}: MealsListProps) {
 
-  const {showSuccess, showError} = useCustomSnackbar();
+  const {showSuccess} = useCustomSnackbar();
   const {loading, dashboardAdminActivities} = useDashboardState();
   const dispatch = useDashboardDispatch();
 
@@ -54,10 +54,6 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate}: Meals
   function handleUpdateSuccess() {
     setEditMealsDialogOpen(false);
     showSuccess('Zeitplan erfolgreich gespeichert!');
-  }
-  function handleUpdateError(errorResponse: Error) {
-    const errorReason = errorResponse.message ? errorResponse.message : 'Unknown';
-    showError(`Fehler beim Speichern: ${errorReason}`);
   }
 
   return (
