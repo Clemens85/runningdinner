@@ -9,11 +9,12 @@ import {
   CallbackHandler,
   findAdminActivitiesAction,
   Meal,
-  updateMealTimesAsync,
+  updateMealTimesAsync, useBackendIssueHandler,
   useDashboardDispatch,
   useDashboardState
 } from "@runningdinner/shared";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
+import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 
 export interface MealsListProps {
   meals: Meal[];
@@ -35,12 +36,19 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate}: Meals
 
   const {t} = useTranslation(['admin', 'common']);
 
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'admin'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+
   function updateMeals(mealsToUpdate: Meal[]) {
       updateMealTimesAsync(adminId, mealsToUpdate)
         .then(updatedRunningDinner => onRunningDinnerUpdate(updatedRunningDinner))
         .then(handleUpdateSuccess)
         .then(() => findAdminActivitiesAction(adminId, dispatch))
-        .catch((errorResponse) => handleUpdateError(errorResponse));
+        .catch((errorResponse) => showHttpErrorDefaultNotification(errorResponse));
   }
 
   function handleUpdateSuccess() {

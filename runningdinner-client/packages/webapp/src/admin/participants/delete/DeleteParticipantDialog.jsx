@@ -13,13 +13,19 @@ import {
 } from "@runningdinner/shared";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
+import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 
 export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) => {
 
   const {t} = useTranslation(['admin', 'common']);
   const {showSuccess} = useCustomSnackbar();
-  const {getIssuesUntranslated} = useBackendIssueHandler();
   const {navigateToTeamMemberCancellation} = useAdminNavigation();
+  const {getIssuesUntranslated, getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'admin'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const deleteParticipant = async () => {
     try {
@@ -32,6 +38,7 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
         onClose(null);
         cancelTeamMember(adminId, participant);
       }
+      showHttpErrorDefaultNotification(e);
     }
   };
 
