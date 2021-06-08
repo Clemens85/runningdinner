@@ -6,6 +6,7 @@ import { Grid}  from "@material-ui/core";
 import Checklist from "./Checklist";
 import {useAdminContext} from "../AdminContext";
 import {findAdminActivitiesAction, useDashboardDispatch} from "@runningdinner/shared";
+import {Helmet} from "react-helmet-async";
 
 export default function Dashboard(props) {
 
@@ -37,6 +38,9 @@ export default function Dashboard(props) {
             <Checklist runningDinner={runningDinner} />
           </Grid>
         </Grid>
+        <Helmet>
+          <title>Dashboard - Running Dinner Administration</title>
+        </Helmet>
       </div>
   );
 }
