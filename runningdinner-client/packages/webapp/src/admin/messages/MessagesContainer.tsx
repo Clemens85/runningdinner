@@ -35,7 +35,6 @@ import {
 import {enhanceMessageObjectWithCustomSelectedRecipients} from "./MessagesContext";
 import {Helmet} from "react-helmet-async";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
-import {yupResolver} from "@hookform/resolvers/yup";
 
 
 export interface BaseMessagesProps {
@@ -97,7 +96,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, validatio
   const formMethods = useForm({
     // @ts-ignore
     defaultValues: exampleMessage,
-    resolver: yupResolver(validationSchema),
+    // resolver: yupResolver(validationSchema), // Currently I use only backend validation...
     mode: 'onBlur'
   });
   const { handleSubmit, clearErrors, setError, formState } = formMethods;

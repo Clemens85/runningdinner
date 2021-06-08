@@ -11,14 +11,14 @@ import {
   getFullname,
   isNewEntity,
   mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant,
-  PARTICIPANT_VALIDATION_SCHEMA, saveParticipantAsync, useBackendIssueHandler
+  saveParticipantAsync,
+  useBackendIssueHandler
 } from "@runningdinner/shared";
 import {PrimaryButton} from "../../../common/theme/PrimaryButton";
 import {DeleteParticipantDialog} from "../delete/DeleteParticipantDialog";
 import {FormProvider, useForm} from "react-hook-form";
 import {useTranslation} from "react-i18next";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
-import {yupResolver} from "@hookform/resolvers/yup";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 
@@ -55,7 +55,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
   const formMethods = useForm({
     defaultValues: newEmptyParticipantInstance(),
-    resolver: yupResolver(PARTICIPANT_VALIDATION_SCHEMA),
+    // resolver: yupResolver(PARTICIPANT_VALIDATION_SCHEMA), // Currently I use only backend validation...
     mode: 'onTouched'
   });
   const { handleSubmit, clearErrors, setError, formState, reset } = formMethods;

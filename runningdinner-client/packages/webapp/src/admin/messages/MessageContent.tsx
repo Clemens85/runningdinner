@@ -16,7 +16,7 @@ export interface MessageContentProps {
 
 export default function MessageContent({templates, onMessageContentChange, name, label, rows, helperText}: MessageContentProps) {
 
-  const { setValue, register } = useFormContext();
+  const { setValue, register, errors } = useFormContext();
 
   const contentRef = useRef();
   const [cursorPosition, setCursorPosition] = useState(-1);
@@ -54,6 +54,10 @@ export default function MessageContent({templates, onMessageContentChange, name,
     setCursorPosition(updatedCursorPosition);
   }, 100);
 
+
+  const hasErrors = errors[name] ? true : false;
+  const helperTextToDisplay = hasErrors ? errors[name].message : helperText;
+
   return (
       <Box mt={3}>
 
@@ -69,7 +73,8 @@ export default function MessageContent({templates, onMessageContentChange, name,
           onChange={handleMessageContentChange}
           required
           variant="filled"
-          helperText={helperText}
+          helperText={helperTextToDisplay}
+          error={hasErrors}
           multiline
           rows={rows}
           name={name}
