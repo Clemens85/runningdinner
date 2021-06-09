@@ -17,3 +17,6 @@ grunt default --GOOGLE_MAPS_KEY_JS=xxx
 
 Alternatively the environment variable GOOGLE_MAPS_KEY_JS can be set, and a call to ``npm run build`` will just pick it up.
 
+** Local Development Mail files **
+
+Specify `-DMailMockDir=yourfolder` for getting mail files into a specific folder.
