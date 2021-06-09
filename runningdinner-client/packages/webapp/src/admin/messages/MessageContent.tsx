@@ -19,27 +19,35 @@ export default function MessageContent({templates, onMessageContentChange, name,
   const { setValue, register, errors } = useFormContext();
 
   const contentRef = useRef();
-  const [cursorPosition, setCursorPosition] = useState(-1);
 
   function handleTemplateClick(template: string) {
 
-    // @ts-ignore
-    const currentMessageContent = contentRef?.current?.value;
+    const inputField = getInputField();
+    if (!inputField) {
+      return;
+    }
+
+    const currentMessageContent = inputField.value;
+    const cursorPosition = getCurrentCursorPosition();
+
+    let newCursorPosition;
 
     let updatedValue;
     if (cursorPosition < 0) {
       updatedValue = currentMessageContent + template;
-      setCursorPosition(updatedValue.length);
-      return;
+      newCursorPosition = updatedValue.length;
     } else {
       let textBeforeCursorPosition = currentMessageContent.substring(0, cursorPosition);
       let textAfterCursorPosition = currentMessageContent.substring(cursorPosition, currentMessageContent.length);
       updatedValue = textBeforeCursorPosition + template + textAfterCursorPosition;
-      setCursorPosition(cursorPosition + template.length);
+      newCursorPosition = template.length + cursorPosition;
     }
 
     setValue(name, updatedValue);
     onMessageContentChange(updatedValue);
+
+    inputField.focus();
+    inputField.selectionEnd = newCursorPosition; // Add one space, so that user can straight continue typing
   }
 
   const handleMessageContentChange = (changeEvt: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,12 +55,24 @@ export default function MessageContent({templates, onMessageContentChange, name,
     onMessageContentChange(changedValue);
   };
 
+  /**
+   * Returns -1 if cursor is not set in inputField or inputField has no focus, otherwise the current cursor position
+   */
+  const getCurrentCursorPosition = (): number => {
+    const inputField = getInputField();
+    if (!inputField) {
+      return -1;
+    }
+    return /*inputField === document.activeElement && */inputField.selectionStart !== null ? inputField.selectionStart : -1;
+  };
 
-  const handlePositionUpdate = debounce(() => {
-    // @ts-ignore
-    const updatedCursorPosition = contentRef?.current?.selectionStart;
-    setCursorPosition(updatedCursorPosition);
-  }, 100);
+  const getInputField = (): HTMLInputElement | undefined => {
+    if (contentRef && contentRef.current) {
+      // @ts-ignore
+      return contentRef.current as HTMLInputElement;
+    }
+    return undefined;
+  };
 
 
   const hasErrors = errors[name] ? true : false;
@@ -68,8 +88,6 @@ export default function MessageContent({templates, onMessageContentChange, name,
                                 contentRef.current = ref;
                             }}
           fullWidth
-          onClick={handlePositionUpdate}
-          onKeyDown={handlePositionUpdate}
           onChange={handleMessageContentChange}
           required
           variant="filled"
