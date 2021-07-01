@@ -1,16 +1,22 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import { TableContainer, Paper, Table, TableBody, Grid, Box, }from "@material-ui/core";
 import ParticipantRow from "./ParticipantRow";
-import {AdminContext} from "../../AdminContext";
 import {Alert, AlertTitle} from "@material-ui/lab";
-import {getAssignableParticipants, getNotAssignableParticipants, getParticipantsOrganizedInTeams, isSameEntity, useNumberOfParticipants} from "@runningdinner/shared";
+import {
+  getAssignableParticipants,
+  getNotAssignableParticipants,
+  getParticipantsOrganizedInTeams, getRunningDinnerMandatorySelector,
+  isSameEntity,
+  useAdminSelector,
+  useNumberOfParticipants
+} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 
 export default function ParticipantsList({participants, selectedParticipant, participantsListInfo, hasSearchText, onClick}) {
 
   const {t} = useTranslation('admin');
 
-  const { runningDinner } = useContext(AdminContext);
+  const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
   const { sessionData } = runningDinner;
   const { numberOfParticipantsWaitingList, hasNotEnoughtParticipantsForDinner } = useNumberOfParticipants(participants, sessionData);
 

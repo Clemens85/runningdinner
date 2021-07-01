@@ -8,7 +8,7 @@ import {
   BaseEntity,
   BaseMessage,
   BaseTeamMessage,
-  MessageJob,
+  MessageJob, MessageJobOverview,
   MessageTask,
   MessageType,
   Participant,
@@ -23,6 +23,12 @@ import {CONSTANTS} from "../Constants";
 
 export async function findMessageJobsByAdminIdAndTypeAsync(adminId: string, messageType: MessageType): Promise<MessageJob> {
   const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs?messageType=${messageType}`);
+  const response = await axios.get(url);
+  return response.data;
+}
+
+export async function findMessageJobOverviewByAdminIdAndMessageJobId(adminId: string, messageJobId: string): Promise<MessageJobOverview> {
+  const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs/${messageJobId}/overview`);
   const response = await axios.get(url);
   return response.data;
 }

@@ -1,16 +1,20 @@
 import {Link} from "@material-ui/core";
 import {Link as RouterLink} from "react-router-dom";
 import React from "react";
-import {Parent} from "@runningdinner/shared";
+import {isStringEmpty, Parent} from "@runningdinner/shared";
 
 export interface LinkInternProps extends Parent {
   pathname: string;
+  color?: string;
 }
 
-export default function LinkIntern({pathname, children}: LinkInternProps) {
+export default function LinkIntern({pathname, color, children}: LinkInternProps) {
+
+  const colorToSet = isStringEmpty(color) ? "primary" : color;
 
   return (
-      <Link to={{ pathname: pathname}} component={RouterLink} color="primary">
+      // @ts-ignore
+      <Link to={{ pathname: pathname}} component={RouterLink} color={colorToSet}>
         {children}
       </Link>
   );

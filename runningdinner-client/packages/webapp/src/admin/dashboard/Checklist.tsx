@@ -13,10 +13,9 @@ import {
   Typography
 } from "@material-ui/core";
 import {
+  BaseRunningDinnerProps, DashboardAdminActivities,
   getDaysFromTodayTillEndOfRegistration,
   isClosedDinner,
-  RunningDinner,
-  useDashboardState
 } from "@runningdinner/shared";
 import DoneIcon from '@material-ui/icons/Done';
 import SaveIcon from '@material-ui/icons/Save';
@@ -25,20 +24,15 @@ import GroupIcon from '@material-ui/icons/Group';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import {useTranslation} from "react-i18next";
 
-export interface ChecklistProps {
-  runningDinner: RunningDinner;
+export interface ChecklistProps extends BaseRunningDinnerProps {
+  dashboardAdminActivities: DashboardAdminActivities;
 }
 
 export default function Checklist(props: ChecklistProps) {
 
   const {t} = useTranslation('admin');
 
-  const {runningDinner} = props;
-
-  const {loading, dashboardAdminActivities} = useDashboardState();
-  if (loading || !dashboardAdminActivities) {
-    return null;
-  }
+  const {runningDinner, dashboardAdminActivities} = props;
 
   const { dinnerCreated, dinnerRouteMessagesSent, endOfRegistrationDate, participantMessagesSent, teamArrangementsCreated, teamMessagesSent } = dashboardAdminActivities.checkList;
   const checklistItems = [];

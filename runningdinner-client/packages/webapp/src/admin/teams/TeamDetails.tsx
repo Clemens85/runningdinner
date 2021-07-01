@@ -22,9 +22,16 @@ import {
   generateCancelledTeamMembersAsNumberArray,
   getFullname,
   hasEnoughSeats,
-  useDisclosure, Team, Meal, Participant, NoopFunction, CallbackHandler, RunningDinnerSessionData, isSameEntity
+  useDisclosure,
+  Team,
+  Meal,
+  Participant,
+  NoopFunction,
+  CallbackHandler,
+  RunningDinnerSessionData,
+  isSameEntity,
+  useAdminSelector, getRunningDinnerMandatorySelector, BaseAdminIdProps
 } from "@runningdinner/shared";
-import {useAdminContext} from "../AdminContext";
 
 export interface TeamDetailsProps {
   team: Team;
@@ -36,7 +43,7 @@ export interface TeamDetailsProps {
 export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTeamHostDialog, onUpdateTeamState}: TeamDetailsProps) {
 
   const {t} = useTranslation('common');
-  const {runningDinner} = useAdminContext();
+  const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
 
   const {adminId, sessionData} = runningDinner;
   const {teamMembers, meal} = team;
@@ -150,16 +157,13 @@ function MealAtTime({label, time}: Meal) {
   );
 }
 
-interface TeamMemberProps {
+interface TeamMemberProps extends BaseAdminIdProps {
   teamMember?: Participant;
-  adminId: string;
   team: Team;
   passedTeamMemberToCancel?: Participant;
   onUpdateTeamState: (team: Team) => unknown;
   onOpenTeamCancelDialog: CallbackHandler;
 }
-
-
 
 function TeamMember({teamMember, adminId, team, passedTeamMemberToCancel, onUpdateTeamState, onOpenTeamCancelDialog}: TeamMemberProps) {
 

@@ -61,6 +61,13 @@ export function formatLocalDateWithSeconds(date: Date | undefined, locale?: stri
   return format(date, 'dd.MM.yyyy HH:mm:ss');
 }
 
+export function getShortFormattedMonth(date: Date) {
+  return format(date, "MMM");
+}
+export function getDayOfMonthInNumbers(date: Date) {
+  return format(date, "dd");
+}
+
 export function toLocalDateQueryString(date: Date | undefined) {
   if (!date) {
     return '';

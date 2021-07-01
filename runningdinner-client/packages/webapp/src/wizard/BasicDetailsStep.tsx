@@ -2,7 +2,13 @@ import React from 'react';
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {Controller, FormProvider, useForm} from "react-hook-form";
-import {FetchStatus, getByValue, OptionsNavigationStep, RunningDinnerBasicDetails, useBackendIssueHandler, validateBasicDetails} from "@runningdinner/shared";
+import {
+  getByValue,
+  OptionsNavigationStep,
+  RunningDinnerBasicDetails,
+  useBackendIssueHandler,
+  validateBasicDetails
+} from "@runningdinner/shared";
 import {useWizardSelector} from "@runningdinner/shared";
 import {getRegistrationTypesSelector, getRunningDinnerBasicDetailsSelector, setNextNavigationStep, setPreviousNavigationStep, updateBasicDetails} from '@runningdinner/shared';
 import Grid from "@material-ui/core/Grid";
@@ -21,7 +27,7 @@ export default function BasicDetailsStep() {
   const {t} = useTranslation(['wizard', 'common']);
 
   const basicDetails = useWizardSelector(getRunningDinnerBasicDetailsSelector);
-  const {registrationTypes, status} = useWizardSelector(getRegistrationTypesSelector);
+  const {registrationTypes} = useWizardSelector(getRegistrationTypesSelector);
 
   const dispatch = useDispatch();
 
@@ -63,7 +69,7 @@ export default function BasicDetailsStep() {
     }
   };
 
-  if (status !== FetchStatus.SUCCEEDED) {
+  if (!registrationTypes) {
     return null;
   }
 

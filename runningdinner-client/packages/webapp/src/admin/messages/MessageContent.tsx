@@ -1,9 +1,8 @@
-import React, {useRef, useState} from 'react'
+import React, {useRef} from 'react'
 import Box from "@material-ui/core/Box";
 import MessageTemplates from "./MessageTemplates";
 import { useFormContext } from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
-import debounce from 'lodash/debounce';
 
 export interface MessageContentProps {
   templates: string[];

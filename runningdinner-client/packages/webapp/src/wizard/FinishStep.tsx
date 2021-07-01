@@ -1,8 +1,7 @@
 import React from 'react';
 import {Trans, useTranslation} from "react-i18next";
-import {useWizardSelector} from "@runningdinner/shared";
+import { getRunningDinnerSelector, useWizardSelector} from "@runningdinner/shared";
 import {
-  getRunningDinnerSelector,
   isDemoDinnerSelector,
   setNextNavigationStep,
   setPreviousNavigationStep,

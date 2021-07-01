@@ -1,24 +1,22 @@
 import React from 'react';
-import {useAdminContext} from "../AdminContext";
 import {
   CONSTANTS,
   isAcknowledgeRequired,
   isNotificationRequired,
   formatLocalDateWithSeconds,
-  useDisclosure
+  useDisclosure, useAdminSelector, getRunningDinnerFetchSelector, RunningDinner
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {Box} from "@material-ui/core";
 import AlertCentered from "../../common/theme/AlertCentered";
+import {FetchData} from "@runningdinner/shared/src/redux";
 
 export default function AdminNotificationBar() {
 
-  const {runningDinner} = useAdminContext();
-  const {cancellationDate, acknowledgedDate, runningDinnerType} = runningDinner;
-
-  const notificationRequired = isNotificationRequired(runningDinner);
-
   const {t} = useTranslation('admin');
+
+  const runningDinnerFetchData = useAdminSelector(getRunningDinnerFetchSelector);
+  const notificationRequired = isNotificationRequiredForFetchedRunningDinner(runningDinnerFetchData);
 
   // For now it is good enough to hold the state just locally (=> alert will disappear as long as user do not refresh browser)
   const {isOpen, close} = useDisclosure(notificationRequired);
@@ -27,9 +25,12 @@ export default function AdminNotificationBar() {
     return null;
   }
 
+  const runningDinner = runningDinnerFetchData.data!;
+  const {cancellationDate, acknowledgedDate, runningDinnerType} = runningDinner;
+
   let notificationMessage = [];
   if (cancellationDate) {
-    var cancellationDateFormatted = formatLocalDateWithSeconds(cancellationDate);
+    const cancellationDateFormatted = formatLocalDateWithSeconds(cancellationDate);
     notificationMessage.push(<Box key="cancellationDate">{t('notification_dinner_cancellation_text', { cancellationDate: cancellationDateFormatted })}</Box>);
   } else if (isAcknowledgeRequired(runningDinner)) {
     notificationMessage.push(<Box key="acknowledgedDate">{t("notification_dinner_acknowledge_required")}</Box>);
@@ -49,3 +50,7 @@ export default function AdminNotificationBar() {
       </>
   );
 };
+
+function isNotificationRequiredForFetchedRunningDinner(runningDinnerFetchData: FetchData<RunningDinner>) {
+  return runningDinnerFetchData.data && isNotificationRequired(runningDinnerFetchData.data);
+}

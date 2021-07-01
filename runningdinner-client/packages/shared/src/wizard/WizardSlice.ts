@@ -5,7 +5,6 @@ import {
   applyDinnerDateToMeals,
   BasicDetailsNavigationStep,
   CreateRunningDinnerResponse,
-  FetchStatus,
   fillDemoDinnerValues,
   FinishNavigationStep,
   MealTimesNavigationStep,
@@ -15,7 +14,6 @@ import {
   PublicRegistrationNavigationStep,
   setDefaultEndOfRegistrationDate,
   SummaryNavigationStep,
-  WizardContextData
 } from "./CreateWizardService";
 import {WizardRootState} from "./WizardStore";
 import find from "lodash/find";
@@ -23,7 +21,7 @@ import {RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSett
 import {isStringEmpty, isStringNotEmpty} from "../Utils";
 import {findGenderAspectsAsync, findRegistrationTypesAsync} from "../masterdata";
 import {getMinimumParticipantsNeeded, isClosedDinner} from "../admin";
-import { getAsHttpErrorOrDefault } from "../issue";
+import {FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../redux";
 
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
@@ -62,8 +60,7 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
       .addCase(updateBasicDetails, (state, action) => {
         state.runningDinner.basicDetails = {...action.payload};
         setDefaultEndOfRegistrationDate(state.runningDinner);
-        const updatedMeals = applyDinnerDateToMeals(state.runningDinner.options.meals, state.runningDinner.basicDetails.date);
-        state.runningDinner.options.meals = updatedMeals;
+        state.runningDinner.options.meals = applyDinnerDateToMeals(state.runningDinner.options.meals, state.runningDinner.basicDetails.date);
         state.completedNavigationSteps.push(BasicDetailsNavigationStep);
       })
       .addCase(updateRunningDinnerOptions, (state, action) => {
@@ -182,64 +179,30 @@ export const getNavigationStepSelector = (state: WizardRootState) => {
   };
 }
 export const isLoadingDataSelector = (state: WizardRootState) => {
-  const loadingItems = getContextDataItems(state)
+  const loadingItems = getFetchDataItems(state)
       .filter(item => item.fetchStatus === FetchStatus.LOADING);
   return loadingItems.length > 0;
 };
 export const getLoadingDataErrorSelector = (state: WizardRootState): HttpError | undefined => {
-  const errorItems = getContextDataItems(state)
+  const errorItems = getFetchDataItems(state)
       .filter(item => item.fetchError !== undefined && item.fetchError !== null);
   return errorItems.length > 0 ? errorItems[0].fetchError : undefined;
 }
 
-const getContextDataItems = (state: WizardRootState): WizardContextData<any>[] => {
+const getFetchDataItems = (state: WizardRootState): FetchData<any>[] => {
   return [state.registrationTypes, state.genderAspects];
 };
 
 export const getRegistrationTypesSelector = (state: WizardRootState) => {
   return {
     status: state.registrationTypes.fetchStatus,
-    registrationTypes: state.registrationTypes.content
+    registrationTypes: state.registrationTypes.data
   };
 };
 
 export const getGenderAspectsSelector = (state: WizardRootState) => {
   return {
     status: state.genderAspects.fetchStatus,
-    genderAspects: state.genderAspects.content
+    genderAspects: state.genderAspects.data
   }
 };
-
-// *** Misc **** //
-
-function handleFetchSucceeded<T>(contextData: WizardContextData<T>, payload: T) {
-  contextData.content = payload;
-  contextData.fetchStatus = FetchStatus.SUCCEEDED;
-  contextData.fetchError = mapFetchErrorState(FetchStatus.SUCCEEDED);
-}
-
-function handleFetchLoading<T>(contextData: WizardContextData<T>) {
-  contextData.fetchStatus = FetchStatus.LOADING;
-  contextData.fetchError = mapFetchErrorState(FetchStatus.LOADING);
-}
-
-function handleFetchRejected<T>(contextData: WizardContextData<T>, action?: any) {
-  contextData.fetchStatus = FetchStatus.FAILED;
-  contextData.fetchError = mapFetchErrorState(FetchStatus.FAILED, action);
-}
-
-const GENERIC_HTTP_ERROR: HttpError = { // Will trigger a generic error message (-> useNotificationHttpError)
-  response: {
-    status: 500,
-    data: {}
-  }
-}
-function mapFetchErrorState(fetchStatus: FetchStatus, action?: any): HttpError | undefined {
-  let result = undefined;
-  if (fetchStatus === FetchStatus.FAILED) {
-    result = getAsHttpErrorOrDefault(action?.payload, GENERIC_HTTP_ERROR)
-    // @ts-ignore
-    console.log(`Fetch error: ${JSON.stringify(action)}`);
-  }
-  return result;
-}

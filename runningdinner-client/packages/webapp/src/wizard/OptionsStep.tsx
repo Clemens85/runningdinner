@@ -5,7 +5,6 @@ import {SpacingGrid} from "../common/theme/SpacingGrid";
 import {
   mapExistingMealTimesToNewMeals,
   BasicDetailsNavigationStep,
-  FetchStatus,
   MealTimesNavigationStep,
   RunningDinnerOptions,
   useBackendIssueHandler,
@@ -107,9 +106,9 @@ function TeamSettings() {
 
   const {t} = useTranslation(['wizard', 'common']);
 
-  const {genderAspects, status} = useWizardSelector(getGenderAspectsSelector);
+  const {genderAspects} = useWizardSelector(getGenderAspectsSelector);
 
-  if (status !== FetchStatus.SUCCEEDED) {
+  if (!genderAspects) {
     return null;
   }
 

@@ -18,12 +18,12 @@ import {
   exchangeEntityInList,
   findEntityById,
   findTeamsAsync,
-  getFullname,
+  getFullname, getRunningDinnerMandatorySelector,
   swapTeamMembersAsync,
   Team,
+  useAdminSelector,
   useDisclosure
 } from "@runningdinner/shared";
-import {useAdminContext} from "../AdminContext";
 import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../AdminNavigationHook";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 import DropdownButton from "../../common/theme/dropdown/DropdownButton";
@@ -35,7 +35,7 @@ const TeamsContainer = () => {
 
   const query = useQuery();
 
-  const {runningDinner} = useAdminContext();
+  const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
 
   const params = useParams<Record<string, string>>();
   const teamId = params.teamId;
@@ -56,7 +56,7 @@ interface TeamsProps {
 
 function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
 
-  const {runningDinner} = useAdminContext();
+  const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
 
   const [teams, setTeams] = useState(incomingTeams);
   const [selectedTeam, setSelectedTeam] = useState<Team>();

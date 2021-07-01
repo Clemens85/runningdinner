@@ -33,6 +33,13 @@ export interface MessageTask extends Sendable {
   message: Message;
 }
 
+export interface MessageJobOverview extends RunningDinnerRelated {
+  messageJobId: string;
+  numMessagesSucceeded: number;
+  numMessagesFailed: number;
+  sendingFinished: boolean;
+}
+
 export interface SendingResult {
   delieveryFailed: boolean;
   failureMessage: string;

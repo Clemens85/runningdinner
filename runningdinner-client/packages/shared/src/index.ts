@@ -21,4 +21,7 @@ export * from './GeocoderHook';
 // TODO Add possibility to include JSON files
 export * from "./i18n";
 
+export * from "./admin/redux";
+
+
 

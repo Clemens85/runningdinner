@@ -4,8 +4,7 @@ import ParticipantsContainer from "./participants/ParticipantsContainer";
 import TeamsContainer from "./teams/TeamsContainer";
 import Dashboard from "./dashboard/Dashboard";
 import {Route, Switch} from "react-router-dom";
-import {useAdminContext} from "./AdminContext";
-import {DashboardStateProvider} from "@runningdinner/shared";
+import {getRunningDinnerFetchSelector, useAdminSelector} from "@runningdinner/shared";
 import Acknowledge from "./common/Acknowledge";
 import TeamDinnerRoute from "./teams/TeamDinnerRoute";
 
@@ -15,7 +14,12 @@ export interface AdminRouteProps {
 
 export const AdminRoute = ({path}: AdminRouteProps) => {
 
-  const {runningDinner} = useAdminContext();
+  const runningDinnerFetchData = useAdminSelector(getRunningDinnerFetchSelector);
+  if (!runningDinnerFetchData.data) {
+    return null;
+  }
+
+  const runningDinner = runningDinnerFetchData.data;
   const {adminId} = runningDinner;
 
   return (
@@ -43,12 +47,10 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
           <TeamsContainer />
         </Route>
         <Route path={`${path}/:acknowledgeId/acknowledge`}>
-          <Acknowledge />
+          <Acknowledge runningDinner={runningDinner} />
         </Route>
         <Route path="/">
-          <DashboardStateProvider>
-            <Dashboard runningDinner={runningDinner} />
-          </DashboardStateProvider>
+          <Dashboard runningDinner={runningDinner} />
         </Route>
       </Switch>
   );

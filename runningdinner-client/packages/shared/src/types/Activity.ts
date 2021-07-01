@@ -1,6 +1,7 @@
-import { RelatedEntityType } from "./Base";
+import {RelatedEntityType, RunningDinnerRelated} from "./Base";
+import {MessageJob, MessageJobOverview} from "@runningdinner/shared";
 
-export interface Activity {
+export interface Activity extends RunningDinnerRelated {
   activityDate: Date;
   originator: string;
   activityHeadline: string;
@@ -8,6 +9,7 @@ export interface Activity {
   activityType: ActivityType;
   relatedEntityId: string;
   relatedEntityType: RelatedEntityType;
+  messageJobOverview?: MessageJobOverview;
 }
 
 export interface DashboardAdminActivities {

@@ -2,12 +2,19 @@ import axios from "axios";
 import filter from "lodash/filter";
 import { BackendConfig } from "../BackendConfig";
 import {CONSTANTS} from "../Constants";
-import {Activity, ActivityType, DashboardAdminActivities } from "../types";
+import {Activity, ActivityType, DashboardAdminActivities, MessageJobOverview} from "../types";
+import {
+  findEntityById,
+  findMessageJobOverviewByAdminIdAndMessageJobId,
+  isStringNotEmpty
+} from "@runningdinner/shared";
+import cloneDeep from "lodash/cloneDeep";
 
 const messageActivities = [
   CONSTANTS.ACTIVITY.DINNERROUTE_MAIL_SENT,
   CONSTANTS.ACTIVITY.PARTICIPANT_MAIL_SENT,
-  CONSTANTS.ACTIVITY.TEAMARRANGEMENT_MAIL_SENT
+  CONSTANTS.ACTIVITY.TEAMARRANGEMENT_MAIL_SENT,
+  CONSTANTS.ACTIVITY.MESSAGE_JOB_SENDING_FAILED
 ];
 
 export async function findAdminActivitiesByAdminIdAsync(adminId: string): Promise<DashboardAdminActivities> {
@@ -21,10 +28,27 @@ export function filterActivitiesByType(activities: Activity[], activityTypeToFil
 }
 
 export function isMessageActivityContained(activities: Activity[]) {
-  for (var i=0; i<activities.length; i++) {
+  for (let i=0; i<activities.length; i++) {
     if (messageActivities.indexOf(activities[i].activityType) > -1) {
       return true;
     }
   }
   return false;
+}
+
+export async function enhanceAdminActivitiesByDetailsAsync(adminId: string, dashboardAdminActivities: DashboardAdminActivities): Promise<DashboardAdminActivities> {
+  const asyncFetchDetailsJobs: Record<string, Promise<MessageJobOverview>> = {};
+  dashboardAdminActivities.activities.map(activity => {
+    if (isMessageActivityContained([activity]) && isStringNotEmpty(activity.relatedEntityId)) {
+      asyncFetchDetailsJobs[activity.id!] = findMessageJobOverviewByAdminIdAndMessageJobId(adminId, activity.relatedEntityId);
+    }
+  });
+
+  const result = cloneDeep(dashboardAdminActivities);
+  for (let id in asyncFetchDetailsJobs) {
+    const messageJobOverview = await asyncFetchDetailsJobs[id];
+    const activity = findEntityById(result.activities, id);
+    activity.messageJobOverview = messageJobOverview;
+  }
+  return result;
 }

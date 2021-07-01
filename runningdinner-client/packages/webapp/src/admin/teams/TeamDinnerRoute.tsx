@@ -1,13 +1,16 @@
 import React from 'react';
-import {useAdminContext} from "../AdminContext";
 import {Fetch} from "../../common/Fetch";
-import {findDinnerRouteByAdminIdAndTeamIdAsync} from "@runningdinner/shared";
+import {
+  findDinnerRouteByAdminIdAndTeamIdAsync,
+  getRunningDinnerMandatorySelector,
+  useAdminSelector
+} from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
 import DinnerRouteView from "../../common/dinnerroute/DinnerRouteView";
 
 export default function TeamDinnerRoute() {
 
-  const {runningDinner} = useAdminContext();
+  const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
   const {adminId} = runningDinner;
 
   const params = useParams<Record<string, string>>();

@@ -15,13 +15,14 @@ const HtmlTooltip = withStyles((theme) => ({
 }))(Tooltip);
 
 export interface HelpIconTooltipProps extends Omit<TooltipProps, "children"> {
+  fontSize?: 'inherit' | 'default' | 'small' | 'large';
 }
 
-function HelpHtmlTooltip(props: HelpIconTooltipProps) {
+function HelpHtmlTooltip({fontSize, ...remainder}: HelpIconTooltipProps) {
 
   return (
-    <HtmlTooltip {...props} arrow>
-      <HelpOutlineOutlinedIcon />
+    <HtmlTooltip {...remainder} arrow>
+      <HelpOutlineOutlinedIcon fontSize={fontSize} />
     </HtmlTooltip>
   );
 }

@@ -1,7 +1,11 @@
 import React from 'react';
-import {useAdminContext} from "../AdminContext";
 import {useAsync} from "react-async-hook";
-import { acknowledgeRunningDinnerAsync, CONSTANTS } from '@runningdinner/shared';
+import {
+  acknowledgeRunningDinnerAsync,
+  BaseRunningDinnerProps,
+  CONSTANTS,
+  setUpdatedRunningDinner
+} from '@runningdinner/shared';
 import {PageTitle, Span} from "../../common/theme/typography/Tags";
 import {Alert, AlertTitle} from "@material-ui/lab";
 import LinkIntern from "../../common/theme/LinkIntern";
@@ -10,11 +14,12 @@ import {LinearProgress} from "@material-ui/core";
 import LinkExtern from "../../common/theme/LinkExtern";
 import {useParams} from "react-router-dom";
 import {useAdminNavigation} from "../AdminNavigationHook";
+import {useDispatch} from "react-redux";
 
-export default function Acknowledge() {
+export default function Acknowledge({runningDinner}: BaseRunningDinnerProps) {
 
-  const {runningDinner, updateRunningDinner} = useAdminContext();
   const {adminId} = runningDinner;
+  const dispatch = useDispatch();
 
   const {t} = useTranslation('admin');
 
@@ -27,7 +32,7 @@ export default function Acknowledge() {
 
   React.useEffect(() => {
     if (!loading && result) {
-      updateRunningDinner(result);
+      dispatch(setUpdatedRunningDinner(result));
     }
     // eslint-disable-next-line
   }, [loading, error, result]);

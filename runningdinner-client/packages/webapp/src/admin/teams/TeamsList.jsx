@@ -5,16 +5,15 @@ import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TeamRow from "./TeamRow";
-import {useAdminContext} from "../AdminContext";
-import {isSameEntity} from "@runningdinner/shared";
+import {getRunningDinnerMandatorySelector, isSameEntity, useAdminSelector} from "@runningdinner/shared";
 
 export default function TeamsList({teams, selectedTeam, onClick, onTeamMemberSwap, onOpenChangeTeamHostDialog}) {
 
-  const { runningDinner } = useAdminContext()
+  const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
   const { sessionData } = runningDinner;
   const teamSize = runningDinner.options.teamSize;
 
-  function buildTeamRows(teans) {
+  function buildTeamRows(teams) {
     return teams.map(team => <TeamRow team={team} key={team.id} onClick={onClick} onTeamMemberSwap={onTeamMemberSwap} onOpenChangeTeamHostDialog={onOpenChangeTeamHostDialog}
                                       runningDinnerSessionData={sessionData} teamSize={teamSize} selected={isSameEntity(selectedTeam, team)}/>);
   }

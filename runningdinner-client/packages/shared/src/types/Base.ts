@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { RunningDinner } from "./RunningDinner";
 
 export interface BaseEntity {
   id?: string;
@@ -60,4 +61,12 @@ export interface ClickableTextIconEntry extends ClickableTextEntry {
 
 export interface Parent {
   children?: React.ReactNode;
+}
+
+export interface BaseRunningDinnerProps {
+  runningDinner: RunningDinner;
+}
+
+export interface BaseAdminIdProps {
+  adminId: string;
 }

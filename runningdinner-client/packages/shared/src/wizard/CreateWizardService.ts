@@ -1,10 +1,11 @@
 import axios from "axios";
 import { BackendConfig } from "../BackendConfig";
-import {GenderAspects, HttpError, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings, RunningDinnerType} from "../types";
+import {GenderAspects, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings, RunningDinnerType} from "../types";
 import {CONSTANTS} from "../Constants";
 import {getHoursOfDate, getMinutesOfDate, isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute} from "../date";
 import {isClosedDinner} from "../admin";
 import {useTranslation} from "react-i18next";
+import {FetchData, FetchStatus} from "../redux/";
 
 export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
 
@@ -50,12 +51,11 @@ export function newInitialWizardState(): WizardState {
 }
 
 export function newDefaultMeals(dinnerDate: Date): Meal[] {
-  const meals = [
+  return [
     { label: "appetizer", time: withHourAndMinute(dinnerDate, 19, 0) },
     { label: "main_course", time: withHourAndMinute(dinnerDate, 21, 0) },
     { label: "dessert", time: withHourAndMinute(dinnerDate, 23, 0) }
   ];
-  return meals;
 }
 
 export function useMealsTranslated() {
@@ -111,24 +111,11 @@ export function fillDemoDinnerValues(runningDinner: CreateRunningDinnerWizardMod
 }
 
 
-export enum FetchStatus {
-  IDLE = "IDLE",
-  LOADING = "LOADING",
-  SUCCEEDED = "SUCCEEDED",
-  FAILED = "FAILED"
-}
-
 export interface NavigationStep extends LabelValue {
 }
 
 export interface CreateRunningDinnerWizardModel extends Omit<RunningDinner, "sessionData"> {
 
-}
-
-export interface WizardContextData<T> {
-  fetchStatus: FetchStatus;
-  fetchError?: HttpError;
-  content: T;
 }
 
 export interface WizardState {
@@ -140,8 +127,8 @@ export interface WizardState {
   previousNavigationStep?: NavigationStep;
   completedNavigationSteps: NavigationStep[];
 
-  registrationTypes: WizardContextData<LabelValue[]>;
-  genderAspects: WizardContextData<LabelValue[]>;
+  registrationTypes: FetchData<LabelValue[]>;
+  genderAspects: FetchData<LabelValue[]>;
 }
 
 
@@ -211,8 +198,8 @@ const initialState: WizardState = {
     }
   },
 
-  registrationTypes: { fetchStatus: FetchStatus.IDLE, content: [] },
-  genderAspects: { fetchStatus: FetchStatus.IDLE, content: [] },
+  registrationTypes: { fetchStatus: FetchStatus.IDLE, data: [] },
+  genderAspects: { fetchStatus: FetchStatus.IDLE, data: [] },
 
   navigationSteps: ALL_NAVIGATION_STEPS,
   nextNavigationStep: OptionsNavigationStep,
