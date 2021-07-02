@@ -1,17 +1,28 @@
 import {newInitialDashboardState} from "./StoreTypes";
-import {createAction, createReducer} from "@reduxjs/toolkit";
-import {enhanceAdminActivitiesByDetailsAsync, findAdminActivitiesByAdminIdAsync} from "../ActivityService";
+import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {
+  enhanceAdminActivitiesByDetailsAsync,
+  findAdminActivitiesByAdminIdAsync,
+  findParticipantActivitiesByAdminIdAsync
+} from "../ActivityService";
+import {
+  ActivityList,
   AdminStateType,
   AdminThunk,
-  DashboardAdminActivities,
+  DashboardAdminActivities, findNotActivatedParticipantsByAdminIdAndIdsAsync,
   HttpError,
+  isArrayEmpty, updateParticipantSubscriptionByAdminIdAndIdAsyncImpl,
 } from "@runningdinner/shared";
-import {handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../../redux/FetchHelpers";
+import {FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../../redux";
+import find from "lodash/find";
+import cloneDeep from "lodash/cloneDeep";
 
+// *** Actions *** //
 const fetchAdminActivitiesPending = createAction('fetchAdminActivitiesPending');
 const fetchAdminActivitiesRejected = createAction<HttpError>('fetchAdminActivitiesRejected');
 const fetchAdminActivitiesSucceeded = createAction<DashboardAdminActivities>('fetchAdminActivitiesSucceeded');
+
+export const resetParticipantActivities = createAction('resetAdminActivities');
 
 export function fetchAdminActivities(adminId: string) : AdminThunk {
   return async (dispatch) => {
@@ -38,6 +49,38 @@ export function fetchAdminActivitiesDetails(adminId: string, dashboardAdminActiv
   };
 }
 
+export const fetchNextParticipantActivities = createAsyncThunk(
+  'fetchNextParticipantActivities',
+  async (adminId: string, thunkAPI) => {
+    const currentStoreState = thunkAPI.getState() as AdminStateType;
+    const currentPage = currentStoreState.dashboard.participantActivities.data?.page || -1;
+    const participantActivities = await findParticipantActivitiesByAdminIdAsync(adminId, currentPage + 1);
+    return await enhanceParticipantActivitiesByActivationInfo(adminId, participantActivities);
+  }
+);
+
+async function enhanceParticipantActivitiesByActivationInfo(adminId: string, participantActivities: ActivityList) : Promise<ActivityList> {
+  const result = cloneDeep(participantActivities);
+  const participantIds = result.activities.map(activity => activity.relatedEntityId);
+  const notActivatedParticipants = await findNotActivatedParticipantsByAdminIdAndIdsAsync(adminId, participantIds);
+  notActivatedParticipants.map(notActivatedParticipant => {
+    const matchingActivity = find(result.activities, ["relatedEntityId", notActivatedParticipant.id]);
+    if (matchingActivity) {
+      matchingActivity.relatedParticipantNotActivated = true;
+    }
+  });
+  return result;
+}
+
+export const updateParticipantSubscription = createAsyncThunk(
+  'updateParticipantSubscription',
+  async (props: Record<string, string>) => {
+    const {adminId, participantId} = props;
+    return await updateParticipantSubscriptionByAdminIdAndIdAsyncImpl(adminId, participantId);
+  }
+);
+
+
 // *** Reducer *** //
 export const dashboardSlice = createReducer(newInitialDashboardState(), builder => {
   builder.addCase(fetchAdminActivitiesSucceeded, (state, action) => {
@@ -48,8 +91,49 @@ export const dashboardSlice = createReducer(newInitialDashboardState(), builder 
   })
   .addCase(fetchAdminActivitiesRejected, (state, action) => {
     handleFetchRejected(state.adminActivities, action);
+  })
+  .addCase(fetchNextParticipantActivities.fulfilled, (state, action) => {
+    if (!state.participantActivities.data) {
+      state.participantActivities.data = setupInitialActivityList(state.participantActivities);
+    }
+    // const existingActivities = state.participantActivities.data?.activities || [];
+    state.participantActivities.data.activities = state.participantActivities.data.activities.concat(action.payload.activities || []);
+    state.participantActivities.data.page = action.payload.page;
+    state.participantActivities.data.hasMore = action.payload.hasMore;
+    state.participantActivities.fetchStatus = FetchStatus.SUCCEEDED;
+    state.participantActivities.fetchError = undefined;
+  })
+  .addCase(fetchNextParticipantActivities.pending, (state) => {
+    handleFetchLoading(state.participantActivities);
+  })
+  .addCase(fetchNextParticipantActivities.rejected, (state, action) => {
+    handleFetchRejected(state.participantActivities, action);
+  })
+  .addCase(updateParticipantSubscription.fulfilled, (state, action) => {
+    const activatedParticipant = action.payload;
+    const {activities} = state.participantActivities.data!;
+    const matchingActivity = find(activities, ["relatedEntityId", activatedParticipant.id]);
+    if (matchingActivity) {
+      matchingActivity.relatedParticipantNotActivated = false;
+    }
+  })
+  .addCase(resetParticipantActivities, (state) => {
+    setupInitialActivityList(state.participantActivities);
   });
 });
 
 // *** Selectors *** //
 export const getAdminActivitiesFetchSelector = (state: AdminStateType) => state.dashboard.adminActivities;
+export const getParticipantRegistrationActivitiesFetchSelector = (state: AdminStateType) => state.dashboard.participantActivities;
+export const isParticipantRegistrationActivitiesEmpty = (state: AdminStateType) => state.dashboard.participantActivities.fetchStatus === FetchStatus.SUCCEEDED &&
+                                                                                   isArrayEmpty(state.dashboard.participantActivities.data?.activities);
+
+// *** Helpers *** //
+function setupInitialActivityList(activityList: FetchData<ActivityList>): ActivityList {
+  activityList.data = {
+    page: 0,
+    activities: [],
+    hasMore: false
+  };
+  return activityList.data;
+}

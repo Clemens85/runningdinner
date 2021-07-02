@@ -56,7 +56,7 @@ function TimelineDot({date, colorCssClass}: TimelineDotProps) {
   )
 }
 
-function TimelineContentPanel({activityDate, activityType, activityHeadline, activityMessage, messageJobOverview}: Activity) {
+function TimelineContentPanel({activityDate, activityType, activityHeadline, activityMessage, relatedMessageJobOverview}: Activity) {
 
   const activityStyles = useActivityStyles();
   const {generateMessageJobDetailsPath} = useAdminNavigation();
@@ -90,20 +90,20 @@ function TimelineContentPanel({activityDate, activityType, activityHeadline, act
       </div>
       <div className={activityStyles.timelineBody}>
         <Span>{parse(activityMessage)}</Span>
-        { messageJobOverview && <div>
-          <LinkIntern pathname={ generateMessageJobDetailsPath(messageJobOverview.adminId, messageJobOverview.messageJobId) } color="primary">
-            {messageJobOverview.numMessagesSucceeded} erfolgreich
+        { relatedMessageJobOverview && <div>
+          <LinkIntern pathname={ generateMessageJobDetailsPath(relatedMessageJobOverview.adminId, relatedMessageJobOverview.messageJobId) } color="primary">
+            {relatedMessageJobOverview.numMessagesSucceeded} erfolgreich
           </LinkIntern><br/>
-          <LinkIntern pathname={ generateMessageJobDetailsPath(messageJobOverview.adminId, messageJobOverview.messageJobId) } color="secondary">
-            {messageJobOverview.numMessagesFailed} fehlgeschlagen
+          <LinkIntern pathname={ generateMessageJobDetailsPath(relatedMessageJobOverview.adminId, relatedMessageJobOverview.messageJobId) } color="secondary">
+            {relatedMessageJobOverview.numMessagesFailed} fehlgeschlagen
           </LinkIntern><br/>
-          { isShowMessageJobSendingFinishedInfo(messageJobOverview) &&
+          { isShowMessageJobSendingFinishedInfo(relatedMessageJobOverview) &&
               <Grid container alignItems="center">
                 <Grid item><div className={activityStyles.timelineHeadlineIcon}><Typography variant={"caption"}>{t("messages_sending_finished")}</Typography></div></Grid>
                 <Grid item><HelpIconTooltip title={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' fontSize={"small"}/></Grid>
               </Grid>
           }
-          { isShowMessageJobSendingPendingInfo(messageJobOverview) && <Typography variant={"caption"}>{t("messages_sending_pending")}</Typography> }
+          { isShowMessageJobSendingPendingInfo(relatedMessageJobOverview) && <Typography variant={"caption"}>{t("messages_sending_pending")}</Typography> }
         </div> }
       </div>
     </div>

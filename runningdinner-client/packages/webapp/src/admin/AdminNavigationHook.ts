@@ -7,6 +7,10 @@ function generateTeamPath(adminId: string, teamId: string) {
   return `/admin/${adminId}/teams/${teamId}`;
 }
 
+function generateParticipantPath(adminId: string, participantId: string) {
+  return `/admin/${adminId}/participants/${participantId}`;
+}
+
 function generateTeamMessagesPath(adminId: string) {
   return generateMessagesPath(adminId, 'teams');
 }
@@ -53,6 +57,10 @@ export function useAdminNavigation() {
     history.push(generateTeamMessagesPath(adminId));
   }
 
+  function navigateToParticipant(adminId: string, participantId: string) {
+    history.push(generateParticipantPath(adminId, participantId));
+  }
+
   return {
     generateTeamPath,
     navigateToTeam,
@@ -63,7 +71,8 @@ export function useAdminNavigation() {
     navigateToTeamMemberCancellation,
     generateDashboardPath,
     generateTeamDinnerRoutePath,
-    navigateToTeamMessages
+    navigateToTeamMessages,
+    navigateToParticipant
   };
 
 }

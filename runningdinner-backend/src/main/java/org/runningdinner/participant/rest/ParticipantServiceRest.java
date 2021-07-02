@@ -85,8 +85,8 @@ public class ParticipantServiceRest {
   }
   
   @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}/activate", method = RequestMethod.PUT)
-  public ParticipantTO findNotActivatedParticipants(@PathVariable("adminId") final String adminId,
-                                                    @PathVariable("participantId") final UUID participantId) {
+  public ParticipantTO activateParticipantSubscription(@PathVariable("adminId") final String adminId,
+                                                       @PathVariable("participantId") final UUID participantId) {
 
     LocalDateTime now = LocalDateTime.now();
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);

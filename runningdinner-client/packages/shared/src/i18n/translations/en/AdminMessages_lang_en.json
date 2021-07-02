@@ -139,6 +139,7 @@
 	"participants_remaining_not_assignable_text": "Following participants could not be mixed up into teams and are thus placed on the waiting list for now.",
 	"participants_selection": "Participant selection",
 	"participants_too_few_text": "Unfortunately you have too few participants for a Running Dinner event. You need at least a total of {{ minSizeNeeded }} participants, hence you need still at least {{ missingParticipants }} more participants.",
+	"participant_manual_activation_success": "Manual activation of subscription for {{ participantEmail }} succeeded",
 	"protocols": "Protocols",
 	"protocols_empty": "No messages sent so far",
 	"protocols_last_update_text": "Last updated at {{ lastPollDate }}",

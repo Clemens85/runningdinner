@@ -8,6 +8,7 @@ import {
   BaseRunningDinnerProps,
   fetchAdminActivities,
   getAdminActivitiesFetchSelector,
+  isClosedDinner,
   RunningDinner,
   setUpdatedRunningDinner,
   useAdminSelector,
@@ -15,6 +16,7 @@ import {
 import {Helmet} from "react-helmet-async";
 import {useDispatch} from "react-redux";
 import {AdminActivitiesTimeline} from "./AdminActivitiesTimeline";
+import {ParticipantRegistrations} from "./ParticipantRegistrations";
 
 export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
 
@@ -57,11 +59,10 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
           <Grid item xs={12} md={8}>
             { dashboardAdminActivities && <AdminActivitiesTimeline dashboardAdminActivities={dashboardAdminActivities} /> }
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Paper>
-              TODO
-            </Paper>
-          </Grid>
+          { !isClosedDinner(runningDinner) &&
+              <Grid item xs={12} md={4}>
+                <ParticipantRegistrations runningDinner={runningDinner} />
+              </Grid> }
         </Grid>
         <Helmet>
           <title>Dashboard - Running Dinner Administration</title>

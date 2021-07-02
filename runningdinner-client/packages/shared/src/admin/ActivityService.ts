@@ -2,7 +2,7 @@ import axios from "axios";
 import filter from "lodash/filter";
 import { BackendConfig } from "../BackendConfig";
 import {CONSTANTS} from "../Constants";
-import {Activity, ActivityType, DashboardAdminActivities, MessageJobOverview} from "../types";
+import {Activity, ActivityList, ActivityType, DashboardAdminActivities, MessageJobOverview} from "../types";
 import {
   findEntityById,
   findMessageJobOverviewByAdminIdAndMessageJobId,
@@ -35,6 +35,11 @@ export function isMessageActivityContained(activities: Activity[]) {
   }
   return false;
 }
+export async function findParticipantActivitiesByAdminIdAsync(adminId: string, page: number) : Promise<ActivityList>  {
+  const url = BackendConfig.buildUrl(`/activityservice/v1/runningdinner/${adminId}/participant?page=${page}`);
+  const response = await axios.get<ActivityList>(url);
+  return response.data;
+}
 
 export async function enhanceAdminActivitiesByDetailsAsync(adminId: string, dashboardAdminActivities: DashboardAdminActivities): Promise<DashboardAdminActivities> {
   const asyncFetchDetailsJobs: Record<string, Promise<MessageJobOverview>> = {};
@@ -48,7 +53,7 @@ export async function enhanceAdminActivitiesByDetailsAsync(adminId: string, dash
   for (let id in asyncFetchDetailsJobs) {
     const messageJobOverview = await asyncFetchDetailsJobs[id];
     const activity = findEntityById(result.activities, id);
-    activity.messageJobOverview = messageJobOverview;
+    activity.relatedMessageJobOverview = messageJobOverview;
   }
   return result;
 }

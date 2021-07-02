@@ -9,7 +9,9 @@ export interface Activity extends RunningDinnerRelated {
   activityType: ActivityType;
   relatedEntityId: string;
   relatedEntityType: RelatedEntityType;
-  messageJobOverview?: MessageJobOverview;
+  // The following properties are just used (and enhanced) for UI control and are not part of backend, but it makes life easier:
+  relatedMessageJobOverview?: MessageJobOverview;
+  relatedParticipantNotActivated?: boolean;
 }
 
 export interface DashboardAdminActivities {
@@ -53,4 +55,10 @@ export enum ActivityType {
   MESSAGE_JOB_SENDING_FAILED = "MESSAGE_JOB_SENDING_FAILED",
 
   DINNER_CANCELLED = "DINNER_CANCELLED"
+}
+
+export interface ActivityList {
+  activities: Activity[];
+  page: number;
+  hasMore: boolean;
 }

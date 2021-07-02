@@ -74,6 +74,22 @@ export async function findNotAssignedParticipantsAsync(adminId: string): Promise
   return result;
 }
 
+export async function findNotActivatedParticipantsByAdminIdAndIdsAsync(adminId: string, participantIds: string[]): Promise<Participant[]> {
+  const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/not-active`);
+  const response = await axios.put(url, {
+    entityIds: participantIds,
+    adminId
+  });
+  const { participants } = response.data;
+  return participants;
+}
+
+export async function updateParticipantSubscriptionByAdminIdAndIdAsyncImpl(adminId: string, participantId: string): Promise<Participant> {
+  const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participant/${participantId}/activate`);
+  const response = await axios.put(url);
+  return response.data;
+}
+
 /**
  * Deletes the passed participant for the passed dinner admin id.
  * @param participant
