@@ -10,7 +10,7 @@ import {
 } from "@runningdinner/shared";
 import {
   Box,
-  Button,
+  Button, Card, CardContent,
   Dialog, DialogContent,
   LinearProgress,
   List, ListItem,
@@ -50,29 +50,33 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
 
   return (
     <>
-      <Subtitle i18n={"admin:latest_registrations"} />
-      { fetchStatus === FetchStatus.LOADING && <LinearProgress variant={"indeterminate"} /> }
-      { hasNoRegistrations && <NoRegistrations /> }
-      { isArrayNotEmpty(participantActivityList?.activities) &&
-        <List>
-          { participantActivityList!.activities.map((activity, index) => <ParticipantRegistrationRow key={index}
-                                                                                                                     adminId={adminId}
-                                                                                                                     participantActivity={activity}
-                                                                                                                     onShowConfirmSubscriptionActivationDialog={() => open(activity)} />) }
-        </List>
-      }
-      { showMoreLink &&
-        <Box pb={2}>
-          <Button onClick={() => dispatch(fetchNextParticipantActivities({adminId}))}
-                  variant={"outlined"}
-                  fullWidth
-                  color={"primary"}>{t("common:show_more")}</Button>
-        </Box>
-       }
+      <Card>
+        <CardContent>
+          <Subtitle i18n={"admin:latest_registrations"} />
+          { fetchStatus === FetchStatus.LOADING && <LinearProgress variant={"indeterminate"} /> }
+          { hasNoRegistrations && <NoRegistrations /> }
+          { isArrayNotEmpty(participantActivityList?.activities) &&
+            <List>
+              { participantActivityList!.activities.map((activity, index) => <ParticipantRegistrationRow key={index}
+                                                                                                                         adminId={adminId}
+                                                                                                                         participantActivity={activity}
+                                                                                                                         onShowConfirmSubscriptionActivationDialog={() => open(activity)} />) }
+            </List>
+          }
+          { showMoreLink &&
+            <Box pb={2}>
+              <Button onClick={() => dispatch(fetchNextParticipantActivities({adminId}))}
+                      variant={"outlined"}
+                      fullWidth
+                      color={"primary"}>{t("common:show_more")}</Button>
+            </Box>
+           }
 
-      { isOpen && <ConfirmParticipantActivationDialog participantActivity={getIsOpenData()}
-                                                      adminId={adminId}
-                                                      onClose={close} /> }
+          { isOpen && <ConfirmParticipantActivationDialog participantActivity={getIsOpenData()}
+                                                          adminId={adminId}
+                                                          onClose={close} /> }
+        </CardContent>
+      </Card>
     </>
   );
 }

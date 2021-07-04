@@ -2,7 +2,7 @@ import React from "react";
 import DashboardTitle from "./DashboardTitle"
 import MealsList from "./MealsList"
 import Overview from "./Overview";
-import {Grid, Paper} from "@material-ui/core";
+import {Box, Grid, Paper} from "@material-ui/core";
 import Checklist from "./Checklist";
 import {
   BaseRunningDinnerProps,
@@ -36,32 +36,49 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
     dispatch(setUpdatedRunningDinner(updatedRunningDinner));
   }
 
+  // const padding = 2;
+  const padding = {
+    pr: 2,
+    pt: 2,
+    pb: 2
+  }
+
   return (
       <div>
         <div>
           <DashboardTitle basicDetails={basicDetails} />
         </div>
-        <Grid container spacing={8} justify={"center"} alignItems={"stretch"}>
-          <Grid item xs={12} md={3}>
-            { dashboardAdminActivities && <MealsList meals={meals}
-                                                     adminId={adminId}
-                                                     onRunningDinnerUpdate={handleRunningDinnerUpdate}
-                                                     dashboardAdminActivities={dashboardAdminActivities} /> }
+        <Grid container justify={"center"} alignItems={"stretch"}>
+          <Grid item xs={12} md={4}>
+            <Box {...padding}>
+              <Overview runningDinner={runningDinner} />
+            </Box>
           </Grid>
-          <Grid item xs={12} md={3}>
-            <Overview runningDinner={runningDinner} />
+          <Grid item xs={12} md={4}>
+            <Box {...padding}>
+              { dashboardAdminActivities && <MealsList meals={meals}
+                                                       adminId={adminId}
+                                                       onRunningDinnerUpdate={handleRunningDinnerUpdate}
+                                                       dashboardAdminActivities={dashboardAdminActivities} /> }
+            </Box>
           </Grid>
-          <Grid item xs={12} md={3}>
-            { dashboardAdminActivities && <Checklist runningDinner={runningDinner} dashboardAdminActivities={dashboardAdminActivities} /> }
+          <Grid item xs={12} md={4}>
+            <Box {...padding} pr={0}>
+              { dashboardAdminActivities && <Checklist runningDinner={runningDinner} dashboardAdminActivities={dashboardAdminActivities} /> }
+            </Box>
           </Grid>
         </Grid>
         <Grid container>
           <Grid item xs={12} md={8}>
-            { dashboardAdminActivities && <AdminActivitiesTimeline dashboardAdminActivities={dashboardAdminActivities} /> }
+            <Box {...padding}>
+              { dashboardAdminActivities && <AdminActivitiesTimeline dashboardAdminActivities={dashboardAdminActivities} /> }
+            </Box>
           </Grid>
           { !isClosedDinner(runningDinner) &&
-              <Grid item xs={12} md={4}>
-                <ParticipantRegistrations runningDinner={runningDinner} />
+               <Grid item xs={12} md={4}>
+                 <Box {...padding} pr={0}>
+                    <ParticipantRegistrations runningDinner={runningDinner} />
+                 </Box>
               </Grid> }
         </Grid>
         <Helmet>

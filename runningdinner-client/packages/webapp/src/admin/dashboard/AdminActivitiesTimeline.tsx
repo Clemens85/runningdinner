@@ -7,7 +7,7 @@ import {
   getShortFormattedMonth, MessageJobOverview,
   Time
 } from "@runningdinner/shared";
-import {Grid, makeStyles, Typography} from "@material-ui/core";
+import {Card, CardContent, Grid, makeStyles, Typography} from "@material-ui/core";
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
 import parse from "html-react-parser";
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
@@ -27,19 +27,21 @@ export interface AdminActivitiesTimelineProps {
 }
 export function AdminActivitiesTimeline({dashboardAdminActivities}: AdminActivitiesTimelineProps) {
   return (
-    <div>
-      <Subtitle i18n='admin:admin_activities_headline' />
-      <ul className="timeline">
-        {
-          dashboardAdminActivities.activities.map((activity, index) =>
-            <li key={index} className={index % 2 === 1 ? "timeline-inverted": ""}>
-              <TimelineDot colorCssClass={getActivityStyle(activity.activityType).colorCssClass} date={activity.activityDate} />
-              <TimelineContentPanel {... activity} />
-            </li>
-          )
-        }
-      </ul>
-    </div>
+    <Card>
+      <CardContent>
+        <Subtitle i18n='admin:admin_activities_headline' />
+        <ul className="timeline">
+          {
+            dashboardAdminActivities.activities.map((activity, index) =>
+              <li key={index} className={index % 2 === 1 ? "timeline-inverted": ""}>
+                <TimelineDot colorCssClass={getActivityStyle(activity.activityType).colorCssClass} date={activity.activityDate} />
+                <TimelineContentPanel {... activity} />
+              </li>
+            )
+          }
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 
