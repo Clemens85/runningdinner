@@ -15,6 +15,9 @@ const useCommonStyles = makeStyles((theme) => ({
   },
   buttonSpacingLeft: {
     marginLeft: theme.spacing(2)
+  },
+  textTransformCapitalize: {
+    textTransform: 'capitalize',
   }
 }));
 

@@ -9,6 +9,7 @@ import {
   useAdminSelector, useDisclosure
 } from "@runningdinner/shared";
 import {
+  Box,
   Button,
   Dialog, DialogContent,
   LinearProgress,
@@ -61,12 +62,12 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
         </List>
       }
       { showMoreLink &&
-        <div>
+        <Box pb={2}>
           <Button onClick={() => dispatch(fetchNextParticipantActivities({adminId}))}
                   variant={"outlined"}
                   fullWidth
                   color={"primary"}>{t("common:show_more")}</Button>
-        </div>
+        </Box>
        }
 
       { isOpen && <ConfirmParticipantActivationDialog participantActivity={getIsOpenData()}
@@ -113,7 +114,7 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
                     secondary={renderParticipantActivityDetails()} />
       { relatedParticipantNotActivated ?
         <ListItemSecondaryAction>
-          <LinkAction onClick={onShowConfirmSubscriptionActivationDialog}>{t("admin:participant_subscription_activation_manual")}</LinkAction>
+          <LinkAction onClick={onShowConfirmSubscriptionActivationDialog} color={"secondary"}>{t("admin:participant_subscription_activation_manual")}</LinkAction>
         </ListItemSecondaryAction> :
         <DoneIcon color={"primary"} />
       }

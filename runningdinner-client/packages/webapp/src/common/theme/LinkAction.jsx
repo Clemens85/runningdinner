@@ -1,10 +1,12 @@
 import {Link} from "@material-ui/core";
 import React from "react";
+import useCommonStyles from "./CommonStyles";
 
 export default function LinkAction(props) {
 
-  const { onClick } = props;
+  const commonStyles = useCommonStyles();
+  const { onClick, ...remainder } = props;
   return (
-    <Link component="button" onClick={onClick}>{props.children}</Link>
+    <Link component="button" onClick={onClick} {...remainder} className={commonStyles.textTransformCapitalize}>{props.children}</Link>
   );
 }
