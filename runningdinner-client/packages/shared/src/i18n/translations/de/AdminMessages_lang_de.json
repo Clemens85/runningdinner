@@ -19,7 +19,7 @@
 	"checklist_send_dinnerroute_messages": "Dinner-Routen versenden",
 	"checklist_send_participant_messages": "Nachrichten an Teilnehmer versenden",
 	"checklist_send_team_messages": "Teameinteilungs Emails versenden",
-	"confirmation_activate_subscription_text": "Diese Aktion sollte nur dann durchgeführt werden wenn ein Teilnehmer die Bestätigungs-Email nicht erhalten hat, aber dennoch am Event teilnehmen möchte.<br/><br/><em>Es wird intern vermerkt, dass die Bestätigung durch den Veranstalter und nicht vom Teilnehmer selbst vorgenommen wurde.</em>",
+	"confirmation_activate_subscription_text": "Diese Aktion sollte nur dann durchgeführt werden wenn ein Teilnehmer die Bestätigungs-Email nicht erhalten hat, aber dennoch am Event teilnehmen möchte.<br/><br/><italic>Es wird intern vermerkt, dass die Bestätigung durch den Veranstalter und nicht vom Teilnehmer selbst vorgenommen wurde.</italic>",
 	"confirmation_activate_subscription_title": "{{ participantEmail }} wirklich manuell bestätigen?",
 	"confirmation_title": "Bestätigung - Running Dinner Administration",
 	"confirmation_unsaved_data_text": "Du hast noch nicht gespeicherte Änderungen. Willst du fortfahren und die Daten verwerfen oder zurück zum Formular?",

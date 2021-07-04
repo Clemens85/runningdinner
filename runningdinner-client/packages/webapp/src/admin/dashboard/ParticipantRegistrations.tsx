@@ -5,7 +5,7 @@ import {
   fetchNextParticipantActivities,
   getParticipantRegistrationActivitiesFetchSelector,
   isArrayNotEmpty,
-  isParticipantRegistrationActivitiesEmpty, LocalDate, resetParticipantActivities, Time, updateParticipantSubscription,
+  isParticipantRegistrationActivitiesEmpty, LocalDate, Time, updateParticipantSubscription,
   useAdminSelector, useDisclosure
 } from "@runningdinner/shared";
 import {
@@ -20,7 +20,7 @@ import {
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
 import {useDispatch} from "react-redux";
 import {FetchStatus} from "@runningdinner/shared/src/redux";
-import {useTranslation} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 import LinkAction from "../../common/theme/LinkAction";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
@@ -43,8 +43,8 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
   const showMoreLink = participantActivityList?.hasMore;
 
   useEffect(() => {
-    dispatch(resetParticipantActivities());
-    dispatch(fetchNextParticipantActivities(adminId));
+    // dispatch(resetParticipantActivities());
+    dispatch(fetchNextParticipantActivities({adminId, initialFetch: true}));
   }, [adminId, dispatch]);
 
   return (
@@ -62,7 +62,7 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
       }
       { showMoreLink &&
         <div>
-          <Button onClick={() => dispatch(fetchNextParticipantActivities(adminId))}
+          <Button onClick={() => dispatch(fetchNextParticipantActivities({adminId}))}
                   variant={"outlined"}
                   fullWidth
                   color={"primary"}>{t("common:show_more")}</Button>
@@ -94,7 +94,7 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
         { relatedParticipantNotActivated &&
           <>
             <br/>
-            <Typography variant={"caption"}><i>{t("admin:registration_not_yet_confirmed")}</i></Typography>
+            <Typography variant="caption"><i>{t("admin:registration_not_yet_confirmed")}</i></Typography>
           </> }
       </>
     );
@@ -158,7 +158,10 @@ function ConfirmParticipantActivationDialog({participantActivity, adminId, onClo
         {t('confirmation_activate_subscription_title', {participantEmail: originator })}
       </DialogTitleCloseable>
       <DialogContent>
-        <Span i18n={"admin:confirmation_activate_subscription_text"} />
+        <Span><Trans i18nKey="confirmation_activate_subscription_text"
+                     ns="admin"
+                     components={{ italic: <em /> }} />
+        </Span>
       </DialogContent>
       <DialogActionsPanel onOk={handleActivateSubscriptionManual} onCancel={onClose} okLabel={"Ok"} cancelLabel={t('common:cancel')} />
     </Dialog>

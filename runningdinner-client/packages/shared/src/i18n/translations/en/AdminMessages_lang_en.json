@@ -19,7 +19,7 @@
 	"checklist_send_dinnerroute_messages": "Send dinner routes to each team",
 	"checklist_send_participant_messages": "Send messages to your participants",
 	"checklist_send_team_messages": "Send messages to each created team",
-	"confirmation_activate_subscription_text": "This action should only be performed if a participant has not received his confirmation email, but wants to attend the event.<br/><br/><em>Internally it will be noted that the confirmation was performed by the event creator and not by the participant himself.</em>",
+	"confirmation_activate_subscription_text": "This action should only be performed if a participant has not received his confirmation email, but wants to attend the event.<br/><br/><italic>Internally it will be noted that the confirmation was performed by the event creator and not by the participant himself.</italic>",
 	"confirmation_activate_subscription_title": "Do you really want to manually confirm {{ participantEmail }}?",
 	"confirmation_title": "Acknowledge - Running Dinner Administration",
 	"confirmation_unsaved_data_text": "Not yet saved changes. Do you want to continue and lose all your not-saved data or do you want to go back to the form?",
