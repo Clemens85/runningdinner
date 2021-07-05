@@ -7,6 +7,6 @@ export default function LinkAction(props) {
   const commonStyles = useCommonStyles();
   const { onClick, ...remainder } = props;
   return (
-    <Link component="button" onClick={onClick} {...remainder} className={commonStyles.textTransformCapitalize}>{props.children}</Link>
+    <Link component="button" onClick={onClick} {...remainder} className={commonStyles.textTransformUppercase}>{props.children}</Link>
   );
 }
