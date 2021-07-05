@@ -11,7 +11,7 @@ import {
 import {
   Box,
   Button, Card, CardContent,
-  Dialog, DialogContent,
+  Dialog, DialogContent, Hidden,
   LinearProgress,
   List, ListItem,
   ListItemSecondaryAction,
@@ -100,9 +100,14 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
           <>
             <br/>
             <Typography variant="caption"><i>{t("admin:registration_not_yet_confirmed")}</i></Typography>
+            <Hidden smUp>{renderShowConfirmSubscriptionActivationDialogButton()}</Hidden>
           </> }
       </>
     );
+  }
+
+  function renderShowConfirmSubscriptionActivationDialogButton() {
+    return <LinkAction onClick={onShowConfirmSubscriptionActivationDialog} color={"secondary"}>{t("admin:participant_subscription_activation_manual")}</LinkAction>;
   }
 
   function handleClick() {
@@ -118,7 +123,7 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
                     secondary={renderParticipantActivityDetails()} />
       { relatedParticipantNotActivated ?
         <ListItemSecondaryAction>
-          <LinkAction onClick={onShowConfirmSubscriptionActivationDialog} color={"secondary"}>{t("admin:participant_subscription_activation_manual")}</LinkAction>
+          <Hidden smDown>{renderShowConfirmSubscriptionActivationDialogButton()}</Hidden>
         </ListItemSecondaryAction> :
         <DoneIcon color={"primary"} />
       }
