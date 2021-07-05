@@ -2,7 +2,7 @@ import React from "react";
 import DashboardTitle from "./DashboardTitle"
 import MealsList from "./MealsList"
 import Overview from "./Overview";
-import {Box, Grid, Paper} from "@material-ui/core";
+import {Box, Grid} from "@material-ui/core";
 import Checklist from "./Checklist";
 import {
   BaseRunningDinnerProps,
@@ -18,7 +18,7 @@ import {useDispatch} from "react-redux";
 import {AdminActivitiesTimeline} from "./AdminActivitiesTimeline";
 import {ParticipantRegistrations} from "./ParticipantRegistrations";
 import LinkExtern from "../../common/theme/LinkExtern";
-import {SmallTitle, Span, Subtitle} from "../../common/theme/typography/Tags";
+import {SmallTitle} from "../../common/theme/typography/Tags";
 import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";

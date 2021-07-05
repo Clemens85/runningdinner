@@ -1,6 +1,6 @@
 import React from 'react'
 import MealItem from "./MealItem";
-import {Card, CardActions, CardContent, Grid, List} from "@material-ui/core";
+import {Box, Card, CardActions, CardContent, Grid, List} from "@material-ui/core";
 import EditMealsDialog from "./EditMealsDialog";
 import {useTranslation} from "react-i18next";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
@@ -61,7 +61,9 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate, dashbo
         <CardActions>
           <Grid container justify={"flex-end"}>
             <Grid item>
-              <PrimarySuccessButtonAsync onClick={() => setEditMealsDialogOpen(true)} size={"small"}>{t('common:label_edit')}</PrimarySuccessButtonAsync>
+              <Box pr={2} mt={-2} pb={2}>
+                <PrimarySuccessButtonAsync onClick={() => setEditMealsDialogOpen(true)} size={"small"}>{t('common:label_edit')}</PrimarySuccessButtonAsync>
+              </Box>
             </Grid>
           </Grid>
         </CardActions>
