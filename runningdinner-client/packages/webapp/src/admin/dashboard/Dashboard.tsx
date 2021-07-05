@@ -2,7 +2,7 @@ import React from "react";
 import DashboardTitle from "./DashboardTitle"
 import MealsList from "./MealsList"
 import Overview from "./Overview";
-import {Box, Grid} from "@material-ui/core";
+import {Box, Grid, Hidden} from "@material-ui/core";
 import Checklist from "./Checklist";
 import {
   BaseRunningDinnerProps,
@@ -17,11 +17,11 @@ import {Helmet} from "react-helmet-async";
 import {useDispatch} from "react-redux";
 import {AdminActivitiesTimeline} from "./AdminActivitiesTimeline";
 import {ParticipantRegistrations} from "./ParticipantRegistrations";
-import LinkExtern from "../../common/theme/LinkExtern";
 import {SmallTitle} from "../../common/theme/typography/Tags";
 import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
+import {PublicRunningDinnerLink} from "./PublicRunningDinnerLink";
 
 export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
 
@@ -55,17 +55,28 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
           <DashboardTitle basicDetails={basicDetails} />
         </div>
         { !isClosedDinner(runningDinner) &&
-            <Grid container alignItems={"center"} spacing={1}>
-              <Grid item>
-                <SmallTitle>
-                  {t("common:hidden_link_text")}&nbsp;
-                  <LinkExtern href={runningDinner.publicSettings.publicDinnerUrl} title={runningDinner.publicSettings.publicDinnerUrl} />
-                </SmallTitle>
-              </Grid>
-              <Grid item>
-                <HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} />
-              </Grid>
-            </Grid> }
+            <>
+              <Hidden xsDown>
+                <Grid container alignItems={"center"} spacing={1}>
+                  <Grid item>
+                    <SmallTitle>{t("common:hidden_link_text")}&nbsp;<PublicRunningDinnerLink {... runningDinner} /></SmallTitle>
+                  </Grid>
+                  <Grid item>
+                    <HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} />
+                  </Grid>
+                </Grid>
+              </Hidden>
+              <Hidden smUp>
+                <Grid container alignItems={"center"}>
+                  <Grid item>
+                    <Box pr={1}><SmallTitle i18n={"common:hidden_link_text"}/></Box>
+                  </Grid>
+                  <Grid item><HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} /></Grid>
+                  <Grid item xs={12}><PublicRunningDinnerLink {... runningDinner} /></Grid>
+                </Grid>
+              </Hidden>
+            </>
+        }
         <Grid container justify={"center"} alignItems={"stretch"}>
           <Grid item xs={12} md={4}>
             <Box {...padding}>
