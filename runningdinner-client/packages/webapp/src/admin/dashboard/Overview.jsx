@@ -3,7 +3,7 @@ import OverviewItem from "./OverviewItem";
 import { Card, CardContent, Link }  from "@material-ui/core";
 import {useTranslation} from "react-i18next";
 import {Subtitle} from "../../common/theme/typography/Tags";
-import {isClosedDinner, LocalDate, ValueTranslate} from "@runningdinner/shared";
+import {getTruncatedText, isClosedDinner, LocalDate, ValueTranslate} from "@runningdinner/shared";
 
 export default function Overview({runningDinner}) {
 
@@ -19,7 +19,8 @@ export default function Overview({runningDinner}) {
     publicOerviewItems = [
       <OverviewItem key={0} headline={t('public_dinner_link')} content={publicDinnerUrl} />,
       <OverviewItem key={1} headline={t('public_end_of_registration_date')} content={<LocalDate date={publicSettings.endOfRegistrationDate}></LocalDate>} />,
-      <OverviewItem key={2} headline={t('public_title')} content={publicSettings.title} />
+      <OverviewItem key={2} headline={t('public_title')} content={publicSettings.title} />,
+      <OverviewItem key={3} headline={t('public_description')} content={getTruncatedText(publicSettings.description, 80)} />
     ];
   }
 

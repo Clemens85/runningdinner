@@ -4,7 +4,7 @@ import cloneDeep from "lodash/cloneDeep";
 import remove from "lodash/remove";
 import isArray from "lodash/isArray";
 import {BaseEntity} from "./types";
-
+import truncate from "lodash/truncate";
 
 /**
  * Iterates the passed list and tries to find the entity with the passed id.
@@ -140,4 +140,14 @@ export function isArrayNotEmpty<T>(arr?: Array<T>): arr is Array<T> {
 
 export function isArrayEmpty(arr?: any) {
   return !isArrayNotEmpty(arr);
+}
+
+export function getTruncatedText(text: string, limit: number) {
+  if (!text) {
+    return "";
+  }
+  if (text.length <= limit || limit <= 4) {
+    return text;
+  }
+  return truncate(text, { length: limit });
 }

@@ -17,6 +17,11 @@ import {Helmet} from "react-helmet-async";
 import {useDispatch} from "react-redux";
 import {AdminActivitiesTimeline} from "./AdminActivitiesTimeline";
 import {ParticipantRegistrations} from "./ParticipantRegistrations";
+import LinkExtern from "../../common/theme/LinkExtern";
+import {SmallTitle, Span, Subtitle} from "../../common/theme/typography/Tags";
+import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
+import Paragraph from "../../common/theme/typography/Paragraph";
+import {useTranslation} from "react-i18next";
 
 export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
 
@@ -24,6 +29,7 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
   const { meals } = runningDinner.options;
 
   const dispatch = useDispatch();
+  const {t} = useTranslation();
 
   React.useEffect(() => {
     dispatch(fetchAdminActivities(adminId));
@@ -48,6 +54,18 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
         <div>
           <DashboardTitle basicDetails={basicDetails} />
         </div>
+        { !isClosedDinner(runningDinner) &&
+            <Grid container alignItems={"center"} spacing={1}>
+              <Grid item>
+                <SmallTitle>
+                  {t("common:hidden_link_text")}&nbsp;
+                  <LinkExtern href={runningDinner.publicSettings.publicDinnerUrl} title={runningDinner.publicSettings.publicDinnerUrl} />
+                </SmallTitle>
+              </Grid>
+              <Grid item>
+                <HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} />
+              </Grid>
+            </Grid> }
         <Grid container justify={"center"} alignItems={"stretch"}>
           <Grid item xs={12} md={4}>
             <Box {...padding}>
