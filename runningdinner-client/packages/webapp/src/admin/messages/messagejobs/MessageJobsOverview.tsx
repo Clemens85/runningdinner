@@ -1,8 +1,18 @@
 import React from "react";
 import {Box, LinearProgress, Paper, TableCell, TableRow} from "@material-ui/core";
 import {Span, Subtitle} from "../../../common/theme/typography/Tags";
-import {queryNotFinishedMessageJobsAsync, useMessagesDispatch, useMessagesState} from "../MessagesContext";
-import {isArrayEmpty, Time, LocalDate, formatLocalDateWithSeconds} from "@runningdinner/shared";
+import {
+  formatLocalDateWithSeconds,
+  getMessageJobsLastPollDate,
+  getMessageJobsSelector,
+  isArrayEmpty, isArrayNotEmpty,
+  LocalDate,
+  MessageJob,
+  MessageTypeAdminIdPayload,
+  queryNotFinishedMessageJobs,
+  Time,
+  useAdminSelector
+} from "@runningdinner/shared";
 import Grid from "@material-ui/core/Grid";
 import {MessageJobStatus} from "./MessageJobStatus";
 import Paragraph from "../../../common/theme/typography/Paragraph";
@@ -12,22 +22,25 @@ import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
 import {useAdminNavigation} from "../../AdminNavigationHook";
+import {useDispatch} from "react-redux";
+import {FetchStatus} from "@runningdinner/shared/src/redux";
 
-function MessageJobsOverview({adminId}) {
+export function MessageJobsOverview({adminId, messageType}: MessageTypeAdminIdPayload) {
 
-  const {messageJobs, messageType, lastPollDate, messageJobsLoading} = useMessagesState();
-  const dispatch = useMessagesDispatch();
+  const {data: messageJobs, fetchStatus: messageJobsFetchStatus} = useAdminSelector(getMessageJobsSelector);
+  const lastPollDate = useAdminSelector(getMessageJobsLastPollDate);
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
-    if (!messageJobsLoading) {
-      queryNotFinishedMessageJobsAsync(adminId, messageJobs, messageType, dispatch);
+    if (messageJobsFetchStatus !== FetchStatus.LOADING && isArrayNotEmpty(messageJobs)) {
+      dispatch(queryNotFinishedMessageJobs(messageJobs));
     }
-  }, [messageJobs, adminId, messageType, lastPollDate, messageJobsLoading, dispatch]);
+  }, [messageJobs, lastPollDate, messageJobsFetchStatus, dispatch]);
 
   const lastPollDateFormatted = formatLocalDateWithSeconds(lastPollDate);
   const classes = useCommonStyles();
 
-  if (messageJobsLoading) {
+  if (!messageJobs) {
     return <LinearProgress color="secondary" />;
   }
 
@@ -58,7 +71,11 @@ function MessageJobsOverview({adminId}) {
   );
 }
 
-function MessageJobsTable({adminId, messageJobs}) {
+interface MessageJobsTableProps {
+  adminId: string;
+  messageJobs: MessageJob[];
+}
+function MessageJobsTable({adminId, messageJobs}: MessageJobsTableProps) {
 
   const messageJobRows = messageJobs
                           .map(messageJob => <MessageJobRow key={messageJob.id} messageJob={messageJob} adminId={adminId}/>);
@@ -74,13 +91,17 @@ function MessageJobsTable({adminId, messageJobs}) {
   );
 }
 
-function MessageJobRow({adminId, messageJob}) {
+interface MessageJobRowProps {
+  adminId: string;
+  messageJob: MessageJob;
+}
+function MessageJobRow({adminId, messageJob}: MessageJobRowProps) {
 
   const classes = useCommonStyles();
   const {generateMessageJobDetailsPath} = useAdminNavigation();
 
   const handleMessageJobClick = () => {
-    window.open(generateMessageJobDetailsPath(adminId, messageJob.id), '_blank');
+    window.open(generateMessageJobDetailsPath(adminId, messageJob.id!), '_blank');
   };
 
   return (
@@ -97,7 +118,3 @@ function MessageJobRow({adminId, messageJob}) {
       </TableRow>
   );
 }
-
-export {
-  MessageJobsOverview
-};

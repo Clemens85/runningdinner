@@ -74,7 +74,7 @@ export default function MessageContent({templates, onMessageContentChange, name,
   };
 
 
-  const hasErrors = errors[name] ? true : false;
+  const hasErrors = !!errors[name];
   const helperTextToDisplay = hasErrors ? errors[name].message : helperText;
 
   return (

@@ -10,8 +10,7 @@ import {
   getExampleParticipantMessage,
   getExampleTeamMessage,
   getMessagePreviewAsync,
-  getStatusResult,
-  isArrayNotEmpty,
+  isArrayNotEmpty, isOneMessageJobNotFinished,
   isStringEmpty,
   MessageJob,
   MessageType,
@@ -22,7 +21,6 @@ import {
   TeamMessage
 } from "@runningdinner/shared";
 import debounce from 'lodash/debounce';
-import find from "lodash/find";
 import cloneDeep from "lodash/cloneDeep";
 
 // See https://kentcdodds.com/blog/how-to-use-react-context-effectively
@@ -397,13 +395,6 @@ const queryNotFinishedMessageJobsAsync = debounce((adminId: string, messageJobs:
         });
   }
 }, 1500);
-
-function isOneMessageJobNotFinished(messageJobs: MessageJob[]) {
-  return find(messageJobs, function(messageJob) {
-    const status = getStatusResult(messageJob);
-    return status === CONSTANTS.SENDING_STATUS_RESULT.SENDING_NOT_FINISHED;
-  });
-}
 
 function isMailMessageValid<T extends BaseMessage>(messageObject: T, messageType: MessageType, selectedRecipient?: Recipient) {
   const {subject, message} = messageObject;

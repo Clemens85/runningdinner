@@ -3,7 +3,7 @@ import { isTeam } from "../TeamService";
 import {useTeamNameMembers} from "../teams/TeamNameMembersHook";
 import {Participant, Recipient, Team} from "../../types";
 
-export function useRecipientName(recipient: Recipient) {
+export function useRecipientName(recipient?: Recipient) {
 
   const {getTeamNameMembers} = useTeamNameMembers();
 

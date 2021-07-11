@@ -1,85 +1,90 @@
-import {Box, Grid, LinearProgress, Paper} from "@material-ui/core";
+import {Box, Grid, Paper} from "@material-ui/core";
 import {PageTitle} from "../../common/theme/typography/Tags";
 import {FormProvider, useForm} from "react-hook-form";
-import React from "react";
+import React, {useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {MessageJobsOverview} from "./messagejobs/MessageJobsOverview";
 import MessageHeadline from "./MessageHeadline";
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import MessageSubject from "./MessageSubject";
 import MessageContent from "./MessageContent";
-import {
-  ADD_MESSAGEJOB,
-  MessagesFetchData,
-  MessagesProvider,
-  newAction,
-  updateHostMessagePartTemplatePreviewAsync,
-  updateMessageContentPreviewAsync,
-  updateMessageSubjectPreviewAsync,
-  updateNonHostMessagePartTemplatePreviewAsync,
-  useMessagesDispatch,
-  useMessagesState
-} from "./MessagesContext";
 import {RecipientSelection} from "./RecipientSelection";
 import {MessagePreview} from "./MessagePreview";
 import {
+  BaseAdminIdProps,
   BaseMessage,
+  fetchInitialMessageData,
   getExampleParticipantMessage,
   getExampleTeamMessage,
   MessageType,
   PARTICIPANT_MESSAGE_VALIDATION_SCHEMA,
-  sendMessagesAsync,
+  sendMessages,
   TEAM_MESSAGE_VALIDATION_SCHEMA,
+  updateHostMessagePartTemplatePreviewAsync,
+  updateMessageContentPreviewAsync,
+  updateMessageSubjectPreviewAsync,
+  updateNonHostMessagePartTemplatePreviewAsync,
   useBackendIssueHandler
 } from "@runningdinner/shared";
-import {enhanceMessageObjectWithCustomSelectedRecipients} from "./MessagesContext";
 import {Helmet} from "react-helmet-async";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
+import {useDispatch} from "react-redux";
 
 
-export interface BaseMessagesProps {
-  adminId: string;
-}
-
-export function TeamMessages({adminId}: BaseMessagesProps) {
+export function TeamMessages({adminId}: BaseAdminIdProps) {
   const {t} = useTranslation(['admin']);
-  const exampleMessage = getExampleTeamMessage();
   const templates = ['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'];
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchInitialMessageData(adminId, MessageType.MESSAGE_TYPE_TEAMS))
+  }, [dispatch, adminId]);
+
   return (
-      <MessagesProvider messageType={MessageType.MESSAGE_TYPE_TEAMS}>
-        <MessagesFetchData adminId={adminId}>
-          <MessagesView adminId={adminId} exampleMessage={exampleMessage} validationSchema={TEAM_MESSAGE_VALIDATION_SCHEMA} templates={templates}/>
-        </MessagesFetchData>
-        <Helmet>
-          <title>{t('admin:mails_send_teams_title')}</title>
-        </Helmet>
-      </MessagesProvider>
+    <>
+      <MessagesView adminId={adminId}
+                    exampleMessage={getExampleTeamMessage()}
+                    validationSchema={TEAM_MESSAGE_VALIDATION_SCHEMA}
+                    templates={templates}
+                    messageType={MessageType.MESSAGE_TYPE_TEAMS}/>
+      <Helmet>
+        <title>{t('admin:mails_send_teams_title')}</title>
+      </Helmet>
+    </>
   );
 }
 
-export function ParticipantMessages({adminId}: BaseMessagesProps) {
+export function ParticipantMessages({adminId}: BaseAdminIdProps) {
   const {t} = useTranslation(['admin']);
-  const exampleMessage = getExampleParticipantMessage();
   const templates = ['{firstname}', '{lastname}'];
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchInitialMessageData(adminId, MessageType.MESSAGE_TYPE_PARTICIPANTS))
+  }, [dispatch, adminId]);
+
   return (
-      <MessagesProvider messageType={MessageType.MESSAGE_TYPE_PARTICIPANTS}>
-        <MessagesFetchData adminId={adminId}>
-          <MessagesView adminId={adminId} exampleMessage={exampleMessage} validationSchema={PARTICIPANT_MESSAGE_VALIDATION_SCHEMA} templates={templates}/>
-          <Helmet>
-            <title>{t('admin:mails_send_participants_title')}</title>
-          </Helmet>
-        </MessagesFetchData>
-      </MessagesProvider>
+    <>
+      <MessagesView adminId={adminId}
+                    exampleMessage={getExampleParticipantMessage()}
+                    validationSchema={PARTICIPANT_MESSAGE_VALIDATION_SCHEMA}
+                    templates={templates}
+                    messageType={MessageType.MESSAGE_TYPE_PARTICIPANTS} />
+      <Helmet>
+        <title>{t('admin:mails_send_participants_title')}</title>
+      </Helmet>
+    </>
   );
 }
 
-interface MessagesViewProps<T extends BaseMessage> extends BaseMessagesProps {
+interface MessagesViewProps<T extends BaseMessage> extends BaseAdminIdProps {
   exampleMessage: T;
-  validationSchema: any;
+  validationSchema?: any;
   templates: string[];
+  messageType: MessageType
 }
 
-function MessagesView<T extends BaseMessage>({adminId, exampleMessage, validationSchema, templates}: MessagesViewProps<T>) {
+function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates, messageType}: MessagesViewProps<T>) {
 
   const {t} = useTranslation(['admin', 'common']);
 
@@ -90,8 +95,8 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, validatio
   });
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
-  const {loadingData, messageType, customSelectedRecipients} = useMessagesState();
-  const dispatch = useMessagesDispatch();
+  //const {loadingData, messageType, customSelectedRecipients} = useMessagesState();
+  const dispatch = useDispatch();
 
   const formMethods = useForm({
     // @ts-ignore
@@ -105,23 +110,17 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, validatio
   const handleSendMessages = async (values: T) => {
     clearErrors();
     try {
-      const messageObj = enhanceMessageObjectWithCustomSelectedRecipients(values, messageType, customSelectedRecipients);
-      const newMessageJob = await sendMessagesAsync(adminId, messageObj, messageType, false);
-      dispatch(newAction(ADD_MESSAGEJOB, newMessageJob));
+      await dispatch(sendMessages(values));
     } catch(e) {
       applyValidationIssuesToForm(e, setError);
       showHttpErrorDefaultNotification(e);
     }
   };
 
-  const handleMessageContentChange = (content: string) => updateMessageContentPreviewAsync(content, dispatch);
-  const handleMessageSubjectChange = (subject: string) => updateMessageSubjectPreviewAsync(subject, dispatch);
-  const handleNonHostMessagePartTemplateChange = (changedValue: string) => updateNonHostMessagePartTemplatePreviewAsync(changedValue, dispatch);
-  const handleHostMessagePartTemplateChange = (changedValue: string) => updateHostMessagePartTemplatePreviewAsync(changedValue, dispatch);
-
-  if (loadingData) {
-    return <LinearProgress color="secondary" />;
-  }
+  const handleMessageContentChange = (content: string) => updateMessageContentPreviewAsync(content);
+  const handleMessageSubjectChange = (subject: string) => updateMessageSubjectPreviewAsync(subject);
+  const handleNonHostMessagePartTemplateChange = (changedValue: string) => updateNonHostMessagePartTemplatePreviewAsync(changedValue);
+  const handleHostMessagePartTemplateChange = (changedValue: string) => updateHostMessagePartTemplatePreviewAsync(changedValue);
 
   // @ts-ignore
   return (
@@ -144,7 +143,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, validatio
                     <Grid container>
                       <Grid item xs={12}><MessageHeadline /></Grid>
                       <Grid item xs={12}>
-                        <RecipientSelection />
+                        <RecipientSelection messageType={messageType} adminId={adminId} />
                         <MessageSubject onMessageSubjectChange={handleMessageSubjectChange}/>
                         <MessageContent templates={templates}
                                         onMessageContentChange={handleMessageContentChange}
@@ -190,13 +189,13 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, validatio
 
               <Grid item xs={12} lg={5}>
                 <Grid item xs={12}>
-                  <MessageJobsOverview adminId={adminId} />
+                  <MessageJobsOverview adminId={adminId} messageType={messageType} />
                 </Grid>
                 <Grid item xs={12}>
                   <Box mt={3}>
                     <Paper elevation={3}>
                       <Box p={2}>
-                        <MessagePreview adminId={adminId} />
+                        <MessagePreview adminId={adminId} messageType={messageType} />
                       </Box>
                     </Paper>
                   </Box>

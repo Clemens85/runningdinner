@@ -4,7 +4,7 @@ import {TypedUseSelectorHook, useSelector} from "react-redux";
 import { combineReducers } from 'redux';
 import {adminSlice} from "./AdminSlice";
 import {dashboardSlice} from "./DashboardSlice";
-import {WizardRootState} from "@runningdinner/shared";
+import {messagesSlice} from "./MessagesSlice";
 
 const customizedMiddleware = getDefaultMiddleware({
   serializableCheck: false // I want to use Dates in Redux for now (no persistence of store needed for now...)
@@ -14,7 +14,8 @@ const middleware = [...customizedMiddleware, logger];
 export const adminStore = configureStore({
   reducer: combineReducers({
     root: adminSlice,
-    dashboard: dashboardSlice
+    dashboard: dashboardSlice,
+    messages: messagesSlice,
   }),
   middleware
 });

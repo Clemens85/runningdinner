@@ -35,7 +35,7 @@ export function fetchAdminActivities(adminId: string) : AdminThunk {
   };
 }
 
-export function fetchAdminActivitiesDetails(adminId: string, dashboardAdminActivities: DashboardAdminActivities) : AdminThunk {
+function fetchAdminActivitiesDetails(adminId: string, dashboardAdminActivities: DashboardAdminActivities) : AdminThunk {
   return async (dispatch) => {
     dispatch(fetchAdminActivitiesPending()) // Just reuse existing actions due to they match exactly our needs
     try {

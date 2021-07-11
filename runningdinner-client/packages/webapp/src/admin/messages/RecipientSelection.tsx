@@ -1,67 +1,75 @@
 import React from "react";
-import { Box, MenuItem, Typography, IconButton } from "@material-ui/core";
+import {Box, IconButton, LinearProgress, MenuItem, Typography} from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import FormSelect from "../../common/input/FormSelect";
 import {SingleSelectionDialog} from "./SingleSelectionDialog";
 import {
-  isArrayNotEmpty,
+  CallbackHandler,
   CONSTANTS,
+  getNumberOfSelectedRecipients,
+  isArrayNotEmpty,
   isStringEmpty,
-  useTeamSelectionOptions,
-  useRecipientName,
-  useParticipantSelectionOptions,
   MessageType,
-  getNumberOfSelectedRecipients
+  Recipient,
+  useAdminSelector,
+  useParticipantSelectionOptions,
+  useRecipientName,
+  useTeamSelectionOptions
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {SmallTitle, Span} from "../../common/theme/typography/Tags";
-import {
-  START_EDIT_CUSTOM_SELECTED_RECIPIENTS,
-  newAction,
-  RECIPIENTS_SELECTION_CHANGE,
-  useMessagesDispatch,
-  useMessagesState,
-  FINISH_EDIT_CUSTOM_SELECTED_RECIPIENTS
-} from "./MessagesContext";
 import {useFormContext} from "react-hook-form";
+import {
+  finishEditCustomSelectedRecipients,
+  getRecipientsSelector,
+  MessageTypeAdminIdPayload,
+  startEditCustomSelectedRecipients,
+  updateRecipientSelection
+} from "@runningdinner/shared";
+import {useDispatch} from "react-redux";
+import {FetchStatus} from "@runningdinner/shared/src/redux";
 
-function RecipientSelection() {
+function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
 
   const {t} = useTranslation('admin');
-  const dispatch = useMessagesDispatch();
+  const dispatch = useDispatch();
   const { setValue, watch } = useFormContext();
-  const {recipients, recipientSelection, customSelectedRecipients, showCustomSelectionDialog, messageType} = useMessagesState();
+  const {recipients, recipientSelection, customSelectedRecipients, showCustomSelectionDialog} = useAdminSelector(getRecipientsSelector);
+
+  const teamSelectionOptions = useTeamSelectionOptions();
+  const participantSelectionOptions = useParticipantSelectionOptions();
 
   const name = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? "participantSelection" : "teamSelection";
   const label = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? t("participant_selection_text") : t("admin:team_selection_text");
 
   const currentRecipientSelectionValue = watch(name);
   React.useEffect(() => {
-    dispatch(newAction(RECIPIENTS_SELECTION_CHANGE, currentRecipientSelectionValue));
+    dispatch(updateRecipientSelection(currentRecipientSelectionValue));
   }, [currentRecipientSelectionValue, dispatch]);
 
   React.useEffect(() => {
     setValue(name, recipientSelection);
   }, [recipientSelection, name, setValue]);
 
-  const teamSelectionOptions = useTeamSelectionOptions();
-  const participantSelectionOptions = useParticipantSelectionOptions();
+  if (recipients.fetchStatus !== FetchStatus.SUCCEEDED) {
+    return <LinearProgress variant={"indeterminate"} />;
+  }
+
   let recipientSelectionOptions = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? participantSelectionOptions : teamSelectionOptions;
-  recipientSelectionOptions = recipientSelectionOptions.map((selectionOption) =>
-      <MenuItem value={selectionOption.value} key={selectionOption.value}>{selectionOption.label}</MenuItem>
-  );
 
-  const handleStartEditCustomSelectedRecipients = () => dispatch(newAction(START_EDIT_CUSTOM_SELECTED_RECIPIENTS));
-  const handleFinishEditCustomSelectedRecipients = customSelectedEntities => dispatch(newAction(FINISH_EDIT_CUSTOM_SELECTED_RECIPIENTS, customSelectedEntities));
+  const handleStartEditCustomSelectedRecipients = () => dispatch(startEditCustomSelectedRecipients());
+  const handleFinishEditCustomSelectedRecipients = (customSelectedEntities: Recipient[]) => dispatch(finishEditCustomSelectedRecipients(customSelectedEntities));
 
-  const numberOfRecipients = getNumberOfSelectedRecipients(recipients, recipientSelection);
+  const numberOfRecipients = getNumberOfSelectedRecipients(recipients.data || [], recipientSelection);
   return (
       <Box mb={3} mt={2}>
         <FormSelect name={name}
                     label={label}
                     displayEmpty
                     fullWidth>
-          {recipientSelectionOptions}
+          { recipientSelectionOptions.map((selectionOption) =>
+              <MenuItem value={selectionOption.value} key={selectionOption.value}>{selectionOption.label}</MenuItem>
+          )}
         </FormSelect>
         <SelectionHelperText currentSelection={recipientSelection}
                              messageType={messageType}
@@ -69,14 +77,22 @@ function RecipientSelection() {
                              numberOfSelectedRecipients={numberOfRecipients}
                              onEditCustomSelectedEntities={handleStartEditCustomSelectedRecipients} />
         { showCustomSelectionDialog && <SingleSelectionDialog open={showCustomSelectionDialog}
-                                                              selectableEntities={recipients}
+                                                              selectableEntities={recipients.data || []}
                                                               customSelectedEntities={customSelectedRecipients}
                                                               onClose={handleFinishEditCustomSelectedRecipients} /> }
       </Box>
   );
 }
 
-function SelectionHelperText({messageType, currentSelection, customSelectedEntities, onEditCustomSelectedEntities, numberOfSelectedRecipients}) {
+
+interface SelectionHelperTextProps {
+  messageType: MessageType;
+  customSelectedEntities?: Recipient[];
+  currentSelection: string;
+  numberOfSelectedRecipients: number | null;
+  onEditCustomSelectedEntities: CallbackHandler;
+}
+function SelectionHelperText({messageType, currentSelection, customSelectedEntities, onEditCustomSelectedEntities, numberOfSelectedRecipients}: SelectionHelperTextProps) {
 
   const {t} = useTranslation(['admin', 'common']);
 

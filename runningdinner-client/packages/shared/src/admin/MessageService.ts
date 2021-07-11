@@ -15,13 +15,15 @@ import {
   ParticipantMessage,
   ParticipantSelection,
   PreviewMessageList,
+  Recipient,
   SendingStatus,
   TeamMessage,
   TeamSelection
 } from "../types";
 import {CONSTANTS} from "../Constants";
+import find from "lodash/find";
 
-export async function findMessageJobsByAdminIdAndTypeAsync(adminId: string, messageType: MessageType): Promise<MessageJob> {
+export async function findMessageJobsByAdminIdAndTypeAsync(adminId: string, messageType: MessageType): Promise<MessageJob[]> {
   const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs?messageType=${messageType}`);
   const response = await axios.get(url);
   return response.data;
@@ -33,7 +35,7 @@ export async function findMessageJobOverviewByAdminIdAndMessageJobId(adminId: st
   return response.data;
 }
 
-export async function sendMessagesAsync<T extends BaseMessage>(adminId: string, messageObject: T, messageType: MessageType, sendToDinnerOwner: boolean) {
+export async function sendMessagesAsync<T extends BaseMessage>(adminId: string, messageObject: T, messageType: MessageType, sendToDinnerOwner: boolean): Promise<MessageJob> {
   const sendToDinnerOwnerStr = sendToDinnerOwner === true ? 'true' : 'false';
   const recipientType = mapRecipientType(messageType);
   const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/${recipientType}?sendToDinnerOwner=${sendToDinnerOwnerStr}`);
@@ -101,6 +103,13 @@ export function getStatusResult(messageJobOrTask: MessageJob | MessageTask): str
   }
 }
 
+export function isOneMessageJobNotFinished(messageJobs: MessageJob[]) {
+  return find(messageJobs, function(messageJob) {
+    const status = getStatusResult(messageJob);
+    return status === CONSTANTS.SENDING_STATUS_RESULT.SENDING_NOT_FINISHED;
+  });
+}
+
 export function getExampleParticipantMessage(): ParticipantMessage {
   return {
     subject: '',
@@ -129,7 +138,7 @@ export function getExampleTeamMessage(): TeamMessage {
   };
 }
 
-export function getNumberOfSelectedRecipients(recipients: Participant[], recipientSelection: string): number | null {
+export function getNumberOfSelectedRecipients(recipients: Recipient[], recipientSelection: string): number | null {
   if (isArrayEmpty(recipients) || isStringEmpty(recipientSelection) ||
       recipientSelection === CONSTANTS.PARTICIPANT_SELECTION.CUSTOM_SELECTION || recipientSelection === CONSTANTS.TEAM_SELECTION.CUSTOM_SELECTION) {
     return null;
@@ -137,7 +146,7 @@ export function getNumberOfSelectedRecipients(recipients: Participant[], recipie
   if (recipientSelection === CONSTANTS.PARTICIPANT_SELECTION.ALL || recipientSelection === CONSTANTS.TEAM_SELECTION.ALL) {
     return recipients.length;
   }
-  return _getNumberOfSelectedParticipants(recipients, recipientSelection);
+  return _getNumberOfSelectedParticipants(recipients as Participant[], recipientSelection);
 }
 
 function _getNumberOfSelectedParticipants(participants: Participant[], participantSelection: string): number | null {
