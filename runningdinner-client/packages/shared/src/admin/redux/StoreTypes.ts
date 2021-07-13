@@ -1,6 +1,9 @@
 import {
   ActivityList, BaseMessage,
-  DashboardAdminActivities, getExampleParticipantMessage, MessageJob,
+  DashboardAdminActivities,
+  getExampleParticipantMessage,
+  HttpError,
+  MessageJob,
   MessageType,
   Participant, PreviewMessage,
   Recipient,

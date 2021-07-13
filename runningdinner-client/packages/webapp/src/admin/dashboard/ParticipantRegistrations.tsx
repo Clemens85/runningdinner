@@ -57,10 +57,10 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
           { hasNoRegistrations && <NoRegistrations /> }
           { isArrayNotEmpty(participantActivityList?.activities) &&
             <List>
-              { participantActivityList!.activities.map((activity, index) => <ParticipantRegistrationRow key={index}
-                                                                                                                         adminId={adminId}
-                                                                                                                         participantActivity={activity}
-                                                                                                                         onShowConfirmSubscriptionActivationDialog={() => open(activity)} />) }
+              { participantActivityList!.activities.map((activity: Activity, index: number) => <ParticipantRegistrationRow key={index}
+                                                                                                                           adminId={adminId}
+                                                                                                                           participantActivity={activity}
+                                                                                                                           onShowConfirmSubscriptionActivationDialog={() => open(activity)} />) }
             </List>
           }
           { showMoreLink &&

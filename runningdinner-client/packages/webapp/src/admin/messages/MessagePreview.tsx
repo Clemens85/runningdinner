@@ -10,6 +10,7 @@ import {
   getRecipientsPreviewSelector,
   isArrayEmpty,
   MessageTypeAdminIdPayload,
+  PreviewMessage,
   Recipient,
   updateRecipientForPreviewById,
   useAdminSelector,
@@ -39,7 +40,7 @@ export function MessagePreview({adminId, messageType}: MessageTypeAdminIdPayload
     );
   }
 
-  const previewMessageNodes = previewMessages.map((previewMessage, index) =>
+  const previewMessageNodes = previewMessages.map((previewMessage: PreviewMessage, index: number) =>
       <Box mt={1} key={index}>
         <PaperGrey variant={"outlined"} square>
           <Box p={1} style={{overflowX: 'scroll'}}>

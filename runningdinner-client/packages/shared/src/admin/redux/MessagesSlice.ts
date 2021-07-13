@@ -1,5 +1,5 @@
 import {handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../../redux";
-import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
+import {AnyAction, createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {ThunkDispatch} from "redux-thunk";
 import debounce from "lodash/debounce";
 import cloneDeep from "lodash/cloneDeep";
@@ -72,7 +72,8 @@ const fetchRecipients = createAsyncThunk(
   async (props: MessageTypeAdminIdPayload) => {
     const {adminId, messageType} = props;
     const recipientsRequest = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? findParticipantsAsync(adminId) : findTeamsNotCancelledAsync(adminId);
-    return await recipientsRequest;
+    const result = await recipientsRequest;
+    return result as Recipient[];
   }
 );
 
@@ -82,7 +83,11 @@ export const sendMessages = createAsyncThunk(
     const currentState = thunkAPI.getState() as AdminStateType;
     const {adminId, messageType, customSelectedRecipients} = currentState.messages;
     const enhancedMessageObj = enhanceMessageObjectWithCustomSelectedRecipients(baseMessageObj, messageType, customSelectedRecipients);
-    return await sendMessagesAsync(adminId, enhancedMessageObj, messageType, false);
+    try {
+      return await sendMessagesAsync(adminId, enhancedMessageObj, messageType, false);
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e);
+    }
   }
 );
 
@@ -97,14 +102,14 @@ export function fetchInitialMessageData(adminId: string, messageType: MessageTyp
 export function queryNotFinishedMessageJobs(messageJobs: MessageJob[]) : AdminThunk {
   return async (dispatch, getState) => {
     const {adminId, messageType} = getState().messages;
-    debounce(() => {
+    // debounce(() => {
       if (isArrayNotEmpty(messageJobs) && isOneMessageJobNotFinished(messageJobs)) {
         findMessageJobsByAdminIdAndTypeAsync(adminId, messageType)
           .then((messageJobs) => {
             dispatch(updateMessageJobs(messageJobs));
           });
       }
-    }, 1500);
+    // }, 1500);
   };
 }
 
@@ -118,7 +123,6 @@ export function recalculatePreviewMessages() : AdminThunk {
     dispatch(recalculatePreviewMessagesPending());
     try {
       const response = await getMessagePreviewAsync(adminId, messageObject, selectedRecipientForPreview!, messageType);
-      // setPreviewMessagesAsync(response.previewMessageList);
       dispatch(recalculatePreviewMessagesSucceeded(response.previewMessageList));
     } catch (err) {
       dispatch(recalculatePreviewMessagesRejected(err));
@@ -169,8 +173,15 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
   .addCase(sendMessages.fulfilled, (state, action) => {
     const messageJobs = state.messageJobs.data || [];
     state.messageJobs.data = messageJobs.concat(action.payload);
+    // state.sendMessagesError = undefined;
     // Other states (pending | rejected) won't need to be handled in here, due to form handles it
   })
+  // .addCase(sendMessages.rejected, (state, action) => {
+  //   state.sendMessagesError = action.payload;
+  // })
+  // .addCase(sendMessages.pending, (state) => {
+  //   state.sendMessagesError = undefined;
+  // })
   .addCase(updateRecipientSelection, (state, action) => {
     state.previousSelection = state.recipientSelection;
     state.recipientSelection = action.payload;
@@ -268,7 +279,7 @@ export const updateHostMessagePartTemplatePreviewAsync = debounce((value) => {
 }, 150);
 
 function getThunkDispatch() {
-  return adminStore.dispatch as ThunkDispatch<any, any, any>;
+  return adminStore.dispatch as ThunkDispatch<AdminStateType, void, AnyAction>;
 }
 
 function setFirstRecipientForPreviewIfNeeded(state: MessagesState) {

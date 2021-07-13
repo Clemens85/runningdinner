@@ -23,12 +23,13 @@ import {
   updateHostMessagePartTemplatePreviewAsync,
   updateMessageContentPreviewAsync,
   updateMessageSubjectPreviewAsync,
-  updateNonHostMessagePartTemplatePreviewAsync,
+  updateNonHostMessagePartTemplatePreviewAsync, useAdminSelector,
   useBackendIssueHandler
 } from "@runningdinner/shared";
 import {Helmet} from "react-helmet-async";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {useDispatch} from "react-redux";
+import {useAdminDispatch} from "@runningdinner/shared/src/admin/redux/AdminStoreDefinitions";
 
 
 export function TeamMessages({adminId}: BaseAdminIdProps) {
@@ -58,7 +59,7 @@ export function ParticipantMessages({adminId}: BaseAdminIdProps) {
   const {t} = useTranslation(['admin']);
   const templates = ['{firstname}', '{lastname}'];
 
-  const dispatch = useDispatch();
+  const dispatch = useAdminDispatch();
   useEffect(() => {
     dispatch(fetchInitialMessageData(adminId, MessageType.MESSAGE_TYPE_PARTICIPANTS))
   }, [dispatch, adminId]);
@@ -95,8 +96,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   });
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
-  //const {loadingData, messageType, customSelectedRecipients} = useMessagesState();
-  const dispatch = useDispatch();
+  const dispatch = useAdminDispatch();
 
   const formMethods = useForm({
     // @ts-ignore
@@ -110,7 +110,8 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   const handleSendMessages = async (values: T) => {
     clearErrors();
     try {
-      await dispatch(sendMessages(values));
+      await dispatch(sendMessages(values))
+              .unwrap();
     } catch(e) {
       applyValidationIssuesToForm(e, setError);
       showHttpErrorDefaultNotification(e);

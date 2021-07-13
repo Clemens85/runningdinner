@@ -5,7 +5,8 @@ import {
   formatLocalDateWithSeconds,
   getMessageJobsLastPollDate,
   getMessageJobsSelector,
-  isArrayEmpty, isArrayNotEmpty,
+  isArrayEmpty,
+  isArrayNotEmpty,
   LocalDate,
   MessageJob,
   MessageTypeAdminIdPayload,
@@ -33,7 +34,7 @@ export function MessageJobsOverview({adminId, messageType}: MessageTypeAdminIdPa
 
   React.useEffect(() => {
     if (messageJobsFetchStatus !== FetchStatus.LOADING && isArrayNotEmpty(messageJobs)) {
-      dispatch(queryNotFinishedMessageJobs(messageJobs));
+      dispatch(queryNotFinishedMessageJobs(messageJobs as MessageJob[]));
     }
   }, [messageJobs, lastPollDate, messageJobsFetchStatus, dispatch]);
 

@@ -34,9 +34,9 @@
     "yup": "^0.28.3",
     "@hookform/resolvers": "^1.3.4",
     "@runningdinner/shared": "*",
-    "react-redux": "^7.2.2",
+    "react-redux": "^7.2.4",
     "redux-logger": "^3.0.6",
-    "@reduxjs/toolkit": "^1.5.0",
+    "@reduxjs/toolkit": "^1.6.0",
     "@react-google-maps/api": "^2.1.1",
     "react-geocode": "^0.2.3"
   },
@@ -52,8 +52,8 @@
     "typescript": "~4.1.0",
     "@types/lodash": "^4.14.168",
     "@types/yup": "^0.29.6",
-    "@types/react-redux": "^7.1.16",
-    "@types/redux-logger": "^3.0.8"
+    "@types/react-redux": "^7.1.18",
+    "@types/redux-logger": "^3.0.9"
   },
   "scripts": {
     "start": "cross-env SKIP_PREFLIGHT_CHECK=true HTTPS=true react-app-rewired start",
