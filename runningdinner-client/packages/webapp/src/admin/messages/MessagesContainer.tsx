@@ -23,12 +23,11 @@ import {
   updateHostMessagePartTemplatePreviewAsync,
   updateMessageContentPreviewAsync,
   updateMessageSubjectPreviewAsync,
-  updateNonHostMessagePartTemplatePreviewAsync, useAdminSelector,
+  updateNonHostMessagePartTemplatePreviewAsync,
   useBackendIssueHandler
 } from "@runningdinner/shared";
 import {Helmet} from "react-helmet-async";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
-import {useDispatch} from "react-redux";
 import {useAdminDispatch} from "@runningdinner/shared/src/admin/redux/AdminStoreDefinitions";
 
 
@@ -36,7 +35,7 @@ export function TeamMessages({adminId}: BaseAdminIdProps) {
   const {t} = useTranslation(['admin']);
   const templates = ['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'];
 
-  const dispatch = useDispatch();
+  const dispatch = useAdminDispatch();
   useEffect(() => {
     dispatch(fetchInitialMessageData(adminId, MessageType.MESSAGE_TYPE_TEAMS))
   }, [dispatch, adminId]);
