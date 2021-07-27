@@ -102,16 +102,19 @@ export function fetchInitialMessageData(adminId: string, messageType: MessageTyp
 export function queryNotFinishedMessageJobs(messageJobs: MessageJob[]) : AdminThunk {
   return async (dispatch, getState) => {
     const {adminId, messageType} = getState().messages;
-    // debounce(() => {
-      if (isArrayNotEmpty(messageJobs) && isOneMessageJobNotFinished(messageJobs)) {
-        findMessageJobsByAdminIdAndTypeAsync(adminId, messageType)
-          .then((messageJobs) => {
-            dispatch(updateMessageJobs(messageJobs));
-          });
-      }
-    // }, 1500);
+    executeFindMessageJobsDebounced(adminId, messageType, messageJobs);
   };
 }
+
+const executeFindMessageJobsDebounced = debounce((adminId: string, messageType: MessageType, messageJobs: MessageJob[]) => {
+  if (isArrayNotEmpty(messageJobs) && isOneMessageJobNotFinished(messageJobs)) {
+    const dispatch = getThunkDispatch();
+    findMessageJobsByAdminIdAndTypeAsync(adminId, messageType)
+      .then((messageJobs) => {
+        dispatch(updateMessageJobs(messageJobs));
+      });
+  }
+}, 1500);
 
 export function recalculatePreviewMessages() : AdminThunk {
   return async (dispatch, getState) => {
@@ -173,15 +176,8 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
   .addCase(sendMessages.fulfilled, (state, action) => {
     const messageJobs = state.messageJobs.data || [];
     state.messageJobs.data = messageJobs.concat(action.payload);
-    // state.sendMessagesError = undefined;
-    // Other states (pending | rejected) won't need to be handled in here, due to form handles it
+    // Other states (pending | rejected) won't need to be handled in here, due to form handles ithhttps://github.com/Clemens85/Net.gitttps://github.com/Clemens85/Net.git
   })
-  // .addCase(sendMessages.rejected, (state, action) => {
-  //   state.sendMessagesError = action.payload;
-  // })
-  // .addCase(sendMessages.pending, (state) => {
-  //   state.sendMessagesError = undefined;
-  // })
   .addCase(updateRecipientSelection, (state, action) => {
     state.previousSelection = state.recipientSelection;
     state.recipientSelection = action.payload;
