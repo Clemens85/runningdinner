@@ -11,7 +11,7 @@ import {
   isSameEntity,
   LabelValue,
   getStatusResult,
-  CONSTANTS, formatLocalDateWithSeconds, isStringNotEmpty, CallbackHandler,
+  CONSTANTS, formatLocalDateWithSeconds, isStringNotEmpty, CallbackHandler, getTruncatedText,
 } from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
 import {useAdminDispatch} from "@runningdinner/shared/src/admin/redux/AdminStoreDefinitions";
@@ -149,10 +149,22 @@ function MessageTasksTable({messageTasks, onSelectMessageTask, selectedMessageTa
       <TableRow key={messageTask.id} hover className={classes.cursorPointer}
                 onClick={() => onSelectMessageTask(messageTask)}
                 selected={isSameEntity(messageTask, selectedMessageTask)}>
-        <TableCell><MessageJobStatus messageJobOrTask={messageTask} /></TableCell>
-        <TableCell>{messageTask.recipientEmail}</TableCell>
+        <Hidden xsDown>
+          <TableCell><MessageJobStatus messageJobOrTask={messageTask} /></TableCell>
+          <TableCell>{messageTask.recipientEmail}</TableCell>
+        </Hidden>
+        <Hidden smUp>
+          <TableCell>
+            <div style={{ display: "flex", alignContent: "center" }}>
+              <div style={{ marginRight: "4px" }}><MessageJobStatus messageJobOrTask={messageTask} /></div>
+              <div>{getTruncatedText(messageTask.recipientEmail, 18)}</div>
+            </div>
+          </TableCell>
+        </Hidden>
         <TableCell>{formatLocalDateWithSeconds(messageTask.sendingStartTime)}</TableCell>
-        <TableCell>{formatLocalDateWithSeconds(messageTask.sendingEndTime)}</TableCell>
+        <Hidden xsDown>
+          <TableCell>{formatLocalDateWithSeconds(messageTask.sendingEndTime)}</TableCell>
+        </Hidden>
         <Hidden xsDown>
           <TableCell><MessageContentView messageTask={messageTask} truncateMessageContentToNumChars={48} /></TableCell>
         </Hidden>
@@ -164,10 +176,17 @@ function MessageTasksTable({messageTasks, onSelectMessageTask, selectedMessageTa
       <Table size={"small"}>
         <TableHead>
           <TableRow>
-            <TableCell>Status</TableCell>
-            <TableCell>{t('common:recipient')}</TableCell>
+            <Hidden xsDown>
+              <TableCell>Status</TableCell>
+              <TableCell>{t('common:recipient')}</TableCell>
+            </Hidden>
+            <Hidden smUp>
+              <TableCell>&nbsp;</TableCell>
+            </Hidden>
             <TableCell>{t('admin:sending_started_at_text')}</TableCell>
-            <TableCell>{t('admin:sending_finished_at_text')}</TableCell>
+            <Hidden xsDown>
+              <TableCell>{t('admin:sending_finished_at_text')}</TableCell>
+            </Hidden>
             <Hidden xsDown>
               <TableCell>{t('common:content')}</TableCell>
             </Hidden>
