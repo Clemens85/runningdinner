@@ -151,3 +151,7 @@ export function getTruncatedText(text: string, limit: number) {
   }
   return truncate(text, { length: limit });
 }
+
+export function mapNewLineToHtmlLineBreaks(str: string) {
+  return str.replace(new RegExp('\r?\n','g'), '<br />');
+}

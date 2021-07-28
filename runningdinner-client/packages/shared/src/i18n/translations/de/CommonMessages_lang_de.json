@@ -39,6 +39,7 @@
 	"endOfRegistrationDate_help": "Sollte typischerweise ein paar Tage vor dem Veranstaltungstag sein",
 	"error_date_invalid": "Das Datum darf nicht in der Vergangenheit liegen",
 	"error_endofregistrationdate_invalid": "Anmeldeschluss darf nicht nach Datum des Events liegen (siehe Einstellungen)",
+	"error_report": "Fehlerbericht",
 	"event_language_help": "Wenn du ein verstecktes oder öffentliches Dinner veranstaltest, dann wird diese Sprache beim Öffnen des Events voreingestellt. Wenn dein Event z.B. im nicht-deutschsprachigem Raum statt findet, ist es sinnvoll hier Englisch auszuwählen.",
 	"event_language_label": "Voreingestellte Sprache",
 	"example": "Beispiel",

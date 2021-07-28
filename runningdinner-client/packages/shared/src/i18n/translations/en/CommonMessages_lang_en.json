@@ -39,6 +39,7 @@
 	"endOfRegistrationDate_help": "Typically the deadline should be some days before the event.",
 	"error_date_invalid": "Dinner date must not be in past",
 	"error_endofregistrationdate_invalid": "Deadline must not be after the event (-> Basic settings for your event date)",
+	"error_report": "Error Report",
 	"event_language_help": "When creating a hidden or public dinner event, then this language will be preset when a user opens the event.It is quite reasonable to choose e.g. English when your event will be performed in a non-german speaking community.",
 	"event_language_label": "Preset language",
 	"example": "Example",

@@ -67,5 +67,8 @@ const getFetchDataItems = (state: AdminStateType): FetchData<any>[] => {
   return [
     state.root.runningDinner,
     state.dashboard.adminActivities,
+    state.messages.messageJobs,
+    state.messageJobDetails.messageTasks,
+    state.messageJobDetails.messageJob
   ];
 };

@@ -35,6 +35,19 @@ export async function findMessageJobOverviewByAdminIdAndMessageJobId(adminId: st
   return response.data;
 }
 
+export async function findMessageJobByAdminIdAndJobIdAsync(adminId: string, messageJobId: string): Promise<MessageJob> {
+  const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs/${messageJobId}`);
+  const response = await axios.get(url);
+  return response.data;
+}
+
+export async function findMessageTasksByAdminIdAndJobIdAsync(adminId: string, messageJobId: string): Promise<MessageTask[]> {
+  const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagetasks/${messageJobId}`);
+  const response = await axios.get(url);
+  return response.data;
+}
+
+
 export async function sendMessagesAsync<T extends BaseMessage>(adminId: string, messageObject: T, messageType: MessageType, sendToDinnerOwner: boolean): Promise<MessageJob> {
   const sendToDinnerOwnerStr = sendToDinnerOwner === true ? 'true' : 'false';
   const recipientType = mapRecipientType(messageType);

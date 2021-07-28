@@ -7,6 +7,7 @@ import {Route, Switch} from "react-router-dom";
 import {getRunningDinnerFetchSelector, useAdminSelector} from "@runningdinner/shared";
 import Acknowledge from "./common/Acknowledge";
 import TeamDinnerRoute from "./teams/TeamDinnerRoute";
+import {MessageJobDetailsList} from "./messages/messagejobs/MessageJobDetailsList";
 
 export interface AdminRouteProps {
   path: string;
@@ -48,6 +49,9 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
         </Route>
         <Route path={`${path}/:acknowledgeId/acknowledge`}>
           <Acknowledge runningDinner={runningDinner} />
+        </Route>
+        <Route path={`${path}/mailprotocols/:messageJobId`}>
+          <MessageJobDetailsList runningDinner={runningDinner} />
         </Route>
         <Route path="/">
           <Dashboard runningDinner={runningDinner} />

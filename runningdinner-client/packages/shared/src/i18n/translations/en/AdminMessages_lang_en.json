@@ -94,6 +94,7 @@
 	"messages_send_teams": "Team-Arrangements...",
 	"messages_sending_finished": "Sending finished",
 	"messages_sending_pending": "Sending still running",
+	"message_tasks_no_selection": "Please select a message for viewing it's details!",
 
 	"no_registrations": "No registrations",
 	"notification_dinner_acknowledge_required": "Currently you can't send any messages, due to you have not yet confirmed your dinner event (check your emails for a confirmation link).",

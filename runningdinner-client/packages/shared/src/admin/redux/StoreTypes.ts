@@ -3,7 +3,7 @@ import {
   DashboardAdminActivities,
   getExampleParticipantMessage,
   HttpError,
-  MessageJob,
+  MessageJob, MessageTask,
   MessageType,
   Participant, PreviewMessage,
   Recipient,
@@ -49,6 +49,11 @@ export interface MessagesState {
   lastPollDate: Date;
 }
 
+export interface MessageJobDetailsState {
+  messageTasks: FetchData<MessageTask[]>;
+  messageJob: FetchData<MessageJob>;
+}
+
 export function newInitialAdminState(): AdminState {
   return {
     runningDinner: INITIAL_FETCH_DATA
@@ -83,4 +88,8 @@ export const newInitialMessagesState : MessagesState = {
   lastPollDate: new Date()
 };
 
+export const newInitialMessageJobDetailsState: MessageJobDetailsState = {
+  messageTasks: INITIAL_FETCH_DATA,
+  messageJob: INITIAL_FETCH_DATA
+};
 

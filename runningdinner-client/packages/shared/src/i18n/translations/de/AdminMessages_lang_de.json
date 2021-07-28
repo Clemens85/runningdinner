@@ -95,6 +95,7 @@
 	"messages_send_teams": "Team-Einteilungen...",
 	"messages_sending_finished": "Sendevorgang abgeschlossen",
 	"messages_sending_pending": "Sendevorgang läuft noch",
+	"message_tasks_no_selection": "Bitte wähle eine Nachricht aus um dessen Details zu sehen!",
 
 	"no_registrations": "Keine Anmeldungen",
 	"notification_dinner_acknowledge_required": "Aktuell ist der Nachrichtenversand deaktiviert, da du noch nicht den per Mail versandten Bestätigungslink aufgerufen hast.",

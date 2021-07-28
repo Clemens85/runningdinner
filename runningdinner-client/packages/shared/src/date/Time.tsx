@@ -2,12 +2,17 @@ import React from "react";
 import { format } from 'date-fns';
 import {useTranslation} from "react-i18next";
 
-function Time({date}) {
+export interface TimeProps {
+  date?: Date;
+  includeSeconds?: boolean;
+}
+
+function Time({date, includeSeconds}: TimeProps) {
   const {t} = useTranslation('common');
   if (!date) {
     return null;
   }
-  const formattedTime = format(date, 'HH:mm');
+  const formattedTime = format(date, includeSeconds ? 'HH:mm:ss' : "HH:mm");
   return (
       <>{formattedTime} {t('uhr')}</>
   );
