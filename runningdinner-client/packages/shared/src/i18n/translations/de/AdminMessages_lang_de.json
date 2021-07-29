@@ -89,6 +89,7 @@
 	"messagejob_type_dinner_route": "Dinner-Routen-Versand",
 	"messagejob_type_participant": "Teilnehmer-Versand",
 	"messagejob_type_team": "Team-Versand",
+	"messages_preview_empty": "Um die Vorschau zu sehen, muss Betreff und Nachricht ausgefüllt sein.",
 	"messages_send_dinnerroutes": "Dinner-Routen...",
 	"messages_send_general": "Nachrichten schicken",
 	"messages_send_participants": "Nachricht an Teilnehmer",

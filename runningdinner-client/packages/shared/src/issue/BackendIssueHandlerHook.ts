@@ -5,7 +5,7 @@ import {
 import { useTranslation } from "react-i18next";
 import cloneDeep from "lodash/cloneDeep";
 import { isStringNotEmpty } from "../Utils";
-import {HttpError, Issue, IssueOption, Issues} from "../types";
+import {BackendIssue, HttpError, Issue, IssueOption, Issues} from "../types";
 
 export const COMMON_ERROR_NAMESPACE = "common";
 
@@ -23,6 +23,12 @@ export interface BackendIssueHandlerMethods {
    * @param httpError
    */
   getIssuesTranslated: (httpError: HttpError) => Issues;
+
+  /**
+   *
+   * @param backendIssues
+   */
+  getIssuesArrayTranslated: (backendIssues: BackendIssue[]) => Issues;
 
   /**
    * Convenience method which can be used in forms for showing validation errors. <br />
@@ -146,20 +152,28 @@ export function useBackendIssueHandler(
   }
 
   function getIssuesTranslated(httpError: HttpError, filterValidationErrorResponseOnly: boolean = true): Issues {
+    const issuesWrapper = getIssuesUntranslated(httpError, filterValidationErrorResponseOnly);
+    return performTranslationOfRawIssues(issuesWrapper);
+  }
 
-    const issuesRaw = getIssuesUntranslated(httpError, filterValidationErrorResponseOnly);
+  function getIssuesArrayTranslated(backendIssues: BackendIssue[], filterValidationErrorResponseOnly: boolean = true): Issues {
+    const issuesWrapper = mapBackendIssuesToIssues(backendIssues);
+    return performTranslationOfRawIssues(issuesWrapper);
+  }
 
-    const issuesFieldRelated = issuesRaw.issuesFieldRelated.map((issue) =>
-        getDefaultApplicationErrorTranslation(issue)
+  function performTranslationOfRawIssues(issuesWrapper: Issues): Issues {
+    const issuesFieldRelated = issuesWrapper.issuesFieldRelated.map((issue) =>
+      getDefaultApplicationErrorTranslation(issue)
     );
-    const issuesWithoutField = issuesRaw.issuesWithoutField.map(
-        (issue) => getDefaultApplicationErrorTranslation(issue)
+    const issuesWithoutField = issuesWrapper.issuesWithoutField.map(
+      (issue) => getDefaultApplicationErrorTranslation(issue)
     );
     return {
       issuesFieldRelated,
       issuesWithoutField,
     };
   }
+
 
   function applyValidationIssuesToForm(httpError: HttpError, setSingleFormErrorIntoFormCallback: (fieldName: any, error: IssueOption) => unknown): Issues {
     const {issuesFieldRelated, issuesWithoutField} = getIssuesTranslated(httpError, true);
@@ -238,6 +252,7 @@ export function useBackendIssueHandler(
   return {
     getIssuesUntranslated,
     getIssuesTranslated,
+    getIssuesArrayTranslated,
     applyValidationIssuesToForm,
   };
 }

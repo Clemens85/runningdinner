@@ -12,7 +12,7 @@ import {
   isOneMessageJobNotFinished,
   getExampleParticipantMessage,
   getExampleTeamMessage,
-  getMessagePreviewAsync
+  getMessagePreviewAsync, getBackendIssuesFromErrorResponse
 } from "../../";
 import {
   PreviewMessage,
@@ -212,10 +212,12 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
   .addCase(recalculatePreviewMessagesSucceeded, (state, action) => {
     state.isMailMessageValid = true;
     state.previewLoading = false;
+    state.previewIssues = [];
     state.previewMessages = action.payload;
   })
-  .addCase(recalculatePreviewMessagesRejected, (state) => {
+  .addCase(recalculatePreviewMessagesRejected, (state, action) => {
     state.isMailMessageValid = false;
+    state.previewIssues = getBackendIssuesFromErrorResponse(action.payload, false) || [];
     state.previewLoading = false;
   })
   .addCase(updateMessageJobs, (state, action) => {
@@ -237,11 +239,12 @@ export const getRecipientsSelector = (state: AdminStateType) => {
   }
 };
 export const getMessagePreviewSelector = (state: AdminStateType) => {
-  const {previewMessages, isMailMessageValid, previewLoading} = state.messages;
+  const {previewMessages, isMailMessageValid, previewLoading, previewIssues} = state.messages;
   return {
     previewMessages,
     isMailMessageValid,
-    previewLoading
+    previewLoading,
+    previewIssues
   }
 };
 export const getMessageObjectSelector = (state: AdminStateType) => state.messages.messageObject;

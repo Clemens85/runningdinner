@@ -18,10 +18,12 @@ import {
   getTruncatedText,
   useDisclosure,
   useBackendIssueHandler,
-  reSendMessageTaskAsync, Message, NoopFunction,
+  reSendMessageTaskAsync,
+  Message,
+  NoopFunction,
+  useAdminDispatch
 } from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
-import {useAdminDispatch} from "@runningdinner/shared/src/admin/redux/AdminStoreDefinitions";
 import {
   getMessageJobDetailsSelector,
   getMessageTasksSelector

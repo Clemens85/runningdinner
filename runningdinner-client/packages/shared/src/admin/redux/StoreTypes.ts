@@ -1,14 +1,19 @@
 import {
-  ActivityList, BaseMessage,
-  DashboardAdminActivities,
   getExampleParticipantMessage,
-  HttpError,
-  MessageJob, MessageTask,
+} from "../..";
+import {
+  MessageJob,
+  MessageTask,
   MessageType,
-  Participant, PreviewMessage,
+  Participant,
+  PreviewMessage,
   Recipient,
-  RunningDinner
-} from "@runningdinner/shared";
+  RunningDinner,
+  BackendIssue,
+  ActivityList,
+  BaseMessage,
+  DashboardAdminActivities,
+} from "../../types";
 import {FetchData, FetchStatus} from "../../redux";
 
 const INITIAL_FETCH_DATA = {
@@ -44,6 +49,7 @@ export interface MessagesState {
   previewLoading: boolean;
   previewMessages: PreviewMessage[];
   isMailMessageValid: boolean;
+  previewIssues: BackendIssue[];
 
   messageJobs: FetchData<MessageJob[]>;
   lastPollDate: Date;
@@ -83,6 +89,7 @@ export const newInitialMessagesState : MessagesState = {
   previewLoading: false,
   previewMessages: [],
   isMailMessageValid: false,
+  previewIssues: [],
 
   messageJobs: INITIAL_FETCH_DATA,
   lastPollDate: new Date()

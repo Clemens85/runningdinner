@@ -24,12 +24,11 @@ import {
   updateMessageContentPreviewAsync,
   updateMessageSubjectPreviewAsync,
   updateNonHostMessagePartTemplatePreviewAsync,
-  useBackendIssueHandler
+  useBackendIssueHandler,
+  useAdminDispatch
 } from "@runningdinner/shared";
 import {Helmet} from "react-helmet-async";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
-import {useAdminDispatch} from "@runningdinner/shared/src/admin/redux/AdminStoreDefinitions";
-
 
 export function TeamMessages({adminId}: BaseAdminIdProps) {
   const {t} = useTranslation(['admin']);

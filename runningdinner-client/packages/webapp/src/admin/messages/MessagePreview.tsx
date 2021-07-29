@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {PaperGrey} from "../../common/theme/PaperGrey";
 import {Box, FormControl, InputLabel, LinearProgress, MenuItem, Select, Typography} from "@material-ui/core";
 import parse from 'html-react-parser';
@@ -14,18 +14,21 @@ import {
   Recipient,
   updateRecipientForPreviewById,
   useAdminSelector,
-  useRecipientName
+  useAdminDispatch,
+  useRecipientName, useBackendIssueHandler, isArrayNotEmpty, BackendIssue
 } from "@runningdinner/shared";
-import {useDispatch} from "react-redux";
 import {FetchStatus} from "@runningdinner/shared/src/redux";
+import {useTranslation} from "react-i18next";
 
 export function MessagePreview({adminId, messageType}: MessageTypeAdminIdPayload) {
 
-  const {previewLoading, previewMessages, isMailMessageValid} = useAdminSelector(getMessagePreviewSelector);
+  const {previewLoading, previewMessages, isMailMessageValid, previewIssues} = useAdminSelector(getMessagePreviewSelector);
   const messageObject = useAdminSelector(getMessageObjectSelector);
   const {recipients, selectedRecipientForPreview} = useAdminSelector(getRecipientsPreviewSelector);
 
-  const dispatch = useDispatch();
+  const dispatch = useAdminDispatch();
+
+  const {t} = useTranslation("admin");
 
   const handleSelectionChange = (newSelectedRecipientId: string) => dispatch(updateRecipientForPreviewById(newSelectedRecipientId));
 
@@ -35,7 +38,9 @@ export function MessagePreview({adminId, messageType}: MessageTypeAdminIdPayload
           <Box mb={2}>
             <Subtitle i18n="common:preview" />
           </Box>
-          <Typography variant={"subtitle1"}>Um die Vorschau zu sehen, muss Betreff und Nachricht ausgefüllt sein.</Typography>
+          {isArrayNotEmpty(previewIssues) ?
+            <PreviewIssues previewIssues={previewIssues as BackendIssue[]} /> :
+            <Typography variant={"subtitle1"}>{t('admin:messages_preview_empty')}</Typography> }
         </Box>
     );
   }
@@ -108,4 +113,27 @@ function PreviewSelection({recipients, selectedRecipient, onSelectionChange}: Pr
         </Select>
       </FormControl>
   )
+}
+
+interface PreviewIssues {
+  previewIssues: BackendIssue[]
+}
+function PreviewIssues({previewIssues}: PreviewIssues) {
+
+  const {getIssuesArrayTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: ["admin", "common"]
+    }
+  });
+
+  const firstIssueTranslatedWrapper = getIssuesArrayTranslated(previewIssues);
+  const firstIssue = isArrayNotEmpty(firstIssueTranslatedWrapper.issuesFieldRelated) ?
+                      firstIssueTranslatedWrapper.issuesFieldRelated[0] :
+                      firstIssueTranslatedWrapper.issuesWithoutField[0];
+
+  return (
+    <>
+      <Typography variant={"subtitle1"} color={"error"}>{firstIssue?.error?.message}</Typography>
+    </>
+  );
 }

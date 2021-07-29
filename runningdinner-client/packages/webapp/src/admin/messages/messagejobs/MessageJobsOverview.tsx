@@ -12,7 +12,8 @@ import {
   MessageTypeAdminIdPayload,
   queryNotFinishedMessageJobs,
   Time,
-  useAdminSelector
+  useAdminSelector,
+  useAdminDispatch
 } from "@runningdinner/shared";
 import Grid from "@material-ui/core/Grid";
 import {MessageJobStatus} from "./MessageJobStatus";
@@ -24,7 +25,6 @@ import TableBody from "@material-ui/core/TableBody";
 import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import {FetchStatus} from "@runningdinner/shared/src/redux";
-import {useAdminDispatch} from "@runningdinner/shared/src/admin/redux/AdminStoreDefinitions";
 
 export function MessageJobsOverview({adminId}: MessageTypeAdminIdPayload) {
 

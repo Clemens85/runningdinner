@@ -88,6 +88,7 @@
 	"messagejob_type_dinner_route": "Dinner-Route Messaging",
 	"messagejob_type_participant": "Participant Messaging",
 	"messagejob_type_team": "Team Messaging",
+	"messages_preview_empty": "To see the preview, the subject and message must be filled in.",
 	"messages_send_dinnerroutes": "Dinner-Routes...",
 	"messages_send_general": "Send messages",
 	"messages_send_participants": "Message to participants...",

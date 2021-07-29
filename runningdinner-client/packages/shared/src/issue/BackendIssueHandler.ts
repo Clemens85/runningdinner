@@ -19,11 +19,7 @@ export function getBackendIssuesFromErrorResponse(httpError: HttpError, filterVa
     return result;
   }
 
-  if (isArrayNotEmpty(errorResponse.data.IssueList)) {
-    // GRLD delievers issues in this way
-    result = errorResponse.data.IssueList as BackendIssue[];
-  } else if (isArrayNotEmpty(errorResponse.data.issues)) {
-    // RDRK deliévers issues in this way
+   if (isArrayNotEmpty(errorResponse.data.issues)) {
     result = errorResponse.data.issues as BackendIssue[];
   }
   return result;
