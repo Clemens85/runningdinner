@@ -111,6 +111,7 @@ function MessageJobDetailsListView({messageTasks, messageJob, triggerReload}: Me
   function handleReSendMessageTaskDialogClosed(messageResent?: boolean) {
     closeReSendMessageTaskDialog();
     if (messageResent) {
+      setShowDetailsView(false);
       setSelectedMessageTask(undefined);
       triggerReload();
     }
