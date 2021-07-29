@@ -18,7 +18,7 @@ public interface MessageTaskRepository extends RunningDinnerRelatedRepository<Me
   
   List<MessageTask> findByParentJobIdOrderByCreatedAtAsc(UUID parentJobId);
   
-  List<MessageTask> findByAdminIdAndParentJobIdOrderBySendingStartTimeAscCreatedAtAsc(String adminId, UUID parentJobId);
+  List<MessageTask> findByAdminIdAndParentJobIdOrderBySendingStartTimeDescCreatedAtDesc(String adminId, UUID parentJobId);
 
   Page<MessageTask> findBySendingStatusAndParentJobId(SendingStatus sendingStatus, UUID parentJobId, Pageable pageable);
   

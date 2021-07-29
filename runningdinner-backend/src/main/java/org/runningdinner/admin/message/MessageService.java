@@ -373,7 +373,7 @@ public class MessageService {
   
   public List<MessageTask> findMessageTasks(String adminId, UUID messageJobId) {
 
-    return messageTaskRepository.findByAdminIdAndParentJobIdOrderBySendingStartTimeAscCreatedAtAsc(adminId, messageJobId);
+    return messageTaskRepository.findByAdminIdAndParentJobIdOrderBySendingStartTimeDescCreatedAtDesc(adminId, messageJobId);
   }
   
   public MessageJob findMessageJob(@ValidateAdminId String adminId, UUID messageJobId) {
