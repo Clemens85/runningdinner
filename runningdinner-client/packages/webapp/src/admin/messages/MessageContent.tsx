@@ -5,8 +5,8 @@ import { useFormContext } from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
 
 export interface MessageContentProps {
-  templates: string[];
-  onMessageContentChange: (changedVal: string) => unknown;
+  templates?: string[];
+  onMessageContentChange?: (changedVal: string) => unknown;
   name: string;
   label: string;
   rows?: number;
@@ -43,7 +43,7 @@ export default function MessageContent({templates, onMessageContentChange, name,
     }
 
     setValue(name, updatedValue);
-    onMessageContentChange(updatedValue);
+    onMessageContentChange && onMessageContentChange(updatedValue);
 
     inputField.focus();
     inputField.selectionEnd = newCursorPosition; // Add one space, so that user can straight continue typing
@@ -51,7 +51,7 @@ export default function MessageContent({templates, onMessageContentChange, name,
 
   const handleMessageContentChange = (changeEvt: React.ChangeEvent<HTMLInputElement>) => {
     const changedValue = changeEvt.target.value;
-    onMessageContentChange(changedValue);
+    onMessageContentChange && onMessageContentChange(changedValue);
   };
 
   /**

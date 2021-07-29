@@ -135,7 +135,7 @@ export function isStringNotEmpty(s?: string): s is string {
 
 
 export function isArrayNotEmpty<T>(arr?: Array<T>): arr is Array<T> {
-  return Array.isArray(arr) && arr.length > 0;
+  return arr !== undefined && arr !== null && Array.isArray(arr) && arr.length > 0;
 }
 
 export function isArrayEmpty(arr?: any) {

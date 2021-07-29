@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
 
 export interface MessageTemplatesProps {
   onTemplateClick: (template: string) => unknown;
-  templates: string[];
+  templates?: string[];
 }
 
 function MessageTemplates({templates, onTemplateClick}: MessageTemplatesProps) {
@@ -24,6 +24,7 @@ function MessageTemplates({templates, onTemplateClick}: MessageTemplatesProps) {
     return null;
   }
 
+  // @ts-ignore
   const messageTemplateNodes = templates.map(template => <MessageTemplate key={template} template={template} onClick={onTemplateClick} />);
   return (
       <Grid container alignItems={"center"} justify={"flex-start"}>

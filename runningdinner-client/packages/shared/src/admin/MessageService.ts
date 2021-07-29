@@ -75,6 +75,13 @@ export async function sendTeamPartnerWishInvitationAsync(adminId: string, partic
   return response.data;
 }
 
+export async function reSendMessageTaskAsync(adminId: string, messageTask: MessageTask) {
+  const {id} = messageTask;
+  const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagetask/${id}`);
+  const response = await axios.put(url, messageTask);
+  return response.data;
+}
+
 export function getMailMessageForSelectedRecipient<T extends BaseMessage>(mailMessageTemplate: T, messageType: MessageType, recipientForPreview: BaseEntity) {
     let mailMessage = mailMessageTemplate;
     mailMessage = mapEmptySelectionStringToNull(mailMessage);

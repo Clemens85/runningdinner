@@ -11,7 +11,14 @@ import {
   isSameEntity,
   LabelValue,
   getStatusResult,
-  CONSTANTS, formatLocalDateWithSeconds, isStringNotEmpty, CallbackHandler, getTruncatedText,
+  CONSTANTS,
+  formatLocalDateWithSeconds,
+  isStringNotEmpty,
+  CallbackHandler,
+  getTruncatedText,
+  useDisclosure,
+  useBackendIssueHandler,
+  reSendMessageTaskAsync, Message, NoopFunction,
 } from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
 import {useAdminDispatch} from "@runningdinner/shared/src/admin/redux/AdminStoreDefinitions";
@@ -20,11 +27,11 @@ import {
   getMessageTasksSelector
 } from "@runningdinner/shared/src/admin/redux/MessageJobDetailsSlice";
 import {Helmet} from "react-helmet-async";
-import {PageTitle, Subtitle} from "../../../common/theme/typography/Tags";
+import {PageTitle, Span, Subtitle} from "../../../common/theme/typography/Tags";
 import {
-  Box,
+  Box, Dialog, DialogContent,
   Grid,
-  Hidden,
+  Hidden, LinearProgress,
   Paper,
   Table,
   TableBody,
@@ -36,6 +43,7 @@ import {
 import {BackToListButton, useMasterDetailView} from "../../../common/hooks/MasterDetailViewHook";
 import {useTranslation} from "react-i18next";
 import toLower from "lodash/toLower";
+import cloneDeep from "lodash/cloneDeep";
 import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import useCommonStyles from "../../../common/theme/CommonStyles";
@@ -45,6 +53,14 @@ import FormFieldset from "../../../common/theme/FormFieldset";
 import get from 'lodash/get';
 import {MessageContentView} from "./MessageContentView";
 import {SecondaryButtonAsync} from "../../../common/theme/SecondaryButtonAsync";
+import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
+import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
+import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
+import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
+import {useForm, FormProvider} from "react-hook-form";
+import MessageSubject from "../MessageSubject";
+import MessageContent from "../MessageContent";
+import FormTextField from "../../../common/input/FormTextField";
 
 export function MessageJobDetailsList({runningDinner}: BaseRunningDinnerProps) {
 
@@ -61,7 +77,9 @@ export function MessageJobDetailsList({runningDinner}: BaseRunningDinnerProps) {
   }, [messageJobId, adminId, dispatch]);
 
   if (messageJob && isArrayNotEmpty(messageTasks)) {
-    return <MessageJobDetailsListView messageTasks={messageTasks as MessageTask[]} messageJob={messageJob}/>;
+    return <MessageJobDetailsListView messageTasks={messageTasks as MessageTask[]}
+                                      messageJob={messageJob}
+                                      triggerReload={() => dispatch(fetchMessageJobDetailsData(adminId, messageJobId)) } />;
   }
   return null;
 }
@@ -69,14 +87,18 @@ export function MessageJobDetailsList({runningDinner}: BaseRunningDinnerProps) {
 export interface MessageJobDetailsListViewProps {
   messageJob: MessageJob;
   messageTasks: MessageTask[];
+  triggerReload: CallbackHandler;
 }
 
-function MessageJobDetailsListView({messageTasks, messageJob}: MessageJobDetailsListViewProps) {
+function MessageJobDetailsListView({messageTasks, messageJob, triggerReload}: MessageJobDetailsListViewProps) {
 
   const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
   const {t} = useTranslation(['admin', 'common']);
 
   const [selectedMessageTask, setSelectedMessageTask] = useState<MessageTask>();
+  const {isOpen: isReSendMessageTaskDialogOpen,
+         open: openReSendMessageTaskDialog,
+         close: closeReSendMessageTaskDialog} = useDisclosure();
 
   const messageTypeI18nKey = toLower("messagejob_type_" + messageJob.messageType);
 
@@ -86,8 +108,12 @@ function MessageJobDetailsListView({messageTasks, messageJob}: MessageJobDetails
     window.scrollTo(0, 0);
   }
 
-  function handleReSendMessageTask(messageTask: MessageTask) {
-
+  function handleReSendMessageTaskDialogClosed(messageResent?: boolean) {
+    closeReSendMessageTaskDialog();
+    if (messageResent) {
+      setSelectedMessageTask(undefined);
+      triggerReload();
+    }
   }
 
   return (
@@ -120,12 +146,14 @@ function MessageJobDetailsListView({messageTasks, messageJob}: MessageJobDetails
             <>
               { showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}
               { <MessageTaskDetailsView messageTask={selectedMessageTask}
-                                                     onReSendMessageTask={() => handleReSendMessageTask(selectedMessageTask)} /> }
+                                                     onReSendMessageTask={() => openReSendMessageTaskDialog(selectedMessageTask)} /> }
             </> :
             <EmptyDetails labelI18n={"message_tasks_no_selection"} />
           }
         </Grid>
       </Grid>
+      { isReSendMessageTaskDialogOpen && selectedMessageTask && <ReSendMessageTaskDialog messageTask={selectedMessageTask}
+                                                                                         onClose={handleReSendMessageTaskDialogClosed} /> }
       <Helmet>
         <title>{t('admin:mail_protocols')}</title>
       </Helmet>
@@ -133,7 +161,7 @@ function MessageJobDetailsListView({messageTasks, messageJob}: MessageJobDetails
   );
 }
 
-interface MessageTasksTableProps extends Omit<MessageJobDetailsListViewProps, "messageJob"> {
+interface MessageTasksTableProps extends Omit<MessageJobDetailsListViewProps, "messageJob" | "triggerReload"> {
   selectedMessageTask?: MessageTask;
   onSelectMessageTask: (messageTask: MessageTask) => unknown;
 }
@@ -275,5 +303,85 @@ function MessageTaskDetailsRow({label, value}: LabelValue) {
         <strong>{value}</strong>
       </Grid>
     </Grid>
+  );
+}
+
+interface ReSendMessageTaskDialogProps {
+  messageTask: MessageTask;
+  onClose: (messageResent?: boolean) => unknown;
+}
+interface ReSendMessageTaskModel extends Message {
+  recipientEmail: string;
+}
+function ReSendMessageTaskDialog({messageTask, onClose}: ReSendMessageTaskDialogProps) {
+
+  const {message: incomingMessage, recipientEmail: incomingRecipientEmail} = messageTask;
+
+  const {t} = useTranslation(['admin', 'common']);
+  const {showSuccess} = useCustomSnackbar();
+
+  const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: 'admin'
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+
+  const formMethods = useForm<ReSendMessageTaskModel>({
+    defaultValues: { ...incomingMessage, recipientEmail: incomingRecipientEmail },
+    mode: 'onTouched'
+  });
+  const { handleSubmit, clearErrors, setError, formState } = formMethods;
+  const { isSubmitting } = formState;
+
+  const handleReSendMessageTask = async(values: ReSendMessageTaskModel) => {
+    const {subject, content, recipientEmail} = values;
+    const messageTaskToSave = cloneDeep(messageTask);
+    messageTaskToSave.recipientEmail = recipientEmail;
+    messageTaskToSave.message.subject = subject;
+    messageTaskToSave.message.content = content;
+    clearErrors();
+    try {
+      await reSendMessageTaskAsync(messageTaskToSave.adminId, messageTaskToSave);
+      window.scrollTo(0, 0);
+      showSuccess(t('admin:message_task_resend_success'));
+      onClose(true);
+    } catch(e) {
+      applyValidationIssuesToForm(e, setError);
+      showHttpErrorDefaultNotification(e);
+    }
+  };
+
+  return (
+    <Dialog open={true} onClose={() => onClose(false)} aria-labelledby="Send mail message again" maxWidth={"lg"} fullWidth={true}>
+      <FormProvider {...formMethods}>
+        <form>
+          <DialogTitleCloseable onClose={onClose}>
+            {t('admin:send_again')}
+          </DialogTitleCloseable>
+          <DialogContent>
+            <Span i18n={"admin:send_again_help_text"} />
+            <Box mt={2}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <FormTextField name="recipientEmail" label={t('admin:recipient_email')} variant={"filled"} fullWidth mb={2} />
+                </Grid>
+                <Grid item xs={12}>
+                  <MessageSubject onMessageSubjectChange={NoopFunction} />
+                </Grid>
+                <Grid item xs={12}>
+                  <MessageContent name="content" label={t("common:content")} />
+                </Grid>
+              </Grid>
+            </Box>
+            {isSubmitting && <LinearProgress />}
+          </DialogContent>
+          <DialogActionsPanel onOk={handleSubmit(handleReSendMessageTask)}
+                              onCancel={onClose}
+                              okLabel={t('admin:send')}
+                              cancelLabel={t('common:cancel')} />
+        </form>
+      </FormProvider>
+    </Dialog>
   );
 }
