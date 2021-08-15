@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {PaperGrey} from "../../common/theme/PaperGrey";
 import {Box, FormControl, InputLabel, LinearProgress, MenuItem, Select, Typography} from "@material-ui/core";
 import parse from 'html-react-parser';
@@ -115,10 +115,10 @@ function PreviewSelection({recipients, selectedRecipient, onSelectionChange}: Pr
   )
 }
 
-interface PreviewIssues {
+interface PreviewIssuesProps {
   previewIssues: BackendIssue[]
 }
-function PreviewIssues({previewIssues}: PreviewIssues) {
+function PreviewIssues({previewIssues}: PreviewIssuesProps) {
 
   const {getIssuesArrayTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
