@@ -13,6 +13,11 @@ export interface BackendIssue {
    * The type of this issue
    */
   issueType?: string;
+
+  /**
+   * True if already translated from backend
+   */
+  translated?: boolean;
 }
 
 /**

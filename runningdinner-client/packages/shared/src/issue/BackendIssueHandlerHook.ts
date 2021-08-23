@@ -102,45 +102,25 @@ const DEFAULT_TRANSLATION_RESOLUTION_STRATEGY_SETTINGS: DefaultTranslationResolu
 /**
  * @param props
  */
-export function useBackendIssueHandler(
-    props?: BackendIssueHandlerProps
-): BackendIssueHandlerMethods {
-  const defaultTranslationResolutionStrategy = cloneDeep(
-      DEFAULT_TRANSLATION_RESOLUTION_STRATEGY_SETTINGS
-  );
+export function useBackendIssueHandler(props?: BackendIssueHandlerProps): BackendIssueHandlerMethods {
+
+  const defaultTranslationResolutionStrategy = cloneDeep(DEFAULT_TRANSLATION_RESOLUTION_STRATEGY_SETTINGS);
   if (props?.defaultTranslationResolutionSettings) {
-    if (
-        props.defaultTranslationResolutionSettings
-            .includeCommonNamespace === false
-    ) {
+    if (props.defaultTranslationResolutionSettings.includeCommonNamespace === false) {
       defaultTranslationResolutionStrategy.includeCommonNamespace = false;
     }
-    defaultTranslationResolutionStrategy.namespaces = props
-        .defaultTranslationResolutionSettings.namespaces
-        ? props.defaultTranslationResolutionSettings.namespaces
-        : defaultTranslationResolutionStrategy.namespaces;
-    defaultTranslationResolutionStrategy.nameResolutionStrategyOrder = props
-        .defaultTranslationResolutionSettings.nameResolutionStrategyOrder
-        ? props.defaultTranslationResolutionSettings.nameResolutionStrategyOrder
-        : DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
+    defaultTranslationResolutionStrategy.namespaces = props.defaultTranslationResolutionSettings.namespaces ? props.defaultTranslationResolutionSettings.namespaces
+                                                                                                            : defaultTranslationResolutionStrategy.namespaces;
+    defaultTranslationResolutionStrategy.nameResolutionStrategyOrder = props.defaultTranslationResolutionSettings.nameResolutionStrategyOrder ? props.defaultTranslationResolutionSettings.nameResolutionStrategyOrder
+                                                                                                                                              : DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
   }
 
-  if (
-      defaultTranslationResolutionStrategy.includeCommonNamespace
-  ) {
+  if (defaultTranslationResolutionStrategy.includeCommonNamespace) {
     if (Array.isArray(defaultTranslationResolutionStrategy.namespaces)) {
-      defaultTranslationResolutionStrategy.namespaces.push(
-          COMMON_ERROR_NAMESPACE
-      );
-    } else if (
-        isStringNotEmpty(defaultTranslationResolutionStrategy.namespaces)
-    ) {
-      defaultTranslationResolutionStrategy.namespaces = [
-        defaultTranslationResolutionStrategy.namespaces,
-      ];
-      defaultTranslationResolutionStrategy.namespaces.push(
-          COMMON_ERROR_NAMESPACE
-      );
+      defaultTranslationResolutionStrategy.namespaces.push(COMMON_ERROR_NAMESPACE);
+    } else if (isStringNotEmpty(defaultTranslationResolutionStrategy.namespaces)) {
+      defaultTranslationResolutionStrategy.namespaces = [defaultTranslationResolutionStrategy.namespaces];
+      defaultTranslationResolutionStrategy.namespaces.push(COMMON_ERROR_NAMESPACE);
     }
   }
 
@@ -162,12 +142,8 @@ export function useBackendIssueHandler(
   }
 
   function performTranslationOfRawIssues(issuesWrapper: Issues): Issues {
-    const issuesFieldRelated = issuesWrapper.issuesFieldRelated.map((issue) =>
-      getDefaultApplicationErrorTranslation(issue)
-    );
-    const issuesWithoutField = issuesWrapper.issuesWithoutField.map(
-      (issue) => getDefaultApplicationErrorTranslation(issue)
-    );
+    const issuesFieldRelated = issuesWrapper.issuesFieldRelated.map((issue) => getDefaultApplicationErrorTranslation(issue));
+    const issuesWithoutField = issuesWrapper.issuesWithoutField.map((issue) => getDefaultApplicationErrorTranslation(issue));
     return {
       issuesFieldRelated,
       issuesWithoutField,
@@ -178,39 +154,27 @@ export function useBackendIssueHandler(
   function applyValidationIssuesToForm(httpError: HttpError, setSingleFormErrorIntoFormCallback: (fieldName: any, error: IssueOption) => unknown): Issues {
     const {issuesFieldRelated, issuesWithoutField} = getIssuesTranslated(httpError, true);
 
-    issuesFieldRelated.forEach((issue) =>
-        setSingleFormErrorIntoFormCallback(issue.field, issue.error)
-    );
+    issuesFieldRelated.forEach((issue) => setSingleFormErrorIntoFormCallback(issue.field, issue.error));
     return {
       issuesFieldRelated,
       issuesWithoutField,
     };
   }
 
-  function getDefaultApplicationErrorTranslation(
-      issue: Issue
-  ): Issue {
+  function getDefaultApplicationErrorTranslation(issue: Issue): Issue {
     const result = cloneDeep(issue);
+    if (result.error.translated) {
+      return result;
+    }
+    const namespaces = Array.isArray(defaultTranslationResolutionStrategy.namespaces) ? defaultTranslationResolutionStrategy.namespaces
+                                                                                      : [defaultTranslationResolutionStrategy.namespaces];
 
-    const namespaces = Array.isArray(
-        defaultTranslationResolutionStrategy.namespaces
-    )
-        ? defaultTranslationResolutionStrategy.namespaces
-        : [defaultTranslationResolutionStrategy.namespaces];
-
-    const fallbackTranslation =
-        defaultTranslationResolutionStrategy.fallbackTranslation;
-    let nameResolutionStrategyOrder =
-        defaultTranslationResolutionStrategy.nameResolutionStrategyOrder ||
-        DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
+    const fallbackTranslation = defaultTranslationResolutionStrategy.fallbackTranslation;
+    let nameResolutionStrategyOrder = defaultTranslationResolutionStrategy.nameResolutionStrategyOrder || DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
 
     for (let i = 0; i < namespaces.length; i++) {
       const namespace = namespaces[i];
-      const translationResult = tryTranslation(
-          issue,
-          nameResolutionStrategyOrder,
-          namespace
-      );
+      const translationResult = tryTranslation(issue, nameResolutionStrategyOrder, namespace);
       if (isStringNotEmpty(translationResult)) {
         result.error.message = translationResult;
         return result;
@@ -223,11 +187,7 @@ export function useBackendIssueHandler(
     return result;
   }
 
-  function tryTranslation(
-      issue: Issue,
-      nameResolutionStrategyOrder: NameResolutionStrategy[],
-      namespace?: string
-  ): string | undefined {
+  function tryTranslation(issue: Issue, nameResolutionStrategyOrder: NameResolutionStrategy[], namespace?: string): string | undefined {
 
     if (isStringNotEmpty(namespace)) {
       for (let i = 0; i < nameResolutionStrategyOrder.length; i++) {
