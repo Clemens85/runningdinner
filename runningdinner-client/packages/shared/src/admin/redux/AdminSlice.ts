@@ -44,10 +44,6 @@ export const getRunningDinnerMandatorySelector = (state: AdminStateType): Runnin
   return state.root.runningDinner.data;
 };
 
-export const getAdminIdSelector = (state: AdminStateType): string => {
-  return getRunningDinnerMandatorySelector(state).adminId;
-}
-
 export const getRunningDinnerFetchSelector = (state: AdminStateType) => state.root.runningDinner;
 
 export const isFetchingDataSelector = (state: AdminStateType) => {

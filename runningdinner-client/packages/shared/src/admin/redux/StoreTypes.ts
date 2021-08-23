@@ -1,7 +1,9 @@
+import {getExampleParticipantMessage,} from "../..";
 import {
-  getExampleParticipantMessage,
-} from "../..";
-import {
+  ActivityList,
+  BackendIssue,
+  BaseMessage,
+  DashboardAdminActivities,
   MessageJob,
   MessageTask,
   MessageType,
@@ -9,16 +11,8 @@ import {
   PreviewMessage,
   Recipient,
   RunningDinner,
-  BackendIssue,
-  ActivityList,
-  BaseMessage,
-  DashboardAdminActivities,
 } from "../../types";
-import {FetchData, FetchStatus} from "../../redux";
-
-const INITIAL_FETCH_DATA = {
-  fetchStatus: FetchStatus.IDLE,
-}
+import {FetchData, INITIAL_FETCH_DATA} from "../../redux";
 
 export interface AdminState {
   runningDinner: FetchData<RunningDinner>;

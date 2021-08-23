@@ -180,8 +180,6 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
   const {getTeamName} = useTeamName();
   const {t} = useTranslation('common');
 
-  console.log(`Running though MapView`);
-
   const {longitude: currentPosLng, latitude: currentPosLat, error: currentPosError} = useGeoPosition(true, {enableHighAccuracy: true});
 
   const [dinnerRouteTeamMarkerInfoState, setDinnerRouteTeamMarkerInfoState] = React.useState<DinnerRouteTeamMarkerInfoState[]>(

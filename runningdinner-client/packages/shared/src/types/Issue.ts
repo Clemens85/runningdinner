@@ -28,6 +28,7 @@ export interface IssueOption {
   message: string;
   issueType?: string;
   shouldFocus?: boolean;
+  translated?: boolean;
 }
 
 

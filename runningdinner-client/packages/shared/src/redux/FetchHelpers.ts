@@ -45,3 +45,7 @@ function mapFetchErrorState(fetchStatus: FetchStatus, action?: any): HttpError |
   }
   return result;
 }
+
+export const INITIAL_FETCH_DATA = {
+  fetchStatus: FetchStatus.IDLE,
+}

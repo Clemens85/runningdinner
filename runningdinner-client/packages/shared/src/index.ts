@@ -22,6 +22,7 @@ export * from './GeocoderHook';
 export * from "./i18n";
 
 export * from "./admin/redux";
+export * from "./self";
 
 
 

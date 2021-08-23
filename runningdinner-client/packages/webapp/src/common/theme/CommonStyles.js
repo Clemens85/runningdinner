@@ -18,7 +18,11 @@ const useCommonStyles = makeStyles((theme) => ({
   },
   textTransformUppercase: {
     textTransform: 'uppercase',
+  },
+  colorSecondary: {
+    color: theme.palette.secondary.main
   }
+
 }));
 
 export default useCommonStyles;

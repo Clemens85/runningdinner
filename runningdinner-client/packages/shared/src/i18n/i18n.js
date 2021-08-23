@@ -7,16 +7,15 @@ import Common_en from './translations/en/CommonMessages_lang_en.json';
 import Common_de from './translations/de/CommonMessages_lang_de.json';
 import Wizard_de from "./translations/de/WizardMessages_lang_de";
 import Wizard_en from "./translations/en/WizardMessages_lang_en";
+import SelfAdmin_de from "./translations/de/SelfAdminMessages_lang_de";
+import SelfAdmin_en from "./translations/en/SelfAdminMessages_lang_en";
+
 
 const languageDetectionOptions = {
   order: ['querystring', 'cookie'],
   lookupCookie: 'NG_TRANSLATE_LANG_KEY',
   lookupQuerystring: 'lang'
 };
-
-export const COMMON_NAMESPACE = "common";
-export const ADMIN_NAMESPACE = "admin";
-export const WIZARD_NAMESPACE = "wizard";
 
 export function setupI18n() {
   i18n
@@ -28,12 +27,14 @@ export function setupI18n() {
           en: {
             common: Common_en,
             admin: Admin_en,
-            wizard: Wizard_en
+            wizard: Wizard_en,
+            selfadmin: SelfAdmin_en
           },
           de: {
             common: Common_de,
             admin: Admin_de,
-            wizard: Wizard_de
+            wizard: Wizard_de,
+            selfadmin: SelfAdmin_de
           }
         },
         fallbackLng: "de",

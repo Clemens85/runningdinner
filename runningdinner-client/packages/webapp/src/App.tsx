@@ -6,6 +6,7 @@ import LandingApp from "./landing/LandingApp";
 import { ThemeProvider } from '@material-ui/core/styles';
 import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
 import WizardApp from './wizard/WizardApp';
+import SelfAdminApp from "./self/SelfAdminApp";
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
               </Route>
               <Route path="/running-dinner-wizard">
                 <WizardApp />
+              </Route>
+              <Route path="/self/:selfAdminId">
+                <SelfAdminApp />
               </Route>
               <Route path="/">
                 <LandingApp />

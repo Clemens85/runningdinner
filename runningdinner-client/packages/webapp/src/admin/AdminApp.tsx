@@ -5,10 +5,14 @@ import {AdminMenu} from "./AdminMenu";
 import {AdminRoute} from "./AdminRoute";
 import {Provider, useDispatch} from 'react-redux';
 import {
-  adminStore, BaseAdminIdProps,
+  adminStore,
+  BaseAdminIdProps,
   fetchRunningDinner,
+  getFetchDataErrorSelector,
+  isFetchingDataSelector,
+  useAdminSelector,
 } from "@runningdinner/shared";
-import {AdminProgressBar} from "./AdminProgressBar";
+import {ProgressBar} from "../common/ProgressBar";
 import "../timeline.css";
 
 const AdminApp = () =>  {
@@ -27,6 +31,9 @@ const AdminAppContent = ({adminId}: BaseAdminIdProps) => {
   const {path, url} = useRouteMatch();
   const dispatch = useDispatch();
 
+  const showLoadingProgress = useAdminSelector(isFetchingDataSelector);
+  const fetchError = useAdminSelector(getFetchDataErrorSelector);
+
   React.useEffect(() => {
     dispatch(fetchRunningDinner(adminId));
   }, [dispatch, adminId]);
@@ -34,7 +41,7 @@ const AdminAppContent = ({adminId}: BaseAdminIdProps) => {
   return (
       <div>
         <AdminMenu url={url} />
-        <AdminProgressBar />
+        <ProgressBar showLoadingProgress={showLoadingProgress} fetchError={fetchError} />
         <Container maxWidth="xl">
           <AdminRoute path={path} />
         </Container>

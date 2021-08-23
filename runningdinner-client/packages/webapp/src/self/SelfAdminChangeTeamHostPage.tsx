@@ -1,0 +1,193 @@
+import React, {useState} from 'react';
+import {useParams} from "react-router-dom";
+import {
+  fetchSelfAdminTeam,
+  Fullname,
+  getFullname,
+  getSelfAdminTeamFetchSelector, isSameEntity,
+  Participant,
+  SelfAdminChangeTeamHostViewModel, SelfAdminUpdateTeamHostRequest,
+  Team, updateSelfAdminTeamHost, useBackendIssueHandler,
+  useSelfAdminDispatch,
+  useSelfAdminSelector
+} from "@runningdinner/shared";
+import {Trans, useTranslation} from "react-i18next";
+import {PageTitle} from "../common/theme/typography/Tags";
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText, useMediaQuery, useTheme
+} from '@material-ui/core';
+import Grid from "@material-ui/core/Grid";
+import {PrimaryButton} from "../common/theme/PrimaryButton";
+import {FormProvider, useForm} from "react-hook-form";
+import FormTextField from "../common/input/FormTextField";
+
+import CheckBoxOutlinedIcon from '@material-ui/icons/CheckBoxOutlined';
+import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined';
+import useCommonStyles from "../common/theme/CommonStyles";
+import Paragraph from "../common/theme/typography/Paragraph";
+import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
+import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
+
+
+export function SelfAdminChangeTeamHostPage() {
+
+  const {selfAdminId, participantId, teamId} = useParams<Record<string, string>>();
+
+  const dispatch = useSelfAdminDispatch();
+
+  const {data: team} = useSelfAdminSelector(getSelfAdminTeamFetchSelector);
+
+  React.useEffect(() => {
+    dispatch(fetchSelfAdminTeam({selfAdminId, participantId, teamId}));
+  }, [dispatch, selfAdminId, participantId, teamId]);
+
+  if (!team) {
+    return null;
+  }
+  return <SelfAdminChangeTeamHostView team={team} />;
+}
+
+interface SelfAdminChangeTeamHostViewProps {
+  team: Team;
+}
+
+export function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
+
+  const {t} = useTranslation(['selfadmin', 'common']);
+
+  const {selfAdminId, participantId, teamId} = useParams<Record<string, string>>();
+
+  const [newHostTeamMember, setNewHostTeamMember] = useState<Participant>(team.hostTeamMember);
+  const [currentTeam, setCurrentTeam] = useState<Team>(team);
+
+  const theme = useTheme();
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
+  const commonStyles = useCommonStyles();
+  const {showSuccess} = useCustomSnackbar();
+
+  const {getIssuesTranslated} = useBackendIssueHandler();
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+
+  const formMethods = useForm<SelfAdminChangeTeamHostViewModel>({
+    defaultValues: { comment: "" },
+    mode: 'onTouched'
+  });
+  const { handleSubmit, clearErrors, formState } = formMethods;
+  const { isSubmitting } = formState;
+
+  async function updateTeamHost(updatedValues: SelfAdminChangeTeamHostViewModel) {
+    clearErrors();
+    const requestBody: SelfAdminUpdateTeamHostRequest = {
+      teamId,
+      participantId,
+      comment: updatedValues.comment,
+      newHostingTeamMemberId: newHostTeamMember.id!
+    }
+    try {
+      const updatedTeam = await updateSelfAdminTeamHost({selfAdminId, participantId, teamId}, requestBody);
+      showSuccess(
+        <Trans i18nKey={"selfadmin:change_team_host_success_text"}
+               values={{newTeamHost: getFullname(newHostTeamMember)}} />
+      );
+      setCurrentTeam(updatedTeam);
+    } catch (e) {
+      showHttpErrorDefaultNotification(e, { showGenericMesssageOnValidationError: true });
+    }
+  }
+
+  function isTeamHost(teamMember: Participant) {
+    return isSameEntity(teamMember, newHostTeamMember);
+  }
+
+  function handleTeamMemberChange(teamMember: Participant, isHost: boolean) {
+    if (isHost) {
+      setNewHostTeamMember(teamMember);
+    }
+  }
+
+  function isTeamHostChanged() {
+    return !isSameEntity(newHostTeamMember, currentTeam.hostTeamMember);
+  }
+
+  function isNewSelectedTeamHost(teamMember: Participant) {
+    return isTeamHost(teamMember) && !isSameEntity(currentTeam.hostTeamMember, teamMember);
+  }
+
+  return (
+    <FormProvider {...formMethods}>
+      <form>
+        <PageTitle>{t('selfadmin:change_team_host_title')}</PageTitle>
+        <Paragraph>{t('selfadmin:change_team_host_help')}</Paragraph>
+        <Box mt={3}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <List dense={isSmallDevice}>
+                { team.teamMembers.map(teamMember =>
+                  <ListItem button divider onClick={() => handleTeamMemberChange(teamMember, !isTeamHost(teamMember))}>
+                    <ListItemIcon>
+                      <Box p={isSmallDevice ? 2 : 3}>
+                        <TeamMemberHostCheckboxIcon onChange={(newState) => handleTeamMemberChange(teamMember, newState)}
+                                                    checked={isTeamHost(teamMember)} />
+                      </Box>
+                    </ListItemIcon>
+                    <ListItemText primary={
+                      <>
+                        <span><Fullname {...teamMember} /></span>
+                        { isNewSelectedTeamHost(teamMember) && <strong className={commonStyles.colorSecondary}>&nbsp;&nbsp;* </strong> }
+                      </>
+                    } />
+                  </ListItem>
+                )}
+              </List>
+            </Grid>
+          </Grid>
+        </Box>
+        <Box mt={1}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <FormTextField  fullWidth
+                              variant="outlined"
+                              helperText={t('selfadmin:change_team_host_comment_help')}
+                              multiline
+                              disabled={!isTeamHostChanged()}
+                              rows={3}
+                              name="comment"
+                              label={t('selfadmin:change_team_host_comment')} />
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Box my={3}>
+          <Grid container justify={"flex-end"} direction={"row"}>
+            <Grid item xs={isSmallDevice ? 12 : undefined}>
+              <PrimaryButton onClick={handleSubmit(updateTeamHost)}
+                             className={isSmallDevice ? commonStyles.fullWidth : undefined}
+                             disabled={isSubmitting || !isTeamHostChanged()}
+                             size={"large"}>
+                {t('common:save')}
+              </PrimaryButton>
+            </Grid>
+          </Grid>
+        </Box>
+      </form>
+    </FormProvider>
+  );
+}
+
+interface TeamMemberHostCheckboxProps {
+  onChange: (checked: boolean) => unknown;
+  checked: boolean;
+}
+
+function TeamMemberHostCheckboxIcon({checked, onChange}: TeamMemberHostCheckboxProps) {
+  return (
+    <>
+      { !checked && <CheckBoxOutlineBlankOutlinedIcon style={{ fontSize: 48 }} onClick={() => onChange(true) } /> }
+      { checked && <CheckBoxOutlinedIcon color={"primary"} style={{ fontSize: 48 }} onClick={() => onChange(false) } /> }
+    </>
+  );
+}

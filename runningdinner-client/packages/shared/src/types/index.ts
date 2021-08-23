@@ -7,3 +7,4 @@ export * from './Issue';
 export * from './HttpResponse';
 export * from './Activity';
 export * from './DinnerRoute';
+export * from './SelfAdmin';
