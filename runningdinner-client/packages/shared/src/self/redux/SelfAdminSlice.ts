@@ -59,6 +59,7 @@ export const selfAdminSlice = createReducer(newInitialSelfAdminState(), builder 
 // *** Selectors *** //
 export const getSelfAdminTeamFetchSelector = (state: SelfAdminStateType) => state.selfAdminTeam;
 export const getSelfAdminDinnerRouteFetchSelector = (state: SelfAdminStateType) => state.selfAdminDinnerRoute;
+export const getSelfAdminSessionDataFetchSelector = (state: SelfAdminStateType) => state.selfAdminSessionData;
 export const getLanguageOfDinnerSelfAdmin = (state: SelfAdminStateType) => {
   const result = state.selfAdminSessionData.data?.languageCode;
   return result ? result : "de";

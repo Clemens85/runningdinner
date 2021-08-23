@@ -24,5 +24,7 @@ const SelfAdminMessages_de: any = {
   team_partner_wish_manage_title: 'Run Your Dinner - Wunschpartner verwalten',
   host_manage_title: 'Run Your Dinner - Gastgeber verwalten',
 
+  dinnerroute_title: 'Run Your Dinner - Dinner Route',
+
 };
 export default SelfAdminMessages_de;

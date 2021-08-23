@@ -32,3 +32,9 @@ export async function findSelfAdminDinnerRoute({selfAdminId, participantId, team
   const response = await axios.get<DinnerRoute>(url);
   return response.data;
 }
+
+export async function updateSelfTeamPartnerWish({selfAdminId, participantId}: SelfAdminBaseParams, teamPartnerWishEmail: string): Promise<void> {
+  const url = BackendConfig.buildUrl(`/self/v1/${selfAdminId}/${participantId}/teampartnerwish?email=${teamPartnerWishEmail}`);
+  await axios.put<Team>(url);
+  return;
+}

@@ -24,6 +24,7 @@
 /*.log
 /**/server-log*
 /mocked_mails
+/MockedMails
 /schema-export.sql
 /**/mongo-volume/*
 

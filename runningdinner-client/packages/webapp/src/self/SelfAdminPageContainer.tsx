@@ -12,12 +12,17 @@ import Grid from "@material-ui/core/Grid";
 import {Box} from "@material-ui/core";
 import {LanguageSwitch} from "../common/i18n/LanguageSwitch";
 import useCommonStyles from "../common/theme/CommonStyles";
+import {Helmet} from "react-helmet-async";
 
-export function SelfAdminPageContainer({children}: Parent) {
+export interface SelfAdminPageContainerProps extends Parent {
+  htmlPageTitleI18n: string;
+}
+
+export function SelfAdminPageContainer({children, htmlPageTitleI18n}: SelfAdminPageContainerProps) {
 
   const {selfAdminId, participantId} = useParams<Record<string, string>>();
 
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('selfadmin');
 
   const dispatch = useSelfAdminDispatch();
 
@@ -50,6 +55,9 @@ export function SelfAdminPageContainer({children}: Parent) {
           {children}
         </Grid>
       </Grid>
+      <Helmet>
+        <title>{t(htmlPageTitleI18n)}</title>
+      </Helmet>
     </>
   );
 }
