@@ -1,5 +1,6 @@
 import {NavigationStep} from "@runningdinner/shared";
 import {useHistory} from "react-router-dom";
+import {WIZARD_ROOT_PATH} from "../common/mainnavigation/NavigationPaths";
 
 export default function useWizardNavigation() {
 
@@ -10,7 +11,7 @@ export default function useWizardNavigation() {
       return undefined;
     }
     const queryParams = history.location.search;
-    return `/running-dinner-wizard${wizardStep.value}${queryParams}`;
+    return `${WIZARD_ROOT_PATH}${wizardStep.value}${queryParams}`;
   }
 
   function navigateToWizardStep(wizardStep?: NavigationStep) {

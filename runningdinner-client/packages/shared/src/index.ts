@@ -23,6 +23,7 @@ export * from "./i18n";
 
 export * from "./admin/redux";
 export * from "./self";
+export * from "./landing";
 
 
 

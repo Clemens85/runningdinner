@@ -7,7 +7,7 @@ import TeamSchedule from "./TeamSchedule";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import LinkAction from "../../common/theme/LinkAction";
 import {TeamMemberCancelDialog, TeamMemberCancelDialogResult} from "./cancellation/TeamMemberCancelDialog";
-import ContextMenuIcon from "../../common/menu/ContextMenuIcon";
+import ContextMenuIcon from "../../common/contextmenu/ContextMenuIcon";
 import {CancelledTeamMember} from "./CancelledTeamMember";
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import {Span} from "../../common/theme/typography/Tags";

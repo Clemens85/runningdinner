@@ -9,7 +9,8 @@ import Wizard_de from "./translations/de/WizardMessages_lang_de";
 import Wizard_en from "./translations/en/WizardMessages_lang_en";
 import SelfAdmin_de from "./translations/de/SelfAdminMessages_lang_de";
 import SelfAdmin_en from "./translations/en/SelfAdminMessages_lang_en";
-
+import Landing_de from "./translations/de/LandingMessages_lang_de";
+import Landing_en from "./translations/en/LandingMessages_lang_en";
 
 const languageDetectionOptions = {
   order: ['querystring', 'cookie'],
@@ -28,13 +29,15 @@ export function setupI18n() {
             common: Common_en,
             admin: Admin_en,
             wizard: Wizard_en,
-            selfadmin: SelfAdmin_en
+            selfadmin: SelfAdmin_en,
+            landing: Landing_en
           },
           de: {
             common: Common_de,
             admin: Admin_de,
             wizard: Wizard_de,
-            selfadmin: SelfAdmin_de
+            selfadmin: SelfAdmin_de,
+            landing: Landing_de
           }
         },
         fallbackLng: "de",

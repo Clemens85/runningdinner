@@ -79,3 +79,17 @@ export interface RunningDinner {
 
   contract: Contract;
 }
+
+export interface PublicRunningDinnerList {
+  publicRunningDinners: PublicRunningDinner[];
+}
+
+export interface PublicRunningDinner extends Omit<RunningDinnerBasicDetails, "registrationType" | "title" | "languageCode"> {
+  adminEmail: string;
+  registrationDateExpired: boolean;
+  runningDinnerType: RunningDinnerType;
+  languageCode: string;
+  teamPartnerWishDisabled: boolean;
+  meals: Meal[];
+  publicSettings: RunningDinnerPublicSettings;
+}
