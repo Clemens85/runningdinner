@@ -82,6 +82,7 @@
 	"misc": "Sonstiges",
 	"misc_notes": "Sonstige Anmerkungen",
 	"mobile": "Handy-Nr",
+	"more": "Mehr...",
 
 	"news": "Neuigkeiten",
 	"newsletter_label": "Bitte halte mich per E-Mail mit Neuigkeiten zu der runyourdinner-Software auf dem Laufenden.<br/>Wir spammen dich natürlich nicht zu. <br/>Deine freiwillige Einwilligung kannst du trotzdem jederzeit per E-Mail an {{ globalAdminEmail }} widerrufen.",
@@ -159,8 +160,7 @@
 	"visibilities": "Sichtbarkeiten",
 
 	"with_you": "(bei euch)",
-	"meals": "Speisen",
-	
+
 	"x": "x",
 
 	"zip": "PLZ",

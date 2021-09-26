@@ -3,27 +3,30 @@ import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {Box, Grid} from "@material-ui/core";
 import { TeaserCard } from './TeaserCard';
-import {PrimaryButton} from "../common/theme/PrimaryButton";
+import {PrimaryRouterButton} from "../common/theme/PrimaryButton";
 import {Link as RouterLink} from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import {useLandingStyles} from "./LandingStyles";
+import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
 
 export function LandingStart() {
 
   const {t} = useTranslation("landing");
 
   const gridSpacing = 6;
+  const landingStyles = useLandingStyles();
 
   return (
     <div>
       <div style={{ height: "300px", backgroundColor: "#ccc" }}></div>
       <PageTitle>{t("for_organizers_headline")}</PageTitle>
       <div>
-        <Grid container spacing={gridSpacing} alignItems={"stretch"} style={{ maxHeight:'350px'}}>
+        <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4} >
             <TeaserCard titleI18nKey={"landing:create_event_headline"}>
               <Span i18n={"landing:create_event_description"} html={true} />
               <Box pt={2}>
-                <PrimaryButton href={"/create-running-dinner"}>{t('landing:create_event_headline')}</PrimaryButton>
+                <PrimaryRouterButton to={LANDING_CREATE_RUNNING_DINNER_PATH}>{t('landing:create_event_headline')}</PrimaryRouterButton>
               </Box>
             </TeaserCard>
           </Grid>
@@ -33,7 +36,7 @@ export function LandingStart() {
               <Box pt={2}>
                 <Button color={"primary"}
                         variant={"outlined"}
-                        to={"/create-running-dinner"}
+                        to={LANDING_CREATE_RUNNING_DINNER_PATH}
                         component={RouterLink}>{t('landing:manage_event_link')}</Button>
               </Box>
             </TeaserCard>
@@ -48,12 +51,12 @@ export function LandingStart() {
 
       <PageTitle>{t("for_participants_headline")}</PageTitle>
       <div>
-        <Grid container spacing={gridSpacing} alignItems={"stretch"} style={{ maxHeight:'350px'}}>
+        <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4} >
             <TeaserCard titleI18nKey={"landing:discover_public_events_headline"}>
               <Span i18n={"landing:discover_public_events_description"} />
               <Box pt={2}>
-                <PrimaryButton href={"/running-dinner-events"}>{t('landing:discover_public_events_link')}</PrimaryButton>
+                <PrimaryRouterButton to={RUNNING_DINNER_EVENTS_PATH}>{t('landing:discover_public_events_link')}</PrimaryRouterButton>
               </Box>
             </TeaserCard>
           </Grid>

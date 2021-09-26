@@ -6,6 +6,8 @@ import Impressum from "./Impressum";
 import {LandingWizard} from "./LandingWizard";
 import {LandingStart} from "./LandingStart";
 import {PublicDinnerEventsPage} from "./PublicDinnerEventsPage";
+import {PublicDinnerEventRegistrationPage} from "./PublicDinnerEventRegistrationPage";
+import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
 
 export function LandingRoute({path}: RouteProps) {
 
@@ -29,11 +31,19 @@ export function LandingRoute({path}: RouteProps) {
         News
         {renderBrowserTitle("common:news")}
       </Route>
-      <Route path={`/create-running-dinner`}>
+      <Route path={LANDING_CREATE_RUNNING_DINNER_PATH}>
         <LandingWizard />
         {renderBrowserTitle("landing:create_wizard_title")}
       </Route>
-      <Route path={`/running-dinner-events`}>
+      <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/registration`}>
+        <PublicDinnerEventRegistrationPage />
+        {renderBrowserTitle("common:registration")}
+      </Route>
+      <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId`}>
+        <PublicDinnerEventRegistrationPage />
+        {renderBrowserTitle("landing:public_dinner_events_headline")}
+      </Route>
+      <Route path={RUNNING_DINNER_EVENTS_PATH}>
         <PublicDinnerEventsPage />
         {renderBrowserTitle("landing:public_dinner_events_headline")}
       </Route>

@@ -5,6 +5,7 @@ import {useRouteMatch} from "react-router-dom";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 import {LandingRoute} from "./LangingRoute";
 import {useTranslation} from "react-i18next";
+import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
 
 
 export function LandingApp() {
@@ -20,10 +21,10 @@ export function LandingApp() {
       routePath: "/news",
       title: t("common:news")
     }, {
-      routePath: "/running-dinner-events",
+      routePath: RUNNING_DINNER_EVENTS_PATH,
       title: "Running Dinner Events"
     }, {
-      routePath: "/create-running-dinner",
+      routePath: LANDING_CREATE_RUNNING_DINNER_PATH,
       title: t("common:create_running_dinner")
     }, {
       routePath: "/impressum",

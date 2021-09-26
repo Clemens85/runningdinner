@@ -24,15 +24,21 @@ export function useMasterDetailView() {
 
 export interface BackToListButtonProps {
   onBackToList: CallbackHandler;
+  mt?: number;
+  mb?: number;
 }
 
-export function BackToListButton({onBackToList}: BackToListButtonProps) {
+export function BackToListButton({onBackToList, mt, mb}: BackToListButtonProps) {
 
   const {t} = useTranslation('common');
 
+  const mtToSet = mt ? mt : 1;
+  const mbToSet = mb ? mb : 1;
+
   return (
-      <Box mb={1} mt={1}>
+      <Box mt={mtToSet} mb={mbToSet}>
         <Button startIcon={<ChevronLeftIcon />}
+                style={{ paddingLeft: 0 }}
                 onClick={onBackToList}>
           {t('back')}
         </Button>

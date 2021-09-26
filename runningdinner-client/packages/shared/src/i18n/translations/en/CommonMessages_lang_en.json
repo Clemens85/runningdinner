@@ -82,6 +82,7 @@
 	"misc": "Miscellaneous",
 	"misc_notes": "Other remarks",
 	"mobile": "Mobile number",
+	"more": "More...",
 
 	"news": "News",
 	"newsletter_label": "Please send me updates about the runyourdinner-software by EMail.<br />Of course we will not abuse your EMail address with spam. <br/>You can anytime revoke this voluntary aggreement by sending an EMail to {{ globalAdminEmail }}.",
@@ -159,7 +160,6 @@
 	"visibilities": "Visibility types",
 
 	"with_you": "(with you)",
-	"meals": "Meals",
 
 	"x": "x",
 

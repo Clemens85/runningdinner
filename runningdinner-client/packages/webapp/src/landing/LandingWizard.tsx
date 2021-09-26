@@ -1,14 +1,16 @@
 import React from 'react';
 import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
-import {Box, Grid, List} from "@material-ui/core";
+import {Box, Grid} from "@material-ui/core";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {DEMO_WIZARD_ROOT_PATH, WIZARD_ROOT_PATH} from "../common/mainnavigation/NavigationPaths";
 import { TeaserCard } from './TeaserCard';
+import {useLandingStyles} from "./LandingStyles";
 
 export function LandingWizard() {
 
   const {t} = useTranslation("landing");
+  const landingStyles = useLandingStyles();
 
   const gridSpacing = 6;
 
@@ -16,7 +18,7 @@ export function LandingWizard() {
     <Box pl={3} pr={3}>
       <PageTitle>{t("create_your_own_event_hedline")}</PageTitle>
       <div>
-        <Grid container spacing={gridSpacing} alignItems="stretch" style={{ maxHeight:'350px'}}>
+        <Grid container spacing={gridSpacing} alignItems="stretch" className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={6}>
             <TeaserCard titleI18nKey={"quickstart"}>
               <Span i18n={"landing:quickstart_description"} />
@@ -38,7 +40,7 @@ export function LandingWizard() {
 
       <PageTitle>{t("common:features")}</PageTitle>
       <div>
-        <Grid container spacing={gridSpacing} alignItems={"stretch"} style={{ maxHeight:'350px'}}>
+        <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4}>
             <TeaserCard titleI18nKey={"common:visibilities"}>
               <Span i18n={"landing:visibilities_text"} />
@@ -71,7 +73,7 @@ export function LandingWizard() {
       </div>
 
       <div>
-        <Grid container spacing={gridSpacing} alignItems={"stretch"} style={{ maxHeight:'350px'}}>
+        <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4} >
             <TeaserCard titleI18nKey={"landing:mail_sending_personalized"}>
               <Span i18n={"landing:mail_sending_personalized_description"} />
@@ -104,7 +106,7 @@ export function LandingWizard() {
       </div>
 
       <div>
-        <Grid container spacing={gridSpacing} alignItems={"stretch"} style={{ maxHeight:'350px'}}>
+        <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4} >
             <TeaserCard titleI18nKey={"common:Dashboard"}>
               <ul>

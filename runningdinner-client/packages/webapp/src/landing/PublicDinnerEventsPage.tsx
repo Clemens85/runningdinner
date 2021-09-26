@@ -1,11 +1,23 @@
 import React from 'react';
-import {PageTitle, Subtitle} from "../common/theme/typography/Tags";
+import {PageTitle, Span, Subtitle} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {Fetch} from "../common/Fetch";
-import {findPublicRunningDinnersAsync, isArrayNotEmpty, PublicRunningDinner} from "@runningdinner/shared";
-import {Grid} from "@material-ui/core";
+import {
+  AddressLocation,
+  findPublicRunningDinnersAsync,
+  getTruncatedText,
+  isArrayNotEmpty, LocalDate,
+  PublicRunningDinner
+} from "@runningdinner/shared";
+import {Box, CardActions, Grid} from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import {PrimaryButton} from "../common/theme/PrimaryButton";
+import Paragraph from "../common/theme/typography/Paragraph";
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import {useLandingStyles} from "./LandingStyles";
+import {isLocalDevEnv} from "../common/EnvService";
 
 export function PublicDinnerEventsPage() {
 
@@ -28,16 +40,45 @@ export interface PublicDinnerEventsListProps {
 
 function PublicDinnerEventsListPage({publicRunningDinners}: PublicDinnerEventsListProps) {
 
-  function renderPublicDinnerEventCard() {
+  const {t} = useTranslation("common");
+  const landingStyles = useLandingStyles();
+
+  function renderPublicDinnerEventCard(publicRunningDinner: PublicRunningDinner) {
+
+    const title = publicRunningDinner.publicSettings.title;
+    const publicDescriptionTeaser = getTruncatedText(publicRunningDinner.publicSettings.description, 256);
+
+    let publicDinnerUrl = publicRunningDinner.publicSettings.publicDinnerUrl;
+    if (isLocalDevEnv()) {
+      publicDinnerUrl = publicDinnerUrl
+                          .replace("localhost/", "localhost:3000/")
+                          .replace("/running-dinner-event/", "/running-dinner-events/");
+    }
+
     return (
-      <Grid item xs={12} md={6}>
-        <Card style={{ height: '100%' }}>
+      <Grid item xs={12} md={4} key={publicRunningDinner.publicSettings.publicDinnerId}>
+        <Card className={landingStyles.teaserCard}>
           <CardContent>
-            <Subtitle i18n={titleI18nKey} />
-            <div>
-              { children }
-            </div>
+            <Subtitle>{title}</Subtitle>
+            <Box>
+              <Span>{publicDescriptionTeaser}</Span>
+            </Box>
+            <Box pt={2}>
+              <PrimaryButton href={publicDinnerUrl}>{t('common:more')}</PrimaryButton>
+            </Box>
           </CardContent>
+          <CardActions>
+            <div style={{ display: 'flex', justifyContent: "space-between", width: "100%" }}>
+              <div style={{ display: 'flex'}}>
+                <LocationOnIcon color={"primary"} />
+                <Paragraph><AddressLocation cityName={publicRunningDinner.city} zip={publicRunningDinner.zip} /></Paragraph>
+              </div>
+              <div style={{ display: 'flex' }}>
+                <CalendarTodayIcon color={"primary"} />
+                <Paragraph><LocalDate date={publicRunningDinner.date} /></Paragraph>
+              </div>
+            </div>
+          </CardActions>
         </Card>
       </Grid>
     );
@@ -45,8 +86,8 @@ function PublicDinnerEventsListPage({publicRunningDinners}: PublicDinnerEventsLi
 
   return (
     <div>
-      <Grid container spacing={6}>
-
+      <Grid container spacing={6} className={landingStyles.teaserCardRow}>
+        { publicRunningDinners.map(publicRunningDinner => renderPublicDinnerEventCard(publicRunningDinner)) }
       </Grid>
     </div>
   );
