@@ -3,6 +3,9 @@
 
   angular.module('rd.frontend.constants').constant('NewsMessages_lang_de', {
 
+    news_title_20211019: 'Excel Export',
+    news_content_20211019: 'Die Teilnehmerliste wurde um eine einfache Export Funktionalität erweitert (Excel)',
+
     news_title_20201001: 'Fehler behoben bei Team-Einteilung',
     news_content_20201001: 'Durch einen technischen Fehler im Running Dinner Tool kam es in letzter Zeit leider vereinzelt zu Problemen bei der Durchführung der Team Einteilungen. Dieser Fehler ist mittelerweile behoben. ' +
         ' Zusätzlich wurden weitere kleinere Verbesserungen durchgeführt.',

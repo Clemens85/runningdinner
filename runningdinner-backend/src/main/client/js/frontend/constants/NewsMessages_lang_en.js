@@ -3,6 +3,9 @@
 
   angular.module('rd.frontend.constants').constant('NewsMessages_lang_en', {
 
+    news_title_20211019: 'Excel Export',
+    news_content_20211019: 'The participant list was extended by a simple export functionality (Excel)',
+
     news_title_20201001: 'Bugfix for problem during generating teams',
     news_content_20201001: 'Unfortunately there was a technical error in the Running Dinner tool, which caused sometimes a problem during team generation. ' +
                            'This error is now fixed and furthermore some functions were slighty improved.',
