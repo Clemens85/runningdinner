@@ -4,7 +4,7 @@
   angular.module('AdminApp').controller('ParticipantCtrl', ParticipantCtrl);
 
   function ParticipantCtrl($scope, $state, $timeout, $translate, $q, _, $transitions, NotificationService, Constants,
-                           RunningDinnerService, ParticipantService, MasterDataService, UtilService, ParticipantDeletionViewService,
+                           RunningDinnerService, ParticipantService, MasterDataService, UtilService, ParticipantDeletionViewService, AdminRequests,
                            TeamPartnerWishInfoDialogService, FormValidationService, fullnameFilter, TriggerFocus, adminId) {
 
     var vm = this;
@@ -61,6 +61,8 @@
         vm.sessionData = runningDinner.sessionData;
         vm.genders = vm.sessionData.genders;
         vm.numSeatsNeededForHost = vm.sessionData.numSeatsNeededForHost;
+
+        vm.exportUrl = "/rest/participantservice/v1/runningdinner/" + vm.runningDinner.adminId + "/participants/export";
 
         _assignLoadedParticipantsToView(participants);
       });

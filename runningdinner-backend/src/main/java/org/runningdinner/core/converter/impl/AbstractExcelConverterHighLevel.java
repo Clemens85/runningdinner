@@ -153,6 +153,79 @@ public class AbstractExcelConverterHighLevel {
 		return new ArrayList<Participant>(tmpResult);
 	}
 
+
+	public void writeParticipants(Sheet sheet, List<Participant> participants) {
+
+		createHeaderRow(sheet);
+
+		int rowIndex = 1;
+		for (Participant p : participants) {
+			Row row = sheet.createRow(rowIndex++);
+			int cellIndex = 0;
+			LOGGER.debug("Writing row number {}", rowIndex);
+
+			writeNumberToCell(row, cellIndex++, p.getParticipantNumber());
+			writeStringToCell(row, cellIndex++, p.getName().getFullnameFirstnameFirst());
+			writeStringToCell(row, cellIndex++, p.getEmail());
+			writeStringToCell(row, cellIndex++, formatGenderString(p.getGender()));
+			writeNumberToCell(row, cellIndex++, p.getAge() <= 0 ? -1 : p.getAge());
+			String address = p.getAddress().toString();
+			if (StringUtils.isNotEmpty(p.getAddress().getRemarks())) {
+				address += " (" + p.getAddress().getRemarks() + ")";
+			}
+			writeStringToCell(row, cellIndex++, StringUtils.trim(address));
+			writeNumberToCell(row, cellIndex++, p.getNumSeats());
+			writeStringToCell(row, cellIndex++, p.getMobileNumber());
+			writeStringToCell(row, cellIndex++, p.getNotes());
+			String mealSpecifics = p.getMealSpecifics().toCommaSeparatedString();
+			if (StringUtils.isNotEmpty(p.getMealSpecifics().getNote())) {
+				mealSpecifics += " (" + p.getMealSpecifics().getNote() + ")";
+			}
+			writeStringToCell(row, cellIndex, StringUtils.trim(mealSpecifics));
+		}
+	}
+
+	private String formatGenderString(Gender gender) {
+		String result = "Unbekannt";
+		if (gender == Gender.FEMALE) {
+			result = "Weiblich";
+		} else if (gender == Gender.MALE) {
+			result = "Männlich";
+		}
+		return result;
+	}
+
+	private void createHeaderRow(Sheet sheet) {
+
+		Row row = sheet.createRow(0);
+		int cellIndex = 0;
+		writeStringToCell(row, cellIndex++, "Nr");
+		writeStringToCell(row, cellIndex++, "Name");
+		writeStringToCell(row, cellIndex++, "Email-Adresse");
+		writeStringToCell(row, cellIndex++, "Geschlecht");
+		writeStringToCell(row, cellIndex++, "Alter");
+		writeStringToCell(row, cellIndex++, "Adresse");
+		writeStringToCell(row, cellIndex++, "Anzahl Plätze");
+		writeStringToCell(row, cellIndex++, "Handy-Nr");
+		writeStringToCell(row, cellIndex++, "Sonstige Anmerkungen");
+		writeStringToCell(row, cellIndex, "Essenswünsche");
+	}
+
+	private void writeNumberToCell(Row row, int cellIndex, int number) {
+		Cell cell = row.createCell(cellIndex);
+		if (number >= 0) {
+			cell.setCellValue(number);
+		} else {
+			writeStringToCell(row, cellIndex, StringUtils.EMPTY);
+		}
+	}
+
+	private void writeStringToCell(Row row, int cellIndex, String s) {
+		Cell cell = row.createCell(cellIndex);
+		cell.setCellValue(s);
+	}
+
+
 	/**
 	 * Reads out the value that is represented by the passed column configuration or returns an empty string if the passed column
 	 * configuration shall not be considered.

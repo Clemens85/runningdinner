@@ -1,15 +1,8 @@
 package org.runningdinner.participant.rest;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.rest.RunningDinnerRelatedIdListTO;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.geocoder.GeocodingResult;
@@ -19,13 +12,19 @@ import org.runningdinner.participant.partnerwish.TeamPartnerWish;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/rest/participantservice/v1")
@@ -51,6 +50,22 @@ public class ParticipantServiceRest {
 
 		return result;
 	}
+
+	@GetMapping(value = "/runningdinner/{adminId}/participants/export", produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
+	public void exportParticipants(@PathVariable("adminId") final String adminId, HttpServletResponse response) {
+
+		String fileName = "participants-export.xlsx";
+
+		response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+
+		try {
+			participantService.exportParticipantsAsExcel(adminId, response.getOutputStream());
+		} catch (IOException e) {
+			throw new TechnicalException(e);
+		}
+	}
+
 
 	@RequestMapping(value = "/runningdinner/{adminId}/participants/{participantId}", method = RequestMethod.GET)
 	public ParticipantTO findParticipant(@PathVariable("adminId") final String adminId,

@@ -15,21 +15,21 @@
     "grunt-contrib-cssmin": "1.0.1",
     "grunt-contrib-jshint": "1.0.0",
     "grunt-contrib-less": "1.1.0",
-    "grunt-replace": "1.0.1",
     "grunt-contrib-uglify": "1.0.1",
     "grunt-contrib-watch": "1.0.0",
+    "grunt-env": "^1.0.1",
+    "grunt-gitinfo": "0.1.8",
     "grunt-http-server": "2.0.0",
     "grunt-ng-annotate": "2.0.2",
-    "grunt-gitinfo": "0.1.8",
-    "grunt-env": "^1.0.1"
+    "grunt-replace": "1.0.1"
   },
   "dependencies": {
     "@uirouter/angularjs": "1.0.12",
-    "angular-translate-storage-local": "2.18.1",
     "angular": "1.6.1",
-    "angular-cookies": "1.6.1",
     "angular-animate": "1.6.1",
+    "angular-cookies": "1.6.1",
     "angular-dragdrop": "1.0.13",
+    "angular-dynamic-locale": "0.1.37",
     "angular-file-upload": "2.4.1",
     "angular-i18n": "1.6.1",
     "angular-mocks": "1.6.1",
@@ -38,8 +38,9 @@
     "angular-sanitize": "1.6.1",
     "angular-toastr": "2.1.1",
     "angular-translate": "2.13.1",
+    "angular-translate-storage-local": "2.18.1",
     "angular-ui-bootstrap": "2.4.0",
-    "angular-dynamic-locale": "0.1.37",
+    "aws-sdk": "^2.568.0",
     "bootstrap": "3.3.6",
     "font-awesome": "4.5.0",
     "jquery": "2.2.0",
@@ -48,8 +49,7 @@
     "moment": "^2.22.2",
     "ngmap": "1.17.8",
     "select2": "3.4.5",
-    "ui-select": "0.19.6",
-    "aws-sdk": "^2.568.0"
+    "ui-select": "0.19.6"
   },
   "scripts": {
     "clean": "rm -rf node_modules && npm install",
