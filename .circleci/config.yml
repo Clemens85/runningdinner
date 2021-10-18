@@ -112,7 +112,7 @@ jobs:
       - run:
           name: Check App is healthy
           command: |
-            curl -XGET https://runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+            curl -k -XGET https://runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
       - run:
           name: Remove SSH Access
           command: |
