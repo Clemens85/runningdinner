@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#333333'
   },
   mobileNavList: {
-    width: 200,
+    minWidth: 200,
   },
   paper: {
     background: "#333333"
