@@ -8,17 +8,14 @@ import {
   Time
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
-import {Link as RouterLink, useHistory, useParams} from "react-router-dom";
-import {Box, Button, Link, List, ListItem, ListItemIcon, ListItemText, Typography} from '@material-ui/core';
+import {useHistory, useParams} from "react-router-dom";
+import {Box, Link, List, ListItem, ListItemIcon, ListItemText, makeStyles, Typography} from '@material-ui/core';
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import Paragraph from "../common/theme/typography/Paragraph";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import FormFieldset from "../common/theme/FormFieldset";
 import ScheduleIcon from '@material-ui/icons/Schedule';
-import {SpacingGrid} from "../common/theme/SpacingGrid";
-import Grid from "@material-ui/core/Grid";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
-import useCommonStyles from "../common/theme/CommonStyles";
 import {RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
 import {BackToListButton} from "../common/hooks/MasterDetailViewHook";
 
@@ -39,15 +36,24 @@ export function PublicDinnerEventRegistrationPage() {
 interface PublicDinnerEventDetailsViewProps {
   publicRunningDinner: PublicRunningDinner;
 }
+
+const useMealListStyles = makeStyles(() => ({
+  root: {
+    minWidth: "36px"
+  }
+}));
+
 export function PublicDinnerEventDetailsView({publicRunningDinner}: PublicDinnerEventDetailsViewProps) {
 
   const {t} = useTranslation(["landing", "common"]);
   const history = useHistory();
 
+  const mealListClasses = useMealListStyles();
+
   function renderMealListItem(meal: Meal) {
     return (
-      <ListItem key={meal.id}>
-        <ListItemIcon>
+      <ListItem key={meal.id} disableGutters>
+        <ListItemIcon classes={{ root:  mealListClasses.root }}>
           <ScheduleIcon color={"primary"} />
         </ListItemIcon>
         <ListItemText primary={
@@ -99,11 +105,11 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: PublicDinner
       <BackToListButton onBackToList={navigateBackToEventList} mb={-4} mt={2} />
       <PageTitle>{publicSettings.title}</PageTitle>
       <Box>
-        <div style={{ display: 'flex'}}>
+        <div style={{ display: 'flex', marginTop: "-15px" }}>
           <LocationOnIcon color={"primary"} />
           <Paragraph><AddressLocation cityName={publicRunningDinner.city} zip={publicRunningDinner.zip} /></Paragraph>
         </div>
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', marginTop: "15px" }}>
           <CalendarTodayIcon color={"primary"} />
           <Paragraph><LocalDate date={publicRunningDinner.date} /></Paragraph>
         </div>
@@ -111,7 +117,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: PublicDinner
 
       <Box mt={2}>
         <FormFieldset>{t("common:schedule")}</FormFieldset>
-        <List dense={true}>
+        <List dense={true} disablePadding>
           { publicRunningDinner.meals.map(meal => renderMealListItem(meal)) }
         </List>
       </Box>
