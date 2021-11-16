@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { RunningDinner } from "./RunningDinner";
+import {PublicRunningDinner, RunningDinner} from "./RunningDinner";
 
 export interface BaseEntity {
   id?: string;
@@ -69,4 +69,12 @@ export interface BaseRunningDinnerProps {
 
 export interface BaseAdminIdProps {
   adminId: string;
+}
+
+export interface BasePublicDinnerProps {
+  publicRunningDinner: PublicRunningDinner;
+}
+
+export interface BasePublicIdProps {
+  publicDinnerId: string;
 }

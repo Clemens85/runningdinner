@@ -20,11 +20,12 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.RunningDinnerInfo;
-import org.runningdinner.frontend.rest.RegistrationDataTO;
+import org.runningdinner.frontend.rest.RegistrationDataV2TO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.mailserversettings.MailServerSettingsImpl;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
+import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.wizard.BasicDetailsTO;
@@ -56,24 +57,27 @@ public class TestUtil {
     return result;
   }
 
-  public static RegistrationDataTO createRegistrationData(String fullname, String email, ParticipantAddress address, int numberOfSeats) {
+  public static RegistrationDataV2TO createRegistrationData(String fullname, String email, ParticipantAddress address, int numberOfSeats) {
 
-    RegistrationDataTO registrationData = new RegistrationDataTO();
+    RegistrationDataV2TO registrationData = new RegistrationDataV2TO();
     registrationData.setEmail(email);
-    registrationData.setFullname(fullname);
-    registrationData.setNumberOfSeats(numberOfSeats);
-    registrationData.setCity(address.getCityName());
+    ParticipantName participantName = ParticipantName.newName().withCompleteNameString(fullname);
+    registrationData.setFirstnamePart(participantName.getFirstnamePart());
+    registrationData.setLastname(participantName.getLastname());
+    registrationData.setNumSeats(numberOfSeats);
+    registrationData.setCityName(address.getCityName());
     registrationData.setAddressRemarks(address.getRemarks());
-    registrationData.setStreetWithNr(address.getStreetWithNr());
-    registrationData.setZip(address.getZip() + "");
+    registrationData.setStreet(address.getStreet());
+    registrationData.setStreetNr(address.getStreetNr());
+    registrationData.setZip(address.getZip());
     return registrationData;
   }
   
   /**
    * Creates a complete running dinner instance and also arranges also random teams out of the participants
    * 
-   * @param runningDinnerService
-   * @param uuid
+   * @param createService
+   * @param teamService
    * @return
    * @throws NoPossibleRunningDinnerException
    */

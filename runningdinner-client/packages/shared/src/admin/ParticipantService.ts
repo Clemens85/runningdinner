@@ -1,5 +1,4 @@
 import axios, {Method} from 'axios';
-import clone from 'lodash/clone';
 import filter from 'lodash/filter';
 import lowerCase from 'lodash/lowerCase';
 import includes from 'lodash/includes';
@@ -7,41 +6,6 @@ import { BackendConfig } from "../BackendConfig";
 import {isNewEntity} from "../Utils";
 import {Participant, TeamPartnerWishInfo} from "../types";
 import {CONSTANTS} from "../Constants";
-
-export const EMPTY_PARTICIPANT: Participant = {
-  firstnamePart: '',
-  lastname: '',
-  gender: CONSTANTS.GENDER.UNDEFINED,
-  mobileNumber: '',
-  email: '',
-  street: '',
-  streetNr: '',
-  zip: '',
-  cityName: '',
-  age: -1,
-  numberSeats: -1,
-  vegetarian: false,
-  lactose: false,
-  gluten:false,
-  vegan: false,
-  mealSpecificsNote: '',
-  numSeats: -1,
-  addressRemarks: '',
-  teamPartnerWish: '',
-  notes: ''
-};
-
-export const EXAMPLE_PARTICIPANT: Participant = {
-  ...EMPTY_PARTICIPANT,
-  firstnamePart: 'Max',
-  lastname: 'Mustermann',
-  gender: CONSTANTS.GENDER.MALE,
-  email: 'Max@Mustermann.de',
-  street: 'Musterstraße',
-  streetNr: '1',
-  age: 25,
-  numberSeats: 6
-};
 
 export async function findParticipantsAsync(adminId: string): Promise<Participant[]> {
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants`);
@@ -123,14 +87,6 @@ export function getFullnameList(participants: Participant[]): string {
   }
   const participantNames = participants.map(p => getFullname(p));
   return participantNames.join(', ');
-}
-
-export function newEmptyParticipantInstance(): Participant {
-  return clone(EMPTY_PARTICIPANT);
-}
-
-export function newExampleParticipantInstance(): Participant {
-  return clone(EXAMPLE_PARTICIPANT);
 }
 
 export function getAssignableParticipants(participants: Participant[]): Participant[] {

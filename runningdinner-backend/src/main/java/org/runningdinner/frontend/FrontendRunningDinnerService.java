@@ -21,6 +21,7 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
+import org.runningdinner.frontend.rest.RegistrationDataV2TO;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
@@ -101,7 +102,7 @@ public class FrontendRunningDinnerService {
 	 * @param onlyPreviewAndValidation Don't persist the registration but only validate and generate a preview (if valid) for client
 	 */
 	@Transactional
-	public RegistrationSummary performRegistration(String publicDinnerId, RegistrationDataTO registrationData, boolean onlyPreviewAndValidation) {
+	public RegistrationSummary performRegistration(String publicDinnerId, RegistrationDataV2TO registrationData, boolean onlyPreviewAndValidation) {
 
 		LocalDate now = LocalDate.now();
 
@@ -109,21 +110,28 @@ public class FrontendRunningDinnerService {
 
 		Assert.state(!runningDinner.getPublicSettings().isRegistrationDeactivated(), "Registration can only performed when not deactivated: " + runningDinner);
 
+		ParticipantName participantName = ParticipantName.newName()
+																											.withFirstname(registrationData.getFirstnamePart())
+																											.andLastname(registrationData.getLastname());
+
 		checkRegistrationDate(runningDinner, now);
-		checkFullname(registrationData.getFullname());
+		checkFullname(participantName.getFullnameFirstnameFirst());
 		participantService.checkDuplicatedRegistration(runningDinner.getAdminId(), registrationData.getEmail());
 		
 		Participant participant = new Participant();
-		participant.setName(ParticipantName.newName().withCompleteNameString(registrationData.getFullname()));
-		ParticipantAddress address = ParticipantAddress.parseFromString(registrationData.getStreetWithNr() + "\n"
-				+ registrationData.getZip() + " " + registrationData.getCity());
+		participant.setName(participantName);
+		ParticipantAddress address = new ParticipantAddress();
+		address.setZip(registrationData.getZip());
+		address.setStreet(registrationData.getStreet());
+		address.setStreetNr(registrationData.getStreetNr());
+		address.setCityName(registrationData.getCityName());
 		address.setRemarks(registrationData.getAddressRemarks());
 		participant.setAddress(address);
 		participant.setAge(registrationData.getAgeNormalized());
 		participant.setEmail(registrationData.getEmail());
-		participant.setNumSeats(registrationData.getNumberOfSeats());
+		participant.setNumSeats(registrationData.getNumSeats());
 		participant.setGender(registrationData.getGenderNotNull());
-		participant.setMobileNumber(registrationData.getMobile());
+		participant.setMobileNumber(registrationData.getMobileNumber());
 		participant.setMealSpecifics(registrationData.getMealSpecifics());
 		participant.setNotes(registrationData.getNotes());
 		participant.setTeamPartnerWish(registrationData.getTeamPartnerWish());

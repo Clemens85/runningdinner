@@ -7,9 +7,12 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.RegistrationSummary;
+import org.runningdinner.participant.ParticipantAddress;
+import org.runningdinner.participant.ParticipantName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,12 +50,39 @@ public class FrontendRunningDinnerServiceRest {
 			                                             @RequestParam(name = "validateOnly", defaultValue = "true") boolean onlyPreviewAndValidation,
 			                                             @RequestBody @Valid RegistrationDataTO registrationData) {
 
-		RegistrationSummary result = frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData,
-				onlyPreviewAndValidation);
+		RegistrationDataV2TO registrationDataV2 = new RegistrationDataV2TO();
+
+		registrationDataV2.setAge(registrationData.getAge());
+		registrationDataV2.setEmail(registrationData.getEmail());
+		registrationDataV2.setMobileNumber(registrationData.getMobile());
+		ParticipantName participantName = ParticipantName.newName().withCompleteNameString(registrationData.getFullname());
+		registrationDataV2.setFirstnamePart(participantName.getFirstnamePart());
+		registrationDataV2.setLastname(participantName.getLastname());
+		
+		registrationDataV2.setCityName(registrationData.getCity());
+		ParticipantAddress tmpAddress = new ParticipantAddress();
+		tmpAddress.setStreetAndNr(registrationData.getStreetWithNr());
+    registrationDataV2.setStreet(tmpAddress.getStreet());
+    registrationDataV2.setStreetNr(tmpAddress.getStreetWithNr());
+    registrationDataV2.setZip(registrationData.getZip());
+    registrationDataV2.setAddressRemarks(registrationData.getAddressRemarks());
+    registrationDataV2.setGender(registrationData.getGender());
+
+    MealSpecifics mealSpecifics = registrationData.getMealSpecifics();
+    registrationDataV2.setVegan(mealSpecifics.isVegan());
+    registrationDataV2.setVegetarian(mealSpecifics.isVegetarian());
+    registrationDataV2.setGluten(mealSpecifics.isGluten());
+    registrationDataV2.setLactose(mealSpecifics.isLactose());
+    registrationDataV2.setMealSpecificsNote(mealSpecifics.getNote());
+
+    registrationDataV2.setTeamPartnerWish(registrationData.getTeamPartnerWish());
+    registrationDataV2.setNotes(registrationData.getNotes());
+		
+		RegistrationSummary result = frontendRunningDinnerService.performRegistration(publicDinnerId, registrationDataV2, onlyPreviewAndValidation);
 		return new RegistrationSummaryTO(result);
 	}
 
-  @RequestMapping(value = "/runningdinner/{publicDinnerId}/{participantId}/activate", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/runningdinner/{publicDinnerId}/{participantId}/activate", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
   public void activateSubscribedParticipant(@PathVariable("publicDinnerId") String publicDinnerId,
                                             @PathVariable("participantId") UUID participantId) {
 

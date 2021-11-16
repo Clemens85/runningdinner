@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
-import org.runningdinner.frontend.rest.RegistrationDataTO;
+import org.runningdinner.frontend.rest.RegistrationDataV2TO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.test.util.ApplicationTest;
@@ -79,7 +79,7 @@ public class ActivityServiceTest {
 		LocalDate date = LocalDate.now().plusDays(30);
 		RunningDinner runningDinner = testHelperService.createPublicRunningDinner(date, 3);
 
-		RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Muster", "max@muster.de",
+		RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Max Muster", "max@muster.de",
 				ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 3);
 		frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
 

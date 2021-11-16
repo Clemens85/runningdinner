@@ -17,7 +17,7 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.RegistrationSummary;
-import org.runningdinner.frontend.rest.RegistrationDataTO;
+import org.runningdinner.frontend.rest.RegistrationDataV2TO;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
@@ -70,7 +70,7 @@ public class TeamPartnerWishStateHandlingTest {
     String participantEmail = "foo@bar.de";
     String participantEmailEncoded = "foo%40bar.de";
     
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", participantEmail, newAddress(), 6);
+    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Foo Bar", participantEmail, newAddress(), 6);
     registrationData.setTeamPartnerWish("wished@partner.de");
     
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicId, registrationData, false);
@@ -95,7 +95,7 @@ public class TeamPartnerWishStateHandlingTest {
     
     String newParticipantEmail = "foo@bar.de";
     
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
+    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
     registrationData.setTeamPartnerWish("already@subscribed.de");
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicId, registrationData, false);
 
@@ -120,7 +120,7 @@ public class TeamPartnerWishStateHandlingTest {
     String newParticipantEmail = "foo@bar.de";
     String newParticipantEmailEncoded = "foo%40bar.de";
     
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
+    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
     registrationData.setTeamPartnerWish("already@subscribed.de");
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicId, registrationData, false);
 
@@ -150,7 +150,7 @@ public class TeamPartnerWishStateHandlingTest {
     String newParticipantEmail = "foo@bar.de";
     String newParticipantEmailEncoded = "foo%40bar.de";
     
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
+    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
     registrationData.setTeamPartnerWish("already@subscribed.de");
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicId, registrationData, false);
 
@@ -180,7 +180,7 @@ public class TeamPartnerWishStateHandlingTest {
     
     String newParticipantEmail = "foo@bar.de";
     
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
+    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicId, registrationData, false);
 
     assertThat(registrationSummary.getTeamPartnerWishState()).isNull();
@@ -203,7 +203,7 @@ public class TeamPartnerWishStateHandlingTest {
     // Simulate already subscribed participant with no team-wish:
     updateFirstAlreadySubscribedParticipant("Already Subscribed", "already@subscribed.de", "other@wish.de");
     
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", "foo@bar.de", newAddress(), 6);
+    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Foo Bar", "foo@bar.de", newAddress(), 6);
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicId, registrationData, false);
 
     assertNoTeamPartnerWishMessageTask();
@@ -222,7 +222,7 @@ public class TeamPartnerWishStateHandlingTest {
     
     String newParticipantEmail = "foo@bar.de";
     
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
+    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Foo Bar", newParticipantEmail, newAddress(), 6);
     registrationData.setTeamPartnerWish("already@subscribed.de");
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicId, registrationData, false);
 

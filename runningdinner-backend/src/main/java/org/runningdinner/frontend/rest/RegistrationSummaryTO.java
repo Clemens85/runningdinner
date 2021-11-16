@@ -66,8 +66,7 @@ public class RegistrationSummaryTO implements Serializable {
 		this.streetWithNr = address.getStreetWithNr();
 		this.zipWithCity = address.getZipWithCity();
 
-		this.age = participant.getAge();
-		this.ageSpecified = this.age != Participant.UNDEFINED_AGE;
+		this.setAge(participant.getAge());
 
 		this.canHost = canHost;
 
@@ -133,6 +132,7 @@ public class RegistrationSummaryTO implements Serializable {
 
 	public void setAge(int age) {
 		this.age = age;
+		this.ageSpecified = age != Participant.UNDEFINED_AGE;
 	}
 
 	public String getStreetWithNr() {

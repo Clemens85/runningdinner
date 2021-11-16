@@ -5,7 +5,11 @@ import {useRouteMatch} from "react-router-dom";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 import {LandingRoute} from "./LangingRoute";
 import {useTranslation} from "react-i18next";
-import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
+import {
+  IMPRESSUM_PATH,
+  LANDING_CREATE_RUNNING_DINNER_PATH,
+  RUNNING_DINNER_EVENTS_PATH
+} from "../common/mainnavigation/NavigationPaths";
 
 
 export function LandingApp() {
@@ -27,7 +31,7 @@ export function LandingApp() {
       routePath: LANDING_CREATE_RUNNING_DINNER_PATH,
       title: t("common:create_running_dinner")
     }, {
-      routePath: "/impressum",
+      routePath: IMPRESSUM_PATH,
       title: t("common:imprint")
     }
   ];

@@ -8,6 +8,7 @@ import {LandingStart} from "./LandingStart";
 import {PublicDinnerEventsPage} from "./PublicDinnerEventsPage";
 import {PublicDinnerEventRegistrationPage} from "./PublicDinnerEventRegistrationPage";
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
+import { PublicDinnerEventRegistrationFinishedPage } from "./PublicDinnerEventRegistrationFinishedPage";
 
 export function LandingRoute({path}: RouteProps) {
 
@@ -35,13 +36,13 @@ export function LandingRoute({path}: RouteProps) {
         <LandingWizard />
         {renderBrowserTitle("landing:create_wizard_title")}
       </Route>
-      <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/registration`}>
-        <PublicDinnerEventRegistrationPage />
-        {renderBrowserTitle("common:registration")}
+      <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/registration-finished`}>
+        <PublicDinnerEventRegistrationFinishedPage />
+        {renderBrowserTitle("landing:registration_finished_title")}
       </Route>
       <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId`}>
         <PublicDinnerEventRegistrationPage />
-        {renderBrowserTitle("landing:public_dinner_events_headline")}
+        {renderBrowserTitle("landing:registration")}
       </Route>
       <Route path={RUNNING_DINNER_EVENTS_PATH}>
         <PublicDinnerEventsPage />

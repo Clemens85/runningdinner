@@ -55,8 +55,8 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
   const isAssignedToTeam = !isStringEmpty(participant.teamId);
 
   return (
-      <Dialog open={open} onClose={cancel} aria-labelledby="form-dialog-title">
-        <DialogTitleCloseable id="edit-meals-dialog-title" onClose={cancel}>
+      <Dialog open={open} onClose={cancel}>
+        <DialogTitleCloseable onClose={cancel}>
           {t('participant_deletion_confirmation_headline', {fullname: fullName})}
         </DialogTitleCloseable>
         <DialogContent>

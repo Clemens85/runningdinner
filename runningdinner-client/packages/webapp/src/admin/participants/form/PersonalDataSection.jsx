@@ -52,7 +52,7 @@ export default function PersonalDataSection() {
                            label={mobileNr}/>
           </Grid>
           <Grid item xs={12} md={6}>
-            <ParticipantGenderSelection label="Geschlecht" value="gender" id="gender" />
+            <ParticipantGenderSelection label={t('common:gender')} value="gender" id="gender" />
           </Grid>
           <Grid item xs={12} md={6}>
             <Controller

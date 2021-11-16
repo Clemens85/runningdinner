@@ -27,19 +27,19 @@ const LandingMessages_de: any = {
       'Versuche es bitte später erneut. <br/>' +
       'Falls der Fehler immer noch auftritt wende dich bitte an <a href="mailto:{{ adminEmail }}">{{ adminEmail }}</a>.',
 
-    teampartner_wish_summary_not_existing: 'Du hast <em>{{ teamPartnerWish }}</em> als Wunschpartner angegeben. ' +
+    teampartner_wish_summary_not_existing: 'Du hast <italic>{{ teamPartnerWish }}</italic> als Wunschpartner angegeben. ' +
       'Er oder Sie bekommt eine Einladung via Email sobald du deine Registrierung bestätigt hast. ' +
-      'Ihr werdet dann zusammen als Team kochen, wenn <em>{{ teamPartnerWish }}</em> sich anmeldet.',
+      'Ihr werdet dann zusammen als Team kochen, wenn <italic>{{ teamPartnerWish }}</italic> sich anmeldet.',
 
-    teampartner_wish_summary_match: 'Du wirst zusammen mit <em>{{ teamPartnerWish }}</em> als Team kochen.',
+    teampartner_wish_summary_match: 'Du wirst zusammen mit <italic>{{ teamPartnerWish }}</italic> als Team kochen.',
 
-    teampartner_wish_summary: 'Du hast <em>{{ teamPartnerWish }}</em> als Wunschpartner angegeben.',
+    teampartner_wish_summary: 'Du hast <italic>{{ teamPartnerWish }}</italic> als Wunschpartner angegeben.',
 
     gender_unknown: "Keine Angabe",
 
     registration_finished_headline: 'Anmeldung abgeschlossen!',
     registration_finished_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine Email mit einem Bestätigungslink und weiteren Infos erhalten. ' +
-      '<br/>Um deine Anmeldung erfolgreich abzuschließen musst du diesen Link aufrufen. Solltest du keine EMail erhalten melde dich bitte an <a href="mailto:{{ adminEmail }}">{{ adminEmail }}</a>.',
+      '<br/>Um deine Anmeldung erfolgreich abzuschließen musst du diesen Link aufrufen. Solltest du keine EMail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
     street_placeholder: 'Deine Strasse + Nr',
     address_remarks_help: 'Optional: Wenn deine Wohnung schwer zu finden ist, können diese Angaben anderen Teams helfen, falls du Gastgeber bist.',
@@ -58,7 +58,7 @@ const LandingMessages_de: any = {
     goto_registration: 'Zur Anmeldung',
 
     data_processing_acknowledge: 'Ich willige in die Verarbeitung meiner Daten ein.',
-    data_processing_acknowledge_hint: 'Die <a href="{{ privacyLink }}" target="_blank" class="actionlink">Datenschutzerklärung</a> enthält weitere Erläuterungen dazu.',
+    data_processing_acknowledge_hint: 'Die <anchor href="{{ privacyLink }}" target="_blank">Datenschutzerklärung</anchor> enthält weitere Erläuterungen dazu.',
 
     notification_demo_no_registration_text: 'Dies ist kein echtes Event, sondern ein Demo-Event. Eine (Test-)Anmeldung ist zwar möglich, wird aber nicht angenommen.',
 

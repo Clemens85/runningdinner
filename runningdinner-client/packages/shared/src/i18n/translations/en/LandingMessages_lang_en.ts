@@ -26,20 +26,20 @@ const LandingMessages_en: any = {
       'Please try it again later. <br/> ' +
       'If the error still occurs, please send an email to <a href="mailto:{{ adminEmail }}">{{ adminEmail }}</a>.',
 
-    teampartner_wish_summary_not_existing: 'You have entered <em>{{ teamPartnerWish }}</em> as team partner wish. ' +
+    teampartner_wish_summary_not_existing: 'You have entered <italic>{{ teamPartnerWish }}</italic> as team partner wish. ' +
       'This wished partner will receive an invitation email for this dinner event as soon as you confirm your registration. ' +
-      'If <em>{{ teamPartnerWish }}</em> eventually registers to this event, you will be mixed up into one team.',
+      'If <italic>{{ teamPartnerWish }}</italic> eventually registers to this event, you will be mixed up into one team.',
 
-    teampartner_wish_summary_match: 'You will cook together with <em>{{ teamPartnerWish }}</em> in one team.',
+    teampartner_wish_summary_match: 'You will cook together with <italic>{{ teamPartnerWish }}</italic> in one team.',
 
-    teampartner_wish_summary: 'You have entered <em>{{ teamPartnerWish }}</em> as team partner wish.',
+    teampartner_wish_summary: 'You have entered <italic>{{ teamPartnerWish }}</italic> as team partner wish.',
 
     gender_unknown: "No information",
 
     registration_finished_headline: 'Registration finished!',
     registration_finished_text: 'You have successfully registrated. In the next minutes you will receive an email with a confirmation link and further information. ' +
       '<br/>Your registration will only be completed when you open this confirmation link. ' +
-      'If you did not receive any email, then please send an email to <a href="mailto:{{ adminEmail }}">{{ adminEmail }}</a>.',
+      'If you did not receive any email, then please send an email to <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
     street_placeholder: 'Your street + nr',
     address_remarks_help: 'Optional: If you are host and your flat is not easy to find, this remarks can help other teams to find your flat.',
@@ -57,7 +57,7 @@ const LandingMessages_en: any = {
     goto_registration: 'Open Registration',
 
     data_processing_acknowledge: 'I aggree that my data will be processed.',
-    data_processing_acknowledge_hint: 'The <a href="{{ privacyLink }}" target="_blank" class="actionlink">Privacy Statement (DE)</a> contains further information.',
+    data_processing_acknowledge_hint: 'The <anchor href="{{ privacyLink }}" target="_blank">Privacy Statement (DE)</anchor> contains further information.',
 
     notification_demo_no_registration_text: 'This is just a demo event and no "real" event. A registration for testing purposes is possible, but will have no effect.',
 

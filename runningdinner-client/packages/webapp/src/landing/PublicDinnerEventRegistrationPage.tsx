@@ -2,22 +2,39 @@ import React from 'react';
 import {useTranslation} from "react-i18next";
 import {Fetch} from "../common/Fetch";
 import {
-  AddressLocation,
-  findPublicRunningDinnerByPublicId, formatLocalDate, isStringEmpty, isStringNotEmpty, LocalDate, Meal,
-  PublicRunningDinner,
-  Time
+  AddressLocation, BasePublicDinnerProps,
+  findPublicRunningDinnerByPublicId,
+  formatLocalDate,
+  isStringEmpty,
+  isStringNotEmpty,
+  LocalDate,
+  Meal,
+  RegistrationData,
+  Time,
+  useDisclosure
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
-import {useHistory, useParams} from "react-router-dom";
-import {Box, Link, List, ListItem, ListItemIcon, ListItemText, makeStyles, Typography} from '@material-ui/core';
+import {useParams} from "react-router-dom";
+import {
+  Box,
+  Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Typography
+} from '@material-ui/core';
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import Paragraph from "../common/theme/typography/Paragraph";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import FormFieldset from "../common/theme/FormFieldset";
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import {PrimaryButton} from "../common/theme/PrimaryButton";
-import {RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
 import {BackToListButton} from "../common/hooks/MasterDetailViewHook";
+import { PublicDinnerEventRegistrationForm } from './PublicDinnerEventRegistrationForm';
+import {useLandingNavigation} from "./LandingNavigationHook";
+import {getLocalStorageItem, setLocalStorageItem} from "../common/LocalStorageService";
 
 export function PublicDinnerEventRegistrationPage() {
 
@@ -33,22 +50,32 @@ export function PublicDinnerEventRegistrationPage() {
                 } />;
 }
 
-interface PublicDinnerEventDetailsViewProps {
-  publicRunningDinner: PublicRunningDinner;
-}
-
 const useMealListStyles = makeStyles(() => ({
   root: {
     minWidth: "36px"
   }
 }));
 
-export function PublicDinnerEventDetailsView({publicRunningDinner}: PublicDinnerEventDetailsViewProps) {
+export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDinnerProps) {
 
   const {t} = useTranslation(["landing", "common"]);
-  const history = useHistory();
+
+  const {navigateToRegistrationFinished, navigateToRunningDinnerEventList} = useLandingNavigation();
 
   const mealListClasses = useMealListStyles();
+
+  const { isOpen: isRegistrationFormOpen, open: openRegistrationForm, close: closeRegistrationForm } = useDisclosure();
+
+  const {publicSettings} = publicRunningDinner;
+  const isPublicContactInfoAvailable = isStringNotEmpty(publicSettings.publicContactName) ||
+                                       isStringNotEmpty(publicSettings.publicContactEmail) ||
+                                       isStringNotEmpty(publicSettings.publicContactMobileNumber);
+
+  const registrationButtonHidden = publicRunningDinner.registrationDateExpired ||
+                                   publicSettings.registrationDeactivated ||
+                                   isCurrentUserSubscribedToEvent();
+
+  const endOfRegistrationDateStr = formatLocalDate(publicSettings.endOfRegistrationDate);
 
   function renderMealListItem(meal: Meal) {
     return (
@@ -66,21 +93,15 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: PublicDinner
     );
   }
 
-  function isCurrentUserSubscribedToEvent() {
-    // TODO
-    return false;
+  function handleRegistrationPerformed(registrationData: RegistrationData) {
+    setLocalStorageItem(`registration_${publicSettings.publicDinnerId}`, registrationData);
+    navigateToRegistrationFinished(publicSettings.publicDinnerId);
   }
 
-  const {publicSettings} = publicRunningDinner;
-  const isPublicContactInfoAvailable = isStringNotEmpty(publicSettings.publicContactName) ||
-                                       isStringNotEmpty(publicSettings.publicContactEmail) ||
-                                       isStringNotEmpty(publicSettings.publicContactMobileNumber);
-
-  const registrationButtonHidden = publicRunningDinner.registrationDateExpired ||
-                                   publicSettings.registrationDeactivated ||
-                                   isCurrentUserSubscribedToEvent();
-
-  const endOfRegistrationDateStr = formatLocalDate(publicSettings.endOfRegistrationDate);
+  function isCurrentUserSubscribedToEvent(): boolean {
+    const existingRegistrationData = getLocalStorageItem<RegistrationData>(`registration_${publicSettings.publicDinnerId}`);
+    return !!existingRegistrationData;
+  }
 
   function renderRegistrationNotPossibleText() {
     const textKey = publicRunningDinner.registrationDateExpired ?
@@ -96,13 +117,9 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: PublicDinner
     );
   }
 
-  function navigateBackToEventList() {
-    history.push(RUNNING_DINNER_EVENTS_PATH);
-  }
-
   return (
     <>
-      <BackToListButton onBackToList={navigateBackToEventList} mb={-4} mt={2} />
+      <BackToListButton onBackToList={navigateToRunningDinnerEventList} mb={-4} mt={2} />
       <PageTitle>{publicSettings.title}</PageTitle>
       <Box>
         <div style={{ display: 'flex', marginTop: "-15px" }}>
@@ -143,13 +160,17 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: PublicDinner
       </Box>
 
       <Box my={2}>
-        {/*<Grid item xs={12}>*/}
-          { renderRegistrationNotPossibleText() }
-          { !registrationButtonHidden && <PrimaryButton size={"large"}>
-            {t('landing:goto_registration')}
-          </PrimaryButton> }
-        {/*</Grid>*/}
+        { renderRegistrationNotPossibleText() }
+        { !registrationButtonHidden &&
+            <PrimaryButton size={"large"} onClick={openRegistrationForm}>
+              {t('landing:goto_registration')}
+            </PrimaryButton>
+        }
       </Box>
+
+      { isRegistrationFormOpen && <PublicDinnerEventRegistrationForm publicDinnerId={publicSettings.publicDinnerId}
+                                                                     onRegistrationPerformed={handleRegistrationPerformed}
+                                                                     onCancel={closeRegistrationForm} /> }
 
     </>
   );

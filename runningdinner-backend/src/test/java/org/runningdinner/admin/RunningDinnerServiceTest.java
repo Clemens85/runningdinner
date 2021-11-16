@@ -2,7 +2,6 @@
 package org.runningdinner.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
@@ -34,7 +33,7 @@ import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.RunningDinnerInfo;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.RegistrationSummary;
-import org.runningdinner.frontend.rest.RegistrationDataTO;
+import org.runningdinner.frontend.rest.RegistrationDataV2TO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.HostTeamInfo;
 import org.runningdinner.participant.Participant;
@@ -307,7 +306,7 @@ public class RunningDinnerServiceTest {
     assertThat(result).isNotNull();
   }
   
-  private RegistrationDataTO newRegistationData() {
+  private RegistrationDataV2TO newRegistationData() {
     
     ParticipantAddress address = ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 12345 Musterstadt");
     return TestUtil.createRegistrationData("Max Mustermann", "max@max.de", address, 6);
