@@ -9,7 +9,6 @@ export {AddressLocation} from "./AddressLocation.jsx";
 export * from './TeamNr';
 export * from './DisclosureHook';
 
-export * from "./gender/GenderUtils";
 export * from "./date";
 export * from "./admin";
 export * from "./masterdata";
