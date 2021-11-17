@@ -3,8 +3,9 @@ import React from "react";
 
 export default function SecondaryButton(props) {
 
-  const {onClick} = props;
+  const {onClick, children, ...rest} = props;
+
   return (
-    <Button onClick={onClick} color="default">{props.children}</Button>
+    <Button onClick={onClick} color="default" {...rest}>{props.children}</Button>
   );
 }

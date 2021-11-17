@@ -4,17 +4,18 @@ import {useAsyncCallback} from "react-async-hook";
 
 export const PrimarySuccessButtonAsync = (props) => {
 
-  const {onClick} = props;
+  const {size, onClick, disabled, children, ...rest} = props;
+
   const asyncOnClick = useAsyncCallback(onClick);
 
-  const size = props.size ? props.size : 'large';
-  const disabled = !!props.disabled;
+  const sizeToUse = size ? size : 'large';
+  const incomingDisabled = !!disabled;
 
   // const labelToUse = asyncOnClick.loading ? '...' : props.children;
 
   return (
-      <PrimaryButton disabled={disabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={size}>
-        { props.children }
+      <PrimaryButton disabled={incomingDisabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={sizeToUse} {...rest}>
+        { children }
       </PrimaryButton>
   );
 };
