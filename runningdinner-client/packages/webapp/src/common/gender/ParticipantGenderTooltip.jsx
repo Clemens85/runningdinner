@@ -1,6 +1,6 @@
 import React from "react";
 import { Tooltip } from "@material-ui/core";
-import {getGenderTooltip, ValueTranslate} from "@runningdinner/shared";
+import {ValueTranslate} from "@runningdinner/shared";
 
 export default function ParticipantGenderTooltip(props) {
 
