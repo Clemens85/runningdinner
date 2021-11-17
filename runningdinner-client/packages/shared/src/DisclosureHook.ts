@@ -33,7 +33,7 @@ export interface Disclosure<T> {
  *   open: openMyDialog,
  *   close: closeMyDialog,
  *   getIsOpenData: getMyDataForDialog,
- * } = useLxDisclosure<MyData>();
+ * } = useDisclosure<MyData>();
  * // Call openMyDialog(myData?) when you want to open your dialog and pass your data that you want to be accessable during opened phase
  * // Call closeMyDialog() when you want to close your dialog (myData will be cleared then)
  * // Call getIsOpenData() when you want to access your data after you opened your dialog

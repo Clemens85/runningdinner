@@ -180,24 +180,11 @@ const LandingMessages_de: any = {
     create_wizard_title: 'Erstelle und verwalte dein eigenes Running Dinner',
     impressum_title: 'Impressum & Datenschutzerklärung',
 
+    currentuser_already_registered_info: "Du hast dich in diesem Browser bereits mit <italic>{{ email }}</italic> für dieses Event angemeldet.",
+    currentuser_already_registered_cancel: 'Falls du dich abmelden willst, melde dich bitte per Mail an <anchor href="{{ email }}">{{ email }}</anchor>.',
+    currentuser_already_registered_new_register: "Falls du dich erneut anmelden willst, kannst du dies dennoch hier tun:",
+
     x: 'x'
 };
 
 export default LandingMessages_de;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

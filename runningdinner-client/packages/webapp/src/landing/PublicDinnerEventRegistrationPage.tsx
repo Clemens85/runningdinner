@@ -1,5 +1,5 @@
 import React from 'react';
-import {useTranslation} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 import {Fetch} from "../common/Fetch";
 import {
   AddressLocation, BasePublicDinnerProps,
@@ -16,7 +16,7 @@ import {
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
 import {
-  Box,
+  Box, Grid,
   Link,
   List,
   ListItem,
@@ -35,6 +35,8 @@ import {BackToListButton} from "../common/hooks/MasterDetailViewHook";
 import { PublicDinnerEventRegistrationForm } from './PublicDinnerEventRegistrationForm';
 import {useLandingNavigation} from "./LandingNavigationHook";
 import {getLocalStorageItem, setLocalStorageItem} from "../common/LocalStorageService";
+import {Alert} from '@material-ui/lab';
+import LinkExtern from "../common/theme/LinkExtern";
 
 export function PublicDinnerEventRegistrationPage() {
 
@@ -99,8 +101,12 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDi
   }
 
   function isCurrentUserSubscribedToEvent(): boolean {
-    const existingRegistrationData = getLocalStorageItem<RegistrationData>(`registration_${publicSettings.publicDinnerId}`);
+    const existingRegistrationData = getCurrentUserSubscribedToEvent();
     return !!existingRegistrationData;
+  }
+
+  function getCurrentUserSubscribedToEvent(): RegistrationData | undefined {
+    return getLocalStorageItem<RegistrationData>(`registration_${publicSettings.publicDinnerId}`);
   }
 
   function renderRegistrationNotPossibleText() {
@@ -165,6 +171,28 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDi
             <PrimaryButton size={"large"} onClick={openRegistrationForm}>
               {t('landing:goto_registration')}
             </PrimaryButton>
+        }
+        { registrationButtonHidden && isCurrentUserSubscribedToEvent() &&
+          <Grid container>
+            <Grid item>
+              <Alert severity={"success"} variant={"outlined"}>
+                <Box mb={1}>
+                  <Trans i18nKey={"landing:currentuser_already_registered_info"}
+                         components={{ italic: <em /> }}
+                         values={{ email: getCurrentUserSubscribedToEvent()?.email }}/>
+                </Box>
+                <Box mb={1}>
+                  <Trans i18nKey={"landing:currentuser_already_registered_cancel"}
+                         // @ts-ignore
+                         components={{ anchor: <LinkExtern /> }}
+                         values={{ email: publicSettings.publicContactEmail }} />
+                </Box>
+                <Box>
+                  {t('landing:currentuser_already_registered_new_register')} &nbsp; <PrimaryButton onClick={openRegistrationForm} size={"small"}>{t('landing:goto_registration')}</PrimaryButton>
+                </Box>
+              </Alert>
+            </Grid>
+          </Grid>
         }
       </Box>
 
