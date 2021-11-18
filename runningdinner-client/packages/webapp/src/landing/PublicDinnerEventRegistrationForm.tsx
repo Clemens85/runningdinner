@@ -269,19 +269,19 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
         { isStringNotEmpty(registrationSummary.teamPartnerWish) &&
           <Box>
             { !registrationSummary.teamPartnerWishState &&
-              <Span>
+              <Span noWrap={true}>
                 <Trans i18nKey={"landing:teampartner_wish_summary"}
                        components={{ italic: <em /> }}
                        values={{ teamPartnerWish: registrationSummary.teamPartnerWish }} />
               </Span> }
             { registrationSummary.teamPartnerWishState === TeamPartnerWishState.EXISTS_SAME_TEAM_PARTNER_WISH &&
-              <Span>
+              <Span noWrap={true}>
                 <Trans i18nKey={"landing:teampartner_wish_summary_match"}
                        components={{ italic: <em /> }}
                        values={{ teamPartnerWish: registrationSummary.teamPartnerWish }} />
               </Span> }
             { registrationSummary.teamPartnerWishState === TeamPartnerWishState.NOT_EXISTING &&
-              <Span><Trans i18nKey={"landing:teampartner_wish_summary_not_existing"}
+              <Span noWrap={true}><Trans i18nKey={"landing:teampartner_wish_summary_not_existing"}
                            components={{ italic: <em /> }}
                            values={{ teamPartnerWish: registrationSummary.teamPartnerWish }} />
               </Span> }
