@@ -38,7 +38,9 @@ export function LandingWizard() {
         </Grid>
       </div>
 
-      <PageTitle>{t("common:features")}</PageTitle>
+      <Box pt={2}>
+        <PageTitle>{t("common:features")}</PageTitle>
+      </Box>
       <div>
         <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4}>

@@ -1,5 +1,5 @@
 import {RelatedEntityType, RunningDinnerRelated} from "./Base";
-import {MessageJob, MessageJobOverview} from "@runningdinner/shared";
+import {MessageJobOverview} from "./Message";
 
 export interface Activity extends RunningDinnerRelated {
   activityDate: Date;

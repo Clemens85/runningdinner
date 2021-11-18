@@ -125,7 +125,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDi
 
   return (
     <>
-      <BackToListButton onBackToList={navigateToRunningDinnerEventList} mb={-4} mt={2} />
+      <BackToListButton onBackToList={navigateToRunningDinnerEventList} mb={-2} mt={2} />
       <PageTitle>{publicSettings.title}</PageTitle>
       <Box>
         <div style={{ display: 'flex', marginTop: "-15px" }}>

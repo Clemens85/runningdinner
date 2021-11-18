@@ -1,4 +1,14 @@
-import {Box, Dialog, DialogContent, Drawer, Grid, LinearProgress, makeStyles, Paper} from "@material-ui/core";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  Drawer,
+  Grid,
+  LinearProgress,
+  makeStyles,
+  Paper,
+  Typography
+} from "@material-ui/core";
 import {
   CallbackHandler, CallbackHandlerAsync,
   isStringEmpty,
@@ -220,7 +230,8 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
         <Box mb={2}>
           <div style={{ display: 'flex' }}>
             <MailIcon color={"primary"} />
-            <Paragraph>&nbsp; {registrationSummary.email}</Paragraph>
+            <Typography variant={"body1"} component="p" noWrap>&nbsp; {registrationSummary.email}</Typography>
+            {/*<Paragraph>&nbsp; {registrationSummary.email}</Paragraph>*/}
           </div>
           { isStringNotEmpty(registrationSummary.mobile) &&
               <div style={{ display: 'flex', marginTop: '10px' }}>
@@ -278,8 +289,9 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
         }
 
       </DialogContent>
-      { <DialogActionsPanel onOk={onPerformRegistration} onCancel={onCancel}
-                            okLabel={t('landing:registration_perform')} cancelLabel={t('common:cancel')} /> }
+      <DialogActionsPanel onOk={onPerformRegistration} onCancel={onCancel}
+                          okLabel={t('landing:registration_perform')}
+                          cancelLabel={t('common:cancel')} />
     </Dialog>
   );
 }

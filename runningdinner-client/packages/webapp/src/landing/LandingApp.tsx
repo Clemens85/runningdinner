@@ -38,7 +38,9 @@ export function LandingApp() {
 
   return (
     <div>
-      <MainNavigation baseUrl={url} mainTitle={"Run Your Dinner"} navigationItems={navigationItems} />
+      <MainNavigation baseUrl={url}
+                      mainTitle={"Run Your Dinner"}
+                      navigationItems={navigationItems} />
       <ProgressBar showLoadingProgress={false} />
       <Container maxWidth="xl">
         <LandingRoute path={path} />

@@ -36,9 +36,14 @@ const PageTitle = (props) => {
     color = props.color;
   }
 
+  let mtToUse = props.mt ? props.mt : 2;
+  if (props.mt === 0) {
+    mtToUse = 0;
+  }
+
   return (
       <>
-        <Box component={"div"} mt={4} mb={4}>
+        <Box component={"div"} mt={mtToUse} mb={4}>
           <Typography variant="h4" color={color}>{props.children}</Typography>
           <Divider />
         </Box>

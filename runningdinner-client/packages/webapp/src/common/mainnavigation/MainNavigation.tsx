@@ -4,6 +4,8 @@ import {LanguageSwitch} from "../i18n/LanguageSwitch";
 import {Link as RouterLink} from "react-router-dom";
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from "clsx";
+import {FeedbackButtonContainerRightAligned} from "../feedback/FeedbackButton";
+import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "./NavigationPaths";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -46,6 +48,8 @@ export const MainNavigation = ({baseUrl, mainTitle, navigationItems, topNotifica
 
   const normalizedUrl = baseUrl.replace(/\/$/, ""); // Remove last trailing slash (if existing)
 
+  const showFeedback = isShowFeedbackButton();
+
   function createLink(navigationItem: NavigationItem) {
     return <Link to={`${normalizedUrl}${navigationItem.routePath}`}
                  component={RouterLink}
@@ -87,9 +91,19 @@ export const MainNavigation = ({baseUrl, mainTitle, navigationItems, topNotifica
           </Grid>
         </Toolbar>
       </AppBar>
+      { showFeedback && <FeedbackButtonContainerRightAligned /> }
     </>
   );
 };
+
+function isShowFeedbackButton() {
+  let pathName = window.location.pathname || "";
+  pathName = pathName.toLowerCase();
+
+  return pathName.indexOf("/admin/") >= 0 ||
+         pathName.indexOf(LANDING_CREATE_RUNNING_DINNER_PATH) >= 0 ||
+         pathName.indexOf(RUNNING_DINNER_EVENTS_PATH) >= 0;
+}
 
 function MobileNavigation({baseUrl, navigationItems}: MainNavigationProps) {
 
