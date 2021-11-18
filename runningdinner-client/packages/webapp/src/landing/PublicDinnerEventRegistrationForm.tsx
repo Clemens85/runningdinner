@@ -162,14 +162,14 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
                     <FormCheckbox name="dataProcessingAcknowledged"
                                   useTableDisplay={true}
                                   defaultValue={false}
-                                  helperText={
-                                    <Trans i18nKey="landing:data_processing_acknowledge_hint"
-                                           values={{privacyLink: IMPRESSUM_PATH}}
-                                           // @ts-ignore
-                                           components={{ anchor: <LinkExtern /> }} />
-                                  }
                                   label={
-                                    <Trans i18nKey="landing:data_processing_acknowledge" />
+                                    <>
+                                      <Trans i18nKey="landing:data_processing_acknowledge" /><br />
+                                      <Trans i18nKey="landing:data_processing_acknowledge_hint"
+                                             values={{privacyLink: IMPRESSUM_PATH}}
+                                        // @ts-ignore
+                                             components={{ anchor: <LinkExtern /> }} />
+                                    </>
                                   } />
                   </Box>
 
