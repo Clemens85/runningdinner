@@ -19,13 +19,13 @@ const LandingMessages_de: any = {
     registration_activation_title: 'Anmeldung bestätigen',
     registration_activation_congratulation_title: 'Bestätigung erfolgreich',
     registration_activation_congratulation_text: 'Herzlichen Glückwunsch, du hast soeben deine Registrierung erfolgreich abgeschlossen und bist damit bei ' +
-      '<strong><a href="{{ publicDinnerUrl }}" target="_blank">{{ publicDinnerTitle }}</a></strong> dabei! ' +
-      '<br/>Du wirst demnächst nähere Infos vom Veranstalter <a href="mailto:{{ adminEmail }}">{{ adminEmail }}</a> bekommen.',
+      '<strong><anchor href="{{ publicDinnerUrl }}" target="_blank">{{ publicDinnerTitle }}</anchor></strong> dabei! ' +
+      '<br/>Du wirst demnächst nähere Infos vom Veranstalter (<anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>) bekommen.',
 
     registration_activation_error_title: 'Fehler bei Bestätigung',
     registration_activation_error_text: 'Leider ist ein Fehler beim Versuch der Bestätigung der Registrierung aufgetreten. ' +
       'Versuche es bitte später erneut. <br/>' +
-      'Falls der Fehler immer noch auftritt wende dich bitte an <a href="mailto:{{ adminEmail }}">{{ adminEmail }}</a>.',
+      'Falls der Fehler immer noch auftritt wende dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
     teampartner_wish_summary_not_existing: 'Du hast <italic>{{ teamPartnerWish }}</italic> als Wunschpartner angegeben. ' +
       'Er oder Sie bekommt eine Einladung via Email sobald du deine Registrierung bestätigt hast. ' +

@@ -41,12 +41,12 @@ export default function Acknowledge({runningDinner}: BaseRunningDinnerProps) {
     <>
       <PageTitle>{t('admin:runningdinner_acknowledge_title')}</PageTitle>
       { loading && <LinearProgress color="secondary" />}
-      { result && <Alert severity={"success"}>
+      { result && <Alert severity={"success"} variant={"outlined"}>
                     <AlertTitle>{t('admin:runningdinner_acknowledge_congratulation_title')}</AlertTitle>
                     <Span i18n={"admin:runningdinner_acknowledge_congratulation_text"}/>
                     <LinkIntern pathname={generateDashboardPath(adminId)}>{t('admin:goto_dashboard')}</LinkIntern>
                   </Alert> }
-      { error && <Alert severity={"error"}>
+      { error && <Alert severity={"error"} variant={"outlined"}>
                     <AlertTitle>{t('admin:runningdinner_acknowledge_error_title')}</AlertTitle>
                     <Span>
                       <Trans i18nKey={"admin:runningdinner_acknowledge_error_text"}

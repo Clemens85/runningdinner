@@ -9,6 +9,7 @@ import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "..
 import { PublicDinnerEventRegistrationFinishedPage } from "./PublicDinnerEventRegistrationFinishedPage";
 import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 import {NewsPage} from "./news/NewsPage";
+import {ParticipantActivationPage} from "./ParticipantActivationPage";
 
 export function LandingRoute() {
 
@@ -25,6 +26,10 @@ export function LandingRoute() {
       <Route path={LANDING_CREATE_RUNNING_DINNER_PATH}>
         <LandingWizard />
         <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:create_wizard_title"} />
+      </Route>
+      <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/:participantId/activate`}>
+        <ParticipantActivationPage />
+        <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:registration_confirm_title"} />
       </Route>
       <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/registration-finished`}>
         <PublicDinnerEventRegistrationFinishedPage />
