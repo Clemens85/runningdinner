@@ -37,6 +37,7 @@ import {useLandingNavigation} from "./LandingNavigationHook";
 import {getLocalStorageItem, setLocalStorageItem} from "../common/LocalStorageService";
 import {Alert} from '@material-ui/lab';
 import LinkExtern from "../common/theme/LinkExtern";
+import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
 
 export function PublicDinnerEventRegistrationPage() {
 
@@ -125,6 +126,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDi
 
   return (
     <>
+      <PublicDemoDinnerEventNotification publicRunningDinner={publicRunningDinner} />
       <BackToListButton onBackToList={navigateToRunningDinnerEventList} mb={-2} mt={2} />
       <PageTitle>{publicSettings.title}</PageTitle>
       <Box>
