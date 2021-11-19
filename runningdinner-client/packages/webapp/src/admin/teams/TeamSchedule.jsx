@@ -1,7 +1,7 @@
 import React from "react";
 import { Fetch } from "../../common/Fetch";
 import {Box, Button, Grid, makeStyles, Paper, Popover} from "@material-ui/core";
-import sortBy from 'lodash/sortBy';
+import orderBy from 'lodash/orderBy';
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {SmallTitle, Span, Title} from "../../common/theme/typography/Tags";
 import clsx from "clsx";
@@ -66,7 +66,7 @@ const buildScheduledMealsWithTeams = (teamMeetingPlan) => {
   result.push(
       { meal: teamMeetingPlan.team.meal, hostTeam: teamMeetingPlan.team, current: true, guestTeams: teamMeetingPlan.guestTeams}
   );
-  result = sortBy(result, 'meal.time');
+  result = orderBy(result, 'meal.time');
   return result;
 };
 

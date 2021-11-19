@@ -8,6 +8,7 @@ import {PublicDinnerEventRegistrationPage} from "./PublicDinnerEventRegistration
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
 import { PublicDinnerEventRegistrationFinishedPage } from "./PublicDinnerEventRegistrationFinishedPage";
 import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
+import {NewsPage} from "./news/NewsPage";
 
 export function LandingRoute() {
 
@@ -18,7 +19,7 @@ export function LandingRoute() {
         <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:start_title"} />
       </Route>
       <Route path={`/news`}>
-        News
+        <NewsPage />
         <BrowserTitle namespaces={"common"} titleI18nKey={"common:news"} />
       </Route>
       <Route path={LANDING_CREATE_RUNNING_DINNER_PATH}>
