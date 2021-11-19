@@ -26,6 +26,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import PeopleIcon from '@material-ui/icons/People';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import useWizardNavigation from "./WizardNavigationHook";
+import {FeedbackButtonContainerRightAligned} from "../common/feedback/FeedbackButton";
 
 const useMenuStyles = makeStyles((theme) => ({
   navList: {
@@ -90,22 +91,28 @@ export default function WizardMenu() {
 
   return (
       <div>
-        <WizardMenuNotificationBar />
-        <Toolbar className={classes.toolBar}>
-          <Typography
+        <div>
+          <WizardMenuNotificationBar />
+          <Toolbar className={classes.toolBar}>
+            <Typography
               component="h2"
               variant="h5"
               color="inherit"
               align="center"
               noWrap>Run your Dinner Wizard</Typography>
-        </Toolbar>
-        <AppBar position="static" className={classes.appBar}>
-          <Toolbar component={"nav"} className={classes.toolBar}>
-            { isStringEmpty(administrationUrl) && <NavigationLinkList /> }
           </Toolbar>
-          <WizardProgressBar />
-        </AppBar>
+          <AppBar position="static" className={classes.appBar}>
+            <Toolbar component={"nav"} className={classes.toolBar}>
+              { isStringEmpty(administrationUrl) && <NavigationLinkList /> }
+            </Toolbar>
+            <WizardProgressBar />
+          </AppBar>
+        </div>
+        <div>
+          <FeedbackButtonContainerRightAligned />
+        </div>
       </div>
+
   );
 }
 

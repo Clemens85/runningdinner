@@ -17,8 +17,6 @@ import {
   RunningDinnerType, SummaryNavigationStep,
   useMealsTranslated
 } from "@runningdinner/shared";
-import {Helmet} from "react-helmet-async";
-import {useTranslation} from "react-i18next";
 import {MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
@@ -27,10 +25,10 @@ import ParticipantPreviewStep from "./ParticipantPreviewStep";
 import PublicRegistrationStep from "./PublicRegistrationStep";
 import FinishStep from "./FinishStep";
 import SummaryStep from "./SummaryStep";
+import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 
 export default function WizardAppContainer() {
 
-  const {t} = useTranslation('wizard');
   const query = useQuery();
   const demoDinner = !!query.get("demoDinner");
 
@@ -38,9 +36,7 @@ export default function WizardAppContainer() {
 
   return (
       <Provider store={wizardStore}>
-        <Helmet>
-          <title>{t('wizard_create_title')}</title>
-        </Helmet>
+        <BrowserTitle titleI18nKey={"wizard:wizard_create_title"} namespaces={"wizard"} />
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={locale}>
           <WizardApp demoDinner={demoDinner}/>
         </MuiPickersUtilsProvider>
