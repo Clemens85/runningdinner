@@ -18,6 +18,9 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import {useLandingStyles} from "./LandingStyles";
 import {isLocalDevEnv} from "../common/EnvService";
+import {Alert, AlertTitle} from "@material-ui/lab";
+import LinkIntern from "../common/theme/LinkIntern";
+import {LANDING_CREATE_RUNNING_DINNER_PATH} from "../common/mainnavigation/NavigationPaths";
 
 export function PublicDinnerEventsPage() {
 
@@ -94,9 +97,16 @@ function PublicDinnerEventsListPage({publicRunningDinners}: PublicDinnerEventsLi
 }
 
 function NoPublicDinnerEventsPage() {
+
+  const {t} = useTranslation("landing");
+
   return (
     <div>
-      No Dinner
+      <Alert severity={"success"} variant={"outlined"}>
+        <AlertTitle>{t('landing:public_dinner_events_empty_headline')}</AlertTitle>
+        <Span i18n={"landing:public_dinner_events_empty_text"} />
+        <LinkIntern pathname={LANDING_CREATE_RUNNING_DINNER_PATH}><Paragraph>{t("landing:public_dinner_events_empty_goto_wizard")}</Paragraph></LinkIntern>
+      </Alert>
     </div>
   );
 }
