@@ -28,7 +28,7 @@ const AdminApp = () =>  {
 
 const AdminAppContent = ({adminId}: BaseAdminIdProps) => {
 
-  const {path, url} = useRouteMatch();
+  const {path} = useRouteMatch();
   const dispatch = useDispatch();
 
   const showLoadingProgress = useAdminSelector(isFetchingDataSelector);
@@ -40,7 +40,7 @@ const AdminAppContent = ({adminId}: BaseAdminIdProps) => {
 
   return (
       <div>
-        <AdminMenu url={url} />
+        <AdminMenu />
         <ProgressBar showLoadingProgress={showLoadingProgress} fetchError={fetchError} />
         <Container maxWidth="xl">
           <AdminRoute path={path} />

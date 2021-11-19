@@ -8,6 +8,8 @@ import {getRunningDinnerFetchSelector, useAdminSelector} from "@runningdinner/sh
 import Acknowledge from "./common/Acknowledge";
 import TeamDinnerRoute from "./teams/TeamDinnerRoute";
 import {MessageJobDetailsList} from "./messages/messagejobs/MessageJobDetailsList";
+import {SettingsPage} from "./settings/SettingsPage";
+import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 
 export interface AdminRouteProps {
   path: string;
@@ -52,6 +54,10 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
         </Route>
         <Route path={`${path}/mailprotocols/:messageJobId`}>
           <MessageJobDetailsList runningDinner={runningDinner} />
+        </Route>
+        <Route path={`${path}/settings`}>
+          <SettingsPage />
+          <BrowserTitle  namespaces={"common"} titleI18nKey={"common:settings"} />
         </Route>
         <Route path="/">
           <Dashboard runningDinner={runningDinner} />

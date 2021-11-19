@@ -1,7 +1,5 @@
-import {Redirect, Route, RouteProps, Switch} from "react-router-dom";
+import {Redirect, Route, Switch} from "react-router-dom";
 import React from "react";
-import {useTranslation} from "react-i18next";
-import {Helmet} from "react-helmet-async";
 import Impressum from "./Impressum";
 import {LandingWizard} from "./LandingWizard";
 import {LandingStart} from "./LandingStart";
@@ -9,48 +7,39 @@ import {PublicDinnerEventsPage} from "./PublicDinnerEventsPage";
 import {PublicDinnerEventRegistrationPage} from "./PublicDinnerEventRegistrationPage";
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
 import { PublicDinnerEventRegistrationFinishedPage } from "./PublicDinnerEventRegistrationFinishedPage";
+import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 
-export function LandingRoute({path}: RouteProps) {
-
-  const {t} = useTranslation(["landing", "common"]);
-
-  function renderBrowserTitle(titleI18nKey: string) {
-    return (
-      <Helmet>
-        <title>{t(titleI18nKey)}</title>
-      </Helmet>
-    );
-  }
+export function LandingRoute() {
 
   return (
     <Switch>
       <Route path={`/running-dinner-veranstalten-teilnehmen`}>
         <LandingStart />
-        {renderBrowserTitle("landing:start_title")}
+        <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:start_title"} />
       </Route>
       <Route path={`/news`}>
         News
-        {renderBrowserTitle("common:news")}
+        <BrowserTitle namespaces={"common"} titleI18nKey={"common:news"} />
       </Route>
       <Route path={LANDING_CREATE_RUNNING_DINNER_PATH}>
         <LandingWizard />
-        {renderBrowserTitle("landing:create_wizard_title")}
+        <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:create_wizard_title"} />
       </Route>
       <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/registration-finished`}>
         <PublicDinnerEventRegistrationFinishedPage />
-        {renderBrowserTitle("landing:registration_finished_title")}
+        <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:registration_finished_title"} />
       </Route>
       <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId`}>
         <PublicDinnerEventRegistrationPage />
-        {renderBrowserTitle("landing:registration")}
+        <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:registration"} />
       </Route>
       <Route path={RUNNING_DINNER_EVENTS_PATH}>
         <PublicDinnerEventsPage />
-        {renderBrowserTitle("landing:public_dinner_events_headline")}
+        <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:public_dinner_events_headline"} />
       </Route>
       <Route path="/impressum">
         <Impressum />
-        {renderBrowserTitle("landing:impressum_title")}
+        <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:impressum_title"} />
       </Route>
       <Route path="/">
         <Redirect to="/running-dinner-veranstalten-teilnehmen"/>

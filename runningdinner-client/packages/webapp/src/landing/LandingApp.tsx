@@ -14,7 +14,7 @@ import {
 
 export function LandingApp() {
 
-  const {path, url} = useRouteMatch();
+  const {url} = useRouteMatch();
   const {t} = useTranslation(["landing", "common"]);
 
   const showMainTitle = useMediaQuery('(min-width:1090px)');
@@ -46,7 +46,7 @@ export function LandingApp() {
                       navigationItems={navigationItems} />
       <ProgressBar showLoadingProgress={false} />
       <Container maxWidth="xl">
-        <LandingRoute path={path} />
+        <LandingRoute />
       </Container>
     </div>
   );
