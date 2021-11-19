@@ -1,6 +1,6 @@
 import React from 'react';
 import {ProgressBar} from "../common/ProgressBar";
-import {Container} from "@material-ui/core";
+import {Container, useMediaQuery} from "@material-ui/core";
 import {useRouteMatch} from "react-router-dom";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 import {LandingRoute} from "./LangingRoute";
@@ -16,6 +16,9 @@ export function LandingApp() {
 
   const {path, url} = useRouteMatch();
   const {t} = useTranslation(["landing", "common"]);
+
+  const showMainTitle = useMediaQuery('(min-width:1090px)');
+  const mainTitle = showMainTitle ? "Run Your Dinner" : undefined;
 
   const navigationItems = [
     {
@@ -39,7 +42,7 @@ export function LandingApp() {
   return (
     <div>
       <MainNavigation baseUrl={url}
-                      mainTitle={"Run Your Dinner"}
+                      mainTitle={mainTitle}
                       navigationItems={navigationItems} />
       <ProgressBar showLoadingProgress={false} />
       <Container maxWidth="xl">

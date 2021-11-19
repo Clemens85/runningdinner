@@ -6,6 +6,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import clsx from "clsx";
 import {FeedbackButtonContainerRightAligned} from "../feedback/FeedbackButton";
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "./NavigationPaths";
+import {Breakpoint} from "@material-ui/core/styles/createBreakpoints";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -35,6 +36,7 @@ export interface MainNavigationProps {
   navigationItems: NavigationItem[];
   mainTitle?: string;
   topNotificationBar?: React.ReactNode;
+  mobileBreakpoint?: Breakpoint;
 }
 
 interface NavigationItem {
@@ -42,13 +44,18 @@ interface NavigationItem {
   title: string;
 }
 
-export const MainNavigation = ({baseUrl, mainTitle, navigationItems, topNotificationBar}: MainNavigationProps) => {
+const breakpoints: Array<Breakpoint> = ["xs", "sm", "md", "lg", "xl"];
+
+export const MainNavigation = ({baseUrl, mainTitle, navigationItems, topNotificationBar, mobileBreakpoint = "sm"}: MainNavigationProps) => {
 
   const classes = useStyles();
 
   const normalizedUrl = baseUrl.replace(/\/$/, ""); // Remove last trailing slash (if existing)
 
   const showFeedback = isShowFeedbackButton();
+
+  const hiddenForMobileView = getMobileBreakpointsDown(mobileBreakpoint);
+  const hiddenForDesktopView = getMobileBreakpointsUp(mobileBreakpoint);
 
   function createLink(navigationItem: NavigationItem) {
     return <Link to={`${normalizedUrl}${navigationItem.routePath}`}
@@ -66,12 +73,12 @@ export const MainNavigation = ({baseUrl, mainTitle, navigationItems, topNotifica
           <Grid container justify={"space-between"} alignItems={"center"}>
             <Grid item>
               <Grid container alignItems={"center"}>
-                <Hidden smUp>
+                <Hidden only={hiddenForDesktopView}>
                   <Grid item>
                     <MobileNavigation baseUrl={normalizedUrl} navigationItems={navigationItems} />
                   </Grid>
                 </Hidden>
-                <Hidden xsDown>
+                <Hidden only={hiddenForMobileView}>
                   <Grid item>
                     <Grid container alignItems={"center"}>
                       <Grid item>
@@ -103,6 +110,17 @@ function isShowFeedbackButton() {
   return pathName.indexOf("/admin/") >= 0 ||
          pathName.indexOf(LANDING_CREATE_RUNNING_DINNER_PATH) >= 0 ||
          pathName.indexOf(RUNNING_DINNER_EVENTS_PATH) >= 0;
+}
+
+function getMobileBreakpointsDown(breakpoint: Breakpoint): Breakpoint[] {
+  return breakpoints.slice(0, breakpoints.indexOf(breakpoint) + 1);
+}
+function getMobileBreakpointsUp(breakpoint: Breakpoint): Breakpoint[] {
+  const indexOfIncomingBreakpoint = breakpoints.indexOf(breakpoint);
+  if (indexOfIncomingBreakpoint + 1 >= breakpoints.length) {
+    return [breakpoints[breakpoints.length - 1]];
+  }
+  return breakpoints.slice(indexOfIncomingBreakpoint + 1);
 }
 
 function MobileNavigation({baseUrl, navigationItems}: MainNavigationProps) {
