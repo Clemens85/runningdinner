@@ -27,7 +27,7 @@ import FinishStep from "./FinishStep";
 import SummaryStep from "./SummaryStep";
 import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 
-export default function WizardAppContainer() {
+export default function WizardApp() {
 
   const query = useQuery();
   const demoDinner = !!query.get("demoDinner");
@@ -38,7 +38,7 @@ export default function WizardAppContainer() {
       <Provider store={wizardStore}>
         <BrowserTitle titleI18nKey={"wizard:wizard_create_title"} namespaces={"wizard"} />
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={locale}>
-          <WizardApp demoDinner={demoDinner}/>
+          <WizardPage demoDinner={demoDinner}/>
         </MuiPickersUtilsProvider>
       </Provider>
   );
@@ -48,7 +48,7 @@ interface WizardAppProps {
   demoDinner: boolean;
 }
 
-function WizardApp({demoDinner}: WizardAppProps) {
+function WizardPage({demoDinner}: WizardAppProps) {
 
   const {path} = useRouteMatch();
   const dispatch = useDispatch();

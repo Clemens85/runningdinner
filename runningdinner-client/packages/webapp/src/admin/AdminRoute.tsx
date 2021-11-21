@@ -15,7 +15,7 @@ export interface AdminRouteProps {
   path: string;
 }
 
-export const AdminRoute = ({path}: AdminRouteProps) => {
+export default function AdminRoute({path}: AdminRouteProps) {
 
   const runningDinnerFetchData = useAdminSelector(getRunningDinnerFetchSelector);
   if (!runningDinnerFetchData.data) {
@@ -64,4 +64,4 @@ export const AdminRoute = ({path}: AdminRouteProps) => {
         </Route>
       </Switch>
   );
-};
+}

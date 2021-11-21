@@ -1,8 +1,8 @@
 import React from 'react'
 import { useRouteMatch, useParams } from "react-router-dom";
 import { Container } from "@material-ui/core";
-import {AdminMenu} from "./AdminMenu";
-import {AdminRoute} from "./AdminRoute";
+import AdminMenu from "./AdminMenu";
+import AdminRoute from "./AdminRoute";
 import {Provider, useDispatch} from 'react-redux';
 import {
   adminStore,
@@ -15,18 +15,18 @@ import {
 import {ProgressBar} from "../common/ProgressBar";
 import "../timeline.css";
 
-const AdminApp = () =>  {
+export default function AdminApp() {
 
   const {adminId} = useParams<Record<string, string>>();
 
   return (
     <Provider store={adminStore}>
-      <AdminAppContent adminId={adminId} />
+      <AdminAppPage adminId={adminId} />
     </Provider>
   )
-};
+}
 
-const AdminAppContent = ({adminId}: BaseAdminIdProps) => {
+function AdminAppPage({adminId}: BaseAdminIdProps) {
 
   const {path} = useRouteMatch();
   const dispatch = useDispatch();
@@ -47,6 +47,4 @@ const AdminAppContent = ({adminId}: BaseAdminIdProps) => {
         </Container>
       </div>
   );
-};
-
-export default AdminApp;
+}

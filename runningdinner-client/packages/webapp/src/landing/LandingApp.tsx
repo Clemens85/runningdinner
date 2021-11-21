@@ -1,5 +1,4 @@
 import React from 'react';
-import {ProgressBar} from "../common/ProgressBar";
 import {Container, useMediaQuery} from "@material-ui/core";
 import {useRouteMatch} from "react-router-dom";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
@@ -12,7 +11,7 @@ import {
 } from "../common/mainnavigation/NavigationPaths";
 
 
-export function LandingApp() {
+export default function LandingApp() {
 
   const {url} = useRouteMatch();
   const {t} = useTranslation(["landing", "common"]);
@@ -44,7 +43,6 @@ export function LandingApp() {
       <MainNavigation baseUrl={url}
                       mainTitle={mainTitle}
                       navigationItems={navigationItems} />
-      <ProgressBar showLoadingProgress={false} />
       <Container maxWidth="xl">
         <LandingRoute />
       </Container>

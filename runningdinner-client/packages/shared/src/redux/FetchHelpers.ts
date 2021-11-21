@@ -29,7 +29,7 @@ export function handleFetchRejected<T>(fetchData: FetchData<T>, action?: any) {
   fetchData.fetchError = mapFetchErrorState(FetchStatus.FAILED, action);
 }
 
-const GENERIC_HTTP_ERROR: HttpError = { // Will trigger a generic error message (-> useNotificationHttpError)
+export const GENERIC_HTTP_ERROR: HttpError = { // Will trigger a generic error message (-> useNotificationHttpError)
   response: {
     status: 500,
     data: {}

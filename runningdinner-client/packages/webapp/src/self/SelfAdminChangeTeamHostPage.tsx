@@ -33,7 +33,7 @@ import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 
 
-export function SelfAdminChangeTeamHostPage() {
+export default function SelfAdminChangeTeamHostPage() {
 
   const {selfAdminId, participantId, teamId} = useParams<Record<string, string>>();
 
@@ -55,7 +55,7 @@ interface SelfAdminChangeTeamHostViewProps {
   team: Team;
 }
 
-export function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
+function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
 
   const {t} = useTranslation(['selfadmin', 'common']);
 

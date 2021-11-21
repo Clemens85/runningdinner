@@ -44,7 +44,7 @@ export function getAsHttpErrorOrDefault(error: any, defaultHttpError: HttpError)
 }
 
 /**
- * Maps backend issues to an object of type of {@link ApplicationErrors} which itself consists just of items of {@link ApplicationError}, which can then later be used for different error handling scenarios.
+ * Maps backend issues to an object of type of {@link Issues} which itself consists just of items of {@link BackendIssue}, which can then later be used for different error handling scenarios.
  * @param backendIssues
  */
 export function mapBackendIssuesToIssues(backendIssues: BackendIssue[]): Issues {

@@ -64,7 +64,7 @@ export function ParticipantActivationSucceededView({publicRunningDinnerResult}: 
   if (!publicRunningDinnerResult) {
     return null;
   }
-  const {publicSettings, adminEmail} = publicRunningDinnerResult;
+  const {publicSettings} = publicRunningDinnerResult;
 
   return (
     <div>

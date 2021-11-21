@@ -6,7 +6,7 @@ import {useRouteMatch} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 
-export function AdminMenu() {
+export default function AdminMenu() {
 
   const {t} = useTranslation(["admin", "common"]);
   const {url} = useRouteMatch();

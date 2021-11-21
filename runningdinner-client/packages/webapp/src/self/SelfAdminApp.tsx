@@ -15,12 +15,12 @@ export default function SelfAdminApp() {
 
   return (
     <Provider store={selfAdminStore}>
-      <SelfAdminAppContent />
+      <SelfAdminAppPage />
     </Provider>
   )
 }
 
-function SelfAdminAppContent() {
+function SelfAdminAppPage() {
 
   const {path} = useRouteMatch();
 
