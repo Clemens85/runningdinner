@@ -6,11 +6,11 @@ import {SingleSelectionDialog} from "./SingleSelectionDialog";
 import {
   CallbackHandler,
   CONSTANTS,
-  getNumberOfSelectedRecipients,
+  getNumberOfSelectedRecipients, isArrayEmpty,
   isArrayNotEmpty,
   isStringEmpty,
   MessageType,
-  Recipient,
+  Recipient, setCustomSelectedRecipients, setPreviousRecipientSelection,
   useAdminSelector,
   useParticipantSelectionOptions,
   useRecipientName,
@@ -24,7 +24,6 @@ import {
   getRecipientsSelector,
   MessageTypeAdminIdPayload,
   startEditCustomSelectedRecipients,
-  updateRecipientSelection
 } from "@runningdinner/shared";
 import {useDispatch} from "react-redux";
 import {FetchStatus} from "@runningdinner/shared/src/redux";
@@ -34,7 +33,7 @@ function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
   const {t} = useTranslation('admin');
   const dispatch = useDispatch();
   const { setValue, watch } = useFormContext();
-  const {recipients, recipientSelection, customSelectedRecipients, showCustomSelectionDialog} = useAdminSelector(getRecipientsSelector);
+  const {recipients, previousRecipientSelection, customSelectedRecipients, showCustomSelectionDialog} = useAdminSelector(getRecipientsSelector);
 
   const teamSelectionOptions = useTeamSelectionOptions();
   const participantSelectionOptions = useParticipantSelectionOptions();
@@ -43,27 +42,39 @@ function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
   const label = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? t("participant_selection_text") : t("admin:team_selection_text");
 
   const currentRecipientSelectionValue = watch(name);
-  React.useEffect(() => {
-    dispatch(updateRecipientSelection(currentRecipientSelectionValue));
-  }, [currentRecipientSelectionValue, dispatch]);
-
-  React.useEffect(() => {
-    setValue(name, recipientSelection);
-  }, [recipientSelection, name, setValue]);
 
   if (recipients.fetchStatus !== FetchStatus.SUCCEEDED) {
     return <LinearProgress variant={"indeterminate"} />;
   }
 
+  function handleRecipientSelectionChange(event: React.ChangeEvent<{ value: unknown }>) {
+    const newRecipientSelection = event.target.value as string;
+    if (newRecipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION) {
+      dispatch(startEditCustomSelectedRecipients());
+    } else {
+      dispatch(setCustomSelectedRecipients([]));
+      dispatch(setPreviousRecipientSelection(newRecipientSelection));
+      setValue(name, newRecipientSelection);
+    }
+  }
+
   let recipientSelectionOptions = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? participantSelectionOptions : teamSelectionOptions;
 
   const handleStartEditCustomSelectedRecipients = () => dispatch(startEditCustomSelectedRecipients());
-  const handleFinishEditCustomSelectedRecipients = (customSelectedEntities: Recipient[]) => dispatch(finishEditCustomSelectedRecipients(customSelectedEntities));
+  const handleFinishEditCustomSelectedRecipients = (customSelectedEntities: Recipient[]) => {
+    dispatch(finishEditCustomSelectedRecipients(customSelectedEntities));
+    if (isArrayEmpty(customSelectedEntities)) {
+      setValue(name, previousRecipientSelection);
+    } else {
+      setValue(name, CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION);
+    }
+  }
 
-  const numberOfRecipients = getNumberOfSelectedRecipients(recipients.data || [], recipientSelection);
+  const numberOfRecipients = getNumberOfSelectedRecipients(recipients.data || [], currentRecipientSelectionValue);
   return (
       <Box mb={3} mt={2}>
         <FormSelect name={name}
+                    onChange={handleRecipientSelectionChange}
                     label={label}
                     displayEmpty
                     fullWidth>
@@ -71,7 +82,7 @@ function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
               <MenuItem value={selectionOption.value} key={selectionOption.value}>{selectionOption.label}</MenuItem>
           )}
         </FormSelect>
-        <SelectionHelperText currentSelection={recipientSelection}
+        <SelectionHelperText currentSelection={currentRecipientSelectionValue}
                              messageType={messageType}
                              customSelectedEntities={customSelectedRecipients}
                              numberOfSelectedRecipients={numberOfRecipients}

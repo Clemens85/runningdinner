@@ -30,8 +30,9 @@ import {
   CallbackHandler,
   RunningDinnerSessionData,
   isSameEntity,
-  useAdminSelector, getRunningDinnerMandatorySelector, BaseAdminIdProps
+  useAdminSelector, getRunningDinnerMandatorySelector, BaseAdminIdProps, MessageTeamsType
 } from "@runningdinner/shared";
+import {useAdminNavigation} from "../AdminNavigationHook";
 
 export interface TeamDetailsProps {
   team: Team;
@@ -44,6 +45,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
 
   const {t} = useTranslation('common');
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
+  const {navigateToTeamMessages} = useAdminNavigation();
 
   const {adminId, sessionData} = runningDinner;
   const {teamMembers, meal} = team;
@@ -73,7 +75,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
   teamMemberNodes = teamMemberNodes.concat(cancelledTeamMemberNodes);
 
   const handleOpenSingleTeamMessage = () => {
-    alert('handleOpenSingleTeamMessage');
+    navigateToTeamMessages(adminId, MessageTeamsType.SINGLE, [team]);
   };
 
   const handleCloseTeamCancelDialog = (closeResult?: Team) => {

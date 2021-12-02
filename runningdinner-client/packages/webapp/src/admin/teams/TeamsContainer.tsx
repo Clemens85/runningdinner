@@ -205,12 +205,12 @@ interface SendMessagesDropdownProps {
 function SendTeamMessagsDropdown({adminId}: SendMessagesDropdownProps) {
 
   const {t} = useTranslation('admin');
-  const {navigateToTeamMessages} = useAdminNavigation();
+  const {navigateToTeamMessages, navigateToDinnerRouteMessages} = useAdminNavigation();
 
   return (
     <DropdownButton label={t('messages_send_general')}>
       <DropdownButtonItem onClick={() => navigateToTeamMessages(adminId)}>{t('messages_send_teams')}</DropdownButtonItem>
-      <DropdownButtonItem onClick={() => navigateToTeamMessages(adminId)}>{t('messages_send_dinnerroutes')}</DropdownButtonItem>
+      <DropdownButtonItem onClick={() => navigateToDinnerRouteMessages(adminId)}>{t('messages_send_dinnerroutes')}</DropdownButtonItem>
     </DropdownButton>
   );
 }

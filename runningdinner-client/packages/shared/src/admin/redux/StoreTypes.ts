@@ -1,4 +1,4 @@
-import {getExampleParticipantMessage,} from "../..";
+import {CONSTANTS, getExampleParticipantMessage,} from "../..";
 import {
   ActivityList,
   BackendIssue,
@@ -31,8 +31,9 @@ export interface MessagesState {
   adminId: string;
 
   recipients: FetchData<Recipient[]>;
-  recipientSelection: string;
-  previousSelection: string;
+  // recipientSelection: string;
+  // previousSelection: string;
+  previousRecipientSelection: string;
   customSelectedRecipients?: Recipient[];
   showCustomSelectionDialog: boolean;
 
@@ -71,8 +72,7 @@ export const newInitialMessagesState : MessagesState = {
   adminId: '',
 
   recipients: INITIAL_FETCH_DATA,
-  recipientSelection: '',
-  previousSelection: '',
+  previousRecipientSelection: CONSTANTS.RECIPIENT_SELECTION_COMMON.ALL,
   customSelectedRecipients: [],
   showCustomSelectionDialog: false,
 

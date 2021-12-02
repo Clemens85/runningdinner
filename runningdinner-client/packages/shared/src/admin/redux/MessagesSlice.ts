@@ -12,7 +12,7 @@ import {
   isOneMessageJobNotFinished,
   getExampleParticipantMessage,
   getExampleTeamMessage,
-  getMessagePreviewAsync, getBackendIssuesFromErrorResponse
+  getMessagePreviewAsync, getBackendIssuesFromErrorResponse, getExampleDinnerRouteMessage
 } from "../../";
 import {
   PreviewMessage,
@@ -27,7 +27,7 @@ import {
 } from "../../types";
 import {AdminStateType, adminStore, AdminThunk} from "./AdminStore";
 import {MessagesState, newInitialMessagesState} from "./StoreTypes";
-import {isArrayNotEmpty, isStringEmpty, findEntityById, CONSTANTS} from "../../";
+import {isArrayNotEmpty, isStringEmpty, findEntityById} from "../../";
 
 interface UpdatePreviewDataActionPayload {
   value: string;
@@ -41,9 +41,10 @@ export interface MessageTypeAdminIdPayload extends BaseAdminIdProps {
 // *** Actions *** //
 const setupInitialMessageType = createAction<MessageTypeAdminIdPayload>("setupInitialMessageType");
 const updatePreviewInputData = createAction<UpdatePreviewDataActionPayload>("updatePreviewInputData");
-export const updateRecipientSelection = createAction<string>("updateRecipientSelection");
+export const setPreviousRecipientSelection = createAction<string>("setPreviousRecipientSelection");
 export const startEditCustomSelectedRecipients = createAction("startEditCustomSelectedRecipients");
 export const finishEditCustomSelectedRecipients = createAction<Recipient[]>("finishEditCustomSelectedRecipients");
+export const setCustomSelectedRecipients = createAction<Recipient[]>("setCustomSelectedRecipients");
 const updateRecipientForPreviewByIdInternal = createAction<string>("updateRecipientForPreviewByIdInternal");
 
 const recalculatePreviewMessagesPending = createAction('recalculatePreviewMessagesPending');
@@ -163,7 +164,7 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
     } else if (state.messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS) {
       state.messageObject = getExampleParticipantMessage();
     } else if (state.messageType === MessageType.MESSAGE_TYPE_DINNERROUTE) {
-      state.messageObject = getExampleTeamMessage(); // TODO
+      state.messageObject = getExampleDinnerRouteMessage();
     } else {
       throw new Error("Unknown messageType: " + state.messageType);
     }
@@ -178,14 +179,8 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
     state.messageJobs.data = messageJobs.concat(action.payload);
     // Other states (pending | rejected) won't need to be handled in here, due to form handles ithhttps://github.com/Clemens85/Net.gitttps://github.com/Clemens85/Net.git
   })
-  .addCase(updateRecipientSelection, (state, action) => {
-    state.previousSelection = state.recipientSelection;
-    state.recipientSelection = action.payload;
-    if (state.recipientSelection === CONSTANTS.PARTICIPANT_SELECTION.CUSTOM_SELECTION) {
-      state.showCustomSelectionDialog = true;
-    } else {
-      state.customSelectedRecipients = [];
-    }
+  .addCase(setPreviousRecipientSelection, (state, action) => {
+    state.previousRecipientSelection = action.payload;
   })
   .addCase(startEditCustomSelectedRecipients, (state) => {
     state.showCustomSelectionDialog = true;
@@ -197,7 +192,15 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
       state.customSelectedRecipients = customSelectedEntities;
     } else {
       state.customSelectedRecipients = [];
-      state.recipientSelection = isStringEmpty(state.previousSelection) ? CONSTANTS.TEAM_SELECTION.ALL : state.previousSelection;
+    }
+  })
+  .addCase(setCustomSelectedRecipients, (state, action) => {
+    const customSelectedEntities = action.payload;
+    if (isArrayNotEmpty(customSelectedEntities)) {
+      state.customSelectedRecipients = customSelectedEntities;
+      state.showCustomSelectionDialog = false;
+    } else {
+      state.customSelectedRecipients = [];
     }
   })
   .addCase(updateRecipientForPreviewByIdInternal, (state, action) => {
@@ -230,10 +233,10 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
 export const getMessageJobsSelector = (state: AdminStateType) => state.messages.messageJobs;
 export const getMessageJobsLastPollDate = (state: AdminStateType) => state.messages.lastPollDate;
 export const getRecipientsSelector = (state: AdminStateType) => {
-  const {recipients, recipientSelection, customSelectedRecipients, showCustomSelectionDialog} = state.messages;
+  const {recipients, previousRecipientSelection, customSelectedRecipients, showCustomSelectionDialog} = state.messages;
   return {
     recipients,
-    recipientSelection,
+    previousRecipientSelection,
     customSelectedRecipients,
     showCustomSelectionDialog
   }
@@ -274,6 +277,16 @@ export const updateNonHostMessagePartTemplatePreviewAsync = debounce((value ) =>
 
 export const updateHostMessagePartTemplatePreviewAsync = debounce((value) => {
   adminStore.dispatch(updatePreviewInputData({ value, pathInMessageObject: "hostMessagePartTemplate" }));
+  getThunkDispatch()(recalculatePreviewMessages());
+}, 150);
+
+export const updateDinnerRouteSelfPartTemplatePreviewAsync = debounce((value) => {
+  adminStore.dispatch(updatePreviewInputData({ value, pathInMessageObject: "selfTemplate" }));
+  getThunkDispatch()(recalculatePreviewMessages());
+}, 150);
+
+export const updateDinnerRouteHostsPartTemplatePreviewAsync = debounce((value) => {
+  adminStore.dispatch(updatePreviewInputData({ value, pathInMessageObject: "hostsTemplate" }));
   getThunkDispatch()(recalculatePreviewMessages());
 }, 150);
 

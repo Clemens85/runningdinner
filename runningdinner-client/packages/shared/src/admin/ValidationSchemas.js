@@ -35,3 +35,11 @@ export const TEAM_MESSAGE_VALIDATION_SCHEMA = Yup.object({
   hostMessagePartTemplate: Yup.string().required(),
   nonHostMessagePartTemplate: Yup.string().required(),
 });
+
+export const DINNERROUTE_MESSAGE_VALIDATION_SCHEMA = Yup.object({
+  subject: Yup.string().max(255).required(),
+  message: Yup.string().max(2048).required(),
+  selfTemplate: Yup.string().max(2048).required(),
+  hostsTemplate: Yup.string().max(2048).required(),
+  teamSelection: Yup.string().required(),
+});

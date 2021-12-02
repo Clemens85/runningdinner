@@ -6,6 +6,7 @@ import TextField from "@material-ui/core/TextField";
 
 export interface MessageContentProps {
   templates?: string[];
+  showTemplatesHelpIcon: boolean;
   onMessageContentChange?: (changedVal: string) => unknown;
   name: string;
   label: string;
@@ -13,7 +14,7 @@ export interface MessageContentProps {
   helperText?: string;
 }
 
-export default function MessageContent({templates, onMessageContentChange, name, label, rows, helperText}: MessageContentProps) {
+export default function MessageContent({templates, onMessageContentChange, name, label, rows, helperText, showTemplatesHelpIcon}: MessageContentProps) {
 
   const { setValue, register, errors } = useFormContext();
 
@@ -80,7 +81,9 @@ export default function MessageContent({templates, onMessageContentChange, name,
   return (
       <Box mt={3}>
 
-        <MessageTemplates templates={templates} onTemplateClick={handleTemplateClick}/>
+        <MessageTemplates templates={templates}
+                          onTemplateClick={handleTemplateClick}
+                          showTemplatesHelpIcon={showTemplatesHelpIcon} />
 
         <TextField inputRef={(ref) => {
                                 register(ref);

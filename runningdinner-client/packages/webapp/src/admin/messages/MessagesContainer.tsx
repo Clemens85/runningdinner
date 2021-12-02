@@ -1,4 +1,4 @@
-import {Box, Grid, Paper} from "@material-ui/core";
+import {Box, Grid, Paper, useMediaQuery, useTheme} from "@material-ui/core";
 import {PageTitle} from "../../common/theme/typography/Tags";
 import {FormProvider, useForm} from "react-hook-form";
 import React, {useEffect} from "react";
@@ -13,25 +13,35 @@ import {MessagePreview} from "./MessagePreview";
 import {
   BaseAdminIdProps,
   BaseMessage,
-  fetchInitialMessageData,
+  DINNERROUTE_MESSAGE_VALIDATION_SCHEMA,
+  fetchInitialMessageData, findEntityById,
+  getExampleDinnerRouteMessage,
   getExampleParticipantMessage,
   getExampleTeamMessage,
+  getRecipientsSelector,
+  isArrayNotEmpty,
   MessageType,
   PARTICIPANT_MESSAGE_VALIDATION_SCHEMA,
   sendMessages,
+  setCustomSelectedRecipients,
   TEAM_MESSAGE_VALIDATION_SCHEMA,
+  updateDinnerRouteHostsPartTemplatePreviewAsync,
+  updateDinnerRouteSelfPartTemplatePreviewAsync,
   updateHostMessagePartTemplatePreviewAsync,
   updateMessageContentPreviewAsync,
   updateMessageSubjectPreviewAsync,
   updateNonHostMessagePartTemplatePreviewAsync,
+  useAdminDispatch,
+  useAdminSelector,
   useBackendIssueHandler,
-  useAdminDispatch
+  CONSTANTS, isArrayEmpty
 } from "@runningdinner/shared";
-import {Helmet} from "react-helmet-async";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
+import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
+import {useMessagesQueryHandler} from "./MessagesQueryHandlerHook";
+import {FetchStatus} from "@runningdinner/shared/src/redux";
 
 export function TeamMessages({adminId}: BaseAdminIdProps) {
-  const {t} = useTranslation(['admin']);
   const templates = ['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'];
 
   const dispatch = useAdminDispatch();
@@ -46,15 +56,35 @@ export function TeamMessages({adminId}: BaseAdminIdProps) {
                     validationSchema={TEAM_MESSAGE_VALIDATION_SCHEMA}
                     templates={templates}
                     messageType={MessageType.MESSAGE_TYPE_TEAMS}/>
-      <Helmet>
-        <title>{t('admin:mails_send_teams_title')}</title>
-      </Helmet>
+      <BrowserTitle titleI18nKey={"admin:mails_send_teams_title"} namespaces={"admin"} />
     </>
   );
 }
 
+
+export function DinnerRouteMessages({adminId}: BaseAdminIdProps) {
+
+  const templates = ['{firstname}', '{lastname}', '{route}', '{routelink}'];
+
+  const dispatch = useAdminDispatch();
+  useEffect(() => {
+    dispatch(fetchInitialMessageData(adminId, MessageType.MESSAGE_TYPE_DINNERROUTE))
+  }, [dispatch, adminId]);
+
+  return (
+    <>
+      <MessagesView adminId={adminId}
+                    exampleMessage={getExampleDinnerRouteMessage()}
+                    validationSchema={DINNERROUTE_MESSAGE_VALIDATION_SCHEMA}
+                    templates={templates}
+                    messageType={MessageType.MESSAGE_TYPE_DINNERROUTE}/>
+      <BrowserTitle titleI18nKey={"admin:mails_send_dinnerroutes_title"} namespaces={"admin"} />
+    </>
+  );
+}
+
+
 export function ParticipantMessages({adminId}: BaseAdminIdProps) {
-  const {t} = useTranslation(['admin']);
   const templates = ['{firstname}', '{lastname}'];
 
   const dispatch = useAdminDispatch();
@@ -69,9 +99,7 @@ export function ParticipantMessages({adminId}: BaseAdminIdProps) {
                     validationSchema={PARTICIPANT_MESSAGE_VALIDATION_SCHEMA}
                     templates={templates}
                     messageType={MessageType.MESSAGE_TYPE_PARTICIPANTS} />
-      <Helmet>
-        <title>{t('admin:mails_send_participants_title')}</title>
-      </Helmet>
+      <BrowserTitle titleI18nKey={"admin:mails_send_participants_title"} namespaces={"admin"} />
     </>
   );
 }
@@ -87,6 +115,9 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
 
   const {t} = useTranslation(['admin', 'common']);
 
+  const theme = useTheme();
+  const isXlDevice = useMediaQuery(theme.breakpoints.up('xl'));
+
   const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
       namespaces: 'admin'
@@ -95,6 +126,9 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const dispatch = useAdminDispatch();
+  const {recipients} = useAdminSelector(getRecipientsSelector);
+
+  const {headline, selectedTeamIds} = useMessagesQueryHandler(messageType);
 
   const formMethods = useForm({
     // @ts-ignore
@@ -102,8 +136,23 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
     // resolver: yupResolver(validationSchema), // Currently I use only backend validation...
     mode: 'onBlur'
   });
-  const { handleSubmit, clearErrors, setError, formState } = formMethods;
+  const { handleSubmit, clearErrors, setError, formState, setValue } = formMethods;
   const { isSubmitting } = formState;
+
+  useEffect(() => {
+    if (messageType !== MessageType.MESSAGE_TYPE_PARTICIPANTS && isArrayNotEmpty(selectedTeamIds) && recipients.fetchStatus === FetchStatus.SUCCEEDED) {
+      const preSelectedTeams = selectedTeamIds
+                                .map(id => findEntityById(recipients.data, id))
+                                .filter(elem => elem);
+      // @ts-ignore When running in this case, we have always teamSelection
+      setValue("teamSelection", CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION);
+      dispatch(setCustomSelectedRecipients(preSelectedTeams));
+    } else if (recipients.fetchStatus === FetchStatus.SUCCEEDED && isArrayEmpty(selectedTeamIds)) {
+      dispatch(setCustomSelectedRecipients([]));
+    }
+    // eslint-disable-next-line
+  }, [JSON.stringify(selectedTeamIds), messageType, recipients.fetchStatus]);
+
 
   const handleSendMessages = async (values: T) => {
     clearErrors();
@@ -120,15 +169,14 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   const handleMessageSubjectChange = (subject: string) => updateMessageSubjectPreviewAsync(subject);
   const handleNonHostMessagePartTemplateChange = (changedValue: string) => updateNonHostMessagePartTemplatePreviewAsync(changedValue);
   const handleHostMessagePartTemplateChange = (changedValue: string) => updateHostMessagePartTemplatePreviewAsync(changedValue);
+  const handleDinnerRouteHostsPartTemplateChange = (changedValue: string) => updateDinnerRouteHostsPartTemplatePreviewAsync(changedValue);
+  const handleDinnerRouteSelfPartTemplateChange = (changedValue: string) => updateDinnerRouteSelfPartTemplatePreviewAsync(changedValue);
 
   // @ts-ignore
   return (
       <>
         <Grid container>
-          <Grid item xs={12}>
-            { messageType === MessageType.MESSAGE_TYPE_TEAMS && <PageTitle>{t('admin:mails_team_sendmessage_headline')}</PageTitle> }
-            { messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS && <PageTitle>{t('admin:mails_participant_sendmessage_headline')}</PageTitle> }
-          </Grid>
+          <Grid item xs={12}><PageTitle>{t(headline)}</PageTitle></Grid>
         </Grid>
 
         <FormProvider {...formMethods}>
@@ -147,6 +195,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
                         <MessageContent templates={templates}
                                         onMessageContentChange={handleMessageContentChange}
                                         rows={15}
+                                        showTemplatesHelpIcon={true}
                                         name="message"
                                         label={t('common:content')}/>
                       </Grid>
@@ -156,6 +205,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
                             <MessageContent templates={[]}
                                             onMessageContentChange={handleHostMessagePartTemplateChange}
                                             rows={5}
+                                            showTemplatesHelpIcon={true}
                                             name="hostMessagePartTemplate"
                                             helperText={t('admin:mails_template_replacement_host')}
                                             label={t('admin:mails_sendteams_host')}/>
@@ -164,11 +214,36 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
                             <MessageContent templates={[]}
                                             onMessageContentChange={handleNonHostMessagePartTemplateChange}
                                             rows={5}
+                                            showTemplatesHelpIcon={true}
                                             name="nonHostMessagePartTemplate"
                                             helperText={t('admin:mails_template_replacement_nonhost')}
                                             label={t('admin:mails_sendteams_nonhost')}/>
                           </Grid>
                         </Grid> }
+
+                        { messageType === MessageType.MESSAGE_TYPE_DINNERROUTE &&
+                        <Grid container spacing={1}>
+                          <Grid item xs={12} xl={6}>
+                            <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{mealspecifics}']}
+                                            onMessageContentChange={handleDinnerRouteSelfPartTemplateChange}
+                                            rows={7}
+                                            showTemplatesHelpIcon={isXlDevice}
+                                            name="selfTemplate"
+                                            helperText={t('admin:mails_template_replacement_route_host')}
+                                            label={t('admin:mails_senddinnerroute_self')}/>
+                          </Grid>
+                          <Grid item xs={12} xl={6}>
+                            <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{hostaddress}']}
+                                            onMessageContentChange={handleDinnerRouteHostsPartTemplateChange}
+                                            rows={7}
+                                            showTemplatesHelpIcon={isXlDevice}
+                                            name="hostsTemplate"
+                                            helperText={t('admin:mails_template_replacement_route_guest')}
+                                            label={t('admin:mails_senddinnerroute_hosts')}/>
+                          </Grid>
+                        </Grid> }
+
+
                       <Grid container justify="flex-end">
                         <Grid item>
                           <Box mt={3}>

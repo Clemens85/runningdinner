@@ -7,7 +7,7 @@ import get from 'lodash/get';
 import {
   BaseEntity,
   BaseMessage,
-  BaseTeamMessage,
+  BaseTeamMessage, DinnerRouteMessage,
   MessageJob, MessageJobOverview,
   MessageTask,
   MessageType,
@@ -158,12 +158,25 @@ export function getExampleTeamMessage(): TeamMessage {
   };
 }
 
+export function getExampleDinnerRouteMessage(): DinnerRouteMessage {
+  return {
+    subject: '',
+    message: "Hallo {firstname},\n\n" +
+      "hier ist eure Dinner-Route: \n\n{route}\n\nU" +
+      "nter folgendem Link findet ihr jederzeit eine Live-Ansicht eurer Dinner-Route:\n{routelink}\n\n" +
+      "Bitte versucht euch an die Zeitpläne zu halten!",
+    selfTemplate: "{meal} bei EUCH\nGekocht wird bei {firstname} {lastname}\nUhrzeit: {mealtime} Uhr\n{mealspecifics}",
+    hostsTemplate: "{meal}\nWird gekocht bei: {firstname} {lastname}\n{hostaddress}\nUhrzeit: {mealtime} Uhr",
+    teamSelection: TeamSelection.ALL
+  };
+}
+
 export function getNumberOfSelectedRecipients(recipients: Recipient[], recipientSelection: string): number | null {
   if (isArrayEmpty(recipients) || isStringEmpty(recipientSelection) ||
-      recipientSelection === CONSTANTS.PARTICIPANT_SELECTION.CUSTOM_SELECTION || recipientSelection === CONSTANTS.TEAM_SELECTION.CUSTOM_SELECTION) {
+      recipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION) {
     return null;
   }
-  if (recipientSelection === CONSTANTS.PARTICIPANT_SELECTION.ALL || recipientSelection === CONSTANTS.TEAM_SELECTION.ALL) {
+  if (recipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.ALL) {
     return recipients.length;
   }
   return _getNumberOfSelectedParticipants(recipients as Participant[], recipientSelection);

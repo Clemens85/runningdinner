@@ -14,9 +14,10 @@ const useStyles = makeStyles((theme) => ({
 export interface MessageTemplatesProps {
   onTemplateClick: (template: string) => unknown;
   templates?: string[];
+  showTemplatesHelpIcon: boolean;
 }
 
-function MessageTemplates({templates, onTemplateClick}: MessageTemplatesProps) {
+function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: MessageTemplatesProps) {
 
   const {t} = useTranslation('admin');
 
@@ -30,9 +31,11 @@ function MessageTemplates({templates, onTemplateClick}: MessageTemplatesProps) {
       <Grid container alignItems={"center"} justify={"flex-start"}>
         <Grid item><Box component={"span"} pr={1}>{t('mails_template_help')}: </Box></Grid>
         <Grid item>{messageTemplateNodes}</Grid>
-        <Grid item>
-          <HelpIconTooltip title={<Paragraph i18n='admin:mails_template_help_description'/>} placement='right' />
-        </Grid>
+        {showTemplatesHelpIcon &&
+          <Grid item>
+            <HelpIconTooltip title={<Paragraph i18n='admin:mails_template_help_description'/>} placement='right'/>
+          </Grid>
+        }
       </Grid>
   );
 }

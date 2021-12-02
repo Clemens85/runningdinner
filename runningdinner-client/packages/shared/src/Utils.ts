@@ -125,11 +125,11 @@ export function getKeyValueList(obj: any): Array<any> {
   return result;
 }
 
-export function isStringEmpty(s?: string) {
+export function isStringEmpty(s?: string | null) {
   return !s || s.length === 0;
 }
 
-export function isStringNotEmpty(s?: string): s is string {
+export function isStringNotEmpty(s?: string | null): s is string {
   return !isStringEmpty(s);
 }
 

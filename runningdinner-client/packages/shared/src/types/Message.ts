@@ -8,6 +8,12 @@ export enum MessageType {
   MESSAGE_TYPE_DINNERROUTE = "DINNER_ROUTE"
 }
 
+export enum MessageTeamsType {
+  SINGLE = "SINGLE",
+  CANCELLATION = "CANCELLATION",
+  DEFAULT = "DEFAULT"
+}
+
 export enum SendingStatus {
   QUEUED = "QUEUED",
   SENDING_STARTED = "SENDING_STARTED",

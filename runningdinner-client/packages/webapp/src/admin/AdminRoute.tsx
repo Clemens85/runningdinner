@@ -1,5 +1,5 @@
 import React from 'react';
-import {ParticipantMessages, TeamMessages} from "./messages/MessagesContainer";
+import {DinnerRouteMessages, ParticipantMessages, TeamMessages} from "./messages/MessagesContainer";
 import ParticipantsContainer from "./participants/ParticipantsContainer";
 import TeamsContainer from "./teams/TeamsContainer";
 import Dashboard from "./dashboard/Dashboard";
@@ -37,6 +37,9 @@ export default function AdminRoute({path}: AdminRouteProps) {
           <ParticipantsContainer runningDinner={runningDinner} />
         </Route>
 
+        <Route path={`${path}/dinnerroute/messages`}>
+          <DinnerRouteMessages adminId={adminId} />
+        </Route>
         <Route path={`${path}/teams/messages`}>
           <TeamMessages adminId={adminId} />
         </Route>

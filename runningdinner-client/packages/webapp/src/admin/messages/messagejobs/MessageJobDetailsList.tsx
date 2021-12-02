@@ -373,7 +373,7 @@ function ReSendMessageTaskDialog({messageTask, onClose}: ReSendMessageTaskDialog
                   <MessageSubject onMessageSubjectChange={NoopFunction} />
                 </Grid>
                 <Grid item xs={12}>
-                  <MessageContent name="content" label={t("common:content")} />
+                  <MessageContent name="content" label={t("common:content")} showTemplatesHelpIcon={true} />
                 </Grid>
               </Grid>
             </Box>
