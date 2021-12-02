@@ -7,8 +7,6 @@ import { Grid, Box } from "@material-ui/core";
 import {StickyActionButton} from "../../common/theme/StickyActionButton";
 import NumberOfParticipants from "./list/NumberOfParticipants";
 import ParticipantsListInfo from "./list/ParticipantsListInfo";
-import {useTranslation} from "react-i18next";
-import { Helmet } from 'react-helmet-async';
 import {EmptyDetails} from "../common/EmptyDetails";
 import { Fetch } from "../../common/Fetch";
 import {TeamPartnerWishDialog} from "./teampartnerwish/TeamPartnerWishDialog";
@@ -17,6 +15,7 @@ import {
 } from "./teampartnerwish/TeamPartnerWishAction";
 import {findEntityById, findParticipantsAsync, findTeamPartnerWishInfoAsync, useDisclosure} from "@runningdinner/shared";
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
+import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 
 export default function ParticipantsContainer({runningDinner}) {
 
@@ -34,8 +33,6 @@ export default function ParticipantsContainer({runningDinner}) {
 };
 
 const Participants = ({runningDinner, incomingParticipants, selectedParticipantId, reFetch}) => {
-
-  const {t} = useTranslation(['admin', 'common']);
 
   const { adminId, sessionData } = runningDinner;
 
@@ -114,9 +111,7 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
 
   return (
       <>
-        <Helmet>
-          <title>{t('common:participants')}</title>
-        </Helmet>
+        <BrowserTitle titleI18nKey={'common:participants'} namespaces={'common'} />
         { showBackToListViewButton
             ? <BackToListButton onBackToList={() => setShowDetailsView(false)} />
             : <ParticipantsListHeader adminId={adminId}

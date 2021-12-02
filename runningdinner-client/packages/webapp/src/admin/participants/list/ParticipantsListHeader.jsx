@@ -37,9 +37,7 @@ export default function ParticipantsListHeader({adminId, numberOfParticipants, s
 
   return (
       <Box component={"div"} mb={2}>
-        <PageTitle>
-          {t('common:headline_participantlist')}
-        </PageTitle>
+        <PageTitle>{t('common:headline_participantlist')}</PageTitle>
         <Box mt={1}>
           <Grid container direction={"row"} spacing={2} alignItems={"center"} justify={"flex-start"}>
             <Grid item xs={12} sm={7} lg={3}>
