@@ -116,7 +116,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   const {t} = useTranslation(['admin', 'common']);
 
   const theme = useTheme();
-  const isXlDevice = useMediaQuery(theme.breakpoints.up('xl'));
+  const isMdDeviceOrUp = useMediaQuery(theme.breakpoints.up('md'));
 
   const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
@@ -223,20 +223,20 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
 
                         { messageType === MessageType.MESSAGE_TYPE_DINNERROUTE &&
                         <Grid container spacing={1}>
-                          <Grid item xs={12} xl={6}>
+                          <Grid item xs={12} lg={6}>
                             <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{mealspecifics}']}
                                             onMessageContentChange={handleDinnerRouteSelfPartTemplateChange}
                                             rows={7}
-                                            showTemplatesHelpIcon={isXlDevice}
+                                            showTemplatesHelpIcon={isMdDeviceOrUp}
                                             name="selfTemplate"
                                             helperText={t('admin:mails_template_replacement_route_host')}
                                             label={t('admin:mails_senddinnerroute_self')}/>
                           </Grid>
-                          <Grid item xs={12} xl={6}>
+                          <Grid item xs={12} lg={6}>
                             <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{hostaddress}']}
                                             onMessageContentChange={handleDinnerRouteHostsPartTemplateChange}
                                             rows={7}
-                                            showTemplatesHelpIcon={isXlDevice}
+                                            showTemplatesHelpIcon={isMdDeviceOrUp}
                                             name="hostsTemplate"
                                             helperText={t('admin:mails_template_replacement_route_guest')}
                                             label={t('admin:mails_senddinnerroute_hosts')}/>
