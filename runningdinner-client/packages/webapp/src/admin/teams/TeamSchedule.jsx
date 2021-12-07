@@ -1,5 +1,4 @@
 import React from "react";
-import { Fetch } from "../../common/Fetch";
 import {Box, Button, Grid, makeStyles, Paper, Popover} from "@material-ui/core";
 import orderBy from 'lodash/orderBy';
 import Paragraph from "../../common/theme/typography/Paragraph";
@@ -12,8 +11,17 @@ import LinkIntern from "../../common/theme/LinkIntern";
 import LinkExtern from "../../common/theme/LinkExtern";
 import {PrimaryDangerButtonAsync} from "../../common/theme/PrimaryDangerButtonAsync";
 import Hidden from "@material-ui/core/Hidden";
-import {findTeamMeetingPlanAsync, Fullname, isSameEntity, Time, CONSTANTS, TeamNr} from "@runningdinner/shared";
+import {
+  Fullname,
+  isSameEntity,
+  Time,
+  CONSTANTS,
+  TeamNr,
+  getAsHttpErrorOrDefault
+} from "@runningdinner/shared";
 import {useAdminNavigation} from "../AdminNavigationHook";
+import {GENERIC_HTTP_ERROR} from "@runningdinner/shared/src/redux";
+import {ProgressBar} from "../../common/ProgressBar";
 
 const useStyles = makeStyles((theme) => ({
   schedulePaper: {
@@ -70,13 +78,13 @@ const buildScheduledMealsWithTeams = (teamMeetingPlan) => {
   return result;
 };
 
-export default function TeamSchedule({team, adminId}) {
-
-  const teamId = team.id;
-
-  return <Fetch asyncFunction={findTeamMeetingPlanAsync}
-                parameters={[adminId, teamId]}
-                render={resultObj => <TeamScheduleView teamMeetingPlan={resultObj.result} adminId={adminId} />} />;
+export default function TeamSchedule({adminId, isTeamMeetingPlanLoading, teamMeetingPlanResult, teamMeetingPlanError}) {
+  if (isTeamMeetingPlanLoading || teamMeetingPlanError) {
+    const httpFetchError = teamMeetingPlanError ? getAsHttpErrorOrDefault(teamMeetingPlanError, GENERIC_HTTP_ERROR) : undefined;
+    return <ProgressBar showLoadingProgress={isTeamMeetingPlanLoading} fetchError={httpFetchError} />;
+  } else {
+    return <TeamScheduleView teamMeetingPlan={teamMeetingPlanResult} adminId={adminId} />
+  }
 }
 
 

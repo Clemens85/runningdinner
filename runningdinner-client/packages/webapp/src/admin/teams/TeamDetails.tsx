@@ -4,35 +4,39 @@ import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import FormFieldset from "../../common/theme/FormFieldset";
 import TeamSchedule from "./TeamSchedule";
-import {Subtitle} from "../../common/theme/typography/Tags";
+import {Span, Subtitle} from "../../common/theme/typography/Tags";
 import LinkAction from "../../common/theme/LinkAction";
 import {TeamMemberCancelDialog, TeamMemberCancelDialogResult} from "./cancellation/TeamMemberCancelDialog";
 import ContextMenuIcon from "../../common/contextmenu/ContextMenuIcon";
 import {CancelledTeamMember} from "./CancelledTeamMember";
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
-import {Span} from "../../common/theme/typography/Tags";
 import {TeamCancelDialog} from "./cancellation/TeamCancelDialog";
 import {
-  TeamNr,
-  Time,
+  BaseAdminIdProps,
+  CallbackHandler,
   CONSTANTS,
-  ValueTranslate,
-  findEntityById,
+  findEntityById, findTeamMeetingPlanAsync,
   Fullname,
   generateCancelledTeamMembersAsNumberArray,
   getFullname,
+  getRunningDinnerMandatorySelector,
   hasEnoughSeats,
-  useDisclosure,
-  Team,
-  Meal,
-  Participant,
-  NoopFunction,
-  CallbackHandler,
-  RunningDinnerSessionData,
   isSameEntity,
-  useAdminSelector, getRunningDinnerMandatorySelector, BaseAdminIdProps, MessageTeamsType
+  Meal,
+  MessageTeamsType,
+  NoopFunction,
+  Participant,
+  RunningDinnerSessionData,
+  Team, TeamMeetingPlan,
+  TeamNr,
+  Time,
+  useAdminSelector,
+  useDisclosure,
+  ValueTranslate
 } from "@runningdinner/shared";
 import {useAdminNavigation} from "../AdminNavigationHook";
+import concat from "lodash/concat";
+import {useAsync} from "react-async-hook";
 
 export interface TeamDetailsProps {
   team: Team;
@@ -48,7 +52,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
   const {navigateToTeamMessages} = useAdminNavigation();
 
   const {adminId, sessionData} = runningDinner;
-  const {teamMembers, meal} = team;
+  const {teamMembers, meal, id} = team;
 
   const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
   const isReplaced = team.status === CONSTANTS.TEAM_STATUS.REPLACED;
@@ -58,6 +62,12 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
   const {isOpen: isTeamCancelDialogOpen,
          close: closeTeamCancelDialog,
          open: openTeamCancelDialog} = useDisclosure(false);
+
+
+  const findTeamMeetingPlanAsyncResult = useAsync<TeamMeetingPlan>(findTeamMeetingPlanAsync, [adminId, id]);
+  const { loading: isTeamMeetingPlanLoading,
+          result: teamMeetingPlanResult,
+          error: teamMeetingPlanError } = findTeamMeetingPlanAsyncResult;
 
   let teamMemberNodes = teamMembers.map(participant => <TeamMember key={participant.id}
                                                                     adminId={adminId}
@@ -74,20 +84,26 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
                                                                                                onUpdateTeamState={NoopFunction}/>);
   teamMemberNodes = teamMemberNodes.concat(cancelledTeamMemberNodes);
 
-  const handleOpenSingleTeamMessage = () => {
+  function handleOpenSingleTeamMessage() {
     navigateToTeamMessages(adminId, MessageTeamsType.SINGLE, [team]);
-  };
+  }
 
-  const handleCloseTeamCancelDialog = (closeResult?: Team) => {
+  function handleCloseTeamCancelDialog(closeResult?: Team) {
     closeTeamCancelDialog();
     if (closeResult && closeResult.teamNumber) {
       onUpdateTeamState(closeResult); // closeResult === the updated team
     }
-  };
+  }
 
-  const handleNotifyAffectedTeamsCancellation = () => {
-
-  };
+  function handleNotifyAffectedTeamsCancellation() {
+    if (!teamMeetingPlanResult) {
+      console.log("Could not navigate to team cancel messages, due to it seems like that the TeamMeetingPlan for calculating affected teams was not loaded yet");
+      console.log(`TeamMeetingPlan-Loading-State is ${isTeamMeetingPlanLoading} and TeamMeetingPlan-Error-State is ${JSON.stringify(teamMeetingPlanError)}`);
+      return;
+    }
+    const affectedTeams = concat(teamMeetingPlanResult.guestTeams, teamMeetingPlanResult.hostTeams);
+    navigateToTeamMessages(adminId, MessageTeamsType.CANCELLATION, affectedTeams);
+  }
 
   let actionMenuItems = [
     { label: t("admin:team_message"), onClick: handleOpenSingleTeamMessage },
@@ -136,7 +152,10 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
             </Grid>
             <Grid container>
               <Grid item xs={12}>
-                <TeamSchedule team={team} adminId={adminId}/>
+                <TeamSchedule isTeamMeetingPlanLoading={isTeamMeetingPlanLoading}
+                              teamMeetingPlanError={teamMeetingPlanError}
+                              teamMeetingPlanResult={teamMeetingPlanResult}
+                              adminId={adminId}/>
               </Grid>
             </Grid>
           </Box>
