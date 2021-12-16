@@ -8,9 +8,15 @@ export enum MessageType {
   MESSAGE_TYPE_DINNERROUTE = "DINNER_ROUTE"
 }
 
-export enum MessageTeamsType {
-  SINGLE = "SINGLE",
-  CANCELLATION = "CANCELLATION",
+export enum MessageSubType {
+  TEAM_SINGLE = "TEAM_SINGLE",
+  TEAM_CANCELLATION = "TEAM_CANCELLATION",
+  DEFAULT = "DEFAULT",
+  RECIPIENTS_ALL = "RECIPIENTS_ALL"
+}
+
+export enum MessageParticipantsType {
+  ALL = "ALL",
   DEFAULT = "DEFAULT"
 }
 

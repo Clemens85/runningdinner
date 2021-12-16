@@ -23,7 +23,7 @@ import {
   hasEnoughSeats,
   isSameEntity,
   Meal,
-  MessageTeamsType,
+  MessageSubType,
   NoopFunction,
   Participant,
   RunningDinnerSessionData,
@@ -85,7 +85,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
   teamMemberNodes = teamMemberNodes.concat(cancelledTeamMemberNodes);
 
   function handleOpenSingleTeamMessage() {
-    navigateToTeamMessages(adminId, MessageTeamsType.SINGLE, [team]);
+    navigateToTeamMessages(adminId, MessageSubType.TEAM_SINGLE, [team]);
   }
 
   function handleCloseTeamCancelDialog(closeResult?: Team) {
@@ -102,7 +102,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
       return;
     }
     const affectedTeams = concat(teamMeetingPlanResult.guestTeams, teamMeetingPlanResult.hostTeams);
-    navigateToTeamMessages(adminId, MessageTeamsType.CANCELLATION, affectedTeams);
+    navigateToTeamMessages(adminId, MessageSubType.TEAM_CANCELLATION, affectedTeams);
   }
 
   let actionMenuItems = [

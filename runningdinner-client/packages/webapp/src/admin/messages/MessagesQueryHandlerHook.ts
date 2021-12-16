@@ -1,5 +1,5 @@
-import {isArrayEmpty, isStringNotEmpty, MessageTeamsType, MessageType} from "@runningdinner/shared";
-import {MESSAGE_TEAMS_TYPE_QUERY_PARAM, SELECTED_TEAM_IDS_QUERY_PARAM} from "../AdminNavigationHook";
+import {isArrayEmpty, isStringNotEmpty, MessageSubType, MessageType} from "@runningdinner/shared";
+import {MESSAGE_SUBTYPE_QUERY_PARAM, SELECTED_TEAM_IDS_QUERY_PARAM} from "../AdminNavigationHook";
 import {useQuery} from "../../common/hooks/QueryHook";
 
 export function useMessagesQueryHandler(messageType: MessageType) {
@@ -7,16 +7,16 @@ export function useMessagesQueryHandler(messageType: MessageType) {
   const query = useQuery();
 
   function getHeadline() {
-    const messageTeamsType = query.get(MESSAGE_TEAMS_TYPE_QUERY_PARAM);
+    const messageSubType = query.get(MESSAGE_SUBTYPE_QUERY_PARAM);
     if (messageType === MessageType.MESSAGE_TYPE_DINNERROUTE) {
       return 'admin:mails_senddinnerroute_sendmessage';
     } else if (messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS) {
       return 'admin:mails_participant_sendmessage_headline';
     } else if (messageType === MessageType.MESSAGE_TYPE_TEAMS) {
       let result = 'admin:mails_team_sendmessage_headline';
-      if (messageTeamsType === MessageTeamsType.SINGLE) {
+      if (messageSubType === MessageSubType.TEAM_SINGLE) {
         result = 'admin:team_single_message_headline';
-      } else if (messageTeamsType === MessageTeamsType.CANCELLATION) {
+      } else if (messageSubType === MessageSubType.TEAM_CANCELLATION) {
         result = 'admin:team_cancellation_message_headline';
       }
       return result;
@@ -34,11 +34,18 @@ export function useMessagesQueryHandler(messageType: MessageType) {
     return result.map(teamId => teamId.trim());
   }
 
+  function isPreselectAllRecipients() {
+    const messageSubType = query.get(MESSAGE_SUBTYPE_QUERY_PARAM);
+    return MessageSubType.RECIPIENTS_ALL === messageSubType;
+  }
+
   const headline = getHeadline();
   const selectedTeamIds = getSelectedTeamIds();
+  const preselectAllRecipients = isPreselectAllRecipients();
 
   return {
     headline,
-    selectedTeamIds
+    selectedTeamIds,
+    preselectAllRecipients
   };
 }

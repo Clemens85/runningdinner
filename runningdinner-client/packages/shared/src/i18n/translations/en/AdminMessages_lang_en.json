@@ -170,6 +170,10 @@
 	"settings_cancel_event": "Cancel event...",
 	"settings_public_registration": "Registration settings",
 	"settings_saved_success": "Settings successfully saved",
+	"settings_update_date_change": "You are about to change the date of your event and already have participants in your event.<br /> Please remember to inform your participants about this change in cases they don't know so far (e.g. via mail).<br /> You can do this - if desired - directly after saving your settings.",
+	"settings_update_closed_to_public_change": "You are about to publish your event, so after saving your changes you should still adjust the public settings.",
+	"settings_update_closed_to_open_change": "You are about to open your event so that participants can register themselves (via secret link), so after saving your changes you can still adjust the public settings. <br />In addition, you can share the generated secret login link (see dashboard) with your friends / acquaintances.",
+	"settings_update_nonclosed_to_closed_change": "After you save your changes, no participant will be able to register themselves, you will have to add all participants manually.",
 	"synchronize_messagejobs_help": "It is not guaranteed that every message will successfully be transferred to each recipient, event if the sending is marked as successful: Emails can e.g. be marked as spam or a mailbox may be full, ... RunYourDinner will try to detect such issues and show them to you, but this may take some time (hours till days).",
 
 	"team": "Team {{ teamNumber }}",

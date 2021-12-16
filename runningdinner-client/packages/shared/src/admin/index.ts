@@ -13,3 +13,4 @@ export * from "./teams/TeamNameMembersHook";
 export * from "./messages/RecipientNameHook";
 export * from "./messages/ParticipantSelectionOptionsHook";
 export * from "./messages/TeamSelectionOptionsHook";
+export * from "./SettingsService";

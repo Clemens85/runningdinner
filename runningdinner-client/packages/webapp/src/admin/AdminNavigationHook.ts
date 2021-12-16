@@ -1,9 +1,9 @@
-import {isArrayNotEmpty, MessageTeamsType, Participant, Team} from "@runningdinner/shared";
+import {isArrayNotEmpty, MessageSubType, Participant, Team} from "@runningdinner/shared";
 import {useHistory} from "react-router-dom";
 
 export const TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM = "teamMemberIdToCancel";
 export const SELECTED_TEAM_IDS_QUERY_PARAM = "selectedTeamIds";
-export const MESSAGE_TEAMS_TYPE_QUERY_PARAM = "messageTeamsType";
+export const MESSAGE_SUBTYPE_QUERY_PARAM = "messageSubType";
 
 function generateTeamPath(adminId: string, teamId: string) {
   return `/admin/${adminId}/teams/${teamId}`;
@@ -13,7 +13,7 @@ function generateParticipantPath(adminId: string, participantId: string) {
   return `/admin/${adminId}/participants/${participantId}`;
 }
 
-function generateTeamMessagesPath(adminId: string, messageTeamsType?: MessageTeamsType, teamsToSelect?: Team[]) {
+function generateTeamMessagesPath(adminId: string, messageSubType?: MessageSubType, teamsToSelect?: Team[]) {
   let result = generateMessagesPath(adminId, 'teams');
   let queryParamSeparator = "?";
   if (isArrayNotEmpty(teamsToSelect)) {
@@ -21,13 +21,15 @@ function generateTeamMessagesPath(adminId: string, messageTeamsType?: MessageTea
     result = `${result}${queryParamSeparator}${SELECTED_TEAM_IDS_QUERY_PARAM}=${selectedTeamIds}`;
     queryParamSeparator = "&";
   }
-  if (messageTeamsType) {
-    result = `${result}${queryParamSeparator}messageTeamsType=${messageTeamsType}`;
+  if (messageSubType) {
+    result = `${result}${queryParamSeparator}${MESSAGE_SUBTYPE_QUERY_PARAM}=${messageSubType}`;
   }
   return result;
 }
-function generateParticipantMessagesPath(adminId: string) {
-  return generateMessagesPath(adminId, 'participants');
+function generateParticipantMessagesPath(adminId: string, messageSubType: MessageSubType = MessageSubType.DEFAULT) {
+  let result = generateMessagesPath(adminId, 'participants');
+  result = `${result}?${MESSAGE_SUBTYPE_QUERY_PARAM}=${messageSubType}`;
+  return result;
 }
 function generateDinnerRouteMessagesPath(adminId: string) {
   return generateMessagesPath(adminId, 'dinnerroute');
@@ -68,7 +70,7 @@ export function useAdminNavigation() {
     history.push(generateTeamMemberCancellationPath(adminId, participant));
   }
 
-  function navigateToTeamMessages(adminId: string, messageTeamsType: MessageTeamsType = MessageTeamsType.DEFAULT, teamsToSelect?: Team[]) {
+  function navigateToTeamMessages(adminId: string, messageTeamsType: MessageSubType = MessageSubType.DEFAULT, teamsToSelect?: Team[]) {
     history.push(generateTeamMessagesPath(adminId, messageTeamsType, teamsToSelect));
   }
 

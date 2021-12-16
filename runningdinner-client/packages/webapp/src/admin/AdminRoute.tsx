@@ -59,7 +59,7 @@ export default function AdminRoute({path}: AdminRouteProps) {
           <MessageJobDetailsList runningDinner={runningDinner} />
         </Route>
         <Route path={`${path}/settings`}>
-          <SettingsPage />
+          <SettingsPage runningDinner={runningDinner} />
           <BrowserTitle  namespaces={"common"} titleI18nKey={"common:settings"} />
         </Route>
         <Route path="/">

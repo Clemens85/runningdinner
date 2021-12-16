@@ -128,7 +128,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   const dispatch = useAdminDispatch();
   const {recipients} = useAdminSelector(getRecipientsSelector);
 
-  const {headline, selectedTeamIds} = useMessagesQueryHandler(messageType);
+  const {headline, selectedTeamIds, preselectAllRecipients} = useMessagesQueryHandler(messageType);
 
   const formMethods = useForm({
     // @ts-ignore
@@ -140,6 +140,13 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   const { isSubmitting } = formState;
 
   useEffect(() => {
+    // Reset all our selection values on mounting this component:
+     // @ts-ignore We get the correct field name...:
+    setValue(getRecipientFormFieldName(messageType), "");
+    dispatch(setCustomSelectedRecipients([]));
+  }, [dispatch, messageType, setValue]);
+
+  useEffect(() => {
     if (messageType !== MessageType.MESSAGE_TYPE_PARTICIPANTS && isArrayNotEmpty(selectedTeamIds) && recipients.fetchStatus === FetchStatus.SUCCEEDED) {
       const preSelectedTeams = selectedTeamIds
                                 .map(id => findEntityById(recipients.data, id))
@@ -147,11 +154,16 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
       // @ts-ignore When running in this case, we have always teamSelection
       setValue("teamSelection", CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION);
       dispatch(setCustomSelectedRecipients(preSelectedTeams));
-    } else if (recipients.fetchStatus === FetchStatus.SUCCEEDED && isArrayEmpty(selectedTeamIds)) {
-      dispatch(setCustomSelectedRecipients([]));
+    } 
+    // else if (recipients.fetchStatus === FetchStatus.SUCCEEDED && isArrayEmpty(selectedTeamIds)) {
+    //   dispatch(setCustomSelectedRecipients([]));
+    // } 
+    else if (preselectAllRecipients && recipients.fetchStatus === FetchStatus.SUCCEEDED) {
+      // @ts-ignore We get the correct field name...:
+      setValue(getRecipientFormFieldName(messageType), CONSTANTS.RECIPIENT_SELECTION_COMMON.ALL);
     }
     // eslint-disable-next-line
-  }, [JSON.stringify(selectedTeamIds), messageType, recipients.fetchStatus]);
+  }, [JSON.stringify(selectedTeamIds), messageType, recipients.fetchStatus, preselectAllRecipients, setValue]);
 
 
   const handleSendMessages = async (values: T) => {
@@ -164,6 +176,10 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
       showHttpErrorDefaultNotification(e);
     }
   };
+
+  function getRecipientFormFieldName(messageType: MessageType) {
+    return messageType !== MessageType.MESSAGE_TYPE_PARTICIPANTS ? "teamSelection" : "participantSelection";
+  }
 
   const handleMessageContentChange = (content: string) => updateMessageContentPreviewAsync(content);
   const handleMessageSubjectChange = (subject: string) => updateMessageSubjectPreviewAsync(subject);

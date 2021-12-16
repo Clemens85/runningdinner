@@ -1,4 +1,5 @@
-import {BaseEntity, GenderAspects, LabelValue} from "./Base";
+import { CONSTANTS } from "..";
+import { BaseEntity, GenderAspects, LabelValue } from "./Base";
 
 export interface RunningDinnerBasicDetails {
   registrationType: string;
@@ -92,4 +93,38 @@ export interface PublicRunningDinner extends Omit<RunningDinnerBasicDetails, "re
   teamPartnerWishDisabled: boolean;
   meals: Meal[];
   publicSettings: RunningDinnerPublicSettings;
+}
+
+export function newEmptyRunningDinnerBasicDetails(): RunningDinnerBasicDetails {
+  return {
+    title: "",
+    city: "",
+    zip: "",
+    date: new Date(),
+    registrationType: CONSTANTS.REGISTRATION_TYPE.OPEN,
+    languageCode: "de"
+  };
+}
+
+export function newEmptyRunningDinnerPublicSettings(): RunningDinnerPublicSettings {
+  return {
+    title: "",
+    description: "",
+    publicContactName: "",
+    publicContactEmail: "",
+    publicContactMobileNumber: "",
+    publicDinnerId: "",
+    publicDinnerUrl: ""
+  };
+}
+
+export interface RunningDinnerBasicDetailsFormModel extends RunningDinnerBasicDetails {
+  teamPartnerWishDisabled: boolean;
+}
+
+export function newEmptyRunningDinnerBasicDetailsFormModel(): RunningDinnerBasicDetailsFormModel {
+  return {
+    ...newEmptyRunningDinnerBasicDetails(),
+    teamPartnerWishDisabled: false
+  };
 }

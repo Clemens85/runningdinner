@@ -1,6 +1,7 @@
 import axios from "axios";
 import { BackendConfig } from "../BackendConfig";
-import {GenderAspects, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings, RunningDinnerType} from "../types";
+import {GenderAspects, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, 
+        RunningDinnerPublicSettings, RunningDinnerType, newEmptyRunningDinnerBasicDetails, newEmptyRunningDinnerPublicSettings} from "../types";
 import {CONSTANTS} from "../Constants";
 import {getHoursOfDate, getMinutesOfDate, isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute} from "../date";
 import {isClosedDinner} from "../admin";
@@ -162,14 +163,7 @@ const initialState: WizardState = {
     adminId: '',
     email: '',
     runningDinnerType: RunningDinnerType.STANDARD,
-    basicDetails: {
-      title: "",
-      city: "",
-      zip: "",
-      date: new Date(),
-      registrationType: CONSTANTS.REGISTRATION_TYPE.OPEN,
-      languageCode: "de"
-    },
+    basicDetails: newEmptyRunningDinnerBasicDetails(),
     options: {
       teamSize: 2,
       meals: newDefaultMeals(new Date()),
@@ -178,16 +172,7 @@ const initialState: WizardState = {
       considerShortestPaths: false,
       teamPartnerWishDisabled: false
     },
-    publicSettings: {
-      title: "",
-      description: "",
-      // endOfRegistrationDate: minusDays(new Date(), DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER),
-      publicContactName: "",
-      publicContactEmail: "",
-      publicContactMobileNumber: "",
-      publicDinnerId: "",
-      publicDinnerUrl: ""
-    },
+    publicSettings: newEmptyRunningDinnerPublicSettings(),
     contract: {
       fullname: "",
       zip: "",

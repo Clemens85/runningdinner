@@ -171,6 +171,10 @@
 	"settings_cancel_event": "Event absagen...",
 	"settings_public_registration": "Öffentliche Einstellungen",
 	"settings_saved_success": "Einstellungen erfolgreich gespeichert",
+	"settings_update_date_change": "Du bist im Begriff das Datum deines Events zu ändern und hast schon Teilnehmer in deinem Event.<br /> Denk bitte daran deine Teilnehmer (z.B. via Rundmail) darüber zu informieren sofern diese noch nicht bescheid wissen.<br /> Dies kannst du - wenn gewünscht - direkt nach Speichern deiner Einstellungen tun.",
+	"settings_update_closed_to_public_change": "Du bist im Begriff dein Event zu veröffentlichen, daher solltest du nach dem Speichern deiner Änderungen noch die öffentlichen Einstellungen anzupassen.",
+	"settings_update_closed_to_open_change": "Du bist im Begriff dein Event zu öffnen, so dass sich Teilnehmer (via geheimem Link) selbst anmelden können, daher kannst du nach dem Speichern deiner Änderungen noch die öffentlichen Einstellungen anpassen. <br />Zudem kannst du den generierten geheimen Anmeldungs-Link (siehe Dashboard) in deinem Bekanntenkreis weitergeben.",
+	"settings_update_nonclosed_to_closed_change": "Nachdem du deine Änderungen gespeichert hast, wird sich kein Teilnehmer mehr selbst registrieren können, sondern du musst alle Teilnehmer manuell hinzufügen.",
 	"synchronize_messagejobs_help": "Es kann nicht garantiert werden, dass selbst bei einem erfolgreichen Versand alle Nachrichten wirklich bei den Empfängern ankommen. Nachrichten können z.B. im Spam landen, oder es kann das Postfach voll sein, ... RunYourDinner wird dies automatisch feststellen und dir solche Rückläufer anzeigen, allerdings kann das Stunden bis Tage dauern.",
 
 	"team": "Team {{ teamNumber }}",

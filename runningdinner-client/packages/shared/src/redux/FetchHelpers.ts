@@ -1,4 +1,5 @@
 import {getAsHttpErrorOrDefault, HttpError} from "@runningdinner/shared";
+import { newHttpError } from "../types";
 
 export enum FetchStatus {
   IDLE = "IDLE",
@@ -29,12 +30,7 @@ export function handleFetchRejected<T>(fetchData: FetchData<T>, action?: any) {
   fetchData.fetchError = mapFetchErrorState(FetchStatus.FAILED, action);
 }
 
-export const GENERIC_HTTP_ERROR: HttpError = { // Will trigger a generic error message (-> useNotificationHttpError)
-  response: {
-    status: 500,
-    data: {}
-  }
-}
+export const GENERIC_HTTP_ERROR: HttpError = newHttpError(500);  // Will trigger a generic error message (-> useNotificationHttpError)
 
 function mapFetchErrorState(fetchStatus: FetchStatus, action?: any): HttpError | undefined {
   let result = undefined;
