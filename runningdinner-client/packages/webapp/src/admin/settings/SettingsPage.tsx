@@ -40,6 +40,7 @@ import SecondaryButton from '../../common/theme/SecondaryButton';
 import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useDispatch } from 'react-redux';
+import FormCheckbox from '../../common/input/FormCheckbox';
 
 export function SettingsPage({runningDinner}: BaseRunningDinnerProps) {
 
@@ -125,7 +126,9 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
       }
       <SpacingGrid container>
         <SpacingGrid item xs={12} md={7} pr={!isMobileDevice ? 6 : undefined}>
-          <BasicDinnerSettingsView registrationTypes={registrationTypes} runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
+          <BasicDinnerSettingsView registrationTypes={registrationTypes} 
+                                   runningDinner={currentRunningDinner} 
+                                   onSettingsSaved={handleRunningDinnerUpdated} />
         </SpacingGrid>
         { !isClosedDinner(currentRunningDinner) &&
           <SpacingGrid item xs={12} md={5}>
@@ -256,6 +259,13 @@ function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSa
               <BasicDinnerSettingsFormControl registrationTypes={registrationTypes} />
             </SpacingGrid>
           </SpacingGrid>
+          <SpacingGrid container>
+            <SpacingGrid item xs={12} mt={2}>
+              <FormCheckbox name="teamPartnerWishDisabled" 
+                            label={<Trans i18nKey="team_partner_wish_disabled" ns="common" />} 
+                            helperText={t("common:team_partner_wish_disabled_help")} />
+            </SpacingGrid>
+          </SpacingGrid>
           <SpacingGrid container justify={"flex-end"}>
             <SpacingGrid item pt={3} pb={6}>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitBasicDetailsAsync)}>
@@ -352,7 +362,7 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
           </SpacingGrid>
           <SpacingGrid container justify={"flex-end"}>
             <SpacingGrid item pt={3} pb={6}>
-              <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}...</SecondaryButton>
+              <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}</SecondaryButton>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} 
                              className={commonStyles.buttonSpacingLeft}>
                 { t('common:save') }
