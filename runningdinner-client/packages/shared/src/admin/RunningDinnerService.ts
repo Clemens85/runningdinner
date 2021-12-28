@@ -51,6 +51,12 @@ export async function acknowledgeRunningDinnerAsync(adminId: string, acknowledge
   return response.data;
 }
 
+export async function cancelRunningDinnerAsync(adminId: string): Promise<RunningDinner> {
+  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}`);
+  const response = await axios.delete<RunningDinner>(url);
+  return response.data;
+}
+
 export function isClosedDinner(dinner: RunningDinner | CreateRunningDinnerWizardModel): boolean {
   return hasClosedRegistrationType(dinner.basicDetails);
 }

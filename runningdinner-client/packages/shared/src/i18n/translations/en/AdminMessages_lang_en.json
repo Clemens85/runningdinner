@@ -34,7 +34,9 @@
 	"event_cancel_button": "Cancel event finally",
 	"event_cancel_headline": "Cancel Running Dinner Event",
 	"event_cancel_send_messages_hint": "You should notify all registered participants about the cancellation, hence you will directly be redirected to the participant messaging after cancellation.",
-	"event_cancel_text": "<p>You are going to finally cancel your event.</p>\n          <p>This action cannot be undone, so please think carefully about this issue before finally cancelling your event!</p>\n          <p>All data of this event will automatically be deleted within 1-2 days and cannot be recovered. For so long you can still view the data.</p>",
+	"event_cancel_text_1": "You are going to finally cancel your event.",
+	"event_cancel_text_2": "This action cannot be undone, so please think carefully about this issue before finally cancelling your event!",
+	"event_cancel_text_3": "All data of this event will automatically be deleted within 1-2 days and cannot be recovered. For so long you can still view the data.",
 	"event_cancel_text_no_registration_hint": "No participant can registrate himself after cancelling the event.",
 
 	"FAILURE_TYPE_BLOCKED": "Blocked (e.g. from provider)",

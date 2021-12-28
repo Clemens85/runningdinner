@@ -74,6 +74,10 @@ export function useAdminNavigation() {
     history.push(generateTeamMessagesPath(adminId, messageTeamsType, teamsToSelect));
   }
 
+  function navigateToParticipantMessages(adminId: string, messageTeamsType: MessageSubType = MessageSubType.DEFAULT) {
+    history.push(generateParticipantMessagesPath(adminId, messageTeamsType));
+  }
+
   function navigateToDinnerRouteMessages(adminId: string) {
     history.push(generateDinnerRouteMessagesPath(adminId));
   }
@@ -90,6 +94,7 @@ export function useAdminNavigation() {
     navigateToTeamMemberCancellation,
     generateDashboardPath,
     generateTeamDinnerRoutePath,
+    navigateToParticipantMessages,
     navigateToTeamMessages,
     navigateToDinnerRouteMessages,
     navigateToParticipant

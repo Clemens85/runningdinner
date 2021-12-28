@@ -5,6 +5,7 @@ import {
 import {useRouteMatch} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
+import AdminNotificationBar from './common/AdminNotificationBar';
 
 export default function AdminMenu() {
 
@@ -31,11 +32,14 @@ export default function AdminMenu() {
   ];
 
   return (
+    <>
+    <AdminNotificationBar />
     <MainNavigation
       mainTitle={mainTitle}
       baseUrl={url}
       mobileBreakpoint={"xs"}
       navigationItems={navigationItems} />
+    </>
   );
 
 }

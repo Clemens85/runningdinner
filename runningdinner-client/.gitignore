@@ -5,3 +5,5 @@ dist
 .idea
 packages/**/dist/
 packages/**/build
+
+.vscode/

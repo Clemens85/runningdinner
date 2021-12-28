@@ -34,7 +34,7 @@ import {
   useAdminDispatch,
   useAdminSelector,
   useBackendIssueHandler,
-  CONSTANTS, isArrayEmpty
+  CONSTANTS
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";

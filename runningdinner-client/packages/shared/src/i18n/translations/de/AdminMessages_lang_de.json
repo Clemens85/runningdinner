@@ -34,7 +34,9 @@
 	"event_cancel_button": "Endgültig absagen",
 	"event_cancel_headline": "Running Dinner Event absagen",
 	"event_cancel_send_messages_hint": "Du solltest allen bereits angemeldeten Teilnehmern unmittelbar nach der Absage eine Nachricht schreiben, dass das Event nicht mehr statt findet; du wirst nach der Absage daher direkt in den Teilnehmer-Nachrichten-Versand weitergeleitet.",
-	"event_cancel_text": "<p>Mit dieser Aktion sagst du das Event endgültig ab.</p>\n          <p>Diese Aktion kann nicht rückgängig gemacht werden, tue dies daher nur wenn du dir sicher bist.</p>\n          <p>Die Daten dieses Events werden innerhalb von 1-2 Tagen automatisch unwiderruflich gelöscht, solange kannst du dir die Daten noch anschauen.</p>",
+	"event_cancel_text_1": "Mit dieser Aktion sagst du das Event endgültig ab.",
+	"event_cancel_text_2": "Diese Aktion kann nicht rückgängig gemacht werden, tue dies daher nur wenn du dir sicher bist.",
+	"event_cancel_text_3": "Die Daten dieses Events werden innerhalb von 1-2 Tagen automatisch unwiderruflich gelöscht, solange kannst du dir die Daten noch anschauen.",
 	"event_cancel_text_no_registration_hint": "Nach Absage des Events können sich keine neuen Teilnehmer mehr anmelden.",
 
 	"FAILURE_TYPE_BLOCKED": "Blockiert (z.B. vom Provider)",

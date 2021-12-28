@@ -15,22 +15,30 @@ import {
   newEmptyRunningDinnerPublicSettings,
   updatePublicSettingsAsync,
   RunningDinnerPublicSettings,
-  MessageSubType
+  MessageSubType,
+  cancelRunningDinnerAsync,
+  setUpdatedRunningDinner
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import { SpacingGrid } from '../../common/theme/SpacingGrid';
 import {BasicDinnerSettingsFormControl} from "../../common/dinnersettings/BasicDinnerSettingsFormControl";
 import {Fetch} from "../../common/Fetch";
-import {PageTitle} from "../../common/theme/typography/Tags";
+import {PageTitle, Span, Subtitle} from "../../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
 import DateFnsUtils from "@date-io/date-fns";
 import useDatePickerLocale from "../../common/date/DatePickerLocaleHook";
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { BasicSettingsChangeDialog, BasicSettingsChangeDialogData } from './BasicSettingsChangeDialog';
 import { useAdminNavigation } from '../AdminNavigationHook';
-import {Link} from "@material-ui/core";
+import { PublicDinnerSettingsFormControl } from '../../common/dinnersettings/PublicDinnerSettingsFormControl';
+import useCommonStyles from '../../common/theme/CommonStyles';
+import SecondaryButton from '../../common/theme/SecondaryButton';
+import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import { useDispatch } from 'react-redux';
 
 export function SettingsPage({runningDinner}: BaseRunningDinnerProps) {
 
@@ -55,27 +63,81 @@ export interface SettingsViewControllerProps extends BaseRunningDinnerProps {
 
 function SettingsViewController({runningDinner, registrationTypes}: SettingsViewControllerProps) {
 
-  const {t} = useTranslation(['common']);
+  const {t} = useTranslation(['common', 'admin']);
+  const theme = useTheme();
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
+  const commonStyles = useCommonStyles();
+
+  const dispatch = useDispatch();
+
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
+  const {open: openCancelEventDialog, isOpen: isCancelEventDialogOpen, close: closeCancelEventDialog} = useDisclosure();
+
+  const {navigateToParticipantMessages} = useAdminNavigation();
 
   const [currentRunningDinner, setCurrentRunningDinner] = useState(runningDinner);
 
-  function handleBasicSettingsSaved(updatedRunningDinner: RunningDinner) {
+  function handleRunningDinnerUpdated(updatedRunningDinner: RunningDinner) {
     setCurrentRunningDinner(updatedRunningDinner);
+  }
+
+  async function handleCancelEventDialogClose(confirmed: boolean) {
+    if (!confirmed) {
+      closeCancelEventDialog();
+      return;
+    }
+    try {
+      const {adminId} = currentRunningDinner;
+      const updatedRunningDinner = await cancelRunningDinnerAsync(adminId);
+      handleRunningDinnerUpdated(updatedRunningDinner);
+      closeCancelEventDialog();
+      dispatch(setUpdatedRunningDinner(updatedRunningDinner));
+      navigateToParticipantMessages(adminId, MessageSubType.RECIPIENTS_ALL);
+    } catch (e) {
+      showHttpErrorDefaultNotification(e as HttpError);
+    }
+  }
+
+  function renderCancelEventDialogContent() {
+    return (
+      <Alert severity="error" variant="outlined">
+        <AlertTitle>{t('attention')}</AlertTitle>
+        <Span i18n='admin:event_cancel_text_1'/>
+        <Span i18n='admin:event_cancel_text_2'/>
+        <Span i18n='admin:event_cancel_text_3'/>
+        { !isClosedDinner(currentRunningDinner) && <Span i18n='admin:event_cancel_text_no_registration_hint'/> }
+        <Span><em>{t('admin:event_cancel_send_messages_hint')}</em></Span>
+      </Alert>
+    );
   }
 
   return (
     <>
       <PageTitle>{t('common:settings')}</PageTitle>
+      { !currentRunningDinner.cancellationDate && 
+        <SpacingGrid container>
+          <SpacingGrid item xs={12} className={commonStyles.textAlignRight} mt={-2} pb={1}>
+            <Button onClick={openCancelEventDialog} color="secondary">{t('admin:settings_cancel_event')}</Button>
+          </SpacingGrid>
+        </SpacingGrid> 
+      }
       <SpacingGrid container>
-        <SpacingGrid item xs={12} md={6}>
-          <BasicDinnerSettingsView registrationTypes={registrationTypes} runningDinner={currentRunningDinner} onSettingsSaved={handleBasicSettingsSaved} />
+        <SpacingGrid item xs={12} md={7} pr={!isMobileDevice ? 6 : undefined}>
+          <BasicDinnerSettingsView registrationTypes={registrationTypes} runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
         </SpacingGrid>
-        { !isClosedDinner(runningDinner) &&
-          <SpacingGrid item xs={12} md={6}>
-            <PublicDinnerSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleBasicSettingsSaved} registrationTypes={registrationTypes}/>
+        { !isClosedDinner(currentRunningDinner) &&
+          <SpacingGrid item xs={12} md={5}>
+            <PublicDinnerSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} registrationTypes={registrationTypes}/>
           </SpacingGrid>
         }
       </SpacingGrid>
+      { isCancelEventDialogOpen && <ConfirmationDialog onClose={handleCancelEventDialogClose} 
+                                                       dialogContent={renderCancelEventDialogContent()}
+                                                       dialogTitle={t('admin:event_cancel_headline')}
+                                                       danger={true}
+                                                       buttonConfirmText={t('common:save')}
+                                                       buttonCancelText={t('common:cancel')} /> }
     </>
   );
 
@@ -187,11 +249,14 @@ function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSa
         <form>
           <SpacingGrid container>
             <SpacingGrid item>
+              <Box pb={2}>
+                <Subtitle i18n="admin:settings_basics"/>
+              </Box>
               <BasicDinnerSettingsFormControl registrationTypes={registrationTypes} />
             </SpacingGrid>
           </SpacingGrid>
           <SpacingGrid container justify={"flex-end"}>
-            <SpacingGrid item pt={3}>
+            <SpacingGrid item pt={3} pb={6}>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitBasicDetailsAsync)}>
                 { t('common:save') }
               </PrimaryButton>
@@ -214,6 +279,8 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
   
   const {showSuccess} = useCustomSnackbar();
 
+  const commonStyles = useCommonStyles();
+
   const formMethods = useForm({
     defaultValues: newEmptyRunningDinnerPublicSettings(),
     mode: 'onTouched'
@@ -232,10 +299,15 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
 
   async function handleSubmitPublicSettingsAsync(values: RunningDinnerPublicSettings) {
     clearErrors();
-    const publicSettingsToSubmit = { ...values };
-    const updatedRunningDinner = await updatePublicSettingsAsync(adminId, publicSettingsToSubmit);
-    showSuccess(t("admin:settings_saved_success"));
-    onSettingsSaved(updatedRunningDinner);
+    try {
+      const publicSettingsToSubmit = { ...values };
+      const updatedRunningDinner = await updatePublicSettingsAsync(adminId, publicSettingsToSubmit);
+      showSuccess(t("admin:settings_saved_success"));
+      onSettingsSaved(updatedRunningDinner);
+    } catch (e) {
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
+    }
   }
 
   return (
@@ -243,14 +315,18 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
       <FormProvider {...formMethods}>
         <form>
           <SpacingGrid container>
-            <SpacingGrid item>
-              {/* <PublicDinnerSettingsFormControl /> */}
-              TODO
+            <SpacingGrid item xs={12}>
+              <Box pb={2}>
+                <Subtitle i18n="admin:settings_public_registration"/>
+              </Box>
+              <PublicDinnerSettingsFormControl />
             </SpacingGrid>
           </SpacingGrid>
           <SpacingGrid container justify={"flex-end"}>
-            <SpacingGrid item pt={3}>
-              <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitPublicSettingsAsync)}>
+            <SpacingGrid item pt={3} pb={6}>
+              <SecondaryButton>{t('admin:deactivate_registration')}</SecondaryButton>
+              <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} 
+                             className={commonStyles.buttonSpacingLeft}>
                 { t('common:save') }
               </PrimaryButton>
             </SpacingGrid>

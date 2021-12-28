@@ -19,7 +19,14 @@ export default function AdminNotificationBar() {
   const notificationRequired = isNotificationRequiredForFetchedRunningDinner(runningDinnerFetchData);
 
   // For now it is good enough to hold the state just locally (=> alert will disappear as long as user do not refresh browser)
-  const {isOpen, close} = useDisclosure(notificationRequired);
+  const {isOpen, close, open} = useDisclosure(notificationRequired);
+
+  React.useEffect(() => {
+    if (notificationRequired) {
+      open();
+    }
+    // eslint-disable-next-line
+  }, [notificationRequired]);
 
   if (!notificationRequired) {
     return null;
@@ -27,6 +34,8 @@ export default function AdminNotificationBar() {
 
   const runningDinner = runningDinnerFetchData.data!;
   const {cancellationDate, acknowledgedDate, runningDinnerType} = runningDinner;
+
+  console.log(`cancellationDate is ${cancellationDate}`);
 
   let notificationMessage = [];
   if (cancellationDate) {
