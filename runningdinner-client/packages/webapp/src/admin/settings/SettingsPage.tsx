@@ -362,7 +362,7 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
           </SpacingGrid>
           <SpacingGrid container justify={"flex-end"}>
             <SpacingGrid item pt={3} pb={6}>
-              <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}</SecondaryButton>
+              <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}...</SecondaryButton>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} 
                              className={commonStyles.buttonSpacingLeft}>
                 { t('common:save') }
