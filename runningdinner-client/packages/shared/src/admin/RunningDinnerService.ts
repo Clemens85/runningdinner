@@ -40,7 +40,7 @@ export async function updatePublicSettingsAsync(adminId: string, publicSettings:
 }
 
 export async function updateRegistrationActiveState(adminId: string, enable: boolean): Promise<RunningDinner> {
-  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/publicsettings/registrations/${enable}`);
+  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/publicsettings/registration/${enable}`);
   const response = await axios.put(url);
   return response.data;
 }

@@ -17,7 +17,8 @@ import {
   RunningDinnerPublicSettings,
   MessageSubType,
   cancelRunningDinnerAsync,
-  setUpdatedRunningDinner
+  setUpdatedRunningDinner,
+  updateRegistrationActiveState
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import { SpacingGrid } from '../../common/theme/SpacingGrid';
@@ -281,6 +282,8 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
 
   const commonStyles = useCommonStyles();
 
+  const {open: openUpdateRegistrationStateDialog, isOpen: isUpdateRegistrationStateDialogOpen, close: closeUpdateRegistrationStateDialog} = useDisclosure();
+
   const formMethods = useForm({
     defaultValues: newEmptyRunningDinnerPublicSettings(),
     mode: 'onTouched'
@@ -310,6 +313,31 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
     }
   }
 
+  async function handleUpdateRegistrationDialogSubmit(confirmed: boolean) {
+    closeUpdateRegistrationStateDialog();
+    if (!confirmed) {
+      return;
+    }
+    try {
+      const enable = !!runningDinner.publicSettings.registrationDeactivated; // This causes the toggling
+      const updatedRunningDinner = await updateRegistrationActiveState(adminId, enable);
+      showSuccess(t("admin:settings_saved_success"));
+      onSettingsSaved(updatedRunningDinner);
+    } catch (e) {
+      showHttpErrorDefaultNotification(e as HttpError);
+    }
+  }
+
+  function getUpdateRegistrationStateLabel() {
+    const { registrationDeactivated } = runningDinner.publicSettings;
+    return registrationDeactivated ? t(`admin:activate_registration`) : t(`admin:deactivate_registration`);
+  }
+
+  function getUpdateRegistrationStateDialogContentl() {
+    const { registrationDeactivated } = runningDinner.publicSettings;
+    return registrationDeactivated ? t(`admin:activate_registration_confirmation_text`) : t(`admin:deactivate_registration_confirmation_text`);
+  }
+
   return (
     <>
       <FormProvider {...formMethods}>
@@ -324,7 +352,7 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
           </SpacingGrid>
           <SpacingGrid container justify={"flex-end"}>
             <SpacingGrid item pt={3} pb={6}>
-              <SecondaryButton>{t('admin:deactivate_registration')}</SecondaryButton>
+              <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}...</SecondaryButton>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} 
                              className={commonStyles.buttonSpacingLeft}>
                 { t('common:save') }
@@ -332,6 +360,11 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
             </SpacingGrid>
           </SpacingGrid>
         </form>
+        { isUpdateRegistrationStateDialogOpen && <ConfirmationDialog onClose={handleUpdateRegistrationDialogSubmit} 
+                                                                     dialogContent={getUpdateRegistrationStateDialogContentl()}
+                                                                     dialogTitle={getUpdateRegistrationStateLabel()}
+                                                                     buttonConfirmText={"Ok"}
+                                                                     buttonCancelText={t('common:cancel')} /> }
       </FormProvider>
     </>
   );

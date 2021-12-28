@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import { SpacingButton } from "../SpacingButton";
 import { DialogTitleCloseable } from "../DialogTitleCloseable";
+import { PrimaryButton } from "../PrimaryButton";
 
 export interface ConfirmationDialogProps extends Partial<DialogProps> {
   /**
@@ -112,14 +113,21 @@ export function ConfirmationDialog({dialogTitle, dialogContent, buttonConfirmTex
               )}
             </Grid>
             <Grid item style={{ alignSelf: "center" }}>
-              <SpacingButton
-                ml={isSmallDevice ? 0 : 1}
-                color={danger ? "secondary" : "primary"}
-                variant="contained"
-                onClick={() => handleCloseInternal(true)}
-                autoFocus>
-                  {buttonConfirmText}
-                </SpacingButton>
+              {
+                danger ? <SpacingButton ml={isSmallDevice ? 0 : 1}
+                                        color="secondary"
+                                        variant="contained"
+                                        onClick={() => handleCloseInternal(true)}
+                                        autoFocus>
+                                {buttonConfirmText}
+                          </SpacingButton>
+                : <PrimaryButton ml={isSmallDevice ? 0 : 1}
+                                 variant="contained"
+                                 onClick={() => handleCloseInternal(true)}
+                                 autoFocus>
+                    {buttonConfirmText}
+                  </PrimaryButton>
+              }
             </Grid>
           </Grid>
         </Box>
