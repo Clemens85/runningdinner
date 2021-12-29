@@ -21,13 +21,14 @@ import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {useDispatch} from "react-redux";
 import FormDatePicker from "../common/input/FormDatePicker";
 import WizardButtons from "./WizardButtons";
+import { FetchStatus } from 'packages/shared/src/redux';
 
 export default function BasicDetailsStep() {
 
   const {t} = useTranslation(['wizard', 'common']);
 
   const basicDetails = useWizardSelector(getRunningDinnerBasicDetailsSelector);
-  const {registrationTypes} = useWizardSelector(getRegistrationTypesSelector);
+  const {registrationTypes, status} = useWizardSelector(getRegistrationTypesSelector);
 
   const dispatch = useDispatch();
 
@@ -69,7 +70,7 @@ export default function BasicDetailsStep() {
     }
   };
 
-  if (!registrationTypes) {
+  if (!registrationTypes || status !== FetchStatus.SUCCEEDED) {
     return null;
   }
 
@@ -84,6 +85,7 @@ export default function BasicDetailsStep() {
                           variant={"outlined"}
                           label={t('common:registration_type')}
                           helperText={getByValue(selectedRegistrationTypeValue, registrationTypes)?.description}
+                          defaultValue={""}
                           fullWidth>
                 {
                   registrationTypes
