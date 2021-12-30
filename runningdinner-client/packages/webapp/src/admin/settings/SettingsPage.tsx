@@ -295,7 +295,7 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
   const {open: openUpdateRegistrationStateDialog, isOpen: isUpdateRegistrationStateDialogOpen, close: closeUpdateRegistrationStateDialog} = useDisclosure();
 
   const formMethods = useForm({
-    defaultValues: newEmptyRunningDinnerPublicSettings(),
+    defaultValues: newEmptyRunningDinnerPublicSettings(runningDinner.basicDetails.date),
     mode: 'onTouched'
   });
   const { clearErrors, setError, handleSubmit, reset, formState } = formMethods;

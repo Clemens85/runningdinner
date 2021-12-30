@@ -42,7 +42,9 @@
     "@types/yup": "^0.29.6",
     "@types/react-geocode": "^0.2.0",
     "@types/react-redux": "^7.1.18",
-    "@types/redux-logger": "^3.0.9"
+    "@types/redux-logger": "^3.0.9",
+    "@types/jest": "27.0.3",
+    "ts-jest": "27.1.2"
   },
   "publishConfig": {
     "registry": "http://localhost:4873"

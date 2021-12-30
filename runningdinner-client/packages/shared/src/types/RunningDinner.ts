@@ -1,5 +1,7 @@
-import { CONSTANTS } from "..";
+import { CONSTANTS, minusDays } from "..";
 import { BaseEntity, GenderAspects, LabelValue } from "./Base";
+
+export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
 
 export interface RunningDinnerBasicDetails {
   registrationType: string;
@@ -106,7 +108,8 @@ export function newEmptyRunningDinnerBasicDetails(): RunningDinnerBasicDetails {
   };
 }
 
-export function newEmptyRunningDinnerPublicSettings(): RunningDinnerPublicSettings {
+export function newEmptyRunningDinnerPublicSettings(runningDinnerDate?: Date): RunningDinnerPublicSettings {
+  const endOfRegistrationDate = runningDinnerDate ? minusDays(runningDinnerDate, DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER) : undefined;
   return {
     title: "",
     description: "",
@@ -114,7 +117,9 @@ export function newEmptyRunningDinnerPublicSettings(): RunningDinnerPublicSettin
     publicContactEmail: "",
     publicContactMobileNumber: "",
     publicDinnerId: "",
-    publicDinnerUrl: ""
+    publicDinnerUrl: "",
+    endOfRegistrationDate,
+    registrationDeactivated: false
   };
 }
 

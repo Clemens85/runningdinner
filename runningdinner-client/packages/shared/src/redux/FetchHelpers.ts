@@ -1,5 +1,5 @@
-import {getAsHttpErrorOrDefault, HttpError} from "@runningdinner/shared";
-import { newHttpError } from "../types";
+import { getAsHttpErrorOrDefault } from "..";
+import { newHttpError, HttpError } from "../types";
 
 export enum FetchStatus {
   IDLE = "IDLE",

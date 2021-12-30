@@ -1,14 +1,13 @@
 import axios from "axios";
 import { BackendConfig } from "../BackendConfig";
-import {GenderAspects, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, 
+import {GenderAspects, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER,
         RunningDinnerPublicSettings, RunningDinnerType, newEmptyRunningDinnerBasicDetails, newEmptyRunningDinnerPublicSettings} from "../types";
 import {CONSTANTS} from "../Constants";
-import {getHoursOfDate, getMinutesOfDate, isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute} from "../date";
+import {getHoursOfDate, getMinutesOfDate, isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute, isAfterInDays} from "../date";
 import {isClosedDinner} from "../admin";
 import {useTranslation} from "react-i18next";
 import {FetchData, FetchStatus} from "../redux/";
 
-export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
 
 export interface CreateRunningDinnerResponse {
   runningDinner: RunningDinner;
@@ -41,7 +40,7 @@ export async function createRunningDinnerAsync(runningDinner: CreateRunningDinne
 export function setDefaultEndOfRegistrationDate(runningDinner: CreateRunningDinnerWizardModel) {
   const {date} = runningDinner.basicDetails;
   if (!isClosedDinner(runningDinner)) {
-    if (!runningDinner.publicSettings.endOfRegistrationDate || runningDinner.publicSettings.endOfRegistrationDate.getTime() > date.getTime()) {
+    if (!runningDinner.publicSettings.endOfRegistrationDate || isAfterInDays(runningDinner.publicSettings.endOfRegistrationDate, date)) {
       runningDinner.publicSettings.endOfRegistrationDate = minusDays(date, DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER);
     }
   }

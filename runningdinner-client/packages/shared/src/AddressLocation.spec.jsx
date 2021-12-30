@@ -6,7 +6,7 @@ import '@testing-library/jest-dom'
 import React from 'react'
 import {render, fireEvent, screen} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect'
-import {AddressLocation} from "shared/AddressLocation";
+import {AddressLocation} from "./AddressLocation";
 
 test('City and Zip is rendered', () => {
 
