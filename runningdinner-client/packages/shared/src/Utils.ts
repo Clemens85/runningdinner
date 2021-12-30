@@ -5,6 +5,7 @@ import remove from "lodash/remove";
 import isArray from "lodash/isArray";
 import {BaseEntity} from "./types";
 import truncate from "lodash/truncate";
+import mergeWith from 'lodash/mergeWith';
 
 /**
  * Iterates the passed list and tries to find the entity with the passed id.
@@ -154,4 +155,12 @@ export function getTruncatedText(text: string, limit: number) {
 
 export function mapNewLineToHtmlLineBreaks(str: string) {
   return str.replace(new RegExp('\r?\n','g'), '<br />');
+}
+
+
+export function newObjectWithDefaultValuesIfNotSet<T>(incomingObj: T, defaultValues: T): T {
+  return mergeWith(
+    {}, defaultValues, incomingObj,
+    (a, b) => b === null ? a : undefined
+  );
 }

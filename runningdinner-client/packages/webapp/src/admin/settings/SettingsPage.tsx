@@ -18,7 +18,8 @@ import {
   MessageSubType,
   cancelRunningDinnerAsync,
   setUpdatedRunningDinner,
-  updateRegistrationActiveState
+  updateRegistrationActiveState,
+  newObjectWithDefaultValuesIfNotSet
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import { SpacingGrid } from '../../common/theme/SpacingGrid';
@@ -294,17 +295,20 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
 
   const {open: openUpdateRegistrationStateDialog, isOpen: isUpdateRegistrationStateDialogOpen, close: closeUpdateRegistrationStateDialog} = useDisclosure();
 
+  const defaultValues = newEmptyRunningDinnerPublicSettings(runningDinner.basicDetails.date);
   const formMethods = useForm({
-    defaultValues: newEmptyRunningDinnerPublicSettings(runningDinner.basicDetails.date),
+    defaultValues,
     mode: 'onTouched'
   });
   const { clearErrors, setError, handleSubmit, reset, formState } = formMethods;
 
   React.useEffect(() => {
+    const publicSettingsToUse = newObjectWithDefaultValuesIfNotSet(publicSettings, defaultValues);
     reset({
-      ...publicSettings
+      ...publicSettingsToUse
     });
     clearErrors();
+    // eslint-disable-next-line
   }, [publicSettings, reset, clearErrors]);
 
   const {applyValidationIssuesToForm} = useBackendIssueHandler();

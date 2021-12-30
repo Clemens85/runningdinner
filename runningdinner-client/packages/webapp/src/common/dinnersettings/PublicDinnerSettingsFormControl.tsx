@@ -47,6 +47,7 @@ const {t} = useTranslation("common");
             required
             helperText={t("common:public_contact_name_help")}
             variant="outlined"
+            defaultValue={""}
             fullWidth />
         </SpacingGrid>
       </SpacingGrid>
@@ -57,6 +58,7 @@ const {t} = useTranslation("common");
             required
             helperText={t("common:public_contact_email_help")}
             variant="outlined"
+            defaultValue={""}
             fullWidth />
         </SpacingGrid>
       </SpacingGrid>
@@ -66,6 +68,7 @@ const {t} = useTranslation("common");
             label={t('common:public_contact_mobile_number')}
             helperText={t("common:public_contact_mobile_number_help")}
             variant="outlined"
+            defaultValue={""}
             fullWidth />
         </SpacingGrid>
       </SpacingGrid>
