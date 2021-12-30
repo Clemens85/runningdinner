@@ -253,10 +253,10 @@ function TeamHostInfo({team, sessionData, onOpenChangeTeamHostDialog}: TeamHostI
   return (
     <Box mt={1}>
       <Grid container spacing={1} alignContent={"center"}>
-        <Grid item alignItems={"center"}>
+        <Grid item>
           <Paragraph i18n="admin:teams_host" parameters={{host: hostTeamMemberName}} html={true}/>
         </Grid>
-        <Grid item alignItems={"center"}>
+        <Grid item>
           <LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}><Span>({t('change')})</Span></LinkAction>
         </Grid>
       </Grid>
