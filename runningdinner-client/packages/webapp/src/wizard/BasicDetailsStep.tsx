@@ -3,6 +3,7 @@ import {PageTitle} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {FormProvider, useForm} from "react-hook-form";
 import {
+  HttpError,
   OptionsNavigationStep,
   RunningDinnerBasicDetails,
   useBackendIssueHandler,
@@ -55,8 +56,8 @@ export default function BasicDetailsStep() {
       dispatch(updateBasicDetails(basicDetails));
       return true;
     } catch(e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
       return false;
     }
   };
