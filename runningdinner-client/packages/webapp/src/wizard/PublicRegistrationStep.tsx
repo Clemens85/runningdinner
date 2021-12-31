@@ -16,13 +16,12 @@ import {
   RunningDinnerPublicSettings,
   useBackendIssueHandler,
   validatePublicSettings,
+  HttpError
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {PageTitle} from "../common/theme/typography/Tags";
-import {SpacingGrid} from "../common/theme/SpacingGrid";
-import FormTextField from "../common/input/FormTextField";
-import FormDatePicker from "../common/input/FormDatePicker";
 import WizardButtons from "./WizardButtons";
+import { PublicDinnerSettingsFormControl } from '../common/dinnersettings/PublicDinnerSettingsFormControl';
 
 export default function PublicRegistrationStep() {
 
@@ -63,8 +62,8 @@ export default function PublicRegistrationStep() {
       dispatch(updatePublicSettings(publicSettingsToSubmit));
       return true;
     } catch(e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
       return false;
     }
   };
@@ -74,68 +73,8 @@ export default function PublicRegistrationStep() {
         <PageTitle>{t('public_settings')}</PageTitle>
         <FormProvider {...formMethods}>
           <form>
-            <SpacingGrid container>
-              <SpacingGrid item xs={12} md={6}>
-                <FormTextField name="title"
-                               label={t('common:public_title' )}
-                               required
-                               helperText={t("common:public_title_help")}
-                               variant="outlined"
-                               fullWidth />
-              </SpacingGrid>
-            </SpacingGrid>
-            <SpacingGrid container mt={3}>
-              <SpacingGrid item xs={12} md={6}>
-                <FormDatePicker name={"endOfRegistrationDate"}
-                                label={t('common:public_end_of_registration_date' )}
-                                inputVariant={"outlined"}
-                                helperText={t("common:endOfRegistrationDate_help")}/>
-              </SpacingGrid>
-            </SpacingGrid>
-            <SpacingGrid container mt={3}>
-              <SpacingGrid item xs={12}>
-                <FormTextField name="description"
-                               label={t('common:public_description' )}
-                               multiline
-                               rows={8}
-                               required
-                               variant="outlined"
-                               fullWidth />
-              </SpacingGrid>
-            </SpacingGrid>
-
-            <SpacingGrid container mt={3}>
-              <SpacingGrid item xs={12} md={6}>
-                <FormTextField name="publicContactName"
-                               label={t('common:public_contact_name' )}
-                               required
-                               helperText={t("common:public_contact_name_help")}
-                               variant="outlined"
-                               fullWidth />
-              </SpacingGrid>
-            </SpacingGrid>
-            <SpacingGrid container mt={3}>
-              <SpacingGrid item xs={12} md={6}>
-                <FormTextField name="publicContactEmail"
-                               label={t('common:public_contact_email' )}
-                               required
-                               helperText={t("common:public_contact_email_help")}
-                               variant="outlined"
-                               fullWidth />
-              </SpacingGrid>
-            </SpacingGrid>
-            <SpacingGrid container mt={3}>
-              <SpacingGrid item xs={12} md={6}>
-                <FormTextField name="publicContactMobileNumber"
-                               label={t('common:public_contact_mobile_number' )}
-                               helperText={t("common:public_contact_mobile_number_help")}
-                               variant="outlined"
-                               fullWidth />
-              </SpacingGrid>
-            </SpacingGrid>
-
+            <PublicDinnerSettingsFormControl mediumDeviceHalfSize={true} />
             <WizardButtons onSubmitData={submitPublicSettingsAsync} />
-
           </form>
         </FormProvider>
       </div>

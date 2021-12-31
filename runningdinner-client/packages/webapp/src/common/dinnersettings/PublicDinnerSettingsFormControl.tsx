@@ -4,14 +4,20 @@ import { SpacingGrid } from '../theme/SpacingGrid';
 import FormTextField from "../input/FormTextField";
 import FormDatePicker from "../input/FormDatePicker";
 
-export function PublicDinnerSettingsFormControl() {
+export interface PublicDinnerSettingsFormControlProps {
+  mediumDeviceHalfSize: boolean;
+}
 
-const {t} = useTranslation("common");
+export function PublicDinnerSettingsFormControl({mediumDeviceHalfSize}: PublicDinnerSettingsFormControlProps) {
+
+  const {t} = useTranslation("common");
+
+  const md = mediumDeviceHalfSize ? 6 : undefined;
 
   return (
     <>
       <SpacingGrid container>
-        <SpacingGrid item xs={12}>
+        <SpacingGrid item xs={12} md={md}>
           <FormTextField name="title"
             label={t('common:public_title')}
             required
@@ -21,7 +27,7 @@ const {t} = useTranslation("common");
         </SpacingGrid>
       </SpacingGrid>
       <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12} >
+        <SpacingGrid item xs={12} md={md}>
           <FormDatePicker name={"endOfRegistrationDate"}
             label={t('common:public_end_of_registration_date')}
             inputVariant={"outlined"}
@@ -33,7 +39,7 @@ const {t} = useTranslation("common");
           <FormTextField name="description"
             label={t('common:public_description')}
             multiline
-            rows={8}
+            rows={10}
             required
             variant="outlined"
             fullWidth />
@@ -41,7 +47,7 @@ const {t} = useTranslation("common");
       </SpacingGrid>
 
       <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12}>
+        <SpacingGrid item xs={12} md={md}>
           <FormTextField name="publicContactName"
             label={t('common:public_contact_name')}
             required
@@ -52,7 +58,7 @@ const {t} = useTranslation("common");
         </SpacingGrid>
       </SpacingGrid>
       <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12}>
+        <SpacingGrid item xs={12} md={md}>
           <FormTextField name="publicContactEmail"
             label={t('common:public_contact_email')}
             required
@@ -63,7 +69,7 @@ const {t} = useTranslation("common");
         </SpacingGrid>
       </SpacingGrid>
       <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12}>
+        <SpacingGrid item xs={12} md={md}>
           <FormTextField name="publicContactMobileNumber"
             label={t('common:public_contact_mobile_number')}
             helperText={t("common:public_contact_mobile_number_help")}

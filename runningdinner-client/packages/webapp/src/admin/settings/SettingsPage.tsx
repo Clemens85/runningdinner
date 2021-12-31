@@ -361,7 +361,7 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
               <Box pb={2}>
                 <Subtitle i18n="admin:settings_public_registration"/>
               </Box>
-              <PublicDinnerSettingsFormControl />
+              <PublicDinnerSettingsFormControl mediumDeviceHalfSize={false} />
             </SpacingGrid>
           </SpacingGrid>
           <SpacingGrid container justify={"flex-end"}>
