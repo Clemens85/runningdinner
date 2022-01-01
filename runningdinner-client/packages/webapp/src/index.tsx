@@ -4,6 +4,7 @@ import App from "./App";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {SnackbarProvider} from "notistack";
 import {configureAxiosHttpInterceptors, BackendConfig, setupI18n} from "@runningdinner/shared";
+import { LanguageChangeHandler } from './common/i18n/LanguageChangeHandler';
 
 configureAxiosHttpInterceptors();
 BackendConfig.setBaseUrl(process.env.REACT_APP_BACKEND_BASE_URL);
@@ -12,6 +13,7 @@ setupI18n();
 ReactDOM.render(
     <React.StrictMode>
       <CssBaseline />
+      <LanguageChangeHandler />
       <SnackbarProvider maxSnack={3}
                         anchorOrigin={{vertical: 'top', horizontal: 'center'}}
                         autoHideDuration={4500}
@@ -21,6 +23,7 @@ ReactDOM.render(
     </React.StrictMode>,
     document.getElementById('root')
 );
+
 
 
 
