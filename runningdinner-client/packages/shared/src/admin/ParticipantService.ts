@@ -112,6 +112,10 @@ export function searchParticipants(participants: Participant[], searchText: stri
   });
 }
 
+export function getParticipantsExportUrl(adminId: string) {
+  return BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/export`);
+}
+
 export function canHost(participant: Participant, numSeatsNeededForHost: number) {
   return participant.numSeats >= 0 && participant.numSeats >= numSeatsNeededForHost;
 }

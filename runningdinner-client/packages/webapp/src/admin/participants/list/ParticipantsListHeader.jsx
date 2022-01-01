@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { Typography, Grid, TextField, Box, InputAdornment } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
-import {useDebounce, isStringEmpty, searchParticipants} from "@runningdinner/shared";
+import {useDebounce, isStringEmpty, searchParticipants, isArrayNotEmpty, getParticipantsExportUrl} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {Link as RouterLink} from "react-router-dom";
 import {PageTitle} from "../../../common/theme/typography/Tags";
@@ -55,6 +55,15 @@ export default function ParticipantsListHeader({adminId, numberOfParticipants, s
                       to={generateParticipantMessagesPath(adminId)}
                       component={RouterLink}>{t('messages_send_participants')}</Button>
             </Grid>
+
+
+            { isArrayNotEmpty(searchableParticipants) &&
+              <Grid item xs={12} lg={5} className={classes.textAlignRight}>
+                <Button href={getParticipantsExportUrl(adminId)} rel='noopener noreferrer' color="primary" target="_blank">{t('admin:export')}</Button>
+              </Grid> 
+            }
+
+
           </Grid>
         </Box>
       </Box>

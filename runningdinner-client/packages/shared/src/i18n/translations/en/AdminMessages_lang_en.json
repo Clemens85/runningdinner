@@ -39,6 +39,8 @@
 	"event_cancel_text_3": "All data of this event will automatically be deleted within 1-2 days and cannot be recovered. For so long you can still view the data.",
 	"event_cancel_text_no_registration_hint": "No participant can registrate himself after cancelling the event.",
 
+	"export": "Export...",
+
 	"FAILURE_TYPE_BLOCKED": "Blocked (e.g. from provider)",
 	"FAILURE_TYPE_BOUNCE": "Bounce",
 	"FAILURE_TYPE_INVALID_EMAIL": "Invalid email address",

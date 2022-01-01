@@ -39,6 +39,8 @@
 	"event_cancel_text_3": "Die Daten dieses Events werden innerhalb von 1-2 Tagen automatisch unwiderruflich gelöscht, solange kannst du dir die Daten noch anschauen.",
 	"event_cancel_text_no_registration_hint": "Nach Absage des Events können sich keine neuen Teilnehmer mehr anmelden.",
 
+	"export": "Exportieren...",
+
 	"FAILURE_TYPE_BLOCKED": "Blockiert (z.B. vom Provider)",
 	"FAILURE_TYPE_BOUNCE": "Bounce",
 	"FAILURE_TYPE_INVALID_EMAIL": "Ungültige EMail-Adresse",
