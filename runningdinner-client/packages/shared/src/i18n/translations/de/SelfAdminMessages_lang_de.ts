@@ -26,5 +26,7 @@ const SelfAdminMessages_de: any = {
 
   dinnerroute_title: 'Run Your Dinner - Dinner Route',
 
+  invalid_url: "Der von dir aufgerufene Link scheint nicht (mehr) gültig zu sein. Wende dich im Zweifel an den Organistaor deines Events oder an <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />"
+
 };
 export default SelfAdminMessages_de;

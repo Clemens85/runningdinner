@@ -23,7 +23,9 @@ const SelfAdminMessages_en: any = {
   team_partner_wish_manage_title: 'Run Your Dinner - Manage Partner Wish',
   host_manage_title: 'Run Your Dinner - Manage Host',
 
-  dinnerroute_title: 'Run Your Dinner - Dinner Route'
+  dinnerroute_title: 'Run Your Dinner - Dinner Route',
+
+  invalid_url: "The link you called does not seem to be valid (anymore). In case of doubt, please contact the organizer of your event or <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />"
 
 };
 export default SelfAdminMessages_en;
