@@ -210,14 +210,12 @@ function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSa
     const {settingsChangeTypeList, basicDetailsToSubmit} = basicSettingsChangeDialogData;
     if (settingsChangeTypeList.indexOf(SettingsChangeType.CHANGE_IN_DATE_WITH_REGISTERED_PARTICIPANTS) >= 0) {
       successMessage = <>
-                        <div style={{ display: "block"}}>
-                          <Trans i18nKey='admin:settings_saved_success'/>
-                          <br />
-                          <div>
-                            <a href={generateParticipantMessagesPath(adminId, MessageSubType.RECIPIENTS_ALL)} style={{ color: 'white' }}>
-                              <strong><Trans i18nKey='admin:mails_participant_sendmessage_button'/></strong>
-                            </a>
-                          </div>
+                        <Trans i18nKey='admin:settings_saved_success'/>
+                        <br />
+                        <div>
+                          <a href={generateParticipantMessagesPath(adminId, MessageSubType.RECIPIENTS_ALL)} style={{ color: 'white' }}>
+                            <strong><Trans i18nKey='admin:mails_participant_sendmessage_button'/></strong>
+                          </a>
                         </div>
                       </>;
     } else {
@@ -229,7 +227,7 @@ function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSa
   async function saveBasicDetailsAsync(basicDetailsToSubmit: RunningDinnerBasicDetailsFormModel, successMessage: React.ReactNode) {
     try {
       const updatedRunningDinner = await updateBasicSettingsAsync(adminId, basicDetailsToSubmit);
-      showSuccess(successMessage, { autoHideDuration: 6500 });
+      showSuccess(successMessage, { autoHideDuration: 6500, wrapInHtmlContainer: true });
       onSettingsSaved(updatedRunningDinner);
     } catch(e) {
       // This is a little bit awkard, our backend sends us validation issues like this:

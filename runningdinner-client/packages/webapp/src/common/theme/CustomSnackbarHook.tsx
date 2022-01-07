@@ -5,6 +5,7 @@ import { CloseRounded } from "@material-ui/icons";
 
 export interface CustomSnackbarOptions extends OptionsObject {
   showCloseButton?: boolean;
+  wrapInHtmlContainer?: boolean;
 }
 
 /**
@@ -34,24 +35,28 @@ export function useCustomSnackbar() {
   const { enqueueSnackbar } = useSnackbar();
 
   function showSuccess(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(message, newSnackbarOptions("success", options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions("success", options));
   }
 
   function showError(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(message, newSnackbarOptions("error", options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions("error", options));
   }
 
   function showInfo(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(message, newSnackbarOptions("info", options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions("info", options));
   }
 
   function showWarning(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(message, newSnackbarOptions("warning", options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options),newSnackbarOptions("warning", options));
   }
 
   function showDefault(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(message, newSnackbarOptions(undefined, options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions(undefined, options));
   }
+
+  // function showSuccessHtml(message: ReactNode, options?: CustomSnackbarOptions) {
+  //   showSuccess(wrapMessageIfNeeded(message, options), options);
+  // }
 
   return {
     showSuccess,
@@ -60,6 +65,13 @@ export function useCustomSnackbar() {
     showWarning,
     showDefault,
   };
+}
+
+function wrapMessageIfNeeded(message: ReactNode, options?: CustomSnackbarOptions): ReactNode {
+  if (options?.wrapInHtmlContainer) {
+    return <><div style={{ display: "block" }}>{message}</div></>;
+  }
+  return message;
 }
 
 function newSnackbarOptions(variant?: VariantType, incomingOptions?: CustomSnackbarOptions): CustomSnackbarOptions {

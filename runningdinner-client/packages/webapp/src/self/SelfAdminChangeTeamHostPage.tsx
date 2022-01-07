@@ -89,10 +89,8 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
     }
     try {
       const updatedTeam = await updateSelfAdminTeamHost({selfAdminId, participantId, teamId}, requestBody);
-      showSuccess(
-        <Trans i18nKey={"selfadmin:change_team_host_success_text"}
-               values={{newTeamHost: getFullname(newHostTeamMember)}} />
-      );
+      const successMessage =  <Trans i18nKey={"selfadmin:change_team_host_success_text"} values={{newTeamHost: getFullname(newHostTeamMember)}} />;
+      showSuccess(successMessage, { wrapInHtmlContainer: true });
       setCurrentTeam(updatedTeam);
     } catch (e) {
       showHttpErrorDefaultNotification(e, { showGenericMesssageOnValidationError: true });

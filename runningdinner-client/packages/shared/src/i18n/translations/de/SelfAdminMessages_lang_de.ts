@@ -10,7 +10,7 @@ const SelfAdminMessages_de: any = {
   change_team_host_loading_error_text: 'Die Daten zur Gastgeber-Verwaltung konnten nicht geladen werden. Bitte überprüfe die URL und versuche es ggfalls. später erneut.',
   change_team_host_loading_error_title: 'Fehler beim Laden der Daten',
 
-  change_team_host_success_text: "Neuer Gastgeber ist jetzt  <strong>{{ newTeamHost }}</strong>. Es wurden Benachrichtigungen an alle Team-Mitglieder versandt.",
+  change_team_host_success_text: "Neuer Gastgeber ist jetzt  <strong>{{ newTeamHost }}</strong>. <br /> Es wurden Benachrichtigungen an alle Team-Mitglieder versandt.",
 
   change_team_host_button: 'Als neuen Gastgeber speichern',
 
