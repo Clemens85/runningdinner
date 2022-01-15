@@ -38,7 +38,8 @@
     "redux-logger": "^3.0.6",
     "@reduxjs/toolkit": "^1.6.0",
     "@react-google-maps/api": "^2.1.1",
-    "react-geocode": "^0.2.3"
+    "react-geocode": "^0.2.3",
+    "react-medium-image-zoom": "4.3.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",

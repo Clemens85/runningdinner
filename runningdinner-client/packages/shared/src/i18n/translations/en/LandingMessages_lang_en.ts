@@ -72,20 +72,20 @@ const LandingMessages_en: any = {
     create_event_description: 'Create stupid simply your own (private) Running Dinner event - without the need of a registration!<br/>' +
       'You decide whether the event is completely public or whether it is only visible for your private friends.',
 
-    manage_event_headline: 'Manage Event',
+    manage_event_headline: 'Manage event',
     manage_event_description: 'After creation of your running dinner event, almost anything is automatically performed by the application.\n' +
       'All processes like e.g. creating team arrangements or dinner route calculation is done with help of the application.\n' +
       'Nevertheless you can all the time interfere like e.g. changing team arrangements to fit your purposes.',
-    manage_event_link: 'Features for Event Management',
+    manage_event_link: 'All Features of the Event Management',
 
-    manage_event_party_headline: 'Just run the event & enjoy',
+    manage_event_party_headline: 'Run the event & just enjoy',
     manage_event_party_description: 'All those cumbersome and complicated work for organzing a running dinner event is completely removed from you, ' +
       'like e.g. sending personalized emails to your participants / teams.<br/>' +
       'The responsibility for the whole event per se is however still at you.<br/><br/>Have fun!',
 
     for_participants_headline: 'For Participants',
 
-    discover_public_events_headline: 'Discover Public Events',
+    discover_public_events_headline: 'Discover public events',
     discover_public_events_description: 'Find public events close to you and registrate straightforward! ' +
       'You don\'t need to registrate on this platform, you just registrate directly to the event of the organizer.',
     discover_public_events_link: 'Find public event...',
@@ -104,7 +104,7 @@ const LandingMessages_en: any = {
 
     teaser_what_is_running_dinner_headline: 'What is a Running Dinner?',
     teaser_running_dinner_general_description: 'The concept of a running dinner is also known under the german name "rudirockt - Kochen und Kontakte knüpfen" and was awarded several times ' +
-      '(see also <a class="jumbotron-link" href="https://www.wikipedia.de/" target="_blank">Wikipedia</a>).<br/>' +
+      '(see also <anchor href="https://www.wikipedia.de/" target="_blank" rel="noopener noreferrer">Wikipedia</anchor>).<br/>' +
       'It is also known under the names Flying Dinner or Jumping Dinner.',
 
     teaser_running_dinner_general_application: 'With <strong>runyourdinner</strong> you can organize your own running dinner event as a no-brainer. ' +

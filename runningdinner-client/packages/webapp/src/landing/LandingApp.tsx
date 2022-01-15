@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, useMediaQuery} from "@material-ui/core";
+import {useMediaQuery} from "@material-ui/core";
 import {useRouteMatch} from "react-router-dom";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 import {LandingRoute} from "./LangingRoute";
@@ -43,9 +43,7 @@ export default function LandingApp() {
       <MainNavigation baseUrl={url}
                       mainTitle={mainTitle}
                       navigationItems={navigationItems} />
-      <Container maxWidth="xl">
-        <LandingRoute />
-      </Container>
+      <LandingRoute />
     </div>
   );
 

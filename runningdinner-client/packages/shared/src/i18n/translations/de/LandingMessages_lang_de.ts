@@ -77,7 +77,7 @@ const LandingMessages_de: any = {
     manage_event_description: 'Nachdem du dein Running Dinner erstellt hast, geht alles fast wie von alleine.\n' +
       'Sämtliche Vorgänge wie beispielsweise Team-Einteilungen, Routen-Berechnungen erledigt die Anwendung für dich.\n' +
       'Du kannst dennoch jederzeit eingreifen und beispielsweise vorgenommene Team-Einteilungen wieder umändern.',
-    manage_event_link: 'Funktionen der Event-Verwaltung',
+    manage_event_link: 'Alle Funktionen der Event-Verwaltung',
 
     manage_event_party_headline: 'Event durchführen & genießen',
     manage_event_party_description: 'Dir werden alle lästigen und komplizierten Arbeiten zur Organisation eines Running Dinner Events abgenommen,\n' +
@@ -107,7 +107,7 @@ const LandingMessages_de: any = {
 
     teaser_what_is_running_dinner_headline: 'Was ist ein Running Dinner?',
     teaser_running_dinner_general_description: 'Das Konzept eines Running Dinner wurde unter dem Namen "rudirockt - Kochen und Kontakte knüpfen" mehrfach ausgezeichnet ' +
-      '(siehe <a class="jumbotron-link" href="https://www.wikipedia.de/" target="_blank">Wikipedia</a>).<br/>' +
+      '(siehe <anchor href="https://www.wikipedia.de/" target="_blank" rel="noopener noreferrer">Wikipedia</anchor>).<br />' +
       'Es ist auch unter dem Namen Flying Dinner oder Jumping Dinner bekannt.',
 
     teaser_running_dinner_general_application: 'Mit <strong>runyourdinner</strong> kannst du dein eigenes Running Dinner Event kinderleicht veranstalten. ' +
