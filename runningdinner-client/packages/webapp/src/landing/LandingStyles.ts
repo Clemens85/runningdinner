@@ -27,9 +27,12 @@ export const useLandingStyles = makeStyles((theme) => ({
   },
   teaserExplanationBox: {
     backgroundColor: '#e6e6e6',
-    padding: theme.spacing(6)
+    padding: theme.spacing(4)
   },
   bannerTypographyWhite: {
     color: 'rgba(255, 255, 255, 0.87)'
+  },
+  teaserExplanationIconPadding: {
+    marginRight: theme.spacing(2)
   }
 }));

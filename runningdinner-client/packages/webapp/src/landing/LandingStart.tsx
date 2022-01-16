@@ -22,6 +22,12 @@ import selfServiceImg from "./images/selfservice-team-host.png";
 import registrationImg from "./images/registration.png";
 import dashboardImg from "./images/dashboard.png";
 import useElementSize from '../common/hooks/ElementSizeHook';
+import LocalBarIcon from '@material-ui/icons/LocalBar';
+import FastfoodIcon from '@material-ui/icons/Fastfood';
+import EventSeatIcon from '@material-ui/icons/EventSeat';
+import GroupIcon from '@material-ui/icons/Group';
+import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
+
 
 export function LandingStart() {
 
@@ -60,14 +66,32 @@ export function LandingStart() {
       </Container>
 
       <div className={landingStyles.teaserExplanationBox}>
-        <SpacingGrid container mb={4} mt={2} justify='center' spacing={6}>
+        <SpacingGrid container mb={4} mt={2} justify='center' spacing={4}>
           <SpacingGrid item xs={12} md={6}>
-            <Box my={2}><Paragraph i18n="landing:teaser_workflow_team_generation"></Paragraph></Box>
-            <Box my={2}><Paragraph i18n="landing:teaser_workflow_team_meals"></Paragraph></Box>
-            <Box my={2}><Paragraph i18n="landing:teaser_workflow_team_host"></Paragraph></Box>
-            <Box my={2}><Paragraph i18n="landing:teaser_workflow_team_guest"></Paragraph></Box>
-            <Box my={2}><Paragraph i18n="landing:teaser_workflow_dinner_route"></Paragraph></Box>
-            <Box mt={2}><Paragraph i18n="landing:teaser_workflow_dinner_route_finish"></Paragraph></Box>
+            <Box my={2} display="flex" alignItems={"center"}>
+              <GroupIcon color="primary" className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
+              <Paragraph i18n="landing:teaser_workflow_team_generation"></Paragraph>
+            </Box>
+            <Box my={2} display="flex" alignItems={"center"}>
+              <FastfoodIcon color="primary" className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
+              <Paragraph i18n="landing:teaser_workflow_team_meals" />
+            </Box>
+            <Box my={2} display="flex" alignItems={"center"}>
+              <EventSeatIcon fontSize='large' color='primary' className={landingStyles.teaserExplanationIconPadding}/>
+              <Paragraph i18n="landing:teaser_workflow_team_host"></Paragraph>
+            </Box>
+            <Box my={2} display="flex" alignItems={"center"}>
+              <EventSeatIcon fontSize='large' color='primary' className={landingStyles.teaserExplanationIconPadding}/>
+              <Paragraph i18n="landing:teaser_workflow_team_guest"></Paragraph>
+            </Box>
+            <Box my={2} display={"flex"} alignItems={"center"}>
+              <DirectionsRunIcon color='primary' className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
+              <Paragraph i18n="landing:teaser_workflow_dinner_route" />
+            </Box>
+            <Box mt={2} display={"flex"} alignItems={"center"}>
+              <LocalBarIcon color="primary" className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
+              <Paragraph i18n="landing:teaser_workflow_dinner_route_finish" />
+            </Box>
           </SpacingGrid>
           <SpacingGrid item xs={12} md={6}>
             <Typography variant={"h4"} component="h4" gutterBottom>{t("common:example")}</Typography>
