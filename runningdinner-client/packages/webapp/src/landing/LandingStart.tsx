@@ -21,6 +21,7 @@ import dinnerRouteImg from "./images/dinner-route.png";
 import selfServiceImg from "./images/selfservice-team-host.png";
 import registrationImg from "./images/registration.png";
 import dashboardImg from "./images/dashboard.png";
+import useElementSize from '../common/hooks/ElementSizeHook';
 
 export function LandingStart() {
 
@@ -28,11 +29,18 @@ export function LandingStart() {
 
   const theme = useTheme();
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
-
+  // const isXlDevice = useMediaQuery(theme.breakpoints.up('lg'));
   const landingStyles = useLandingStyles();
 
-  // const commonStyles = useCommonStyles();
-  // const gridSpacing = 6;
+  const [imageWidth, setImageWidth] = React.useState(250);
+
+  const [columnRef, { width: columnWidth }] = useElementSize();
+  React.useEffect(() => {
+    const columnWidthMinusSpacing = columnWidth - 128;
+    const divisor = isMobileDevice ? 1 : 3;
+    const calculatedWidthPerImage = columnWidthMinusSpacing / divisor;
+    setImageWidth(calculatedWidthPerImage <= 0 ? 250 : calculatedWidthPerImage);
+  }, [columnWidth, isMobileDevice]);
 
   const mbTeaser = 6;
 
@@ -82,20 +90,20 @@ export function LandingStart() {
       <Container maxWidth="xl">
         <SpacingGrid container spacing={6} mt={2}>
         
-          <SpacingGrid item xs={12} md={6}>
+          <SpacingGrid item xs={12} md={6} ref={columnRef}>
             <PageTitle>{t("for_organizers_headline")}</PageTitle>
             <Box mb={mbTeaser}>
               <TeaserCard titleI18nKey={"landing:create_event_headline"}>
                 <Span i18n={"landing:create_event_description"} html={true} />
                 <SpacingGrid container justify='space-evenly' alignItems={imageAlignItems} py={2} spacing={imageSpacing} direction={imageRowDirection}>
                   <SpacingGrid item>
-                    <Zoom><img src={wizardImg1} alt="Running Dinner Wizard with Basic Details" width={250} loading='lazy'/></Zoom>
+                    <Zoom><img src={wizardImg1} alt="Running Dinner Wizard with Basic Details" width={imageWidth} loading='lazy'/></Zoom>
                   </SpacingGrid>
                   <SpacingGrid item>
-                    <Zoom><img src={wizardImg2} alt="Running Dinner Wizard with Option Settings" width={250} loading='lazy' /></Zoom>
+                    <Zoom><img src={wizardImg2} alt="Running Dinner Wizard with Option Settings" width={imageWidth} loading='lazy' /></Zoom>
                   </SpacingGrid>
                   <SpacingGrid item>
-                    <Zoom><img src={dashboardImg} alt="Dashboard after Dinner Creation" width={250} loading='lazy' /></Zoom>
+                    <Zoom><img src={dashboardImg} alt="Dashboard after Dinner Creation" width={imageWidth} loading='lazy' /></Zoom>
                   </SpacingGrid>
                 </SpacingGrid>
                 <Box pt={2}>
@@ -109,13 +117,13 @@ export function LandingStart() {
                 <Span i18n={"landing:manage_event_description"} />
                 <SpacingGrid container justify='space-evenly' alignItems={imageAlignItems} py={2} spacing={imageSpacing} direction={imageRowDirection}>
                   <SpacingGrid item>
-                    <Zoom><img src={participantsImg} alt="Administration of Participants" width={250} loading='lazy' /></Zoom>
+                    <Zoom><img src={participantsImg} alt="Administration of Participants" width={imageWidth} loading='lazy' /></Zoom>
                   </SpacingGrid>
                   <SpacingGrid item>
-                    <Zoom><img src={teamsImg} alt="Administration of Teams" width={250} loading='lazy' /></Zoom>
+                    <Zoom><img src={teamsImg} alt="Administration of Teams" width={imageWidth} loading='lazy' /></Zoom>
                   </SpacingGrid>
                   <SpacingGrid item>
-                    <Zoom><img src={teamMailsImg} alt="Sending Mails" width={250} loading='lazy' /></Zoom>
+                    <Zoom><img src={teamMailsImg} alt="Sending Mails" width={imageWidth} loading='lazy' /></Zoom>
                   </SpacingGrid>
                 </SpacingGrid>
                 <Box pt={2}>
@@ -143,13 +151,13 @@ export function LandingStart() {
                 <Span i18n={"landing:discover_public_events_description"} />
                 <SpacingGrid container justify='space-evenly' alignItems={imageAlignItems} py={2} spacing={imageSpacing} direction={imageRowDirection}>
                   <SpacingGrid item>
-                    <Zoom><img src={registrationImg} alt="Dinner Registration" width={250} /></Zoom>
+                    <Zoom><img src={registrationImg} alt="Dinner Registration" width={imageWidth} /></Zoom>
                   </SpacingGrid>
                   <SpacingGrid item>
-                    <Zoom><img src={selfServiceImg} alt="Functionalities for self managing settings" width={250} /></Zoom>
+                    <Zoom><img src={selfServiceImg} alt="Functionalities for self managing settings" width={imageWidth} /></Zoom>
                   </SpacingGrid>
                   <SpacingGrid item>
-                    <Zoom><img src={dinnerRouteImg} alt="Live Dinner Route" width={250} /></Zoom>
+                    <Zoom><img src={dinnerRouteImg} alt="Live Dinner Route" width={imageWidth} /></Zoom>
                   </SpacingGrid>
                 </SpacingGrid>
                 <Box pt={2}>
@@ -183,3 +191,4 @@ export function LandingStart() {
     </div>
   );
 }
+

@@ -11,6 +11,11 @@ const LandingApp = React.lazy(() => import('./landing/LandingApp'));
 const AdminApp = React.lazy(() => import('./admin/AdminApp'));
 
 function App() {
+
+  if (isBackendCall()) {
+    return null;
+  }
+
   return (
       <HelmetProvider>
         <ThemeProvider theme={runningDinnerTheme}>
@@ -41,6 +46,21 @@ function App() {
         </ThemeProvider>
       </HelmetProvider>
   );
+}
+
+// This is not very elegant, but works for now quite simple this way...
+const BACKEND_URL_PARTS = [
+  "/rest/",
+  "/resources/"
+];
+function isBackendCall() {
+  const pathName = window.location.pathname;
+  for (let i = 0; i < BACKEND_URL_PARTS.length; i++) {
+    if (pathName.toLowerCase().indexOf(BACKEND_URL_PARTS[i]) >= 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export default App;

@@ -16,7 +16,6 @@ export const useLandingStyles = makeStyles((theme) => ({
     // backgroundImage: `linear-gradient(to bottom, rgba(153, 153, 153, 0.8), rgba(250, 250, 250, 1)), url(${bannerImg})`,
     backgroundImage: `url(${bannerImg})`,
     width: '100%',
-    // height: '500px',
     backgroundSize: 'cover',
     color: 'white',
     marginBottom: theme.spacing(4)
