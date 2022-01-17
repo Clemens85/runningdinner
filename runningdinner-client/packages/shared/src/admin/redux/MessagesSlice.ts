@@ -39,7 +39,7 @@ export interface MessageTypeAdminIdPayload extends BaseAdminIdProps {
 }
 
 // *** Actions *** //
-const setupInitialMessageType = createAction<MessageTypeAdminIdPayload>("setupInitialMessageType");
+export const setupInitialMessageType = createAction<MessageTypeAdminIdPayload>("setupInitialMessageType");
 const updatePreviewInputData = createAction<UpdatePreviewDataActionPayload>("updatePreviewInputData");
 export const setPreviousRecipientSelection = createAction<string>("setPreviousRecipientSelection");
 export const startEditCustomSelectedRecipients = createAction("startEditCustomSelectedRecipients");
@@ -168,6 +168,12 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
     } else {
       throw new Error("Unknown messageType: " + state.messageType);
     }
+    // TODO: This is not very nice, but currently needed for resetting views when navigating away and again into this view (otherwise old preview will be shown)
+    state.previewMessages = [];
+    state.previewIssues = [];
+    state.selectedRecipientForPreview = undefined;
+    state.isMailMessageValid = false;
+    state.lastPollDate = new Date();
   })
   .addCase(updatePreviewInputData, (state, action) => {
     const {pathInMessageObject, value} = action.payload;

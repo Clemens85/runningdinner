@@ -88,6 +88,7 @@
 	"mails_template_sendteams_host": "Es wird vorgeschlagen, dass du als Gastgeber fungierst. Wenn dies nicht in Ordnung ist, dann sprecht euch bitte ab und gebt uns Rückmeldung wer als neuer Gastgeber fungieren soll.",
 	"mails_template_sendteams_message": "Hallo {firstname} {lastname},\n\ndein(e) Tempartner ist/sind:\n\n{partner}.\n\nIhr seid für folgende Speise verantwortlich: {meal}.\nDiese soll um {mealtime} eingenommen werden.\n\n{host}\n\nAlternativ kann jeder von euch die Gastgebereinteilung bis zur endgültigen Festlegung der Dinnerrouten unter folgendem Link selbst ändern:\n{managehostlink}\nSprecht euch hierfür jedoch bitte untereinander ab!",
 	"mails_template_sendteams_nonhost": "Als Gastgeber wurde {partner} vorgeschlagen.",
+	"mails_sending_submitted": "Nachrichten werden verschickt",
 	"mealtimes_updated_success": "Zeitplan erfolgreich geändert!",
 	"message_send_to_me": "An mich versenden (Test)",
 	"messagejob_type_dinner_route": "Dinner-Routen-Versand",

@@ -87,6 +87,7 @@
 	"mails_template_sendteams_host": "You are suggested to be the host. If this is not okay for you then please talk to your team partner and re-arrange this setting if needed.",
 	"mails_template_sendteams_message": "Hello {firstname} {lastname},\n\nYour team-partner will be:\n\n{partner}.\n\nYou have been assigned the following meal: {meal}.\nThe time for your meal will be {mealtime}.\n\n{host}\n\nYou can manage the host arrangement by yourself (until final dinner routes are set up) if you wish another host arrangement. Please use the following link for doing so:\n{managehostlink}\nPlease talk to each other however before doing so!",
 	"mails_template_sendteams_nonhost": "{partner} is suggested to be the host.",
+	"mails_sending_submitted": "Messages are sent",
 	"mealtimes_updated_success": "Time schedule successfully changed!",
 	"message_send_to_me": "Send to me (Test)",
 	"messagejob_type_dinner_route": "Dinner-Route Messaging",

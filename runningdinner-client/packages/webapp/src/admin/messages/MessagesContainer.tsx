@@ -34,12 +34,15 @@ import {
   useAdminDispatch,
   useAdminSelector,
   useBackendIssueHandler,
-  CONSTANTS
+  CONSTANTS,
+  recalculatePreviewMessages,
+  setupInitialMessageType
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 import {useMessagesQueryHandler} from "./MessagesQueryHandlerHook";
 import {FetchStatus} from "@runningdinner/shared/src/redux";
+import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 
 export function TeamMessages({adminId}: BaseAdminIdProps) {
   const templates = ['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'];
@@ -114,6 +117,7 @@ interface MessagesViewProps<T extends BaseMessage> extends BaseAdminIdProps {
 function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates, messageType}: MessagesViewProps<T>) {
 
   const {t} = useTranslation(['admin', 'common']);
+  const {showSuccess} = useCustomSnackbar();
 
   const theme = useTheme();
   const isMdDeviceOrUp = useMediaQuery(theme.breakpoints.up('md'));
@@ -143,8 +147,10 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
     // Reset all our selection values on mounting this component:
      // @ts-ignore We get the correct field name...:
     setValue(getRecipientFormFieldName(messageType), "");
-    dispatch(setCustomSelectedRecipients([]));
-  }, [dispatch, messageType, setValue]);
+    dispatch(setupInitialMessageType({adminId, messageType}));
+    // dispatch(setCustomSelectedRecipients([]));
+    // dispatch(recalculatePreviewMessages());
+  }, [dispatch, messageType, adminId, setValue]);
 
   useEffect(() => {
     if (messageType !== MessageType.MESSAGE_TYPE_PARTICIPANTS && isArrayNotEmpty(selectedTeamIds) && recipients.fetchStatus === FetchStatus.SUCCEEDED) {
@@ -169,8 +175,10 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   const handleSendMessages = async (values: T) => {
     clearErrors();
     try {
-      await dispatch(sendMessages(values))
-              .unwrap();
+      const sendMessagesPromise = dispatch(sendMessages(values)).unwrap();
+      window.scrollTo(0, 0);
+      showSuccess(t("admin:mails_sending_submitted"));
+      await sendMessagesPromise;
     } catch(e) {
       applyValidationIssuesToForm(e, setError);
       showHttpErrorDefaultNotification(e);
