@@ -35,7 +35,6 @@ import {
   useAdminSelector,
   useBackendIssueHandler,
   CONSTANTS,
-  recalculatePreviewMessages,
   setupInitialMessageType
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
@@ -148,8 +147,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
      // @ts-ignore We get the correct field name...:
     setValue(getRecipientFormFieldName(messageType), "");
     dispatch(setupInitialMessageType({adminId, messageType}));
-    // dispatch(setCustomSelectedRecipients([]));
-    // dispatch(recalculatePreviewMessages());
+    dispatch(setCustomSelectedRecipients([]));
   }, [dispatch, messageType, adminId, setValue]);
 
   useEffect(() => {
