@@ -125,7 +125,7 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
             <Grid item xs={12}>
               <List dense={isSmallDevice}>
                 { team.teamMembers.map(teamMember =>
-                  <ListItem button divider onClick={() => handleTeamMemberChange(teamMember, !isTeamHost(teamMember))}>
+                  <ListItem button divider onClick={() => handleTeamMemberChange(teamMember, !isTeamHost(teamMember))} key={teamMember.id}>
                     <ListItemIcon>
                       <Box p={isSmallDevice ? 2 : 3}>
                         <TeamMemberHostCheckboxIcon onChange={(newState) => handleTeamMemberChange(teamMember, newState)}

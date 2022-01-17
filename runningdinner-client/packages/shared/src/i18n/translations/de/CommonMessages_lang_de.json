@@ -26,6 +26,10 @@
 	"create_running_dinner": "Running Dinner Veranstalten",
 
 	"cancelled": "Abgesagt",
+	
+	"client_error_title": "Da ist leider etwas schief gegangen was nicht hätte schief gehen sollen...",
+	"client_error_message": "Versuche es doch einfach nochmal, falls der Fehler weiterhin besteht, wende dich bitte an <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />.",
+	"client_error_action": "Neu laden",
 
 	"date": "Datum",
 	"delete": "Löschen",

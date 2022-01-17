@@ -5,6 +5,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
 import {WIZARD_ROOT_PATH} from "./common/mainnavigation/NavigationPaths";
 import {ProgressBar} from "./common/ProgressBar";
+import { ErrorBoundary } from './ErrorBoundary';
 const SelfAdminApp = React.lazy(() => import('./self/SelfAdminApp'));
 const WizardApp = React.lazy(() => import('./wizard/WizardApp'));
 const LandingApp = React.lazy(() => import('./landing/LandingApp'));
@@ -19,6 +20,7 @@ function App() {
   return (
       <HelmetProvider>
         <ThemeProvider theme={runningDinnerTheme}>
+          <ErrorBoundary>
             <Router>
               <Switch>
                 <Route path="/admin/:adminId" render={() => (
@@ -43,6 +45,7 @@ function App() {
                 )} />
               </Switch>
             </Router>
+          </ErrorBoundary>
         </ThemeProvider>
       </HelmetProvider>
   );

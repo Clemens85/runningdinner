@@ -2,7 +2,7 @@ import { OptionsObject, useSnackbar, VariantType } from "notistack";
 import React, { ReactNode } from "react";
 import IconButton from "@material-ui/core/IconButton";
 import { CloseRounded } from "@material-ui/icons";
-
+import omit from 'lodash/omit';
 export interface CustomSnackbarOptions extends OptionsObject {
   showCloseButton?: boolean;
   wrapInHtmlContainer?: boolean;
@@ -75,7 +75,7 @@ function wrapMessageIfNeeded(message: ReactNode, options?: CustomSnackbarOptions
 }
 
 function newSnackbarOptions(variant?: VariantType, incomingOptions?: CustomSnackbarOptions): CustomSnackbarOptions {
-  const options = { ...incomingOptions };
+  const options = omit(incomingOptions, ['wrapInHtmlContainer']);
   options.preventDuplicate = options.preventDuplicate !== false;
   options.variant = variant;
   if (options.showCloseButton !== false) {

@@ -27,6 +27,10 @@
 
 	"cancelled": "Cancelled",
 
+	"client_error_title": "Unfortunately, something went wrong that should not have gone wrong...",
+	"client_error_message": "Just try again, if the error persists, please contact <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />.",
+	"client_error_action": "Reload",
+
 	"date": "Date",
 	"delete": "Delete",
 	"description": "Description",
