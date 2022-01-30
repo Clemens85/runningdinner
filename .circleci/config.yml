@@ -61,7 +61,7 @@ jobs:
 
   build_webclient:
     docker:
-      - image: cimg/node:current
+      - image: cimg/node:16:13:2
     steps:
       - checkout
       - restore_cache:
@@ -69,6 +69,9 @@ jobs:
             - npm-deps-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
             - npm-deps-
       - run: cd runningdinner-client && yarn install
+      - run: node -v
+      - run: yarn -v
+      - run: ls runningdinner-client/packages/webapp/node_modules
       - run:
           name: Build webclient
           command: |
