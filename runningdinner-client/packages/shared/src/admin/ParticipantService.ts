@@ -48,7 +48,7 @@ export async function findNotActivatedParticipantsByAdminIdAndIdsAsync(adminId: 
   return participants;
 }
 
-export async function updateParticipantSubscriptionByAdminIdAndIdAsyncImpl(adminId: string, participantId: string): Promise<Participant> {
+export async function updateParticipantSubscriptionByAdminIdAndIdAsync(adminId: string, participantId: string): Promise<Participant> {
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participant/${participantId}/activate`);
   const response = await axios.put(url);
   return response.data;

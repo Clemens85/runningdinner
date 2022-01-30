@@ -5,17 +5,18 @@ import {
   findAdminActivitiesByAdminIdAsync,
   findParticipantActivitiesByAdminIdAsync
 } from "../ActivityService";
+import { findNotActivatedParticipantsByAdminIdAndIdsAsync, updateParticipantSubscriptionByAdminIdAndIdAsync } from "../ParticipantService";
 import {
   ActivityList,
-  AdminStateType,
-  AdminThunk,
-  DashboardAdminActivities, findNotActivatedParticipantsByAdminIdAndIdsAsync,
-  HttpError,
-  isArrayEmpty, updateParticipantSubscriptionByAdminIdAndIdAsyncImpl,
-} from "@runningdinner/shared";
+  DashboardAdminActivities,
+  HttpError
+} from "../../types";
+
+import { AdminStateType, AdminThunk } from "./AdminStore";
 import {FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../../redux";
 import find from "lodash/find";
 import cloneDeep from "lodash/cloneDeep";
+import { isArrayEmpty } from "../../Utils";
 
 // *** Actions *** //
 const fetchAdminActivitiesPending = createAction('fetchAdminActivitiesPending');
@@ -76,7 +77,7 @@ export const updateParticipantSubscription = createAsyncThunk(
   'updateParticipantSubscription',
   async (props: Record<string, string>) => {
     const {adminId, participantId} = props;
-    return await updateParticipantSubscriptionByAdminIdAndIdAsyncImpl(adminId, participantId);
+    return await updateParticipantSubscriptionByAdminIdAndIdAsync(adminId, participantId);
   }
 );
 

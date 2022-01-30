@@ -3,7 +3,7 @@ import axios from "axios";
 import {BackendConfig} from "../BackendConfig";
 import {RegistrationData} from "../types/Registration";
 import {getBackendIssuesFromErrorResponse} from "../issue";
-import {isArrayNotEmpty} from "@runningdinner/shared";
+import { isArrayNotEmpty } from "..";
 
 export async function findPublicRunningDinnersAsync(): Promise<PublicRunningDinner[]> {
   const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner`);

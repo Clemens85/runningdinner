@@ -66,18 +66,19 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - npm-deps-{{ checksum "runningdinner-backend/package.json" }}
+            - npm-deps-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
             - npm-deps-
-      - run: cd runningdinner-backend && npm install
+      - run: cd runningdinner-client && yarn install
       - run:
           name: Build webclient
           command: |
-            export GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
-            cd runningdinner-backend && npm run build
+            export REACT_APP_GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
+            cd runningdinner-client && yarn run build
       - save_cache:
           paths:
             - ~/usr/local/lib/node_modules
-          key: dependencies-{{ checksum "runningdinner-backend/package.json" }}
+          key: dependencies-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
+      - run: mv -v runningdinner-client/packages/webapp/build/* runningdinner-backend/src/main/resources/static
       - persist_to_workspace:
           root: runningdinner-backend/src/main/resources
           paths:

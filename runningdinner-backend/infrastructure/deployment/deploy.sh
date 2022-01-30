@@ -30,6 +30,8 @@ mv $UPLOAD_DIR/runningdinner-2.0.0.jar $APP_DIR/runningdinner-2.0.0.jar
 
 cd $APP_DIR
 nohup java -jar -Dspring.profiles.active=prod runningdinner-2.0.0.jar >/dev/null 2>&1 &
+# Use this as a fallback if we need to switch back to angularjs
+# nohup java -jar -Dspring.profiles.active=prod,angularjs runningdinner-2.0.0.jar >/dev/null 2>&1 &
 
 sleep 25s
 

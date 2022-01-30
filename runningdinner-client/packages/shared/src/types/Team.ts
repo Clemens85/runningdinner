@@ -1,7 +1,6 @@
 import {Meal} from "./RunningDinner";
-import {GeocodingResult, Participant} from "./Participant";
+import {Participant} from "./Participant";
 import {BaseEntity} from "./Base";
-import {DinnerRouteTeam} from "@runningdinner/shared";
 
 export enum TeamStatus {
   OK = "OK",

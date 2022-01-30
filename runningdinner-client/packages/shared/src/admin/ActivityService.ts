@@ -3,12 +3,9 @@ import filter from "lodash/filter";
 import { BackendConfig } from "../BackendConfig";
 import {CONSTANTS} from "../Constants";
 import {Activity, ActivityList, ActivityType, DashboardAdminActivities, MessageJobOverview} from "../types";
-import {
-  findEntityById,
-  findMessageJobOverviewByAdminIdAndMessageJobId,
-  isStringNotEmpty
-} from "@runningdinner/shared";
+import { findMessageJobOverviewByAdminIdAndMessageJobId } from "./MessageService";
 import cloneDeep from "lodash/cloneDeep";
+import { isStringNotEmpty, findEntityById } from "../Utils";
 
 const messageActivities = [
   CONSTANTS.ACTIVITY.DINNERROUTE_MAIL_SENT,

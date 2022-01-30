@@ -1,6 +1,6 @@
 import { Meal } from "./RunningDinner";
 import {Team, TeamStatus} from "./Team";
-import {GeocodingResult, Participant} from "@runningdinner/shared";
+import {GeocodingResult, Participant} from "./Participant";
 
 export interface DinnerRoute {
   currentTeam: Team;
