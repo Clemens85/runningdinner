@@ -86,14 +86,18 @@ public class FrontendRunningDinnerTest {
   @Test
   public void testRegistrationInvalidName() {
 
-	  RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Mustermann", "max@muster.de",
+	  RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
 	  ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
 
+	  registrationData.setFirstnamePart(null);
+	  registrationData.setLastname("Mustermann");
+	  
     try {
       frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, true);
       Assert.fail("Expected ValidationException to be thrown");
-    } catch (ValidationException expectedEx) {
-      assertThat(expectedEx.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.FULLNAME_NOT_VALID);
+    } catch (IllegalArgumentException expectedEx) {
+    	// NOP
+//      assertThat(expectedEx.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.FULLNAME_NOT_VALID);
     }
   }
 
