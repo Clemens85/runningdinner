@@ -69,14 +69,12 @@ jobs:
             - npm-deps-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
             - npm-deps-
       - run: cd runningdinner-client && yarn install
-      - run: node -v
-      - run: yarn -v
-      - run: ls runningdinner-client/packages/webapp/node_modules
       - run:
           name: Build webclient
           command: |
             export REACT_APP_GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
-            cd runningdinner-client && yarn run build
+            cd runningdinner-client
+            CI=false yarn run build
       - save_cache:
           paths:
             - ~/usr/local/lib/node_modules
