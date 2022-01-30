@@ -69,7 +69,7 @@ jobs:
             - npm-deps-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
             - npm-deps-
       - run: cd runningdinner-client && yarn install
-      - run:
+      - run: # TODO CI=false should be removed again!
           name: Build webclient
           command: |
             export REACT_APP_GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
@@ -79,7 +79,12 @@ jobs:
           paths:
             - ~/usr/local/lib/node_modules
           key: dependencies-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
-      - run: mv -v runningdinner-client/packages/webapp/build/* runningdinner-backend/src/main/resources/static
+      - run: 
+          name: Move client artifacts to static folder
+          command: |
+            mkdir -p runningdinner-backend/src/main/resources/static
+            mv -v runningdinner-client/packages/webapp/build/* runningdinner-backend/src/main/resources/static
+            mv runningdinner-backend/src/main/client/resources/ runningdinner-backend/src/main/resources/static/resources
       - persist_to_workspace:
           root: runningdinner-backend/src/main/resources
           paths:
