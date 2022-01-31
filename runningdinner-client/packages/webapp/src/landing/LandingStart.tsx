@@ -35,7 +35,6 @@ export function LandingStart() {
 
   const theme = useTheme();
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
-  // const isXlDevice = useMediaQuery(theme.breakpoints.up('lg'));
   const landingStyles = useLandingStyles();
 
   const [imageWidth, setImageWidth] = React.useState(250);

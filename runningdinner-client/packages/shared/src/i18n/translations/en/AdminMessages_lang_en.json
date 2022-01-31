@@ -230,7 +230,7 @@
 	"team_single_message_headline": "Single team message",
 	"team_swap_success_text": "{{ fullnameSrc }} was successfully swapped with {{ fullnameDest }}!",
 	"teampartner_placeholder": "EMail address of team partner wish",
-	"teams_drag_drop_hint": "You can swap team-members of different teams by using Drag &amp; Drop.",
+	"teams_drag_drop_hint": "You can swap team-members of different teams by using Drag & Drop.",
 	"teams_generate": "Generate team arrangements!",
 	"teams_generate_deadline_open_info": "The registration deadline is still open till {{ endOfRegistrationDate }}.",
 	"teams_generate_deadline_open_warning": "The registration deadline is still open till {{ endOfRegistrationDate }}. Do you really want to generate team arrangements?",

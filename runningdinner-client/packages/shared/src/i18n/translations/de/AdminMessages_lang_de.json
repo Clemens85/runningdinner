@@ -231,7 +231,7 @@
 	"team_single_message_headline": "Team-Einzelnachricht",
 	"team_swap_success_text": "{{ fullnameSrc }} mit {{ fullnameDest }} ausgetauscht!",
 	"teampartner_placeholder": "Email des Wunschpartners",
-	"teams_drag_drop_hint": "Du kannst per Drag &amp; Drop Teilnehmer zwischen den Teams tauschen.",
+	"teams_drag_drop_hint": "Du kannst per Drag & Drop Teilnehmer zwischen den Teams tauschen.",
 	"teams_generate": "Teameinteilung vornehmen!",
 	"teams_generate_deadline_open_info": "Die Anmeldefrist für dein Dinner läuft noch bis zum {{ endOfRegistrationDate }}.",
 	"teams_generate_deadline_open_warning": "Die Anmeldefrist für dein Dinner läuft noch bis zum {{ endOfRegistrationDate }}. Teameinteilung dennoch schon vornehmen?",

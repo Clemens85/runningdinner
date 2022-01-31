@@ -142,7 +142,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   if (!teamsExisting) {
     return (
         <Box>
-          <TeamsTitle/>
+          <TeamsTitle hasTeams={false}/>
           <TeamsNotExisting runningDinner={runningDinner} onGenerateTeams={handleGenerateTeams} />
         </Box>
     );
@@ -151,7 +151,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   return (
       <DndProvider backend={HTML5Backend}>
         <Box>
-          { !showBackToListViewButton && <TeamsTitle/> }
+          { !showBackToListViewButton && <TeamsTitle hasTeams={true}/> }
           <Grid container spacing={2}>
             { showListView &&
                 <>
@@ -187,13 +187,19 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   );
 }
 
-function TeamsTitle() {
+
+interface TeamsTitleProps {
+  hasTeams: boolean;
+}
+
+function TeamsTitle({hasTeams}: TeamsTitleProps) {
 
   const {t} = useTranslation(['admin']);
   return (
       <>
         <Helmet><title>{t('headline_teams')}</title></Helmet>
         <PageTitle>{t('headline_teams')}</PageTitle>
+        { hasTeams && <p style={{ fontWeight: 300 }}>{t("admin:teams_drag_drop_hint")}</p> }
       </>
   );
 }
