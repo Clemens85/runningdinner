@@ -21,6 +21,7 @@ import {
   getFullname, getRunningDinnerMandatorySelector,
   swapTeamMembersAsync,
   Team,
+  TeamArrangementList,
   useAdminSelector,
   useDisclosure
 } from "@runningdinner/shared";
@@ -30,6 +31,7 @@ import DropdownButton from "../../common/theme/dropdown/DropdownButton";
 import DropdownButtonItem from "../../common/theme/dropdown/DropdownButtonItem";
 import useCommonStyles from "../../common/theme/CommonStyles";
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
+import { RegenerateTeamsButton } from "./RegenerateTeamsButton";
 
 const TeamsContainer = () => {
 
@@ -66,7 +68,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
          open: openChangeTeamHostDialog,
          getIsOpenData: getTeamForChangeTeamHostDialog} = useDisclosure();
 
-  const {navigateToTeam} = useAdminNavigation();
+  const {generateTeamPath, navigateToTeam} = useAdminNavigation();
   const {t} = useTranslation('admin');
 
   const {showSuccess} = useCustomSnackbar();
@@ -97,10 +99,21 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
     setShowDetailsView(true);
   }
 
+  function setNoSelectedTeam() {
+    setShowDetailsView(false);
+    setSelectedTeam(undefined);
+  }
+
   const handleGenerateTeams = async () => {
     const teamGenerationResult = await createTeamArrangementsAsync(adminId);
     setTeams(teamGenerationResult.teams);
   };
+
+  const handleTeamsRegenerated = async(regeneratedTeamArrangementList: TeamArrangementList) => {
+    setNoSelectedTeam();
+    window.open(generateTeamPath(adminId), '_self');
+    showSuccess(t("admin:teams_reset_success_text"));
+  }
 
   const handleTeamMemberSwap = async(srcParticipantId: string, destParticipantId: string) => {
     const teamArrangementListResult = await swapTeamMembersAsync(adminId, srcParticipantId, destParticipantId);
@@ -157,6 +170,9 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
                 <>
                   <Grid item xs={12} md={7} className={commonClasses.textAlignRight}>
                     <SendTeamMessagsDropdown adminId={adminId} />
+                  </Grid>
+                  <Grid item xs={12} md={5} className={commonClasses.textAlignRight}>
+                    <RegenerateTeamsButton adminId={adminId} onTeamsRegenerated={handleTeamsRegenerated}/>
                   </Grid>
                   <Grid item xs={12} md={7}>
                     <TeamsList teams={teams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}

@@ -101,7 +101,7 @@ export function ConfirmationDialog({dialogTitle, dialogContent, buttonConfirmTex
 
       <DialogContent>
         {dialogContent && (
-          <DialogContentText id="alert-dialog-description">{dialogContent}</DialogContentText>
+          <DialogContentText id="alert-dialog-description" component={"div"}>{dialogContent}</DialogContentText>
         )}
       </DialogContent>
       <DialogActions className={isSmallDevice ? dialogClasses.dialogActions : ""}>

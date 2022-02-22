@@ -241,7 +241,7 @@
 	"teams_reset": "Reset teams and generate again",
 	"teams_reset_confirmation": "Do you really want to re-generate the team arrangements? All existing teams will be discarded and new (random) team arrangements will be created.",
 	"teams_reset_hint_dinnerroute_messages_sent": "You have already sent messaages about the dinner routes. When re-generating the team arrangements, the already sent dinner routes (and also team arrangements) will be not valid any longer. You should notify all teams in detail about this issue, before performing this action!",
-	"teams_reset_hint_team_messages_sent": "You probably have already sent messages about the team arrangements, please think about to notify your teams (if not already happened) that the already sent team arrangements are not valid any longer.<br/> Finally you should send again messages to the new generated teams.",
+	"teams_reset_hint_team_messages_sent": "You probably have already sent messages about the team arrangements, please think about to notify your teams (if not already happened) that the already sent team arrangements are not valid any longer. <br /> Finally you should send again messages to the new generated teams.",
 	"teams_reset_success_text": "Old team arrangements were removed and new team arrangements have been generated",
 	"teams_selection": "Team selection",
 	"teams_show_dinnerroute": "Show dinner route",

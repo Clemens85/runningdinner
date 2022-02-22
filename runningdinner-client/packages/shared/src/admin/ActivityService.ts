@@ -6,6 +6,7 @@ import {Activity, ActivityList, ActivityType, DashboardAdminActivities, MessageJ
 import { findMessageJobOverviewByAdminIdAndMessageJobId } from "./MessageService";
 import cloneDeep from "lodash/cloneDeep";
 import { isStringNotEmpty, findEntityById } from "../Utils";
+import { isArrayEmpty } from "..";
 
 const messageActivities = [
   CONSTANTS.ACTIVITY.DINNERROUTE_MAIL_SENT,
@@ -19,6 +20,21 @@ export async function findAdminActivitiesByAdminIdAsync(adminId: string): Promis
   const response = await axios.get<DashboardAdminActivities>(url);
   return response.data;
 }
+
+
+export async function findAdminActivitiesByAdminIdAndTypesAsync(adminId: string, activityTypes: string[]): Promise<ActivityList> {
+  let url = BackendConfig.buildUrl(`/activityservice/v1/runningdinner/${adminId}`);
+  url += "?";
+  for (let i = 0; i < activityTypes.length; i++) {
+    if (i > 0) {
+      url += "&";
+    }
+    url += `type=${activityTypes[i]}`;
+  }
+  const response = await axios.get<ActivityList>(url);
+  return response.data;
+}
+
 
 export function filterActivitiesByType(activities: Activity[], activityTypeToFilterFor: ActivityType) {
   return filter(activities, ["activityType", activityTypeToFilterFor]);

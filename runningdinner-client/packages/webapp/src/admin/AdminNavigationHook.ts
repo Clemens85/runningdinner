@@ -1,12 +1,12 @@
-import {isArrayNotEmpty, MessageSubType, Participant, Team} from "@runningdinner/shared";
+import {isArrayNotEmpty, isStringNotEmpty, MessageSubType, Participant, Team} from "@runningdinner/shared";
 import {useHistory} from "react-router-dom";
 
 export const TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM = "teamMemberIdToCancel";
 export const SELECTED_TEAM_IDS_QUERY_PARAM = "selectedTeamIds";
 export const MESSAGE_SUBTYPE_QUERY_PARAM = "messageSubType";
 
-function generateTeamPath(adminId: string, teamId: string) {
-  return `/admin/${adminId}/teams/${teamId}`;
+function generateTeamPath(adminId: string, teamId?: string) {
+  return `/admin/${adminId}/teams/${isStringNotEmpty(teamId) ? teamId : ''}`;
 }
 
 function generateParticipantPath(adminId: string, participantId: string) {
@@ -62,7 +62,7 @@ export function useAdminNavigation() {
 
   const history = useHistory();
 
-  function navigateToTeam(adminId: string, teamId: string) {
+  function navigateToTeam(adminId: string, teamId?: string) {
     history.push(generateTeamPath(adminId, teamId));
   }
 

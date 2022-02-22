@@ -18,13 +18,18 @@ export async function findTeamsNotCancelledAsync(adminId: string): Promise<Array
 }
 
 export async function createTeamArrangementsAsync(adminId: string): Promise<TeamArrangementList> {
-  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}?filterCancelledTeams=true`);
+  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}`);
   const response = await axios.post(url);
   return response.data;
 }
 
-export async function swapTeamMembersAsync(adminId: string, firstParticipantId: string, secondParticipantId: string): Promise<TeamArrangementList> {
+export async function reCreateTeamArrangementsAsync(adminId: string): Promise<TeamArrangementList> {
+  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}`);
+  const response = await axios.put(url);
+  return response.data;
+}
 
+export async function swapTeamMembersAsync(adminId: string, firstParticipantId: string, secondParticipantId: string): Promise<TeamArrangementList> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/teammembers/swap/${firstParticipantId}/${secondParticipantId}`);
   const response = await axios.put(url);
   return response.data;
