@@ -35,8 +35,6 @@ export default function AdminNotificationBar() {
   const runningDinner = runningDinnerFetchData.data!;
   const {cancellationDate, acknowledgedDate, runningDinnerType} = runningDinner;
 
-  console.log(`cancellationDate is ${cancellationDate}`);
-
   let notificationMessage = [];
   if (cancellationDate) {
     const cancellationDateFormatted = formatLocalDateWithSeconds(cancellationDate);
