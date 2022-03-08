@@ -23,7 +23,7 @@ export function useNumberOfParticipants(participants: Participant[], runningDinn
     let numberOfParticipantsWaitingList = 0;
 
     const minSizeNeeded = get(runningDinnerSessionData, 'assignableParticipantSizes.minimumParticipantsNeeded', '') || '';
-    if (numberOfParticipantsTotal > minSizeNeeded) {
+    if (numberOfParticipantsTotal >= minSizeNeeded) {
       const assignableParticipants = getAssignableParticipants(participants);
       const participantsAssignedIntoTeams = getParticipantsOrganizedInTeams(participants);
       const numAllAssignableParticipants = assignableParticipants.length + participantsAssignedIntoTeams.length;
