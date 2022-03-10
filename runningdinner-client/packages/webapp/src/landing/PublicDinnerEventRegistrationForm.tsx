@@ -20,7 +20,8 @@ import {
   RegistrationSummary,
   TeamPartnerWishState,
   useBackendIssueHandler,
-  useDisclosure, useMealSpecificsStringify,
+  useDisclosure, 
+  useMealSpecificsStringify,
   ValueTranslate
 } from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
@@ -44,6 +45,8 @@ import Paragraph from "../common/theme/typography/Paragraph";
 import MailIcon from '@material-ui/icons/Mail';
 import PhoneAndroidIcon from '@material-ui/icons/PhoneAndroid';
 import DoneIcon from '@material-ui/icons/Done';
+import { useQuery } from "../common/hooks/QueryHook";
+import { getDecodedQueryParam } from "../common/QueryParamDecoder";
 
 
 const drawerWidth = "1024px";
@@ -76,6 +79,7 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
 
   const classes = useCommonStyles();
   const drawerClasses = useDrawerStyles();
+  const query = useQuery();
 
   const { isOpen: isRegistrationSummaryOpen,
           open: openRegistrationSummary,
@@ -90,7 +94,7 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const formMethods = useForm({
-    defaultValues: newEmptyRegistrationDataInstance(),
+    defaultValues: newEmptyRegistrationDataInstance(getDecodedQueryParam(query, "invitingParticipantEmail"), getDecodedQueryParam(query, "prefilledEmailAddress")),
     mode: 'onTouched'
   });
   const {handleSubmit, clearErrors, setError, formState} = formMethods;

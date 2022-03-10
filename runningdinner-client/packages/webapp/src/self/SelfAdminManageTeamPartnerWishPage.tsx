@@ -16,6 +16,7 @@ import {PrimaryButton} from "../common/theme/PrimaryButton";
 import useCommonStyles from "../common/theme/CommonStyles";
 import {useQuery} from "../common/hooks/QueryHook";
 import {Alert, AlertTitle} from "@material-ui/lab";
+import { getDecodedQueryParam } from '../common/QueryParamDecoder';
 
 export default function SelfAdminManageTeamPartnerWishPage() {
 
@@ -26,8 +27,8 @@ export default function SelfAdminManageTeamPartnerWishPage() {
     return null;
   }
 
-  const teamPartnerWishQueryParam = query.get("email");
-  return <SelfAdminManageTeamPartnerWishView teamPartnerWishQueryParam={teamPartnerWishQueryParam || ""} />;
+  const teamPartnerWishQueryParam = getDecodedQueryParam(query, "email");
+  return <SelfAdminManageTeamPartnerWishView teamPartnerWishQueryParam={teamPartnerWishQueryParam} />;
 }
 
 interface SelfAdminManageTeamPartnerWishViewProps {

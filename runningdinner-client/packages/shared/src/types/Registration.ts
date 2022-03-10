@@ -1,4 +1,5 @@
 import {newEmptyParticipantInstance, Participant, TeamPartnerWishState, MealSpecifics} from ".";
+import { isStringNotEmpty } from "..";
 
 export interface RegistrationData extends Participant {
   dataProcessingAcknowledged: boolean;
@@ -22,10 +23,16 @@ export interface RegistrationSummary {
   notes?: string;
 }
 
-export function newEmptyRegistrationDataInstance(): RegistrationData {
+export function newEmptyRegistrationDataInstance(invitingParticipantEmailAddress?: string, prefilledEmailAddress?: string): RegistrationData {
   const result = {
     ...newEmptyParticipantInstance(),
     dataProcessingAcknowledged: false
   };
+  if (isStringNotEmpty(invitingParticipantEmailAddress)) {
+    result.teamPartnerWish = invitingParticipantEmailAddress;
+  }
+  if (isStringNotEmpty(prefilledEmailAddress)) {
+    result.email = prefilledEmailAddress;
+  }
   return result;
 }
