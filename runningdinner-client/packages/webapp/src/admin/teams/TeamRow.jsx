@@ -89,7 +89,7 @@ function DragAnDroppableTeamMember({participant, onTeamMemberSwap}) {
     }),
   });
 
-  const [{ isOver, canDrop }, drop] = useDrop({
+  const [/*{ isOver, canDrop },*/drop] = useDrop({
     accept: 'TEAM_MEMBER',
     drop: (item) => handleDrop(item),
     collect: (monitor) => ({
