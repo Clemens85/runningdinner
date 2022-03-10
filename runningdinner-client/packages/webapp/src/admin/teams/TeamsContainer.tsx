@@ -19,6 +19,7 @@ import {
   findEntityById,
   findTeamsAsync,
   getFullname, getRunningDinnerMandatorySelector,
+  HttpError,
   swapTeamMembersAsync,
   Team,
   TeamArrangementList,
@@ -32,6 +33,7 @@ import DropdownButtonItem from "../../common/theme/dropdown/DropdownButtonItem";
 import useCommonStyles from "../../common/theme/CommonStyles";
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 import { RegenerateTeamsButton } from "./RegenerateTeamsButton";
+import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
 
 const TeamsContainer = () => {
 
@@ -71,6 +73,8 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   const {generateTeamPath, navigateToTeam} = useAdminNavigation();
   const {t} = useTranslation('admin');
 
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
   const {showSuccess} = useCustomSnackbar();
 
   const commonClasses = useCommonStyles();
@@ -105,8 +109,12 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   }
 
   const handleGenerateTeams = async () => {
-    const teamGenerationResult = await createTeamArrangementsAsync(adminId);
-    setTeams(teamGenerationResult.teams);
+    try {
+      const teamGenerationResult = await createTeamArrangementsAsync(adminId);
+      setTeams(teamGenerationResult.teams);
+    } catch (e) {
+      showHttpErrorDefaultNotification(e as HttpError);
+    }
   };
 
   const handleTeamsRegenerated = async(regeneratedTeamArrangementList: TeamArrangementList) => {
