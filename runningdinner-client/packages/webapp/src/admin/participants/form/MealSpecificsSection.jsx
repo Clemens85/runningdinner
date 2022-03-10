@@ -3,14 +3,26 @@ import CustomSwitch from "../../../common/input/CustomSwitch";
 import {isStringEmpty} from "@runningdinner/shared";
 import FormFieldset from "../../../common/theme/FormFieldset";
 import {useFormContext} from "react-hook-form";
-import {Grid} from "@material-ui/core";
+import {Grid, makeStyles} from "@material-ui/core";
 import FormTextField from "../../../common/input/FormTextField";
 import FormCheckbox from "../../../common/input/FormCheckbox";
 import {useTranslation} from "react-i18next";
+import { SpacingGrid } from 'packages/webapp/src/common/theme/SpacingGrid';
+
+
+const useMealSpecificsNoteStyles = makeStyles((theme) => ({
+  mealSpecificsNoteCol: {
+    [theme.breakpoints.up('sm')]: {
+      width: '600px',
+    }
+  },
+}));
 
 export default function MealSpecificsSection() {
 
   const {t} = useTranslation('common');
+
+  const mealSpecificsNoteStyles = useMealSpecificsNoteStyles();
 
   const {getValues} = useFormContext();
   const currentMealSpecificsNote = getValues('mealSpecificsNote');
@@ -43,18 +55,18 @@ export default function MealSpecificsSection() {
             <FormCheckbox label={t('vegan')} name="vegan"/>
           </Grid>
         </Grid>
-        <Grid container alignItems={"center"}>
-          <Grid item>
+        <SpacingGrid container alignItems={"center"} mt={1}>
+          <SpacingGrid item ml={-1} mr={1}>
             <CustomSwitch checked={mealSpecificsNoteActivated} onChange={(checked) => activateMealSpecificsNote(checked)} />
-          </Grid>
-          <Grid item>
+          </SpacingGrid>
+          <SpacingGrid item className={mealSpecificsNoteStyles.mealSpecificsNoteCol}>
             <FormTextField fullWidth
                            variant={"filled"}
                            disabled={!mealSpecificsNoteActivated}
                            name="mealSpecificsNote"
                            label={t('mealnotes')} />
-          </Grid>
-        </Grid>
+          </SpacingGrid>
+        </SpacingGrid>
       </>
   );
 }
