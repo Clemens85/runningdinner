@@ -1,5 +1,10 @@
 const NewsMessages_de: any = {
 
+  news_title_20220313: 'Neue Oberfläche',
+  news_content_20220313: 'Wie ihr vielleicht schon bemerkt habt, wurde die gesamte Benutzeroberfläche neu implementiert. ' + 
+                         'Neben kleineren Verbesserungen, wurden ausserdem auch noch Bugs bei der Team-Einteilung bezüglich der Geschlechter-Verteilung gefixt. ' + 
+                         'Es wurde zwar alles ausführlich getestet, falls ihr aber Fehler bemerkt oder etwas nicht (wie gewohnt) funktioniert, meldet euch bitte über die Feedback-Funktion!',
+
   news_title_20211019: 'Excel Export',
   news_content_20211019: 'Die Teilnehmerliste wurde um eine einfache Export Funktionalität erweitert (Excel).',
 

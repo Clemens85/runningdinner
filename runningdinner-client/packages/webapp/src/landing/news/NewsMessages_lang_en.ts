@@ -1,5 +1,10 @@
 const NewsMessages_en: any = {
 
+  news_title_20220313: 'New User Interface',
+  news_content_20220313: 'As you may have noticed, the entire user interface has been reimplemented. ' + 
+                         'Besides minor improvements, bugs in the team generation regarding the gender distribution have also been fixed. ' + 
+                         "Everything has been tested extensively, but if you notice any bugs or something doesn't work (as usual), please use the feedback function!",
+   
   news_title_20211019: 'Excel Export',
   news_content_20211019: 'The participant list was extended by a simple export functionality (Excel).',
 
