@@ -10,11 +10,9 @@ import {useTranslation} from "react-i18next";
 import { SpacingGrid } from 'packages/webapp/src/common/theme/SpacingGrid';
 
 
-const useMealSpecificsNoteStyles = makeStyles((theme) => ({
+const useMealSpecificsNoteStyles = makeStyles(() => ({
   mealSpecificsNoteCol: {
-    [theme.breakpoints.up('sm')]: {
-      width: '600px',
-    }
+    flexGrow: 1
   },
 }));
 
