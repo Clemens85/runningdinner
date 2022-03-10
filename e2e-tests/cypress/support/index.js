@@ -16,5 +16,12 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+
+export function navigateParticipantsList(adminId) {
+  cy.visit(`/admin/${adminId}/participants`);
+}
+
+export function getByTestId(dataTestId, optionalQuerySuffix) {
+  const querySuffix = optionalQuerySuffix ? optionalQuerySuffix : '';
+  return cy.get(`[data-testid="${dataTestId}"]${querySuffix}`);
+}

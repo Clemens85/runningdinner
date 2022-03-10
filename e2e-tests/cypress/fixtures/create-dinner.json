@@ -1,0 +1,69 @@
+{
+  "email": "e2etest@e2etest.de",
+  "runningDinnerType": "STANDARD",
+  "basicDetails": {
+    "registrationType": "PUBLIC",
+    "title": "E2E Test",
+    "zip": "79100",
+    "city": "Freiburg",
+    "date": null,
+    "languageCode": "de"
+  },
+  "options": {
+    "teamSize": 2,
+    "forceEqualDistributedCapacityTeams": true,
+    "genderAspects": "FORCE_GENDER_MIX",
+    "teamPartnerWishDisabled": false,
+    "meals": [
+      {
+        "label": "Vorspeise",
+        "time": [
+          null,
+          null,
+          null,
+          19,
+          0,
+          0
+        ]
+      },
+      {
+        "label": "Hauptgericht",
+        "time": [
+          null,
+          null,
+          null,
+          21,
+          0,
+          0
+        ]
+      },
+      {
+        "label": "Dessert",
+        "time": [
+          null,
+          null,
+          null,
+          23,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "publicSettings": {
+    "title": "E2E Test Public Title",
+    "endOfRegistrationDate": null,
+    "description": "E2E Test Public Description",
+    "publicContactName": "E2ETest",
+    "publicContactEmail": "e2etest@e2etest.de",
+    "publicContactMobileNumber": "123456"
+  },
+  "contract": {
+    "email": "e2etest@e2etest.de",
+    "fullname": "E2ETest",
+    "streetWithNr": "Musterstraße 1",
+    "zip": "79100",
+    "city": "Freiburg",
+    "newsletterEnabled": false
+  }
+}

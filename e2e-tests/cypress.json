@@ -1,1 +1,11 @@
-{}
+{
+  "baseUrl": "https://localhost:3000",
+  "watchForFileChanges": false,
+  "defaultCommandTimeout": 6000,
+  "viewportHeight": 900,
+  "viewportWidth": 1444,
+  "chromeWebSecurity": false,
+  "env": {
+    
+  }
+}
