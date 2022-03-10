@@ -382,7 +382,7 @@ public class TeamDistributorGender {
         
         if (bestTeamSwapAction == null && currentTeamSwapAction.getSrcTeam().isGenderAspectSatisfied()) {
           bestTeamSwapAction = currentTeamSwapAction;
-        } else {
+        } else if (bestTeamSwapAction != null) {
           if (currentTeamSwapAction.isGenderAspectSatisfiedForAllTeams() && !bestTeamSwapAction.isGenderAspectSatisfiedForAllTeams()) {
             bestTeamSwapAction = currentTeamSwapAction;
           } else if (currentTeamSwapAction.getDistributionStatusSumForAllTeams() < bestTeamSwapAction.getDistributionStatusSumForAllTeams()) {
