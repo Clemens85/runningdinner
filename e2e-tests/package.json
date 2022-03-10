@@ -1,0 +1,11 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Clemens Stich",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "9.5.1",
+    "lodash": "4.17.21"
+  }
+}
