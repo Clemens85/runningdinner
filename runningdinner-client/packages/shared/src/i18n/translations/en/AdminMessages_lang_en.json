@@ -207,7 +207,7 @@
 	"team_member_cancel_delete": "Cancel & Delete",
 	"team_member_cancel_goto_team_cancel": "Goto team cancellation...",
 	"team_member_cancel_host_info": "Due to this team member was the host, another team member will automatically become the new host.",
-	"team_member_cancel_info": "Team member <strong>{{ teamMemberToCancel }}</strong> will be removed, the team will however still exist. This means that {{ remainingTeamMemberNames }} will cook alone. You can also cancel the complete team, if {{ remainingTeamMemberNames }} will not participate any longer. You can also replace team members by participants that are on the waiting list (if any).",
+	"team_member_cancel_info": "Team member <strong>{{ teamMemberToCancel }}</strong> will be removed, the team will however still exist. This means that {{ remainingTeamMemberNames }} will cook alone. You can also cancel the complete team, if {{ remainingTeamMemberNames }} will not participate any longer.<br /> You can also replace team members by participants that are on the waiting list (if any).",
 	"team_member_cancel_whole_team": "<strong>{{ teamMemberToCancel }}</strong> is the last team member of this team. Therefore the complete team must be cancelled which can be performed in the next step.",
 	"team_message": "Message to team",
 	"team_notify_cancellation": "Notify all affected teams...",
