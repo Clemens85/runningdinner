@@ -126,10 +126,19 @@ public class TeamDistributorGender {
 
   private void swapTeamMember(Team team1, Participant teamMember1, Team team2, Participant teamMember2) {
 
+    Participant otherTeamMemberInTeam2 = team2.getTeamMembers()
+				.stream()
+				.filter(p -> !Objects.equals(p, teamMember2))
+				.findFirst()
+				.orElse(null);
+    if (otherTeamMemberInTeam2 == null) {
+    	return;
+    }
+  	
     LOGGER.info("swapTeamMember: Team {} has {} members and Team {} has {} members", team1, team1.getTeamMembers().size(), team2, team2.getTeamMembers().size());
     team1.removeTeamMember(teamMember1);
-    team2.removeTeamMember(teamMember2);
-    team1.addTeamMember(teamMember2);
+    team2.removeTeamMember(otherTeamMemberInTeam2);
+    team1.addTeamMember(otherTeamMemberInTeam2);
     team2.addTeamMember(teamMember1);
   }
 
