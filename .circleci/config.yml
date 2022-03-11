@@ -92,7 +92,7 @@ jobs:
 
   deploy_runningdinner_app:
     machine:
-      enabled: true
+      image: ubuntu-2004:202201-02
     steps:
       - checkout
       - attach_workspace:
