@@ -50,7 +50,8 @@ public class FormatterUtil {
   public static final String ROUTE = "\\{route\\}";
   public static final String ROUTELINK = "\\{routelink\\}";
   public static final String HOSTADDRESS = "\\{hostaddress\\}";
-
+  public static final String MOBILENUMBER = "\\{mobilenumber\\}";
+  
   public static final String PUBLIC_RUNNING_DINNER_TITLE = "\\{publicRunningDinnerTitle\\}";
   public static final String ACTIVATE_PARTICIPANT_SUBSCRIPTION_LINK = "\\{activateParticipantSubscriptionLink\\}";
   

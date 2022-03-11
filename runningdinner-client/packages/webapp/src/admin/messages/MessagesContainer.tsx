@@ -255,7 +255,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
                                             label={t('admin:mails_senddinnerroute_self')}/>
                           </Grid>
                           <Grid item xs={12} lg={6}>
-                            <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{hostaddress}']}
+                            <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{hostaddress}', '{mobilenumber}']}
                                             onMessageContentChange={handleDinnerRouteHostsPartTemplateChange}
                                             rows={7}
                                             showTemplatesHelpIcon={isMdDeviceOrUp}

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,14 +24,18 @@ import org.springframework.util.Assert;
 @Component
 public class DinnerRouteMessageFormatter {
 
-	@Autowired
-	UrlGenerator urlGenerator;
+	private UrlGenerator urlGenerator;
 
-	@Autowired
-	MessageSource messageSource;
+	private MessageSource messageSource;
 
+	private LocalizationProviderService localizationProviderService;
+	
 	@Autowired
-	LocalizationProviderService localizationProviderService;
+	public DinnerRouteMessageFormatter(UrlGenerator urlGenerator, MessageSource messageSource, LocalizationProviderService localizationProviderService) {
+		this.urlGenerator = urlGenerator;
+		this.messageSource = messageSource;
+		this.localizationProviderService = localizationProviderService;
+	}
 
 	public String formatDinnerRouteMessage(final RunningDinner runningDinner, final Participant teamMember, final Team parentTeam, final List<Team> dinnerRoute,
 			final DinnerRouteTextMessage dinnerRouteTextMessage) {
@@ -46,6 +51,7 @@ public class DinnerRouteMessageFormatter {
 		Assert.state(StringUtils.isNotEmpty(theMessage), "Message template must not be empty!");
 
 		final String noTimeText = messageSource.getMessage("message.template.no.time", null, locale);
+    final String noMobileText = messageSource.getMessage("message.template.no.mobile", null, locale);
 
 		theMessage = theMessage.replaceAll(FormatterUtil.FIRSTNAME, teamMember.getName().getFirstnamePart());
 		theMessage = theMessage.replaceAll(FormatterUtil.LASTNAME, teamMember.getName().getLastname());
@@ -86,8 +92,13 @@ public class DinnerRouteMessageFormatter {
 		      host = host.replaceAll(FormatterUtil.LASTNAME, hostTeamMember.getName().getLastname());
 	        host = host.replaceAll(FormatterUtil.MEAL, mealLabel);
 	        host = host.replaceAll(FormatterUtil.MEALTIME, FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText));
+	        
 	        String address = FormatterUtil.generateAddressString(hostTeamMember); 
   	      host = host.replaceFirst(FormatterUtil.HOSTADDRESS, address);
+  	      
+  	      String mobileNumberStr = getMobileNumbers(hostTeamMember, dinnerRouteTeam);
+  	      mobileNumberStr = StringUtils.defaultIfEmpty(mobileNumberStr, noMobileText);
+  	      host = host.replaceAll(FormatterUtil.MOBILENUMBER, mobileNumberStr);
 			  } else {
 		      host = generateHostCancelledMessage(dinnerRouteTeam, locale, timeFormat, noTimeText);
 			  }
@@ -107,7 +118,26 @@ public class DinnerRouteMessageFormatter {
 
 	}
 
-  public String getMealSpecificsOfGuestTeams(Team parentTeam, Locale locale) {
+  private String getMobileNumbers(Participant hostTeamMember, Team team) {
+  	
+  	String result = hostTeamMember.getMobileNumber() == null ? StringUtils.EMPTY : hostTeamMember.getMobileNumber();
+  	String otherTeamMemberMobileNumbers = team.getTeamMembersOrdered()
+  																						.stream()
+  																						.filter(teamMember -> !Objects.equals(teamMember, hostTeamMember))
+  																						.map(teamMember -> teamMember.getMobileNumber())
+  																						.filter(StringUtils::isNotEmpty)
+  																						.collect(Collectors.joining(", "));
+  	
+  	if (StringUtils.isNotEmpty(result) && StringUtils.isNotEmpty(otherTeamMemberMobileNumbers)) {
+  		result += ", " + otherTeamMemberMobileNumbers;
+  	} else if (StringUtils.isEmpty(result)) {
+  		result = otherTeamMemberMobileNumbers;
+  	}
+  	
+		return result;
+	}
+
+	public String getMealSpecificsOfGuestTeams(Team parentTeam, Locale locale) {
 
     List<MealSpecifics> allGuestMealspecifics = parentTeam.getMealSpecificsOfGuestTeams(); 
     
