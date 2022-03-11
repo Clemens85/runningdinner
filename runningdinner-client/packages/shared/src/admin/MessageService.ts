@@ -168,7 +168,7 @@ export function getExampleDinnerRouteMessage(): DinnerRouteMessage {
       "nter folgendem Link findet ihr jederzeit eine Live-Ansicht eurer Dinner-Route:\n{routelink}\n\n" +
       "Bitte versucht euch an die Zeitpläne zu halten!",
     selfTemplate: "{meal} bei EUCH\nGekocht wird bei {firstname} {lastname}\nUhrzeit: {mealtime} Uhr\n{mealspecifics}",
-    hostsTemplate: "{meal}\nWird gekocht bei: {firstname} {lastname}\n{hostaddress}\nKontakt: {mobilenumber}\nUhrzeit: {mealtime} Uhr",
+    hostsTemplate: "{meal}\nWird gekocht bei: {firstname} {lastname}\n{hostaddress}\nKontakt (Handy/Telefon): {mobilenumber}\nUhrzeit: {mealtime} Uhr",
     teamSelection: TeamSelection.ALL
   };
 }
