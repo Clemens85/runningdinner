@@ -80,7 +80,7 @@
 	"mails_template_replacement_nonhost": "This text will replace the {host} template for the participant which is NOT the host.",
 	"mails_template_replacement_route_guest": "This text will replace the {route} template for the guest teams",
 	"mails_template_replacement_route_host": "This text will replace the {route} template for the hosting team.",
-	"mails_template_senddinnerroute_hosts": "{meal}\nWill be cooked at: {firstname} {lastname}\n{hostaddress}\nTime: {mealtime}",
+	"mails_template_senddinnerroute_hosts": "{meal}\nWill be cooked at: {firstname} {lastname}\n{hostaddress}\nContact: {mobilenumber}\nTime: {mealtime}",
 	"mails_template_senddinnerroute_message": "Hello {firstname},\n\nhere is your dinner route: \n\n{route}\n\nYou can find a live view of you dinner route by this link:\n{routelink}\n\nPlease try to keep the schedule!!",
 	"mails_template_senddinnerroute_self": "{meal} is YOUR turn.\nWill be cooked at {firstname} {lastname}\nTime: {mealtime} \n{mealspecifics}",
 	"mails_template_sendparticipants_message": "Hello {firstname} {lastname},\n\n *ENTER YOUR MESSAGE*",

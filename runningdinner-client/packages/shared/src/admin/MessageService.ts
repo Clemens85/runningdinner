@@ -151,7 +151,9 @@ export function getExampleTeamMessage(): TeamMessage {
         'Ihr seid für folgende Speise verantwortlich: {meal}.\n' +
         'Diese soll um {mealtime} eingenommen werden.\n' +
         '\n' +
-        '{host}',
+        '{host}\n' + 
+        '\n' + 
+        'Alternativ kann jeder von euch die Gastgebereinteilung bis zur endgültigen Festlegung der Dinnerrouten unter folgendem Link selbst ändern: {managehostlink}\nSprecht euch hierfür jedoch bitte untereinander ab!',
     hostMessagePartTemplate: 'Es wird vorgeschlagen, dass du als Gastgeber fungierst. Wenn dies nicht in Ordnung ist, dann sprecht euch bitte ab und gebt uns Rückmeldung wer als neuer Gastgeber fungieren soll.',
     nonHostMessagePartTemplate: 'Als Gastgeber wurde {partner} vorgeschlagen.',
     teamSelection: TeamSelection.ALL
@@ -166,7 +168,7 @@ export function getExampleDinnerRouteMessage(): DinnerRouteMessage {
       "nter folgendem Link findet ihr jederzeit eine Live-Ansicht eurer Dinner-Route:\n{routelink}\n\n" +
       "Bitte versucht euch an die Zeitpläne zu halten!",
     selfTemplate: "{meal} bei EUCH\nGekocht wird bei {firstname} {lastname}\nUhrzeit: {mealtime} Uhr\n{mealspecifics}",
-    hostsTemplate: "{meal}\nWird gekocht bei: {firstname} {lastname}\n{hostaddress}\nUhrzeit: {mealtime} Uhr",
+    hostsTemplate: "{meal}\nWird gekocht bei: {firstname} {lastname}\n{hostaddress}\nKontakt: {mobilenumber}\nUhrzeit: {mealtime} Uhr",
     teamSelection: TeamSelection.ALL
   };
 }

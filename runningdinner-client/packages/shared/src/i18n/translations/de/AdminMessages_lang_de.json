@@ -81,7 +81,7 @@
 	"mails_template_replacement_nonhost": "Dieser Block ersetzt oben den {host} Platzhalter für den Teilnehmer der kein Gastgeber ist.",
 	"mails_template_replacement_route_guest": "Dieser Block ersetzt oben den Teil des {route} Platzhalters für die Teams die besucht werden",
 	"mails_template_replacement_route_host": "Dieser Block ersetzt oben den Teil des {route} Platzhalters für das Gastgeber-Team.",
-	"mails_template_senddinnerroute_hosts": "{meal}\nWird gekocht bei: {firstname} {lastname}\n{hostaddress}\nUhrzeit: {mealtime} Uhr",
+	"mails_template_senddinnerroute_hosts": "{meal}\nWird gekocht bei: {firstname} {lastname}\n{hostaddress}\nKontakt: {mobilenumber}\nUhrzeit: {mealtime} Uhr",
 	"mails_template_senddinnerroute_message": "Hallo {firstname},\n\nhier ist eure Dinner-Route: \n\n{route}\n\nUnter folgendem Link findet ihr jederzeit eine Live-Ansicht eurer Dinner-Route:\n{routelink}\n\nBitte versucht euch an die Zeitpläne zu halten!",
 	"mails_template_senddinnerroute_self": "{meal} bei EUCH\nGekocht wird bei {firstname} {lastname}\nUhrzeit: {mealtime} Uhr\n{mealspecifics}",
 	"mails_template_sendparticipants_message": "Hallo {firstname} {lastname},\n\n *DEIN TEXT*",
