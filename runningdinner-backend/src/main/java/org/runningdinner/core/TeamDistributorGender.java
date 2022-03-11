@@ -220,10 +220,6 @@ public class TeamDistributorGender {
                                         .get();
     
     if (genderAspect == GenderAspect.FORCE_GENDER_MIX) {
-      if (otherTeamMember.getGender() == Gender.UNDEFINED) {
-        // By doing so we try to find any other team with a team-member which has alos UNDEFINED gender... Then a swap might lead into the desired gender-aspect
-        return Gender.UNDEFINED;
-      }
       if (Gender.MALE == teamMemberWithGenderToToggle.getGender()) {
         return Gender.FEMALE;
       } else if (Gender.FEMALE == teamMemberWithGenderToToggle.getGender()) {
