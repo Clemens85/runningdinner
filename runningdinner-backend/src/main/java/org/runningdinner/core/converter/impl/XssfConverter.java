@@ -1,9 +1,6 @@
 package org.runningdinner.core.converter.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
+import com.google.common.base.Optional;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.runningdinner.core.converter.ConversionException;
@@ -12,7 +9,10 @@ import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 
-import com.google.common.base.Optional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Entry point for parsing "new" XLSX excel files.<br>
@@ -36,6 +36,14 @@ public class XssfConverter extends AbstractExcelConverterHighLevel implements Fi
 	}
 
 	@Override
+	public void writeParticipants(List<Participant> participants, OutputStream outputStream) throws IOException {
+		XSSFSheet sheet = createNewSheet();
+		writeParticipants(sheet, participants);
+		XSSFWorkbook workbook = sheet.getWorkbook();
+		workbook.write(outputStream);
+	}
+
+	@Override
 	public List<List<String>> readRows(InputStream inputStream, int maxRows) throws IOException {
 		XSSFSheet sheet = openSheet(inputStream);
 		return readRows(sheet, maxRows);
@@ -51,6 +59,12 @@ public class XssfConverter extends AbstractExcelConverterHighLevel implements Fi
 		CoreUtil.assertNotNull(inputStream, "Passed InputStream must not be null!");
 		XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
 		XSSFSheet sheet = workbook.getSheetAt(0);
+		return sheet;
+	}
+
+	private XSSFSheet createNewSheet() {
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("Teilnehmer"); // TODO: i18n
 		return sheet;
 	}
 

@@ -2,6 +2,7 @@ package org.runningdinner.core.converter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.runningdinner.participant.Participant;
@@ -27,6 +28,8 @@ public interface FileConverter extends RowConverter {
 	 * @throws IOException If there occurred an IO error while reading the inputStream
 	 * @throws ConversionException If there occurred an error during parsing (e.g. wrong file format)
 	 */
-	List<Participant> parseParticipants(final InputStream inputStream) throws IOException, ConversionException;
+	List<Participant> parseParticipants(InputStream inputStream) throws IOException, ConversionException;
+
+	void writeParticipants(List<Participant> participants, OutputStream outputStream) throws IOException;
 
 }

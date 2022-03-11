@@ -1,26 +1,12 @@
 
 package org.runningdinner.participant;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
-import org.runningdinner.common.Issue;
-import org.runningdinner.common.IssueKeys;
-import org.runningdinner.common.IssueList;
-import org.runningdinner.common.IssueType;
-import org.runningdinner.common.ResourceLoader;
+import org.runningdinner.common.*;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.ValidatorService;
@@ -31,12 +17,7 @@ import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConverterFactory;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
 import org.runningdinner.core.converter.FileConverter;
-import org.runningdinner.core.converter.config.AddressColumnConfig;
-import org.runningdinner.core.converter.config.EmailColumnConfig;
-import org.runningdinner.core.converter.config.GenderColumnConfig;
-import org.runningdinner.core.converter.config.NameColumnConfig;
-import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
-import org.runningdinner.core.converter.config.ParsingConfiguration;
+import org.runningdinner.core.converter.config.*;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
@@ -50,7 +31,12 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ParticipantService {
@@ -120,6 +106,16 @@ public class ParticipantService {
     setAssignableInformation(participantsWithoutTeams, runningDinner);
 
     return participants;
+  }
+
+  @Transactional(readOnly = true)
+  public void exportParticipantsAsExcel(@ValidateAdminId String adminId, OutputStream outputStream) throws IOException {
+
+    List<Participant> participants = findParticipants(adminId, true);
+
+    ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
+    FileConverter fileConverter = ConverterFactory.newFileConverter(parsingConfiguration, INPUT_FILE_TYPE.XSSF);
+    fileConverter.writeParticipants(participants, outputStream);
   }
 
   private void setAssignableInformation(List<Participant> participantsWithoutTeam, RunningDinner runningDinner) {
@@ -398,6 +394,5 @@ public class ParticipantService {
       }
     });
   }
-
 
 }
