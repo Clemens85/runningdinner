@@ -130,7 +130,7 @@ public class DinnerRouteMessageFormatterTest {
 															.stream()
 															.filter(member -> setToHostingTeamMember ? member.isHost() : !member.isHost())
 															.findFirst()
-															.orElseThrow();
+															.orElseThrow(IllegalStateException::new);
 		teamMember.setMobileNumber(mobileNumber);
 	}
 
@@ -140,7 +140,7 @@ public class DinnerRouteMessageFormatterTest {
 						.stream()
 						.filter(t -> !Objects.equals(t, team))
 						.findFirst()
-						.orElseThrow();
+						.orElseThrow(IllegalStateException::new);
 	}
 
 	private DinnerRouteMessage newDinnerRouteMessage() {
