@@ -7,14 +7,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.MealClassSorter;
+import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 
-public class TeamRouteBuilder {
+public final class TeamRouteBuilder {
 
+	
+	private TeamRouteBuilder() {
+		// NOP
+	}
+	
 	/**
 	 * Returns a list which contains per each meal the host-teams for the passed team and also the team itself in the correct order.
 	 * The list is ordered by the times of the meals, so it can e.g. be happen the the passed team is in the middle of the list (e.g. if it
@@ -72,4 +81,31 @@ public class TeamRouteBuilder {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param team
+	 * @return Returns the mobilenumber contact of the team-members as comma-separated string or an empty string
+	 */
+  public static String getMobileNumbers(Team team) {
+  	
+		final Participant hostTeamMember = team.getHostTeamMember();
+  	
+  	String result = hostTeamMember.getMobileNumber() == null ? StringUtils.EMPTY : hostTeamMember.getMobileNumber();
+  	String otherTeamMemberMobileNumbers = team.getTeamMembersOrdered()
+  																						.stream()
+  																						.distinct()
+  																						.filter(teamMember -> !Objects.equals(teamMember, hostTeamMember))
+  																						.map(teamMember -> teamMember.getMobileNumber())
+  																						.filter(StringUtils::isNotEmpty)
+  																						.collect(Collectors.joining(", "));
+  	
+  	if (StringUtils.isNotEmpty(result) && StringUtils.isNotEmpty(otherTeamMemberMobileNumbers)) {
+  		result += ", " + otherTeamMemberMobileNumbers;
+  	} else if (StringUtils.isEmpty(result)) {
+  		result = otherTeamMemberMobileNumbers;
+  	}
+  	
+		return result;
+	}
+	
 }

@@ -3,6 +3,7 @@ package org.runningdinner.participant.rest.dinnerroute;
 
 import com.google.common.base.MoreObjects;
 import org.runningdinner.admin.rest.MealTO;
+import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamStatus;
@@ -18,6 +19,8 @@ public class DinnerRouteTeamTO {
   private MealTO meal;
 
   private DinnerRouteTeamHostTO hostTeamMember;
+  
+  private String contactInfo;
   
   @JsonIgnore
   private Team rawTeam;
@@ -37,6 +40,8 @@ public class DinnerRouteTeamTO {
     if (hostTeamMemberTmp != null) {
       this.setHostTeamMember(new DinnerRouteTeamHostTO(hostTeamMemberTmp));
     }
+    
+    this.setContactInfo(TeamRouteBuilder.getMobileNumbers(team));
     
     this.rawTeam = team;
   }
@@ -85,8 +90,19 @@ public class DinnerRouteTeamTO {
   
     return rawTeam;
   }
+  
+  public String getContactInfo() {
 
-  @Override public String toString() {
+  	return contactInfo;
+	}
+
+	public void setContactInfo(String contactInfo) {
+		
+		this.contactInfo = contactInfo;
+	}
+
+	@Override 
+  public String toString() {
 
     return MoreObjects.toStringHelper(this)
             .addValue(rawTeam)

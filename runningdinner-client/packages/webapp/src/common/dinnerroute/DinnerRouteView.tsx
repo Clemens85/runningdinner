@@ -7,7 +7,9 @@ import {
   Fullname,
   getCenterPosition, getFullname, isGeocdingResultValidForAllTeams, isGeocodingResultValid,
   isSameDinnerRouteTeam,
+  isStringEmpty,
   isStringNotEmpty,
+  Team,
   TeamStatus,
   Time,
   useGeocoder,
@@ -80,6 +82,9 @@ const useTeamCardStyles = makeStyles((theme) => ({
   },
   marginBottom: {
     marginBottom: theme.spacing(1)
+  },
+  hidden: {
+    visibility: "hidden"
   }
 }));
 
@@ -104,13 +109,18 @@ function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardPro
       </PageTitle>
       <SpacingPaper elevation={3} p={2}>
         {isCancelled && <Subtitle i18n={"cancelled"} color="error" />}
-        {!isCancelled && <TeamCardDetails {...dinnerRouteTeam} /> }
+        {!isCancelled && <TeamCardDetails {...dinnerRouteTeam} isCurrentTeam={isCurrentTeam} /> }
       </SpacingPaper>
     </>
   );
 }
 
-function TeamCardDetails({hostTeamMember, meal}: DinnerRouteTeam) {
+
+interface TeamCardDetailsProps extends DinnerRouteTeam {
+  isCurrentTeam: boolean;
+}
+
+function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTeam}: TeamCardDetailsProps) {
 
   const teamCardClasses = useTeamCardStyles();
 
@@ -127,8 +137,13 @@ function TeamCardDetails({hostTeamMember, meal}: DinnerRouteTeam) {
         <Span>{hostTeamMember.zip}</Span>&nbsp;<Span>{hostTeamMember.cityName}</Span>
       </div>
       { isStringNotEmpty(hostTeamMember.addressRemarks) && <em>{hostTeamMember.addressRemarks}</em> }
+
       <div className={teamCardClasses.teamCardLine}>
-        <SmallTitle i18n="time"/>: &nbsp; <Span><Time date={meal.time }/></Span>
+        <SmallTitle i18n="time"/>:&nbsp; <Span><Time date={meal.time }/></Span>
+      </div>
+
+      <div className={clsx( teamCardClasses.teamCardLine, {[teamCardClasses.hidden]: isCurrentTeam} )}>
+        <SmallTitle i18n="contact"/>:&nbsp; <Span>{isStringEmpty(contactInfo) ? "-" : contactInfo}</Span>
       </div>
     </>
   )
@@ -159,7 +174,7 @@ function MapContainer({dinnerRoute}: DinnerRouteProps) {
 
 interface MapViewProps {
   dinnerRouteTeams: DinnerRouteTeam[];
-  currentTeam: DinnerRouteTeam;
+  currentTeam: Team;
   googleMapsApiKey: string;
 }
 const polyLineOptionsTemplate = {
@@ -197,7 +212,7 @@ function MapView({dinnerRouteTeams, currentTeam, googleMapsApiKey}: MapViewProps
     return (
       <>
         <Subtitle>{dinnerRouteTeam.meal.label}</Subtitle>
-        <TeamCardDetails {...dinnerRouteTeam}/>
+        <TeamCardDetails {...dinnerRouteTeam} isCurrentTeam={isCurrentTeam(dinnerRouteTeam)}/>
       </>
     );
   }

@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -30,7 +29,6 @@ import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
-import org.runningdinner.mail.formatter.DinnerRouteTextMessage;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.springframework.context.MessageSource;

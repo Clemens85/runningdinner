@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -13,6 +12,7 @@ import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamStatus;
@@ -96,7 +96,7 @@ public class DinnerRouteMessageFormatter {
 	        String address = FormatterUtil.generateAddressString(hostTeamMember); 
   	      host = host.replaceFirst(FormatterUtil.HOSTADDRESS, address);
   	      
-  	      String mobileNumberStr = getMobileNumbers(hostTeamMember, dinnerRouteTeam);
+  	      String mobileNumberStr = TeamRouteBuilder.getMobileNumbers(dinnerRouteTeam);
   	      mobileNumberStr = StringUtils.defaultIfEmpty(mobileNumberStr, noMobileText);
   	      host = host.replaceAll(FormatterUtil.MOBILENUMBER, mobileNumberStr);
 			  } else {
@@ -116,25 +116,6 @@ public class DinnerRouteMessageFormatter {
 
 		return theMessage;
 
-	}
-
-  private String getMobileNumbers(Participant hostTeamMember, Team team) {
-  	
-  	String result = hostTeamMember.getMobileNumber() == null ? StringUtils.EMPTY : hostTeamMember.getMobileNumber();
-  	String otherTeamMemberMobileNumbers = team.getTeamMembersOrdered()
-  																						.stream()
-  																						.filter(teamMember -> !Objects.equals(teamMember, hostTeamMember))
-  																						.map(teamMember -> teamMember.getMobileNumber())
-  																						.filter(StringUtils::isNotEmpty)
-  																						.collect(Collectors.joining(", "));
-  	
-  	if (StringUtils.isNotEmpty(result) && StringUtils.isNotEmpty(otherTeamMemberMobileNumbers)) {
-  		result += ", " + otherTeamMemberMobileNumbers;
-  	} else if (StringUtils.isEmpty(result)) {
-  		result = otherTeamMemberMobileNumbers;
-  	}
-  	
-		return result;
 	}
 
 	public String getMealSpecificsOfGuestTeams(Team parentTeam, Locale locale) {

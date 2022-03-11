@@ -14,12 +14,13 @@ export interface DinnerRouteTeam {
   meal: Meal;
   hostTeamMember: DinnerRouteTeamHost;
   geocodingResult?: GeocodingResult;
+  contactInfo: string;
 }
 
 export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {
 
 }
 
-export function isSameDinnerRouteTeam(a: DinnerRouteTeam, b: DinnerRouteTeam) {
+export function isSameDinnerRouteTeam(a: DinnerRouteTeam | Team, b: DinnerRouteTeam | Team) {
  return a.teamNumber === b.teamNumber;
 }

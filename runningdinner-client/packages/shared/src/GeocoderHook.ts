@@ -1,6 +1,6 @@
 import React from "react";
 import Geocode from "react-geocode";
-import {DinnerRouteTeam, GeocodingResult, isSameDinnerRouteTeam, Participant, TeamStatus} from "./types";
+import {DinnerRouteTeam, GeocodingResult, isSameDinnerRouteTeam, Participant, TeamStatus, Team} from "./types";
 
 export function isGeocodingResultValid(geocodingResult?: GeocodingResult): geocodingResult is GeocodingResult {
   if (!geocodingResult || typeof geocodingResult === 'undefined') {
@@ -29,7 +29,7 @@ export function isGeocdingResultValidForAllTeams(dinnerRouteTeams: DinnerRouteTe
   return dinnerRouteTeamsNotCancelled.length === filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeamsNotCancelled).length;
 }
 
-export function getCenterPosition(dinnerRouteTeams: DinnerRouteTeam[], currentTeam: DinnerRouteTeam): GeocodingResult | undefined {
+export function getCenterPosition(dinnerRouteTeams: DinnerRouteTeam[], currentTeam: DinnerRouteTeam | Team): GeocodingResult | undefined {
   const centerPositionCandidates = filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams);
   if (centerPositionCandidates.length === 0) {
     return undefined;
