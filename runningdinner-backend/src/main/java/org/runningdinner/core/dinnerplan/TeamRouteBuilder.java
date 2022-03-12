@@ -81,31 +81,57 @@ public final class TeamRouteBuilder {
 		return result;
 	}
 
+	
+  public static List<String> getMobileNumbers(Team team) {
+  	
+		final Participant hostTeamMember = team.getHostTeamMember();
+  	
+  	List<String> result = new ArrayList<String>(2); 
+  	if (StringUtils.isNotEmpty(hostTeamMember.getMobileNumber())) {
+  		result.add(hostTeamMember.getMobileNumber());
+  	}
+
+  	result.addAll(
+  			team.getTeamMembersOrdered()
+					.stream()
+					.distinct()
+					.filter(teamMember -> !Objects.equals(teamMember, hostTeamMember))
+					.map(teamMember -> teamMember.getMobileNumber())
+					.filter(StringUtils::isNotEmpty)
+					.collect(Collectors.toList())
+		);
+  	
+		return result;
+	}
+  
+	
 	/**
 	 * 
 	 * @param team
 	 * @return Returns the mobilenumber contact of the team-members as comma-separated string or an empty string
 	 */
-  public static String getMobileNumbers(Team team) {
-  	
-		final Participant hostTeamMember = team.getHostTeamMember();
-  	
-  	String result = hostTeamMember.getMobileNumber() == null ? StringUtils.EMPTY : hostTeamMember.getMobileNumber();
-  	String otherTeamMemberMobileNumbers = team.getTeamMembersOrdered()
-  																						.stream()
-  																						.distinct()
-  																						.filter(teamMember -> !Objects.equals(teamMember, hostTeamMember))
-  																						.map(teamMember -> teamMember.getMobileNumber())
-  																						.filter(StringUtils::isNotEmpty)
-  																						.collect(Collectors.joining(", "));
-  	
-  	if (StringUtils.isNotEmpty(result) && StringUtils.isNotEmpty(otherTeamMemberMobileNumbers)) {
-  		result += ", " + otherTeamMemberMobileNumbers;
-  	} else if (StringUtils.isEmpty(result)) {
-  		result = otherTeamMemberMobileNumbers;
-  	}
-  	
-		return result;
+  public static String getMobileNumbersCommaSeparated(Team team) {
+
+  	List<String> result = getMobileNumbers(team);
+  	return result.stream().collect(Collectors.joining(", "));
+//		final Participant hostTeamMember = team.getHostTeamMember();
+//  	
+//  	String result = hostTeamMember.getMobileNumber() == null ? StringUtils.EMPTY : hostTeamMember.getMobileNumber();
+//  	String otherTeamMemberMobileNumbers = team.getTeamMembersOrdered()
+//  																						.stream()
+//  																						.distinct()
+//  																						.filter(teamMember -> !Objects.equals(teamMember, hostTeamMember))
+//  																						.map(teamMember -> teamMember.getMobileNumber())
+//  																						.filter(StringUtils::isNotEmpty)
+//  																						.collect(Collectors.joining(", "));
+//  	
+//  	if (StringUtils.isNotEmpty(result) && StringUtils.isNotEmpty(otherTeamMemberMobileNumbers)) {
+//  		result += ", " + otherTeamMemberMobileNumbers;
+//  	} else if (StringUtils.isEmpty(result)) {
+//  		result = otherTeamMemberMobileNumbers;
+//  	}
+//  	
+//		return result;
 	}
 	
 }

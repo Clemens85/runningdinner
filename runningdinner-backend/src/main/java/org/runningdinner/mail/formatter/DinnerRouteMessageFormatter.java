@@ -96,7 +96,7 @@ public class DinnerRouteMessageFormatter {
 	        String address = FormatterUtil.generateAddressString(hostTeamMember); 
   	      host = host.replaceFirst(FormatterUtil.HOSTADDRESS, address);
   	      
-  	      String mobileNumberStr = TeamRouteBuilder.getMobileNumbers(dinnerRouteTeam);
+  	      String mobileNumberStr = TeamRouteBuilder.getMobileNumbersCommaSeparated(dinnerRouteTeam);
   	      mobileNumberStr = StringUtils.defaultIfEmpty(mobileNumberStr, noMobileText);
   	      host = host.replaceAll(FormatterUtil.MOBILENUMBER, mobileNumberStr);
 			  } else {

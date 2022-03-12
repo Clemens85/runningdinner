@@ -14,7 +14,7 @@ export interface DinnerRouteTeam {
   meal: Meal;
   hostTeamMember: DinnerRouteTeamHost;
   geocodingResult?: GeocodingResult;
-  contactInfo: string;
+  contactInfo: string[];
 }
 
 export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {

@@ -2,6 +2,10 @@
 package org.runningdinner.participant.rest.dinnerroute;
 
 import com.google.common.base.MoreObjects;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.participant.Participant;
@@ -20,7 +24,7 @@ public class DinnerRouteTeamTO {
 
   private DinnerRouteTeamHostTO hostTeamMember;
   
-  private String contactInfo;
+  private List<String> contactInfo = new ArrayList<>();
   
   @JsonIgnore
   private Team rawTeam;
@@ -91,12 +95,12 @@ public class DinnerRouteTeamTO {
     return rawTeam;
   }
   
-  public String getContactInfo() {
-
-  	return contactInfo;
+	public List<String> getContactInfo() {
+		
+		return new ArrayList<>(contactInfo);
 	}
 
-	public void setContactInfo(String contactInfo) {
+	public void setContactInfo(List<String> contactInfo) {
 		
 		this.contactInfo = contactInfo;
 	}

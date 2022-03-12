@@ -5,9 +5,8 @@ import {
   DinnerRouteTeam,
   filterDinnerRouteTeamsForValidGeocdingResults,
   Fullname,
-  getCenterPosition, getFullname, isGeocdingResultValidForAllTeams, isGeocodingResultValid,
+  getCenterPosition, getFullname, isArrayEmpty, isGeocdingResultValidForAllTeams, isGeocodingResultValid,
   isSameDinnerRouteTeam,
-  isStringEmpty,
   isStringNotEmpty,
   Team,
   TeamStatus,
@@ -124,6 +123,19 @@ function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTeam}: Tea
 
   const teamCardClasses = useTeamCardStyles();
 
+  function renderContactInfo() {
+    if (isArrayEmpty(contactInfo)) {
+      return <Span>-</Span>;
+    }
+    return (
+      <>
+        { contactInfo.map((mobileNumber, index) => 
+            <>{index > 0 ? <span>, &nbsp;</span> : ""}<a style={{ color: 'inherit', textDecoration: 'none' }} href={`tel:${mobileNumber}`} key={mobileNumber}>{mobileNumber}</a></>)
+        }
+      </>
+    );
+  }
+
   return (
     <>
       <div className={clsx(teamCardClasses.teamCardLine, teamCardClasses.marginBottom)}>
@@ -143,7 +155,8 @@ function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTeam}: Tea
       </div>
 
       <div className={clsx( teamCardClasses.teamCardLine, {[teamCardClasses.hidden]: isCurrentTeam} )}>
-        <SmallTitle i18n="contact"/>:&nbsp; <Span>{isStringEmpty(contactInfo) ? "-" : contactInfo}</Span>
+        <SmallTitle i18n="contact"/>:&nbsp; { renderContactInfo() }
+        {/* <Span>{isArrayEmpty(contactInfo) ? "-" : <a style={{ color: 'inherit', textDecoration: 'none' }} href={`tel:${contactInfo}`}>{contactInfo}</a>}</Span> */}
       </div>
     </>
   )
