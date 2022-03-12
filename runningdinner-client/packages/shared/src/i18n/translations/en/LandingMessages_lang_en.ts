@@ -155,6 +155,8 @@ const LandingMessages_en: any = {
     mail_sending_personalized_teams: 'Mails for team arrangements',
     mail_sending_personalized_dinnerroutes: 'Mails for Dinner-Routes',
 
+    attention_mobilenumber_missing: "You have not entered a mobile number. To make it easier to contact you (e.g. if you are a host), it would be very helpful to enter a number. If you don't want to do that, you can also register without giving a number.",
+
     participant_management_headline: 'Manage Participants',
 
     participant_management_crud_feature: 'Add / edit / delete participant',

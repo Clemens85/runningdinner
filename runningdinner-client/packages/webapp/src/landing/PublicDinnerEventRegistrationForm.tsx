@@ -47,6 +47,7 @@ import PhoneAndroidIcon from '@material-ui/icons/PhoneAndroid';
 import DoneIcon from '@material-ui/icons/Done';
 import { useQuery } from "../common/hooks/QueryHook";
 import { getDecodedQueryParam } from "../common/QueryParamDecoder";
+import { Alert, AlertTitle } from "@material-ui/lab";
 
 
 const drawerWidth = "1024px";
@@ -271,7 +272,7 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
         </Box>
 
         { isStringNotEmpty(registrationSummary.teamPartnerWish) &&
-          <Box>
+          <Box mb={2}>
             { !registrationSummary.teamPartnerWishState &&
               <Span noWrap={true}>
                 <Trans i18nKey={"landing:teampartner_wish_summary"}
@@ -291,6 +292,14 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
               </Span> }
           </Box>
         }
+
+        { isStringEmpty(registrationSummary.mobile) && 
+            <Alert severity={"info"}>
+              <AlertTitle>{t('common:attention')}</AlertTitle>
+              {t('landing:attention_mobilenumber_missing')}
+            </Alert>
+        }
+
 
       </DialogContent>
       <DialogActionsPanel onOk={onPerformRegistration} onCancel={onCancel}

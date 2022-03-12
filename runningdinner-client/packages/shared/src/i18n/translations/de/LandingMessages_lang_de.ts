@@ -155,6 +155,8 @@ const LandingMessages_de: any = {
     mail_sending_personalized_teams: 'Versand der Team-Einteilungen',
     mail_sending_personalized_dinnerroutes: 'Versand der Dinner-Routen',
 
+    attention_mobilenumber_missing: 'Du hast keine Handy-Nr angegeben. Um die Kontaktaufnahme zu erleichtern (z.B. wenn du Gastgeber bist), wäre es sehr hilfreich eine Nummer anzugeben. Wenn du das nicht möchtest, kannst du dich aber auch ohne Angabe anmelden.',
+
     participant_management_headline: 'Teilnehmer-Verwaltung',
 
     participant_management_crud_feature: 'Teilnehmer hinzufügen / bearbeiten / löschen',
