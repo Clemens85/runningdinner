@@ -28,6 +28,7 @@ import {AlertTitle} from "@material-ui/lab";
 import {useGeoPosition} from "../hooks/GeoPositionHook";
 import {useDynamicFullscreenHeight} from "../hooks/DynamicFullscreenHeightHook";
 import {Helmet} from "react-helmet-async";
+import LinkExtern from '../theme/LinkExtern';
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -127,10 +128,11 @@ function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTeam}: Tea
     if (isArrayEmpty(contactInfo)) {
       return <Span>-</Span>;
     }
+
     return (
       <>
         { contactInfo.map((mobileNumber, index) => 
-            <>{index > 0 ? <span>, &nbsp;</span> : ""}<a style={{ color: 'inherit', textDecoration: 'none' }} href={`tel:${mobileNumber}`} key={mobileNumber}>{mobileNumber}</a></>)
+            <>{index > 0 ? <span>, &nbsp;</span> : ""}<LinkExtern href={`tel:${mobileNumber}`} key={mobileNumber} title={mobileNumber}/></>)
         }
       </>
     );
