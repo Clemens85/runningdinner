@@ -4,9 +4,11 @@ import {
   BaseRunningDinnerProps, CallbackHandler,
   fetchNextParticipantActivities,
   getParticipantRegistrationActivitiesFetchSelector,
+  HttpError,
   isArrayNotEmpty,
   isParticipantRegistrationActivitiesEmpty, LocalDate, Time, updateParticipantSubscription,
-  useAdminSelector, useDisclosure
+  useAdminDispatch,
+  useAdminSelector, useBackendIssueHandler, useDisclosure
 } from "@runningdinner/shared";
 import {
   Box,
@@ -29,6 +31,7 @@ import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 import DoneIcon from "@material-ui/icons/Done";
 import {useAdminNavigation} from "../AdminNavigationHook";
 import useCommonStyles from "../../common/theme/CommonStyles";
+import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
 
 export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps) {
 
@@ -147,18 +150,25 @@ interface ConfirmParticipantActivationDialogProps extends BaseAdminIdProps {
 function ConfirmParticipantActivationDialog({participantActivity, adminId, onClose}: ConfirmParticipantActivationDialogProps) {
 
   const {t} = useTranslation(["admin", "common"]);
-  const dispatch = useDispatch();
+  const dispatch = useAdminDispatch();
   const {showSuccess} = useCustomSnackbar();
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: ["admin", "common"]
+    }
+  });
+
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const {originator, relatedEntityId: participantId} = participantActivity;
 
   async function handleActivateSubscriptionManual() {
     try {
-      await dispatch(updateParticipantSubscription({adminId, participantId}));
+      await dispatch(updateParticipantSubscription({adminId, participantId})).unwrap();
       showSuccess(t("admin:participant_manual_activation_success", {participantEmail: originator}));
       onClose();
     } catch (e) {
-      // TODO
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   }
 

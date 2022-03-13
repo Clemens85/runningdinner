@@ -75,9 +75,13 @@ async function enhanceParticipantActivitiesByActivationInfo(adminId: string, par
 
 export const updateParticipantSubscription = createAsyncThunk(
   'updateParticipantSubscription',
-  async (props: Record<string, string>) => {
+  async (props: Record<string, string>, thunkAPI) => {
     const {adminId, participantId} = props;
-    return await updateParticipantSubscriptionByAdminIdAndIdAsync(adminId, participantId);
+    try {
+      return await updateParticipantSubscriptionByAdminIdAndIdAsync(adminId, participantId);
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e);
+    }
   }
 );
 
