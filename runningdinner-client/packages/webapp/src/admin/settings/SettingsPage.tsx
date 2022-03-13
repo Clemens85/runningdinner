@@ -83,6 +83,7 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
 
   function handleRunningDinnerUpdated(updatedRunningDinner: RunningDinner) {
     setCurrentRunningDinner(updatedRunningDinner);
+    dispatch(setUpdatedRunningDinner(updatedRunningDinner));
   }
 
   async function handleCancelEventDialogClose(confirmed: boolean) {
@@ -95,7 +96,6 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
       const updatedRunningDinner = await cancelRunningDinnerAsync(adminId);
       handleRunningDinnerUpdated(updatedRunningDinner);
       closeCancelEventDialog();
-      dispatch(setUpdatedRunningDinner(updatedRunningDinner));
       navigateToParticipantMessages(adminId, MessageSubType.RECIPIENTS_ALL);
     } catch (e) {
       showHttpErrorDefaultNotification(e as HttpError);
