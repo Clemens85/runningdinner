@@ -1,7 +1,11 @@
 const NewsMessages_de: any = {
 
-  news_title_20220313: 'Neue Oberfläche',
-  news_content_20220313: 'Wie ihr vielleicht schon bemerkt habt, wurde die gesamte Benutzeroberfläche neu implementiert. ' + 
+  news_title_20220313: 'Handy-Nr in Dinner-Routen integriert',
+  news_content_20220313: 'Oft angefragt, nun endlich verfügbar: ' +
+  'Ihr könnt nun auch die Handy-Nr der Gastgeber bequem über den Dinner-Routen-Mailversand mitschicken bzw. sind diese auch in der Live Dinner-Routen-Sicht verfügbar.',
+
+  news_title_20220312: 'Neue Oberfläche',
+  news_content_20220312: 'Wie ihr vielleicht schon bemerkt habt, wurde die gesamte Benutzeroberfläche neu implementiert. ' + 
                          'Neben kleineren Verbesserungen, wurden ausserdem auch noch Bugs bei der Team-Einteilung bezüglich der Geschlechter-Verteilung gefixt. ' + 
                          'Es wurde zwar alles ausführlich getestet, falls ihr aber Fehler bemerkt oder etwas nicht (wie gewohnt) funktioniert, meldet euch bitte über die Feedback-Funktion!',
 

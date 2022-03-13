@@ -1,7 +1,10 @@
 const NewsMessages_en: any = {
 
-  news_title_20220313: 'New User Interface',
-  news_content_20220313: 'As you may have noticed, the entire user interface has been reimplemented. ' + 
+  news_title_20220313: 'Mobile number integrated into dinner routes',
+  news_content_20220313: "Often requested, now finally available: You can now also conveniently send the mobile numbers of the hosts via the dinner route mails and/or they are also available in the live dinner route view.",
+
+  news_title_20220312: 'New User Interface',
+  news_content_20220312: 'As you may have noticed, the entire user interface has been reimplemented. ' + 
                          'Besides minor improvements, bugs in the team generation regarding the gender distribution have also been fixed. ' + 
                          "Everything has been tested extensively, but if you notice any bugs or something doesn't work (as usual), please use the feedback function!",
    
