@@ -29,6 +29,26 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css" />
 
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+    <script>
+      window.addEventListener("load", function(){
+        window.cookieconsent.initialise({
+          "palette": {
+            "popup": {
+              "background": "#1d8a8a"
+            },
+            "button": {
+              "background": "#62ffaa"
+            }
+          },
+          "theme": "classic",
+          "position": "bottom-left"
+        })});
+    </script>
+
+
     <title>Running Dinner React</title>
   </head>
   <body>
