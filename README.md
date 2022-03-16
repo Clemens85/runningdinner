@@ -30,3 +30,7 @@ Currently the software is built on a local Jenkins but is in a migration process
 ## Author
 **Clemens Stich**
 + runyourdinner at gmail.com
+
+## Support 
+
+Thanks to JetBrains for giving a <a href="https://www.jetbrains.com/community/opensource/#support" target="_blank">free</a> ultimate IntellIJ license for this project. 
