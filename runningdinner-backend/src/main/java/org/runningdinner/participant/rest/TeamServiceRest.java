@@ -47,18 +47,33 @@ public class TeamServiceRest {
 	
   @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.GET)
   public TeamArrangementListTO findTeamArrangements(@PathVariable("adminId") String adminId, 
-                                                    @RequestParam(value = "filterCancelledTeams", defaultValue = "false", required = false) boolean filterCancelledTeams) {
+                                                    @RequestParam(value = "filterCancelledTeams", defaultValue = "false", required = false) boolean excludeCancelledTeams) {
 
-    TeamArrangementListTO result = new TeamArrangementListTO();
-    List<Team> teams = teamService.findTeamArrangements(adminId, filterCancelledTeams);
+    List<Team> teams = teamService.findTeamArrangements(adminId, excludeCancelledTeams);
 
-    for (Team team : teams) {
+    TeamArrangementListTO result = mapToTeamArrangementList(adminId, teams);
+    return result;
+  }
+  
+  @RequestMapping(value = "/runningdinner/{adminId}/waitinglist-fillable", method = RequestMethod.GET)
+  public TeamArrangementListTO findTeamArrangementsWaitingListFillable(@PathVariable("adminId") String adminId) {
+
+    List<Team> teams = teamService.findTeamArrangementsWaitingListFillable(adminId);
+
+    TeamArrangementListTO result = mapToTeamArrangementList(adminId, teams);
+    
+    return result;
+  }
+
+	private TeamArrangementListTO mapToTeamArrangementList(String adminId, List<Team> teams) {
+		
+		TeamArrangementListTO result = new TeamArrangementListTO();
+		for (Team team : teams) {
       result.addTeam(new TeamTO(team));
     }
     result.setDinnerAdminId(adminId);
-
     return result;
-  }
+	} 
   
   @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.POST)
   public TeamArrangementListTO generateTeamArrangements(@PathVariable("adminId") final String adminId) {

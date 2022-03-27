@@ -1,7 +1,6 @@
 import React from 'react'
 import { TableContainer, Paper, Table, TableBody, Grid, Box, }from "@material-ui/core";
 import ParticipantRow from "./ParticipantRow";
-import {Alert, AlertTitle} from "@material-ui/lab";
 import {
   getAssignableParticipants,
   getNotAssignableParticipants,
@@ -11,6 +10,7 @@ import {
   useNumberOfParticipants
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
+import { WaitingListManagementAlert } from './WaitingListManagementAlert';
 
 export default function ParticipantsList({participants, selectedParticipant, participantsListInfo, hasSearchText, onClick}) {
 
@@ -20,9 +20,11 @@ export default function ParticipantsList({participants, selectedParticipant, par
   const { sessionData } = runningDinner;
   const { numberOfParticipantsWaitingList, hasNotEnoughtParticipantsForDinner } = useNumberOfParticipants(participants, sessionData);
 
-  const participantsOrganizedInTeams = buildParticipantRows(getParticipantsOrganizedInTeams(participants));
-  const participantsAssignable = buildParticipantRows(getAssignableParticipants(participants));
-  const participantsNotAssignable = buildParticipantRows(getNotAssignableParticipants(participants));
+  const notAssignableParticipants = getNotAssignableParticipants(participants);
+
+  const participantsOrganizedInTeamsRows = buildParticipantRows(getParticipantsOrganizedInTeams(participants));
+  const participantsAssignableRows = buildParticipantRows(getAssignableParticipants(participants));
+  const participantsNotAssignableRows = buildParticipantRows(notAssignableParticipants);
 
   function buildParticipantRows(_participants) {
     return _participants.map((participant) =>
@@ -42,9 +44,9 @@ export default function ParticipantsList({participants, selectedParticipant, par
           <TableContainer component={Paper}>
             <Table size={"small"}>
               <TableBody>
-                {participantsOrganizedInTeams}
-                {participantsAssignable}
-                { (hasSearchText || hasNotEnoughtParticipantsForDinner) && participantsNotAssignable}
+                {participantsOrganizedInTeamsRows}
+                {participantsAssignableRows}
+                { (hasSearchText || hasNotEnoughtParticipantsForDinner) && participantsNotAssignableRows}
               </TableBody>
             </Table>
           </TableContainer>
@@ -52,14 +54,11 @@ export default function ParticipantsList({participants, selectedParticipant, par
           {showParticiapntsOnWaitingListInOwnSection &&
             <Box mt={2}>
               <Box mb={2}>
-                <Alert severity={"info"} variant="outlined">
-                  <AlertTitle>{t('participants_remaining_not_assignable_headline')}</AlertTitle>
-                  {t('participants_remaining_not_assignable_text')}
-                </Alert>
+                <WaitingListManagementAlert participantsNotAssignable={notAssignableParticipants} runningDinner={runningDinner} />
               </Box>
               <TableContainer component={Paper}>
                 <Table size={"small"}>
-                  <TableBody>{participantsNotAssignable}</TableBody>
+                  <TableBody>{participantsNotAssignableRows}</TableBody>
                 </Table>
               </TableContainer>
             </Box>

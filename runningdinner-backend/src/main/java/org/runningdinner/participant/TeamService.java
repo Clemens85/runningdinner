@@ -86,16 +86,36 @@ public class TeamService {
   @Autowired
   private LocalizationProviderService localizationProviderService;
   
-  public List<Team> findTeamArrangements(@ValidateAdminId String adminId, boolean filterCancelledTeams) {
+  public List<Team> findTeamArrangements(@ValidateAdminId String adminId, boolean excludeCancelledTeams) {
 
     List<Team> teams = teamRepository.findWithTeamMembersAndMealClassDistinctByAdminIdOrderByTeamNumber(adminId);
-    if (filterCancelledTeams) {
+    if (excludeCancelledTeams) {
       teams = filterCancelledTeams(teams);
     }
     return teams;
   }
 
-  public TeamMeetingPlan findTeamMeetingPlan(@ValidateAdminId String adminId, UUID teamId) {
+	public List<Team> findTeamArrangementsWaitingListFillable(@ValidateAdminId String adminId) {
+		
+		final List<Team> teams = findTeamArrangements(adminId, false);
+		
+    final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    
+		List<Team> result = teams
+													.stream()
+													.filter(t -> t.getStatus() == TeamStatus.CANCELLED || hasCancelledTeamMember(t, runningDinner.getConfiguration()))
+													.distinct()
+													.collect(Collectors.toList());
+		
+		return result;
+	}
+  
+  private boolean hasCancelledTeamMember(Team team, RunningDinnerConfig configuration) {
+  	
+  	return configuration.getTeamSize() > team.getTeamMembers().size();
+	}
+
+	public TeamMeetingPlan findTeamMeetingPlan(@ValidateAdminId String adminId, UUID teamId) {
 
     Team team = teamRepository.findWithVisitationPlanByIdAndAdminId(teamId, adminId);
     Set<Team> hostTeamReferencess = team.getHostTeams();

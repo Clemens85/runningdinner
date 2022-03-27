@@ -84,9 +84,7 @@ public class TeamServiceTest {
     assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
     Set<Participant> oldTeamMembers = team.getTeamMembers();
 
-    TeamCancellation teamCancellation = new TeamCancellation();
-    teamCancellation.setReplaceTeam(false);
-    teamCancellation.setTeamId(team.getId());
+    TeamCancellation teamCancellation = newCancellationWithoutReplacement(team); 
 
     TeamCancellationResult result = teamService.cancelTeam(runningDinner.getAdminId(), teamCancellation);
     assertTeamCancellationResultWithoutNotification(result, oldTeamMembers);
@@ -400,7 +398,37 @@ public class TeamServiceTest {
     assertThat(teamService.findTeamArrangements(runningDinner.getAdminId(), true)).hasSize(8);
   }
   
-
+  @Test
+  public void teamsToBeUsedForWaitingList() {
+  	
+    String adminId = runningDinner.getAdminId();
+		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
+    	.isEmpty();
+    
+    List<Team> allTeams = teamService.findTeamArrangements(adminId, false);
+    Team firstTeam = allTeams.get(0);
+    Team lastTeam = allTeams.get(8);
+    
+    teamService.cancelTeamMember(adminId, firstTeam.getId(), firstTeam.getHostTeamMember().getId());
+    
+		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
+			.containsExactly(firstTeam);
+		
+		teamService.cancelTeam(adminId, newCancellationWithoutReplacement(lastTeam));
+		
+		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
+			.containsExactly(firstTeam, lastTeam);
+  }
+  
+  private TeamCancellation newCancellationWithoutReplacement(Team team) {
+  	
+  	TeamCancellation result = new TeamCancellation();
+  	result.setTeamId(team.getId());
+  	result.setDryRun(false);
+  	result.setReplaceTeam(false);
+  	return result;
+  }
+  
   private Team findFirstTeam() {
 
     List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);

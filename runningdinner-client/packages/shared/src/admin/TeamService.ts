@@ -17,6 +17,12 @@ export async function findTeamsNotCancelledAsync(adminId: string): Promise<Array
   return response.data ? response.data.teams : []; // The backend API provides a result which contains the teams as own attribute
 }
 
+export async function findTeamsForWaitingListAsync(adminId: string): Promise<Array<Team>> {
+  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/waitinglist-fillable`);
+  const response = await axios.get(url);
+  return response.data ? response.data.teams : []; // The backend API provides a result which contains the teams as own attribute
+}
+
 export async function createTeamArrangementsAsync(adminId: string): Promise<TeamArrangementList> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}`);
   const response = await axios.post(url);
