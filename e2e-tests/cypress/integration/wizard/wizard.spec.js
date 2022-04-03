@@ -9,7 +9,6 @@ import {
   getWizardNextButton,
   getSelectedLanguageButton,
   getMealInputByIndex,
-  getMealTimeControlByMealLabel,
   getMealTimeControlInputByMealLabel,
   openMealTimeControlTimePickerByMealLabel,
   selectHourInTimePicker, applyTimePickerSelection, getWizardPublicTitleInput, getWizardEndOfRegistrationDateInput,
@@ -20,7 +19,7 @@ describe('participants list', () => {
 
   const NOW = new Date();
   const NOW_PLUS_7_DAYS = plusDays(NOW, 7);
-  const NOW_PLUS_5_DAYS = plusDays(NOW, 5);
+  const NOW_PLUS_5_DAYS = plusDays(NOW, 2);
 
   beforeEach(() => {
   })
