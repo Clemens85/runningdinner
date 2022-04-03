@@ -16,7 +16,6 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 
-
 export function navigateParticipantsList(adminId) {
   cy.visit(`/admin/${adminId}/participants`);
 }
@@ -25,3 +24,14 @@ export function getByTestId(dataTestId, optionalQuerySuffix) {
   const querySuffix = optionalQuerySuffix ? optionalQuerySuffix : '';
   return cy.get(`[data-testid="${dataTestId}"]${querySuffix}`);
 }
+
+export function getSelectedLanguageButton(lang) {
+  return getByTestId(`language-switch-${lang}-selected`);
+}
+
+export function getUnselectedLanguageButton(lang) {
+  return getByTestId(`language-switch-${lang}`);
+}
+
+export * from "./wizard/wizardHelper";
+export * from "./mui/muiHelper";

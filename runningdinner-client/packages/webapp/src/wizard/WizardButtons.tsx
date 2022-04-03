@@ -44,8 +44,8 @@ export default function WizardButtons({onSubmitData}: WizardButtonsProps) {
   return (
       <SpacingGrid container justify="flex-end" my={3} className={classes.textAlignRight}>
         <Grid item xs={12}>
-          { previousNavigationStep && <SecondaryButton onClick={handleSubmit(handlePrevious)}>{t('common:back')}</SecondaryButton> }
-          { nextNavigationStep && <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleNext)} ml={1}>
+          { previousNavigationStep && <SecondaryButton onClick={handleSubmit(handlePrevious)} data-testid={"wizard-previous-action"}>{t('common:back')}</SecondaryButton> }
+          { nextNavigationStep && <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleNext)} ml={1} data-testid={"wizard-next-action"}>
                                       { lastStepBeforeSummary ? t('wizard:finish') : t('common:next') }
                                   </PrimaryButton> }
         </Grid>

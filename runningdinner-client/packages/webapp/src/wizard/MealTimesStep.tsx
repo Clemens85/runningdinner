@@ -78,7 +78,7 @@ export default function MealTimesStep() {
 
   const mealTimeFields = mealsFormState.map((meal) =>
       <SpacingGrid item key={meal.label} pr={6}>
-        <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
+        <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} dataTestId={`meal-time-${meal.label}`} />
       </SpacingGrid>
   );
 
