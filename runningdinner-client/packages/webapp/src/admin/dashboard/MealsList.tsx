@@ -62,7 +62,9 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate, dashbo
           <Grid container justify={"flex-end"}>
             <Grid item>
               <Box pr={2} mt={-2} pb={2}>
-                <PrimarySuccessButtonAsync onClick={() => setEditMealsDialogOpen(true)} size={"small"}>{t('common:label_edit')}</PrimarySuccessButtonAsync>
+                <PrimarySuccessButtonAsync onClick={() => setEditMealsDialogOpen(true)} size={"small"} data-testid="open-edit-meals-action">
+                  {t('common:label_edit')}
+                </PrimarySuccessButtonAsync>
               </Box>
             </Grid>
           </Grid>

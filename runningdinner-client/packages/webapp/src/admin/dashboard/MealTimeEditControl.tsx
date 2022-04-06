@@ -4,10 +4,9 @@ import {CallbackHandler, Meal} from "@runningdinner/shared";
 
 export interface MealTimeEditControlProps extends Meal {
   onHandleTimeChange: CallbackHandler
-  dataTestId?: string;
 }
 
-export default function MealTimeEditControl({id, label, time, dataTestId, onHandleTimeChange}: MealTimeEditControlProps) {
+export default function MealTimeEditControl({id, label, time, onHandleTimeChange}: MealTimeEditControlProps) {
 
   return (
       <KeyboardTimePicker
@@ -16,7 +15,7 @@ export default function MealTimeEditControl({id, label, time, dataTestId, onHand
           id={id}
           label={label}
           value={time}
-          data-testid={dataTestId}
+          data-testid={`meal-time-${label}`}
           onChange={onHandleTimeChange}
           KeyboardButtonProps={{
             'aria-label': 'change time',

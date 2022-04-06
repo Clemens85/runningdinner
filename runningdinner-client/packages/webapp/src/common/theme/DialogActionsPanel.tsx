@@ -26,10 +26,10 @@ const DialogActionsPanel = ({onOk, okLabel, danger = false, onCancel, cancelLabe
       <DialogActions>
         <Box p={padding} className={isMobileDevice ? commonStyles.fullWidth: ""}>
           <SecondaryButton onClick={onCancel} className={isMobileDevice ? commonStyles.fullWidth: ""}>{cancelLabel}</SecondaryButton>
-          { danger ? <PrimaryDangerButtonAsync onClick={onOk} size={"medium"} className={isMobileDevice ? commonStyles.fullWidth: ""}>
+          { danger ? <PrimaryDangerButtonAsync onClick={onOk} size={"medium"} className={isMobileDevice ? commonStyles.fullWidth: ""} data-testid="dialog-submit">
                         {okLabel}
                       </PrimaryDangerButtonAsync>
-                    : <PrimarySuccessButtonAsync onClick={onOk} size={"medium"} className={isMobileDevice ? commonStyles.fullWidth: ""}>
+                    : <PrimarySuccessButtonAsync onClick={onOk} size={"medium"} className={isMobileDevice ? commonStyles.fullWidth: ""} data-testid="dialog-cancel">
                         {okLabel}
                       </PrimarySuccessButtonAsync> }
         </Box>
