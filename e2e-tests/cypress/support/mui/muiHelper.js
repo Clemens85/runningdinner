@@ -26,3 +26,7 @@ export function applyTimePickerSelection() {
            .filter(`:contains("OK")`)
            .click({force: true});
 }
+
+export function assertToastIsShown(toastText) {
+  cy.contains(toastText);
+}

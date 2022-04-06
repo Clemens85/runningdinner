@@ -1,4 +1,4 @@
-import {getByTestId, getTextInputByName} from "../index";
+import {getByTestId, getMealTimeControlByMealLabel, getTextInputByName} from "../index";
 
 export function navigateWizardStart(demo) {
   cy.visit("/create-running-dinner");
@@ -36,16 +36,6 @@ export function getWizardDateInput() {
 
 export function getMealInputByIndex(index) {
   return getTextInputByName(`meals[${index}].label`);
-}
-
-export function getMealTimeControlByMealLabel(mealLabel) {
-  return getByTestId(`meal-time-${mealLabel}`);
-}
-
-export function getMealTimeControlInputByMealLabel(mealLabel) {
-  return getMealTimeControlByMealLabel(mealLabel)
-          .find("input")
-          .first();
 }
 
 export function openMealTimeControlTimePickerByMealLabel(mealLabel) {

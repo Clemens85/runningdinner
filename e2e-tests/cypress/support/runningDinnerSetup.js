@@ -17,6 +17,7 @@ export function createRunningDinner(createRunningDinnerSettings) {
       .then(runningDinnerJson => {
         runningDinnerJson.basicDetails.date = date;
         runningDinnerJson.basicDetails.registrationType = registrationType;
+        runningDinnerJson.publicSettings.endOfRegistrationDate = date;
         if (runningDinnerJson.basicDetails.registrationType === "CLOSED") {
           runningDinnerJson.publicSettings = null;
         }

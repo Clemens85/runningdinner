@@ -86,7 +86,7 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
           <Grid item xs={12} md={4}>
             <Box {...padding}>
               { dashboardAdminActivities && <MealsList meals={meals}
-                                                       adminId={adminId}
+                                                       runningDinner={runningDinner}
                                                        onRunningDinnerUpdate={handleRunningDinnerUpdate}
                                                        dashboardAdminActivities={dashboardAdminActivities} /> }
             </Box>

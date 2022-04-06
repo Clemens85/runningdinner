@@ -11,8 +11,8 @@ import {
   CallbackHandler,
   DashboardAdminActivities,
   isMessageActivityContained,
-  isSameEntity,
-  Meal
+  isSameEntity, isValidDate,
+  Meal, setHoursAndMinutesFromSrcToDest
 } from "@runningdinner/shared";
 import Alert from "@material-ui/lab/Alert";
 import {AlertTitle} from "@material-ui/lab";
@@ -24,6 +24,7 @@ type EditMealsDialogState = {
 
 export interface EditMealsDialogProps extends WithTranslation {
   meals: Meal[];
+  runningDinnerDate: Date;
   onCancel: CallbackHandler;
   onSave: CallbackHandler;
   open: boolean;
@@ -48,7 +49,8 @@ class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDia
     const meals = cloneDeep(this.state.meals);
     for (let i = 0; i < meals.length; i++) {
       if (isSameEntity(meals[i], meal)) {
-        meals[i].time = newTime;
+        meals[i].time = isValidDate(newTime) ? setHoursAndMinutesFromSrcToDest(newTime, this.props.runningDinnerDate) : newTime;
+          // newTime;
       }
     }
     this.setState({

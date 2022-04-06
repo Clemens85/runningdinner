@@ -20,6 +20,10 @@ export function navigateParticipantsList(adminId) {
   cy.visit(`/admin/${adminId}/participants`);
 }
 
+export function navigateAdminDashboard(adminId) {
+  cy.visit(`/admin/${adminId}`);
+}
+
 export function getByTestId(dataTestId, optionalQuerySuffix) {
   const querySuffix = optionalQuerySuffix ? optionalQuerySuffix : '';
   return cy.get(`[data-testid="${dataTestId}"]${querySuffix}`);
@@ -33,5 +37,21 @@ export function getUnselectedLanguageButton(lang) {
   return getByTestId(`language-switch-${lang}`);
 }
 
+export function getMealTimeControlByMealLabel(mealLabel) {
+  return getByTestId(`meal-time-${mealLabel}`);
+}
+
+export function getMealTimeControlInputByMealLabel(mealLabel) {
+  return getMealTimeControlByMealLabel(mealLabel)
+    .find("input")
+    .first();
+}
+
+export function submitStandardDialog() {
+  return getByTestId("dialog-submit")
+          .click({ force: true });
+}
+
 export * from "./wizard/wizardHelper";
 export * from "./mui/muiHelper";
+export * from "./admin/adminDashboardHelper";

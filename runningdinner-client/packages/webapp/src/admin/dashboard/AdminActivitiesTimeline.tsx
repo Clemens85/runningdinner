@@ -78,7 +78,7 @@ function TimelineContentPanel({activityDate, activityType, activityHeadline, act
   }
 
   return (
-    <div className="timeline-panel">
+    <div className="timeline-panel" data-testid="admin-activity-container">
       <div className="timeline-heading">
         <Grid container alignItems="center">
           <Grid item>

@@ -6,22 +6,23 @@ import {useTranslation} from "react-i18next";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import {
-  BaseAdminIdProps, DashboardAdminActivities,
+  BaseAdminIdProps, BaseRunningDinnerProps, DashboardAdminActivities,
   Meal, RunningDinner,
   updateMealTimesAsync, useBackendIssueHandler,
 } from "@runningdinner/shared";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 
-export interface MealsListProps extends BaseAdminIdProps {
+export interface MealsListProps extends BaseRunningDinnerProps {
   meals: Meal[];
   dashboardAdminActivities: DashboardAdminActivities
   onRunningDinnerUpdate: (runningDinner: RunningDinner) => unknown;
 }
 
-export default function MealsList({meals, adminId, onRunningDinnerUpdate, dashboardAdminActivities}: MealsListProps) {
+export default function MealsList({meals, runningDinner, onRunningDinnerUpdate, dashboardAdminActivities}: MealsListProps) {
 
   const {showSuccess} = useCustomSnackbar();
+  const {adminId} = runningDinner;
 
   const mealItems = meals.map((meal) =>
       <MealItem {...meal} key={meal.id} />
@@ -47,7 +48,7 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate, dashbo
 
   function handleUpdateSuccess() {
     setEditMealsDialogOpen(false);
-    showSuccess('Zeitplan erfolgreich gespeichert!');
+    showSuccess(t('admin:mealtimes_save_success'));
   }
 
   return (
@@ -71,10 +72,11 @@ export default function MealsList({meals, adminId, onRunningDinnerUpdate, dashbo
         </CardActions>
 
         <EditMealsDialog open={editMealsDialogOpen}
-                                       dashboardAdminActivities={dashboardAdminActivities}
-                                       onSave={(mealsToUpdate) => updateMeals(mealsToUpdate)}
-                                       meals={meals}
-                                       onCancel={() => setEditMealsDialogOpen(false)}>
+                         dashboardAdminActivities={dashboardAdminActivities}
+                         runningDinnerDate={runningDinner.basicDetails.date}
+                         onSave={(mealsToUpdate) => updateMeals(mealsToUpdate)}
+                         meals={meals}
+                         onCancel={() => setEditMealsDialogOpen(false)}>
        </EditMealsDialog>
 
       </Card>
