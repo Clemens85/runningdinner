@@ -5,7 +5,6 @@ import {Fetch} from "../common/Fetch";
 import {
   AddressLocation,
   findPublicRunningDinnersAsync,
-  getTruncatedText,
   isArrayNotEmpty, LocalDate,
   PublicRunningDinner
 } from "@runningdinner/shared";
@@ -21,6 +20,7 @@ import {isLocalDevEnv} from "../common/EnvService";
 import {Alert, AlertTitle} from "@material-ui/lab";
 import LinkIntern from "../common/theme/LinkIntern";
 import {LANDING_CREATE_RUNNING_DINNER_PATH} from "../common/mainnavigation/NavigationPaths";
+import { TextViewHtml } from '../common/TextViewHtml';
 
 export function PublicDinnerEventsPage() {
 
@@ -49,7 +49,6 @@ function PublicDinnerEventsListPage({publicRunningDinners}: PublicDinnerEventsLi
   function renderPublicDinnerEventCard(publicRunningDinner: PublicRunningDinner) {
 
     const title = publicRunningDinner.publicSettings.title;
-    const publicDescriptionTeaser = getTruncatedText(publicRunningDinner.publicSettings.description, 256);
 
     let publicDinnerUrl = publicRunningDinner.publicSettings.publicDinnerUrl;
     if (isLocalDevEnv()) {
@@ -64,7 +63,9 @@ function PublicDinnerEventsListPage({publicRunningDinners}: PublicDinnerEventsLi
           <CardContent>
             <Subtitle>{title}</Subtitle>
             <Box>
-              <Span>{publicDescriptionTeaser}</Span>
+              <Span>
+                <TextViewHtml text={publicRunningDinner.publicSettings.description} limit={256} />
+              </Span>
             </Box>
             <Box pt={2}>
               <PrimaryButton href={publicDinnerUrl}>{t('common:more')}</PrimaryButton>

@@ -38,6 +38,7 @@ import {getLocalStorageItem, setLocalStorageItem} from "../common/LocalStorageSe
 import {Alert} from '@material-ui/lab';
 import LinkExtern from "../common/theme/LinkExtern";
 import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
+import { TextViewHtml } from '../common/TextViewHtml';
 
 export function PublicDinnerEventRegistrationPage() {
 
@@ -149,7 +150,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDi
 
       <Box mt={2}>
         <FormFieldset>{t("common:description")}</FormFieldset>
-        <Paragraph>{publicSettings.description}</Paragraph>
+        <Paragraph><TextViewHtml text={publicSettings.description}/></Paragraph>
       </Box>
 
       { isPublicContactInfoAvailable &&
