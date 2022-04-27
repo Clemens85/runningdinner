@@ -36,6 +36,10 @@ export interface Participant extends BaseEntity {
   geocodingResult?: GeocodingResult;
 }
 
+export interface SelectableParticipant extends Participant {
+  selected?: boolean;
+}
+
 export enum TeamPartnerWishState {
   NOT_EXISTING = "NOT_EXISTING",
   EXISTS_EMPTY_TEAM_PARTNER_WISH = "EXISTS_EMPTY_TEAM_PARTNER_WISH",
