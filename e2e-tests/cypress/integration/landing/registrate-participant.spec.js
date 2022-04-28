@@ -1,14 +1,14 @@
 /// <reference types="cypress" />
 
 import {
-  assertDashboardAdminActivityContains,
-  assertEditMealTimesDialogIsClosed, assertGenderSelected,
-  assertMealsExistInDashboardWithTimes,
-  assertToastIsShown, getByTestId,
-  getMealTimeControlInputByMealLabel, getTextInputByName,
-  navigateAdminDashboard,
-  openEditMealTimesDialogAndExecuteInDialog,
-  submitStandardDialog,
+  assertFormValidationToastIsShown,
+  assertGenderSelected,
+  assertToastIsShown,
+  getByTestId,
+  getTextInputByName,
+  fillAddressFieldsInRegistrationForm,
+  fillPersonalFieldsInRegistrationForm,
+  submitStandardDialog, assertRegistrationFinishedPage, acknowledgeDataProcessing,
 } from "../../support";
 import {createRunningDinner, RUNNING_DINNER_ADMIN_EMAIL} from "../../support/runningDinnerSetup"
 
@@ -37,20 +37,15 @@ describe('participant registration', () => {
     cy.log("Ensure undefined is preselected as gender");
     assertGenderSelected("undefined");
 
-    getTextInputByName("firstnamePart").type("Max");
-    getTextInputByName("lastname").type("Mustermann");
-    getTextInputByName("email").type("Max@Mustermann.de");
+    fillPersonalFieldsInRegistrationForm("Max", "Mustermann", "Max@Mustermann.de");
     getByTestId("gender-male-action").click({ force: true});
     assertGenderSelected("male");
 
-    getTextInputByName("street").type("Musterstraße");
-    getTextInputByName("streetNr").type("1");
-    getTextInputByName("zip").type("79100");
-    getTextInputByName("cityName").type("Freiburg");
+    fillAddressFieldsInRegistrationForm("Musterstraße", "1", "79100", "Freiburg");
     getTextInputByName("addressRemarks").type("Adress-Bemerkungen");
     getTextInputByName("numSeats").type("6");
 
-    getByTestId("dataProcessingAcknowledged").click({ force: true});
+    acknowledgeDataProcessing();
 
     getByTestId("registration-form-next-action").click({force: true});
 
@@ -64,29 +59,43 @@ describe('participant registration', () => {
       submitStandardDialog();
     });
 
-    cy.contains("Anmeldung abgeschlossen");
-    cy.contains("Herzlichen Glückwunsch");
-    cy.contains(RUNNING_DINNER_ADMIN_EMAIL);
+    assertRegistrationFinishedPage();
   });
 
   it.only('non-numeric input of numSeats lead to validation issue', () => {
 
-    getTextInputByName("firstnamePart").type("Max");
-    getTextInputByName("lastname").type("Mustermann");
-    getTextInputByName("email").type("Max@Mustermann.de");
+    fillPersonalFieldsInRegistrationForm("Max", "Mustermann", "Max@Mustermann.de");
 
-    getTextInputByName("street").type("Musterstraße");
-    getTextInputByName("streetNr").type("1");
-    getTextInputByName("zip").type("79100");
-    getTextInputByName("cityName").type("Freiburg");
-    getTextInputByName("addressRemarks").type("Adress-Bemerkungen");
+    fillAddressFieldsInRegistrationForm("Musterstraße", "1", "79100", "Freiburg");
+
     getTextInputByName("numSeats").type("2-4");
 
-    getByTestId("dataProcessingAcknowledged").click({ force: true});
-
+    acknowledgeDataProcessing();
     getByTestId("registration-form-next-action").click({force: true});
 
+    getByTestId("registration-summary-dialog").should("not.exist");
     assertToastIsShown("Ungültige Eingabe");
+  });
+
+  it("numSeats is required for registration and 0 is valid", () => {
+    fillPersonalFieldsInRegistrationForm("Max", "Mustermann", "Max@Mustermann.de");
+
+    fillAddressFieldsInRegistrationForm("Musterstraße", "1", "79100", "Freiburg");
+
+    acknowledgeDataProcessing();
+
+    getByTestId("registration-form-next-action").click({force: true});
+    assertFormValidationToastIsShown();
+    getByTestId("registration-summary-dialog").should("not.exist");
+
+    getTextInputByName("numSeats").clear().type("0");
+    getByTestId("registration-form-next-action").click({force: true});
+    getByTestId("registration-summary-dialog").within(() => {
+      cy.contains("Du hast nicht genügend Plätze um als Gastgeber teilzunehmen, daher wird versucht dich jemandem zuzulosen der genügend Plätze hat").should("exist");
+      submitStandardDialog();
+    });
+
+    assertRegistrationFinishedPage();
   });
 
 })

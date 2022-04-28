@@ -30,3 +30,7 @@ export function applyTimePickerSelection() {
 export function assertToastIsShown(toastText) {
   cy.contains(toastText);
 }
+
+export function assertFormValidationToastIsShown() {
+  cy.contains("Ein paar Eingaben sind noch nicht ganz korrekt, bitte prüfe die Einträge in den rot markierten Feldern");
+}

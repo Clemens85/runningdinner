@@ -56,3 +56,4 @@ export * from "./wizard/wizardHelper";
 export * from "./mui/muiHelper";
 export * from "./admin/adminDashboardHelper";
 export * from "./commonHelper";
+export * from "./landing/registrationHelper";
