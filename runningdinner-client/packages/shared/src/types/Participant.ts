@@ -1,6 +1,7 @@
 import {BaseEntity} from "./Base";
 import {CONSTANTS} from "../Constants";
 import clone from "lodash/clone";
+import {isStringEmpty} from "@runningdinner/shared";
 
 export interface MealSpecifics {
   vegetarian: boolean,
@@ -22,7 +23,6 @@ export interface Participant extends BaseEntity {
   zip: string;
   cityName: string;
   age: number;
-  numberSeats: number | undefined;
   vegetarian: false,
   lactose: false,
   gluten:false,
@@ -67,7 +67,6 @@ const EMPTY_PARTICIPANT: Participant = {
   zip: '',
   cityName: '',
   age: -1,
-  numberSeats: -1,
   vegetarian: false,
   lactose: false,
   gluten:false,
@@ -88,7 +87,7 @@ const EXAMPLE_PARTICIPANT: Participant = {
   street: 'Musterstraße',
   streetNr: '1',
   age: 25,
-  numberSeats: 6
+  numSeats: 6
 };
 
 export function newEmptyParticipantInstance(): Participant {
@@ -97,4 +96,14 @@ export function newEmptyParticipantInstance(): Participant {
 
 export function newExampleParticipantInstance(): Participant {
   return clone(EXAMPLE_PARTICIPANT);
+}
+
+export function isNumSeatsPositiveIntegerOrEmpty(participant: Participant) {
+  const {numSeats} = participant;
+  const numSeatsStr = numSeats + "";
+  if (isStringEmpty(numSeatsStr)) {
+    return true;
+  }
+  return /^(0|[1-9]\d*)$/.test(numSeatsStr);
+
 }

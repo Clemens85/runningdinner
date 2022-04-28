@@ -3,14 +3,16 @@
 import {
   assertFormValidationToastIsShown,
   assertGenderSelected,
-  assertToastIsShown,
   getByTestId,
   getTextInputByName,
   fillAddressFieldsInRegistrationForm,
   fillPersonalFieldsInRegistrationForm,
-  submitStandardDialog, assertRegistrationFinishedPage, acknowledgeDataProcessing,
+  submitStandardDialog,
+  assertRegistrationFinishedPage,
+  acknowledgeDataProcessing,
+  assertRegistrationSummaryDialogNotShown, assertRegistrationSummaryDialogShown,
 } from "../../support";
-import {createRunningDinner, RUNNING_DINNER_ADMIN_EMAIL} from "../../support/runningDinnerSetup"
+import {createRunningDinner} from "../../support/runningDinnerSetup"
 
 describe('participant registration', () => {
 
@@ -49,7 +51,7 @@ describe('participant registration', () => {
 
     getByTestId("registration-form-next-action").click({force: true});
 
-    getByTestId("registration-summary-dialog").within(() => {
+    assertRegistrationSummaryDialogShown(() => {
       getByTestId("mobilenumber-missing-attention").should("exist");
       cy.contains("Max Mustermann");
       cy.contains("Musterstraße 1");
@@ -62,19 +64,18 @@ describe('participant registration', () => {
     assertRegistrationFinishedPage();
   });
 
-  it.only('non-numeric input of numSeats lead to validation issue', () => {
+  it('non-numeric input of numSeats lead to validation issue', () => {
 
     fillPersonalFieldsInRegistrationForm("Max", "Mustermann", "Max@Mustermann.de");
-
     fillAddressFieldsInRegistrationForm("Musterstraße", "1", "79100", "Freiburg");
+    acknowledgeDataProcessing();
 
     getTextInputByName("numSeats").type("2-4");
 
-    acknowledgeDataProcessing();
     getByTestId("registration-form-next-action").click({force: true});
-
     getByTestId("registration-summary-dialog").should("not.exist");
-    assertToastIsShown("Ungültige Eingabe");
+    assertFormValidationToastIsShown();
+    assertRegistrationSummaryDialogNotShown();
   });
 
   it("numSeats is required for registration and 0 is valid", () => {
@@ -86,11 +87,11 @@ describe('participant registration', () => {
 
     getByTestId("registration-form-next-action").click({force: true});
     assertFormValidationToastIsShown();
-    getByTestId("registration-summary-dialog").should("not.exist");
+    assertRegistrationSummaryDialogNotShown();
 
     getTextInputByName("numSeats").clear().type("0");
     getByTestId("registration-form-next-action").click({force: true});
-    getByTestId("registration-summary-dialog").within(() => {
+    assertRegistrationSummaryDialogShown(() => {
       cy.contains("Du hast nicht genügend Plätze um als Gastgeber teilzunehmen, daher wird versucht dich jemandem zuzulosen der genügend Plätze hat").should("exist");
       submitStandardDialog();
     });

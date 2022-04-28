@@ -24,3 +24,11 @@ export function assertRegistrationFinishedPage() {
 export function acknowledgeDataProcessing() {
   getByTestId("dataProcessingAcknowledged").click({ force: true});
 }
+
+export function assertRegistrationSummaryDialogNotShown() {
+  getByTestId("registration-summary-dialog").should("not.exist");
+}
+
+export function assertRegistrationSummaryDialogShown(funcToExecute) {
+  return getByTestId("registration-summary-dialog").within(funcToExecute);
+}
