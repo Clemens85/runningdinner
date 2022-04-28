@@ -24,6 +24,10 @@ export function navigateAdminDashboard(adminId) {
   cy.visit(`/admin/${adminId}`);
 }
 
+export function navigateTeamsList(adminId) {
+  cy.visit(`/admin/${adminId}/teams`);
+}
+
 export function getByTestId(dataTestId, optionalQuerySuffix) {
   const querySuffix = optionalQuerySuffix ? optionalQuerySuffix : '';
   return cy.get(`[data-testid="${dataTestId}"]${querySuffix}`);
@@ -57,3 +61,4 @@ export * from "./mui/muiHelper";
 export * from "./admin/adminDashboardHelper";
 export * from "./commonHelper";
 export * from "./landing/registrationHelper";
+export * from "./admin/teamsHelper";
