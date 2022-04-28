@@ -1,6 +1,9 @@
 import { createParticipants } from "./participantSetup";
 import { toLocalDateArr } from "./util";
 
+
+export const RUNNING_DINNER_ADMIN_EMAIL = "e2etest@e2etest.de";
+
 /**
  * @param {date, registrationType, numParticipantsToCreate} createRunningDinnerSettings 
  * @returns 
