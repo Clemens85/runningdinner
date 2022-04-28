@@ -171,7 +171,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDi
       <Box my={2}>
         { renderRegistrationNotPossibleText() }
         { !registrationButtonHidden &&
-            <PrimaryButton size={"large"} onClick={openRegistrationForm}>
+            <PrimaryButton size={"large"} onClick={openRegistrationForm} data-testid="registration-form-open-action">
               {t('landing:goto_registration')}
             </PrimaryButton>
         }

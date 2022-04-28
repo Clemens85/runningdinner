@@ -49,6 +49,7 @@ export const NumberTextInputEmptyValue = React.forwardRef(({onChange, emptyValue
                  error={hasError}
                  helperText={errorText}
                  innerRef={ref}
+                 name={name}
                  {...others}
                  onChange={handleDisplayValueChange}
                  value={displayValue} />

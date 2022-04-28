@@ -167,6 +167,7 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
                     <FormCheckbox name="dataProcessingAcknowledged"
                                   useTableDisplay={true}
                                   defaultValue={false}
+                                  data-testid={"dataProcessingAcknowledged"}
                                   label={
                                     <>
                                       <Trans i18nKey="landing:data_processing_acknowledge" /><br />
@@ -185,6 +186,7 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
                       <SecondaryButton onClick={onCancel}>{t('common:cancel')}</SecondaryButton>
                       <PrimaryButton onClick={handleSubmit(submitRegistrationData)}
                                      disabled={isSubmitting}
+                                     data-testid={"registration-form-next-action"}
                                      size={"large"}
                                      className={classes.buttonSpacingLeft}>
                         {t('common:next')}
@@ -222,7 +224,7 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
   const mealSpecificsAsString = useMealSpecificsStringify(registrationSummary?.mealSpecifics);
 
   return (
-    <Dialog onClose={onCancel} open={true}>
+    <Dialog onClose={onCancel} open={true} data-testid={"registration-summary-dialog"}>
       <DialogTitleCloseable onClose={onCancel}>{t('landing:registration_finish')}</DialogTitleCloseable>
       <DialogContent>
         <Subtitle i18n={"landing:registration_finish_check"} />
@@ -294,7 +296,7 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
         }
 
         { isStringEmpty(registrationSummary.mobile) && 
-            <Alert severity={"info"}>
+            <Alert severity={"info"} data-testid={"mobilenumber-missing-attention"}>
               <AlertTitle>{t('common:attention')}</AlertTitle>
               {t('landing:attention_mobilenumber_missing')}
             </Alert>
