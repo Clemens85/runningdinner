@@ -1,7 +1,7 @@
 import {BaseEntity} from "./Base";
 import {CONSTANTS} from "../Constants";
 import clone from "lodash/clone";
-import {isStringEmpty} from "@runningdinner/shared";
+import {isStringEmpty} from "../";
 
 export interface MealSpecifics {
   vegetarian: boolean,
