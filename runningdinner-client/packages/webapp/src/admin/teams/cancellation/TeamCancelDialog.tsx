@@ -151,7 +151,7 @@ function TeamCancelOverview({runningDinner, team, onCancelDialog, onShowPreview,
   const { adminId } = runningDinner;
 
   return (
-      <Dialog open={true} onClose={onCancelDialog} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true}>
+      <Dialog open={true} onClose={onCancelDialog} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true} data-testid={"team-cancel-dialog-overview"}>
         <DialogTitleCloseable onClose={onCancelDialog}>{t('team_member_cancel', {teamMemberToCancel: teamName})}</DialogTitleCloseable>
         <DialogContent>
           <Box>

@@ -123,7 +123,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
               <MealAtTime {...meal} />
             </Grid>
             <Grid item xs={1}>
-              <ContextMenuIcon entries={actionMenuItems}/>
+              <ContextMenuIcon entries={actionMenuItems} dataTestId={"team-details-context-menu-icon"}/>
             </Grid>
             { isReplaced &&
               <Grid item xs={12}>

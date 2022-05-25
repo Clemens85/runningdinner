@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 import {
+  assertTeamCancelOverviewDialog,
   generateTeams,
   getByTestId, getTeamAt,
   navigateAdminDashboard,
@@ -9,7 +10,7 @@ import {
 } from "../../support";
 import { createRunningDinner } from "../../support/runningDinnerSetup"
 
-describe('participants list', () => {
+describe('team cancellation', () => {
 
   let runningDinner, adminId;
 
@@ -23,7 +24,7 @@ describe('participants list', () => {
     });
   })
 
-  it('displays all created participants', () => {
+  it('can cancel complete team', () => {
 
     generateTeams(adminId, () => {
       navigateAdminDashboard(adminId);
@@ -35,8 +36,12 @@ describe('participants list', () => {
 
     getTeamAt(0).click({ force: true});
 
+    getByTestId("team-details-context-menu-icon").click();
+    getByTestId("context-menu-entry-Absage des Teams...").click();
 
-
+    assertTeamCancelOverviewDialog(() => {
+      // TODO
+    });
   })
 
 })

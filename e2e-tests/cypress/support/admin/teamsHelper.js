@@ -13,3 +13,7 @@ export function getTeamAt(index) {
   return getByTestId("team-row")
           .eq(index);
 }
+
+export function assertTeamCancelOverviewDialog(funcToExecute) {
+  return getByTestId("team-cancel-dialog-overview").within(funcToExecute);
+}
