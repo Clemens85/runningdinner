@@ -5,7 +5,6 @@ import {
   generateTeams,
   getByTestId, getTeamAt,
   navigateAdminDashboard,
-  navigateParticipantsList,
   navigateTeamsList
 } from "../../support";
 import { createRunningDinner } from "../../support/runningDinnerSetup"
