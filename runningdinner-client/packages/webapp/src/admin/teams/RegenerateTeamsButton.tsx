@@ -1,8 +1,17 @@
 import { Box, Button } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { BaseAdminIdProps, HttpError, reCreateTeamArrangementsAsync, useDisclosure, 
-        findAdminActivitiesByAdminIdAndTypesAsync, TeamArrangementList, filterActivitiesByType, ActivityType } 
-        from '@runningdinner/shared';
+import {
+  BaseAdminIdProps,
+  HttpError,
+  reCreateTeamArrangementsAsync,
+  useDisclosure,
+  findAdminActivitiesByAdminIdAndTypesAsync,
+  TeamArrangementList,
+  filterActivitiesByType,
+  ActivityType,
+  useBackendIssueHandler
+}
+  from '@runningdinner/shared';
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
@@ -23,7 +32,14 @@ export function RegenerateTeamsButton({adminId, onTeamsRegenerated}: RegenerateT
 
   const {t} = useTranslation(["admin", "common"]);
   const {isOpen, open, getIsOpenData, close} = useDisclosure<RegenerateTeamsConfirmationData>();
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: ['admin', 'common']
+    }
+  });
+
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   async function handleOpenRegenerateTeamsConfirmationDialog() {
     const activityList = await findAdminActivitiesByAdminIdAndTypesAsync(adminId, [ActivityType.TEAMARRANGEMENT_MAIL_SENT, ActivityType.DINNERROUTE_MAIL_SENT]);

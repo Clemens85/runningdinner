@@ -21,8 +21,8 @@ public interface ParticipantRepository extends RunningDinnerRelatedRepository<Pa
   List<Participant> findByTeamPartnerWishIgnoreCaseAndAdminId(String email, String adminId);
   
   @Modifying
-  @Query("UPDATE Participant p SET p.teamId = NULL WHERE p.adminId = :adminId")
-  int updateTeamReferenceToNull(@Param("adminId") String adminId);
+  @Query("UPDATE Participant p SET p.teamId = NULL, p.host = FALSE WHERE p.adminId = :adminId")
+  int updateTeamReferenceAndHostToNull(@Param("adminId") String adminId);
 
 	List<Participant> findByIdInAndAdminIdOrderByParticipantNumber(Set<UUID> participantIds, String adminId);
 	

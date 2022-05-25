@@ -20,6 +20,8 @@ import org.runningdinner.participant.TeamCancellationResult;
 import org.runningdinner.participant.TeamMeetingPlan;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -33,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/rest/teamservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TeamServiceRest {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(TeamServiceRest.class);
 
 	@Autowired
 	private TeamService teamService;
@@ -89,6 +93,9 @@ public class TeamServiceRest {
 
 		List<TeamTO> teams = teamHostList.getTeams();
 		List<Team> updatedTeams = teamService.updateTeamHostersByAdmin(adminId, convertToTeamHostMap(teams));
+		
+  	LOGGER.info("Updated teams after team host change: {}", Team.toStringDetailed(updatedTeams));
+		
 		return new TeamArrangementListTO(TeamTO.convertTeamList(updatedTeams), adminId);
 	}
 
@@ -104,6 +111,8 @@ public class TeamServiceRest {
 			result.add(resultingTeam);
 		}
 		
+  	LOGGER.info("Updated teams after swap: {}", Team.toStringDetailed(updatedTeams));
+		
 		return new TeamArrangementListTO(result, adminId);
 	}
 
@@ -114,6 +123,9 @@ public class TeamServiceRest {
   	Assert.state(Objects.equals(teamId, teamCancellation.getTeamId()), "Passed teamId does not match teamId in teamCancellation obj");
   
   	TeamCancellationResult result = teamCancellation.isDryRun() ? teamService.cancelTeamDryRun(adminId, teamCancellation) : teamService.cancelTeam(adminId, teamCancellation);
+  	
+  	LOGGER.info("Team state after cancellation (dryRun = {}): {}", teamCancellation.isDryRun(), result.getTeam().toStringDetailed());
+  	
   	return new TeamCancellationResultTO(result);
   }
 	
@@ -121,6 +133,9 @@ public class TeamServiceRest {
   public TeamTO cancelTeamMember(@PathVariable("adminId") String adminId, @PathVariable("teamId") UUID teamId, @PathVariable("participantId") UUID participantId) {
   
     Team result = teamService.cancelTeamMember(adminId, teamId, participantId);
+  	
+    LOGGER.info("Team state after cancellation of teammember ({}): {}", participantId, result.toStringDetailed());
+    
     return new TeamTO(result);
   }
 	
