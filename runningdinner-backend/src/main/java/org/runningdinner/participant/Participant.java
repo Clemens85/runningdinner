@@ -396,6 +396,7 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
             .addValue(participantNumber)
             .addValue(getName().toString())
             .addValue(gender)
+            .add("host", isHost())
             .toString();
   }
 

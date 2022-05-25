@@ -28,7 +28,7 @@ const TeamsNotExisting = ({runningDinner, onGenerateTeams}) => {
         <RegistrationStillRunningAlert teamsNotExistingInfo={teamsNotExistingInfo} />
       </Box>
       <Box p={3}>
-        <PrimarySuccessButtonAsync disabled={!canGenerateTeams} onClick={onGenerateTeams}>{t('teams_generate')}</PrimarySuccessButtonAsync>
+        <PrimarySuccessButtonAsync disabled={!canGenerateTeams} onClick={onGenerateTeams} data-testid={"generate-teams-action"}>{t('teams_generate')}</PrimarySuccessButtonAsync>
       </Box>
     </Paper>
   );

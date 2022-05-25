@@ -95,6 +95,7 @@
 	"no_thanks": "No, thanks",
 	"note": "Note",
 	"number_seats": "Number of seats",
+	"num_seats_invalid": "Please enter a number (zero allowed)",
 
 	"on_date": "on",
 	"open_wizard": "Open Wizard",

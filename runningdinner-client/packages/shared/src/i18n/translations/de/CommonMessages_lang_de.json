@@ -95,6 +95,7 @@
 	"no_thanks": "Nein, danke",
 	"note": "Hinweis",
 	"number_seats": "Anzahl Plätze",
+	"num_seats_invalid": "Gib bitte eine Zahl ein (0 erlaubt)",
 
 	"on_date": "am",
 	"open_wizard": "Wizard öffnen",

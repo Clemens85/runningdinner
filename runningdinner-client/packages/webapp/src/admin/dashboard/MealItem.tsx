@@ -8,7 +8,7 @@ export interface MealItemProps extends Meal {
 
 export default function MealItem({ label, time }: MealItemProps) {
   return (
-      <ListItem>
+      <ListItem data-testid={`meal-item`}>
         <ListItemText primary={label} />
         <ListItemSecondaryAction><Time date={time} /></ListItemSecondaryAction>
       </ListItem>

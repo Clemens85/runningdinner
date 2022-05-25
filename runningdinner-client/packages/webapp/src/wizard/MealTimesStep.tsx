@@ -2,7 +2,7 @@ import React from 'react';
 import {
   getRunningDinnerBasicDetailsSelector,
   getRunningDinnerOptionsSelector,
-  isClosedDinnerSelector,
+  isClosedDinnerSelector, isValidDate, setHoursAndMinutesFromSrcToDest,
   setNextNavigationStep,
   setPreviousNavigationStep, updateMeals,
 } from "@runningdinner/shared";
@@ -70,7 +70,7 @@ export default function MealTimesStep() {
     const meals = cloneDeep(mealsFormState);
     for (let i = 0; i < meals.length; i++) {
       if (meals[i].label === meal.label) {
-        meals[i].time = newTime;
+        meals[i].time = isValidDate(newTime) ? setHoursAndMinutesFromSrcToDest(newTime, date) : newTime;
       }
     }
     setMealsFormState(meals);

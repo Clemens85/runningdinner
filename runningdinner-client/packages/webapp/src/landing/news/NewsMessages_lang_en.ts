@@ -1,5 +1,8 @@
 const NewsMessages_en: any = {
 
+  news_title_20220413: 'Fixed line breaks',
+  news_content_20220413: 'In case you wondered why your event description looked so weird (i.e. no paragraphs were displayed): That (plus a few other minor bugs) is fixed now. If in doubt, you can edit your description again in the settings.',
+
   news_title_20220313: 'Mobile number integrated into dinner routes',
   news_content_20220313: "Often requested, now finally available: You can now also conveniently send the mobile numbers of the hosts via the dinner route mails and/or they are also available in the live dinner route view.",
 

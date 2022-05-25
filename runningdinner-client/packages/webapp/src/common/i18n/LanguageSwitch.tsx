@@ -64,16 +64,21 @@ export function LanguageSwitchButtons({selectedLanguage, onClick}: LanguageSwitc
     return selectedLanguage === lang;
   }
 
+  const isGermanSelected = isLanguageSelected('de');
+  const isEnglishSelected = isLanguageSelected('en');
+
   return (
       <ButtonGroup variant="contained" aria-label="Switch language" disableRipple className={buttonGroupClasses.root}>
-        <Button className={clsx(isLanguageSelected('de') && languageButtonClasses.root)}
+        <Button className={clsx(isGermanSelected && languageButtonClasses.root)}
                 onClick={() => onClick('de')}
+                data-testid={`language-switch-de${isGermanSelected ? '-selected' : ''}`}
                 disableFocusRipple
                 disableRipple
                 disableElevation
                 disableTouchRipple>DE</Button>
-        <Button className={clsx(isLanguageSelected('en') && languageButtonClasses.root)}
+        <Button className={clsx(isEnglishSelected && languageButtonClasses.root)}
                 onClick={() => onClick('en')}
+                data-testid={`language-switch-en${isEnglishSelected ? '-selected' : ''}`}
                 disableTouchRipple
                 disableRipple
                 disableElevation

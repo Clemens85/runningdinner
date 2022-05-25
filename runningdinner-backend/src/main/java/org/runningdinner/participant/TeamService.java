@@ -217,7 +217,7 @@ public class TeamService {
     final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     LOGGER.info("Drop existing teams and re-create teams and visitation-plans for dinner {}", adminId);
 
-    participantRepository.updateTeamReferenceToNull(adminId);
+    participantRepository.updateTeamReferenceAndHostToNull(adminId);
     teamRepository.deleteByAdminId(adminId);
 
     List<Team> teams = createTeamsAndVisitationPlan(runningDinner);
@@ -584,9 +584,9 @@ public class TeamService {
                                       .findAny()
                                       .orElseThrow(() -> new IllegalStateException("Could not find participant " + participantId + " in " + team));
 
-    participantRepository.delete(teamMemberToCancel);
-    
     final boolean needNewTeamHost = team.getHostTeamMember().isSameId(teamMemberToCancel.getId());
+    
+    participantRepository.delete(teamMemberToCancel);
     
     teamMembers.remove(teamMemberToCancel);
     team.setTeamMembers(teamMembers);

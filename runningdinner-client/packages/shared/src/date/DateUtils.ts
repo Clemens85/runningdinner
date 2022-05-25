@@ -1,4 +1,4 @@
-import {add, format, parse, sub} from 'date-fns';
+import {add, format, isValid, parse, sub} from 'date-fns';
 import { getMonth, getDate, getYear, getHours, getMinutes, getSeconds, differenceInCalendarDays} from 'date-fns';
 
 export function isAfterInDays(a: Date, b: Date): boolean {
@@ -19,6 +19,10 @@ export function minusDays(date: Date, days: number): Date {
 
 export function isSameDay(a: Date, b: Date) {
   return getDaysBetweenDates(a, b) === 0;
+}
+
+export function isValidDate(d: Date) {
+  return isValid(d);
 }
 
 export function plusDays(date: Date, days: number): Date {
@@ -45,6 +49,12 @@ export function withHourAndMinute(date: Date, hour: number, minute: number): Dat
   const result = new Date(date.getTime());
   result.setHours(hour, minute, 0, 0);
   return result;
+}
+
+export function setHoursAndMinutesFromSrcToDest(src: Date, dest: Date) {
+  const hours = getHoursOfDate(src);
+  const minutes = getMinutesOfDate(src);
+  return withHourAndMinute(dest, hours, minutes);
 }
 
 export function formatLocalDate(date: Date | undefined, locale?: string): (string | undefined) {

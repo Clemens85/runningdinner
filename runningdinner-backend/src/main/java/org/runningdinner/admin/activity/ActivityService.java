@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.runningdinner.admin.check.ValidateAdminId;
@@ -18,6 +19,8 @@ import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellationResult;
 import org.runningdinner.participant.TeamStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -28,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ActivityService {
   
+  private static final Logger LOGGER = LoggerFactory.getLogger(ActivityService.class);
+	
   public static final int PARTICIPANT_ACTIVITES_PAGE_SIZE = 18;
   
   static final Collection<ActivityType> ADMIN_ACTIVITY_TYPES =
@@ -219,20 +224,24 @@ public class ActivityService {
   }
 
   @Transactional
-  public Activity createActivityForMessageJobSendingFailed(MessageJob messageJob) {
+  public Optional<Activity> createActivityForMessageJobSendingFailed(MessageJob messageJob) {
 
+    Optional<String> activityMessage = getMessageJobSendingFailedMessage(messageJob);
+    if (activityMessage.isEmpty()) {
+    	return Optional.empty();
+    }
+  	
     ActivityType activityType = ActivityType.MESSAGE_JOB_SENDING_FAILED;
     String originator = messageJob.getRunningDinner().getEmail();
     Activity activity = new Activity(LocalDateTime.now(), activityType, originator, messageJob.getRunningDinner());
 
+    activity.setActivityMessage(activityMessage.get());
     activity.setActivityHeadline("Nicht alle Emails konnten zugestellt werden");
-    String activityMessage = getMessageJobSendingFailedMessage(messageJob);
-    activity.setActivityMessage(activityMessage);
 
     activity.setRelatedEntityId(messageJob.getId());
     activity.setRelatedEntityType(RelatedEntityType.MESSAGE_JOB);
 
-    return activityRepository.save(activity);
+    return Optional.of(activityRepository.save(activity));
   }
 
   @Transactional
@@ -431,18 +440,19 @@ public class ActivityService {
     throw new IllegalArgumentException("Cannot map messageJob type " + messageJob);
   }
 
-  private String getMessageJobSendingFailedMessage(MessageJob messageJob) {
+  private Optional<String> getMessageJobSendingFailedMessage(MessageJob messageJob) {
 
     if (messageJob.getMessageType() == MessageType.TEAM) {
-      return "Beim Email-Versand von Team-Nachrichten konnte mindestens eine Email nicht zugestellt werden.";
+      return Optional.of("Beim Email-Versand von Team-Nachrichten konnte mindestens eine Email nicht zugestellt werden.");
     }
     else if (messageJob.getMessageType() == MessageType.DINNER_ROUTE) {
-      return "Beim Email-Versand der Dinner-Routen konnte mindestens eine Email nicht zugestellt werden.";
+      return Optional.of("Beim Email-Versand der Dinner-Routen konnte mindestens eine Email nicht zugestellt werden.");
     }
     else if (messageJob.getMessageType() == MessageType.PARTICIPANT) {
-      return "Beim Versand der Emails an die Teilnehmer konnte mindestens eine Email nicht zugestellt werden.";
+      return  Optional.of("Beim Versand der Emails an die Teilnehmer konnte mindestens eine Email nicht zugestellt werden.");
     }
-    throw new IllegalArgumentException("Cannot map messageJob type " + messageJob);
+    LOGGER.warn("Currently we support only TEAM, DINNER_ROUTE and PARTICIPANT MessageJob Types for generating Activity Entities. Passed MessageJob was {}", messageJob);
+    return Optional.empty();
   }
 
 }

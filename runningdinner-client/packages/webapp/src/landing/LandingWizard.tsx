@@ -23,7 +23,7 @@ export function LandingWizard() {
             <TeaserCard titleI18nKey={"quickstart"}>
               <Span i18n={"landing:quickstart_description"} />
               <Box pt={2}>
-                <PrimaryButton href={WIZARD_ROOT_PATH} target="_blank">{t('common:open_wizard')}</PrimaryButton>
+                <PrimaryButton href={WIZARD_ROOT_PATH} target="_blank" data-testid={"wizard-open-action"}>{t('common:open_wizard')}</PrimaryButton>
               </Box>
             </TeaserCard>
           </Grid>
@@ -31,7 +31,7 @@ export function LandingWizard() {
             <TeaserCard titleI18nKey={"landing:uncertain_headline"}>
               <Span i18n={"landing:uncertain_description"} />
               <Box pt={2}>
-                <PrimaryButton href={DEMO_WIZARD_ROOT_PATH} target="_blank">{t('landing:create_demo_dinner_link')}</PrimaryButton>
+                <PrimaryButton href={DEMO_WIZARD_ROOT_PATH} target="_blank" data-testid={"wizard-open-action-demo"}>{t('landing:create_demo_dinner_link')}</PrimaryButton>
               </Box>
             </TeaserCard>
           </Grid>

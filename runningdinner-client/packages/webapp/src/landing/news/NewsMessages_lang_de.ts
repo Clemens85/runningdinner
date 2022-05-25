@@ -1,5 +1,9 @@
 const NewsMessages_de: any = {
 
+  news_title_20220413: 'Zeilenumbrüche gefixt',
+  news_content_20220413: 'Falls ihr euch gewundert habt warum eure Event-Beschreibung so komisch aussah (d.h. keine Absätze angezeigt wurden): ' +
+    'Das (plus ein paar andere kleinere Fehler) ist jetzt behoben. Im Zweifel könnt ihr in den Einstellungen eure Beschreibung nochmal neu editieren.',
+
   news_title_20220313: 'Handy-Nr in Dinner-Routen integriert',
   news_content_20220313: 'Oft angefragt, nun endlich verfügbar: ' +
   'Ihr könnt nun auch die Handy-Nr der Gastgeber bequem über den Dinner-Routen-Mailversand mitschicken bzw. sind diese auch in der Live Dinner-Routen-Sicht verfügbar.',

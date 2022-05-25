@@ -459,6 +459,19 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
     String mealClassStr = mealClass != null ? " - " + mealClass.toString() : "";
     return teamNumber + mealClassStr;
   }
+  
+  public String toStringDetailed() {
+  	String teamMembersInfo = teamMembers != null ? getTeamMembersOrdered().toString() : "teamMembers not loaded";
+  	return toString() + ": " + teamMembersInfo;
+  }
+  
+  public static String toStringDetailed(Collection<Team> teams) {
+  	
+  	return teams
+  					.stream()
+  					.map(Team::toStringDetailed)
+  					.collect(Collectors.joining(","));
+  }
 
   @Override
   public int compareTo(Team o) {

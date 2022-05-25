@@ -1,6 +1,9 @@
 import { createParticipants } from "./participantSetup";
 import { toLocalDateArr } from "./util";
 
+
+export const RUNNING_DINNER_ADMIN_EMAIL = "e2etest@e2etest.de";
+
 /**
  * @param {date, registrationType, numParticipantsToCreate} createRunningDinnerSettings 
  * @returns 
@@ -17,6 +20,7 @@ export function createRunningDinner(createRunningDinnerSettings) {
       .then(runningDinnerJson => {
         runningDinnerJson.basicDetails.date = date;
         runningDinnerJson.basicDetails.registrationType = registrationType;
+        runningDinnerJson.publicSettings.endOfRegistrationDate = date;
         if (runningDinnerJson.basicDetails.registrationType === "CLOSED") {
           runningDinnerJson.publicSettings = null;
         }

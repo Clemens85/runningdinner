@@ -1,4 +1,10 @@
-import {BackendIssue, PublicRunningDinner, PublicRunningDinnerList, RegistrationSummary} from "../types";
+import {
+  BackendIssue,
+  isNumSeatsPositiveIntegerOrEmpty, newHttpError,
+  PublicRunningDinner,
+  PublicRunningDinnerList,
+  RegistrationSummary
+} from "../types";
 import axios from "axios";
 import {BackendConfig} from "../BackendConfig";
 import {RegistrationData} from "../types/Registration";
@@ -25,8 +31,14 @@ export async function performRegistration(publicDinnerId: string, registrationDa
   return executePerformRegistrationRequest(publicDinnerId, registrationData, false);
 }
 
-async function executePerformRegistrationRequest(publicDinnerId: string, registrationData: RegistrationData, validateOnly: boolean) {
+async function executePerformRegistrationRequest(publicDinnerId: string, registrationData: RegistrationData, validateOnly: boolean): Promise<RegistrationSummary> {
   const url = BackendConfig.buildUrl(`/frontend/v2/runningdinner/${publicDinnerId}/register?validateOnly=${validateOnly}`);
+  if (!isNumSeatsPositiveIntegerOrEmpty(registrationData)) { // TODO: Not very nice, but it works for now. Should be replaced by client side validation
+    throw newHttpError(406, [{
+      field: "numSeats",
+      message: "num_seats_invalid"
+    }]);
+  }
   const response = await axios.post<RegistrationSummary>(url, registrationData);
   return response.data;
 }

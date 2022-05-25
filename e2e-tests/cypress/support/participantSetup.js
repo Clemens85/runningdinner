@@ -1,3 +1,5 @@
+import {getTextInputByName} from "./mui/muiHelper";
+
 export function createParticipants(adminId, startNumber, endNumber, participantOverrides) {
   return new Cypress.Promise((resolve) => {
     let passes = 0;
@@ -54,3 +56,4 @@ export function newParticipantJson(participantNumber, participantOverrides) {
   }
   return result;
 }
+

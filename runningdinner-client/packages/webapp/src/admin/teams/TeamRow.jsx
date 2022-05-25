@@ -47,7 +47,7 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
   const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
 
   return (
-      <TableRow hover className={classes.cursorPointer} onClick={() => onClick(team)} selected={selected}>
+      <TableRow hover className={classes.cursorPointer} onClick={() => onClick(team)} selected={selected} data-testid="team-row">
         <TableCell>{teamNumber}</TableCell>
         <TableCell>{isCancelled ? <CancelledTeamMember /> : teamMemberNames }</TableCell>
         <Hidden xsDown>

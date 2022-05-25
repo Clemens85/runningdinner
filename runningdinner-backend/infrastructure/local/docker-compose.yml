@@ -5,12 +5,16 @@ services:
   nginx:
     image: nginx
     container_name: web
-    network_mode: "host"
+    ports:
+      - "443:443"
+      - "80:80"
     volumes:
       - ./nginx-custom.conf:/etc/nginx/conf.d/default.conf
       - ../../src/main/resources:/usr/share/nginx/html
       - ./ssl/cert.pem:/etc/nginx/conf.d/cert.pem
       - ./ssl/key.pem:/etc/nginx/conf.d/key.pem
+    extra_hosts:
+      - "runningdinner-backend:${DOCKER_HOST_IP}"
 
   postgres:
     image: postgres:9.6.6
