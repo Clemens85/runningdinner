@@ -15,7 +15,7 @@ public abstract class BaseMessage implements SimpleTextMessage, Serializable {
   
   public static final int MAX_SUBJECT_LENGTH = 255;
   
-  public static final int MAX_MESSAGE_LENGTH = 2048;
+  public static final int MAX_MESSAGE_LENGTH = 3048;
   
   @NotBlank
   @SafeHtml
