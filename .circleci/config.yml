@@ -6,8 +6,8 @@ orbs:
 jobs:
   build_test_backend:
     docker:
-      - image: cimg/openjdk:8-jdk-stretch
-      - image: cimg/postgres:9.6
+      - image: cimg/openjdk:8.0.322
+      - image: cimg/postgres:9.6.24
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: root
