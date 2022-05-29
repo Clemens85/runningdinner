@@ -226,8 +226,8 @@ public class ActivityService {
   @Transactional
   public Optional<Activity> createActivityForMessageJobSendingFailed(MessageJob messageJob) {
 
-    Optional<String> activityMessage = getMessageJobSendingFailedMessage(messageJob);
-    if (activityMessage.isEmpty()) {
+    String activityMessage = getMessageJobSendingFailedMessage(messageJob);
+    if (activityMessage == null) {
     	return Optional.empty();
     }
   	
@@ -235,7 +235,7 @@ public class ActivityService {
     String originator = messageJob.getRunningDinner().getEmail();
     Activity activity = new Activity(LocalDateTime.now(), activityType, originator, messageJob.getRunningDinner());
 
-    activity.setActivityMessage(activityMessage.get());
+    activity.setActivityMessage(activityMessage);
     activity.setActivityHeadline("Nicht alle Emails konnten zugestellt werden");
 
     activity.setRelatedEntityId(messageJob.getId());
@@ -440,19 +440,19 @@ public class ActivityService {
     throw new IllegalArgumentException("Cannot map messageJob type " + messageJob);
   }
 
-  private Optional<String> getMessageJobSendingFailedMessage(MessageJob messageJob) {
+  private String getMessageJobSendingFailedMessage(MessageJob messageJob) {
 
     if (messageJob.getMessageType() == MessageType.TEAM) {
-      return Optional.of("Beim Email-Versand von Team-Nachrichten konnte mindestens eine Email nicht zugestellt werden.");
+      return "Beim Email-Versand von Team-Nachrichten konnte mindestens eine Email nicht zugestellt werden.";
     }
     else if (messageJob.getMessageType() == MessageType.DINNER_ROUTE) {
-      return Optional.of("Beim Email-Versand der Dinner-Routen konnte mindestens eine Email nicht zugestellt werden.");
+      return "Beim Email-Versand der Dinner-Routen konnte mindestens eine Email nicht zugestellt werden.";
     }
     else if (messageJob.getMessageType() == MessageType.PARTICIPANT) {
-      return  Optional.of("Beim Versand der Emails an die Teilnehmer konnte mindestens eine Email nicht zugestellt werden.");
+      return "Beim Versand der Emails an die Teilnehmer konnte mindestens eine Email nicht zugestellt werden.";
     }
     LOGGER.warn("Currently we support only TEAM, DINNER_ROUTE and PARTICIPANT MessageJob Types for generating Activity Entities. Passed MessageJob was {}", messageJob);
-    return Optional.empty();
+    return null;
   }
 
 }

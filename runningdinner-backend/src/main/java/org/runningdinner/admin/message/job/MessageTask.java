@@ -1,10 +1,8 @@
 
 package org.runningdinner.admin.message.job;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
-import org.runningdinner.core.RunningDinner;
-import org.runningdinner.core.RunningDinnerRelatedEntity;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -18,8 +16,13 @@ import javax.persistence.ManyToOne;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
-import java.util.UUID;
+
+import org.runningdinner.admin.message.BaseMessage;
+import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.RunningDinnerRelatedEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 
 @Entity
 public class MessageTask extends RunningDinnerRelatedEntity {
@@ -59,7 +62,7 @@ public class MessageTask extends RunningDinnerRelatedEntity {
   @Embedded
   @Valid
   @AttributeOverrides({
-    @AttributeOverride(name = "content", column = @Column(nullable = false, length = 2048)),
+    @AttributeOverride(name = "content", column = @Column(nullable = false, length = BaseMessage.MAX_MESSAGE_LENGTH)),
     @AttributeOverride(name = "subject", column = @Column(nullable = false)),
     @AttributeOverride(name = "replyTo", column = @Column(nullable = false))
   })
