@@ -124,6 +124,7 @@ const Participants = ({runningDinner, incomingParticipants, selectedParticipantI
                                 participants={participants}
                                 selectedParticipant={selectedParticipant}
                                 hasSearchText={hasSearchText}
+                                onRefetch={reFetch}
                                 onClick={editParticipant} />
             </Grid>
           }

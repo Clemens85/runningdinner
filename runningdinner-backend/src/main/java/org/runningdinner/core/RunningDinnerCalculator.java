@@ -1,15 +1,15 @@
 package org.runningdinner.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.runningdinner.core.dinnerplan.DinnerPlanGenerator;
 import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Stateless object for calculating running dinner scenarios.<br>
@@ -270,7 +270,8 @@ public class RunningDinnerCalculator {
 		}
 
 		// Last fallback, just pick up the first matching participant:
-		team.getTeamMembers().iterator().next().setHost(true);
+		Participant firstTeamMember = team.getTeamMembers().iterator().next();
+		firstTeamMember.setHost(true);
 	}
 
 	/**

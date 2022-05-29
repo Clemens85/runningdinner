@@ -58,16 +58,6 @@ public class TeamServiceRest {
     TeamArrangementListTO result = mapToTeamArrangementList(adminId, teams);
     return result;
   }
-  
-  @RequestMapping(value = "/runningdinner/{adminId}/waitinglist-fillable", method = RequestMethod.GET)
-  public TeamArrangementListTO findTeamArrangementsWaitingListFillable(@PathVariable("adminId") String adminId) {
-
-    List<Team> teams = teamService.findTeamArrangementsWaitingListFillable(adminId);
-
-    TeamArrangementListTO result = mapToTeamArrangementList(adminId, teams);
-    
-    return result;
-  }
 
 	private TeamArrangementListTO mapToTeamArrangementList(String adminId, List<Team> teams) {
 		

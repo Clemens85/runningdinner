@@ -226,7 +226,7 @@ public class TeamService {
     
     return newTeamArrangementList(teams, adminId);
   }
-
+  
   private List<Team> createTeamsAndVisitationPlan(RunningDinner runningDinner) throws NoPossibleRunningDinnerException {
     
     List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);

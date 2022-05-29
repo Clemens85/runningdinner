@@ -6,6 +6,7 @@ export * from "./ActivityService";
 export * from "./ValidationSchemas";
 export * from "./participants/NumberOfParticipantsHook";
 export * from "./participants/ParticipantsListInfoHook";
+export * from "./participants/WaitingListService";
 export * from "./teams/TeamsNotExistingHook";
 export * from "./teams/NumberOfAssignableParticipantsToReplaceTeamHook";
 export * from "./teams/TeamNameHook";

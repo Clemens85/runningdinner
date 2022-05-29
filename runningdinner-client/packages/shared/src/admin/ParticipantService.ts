@@ -4,7 +4,7 @@ import lowerCase from 'lodash/lowerCase';
 import includes from 'lodash/includes';
 import { BackendConfig } from "../BackendConfig";
 import {isNewEntity} from "../Utils";
-import {Participant, TeamPartnerWishInfo, RunningDinner} from "../types";
+import {Participant, TeamPartnerWishInfo, RunningDinner, SelectableParticipant} from "../types";
 import {CONSTANTS} from "../Constants";
 
 export async function findParticipantsAsync(adminId: string): Promise<Participant[]> {
@@ -123,45 +123,3 @@ export function canHost(participant: Participant, numSeatsNeededForHost: number)
 export function isNumSeatsUnknown(participant: Participant) {
   return participant.numSeats < 0;
 }
-
-interface WaitingListParticipantsAssignableToTeams {
-  participantsAssignable: Participant[];
-  participantsRemaining: Participant[];
-  numMissingParticipantsForAllAssignable: number;
-}
-
-export function getWaitingListParticipantsAssignableToTeams(runningDinner: RunningDinner, participants: Participant[]): WaitingListParticipantsAssignableToTeams {
-
-  const {assignableParticipantSizes} = runningDinner.sessionData;
-  const {nextParticipantsOffsetSize} = assignableParticipantSizes;
-  if (nextParticipantsOffsetSize === 0) {
-     // should never happen
-    throw `Unexpected Error: nextParticipantsOffsetSize was 0: ${JSON.stringify(assignableParticipantSizes)}`;
-  }
-
-  // Incoming Participant array should already contain already not assignable participants, but enforce this again here:
-  const notAssignableParticipants = getNotAssignableParticipants(participants);
-
-  const factor = Math.trunc(notAssignableParticipants.length / nextParticipantsOffsetSize);
-  if (factor === 0) {
-    return {
-      participantsAssignable: [],
-      participantsRemaining: participants,
-      numMissingParticipantsForAllAssignable: nextParticipantsOffsetSize - participants.length
-    };
-  }
-
-  const numParticipantsToTake = factor * nextParticipantsOffsetSize;
-  if (numParticipantsToTake > participants.length + 1) {
-     // should never happen
-    throw `Unexpected Error: numParticipantsToTake (${numParticipantsToTake}) is greather than participants.length (${participants.length}). (Factor was ${factor})`;
-  }
-
-  const participantsRemaining = numParticipantsToTake === participants.length ? [] : participants.slice(numParticipantsToTake);
-  return {
-    participantsAssignable: participants.slice(0, numParticipantsToTake),
-    participantsRemaining: participantsRemaining,
-    numMissingParticipantsForAllAssignable: participantsRemaining.length === 0 ? 0 : nextParticipantsOffsetSize - participantsRemaining.length
-  }
-}
-

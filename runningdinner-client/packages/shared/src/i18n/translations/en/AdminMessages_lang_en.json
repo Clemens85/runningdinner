@@ -249,6 +249,8 @@
 	"teams_show_dinnerroute": "Show dinner route",
 	"time_schedule": "Time schedule",
 	"time_schedule_edit": "Edit time schedule",
-	"transfer": "Transfer"
+	"transfer": "Transfer",
+
+	"waitinglist_management": "Waitinglist management"
 
 }

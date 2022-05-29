@@ -251,6 +251,8 @@
 	"text_host_saved": "Gastgeber erfolgreich gespeichert!",
 	"time_schedule": "Zeitplan",
 	"time_schedule_edit": "Zeitplan bearbeiten",
-	"transfer": "Übertragung"
+	"transfer": "Übertragung",
+
+	"waitinglist_management": "Wartelisten Verwaltung"
 
 }

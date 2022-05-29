@@ -12,7 +12,7 @@ import {
 import {useTranslation} from "react-i18next";
 import { WaitingListManagementAlert } from './WaitingListManagementAlert';
 
-export default function ParticipantsList({participants, selectedParticipant, participantsListInfo, hasSearchText, onClick}) {
+export default function ParticipantsList({participants, selectedParticipant, participantsListInfo, hasSearchText, onClick, onRefetch}) {
 
   const {t} = useTranslation('admin');
 
@@ -54,7 +54,7 @@ export default function ParticipantsList({participants, selectedParticipant, par
           {showParticiapntsOnWaitingListInOwnSection &&
             <Box mt={2}>
               <Box mb={2}>
-                <WaitingListManagementAlert participantsNotAssignable={notAssignableParticipants} runningDinner={runningDinner} />
+                <WaitingListManagementAlert participantsNotAssignable={notAssignableParticipants} runningDinner={runningDinner} onRefetch={onRefetch} />
               </Box>
               <TableContainer component={Paper}>
                 <Table size={"small"}>
