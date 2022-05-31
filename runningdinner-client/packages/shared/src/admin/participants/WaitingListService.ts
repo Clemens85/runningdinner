@@ -5,7 +5,7 @@ import orderBy from "lodash/orderBy";
 import {Participant, SelectableParticipant, Team} from "../../types";
 import {isArrayNotEmpty, isSameEntity, removeEntityFromList} from "../../Utils";
 import {generateCancelledTeamMembersAsNumberArray} from "../TeamService";
-import {BackendConfig} from "@runningdinner/shared";
+import {BackendConfig} from "../../BackendConfig";
 import axios from "axios";
 
 
