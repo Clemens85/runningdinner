@@ -149,7 +149,7 @@ function WaitingListManagementDialogContentView(props: WaitingListManagementDial
 }
 
 const DIALOG_SPACING_X = 3;
-const GRID_SIZES: Partial<Record<Breakpoint, GridSize>> = { xs: 12, md: 4, lg: 4, xl: 4 };
+const GRID_SIZES: Partial<Record<Breakpoint, GridSize>> = { xs: 12, md: 5, lg: 5, xl: 5 };
 
 function TeamParticipantsAssignmentView({teamsWithCancelStatusOrCancelledMembers, remainingParticipants, participtantsForTeamArrangement, runningDinner, onSave}: WaitingListAssignmentViewProps) {
 
@@ -209,13 +209,23 @@ function TeamParticipantsAssignmentView({teamsWithCancelStatusOrCancelledMembers
 
   return (
     <>
+      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} mx={DIALOG_SPACING_X}>
+        <Grid item xs={12}>
+          <Subtitle>Teams durch Teilnehmer der Warteliste auffüllen</Subtitle>
+          <Paragraph>
+            Du hast derzeit <strong>{allSelectableParticipants.length}</strong> Teilnehmer auf der Warteliste.<br/>
+            Nutze diese um die folgenden Teams, welche durch Absagen nicht mehr vollständig sind, aufzufüllen. Hierfür kannst du <strong>TODO</strong> Teilnehmer verwenden.<br/>
+            In einem nächsten Schritt TODO Falls noch genügend andere Teilnehmer vorhanden sind.
+          </Paragraph>
+        </Grid>
+      </SpacingGrid>
       <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"}>
         <>
         {
           teamParticipantAssignments.map(tpa => {
             return (
               <Grid item {... GRID_SIZES} key={tpa.team.id}>
-                <Box mx={DIALOG_SPACING_X}>
+                <Box mx={DIALOG_SPACING_X} mb={DIALOG_SPACING_X}>
                   <SingleTeamParticipantsAssignmentView {...tpa}
                                                         allSelectableParticipants={allSelectableParticipants}
                                                         teamSizeOfRunningDinner={teamSize}
@@ -232,7 +242,7 @@ function TeamParticipantsAssignmentView({teamsWithCancelStatusOrCancelledMembers
       <SpacingGrid container justify={"center"}>
         <Grid item {... GRID_SIZES}>
           <Box mx={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
-            <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams} size={"large"} className={commonClasses.buttonSpacingLeft}>
+            <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams} size={"large"} className={commonClasses.fullWidth}>
               {t('Teams durch Teilnehmer auf Warteliste auffüllen!')}
             </PrimarySuccessButtonAsync>
           </Box>
@@ -285,6 +295,9 @@ function SingleTeamParticipantsAssignmentView({team, selectedParticipants, allSe
         <Subtitle><TeamNr {...team} /></Subtitle>
         { renderTeamMembers() }
       </SpacingPaper>
+      <Box my={2}>
+        <small>(Wähle die Teilnehmer aus die zu diesem Team hinzufügen willst.)</small>
+      </Box>
       { selectableParticipantControls }
     </>
   );
@@ -382,10 +395,10 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListAssignm
 
       </Grid>
 
-      <Grid container justify={"flex-end"}>
+      <Grid container justify={"center"}>
         <Grid item {... GRID_SIZES}>
-          <Box mx={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
-            <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams} size={"large"} className={commonClasses.buttonSpacingLeft}>
+          <Box mx={DIALOG_SPACING_X} mt={DIALOG_SPACING_X} pt={DIALOG_SPACING_X}>
+            <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams} size={"large"} className={commonClasses.fullWidth}>
               {t('Teilnehmer in Teams einteilen!')}
             </PrimarySuccessButtonAsync>
           </Box>
@@ -396,24 +409,26 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListAssignm
   );
 }
 
-function NoActionView({numMissingParticipantsForFullTeamArrangement}: WaitingListInfo) {
+function NoActionView({numMissingParticipantsForFullTeamArrangement, remainingParticipants}: WaitingListInfo) {
 
   const {t} = useTranslation(["admin", "common"]);
+
+  const numRemainingParticpants = remainingParticipants.length;
 
   return (
     <Grid container justify={"center"}>
       <Grid item {... GRID_SIZES}>
         <Box m={DIALOG_SPACING_X}>
           <Paragraph>
-            Die aktuell vorhandenen Teilnehmer können leider nicht als neue Teams hinzugefügt werden.
+            Die {numRemainingParticpants} Teilnehmer auf der Warteliste können nicht als neue Teams hinzugefügt werden.
             Hierzu fehlen derzeit noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> zusätzliche Teilnehmer.
           </Paragraph>
+          <Paragraph>Folgende Optionen stehen dir zur Verfügung:</Paragraph>
+          <ul>
+            <li>First come first serve: Die übrig gebliebenen Teilnehmer nehmen zunächst nicht am Event teil, können aber bei Bedarf z.B. später mögliche Teilnehmer/Team-Absagen ersetzen.</li>
+            <li>Falls sich doch noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> zusätzliche Teilnehmer anmelden, kannst du diese als neue Teams hinzufügen.</li>
+          </ul>
           <Paragraph>
-            Folgende Optionen stehen dir zur Verfügung:
-            <ul>
-              <li>First come first serve: Die übrig gebliebenen Teilnehmer nehmen zunächst nicht am Event teil, können aber bei Bedarf z.B. später mögliche Teilnehmer/Team-Absagen ersetzen.</li>
-              <li>Falls sich doch noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> zusätzliche Teilnehmer anmelden, kannst du diese als neue Teams hinzufügen.</li>
-            </ul>
             <strong>{t('common:note')}</strong>: Aktuell gibt es noch keine Möglichkeit übrig gebliebene Teilnehmer automatisch auf existierende Teams zu verteilen.
             An diesem Feature wird derzeit gearbeitet, aber es ist noch nicht verfübar. Bis dahin und falls du dies tun willst, musst du das händisch mit Zettel und Stift erledigen und kannst aber ggfalls
             über das Tool dann die betroffenen Teams via Team-Nachrichten-Versand benachrichtigen.
