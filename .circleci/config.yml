@@ -6,7 +6,7 @@ orbs:
 jobs:
   build_test_backend:
     docker:
-      - image: cimg/openjdk:8.0.322
+      - image: cimg/openjdk:17.0.3
       - image: cimg/postgres:9.6.24
         environment:
           POSTGRES_USER: postgres
