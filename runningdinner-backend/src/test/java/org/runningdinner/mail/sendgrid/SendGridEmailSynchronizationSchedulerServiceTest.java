@@ -143,7 +143,7 @@ public class SendGridEmailSynchronizationSchedulerServiceTest {
 
     Optional<MailSynchronizationState> mailSyncState = sendGridEmailSynchronizationService.findLastSuccessfulMailSynchronizationState();
     assertThat(mailSyncState).isPresent();
-    assertThat(mailSyncState.get().getSynchronizationDate()).isAfterOrEqualTo(expectedDateTimeAfter);
+    assertThat(mailSyncState.get().getSynchronizationDate()).isBetween(expectedDateTimeAfter.minusSeconds(1), expectedDateTimeAfter.plusSeconds(2));
     assertThat(mailSyncState.get().getSynchronizationResult()).isEqualTo(expectedResult);
     return mailSyncState.get();
   }
