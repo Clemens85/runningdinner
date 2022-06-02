@@ -67,7 +67,8 @@ public class WaitingListServiceTest {
 
 		List<Participant> participantsOnWaitingList = participantService.findActiveParticipantsNotAssignedToTeam(adminId);
   	Participant firstParticipantOnWaitingList = participantsOnWaitingList.get(0);
-		List<TeamParticipantsAssignmentTO> assignments = List.of(newTeamParticipantsAssignment(firstTeam, firstParticipantOnWaitingList));
+    List<TeamParticipantsAssignmentTO> assignments = Arrays
+        .asList(newTeamParticipantsAssignment(firstTeam, firstParticipantOnWaitingList));
 
 		waitingListService.assignParticipantsToExistingTeams(adminId, assignments);
 		

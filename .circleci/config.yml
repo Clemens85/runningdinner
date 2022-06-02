@@ -6,7 +6,7 @@ orbs:
 jobs:
   build_test_backend:
     docker:
-      - image: cimg/openjdk:8.0.322
+      - image: cimg/openjdk:17.0.3
       - image: cimg/postgres:9.6.24
         environment:
           POSTGRES_USER: postgres
@@ -14,10 +14,10 @@ jobs:
           POSTGRES_DB: runningdinner
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - dependencies-{{ checksum "runningdinner-backend/pom.xml" }} # appends cache key with a hash of pom.xml file
-            - dependencies- # fallback in case previous cache key is not found
+#      - restore_cache:
+#          keys:
+#            - dependencies-{{ checksum "runningdinner-backend/pom.xml" }} # appends cache key with a hash of pom.xml file
+#            - dependencies- # fallback in case previous cache key is not found
       - attach_workspace:
           at: runningdinner-backend/src/main/resources
       - run:
@@ -41,10 +41,10 @@ jobs:
           command: |
             cd runningdinner-backend
             ./mvnw package
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: dependencies-{{ checksum "runningdinner-backend/pom.xml" }}
+#      - save_cache:
+#          paths:
+#            - ~/.m2
+#          key: dependencies-{{ checksum "runningdinner-backend/pom.xml" }}
       - run: cp runningdinner-backend/infrastructure/deployment/deploy.sh runningdinner-backend/target/deploy.sh
       - maven/process_test_results:
           test_results_path: runningdinner-backend/target/surefire-reports
