@@ -4,7 +4,7 @@ import {
   getBackendIssuesFromErrorResponse,
   mapBackendIssuesToIssues
 } from "@runningdinner/shared";
-import {useCustomSnackbar} from "./theme/CustomSnackbarHook";
+import {CustomSnackbarOptions, useCustomSnackbar} from "./theme/CustomSnackbarHook";
 
 export interface HttpErrorDefaultNotificationProps {
   /**
@@ -20,10 +20,15 @@ export interface HttpErrorDefaultNotificationProps {
    * Default is true
    */
   showMessageForValidationErrorsWithoutSource?: boolean;
+
+  /**
+   * Can be passed to overwrite default autoHideDuration, see {@link SnackbarProps.autoHideDuration} for more details.
+   */
+  autoHideDuration?: number | null;
 }
 
 /**
- * Convenience hook for default error handling on Http errors. This hook simply wraps the {@link useLxNotification} hook for showing notification toasts<br/>
+ * Convenience hook for default error handling on Http errors. This hook simply wraps the {@link useCustomSnackbar} hook for showing notification toasts<br/>
  *
  */
 export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpError) => Issues) {
@@ -63,11 +68,8 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
         };
 
     if (isValidationError(httpError)) {
-      if (
-          isArrayNotEmpty(issues.issuesWithoutField) &&
-          optionsToUse.showMessageForValidationErrorsWithoutSource !== false
-      ) {
-        showErrorNotification(issues.issuesWithoutField);
+      if (isArrayNotEmpty(issues.issuesWithoutField) && optionsToUse.showMessageForValidationErrorsWithoutSource !== false) {
+        showErrorNotification(issues.issuesWithoutField, optionsToUse);
       } else if (optionsToUse.showGenericMesssageOnValidationError !== false) {
         const errorMessage = t("validation_error_desc");
         showError(errorMessage);
@@ -85,11 +87,15 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
         },
       });
     }
-    showErrorNotification(allIssues);
+    showErrorNotification(allIssues, optionsToUse);
   }
 
-  function showErrorNotification(errorItems: Issue[]) {
-    errorItems.forEach((errorItem) => showError(errorItem.error.message));
+  function showErrorNotification(errorItems: Issue[], options: HttpErrorDefaultNotificationProps) {
+    let snackbarOptionsOverride: CustomSnackbarOptions | undefined = undefined;
+    if (options && options.autoHideDuration !== undefined) {
+      snackbarOptionsOverride = { autoHideDuration: options.autoHideDuration };
+    }
+    errorItems.forEach((errorItem) => showError(errorItem.error.message, snackbarOptionsOverride));
   }
 
   return {
