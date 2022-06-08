@@ -23,7 +23,7 @@ import {
   swapTeamMembersAsync,
   Team,
   TeamArrangementList,
-  useAdminSelector,
+  useAdminSelector, useBackendIssueHandler,
   useDisclosure
 } from "@runningdinner/shared";
 import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../AdminNavigationHook";
@@ -73,7 +73,13 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   const {generateTeamPath, navigateToTeam} = useAdminNavigation();
   const {t} = useTranslation('admin');
 
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: ['admin', 'common']
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const {showSuccess} = useCustomSnackbar();
 
@@ -124,7 +130,14 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   }
 
   const handleTeamMemberSwap = async(srcParticipantId: string, destParticipantId: string) => {
-    const teamArrangementListResult = await swapTeamMembersAsync(adminId, srcParticipantId, destParticipantId);
+
+    let teamArrangementListResult;
+    try {
+      teamArrangementListResult = await swapTeamMembersAsync(adminId, srcParticipantId, destParticipantId);
+    } catch (e) {
+      showHttpErrorDefaultNotification(e as HttpError, { autoHideDuration: 8000 });
+      return;
+    }
 
     let updatedTeams = teams;
     for (let i = 0; i < teamArrangementListResult.teams.length; i++) {
