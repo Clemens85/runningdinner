@@ -96,11 +96,14 @@ public class WaitingListService {
 	  
 	  List<Team> teamsWithCancelStatusOrCancelledMembers = teamService.findTeamArrangementsWaitingListFillable(adminId);
 	  int numberOfTeams = teamService.getNumberOfTeams(adminId);
+
+	  int teamSize = runningDinner.getConfiguration().getTeamSize();
 	  
 	  result.setNumMissingParticipantsForFullTeamArrangement(numMissingParticipantsForFullTeamArrangement);
 	  result.setParticiptantsForTeamArrangement(ParticipantTO.convertParticipantList(participtantsForTeamArrangement));
 	  result.setRemainingParticipants(ParticipantTO.convertParticipantList(remainingParticipants));
 	  result.setTeamsWithCancelStatusOrCancelledMembers(TeamTO.convertTeamList(teamsWithCancelStatusOrCancelledMembers));
+		result.setTotalNumberOfMissingTeamMembers(calculateTotalNumberOfMissingTeamMembers(teamsWithCancelStatusOrCancelledMembers, teamSize));
 	  result.setTeamsGenerated(numberOfTeams > 0);
 	  result.setPossibleActions(calculatePossibleActions(result));
 	  return result;
@@ -222,6 +225,15 @@ public class WaitingListService {
 		int nextParticipantsOffsetSize = runningDinnerSessionData.getAssignableParticipantSizes().getNextParticipantsOffsetSize();
 		Assert.state(nextParticipantsOffsetSize > 0, "Unexpected Error: nextParticipantsOffsetSize was <= 0");
 		return nextParticipantsOffsetSize;
+	}
+	
+	private int calculateTotalNumberOfMissingTeamMembers(List<Team> teams, int teamSize) {
+		
+		Integer result = teams
+											.stream()
+											.map(t -> Math.max(0, teamSize - t.getTeamMembersOrdered().size()))
+											.reduce(0, Integer::sum);
+		return result;
 	}
 
 }
