@@ -30,6 +30,7 @@ export interface WaitingListInfo {
   numMissingParticipantsForFullTeamArrangement: number;
   teamsWithCancelStatusOrCancelledMembers: Team[];
   teamsGenerated: boolean;
+  totalNumberOfMissingTeamMembers: number;
   possibleActions: WaitingListAction[];
 }
 
@@ -47,21 +48,21 @@ export async function generateNewTeamsFromWaitingListAsync(adminId: string, part
   return response.data;
 }
 
-export async function assignParticipantsToExistingTeamsAsync(adminId: string, teamParticipantsAssignmentList: TeamParticipantsAssignment[]): Promise<void> {
+export async function assignParticipantsToExistingTeamsAsync(adminId: string, teamParticipantsAssignmentList: TeamParticipantsAssignment[]): Promise<TeamParticipantsAssignment[]> {
   const url = BackendConfig.buildUrl(`/waitinglistservice/v1/runningdinner/${adminId}/assign-participants-teams`);
-  const teamParticipantsAssignmentsToSendTmp = teamParticipantsAssignmentList.filter(tpa => isArrayNotEmpty(tpa.selectedParticipants));
+  const teamParticipantsAssignments = teamParticipantsAssignmentList.filter(tpa => isArrayNotEmpty(tpa.selectedParticipants));
 
-  const teamParticipantsAssignmentsToSend = teamParticipantsAssignmentsToSendTmp.map((tpa) => {
+  const teamParticipantsAssignmentsNormalized = teamParticipantsAssignments.map((tpa) => {
     return {
       teamId: tpa.team.id,
       participantIds: tpa.selectedParticipants.map(p => p.id)
     };
   });
 
-  const response = await axios.put(url, {
-    teamParticipantsAssignments: teamParticipantsAssignmentsToSend
+  await axios.put(url, {
+    teamParticipantsAssignments: teamParticipantsAssignmentsNormalized
   });
-  return response.data;
+  return teamParticipantsAssignments;
 }
 
 export function setupAssignParticipantsToTeamsModel(teams: Team[], participants: Participant[]): TeamParticipantsAssignmentModel {
