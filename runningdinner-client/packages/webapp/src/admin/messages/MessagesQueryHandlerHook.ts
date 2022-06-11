@@ -18,6 +18,8 @@ export function useMessagesQueryHandler(messageType: MessageType) {
         result = 'admin:team_single_message_headline';
       } else if (messageSubType === MessageSubType.TEAM_CANCELLATION) {
         result = 'admin:team_cancellation_message_headline';
+      } else if (messageSubType === MessageSubType.TEAMS_MODIFIED_WAITINGLIST) {
+        result = 'admin:teams_modified_waitinglist_message_headline';
       }
       return result;
     } else {

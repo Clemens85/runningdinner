@@ -3,53 +3,60 @@ import {
   createStyles,
   Dialog,
   Grid,
-  IconButton, makeStyles,
+  IconButton,
+  makeStyles,
   Slide,
   Theme,
   Toolbar,
   Typography
 } from '@material-ui/core';
 import {
-  isArrayNotEmpty,
-  Team,
-  CallbackHandler,
-  TeamNr,
-  SelectableParticipant,
-  Fullname,
-  findEntityById,
-  TeamParticipantsAssignmentModel,
-  setupAssignParticipantsToTeamsModel,
   addSelectedParticipantToTeam,
-  removeSelectedParticipantFromTeam,
-  TeamParticipantsAssignment,
+  assignParticipantsToExistingTeamsAsync,
+  BaseRunningDinnerProps,
   calculateCancelledTeamMembersNumArr,
+  CallbackHandler,
+  findEntityById,
+  findWaitingListInfoAsync,
+  Fullname,
+  generateNewTeamsFromWaitingListAsync,
   getNumCancelledTeamMembers,
   getTeamParticipantsAssignment,
-  findWaitingListInfoAsync,
-  BaseRunningDinnerProps,
-  WaitingListInfo,
+  isArrayNotEmpty,
+  MessageSubType,
+  removeSelectedParticipantFromTeam,
+  SelectableParticipant,
+  setupAssignParticipantsToTeamsModel,
+  Team,
+  TeamNr,
+  TeamParticipantsAssignment,
+  TeamParticipantsAssignmentModel,
+  useBackendIssueHandler,
+  useTeamNameMembers,
   WaitingListAction,
-  generateNewTeamsFromWaitingListAsync, useBackendIssueHandler, assignParticipantsToExistingTeamsAsync
+  WaitingListInfo
 } from '@runningdinner/shared';
-import { Fetch } from '../../../common/Fetch';
+import {Fetch} from '../../../common/Fetch';
 import React, {useEffect, useState} from 'react';
-import { useTranslation } from 'react-i18next';
-import {SmallTitle, Subtitle} from "../../../common/theme/typography/Tags";
+import {useTranslation} from 'react-i18next';
+import {Subtitle} from "../../../common/theme/typography/Tags";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import Box from "@material-ui/core/Box";
 import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from 'lodash/cloneDeep';
-import { SpacingPaper } from '../../../common/theme/SpacingPaper';
+import {SpacingPaper} from '../../../common/theme/SpacingPaper';
 import {CancelledTeamMember} from "../../teams/CancelledTeamMember";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
-import { TransitionProps } from '@material-ui/core/transitions';
+import {TransitionProps} from '@material-ui/core/transitions';
 import CloseIcon from '@material-ui/icons/Close';
 import useCommonStyles from "../../../common/theme/CommonStyles";
 import {SpacingGrid} from "../../../common/theme/SpacingGrid";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {PrimarySuccessButtonAsync} from "../../../common/theme/PrimarySuccessButtonAsync";
-import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
-import { GridSize } from "@material-ui/core/Grid/Grid";
+import {Breakpoint} from "@material-ui/core/styles/createBreakpoints";
+import {GridSize} from "@material-ui/core/Grid/Grid";
+import {useAdminNavigation} from "../../AdminNavigationHook";
+import {SpacingButton} from "../../../common/theme/SpacingButton";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
@@ -71,8 +78,27 @@ const useDialogStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface WaitingListManagementDialogProps extends BaseRunningDinnerProps {
+type WaitingListManagementDialogProps = {
   onClose: CallbackHandler;
+} & BaseRunningDinnerProps;
+
+type ReFetchCallback = {
+  reFetch: () => Promise<WaitingListInfo>;
+};
+
+type SaveCallback = {
+  onSave: (affectedTeams: Team[], showNotificationView: boolean, triggerRefetch: boolean) => unknown;
+};
+
+type AffectedTeamsProps = {
+  affectedTeams: Team[];
+};
+
+type SingleTeamParticipantsAssignmentProps = {
+  allSelectableParticipants: SelectableParticipant[];
+  onRemoveFromTeam: (team: Team, participant: SelectableParticipant) => unknown;
+  onAddToTeam: (team: Team, participant: SelectableParticipant) => unknown;
+  teamSizeOfRunningDinner: number;
 }
 
 export function WaitingListManagementDialog(props: WaitingListManagementDialogProps) {
@@ -108,28 +134,27 @@ export function WaitingListManagementDialog(props: WaitingListManagementDialogPr
   );
 }
 
-interface WaitingListManagementDialogContentProps extends WaitingListInfo, BaseRunningDinnerProps {
-  reFetch: () => Promise<WaitingListInfo>;
-}
+function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetchCallback & BaseRunningDinnerProps) {
 
-interface WaitingListAssignmentViewProps extends WaitingListManagementDialogContentProps {
-  onSave: CallbackHandler;
-}
-
-function WaitingListManagementDialogContentView(props: WaitingListManagementDialogContentProps) {
-
-  const { possibleActions, teamsGenerated, reFetch } = props;
+  const { possibleActions, teamsGenerated, runningDinner, reFetch } = props;
 
   const [currentWaitingListAction, setCurrentWaitingListAction] = React.useState<WaitingListAction>();
+  const [teamsToNotify, setTeamsToNotify] = React.useState<Team[]>();
+
   React.useEffect(() => {
     setCurrentWaitingListAction(isArrayNotEmpty(possibleActions) ? possibleActions[0] : undefined);
   }, possibleActions);
 
-  function handleAssignToExistingTeams() {
-    reFetch();
+  function handleSave(affectedTeams: Team[], showNotificationView: boolean, triggerRefetch: boolean) {
+    if (triggerRefetch) {
+      reloadWaitingListContent();
+    } else if (showNotificationView) {
+      setTeamsToNotify(affectedTeams);
+    }
   }
 
-  function handleGenerateNewTeams() {
+  function reloadWaitingListContent() {
+    setTeamsToNotify(undefined);
     reFetch();
   }
 
@@ -137,13 +162,19 @@ function WaitingListManagementDialogContentView(props: WaitingListManagementDial
     return <TeamsNotGeneratedView />;
   }
 
+  if (isArrayNotEmpty(teamsToNotify)) {
+    return <NotifyTeamsAboutChangesView affectedTeams={teamsToNotify}
+                                        onSave={reloadWaitingListContent}
+                                        runningDinner={runningDinner} />
+  }
+
   if (!currentWaitingListAction) {
     return <NoActionView {... props } />;
   }
   return (
     <>
-      { currentWaitingListAction === WaitingListAction.GENERATE_NEW_TEAMS && <RegenerateTeamsWithAssignableParticipantsView {... props} onSave={handleGenerateNewTeams} /> }
-      { currentWaitingListAction === WaitingListAction.ASSIGN_TO_EXISTING_TEAMS && <TeamParticipantsAssignmentView {...props} onSave={handleAssignToExistingTeams}/> }
+      { currentWaitingListAction === WaitingListAction.GENERATE_NEW_TEAMS && <RegenerateTeamsWithAssignableParticipantsView {... props} onSave={handleSave} /> }
+      { currentWaitingListAction === WaitingListAction.ASSIGN_TO_EXISTING_TEAMS && <TeamParticipantsAssignmentView {...props} onSave={handleSave}/> }
     </>
   );
 }
@@ -151,11 +182,13 @@ function WaitingListManagementDialogContentView(props: WaitingListManagementDial
 const DIALOG_SPACING_X = 3;
 const GRID_SIZES: Partial<Record<Breakpoint, GridSize>> = { xs: 12, md: 5, lg: 5, xl: 5 };
 
-function TeamParticipantsAssignmentView({teamsWithCancelStatusOrCancelledMembers, remainingParticipants, participtantsForTeamArrangement, runningDinner, onSave}: WaitingListAssignmentViewProps) {
+function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & BaseRunningDinnerProps) {
+
+  const {teamsWithCancelStatusOrCancelledMembers, totalNumberOfMissingTeamMembers, remainingParticipants, participtantsForTeamArrangement, runningDinner, onSave} = props;
 
   const {t} = useTranslation(['admin', 'common']);
   const commonClasses = useCommonStyles();
-  const {showInfo, showSuccess} = useCustomSnackbar();
+  const {showWarning, showSuccess} = useCustomSnackbar();
 
   const {teamSize} = runningDinner.options;
   const [teamParticipantsAssignmentModel, setTeamParticipantsAssignmentModel] = useState<TeamParticipantsAssignmentModel>(setupAssignParticipantsToTeamsModel(teamsWithCancelStatusOrCancelledMembers, remainingParticipants));
@@ -177,7 +210,7 @@ function TeamParticipantsAssignmentView({teamsWithCancelStatusOrCancelledMembers
     const teamParticipantsAssignment = getTeamParticipantsAssignment(teamParticipantsAssignmentModel, team);
     const numCancelledTeamMembers = getNumCancelledTeamMembers(team, teamParticipantsAssignment.selectedParticipants.length, teamSize);
     if (numCancelledTeamMembers <= 0) {
-      showInfo("Es können nur max. " + teamSize + " Teilnehmer in einem Team sein!");
+      showWarning("Es können nur max. " + teamSize + " Teilnehmer in einem Team sein!");
       return;
     }
     setTeamParticipantsAssignmentModel(prevState => {
@@ -196,9 +229,10 @@ function TeamParticipantsAssignmentView({teamsWithCancelStatusOrCancelledMembers
   async function handleAssignToExistingTeams() {
     const {teamParticipantAssignments} = teamParticipantsAssignmentModel;
     try {
-      await assignParticipantsToExistingTeamsAsync(runningDinner.adminId, teamParticipantAssignments);
+      const teamParticipantAssignmentsResponse = await assignParticipantsToExistingTeamsAsync(runningDinner.adminId, teamParticipantAssignments);
       showSuccess("Teams erfolgreich aufgefüllt");
-      onSave();
+      const affectedTeams = teamParticipantAssignmentsResponse.map(tpa => tpa.team);
+      onSave(affectedTeams, true, false);
     } catch (e) {
       showHttpErrorDefaultNotification(e);
     }
@@ -214,8 +248,8 @@ function TeamParticipantsAssignmentView({teamsWithCancelStatusOrCancelledMembers
           <Subtitle>Teams durch Teilnehmer der Warteliste auffüllen</Subtitle>
           <Paragraph>
             Du hast derzeit <strong>{allSelectableParticipants.length}</strong> Teilnehmer auf der Warteliste.<br/>
-            Nutze diese um die folgenden Teams, welche durch Absagen nicht mehr vollständig sind, aufzufüllen. Hierfür kannst du <strong>TODO</strong> Teilnehmer verwenden.<br/>
-            In einem nächsten Schritt TODO Falls noch genügend andere Teilnehmer vorhanden sind.
+            Nutze diese um die folgenden Teams, welche durch Absagen nicht mehr vollständig sind, aufzufüllen.
+            Hierfür kannst du insgesamt <strong>{totalNumberOfMissingTeamMembers}</strong> Teilnehmer verwenden.<br/>
           </Paragraph>
         </Grid>
       </SpacingGrid>
@@ -248,19 +282,55 @@ function TeamParticipantsAssignmentView({teamsWithCancelStatusOrCancelledMembers
           </Box>
         </Grid>
       </SpacingGrid>
-
     </>
   );
 }
 
-interface SingleTeamParticipantsAssignmentViewProps extends TeamParticipantsAssignment {
-  allSelectableParticipants: SelectableParticipant[];
-  onRemoveFromTeam: (team: Team, participant: SelectableParticipant) => unknown;
-  onAddToTeam: (team: Team, participant: SelectableParticipant) => unknown;
-  teamSizeOfRunningDinner: number;
+function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, onSave}: AffectedTeamsProps & SaveCallback & BaseRunningDinnerProps) {
+
+  const {t} = useTranslation("admin");
+  const commonClasses = useCommonStyles();
+  const {generateTeamMessagesPath} = useAdminNavigation();
+  const {getTeamNameMembers} = useTeamNameMembers();
+
+  function handleSendNotifications(openMessagesView: boolean) {
+    if (openMessagesView) {
+      window.open(generateTeamMessagesPath(runningDinner.adminId, MessageSubType.TEAMS_MODIFIED_WAITINGLIST, affectedTeams), '_blank');
+    }
+    onSave(affectedTeams, false, true);
+  }
+
+  return (
+    <>
+      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
+        <Grid item {... GRID_SIZES}>
+          <Subtitle>{t('admin:team_notify_cancellation')}</Subtitle>
+          <Paragraph>Da sich nun folgende Teams in der Zusammenstellung geändert haben, solltest du diese über die Änderungen benachrichtigen:</Paragraph>
+          <ul>
+            { affectedTeams.map(team => <li key={team.id}>{getTeamNameMembers(team)}</li>) }
+          </ul>
+        </Grid>
+      </SpacingGrid>
+
+      <SpacingGrid container justify={"center"} px={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
+        <Grid item {... GRID_SIZES}>
+          <PrimarySuccessButtonAsync onClick={() => handleSendNotifications(true)}
+                                     size={"large"} className={commonClasses.fullWidth}>
+            Teams benachrichtigen (öffnet neues Fenster)
+          </PrimarySuccessButtonAsync>
+          <SpacingButton onClick={() => handleSendNotifications(false)} mt={DIALOG_SPACING_X}
+                         color={"primary"} variant={"outlined"} className={commonClasses.fullWidth}>
+            Weiter ohne Benachrichtigungen
+          </SpacingButton>
+        </Grid>
+      </SpacingGrid>
+    </>
+  );
 }
 
-function SingleTeamParticipantsAssignmentView({team, selectedParticipants, allSelectableParticipants, onAddToTeam, onRemoveFromTeam, teamSizeOfRunningDinner}: SingleTeamParticipantsAssignmentViewProps) {
+function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssignmentProps & TeamParticipantsAssignment) {
+
+  const {team, selectedParticipants, allSelectableParticipants, onAddToTeam, onRemoveFromTeam, teamSizeOfRunningDinner} = props;
 
   const selectableParticipantControls = allSelectableParticipants.map(participant =>
     <Box key={participant.id} >
@@ -296,7 +366,7 @@ function SingleTeamParticipantsAssignmentView({team, selectedParticipants, allSe
         { renderTeamMembers() }
       </SpacingPaper>
       <Box my={2}>
-        <small>(Wähle die Teilnehmer aus die zu diesem Team hinzufügen willst.)</small>
+        <small>(Wähle die Teilnehmer aus die zu diesem Team hinzufügen willst)</small>
       </Box>
       { selectableParticipantControls }
     </>
@@ -304,7 +374,7 @@ function SingleTeamParticipantsAssignmentView({team, selectedParticipants, allSe
 
 }
 
-function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListAssignmentViewProps) {
+function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & BaseRunningDinnerProps & SaveCallback) {
 
   const {numMissingParticipantsForFullTeamArrangement, participtantsForTeamArrangement, remainingParticipants, runningDinner, onSave } = props;
 
@@ -329,7 +399,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListAssignm
     try {
       await generateNewTeamsFromWaitingListAsync(runningDinner.adminId, participantsForTeamsGeneration);
       showSuccess("Teams erfolgreich generiert");
-      onSave();
+      onSave([], true, false); // TODO: Get new teams out of new generated ones!
     } catch (e) {
       showHttpErrorDefaultNotification(e);
     }
@@ -364,7 +434,6 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListAssignm
     setParticipantList(initialParticipantList);
   }, []);
 
-  const colMd = 6;
 
   const participantsAssignableControls = participantList.map(participant =>
     <Box key={participant.id} >
@@ -374,37 +443,36 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListAssignm
 
   return (
     <>
-      <Grid container>
-        <Grid item {... GRID_SIZES}>
-          <Box mx={DIALOG_SPACING_X}>
-            <Paragraph>Hier kannst du <strong>{numParticipantsAssignable}</strong> Teilnehmer als neue Teams hinzufügen</Paragraph>
-            { numRemainingParticipants > 0 &&
-              <Paragraph>
-                Es gibt noch <strong>{numRemainingParticipants}</strong> Teilnehmer welche übrig bleiben. Falls sich noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> weitere Teilnehmer
-                anmelden, so kannst du alle diese später ebenfalls noch als weitere Teams hinzufügen.
-              </Paragraph>
-            }
-          </Box>
-        </Grid>
+      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
+        <SpacingGrid item {... GRID_SIZES} px={DIALOG_SPACING_X}>
+          <Subtitle>Es gibt <strong>{numParticipantsAssignable}</strong> Teilnehmer welche als neue Teams eingeteilt werden können!</Subtitle>
+          { numRemainingParticipants > 0 &&
+            <Paragraph>
+              Es gibt noch <strong>{numRemainingParticipants}</strong> Teilnehmer welche übrig bleiben. Falls sich noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> weitere Teilnehmer
+              anmelden, so kannst du alle diese später ebenfalls noch als weitere Teams hinzufügen.
+            </Paragraph>
+          }
+        </SpacingGrid>
+      </SpacingGrid>
 
-        <Grid item {... GRID_SIZES}>
-          <SpacingPaper elevation={3} p={DIALOG_SPACING_X} mx={DIALOG_SPACING_X}>
+      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"}>
+        <SpacingGrid item {... GRID_SIZES} px={DIALOG_SPACING_X} mb={DIALOG_SPACING_X}>
+          <SpacingPaper elevation={3} p={DIALOG_SPACING_X}>
             { participantsAssignableControls }
           </SpacingPaper>
-        </Grid>
-
-      </Grid>
-
-      <Grid container justify={"center"}>
-        <Grid item {... GRID_SIZES}>
-          <Box mx={DIALOG_SPACING_X} mt={DIALOG_SPACING_X} pt={DIALOG_SPACING_X}>
-            <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams} size={"large"} className={commonClasses.fullWidth}>
-              {t('Teilnehmer in Teams einteilen!')}
-            </PrimarySuccessButtonAsync>
+          <Box my={2}>
+            <small>(Wähle die Teilnehmer aus, welche als neue Teams eingeteilt werden sollen)</small>
           </Box>
-        </Grid>
-      </Grid>
+        </SpacingGrid>
+      </SpacingGrid>
 
+      <SpacingGrid container justify={"center"}>
+        <SpacingGrid item {... GRID_SIZES} px={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
+          <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams} size={"large"} className={commonClasses.fullWidth}>
+            {t('Teilnehmer in Teams einteilen!')}
+          </PrimarySuccessButtonAsync>
+        </SpacingGrid>
+      </SpacingGrid>
     </>
   );
 }
@@ -420,7 +488,7 @@ function NoActionView({numMissingParticipantsForFullTeamArrangement, remainingPa
       <Grid item {... GRID_SIZES}>
         <Box m={DIALOG_SPACING_X}>
           <Paragraph>
-            Die {numRemainingParticpants} Teilnehmer auf der Warteliste können nicht als neue Teams hinzugefügt werden.
+            Die {numRemainingParticpants} verbleibenden Teilnehmer auf der Warteliste können nicht als neue Teams hinzugefügt werden.<br/>
             Hierzu fehlen derzeit noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> zusätzliche Teilnehmer.
           </Paragraph>
           <Paragraph>Folgende Optionen stehen dir zur Verfügung:</Paragraph>
@@ -465,49 +533,3 @@ function TeamsNotGeneratedView() {
     </Grid>
   );
 }
-
-
-
-interface PossibleActionSelectControlProps {
-  possibleActions: WaitingListAction[];
-  currentWaitingListAction: WaitingListAction;
-  onWaitingListActionChange: (wla: WaitingListAction) => unknown;
-}
-
-// function PossibleActionSelectControl({possibleActions, currentWaitingListAction, onWaitingListActionChange}: PossibleActionSelectControlProps) {
-//
-//   function handleChange(changeEvent: React.ChangeEvent<{ value: unknown}>) {
-//     const newWaitingListAction = changeEvent.target.value as WaitingListAction;
-//     onWaitingListActionChange(newWaitingListAction);
-//   }
-//
-//   const selectionOptions = possibleActions
-//     .map(possibleAction =>
-//       <MenuItem value={possibleAction} key={possibleAction}>
-//         {possibleAction}
-//       </MenuItem>
-//     );
-//
-//   const selectionLabel = 'TODO';
-//   return (
-//     <>
-//       <SmallTitle>Es sind mehrere Aktionen möglich</SmallTitle>
-//       <FormControl fullWidth>
-//         <InputLabel>{selectionLabel}</InputLabel>
-//         <Select
-//           autoWidth
-//           value={currentWaitingListAction}
-//           onChange={handleChange}
-//           inputProps={{ 'aria-label': selectionLabel }}>
-//           {selectionOptions}
-//         </Select>
-//       </FormControl>
-//     </>
-//   )
-// }
-
-
-
-{/*{ possibleActions.length > 1 && <PossibleActionSelectControl possibleActions={possibleActions}*/}
-{/*                                                             currentWaitingListAction={currentWaitingListAction}*/}
-{/*                                                             onWaitingListActionChange={setCurrentWaitingListAction} />  }*/}

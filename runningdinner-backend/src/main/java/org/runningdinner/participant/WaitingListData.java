@@ -17,6 +17,8 @@ public class WaitingListData {
 	private int numMissingParticipantsForFullTeamArrangement = 0;
 
 	private List<TeamTO> teamsWithCancelStatusOrCancelledMembers = new ArrayList<>();
+	
+	private int totalNumberOfMissingTeamMembers = 0;
 
 	private List<WaitingListAction> possibleActions = new ArrayList<>();
 	
@@ -68,6 +70,14 @@ public class WaitingListData {
 
 	public void setTeamsGenerated(boolean teamsGenerated) {
 		this.teamsGenerated = teamsGenerated;
+	}
+	
+	public int getTotalNumberOfMissingTeamMembers() {
+		return totalNumberOfMissingTeamMembers;
+	}
+
+	public void setTotalNumberOfMissingTeamMembers(int totalNumberOfMissingTeamMembers) {
+		this.totalNumberOfMissingTeamMembers = totalNumberOfMissingTeamMembers;
 	}
 
 	@Override

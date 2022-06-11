@@ -247,6 +247,7 @@
 	"teams_reset_success_text": "Old team arrangements were removed and new team arrangements have been generated",
 	"teams_selection": "Team selection",
 	"teams_show_dinnerroute": "Show dinner route",
+	"teams_modified_waitinglist_message_headline": "Team Changes by Waitinglist",
 	"time_schedule": "Time schedule",
 	"time_schedule_edit": "Edit time schedule",
 	"transfer": "Transfer",
