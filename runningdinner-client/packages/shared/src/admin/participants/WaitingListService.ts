@@ -2,8 +2,8 @@ import cloneDeep from "lodash/cloneDeep";
 import find from "lodash/find";
 import uniqBy from "lodash/uniqBy";
 import orderBy from "lodash/orderBy";
-import {Participant, SelectableParticipant, Team} from "../../types";
-import {isArrayNotEmpty, isSameEntity, removeEntityFromList} from "../../Utils";
+import {Participant, SelectableParticipant, Team, TeamArrangementList} from "../../types";
+import {isArrayEmpty, isArrayNotEmpty, isSameEntity, removeEntityFromList} from "../../Utils";
 import {generateCancelledTeamMembersAsNumberArray} from "../TeamService";
 import {BackendConfig} from "../../BackendConfig";
 import axios from "axios";
@@ -21,23 +21,36 @@ export interface TeamParticipantsAssignment {
 
 export enum WaitingListAction {
   ASSIGN_TO_EXISTING_TEAMS = "ASSIGN_TO_EXISTING_TEAMS",
-  GENERATE_NEW_TEAMS = "GENERATE_NEW_TEAMS"
+  GENERATE_NEW_TEAMS = "GENERATE_NEW_TEAMS",
+  DISTRIBUTE_TO_TEAMS = "DISTRIBUTE_TO_TEAMS"
 }
+export enum WaitingListActionAdditional {
+  NO_ACTION = "NO_ACTION" // This is not from Backend, but we need it in frontend
+}
+
+export type WaitingListActionUI = WaitingListAction | WaitingListActionAdditional;
 
 export interface WaitingListInfo {
   participtantsForTeamArrangement: SelectableParticipant[];
   remainingParticipants: SelectableParticipant[];
+  allParticipantsOnWaitingList: SelectableParticipant[]; // This is just another view with participtantsForTeamArrangement + remainingParticipants combined
   numMissingParticipantsForFullTeamArrangement: number;
   teamsWithCancelStatusOrCancelledMembers: Team[];
   teamsGenerated: boolean;
   totalNumberOfMissingTeamMembers: number;
-  possibleActions: WaitingListAction[];
+  possibleActions: WaitingListActionUI[];
 }
 
 export async function findWaitingListInfoAsync(adminId: string): Promise<WaitingListInfo> {
   const url = BackendConfig.buildUrl(`/waitinglistservice/v1/runningdinner/${adminId}`);
   const response = await axios.get(url);
-  return response.data;
+  const waitingListInfo = response.data;
+  waitingListInfo.allParticipantsOnWaitingList = waitingListInfo.participtantsForTeamArrangement.concat(waitingListInfo.remainingParticipants);
+  waitingListInfo.allParticipantsOnWaitingList = cloneDeep(waitingListInfo.allParticipantsOnWaitingList);
+  if (isArrayEmpty(waitingListInfo.possibleActions)) {
+    waitingListInfo.possibleActions = [WaitingListActionAdditional.NO_ACTION];
+  }
+  return waitingListInfo;
 }
 
 export async function generateNewTeamsFromWaitingListAsync(adminId: string, participants: Participant[]): Promise<void> {
@@ -48,7 +61,7 @@ export async function generateNewTeamsFromWaitingListAsync(adminId: string, part
   return response.data;
 }
 
-export async function assignParticipantsToExistingTeamsAsync(adminId: string, teamParticipantsAssignmentList: TeamParticipantsAssignment[]): Promise<TeamParticipantsAssignment[]> {
+export async function assignParticipantsToExistingTeamsAsync(adminId: string, teamParticipantsAssignmentList: TeamParticipantsAssignment[]): Promise<Team[]> {
   const url = BackendConfig.buildUrl(`/waitinglistservice/v1/runningdinner/${adminId}/assign-participants-teams`);
   const teamParticipantsAssignments = teamParticipantsAssignmentList.filter(tpa => isArrayNotEmpty(tpa.selectedParticipants));
 
@@ -59,10 +72,10 @@ export async function assignParticipantsToExistingTeamsAsync(adminId: string, te
     };
   });
 
-  await axios.put(url, {
+  const result = await axios.put<TeamArrangementList>(url, {
     teamParticipantsAssignments: teamParticipantsAssignmentsNormalized
   });
-  return teamParticipantsAssignments;
+  return result.data.teams;
 }
 
 export function setupAssignParticipantsToTeamsModel(teams: Team[], participants: Participant[]): TeamParticipantsAssignmentModel {

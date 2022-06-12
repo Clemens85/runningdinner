@@ -2,6 +2,7 @@ package org.runningdinner.participant.rest;
 
 import java.util.List;
 
+import org.runningdinner.participant.Team;
 import org.runningdinner.participant.WaitingListData;
 import org.runningdinner.participant.WaitingListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +37,12 @@ public class WaitingListServiceRest {
   }
   
   @PutMapping("/runningdinner/{adminId}/assign-participants-teams")
-  public void assignParticipantsToExistingTeams(@PathVariable("adminId") String adminId, 
+  public TeamArrangementListTO assignParticipantsToExistingTeams(@PathVariable("adminId") String adminId, 
   																							@RequestBody @Validated TeamParticipantsAssignmentListTO teamParticipantsAssignmentList) {
 
   	
-  	waitingListService.assignParticipantsToExistingTeams(adminId, teamParticipantsAssignmentList.getTeamParticipantsAssignments());
+  	List<Team> result = waitingListService.assignParticipantsToExistingTeams(adminId, teamParticipantsAssignmentList.getTeamParticipantsAssignments());
+  	return new TeamArrangementListTO(TeamTO.convertTeamList(result), adminId);
   }
-  
   
 }

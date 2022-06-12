@@ -141,7 +141,7 @@ public class WaitingListService {
 	}
 
 	@Transactional
-	public void assignParticipantsToExistingTeams(@ValidateAdminId String adminId, List<TeamParticipantsAssignmentTO> teamParticipantsAssignments) {
+	public List<Team> assignParticipantsToExistingTeams(@ValidateAdminId String adminId, List<TeamParticipantsAssignmentTO> teamParticipantsAssignments) {
 		
 		List<TeamParticipantsAssignmentTO> teamParticipantsAssignmentsToApply = teamParticipantsAssignments
 																																							.stream()
@@ -152,10 +152,11 @@ public class WaitingListService {
 		
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 		
+		List<Team> affectedTeams = new ArrayList<>();
 		for (TeamParticipantsAssignmentTO singleTeamParticipantsAssignment : teamParticipantsAssignmentsToApply) {
-			assignParticipantsToExistingTeam(runningDinner, singleTeamParticipantsAssignment.getTeamId(), singleTeamParticipantsAssignment.getParticipantIds());
+			affectedTeams.add(assignParticipantsToExistingTeam(runningDinner, singleTeamParticipantsAssignment.getTeamId(), singleTeamParticipantsAssignment.getParticipantIds()));
 		}
-
+		return affectedTeams;
 	}
 	
 	private static void validateNoDuplicatedParticipantIds(List<TeamParticipantsAssignmentTO> teamParticipantsAssignments) {
@@ -210,12 +211,23 @@ public class WaitingListService {
 	private List<WaitingListAction> calculatePossibleActions(WaitingListData waitingListData) {
 		
 		List<WaitingListAction> result = new ArrayList<>();
+		
+		boolean hasParticipantsOnWaitingList = CollectionUtils.isNotEmpty(waitingListData.getParticiptantsForTeamArrangement()) || CollectionUtils.isNotEmpty(waitingListData.getRemainingParticipants());
+		if (!hasParticipantsOnWaitingList || !waitingListData.isTeamsGenerated()) {
+			return result;
+		}
+		
 		if (CollectionUtils.isNotEmpty(waitingListData.getTeamsWithCancelStatusOrCancelledMembers())) {
 			result.add(WaitingListAction.ASSIGN_TO_EXISTING_TEAMS);
 		}
 		if (CollectionUtils.isNotEmpty(waitingListData.getParticiptantsForTeamArrangement())) {
 			result.add(WaitingListAction.GENERATE_NEW_TEAMS);
 		}
+
+		if (result.size() == 0) {
+			result.add(WaitingListAction.DISTRIBUTE_TO_TEAMS);
+		}
+		
 		return result;
 	}
 
