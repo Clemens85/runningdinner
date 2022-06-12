@@ -11,17 +11,21 @@ import {
   Typography
 } from '@material-ui/core';
 import {
+  ActivityType,
   addSelectedParticipantToTeam,
   assignParticipantsToExistingTeamsAsync,
   BaseRunningDinnerProps,
   calculateCancelledTeamMembersNumArr,
   CallbackHandler,
+  filterActivitiesByType,
+  findAdminActivitiesByAdminIdAndTypesAsync,
   findEntityById,
   findWaitingListInfoAsync,
   Fullname,
   generateNewTeamsFromWaitingListAsync,
   getNumCancelledTeamMembers,
   getTeamParticipantsAssignment,
+  isArrayEmpty,
   isArrayNotEmpty,
   MessageSubType,
   removeSelectedParticipantFromTeam,
@@ -34,11 +38,13 @@ import {
   useBackendIssueHandler,
   useTeamNameMembers,
   WaitingListAction,
+  WaitingListActionAdditional,
+  WaitingListActionUI,
   WaitingListInfo
 } from '@runningdinner/shared';
 import {Fetch} from '../../../common/Fetch';
 import React, {useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import {Trans, useTranslation} from 'react-i18next';
 import {Subtitle} from "../../../common/theme/typography/Tags";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import Box from "@material-ui/core/Box";
@@ -57,6 +63,7 @@ import {Breakpoint} from "@material-ui/core/styles/createBreakpoints";
 import {GridSize} from "@material-ui/core/Grid/Grid";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import {SpacingButton} from "../../../common/theme/SpacingButton";
+import {Alert, AlertTitle} from "@material-ui/lab";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
@@ -78,20 +85,14 @@ const useDialogStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-type WaitingListManagementDialogProps = {
+type CloseCallback = {
   onClose: CallbackHandler;
-} & BaseRunningDinnerProps;
-
+};
 type ReFetchCallback = {
   reFetch: () => Promise<WaitingListInfo>;
 };
-
 type SaveCallback = {
   onSave: (affectedTeams: Team[], showNotificationView: boolean, triggerRefetch: boolean) => unknown;
-};
-
-type AffectedTeamsProps = {
-  affectedTeams: Team[];
 };
 
 type SingleTeamParticipantsAssignmentProps = {
@@ -101,13 +102,18 @@ type SingleTeamParticipantsAssignmentProps = {
   teamSizeOfRunningDinner: number;
 }
 
-export function WaitingListManagementDialog(props: WaitingListManagementDialogProps) {
+type TeamNotificationModel = {
+  dinnerRouteMessagesAlreadySent: boolean;
+  affectedTeams: Team[];
+};
+
+export function WaitingListManagementDialog(props: BaseRunningDinnerProps & CloseCallback) {
   
   const {t} = useTranslation(["admin", "common"]);
 
   const dialogClasses = useDialogStyles();
 
-  const {runningDinner, onClose} = props
+  const {runningDinner, onClose} = props;
 
   return (
     <Dialog onClose={onClose} open={true} fullScreen TransitionComponent={Transition}>
@@ -126,7 +132,7 @@ export function WaitingListManagementDialog(props: WaitingListManagementDialogPr
              parameters={[runningDinner.adminId]}
              render={response =>
                 <Box mt={3}>
-                  <WaitingListManagementDialogContentView {...response.result} reFetch={response.reFetch} runningDinner={runningDinner} />
+                  <WaitingListManagementDialogContentView {...response.result} reFetch={response.reFetch} runningDinner={runningDinner} onClose={onClose} />
                 </Box>
              } />
 
@@ -134,27 +140,42 @@ export function WaitingListManagementDialog(props: WaitingListManagementDialogPr
   );
 }
 
-function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetchCallback & BaseRunningDinnerProps) {
+function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetchCallback & CloseCallback & BaseRunningDinnerProps) {
 
-  const { possibleActions, teamsGenerated, runningDinner, reFetch } = props;
+  const { possibleActions, teamsGenerated, runningDinner, reFetch, onClose } = props;
 
-  const [currentWaitingListAction, setCurrentWaitingListAction] = React.useState<WaitingListAction>();
-  const [teamsToNotify, setTeamsToNotify] = React.useState<Team[]>();
+  const [currentWaitingListAction, setCurrentWaitingListAction] = React.useState<WaitingListActionUI>();
+  const [teamNotificationModel, setTeamNotificationModel] = React.useState<TeamNotificationModel>();
 
   React.useEffect(() => {
     setCurrentWaitingListAction(isArrayNotEmpty(possibleActions) ? possibleActions[0] : undefined);
   }, possibleActions);
 
-  function handleSave(affectedTeams: Team[], showNotificationView: boolean, triggerRefetch: boolean) {
+  async function handleSave(affectedTeams: Team[], showNotificationView: boolean, triggerRefetch: boolean) {
     if (triggerRefetch) {
       reloadWaitingListContent();
     } else if (showNotificationView) {
-      setTeamsToNotify(affectedTeams);
+      const activities = await findTeamOrDinnerRouteMessageActivitiesAsync(runningDinner.adminId);
+      if (isArrayEmpty(activities)) {
+        // Although we wanted to show notification view, there is no need for it, due to there were no messages sent so far.
+        // => Hence we trigger refetch for determining if there is anything left to be done for the user (we know it better here than our child compponent which called us)
+        reloadWaitingListContent();
+        return;
+      } // else: show notification view
+      setTeamNotificationModel({
+        affectedTeams,
+        dinnerRouteMessagesAlreadySent: isArrayNotEmpty(filterActivitiesByType(activities, ActivityType.DINNERROUTE_MAIL_SENT))
+      });
     }
   }
 
+  async function findTeamOrDinnerRouteMessageActivitiesAsync(adminId: string) {
+    const activityList = await findAdminActivitiesByAdminIdAndTypesAsync(adminId, [ActivityType.TEAMARRANGEMENT_MAIL_SENT, ActivityType.DINNERROUTE_MAIL_SENT]);
+    return activityList.activities || [];
+  }
+
   function reloadWaitingListContent() {
-    setTeamsToNotify(undefined);
+    setTeamNotificationModel(undefined);
     reFetch();
   }
 
@@ -162,19 +183,22 @@ function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetch
     return <TeamsNotGeneratedView />;
   }
 
-  if (isArrayNotEmpty(teamsToNotify)) {
-    return <NotifyTeamsAboutChangesView affectedTeams={teamsToNotify}
+  if (teamNotificationModel) {
+    return <NotifyTeamsAboutChangesView {... teamNotificationModel }
                                         onSave={reloadWaitingListContent}
                                         runningDinner={runningDinner} />
   }
 
-  if (!currentWaitingListAction) {
-    return <NoActionView {... props } />;
+  if (currentWaitingListAction === WaitingListActionAdditional.NO_ACTION) {
+    onClose();
+    return null;
   }
+
   return (
     <>
       { currentWaitingListAction === WaitingListAction.GENERATE_NEW_TEAMS && <RegenerateTeamsWithAssignableParticipantsView {... props} onSave={handleSave} /> }
       { currentWaitingListAction === WaitingListAction.ASSIGN_TO_EXISTING_TEAMS && <TeamParticipantsAssignmentView {...props} onSave={handleSave}/> }
+      { currentWaitingListAction === WaitingListAction.DISTRIBUTE_TO_TEAMS && <NoSimpleActionView {...props} /> }
     </>
   );
 }
@@ -184,14 +208,14 @@ const GRID_SIZES: Partial<Record<Breakpoint, GridSize>> = { xs: 12, md: 5, lg: 5
 
 function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & BaseRunningDinnerProps) {
 
-  const {teamsWithCancelStatusOrCancelledMembers, totalNumberOfMissingTeamMembers, remainingParticipants, participtantsForTeamArrangement, runningDinner, onSave} = props;
+  const {teamsWithCancelStatusOrCancelledMembers, totalNumberOfMissingTeamMembers, allParticipantsOnWaitingList, runningDinner, onSave} = props;
 
   const {t} = useTranslation(['admin', 'common']);
   const commonClasses = useCommonStyles();
   const {showWarning, showSuccess} = useCustomSnackbar();
 
   const {teamSize} = runningDinner.options;
-  const [teamParticipantsAssignmentModel, setTeamParticipantsAssignmentModel] = useState<TeamParticipantsAssignmentModel>(setupAssignParticipantsToTeamsModel(teamsWithCancelStatusOrCancelledMembers, remainingParticipants));
+  const [teamParticipantsAssignmentModel, setTeamParticipantsAssignmentModel] = useState<TeamParticipantsAssignmentModel>(setupAssignParticipantsToTeamsModel(teamsWithCancelStatusOrCancelledMembers, allParticipantsOnWaitingList));
 
   const {getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
@@ -201,8 +225,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   useEffect(() => {
-    const allParticipants = participtantsForTeamArrangement.concat(remainingParticipants);
-    const model = setupAssignParticipantsToTeamsModel(teamsWithCancelStatusOrCancelledMembers, allParticipants);
+    const model = setupAssignParticipantsToTeamsModel(teamsWithCancelStatusOrCancelledMembers, allParticipantsOnWaitingList);
     setTeamParticipantsAssignmentModel(model);
   }, []);
 
@@ -229,9 +252,8 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
   async function handleAssignToExistingTeams() {
     const {teamParticipantAssignments} = teamParticipantsAssignmentModel;
     try {
-      const teamParticipantAssignmentsResponse = await assignParticipantsToExistingTeamsAsync(runningDinner.adminId, teamParticipantAssignments);
+      const affectedTeams = await assignParticipantsToExistingTeamsAsync(runningDinner.adminId, teamParticipantAssignments);
       showSuccess("Teams erfolgreich aufgefüllt");
-      const affectedTeams = teamParticipantAssignmentsResponse.map(tpa => tpa.team);
       onSave(affectedTeams, true, false);
     } catch (e) {
       showHttpErrorDefaultNotification(e);
@@ -240,16 +262,17 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
 
   const teamParticipantAssignments = teamParticipantsAssignmentModel.teamParticipantAssignments || [];
   const allSelectableParticipants = teamParticipantsAssignmentModel.allSelectableParticipants || [];
+  const numParticipantsOnWaitingList = allParticipantsOnWaitingList.length; // Displays the original number of participants on waitinglist
 
   return (
     <>
       <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} mx={DIALOG_SPACING_X}>
-        <Grid item xs={12}>
-          <Subtitle>Teams durch Teilnehmer der Warteliste auffüllen</Subtitle>
+        <Grid item {... GRID_SIZES}>
+          <Subtitle>{t('admin:waitinglist_assign_participants_teams')}</Subtitle>
           <Paragraph>
-            Du hast derzeit <strong>{allSelectableParticipants.length}</strong> Teilnehmer auf der Warteliste.<br/>
-            Nutze diese um die folgenden Teams, welche durch Absagen nicht mehr vollständig sind, aufzufüllen.
-            Hierfür kannst du insgesamt <strong>{totalNumberOfMissingTeamMembers}</strong> Teilnehmer verwenden.<br/>
+            <Trans i18nKey={"admin:waitinglist_num_participants_list_info"} values={{ numParticipants: numParticipantsOnWaitingList }} /><br />
+            <Trans i18nKey={"admin:waitinglist_num_participants_assignment_info"} /><br />
+            <Trans i18nKey={"admin:waitinglist_num_missing_teammembers"} values={{ totalNumberOfMissingTeamMembers }} />
           </Paragraph>
         </Grid>
       </SpacingGrid>
@@ -277,7 +300,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
         <Grid item {... GRID_SIZES}>
           <Box mx={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
             <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams} size={"large"} className={commonClasses.fullWidth}>
-              {t('Teams durch Teilnehmer auf Warteliste auffüllen!')}
+              {t('admin:waitinglist_assign_participants_teams')}!
             </PrimarySuccessButtonAsync>
           </Box>
         </Grid>
@@ -286,16 +309,18 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
   );
 }
 
-function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, onSave}: AffectedTeamsProps & SaveCallback & BaseRunningDinnerProps) {
+function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteMessagesAlreadySent, onSave}: TeamNotificationModel & SaveCallback & BaseRunningDinnerProps) {
 
-  const {t} = useTranslation("admin");
+  const {t} = useTranslation(["admin", "common"]);
   const commonClasses = useCommonStyles();
   const {generateTeamMessagesPath} = useAdminNavigation();
   const {getTeamNameMembers} = useTeamNameMembers();
 
+  const {adminId} = runningDinner;
+
   function handleSendNotifications(openMessagesView: boolean) {
     if (openMessagesView) {
-      window.open(generateTeamMessagesPath(runningDinner.adminId, MessageSubType.TEAMS_MODIFIED_WAITINGLIST, affectedTeams), '_blank');
+      window.open(generateTeamMessagesPath(adminId, MessageSubType.TEAMS_MODIFIED_WAITINGLIST, affectedTeams), '_blank');
     }
     onSave(affectedTeams, false, true);
   }
@@ -305,22 +330,33 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, onSave}: Aff
       <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
         <Grid item {... GRID_SIZES}>
           <Subtitle>{t('admin:team_notify_cancellation')}</Subtitle>
-          <Paragraph>Da sich nun folgende Teams in der Zusammenstellung geändert haben, solltest du diese über die Änderungen benachrichtigen:</Paragraph>
+          <Paragraph>{t("admin:waitinglist_notification_teams_info")}</Paragraph>
           <ul>
             { affectedTeams.map(team => <li key={team.id}>{getTeamNameMembers(team)}</li>) }
           </ul>
         </Grid>
       </SpacingGrid>
 
+      { dinnerRouteMessagesAlreadySent &&
+        <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
+          <Grid item {... GRID_SIZES}>
+            <Alert severity={"warning"}>
+              <AlertTitle>{t('common:attention')}</AlertTitle>
+              <Trans i18nKey='admin:waitinglist_notification_dinnerroutes_sent' />
+            </Alert>
+          </Grid>
+        </SpacingGrid>
+      }
+
       <SpacingGrid container justify={"center"} px={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
         <Grid item {... GRID_SIZES}>
           <PrimarySuccessButtonAsync onClick={() => handleSendNotifications(true)}
                                      size={"large"} className={commonClasses.fullWidth}>
-            Teams benachrichtigen (öffnet neues Fenster)
+            {t('admin:waitinglist_notification_teams_sendmessages')}
           </PrimarySuccessButtonAsync>
           <SpacingButton onClick={() => handleSendNotifications(false)} mt={DIALOG_SPACING_X}
                          color={"primary"} variant={"outlined"} className={commonClasses.fullWidth}>
-            Weiter ohne Benachrichtigungen
+            {t('admin:waitinglist_notification_teams_continue_without_messages')}
           </SpacingButton>
         </Grid>
       </SpacingGrid>
@@ -477,7 +513,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
   );
 }
 
-function NoActionView({numMissingParticipantsForFullTeamArrangement, remainingParticipants}: WaitingListInfo) {
+function NoSimpleActionView({numMissingParticipantsForFullTeamArrangement, remainingParticipants}: WaitingListInfo) {
 
   const {t} = useTranslation(["admin", "common"]);
 
