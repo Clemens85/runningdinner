@@ -52,7 +52,7 @@ export default function ParticipantsList({participants, selectedParticipant, par
           </TableContainer>
 
           {showParticiapntsOnWaitingListInOwnSection &&
-            <Box mt={2}>
+            <Box mt={2} data-testid={"waitinglist-participants"}>
               <Box mb={2}>
                 <WaitingListManagementAlert participantsNotAssignable={notAssignableParticipants} runningDinner={runningDinner} onRefetch={onRefetch} />
               </Box>

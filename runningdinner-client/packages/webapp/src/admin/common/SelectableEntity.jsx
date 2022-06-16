@@ -2,7 +2,9 @@ import {Checkbox, FormControlLabel} from "@material-ui/core";
 import React from "react";
 import {useRecipientName} from "@runningdinner/shared";
 
-function SelectableEntity({entity, onSelectionChange, disabled}) {
+function SelectableEntity(props) {
+
+  const {entity, onSelectionChange, disabled, ...rest} = props;
 
   const {recipientName} = useRecipientName(entity);
 
@@ -15,7 +17,7 @@ function SelectableEntity({entity, onSelectionChange, disabled}) {
 
   return (
       <FormControlLabel disabled={disabled} label={recipientName} control={
-        <Checkbox color="primary" disabled={disabled} onChange={handleChange} checked={selected} />
+        <Checkbox color="primary" disabled={disabled} onChange={handleChange} checked={selected} {...rest} />
       } />
   );
 }

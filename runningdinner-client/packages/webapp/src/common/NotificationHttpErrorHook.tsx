@@ -63,10 +63,7 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
         };
 
     if (isValidationError(httpError)) {
-      if (
-          isArrayNotEmpty(issues.issuesWithoutField) &&
-          optionsToUse.showMessageForValidationErrorsWithoutSource !== false
-      ) {
+      if (isArrayNotEmpty(issues.issuesWithoutField) && optionsToUse.showMessageForValidationErrorsWithoutSource !== false) {
         showErrorNotification(issues.issuesWithoutField);
       } else if (optionsToUse.showGenericMesssageOnValidationError !== false) {
         const errorMessage = t("validation_error_desc");

@@ -27,7 +27,7 @@ export function WaitingListManagementAlert(props: WaitingListManagementAlertProp
         <AlertTitle>{t('participants_remaining_not_assignable_headline')}</AlertTitle>
         {t('participants_remaining_not_assignable_text')}
         <Box mt={2}>
-          <PrimaryButton onClick={open}>{t('admin:waitinglist_management')}</PrimaryButton>
+          <PrimaryButton onClick={open} data-testid={"open-waitinglist-view-action"}>{t('admin:waitinglist_management')}</PrimaryButton>
         </Box>
       </Alert>
       { isOpen && <WaitingListManagementDialog {... props} onClose={handleClose}/> }

@@ -27,4 +27,6 @@ public interface IssueKeys {
 	
 	String INVALID_SIZE_SELECTED_PARTICIPANTS_MESSAGE_EMPTY = "invalid_size_selected_participants_message_empty";
   String TEAM_SWAP_VIOLATES_TEAM_PARTNER_WISH = "team_swap_violates_team_partner_wish";
+  
+	String INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_ASSIGN = "invalid_size_waitinglist_participants_to_assign";
 }

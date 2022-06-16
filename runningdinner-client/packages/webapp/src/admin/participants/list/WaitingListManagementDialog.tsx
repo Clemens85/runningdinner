@@ -122,7 +122,7 @@ export function WaitingListManagementDialog(props: BaseRunningDinnerProps & Clos
           <Typography variant="h6" className={dialogClasses.title}>
             {t('admin:waitinglist_management')}
           </Typography>
-          <IconButton edge="end" color="inherit" onClick={onClose} aria-label="close">
+          <IconButton edge="end" color="inherit" onClick={onClose} aria-label="close" data-testid={"close-waitinglist-view-action"}>
             <CloseIcon />
           </IconButton>
         </Toolbar>
@@ -219,7 +219,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
 
   const {getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
-      namespaces: 'admin'
+      namespaces: ['admin', 'common']
     }
   });
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
@@ -253,10 +253,13 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
     const {teamParticipantAssignments} = teamParticipantsAssignmentModel;
     try {
       const affectedTeams = await assignParticipantsToExistingTeamsAsync(runningDinner.adminId, teamParticipantAssignments);
-      showSuccess("Teams erfolgreich aufgefüllt");
+      showSuccess(t("admin:waitinglist_assign_participants_teams_success"));
       onSave(affectedTeams, true, false);
     } catch (e) {
-      showHttpErrorDefaultNotification(e);
+      showHttpErrorDefaultNotification(e, {
+        showGenericMesssageOnValidationError: false,
+        showMessageForValidationErrorsWithoutSource: true
+      });
     }
   }
 
@@ -265,7 +268,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
   const numParticipantsOnWaitingList = allParticipantsOnWaitingList.length; // Displays the original number of participants on waitinglist
 
   return (
-    <>
+    <div data-testid={"waitinglist-teams-participants-assignment-view"}>
       <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} mx={DIALOG_SPACING_X}>
         <Grid item {... GRID_SIZES}>
           <Subtitle>{t('admin:waitinglist_assign_participants_teams')}</Subtitle>
@@ -299,13 +302,13 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
       <SpacingGrid container justify={"center"}>
         <Grid item {... GRID_SIZES}>
           <Box mx={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
-            <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams} size={"large"} className={commonClasses.fullWidth}>
+            <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams} size={"large"} className={commonClasses.fullWidth} data-testid={"waitinglist-assign-participants-teams-action"}>
               {t('admin:waitinglist_assign_participants_teams')}!
             </PrimarySuccessButtonAsync>
           </Box>
         </Grid>
       </SpacingGrid>
-    </>
+    </div>
   );
 }
 
@@ -371,6 +374,7 @@ function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssig
   const selectableParticipantControls = allSelectableParticipants.map(participant =>
     <Box key={participant.id} >
       <SelectableEntity entity={participant}
+                        data-testid={"waitinglist-participant-for-assignment"}
                         onSelectionChange={(participant: SelectableParticipant, selected: boolean) => selected && onAddToTeam(team, participant) } />
     </Box>
   );
@@ -396,7 +400,7 @@ function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssig
   }
 
   return (
-    <>
+    <div data-testid={"waitinglist-team-for-assignment"}>
       <SpacingPaper elevation={3} p={DIALOG_SPACING_X}>
         <Subtitle><TeamNr {...team} /></Subtitle>
         { renderTeamMembers() }
@@ -405,7 +409,7 @@ function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssig
         <small>(Wähle die Teilnehmer aus die zu diesem Team hinzufügen willst)</small>
       </Box>
       { selectableParticipantControls }
-    </>
+    </div>
   );
 
 }
@@ -520,7 +524,7 @@ function NoSimpleActionView({numMissingParticipantsForFullTeamArrangement, remai
   const numRemainingParticpants = remainingParticipants.length;
 
   return (
-    <Grid container justify={"center"}>
+    <Grid container justify={"center"} data-testid={"waitinglist-distribute-to-teams-view"}>
       <Grid item {... GRID_SIZES}>
         <Box m={DIALOG_SPACING_X}>
           <Paragraph>

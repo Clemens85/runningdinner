@@ -211,11 +211,13 @@ function TeamCancelOverviewContent({team, runningDinner, notAssignedParticipants
     );
   };
 
-  const selectableParticipantsToReplace = notAssignedParticipants.map(notAssignedParticipant =>
+  const selectableParticipantsToReplace = notAssignedParticipants.map((notAssignedParticipant, index) =>
       <Box key={notAssignedParticipant.id}>
         <SelectableEntity disabled={!hasEnoughNotAssignedParticipantsToReplaceTeam}
                           entity={notAssignedParticipant}
-                          onSelectionChange={onReplacementParticipantSelectionChange} />
+                          onSelectionChange={onReplacementParticipantSelectionChange}
+                          data-testid={`replacement-participant-${index}`}
+        />
       </Box>
   );
 
@@ -336,7 +338,7 @@ function TeamCancelPreview({teamCancelPreviewData, onPerformCancellation, onCanc
 
   const okLabel = isReplacement ? t('team_cancel_replace_team_members') : t('team_cancel_button');
   return (
-      <Dialog open={true} onClose={onCancelDialog} aria-labelledby="form-dialog-title" maxWidth={"md"} fullWidth={true}>
+      <Dialog open={true} onClose={onCancelDialog} aria-labelledby="form-dialog-title" maxWidth={"md"} fullWidth={true} data-testid={"team-cancel-dialog-preview"}>
         <DialogTitleCloseable onClose={onCancelDialog}>{headline}</DialogTitleCloseable>
         <DialogContent>
           <Box>

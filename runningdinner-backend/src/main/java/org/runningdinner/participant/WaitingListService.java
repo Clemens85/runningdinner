@@ -14,6 +14,7 @@ import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.RunningDinnerSessionData;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.Issue;
+import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.TechnicalException;
@@ -149,6 +150,8 @@ public class WaitingListService {
 																																							.collect(Collectors.toList());
 		
 		validateNoDuplicatedParticipantIds(teamParticipantsAssignmentsToApply);
+
+		validateAtLeastOneIncomingParticipantId(teamParticipantsAssignmentsToApply);
 		
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 		
@@ -159,6 +162,13 @@ public class WaitingListService {
 		return affectedTeams;
 	}
 	
+	private void validateAtLeastOneIncomingParticipantId(List<TeamParticipantsAssignmentTO> teamParticipantsAssignmentsToApply) {
+
+		if (CollectionUtils.isEmpty(teamParticipantsAssignmentsToApply)) {
+			throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_ASSIGN, IssueType.VALIDATION)));
+		}
+	}
+
 	private static void validateNoDuplicatedParticipantIds(List<TeamParticipantsAssignmentTO> teamParticipantsAssignments) {
 		
 		List<UUID> allSentParticipantIds = teamParticipantsAssignments
