@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { getByTestId, navigateParticipantsList } from "../../support";
+import {assertParticipantListLength, navigateParticipantsList} from "../../support";
 import { createRunningDinner } from "../../support/runningDinnerSetup"
 
 describe('participants list', () => {
@@ -19,7 +19,7 @@ describe('participants list', () => {
 
   it('displays all created participants', () => {
     navigateParticipantsList(adminId);
-    getByTestId("participant-row").should("have.length", 18);
+    assertParticipantListLength(18);
   })
  
 })

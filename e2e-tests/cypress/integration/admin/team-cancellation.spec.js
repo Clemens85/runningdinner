@@ -2,7 +2,7 @@
 
 import {
   assertTeamCancelOverviewDialog,
-  generateTeams,
+  generateTeams, generateTeamsAndRefresh,
   getByTestId, getTeamAt,
   navigateAdminDashboard,
   navigateTeamsList
@@ -25,11 +25,8 @@ describe('team cancellation', () => {
 
   it('can cancel complete team', () => {
 
-    generateTeams(adminId, () => {
-      navigateAdminDashboard(adminId);
-      cy.wait(50);
-      navigateTeamsList(adminId);
-    });
+
+    generateTeamsAndRefresh(adminId);
 
     getByTestId("team-row").should("have.length", 9);
 

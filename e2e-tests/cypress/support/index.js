@@ -56,9 +56,15 @@ export function submitStandardDialog() {
           .click({ force: true });
 }
 
+export function getButtonByLabel(label) {
+  return cy.get(`button:contains('${label}')`);
+}
+
 export * from "./wizard/wizardHelper";
 export * from "./mui/muiHelper";
 export * from "./admin/adminDashboardHelper";
 export * from "./commonHelper";
 export * from "./landing/registrationHelper";
 export * from "./admin/teamsHelper";
+export * from "./admin/waitingListHelper";
+export * from "./admin/participantListHelper";
