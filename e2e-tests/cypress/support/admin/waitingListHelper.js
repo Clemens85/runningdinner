@@ -1,4 +1,4 @@
-import {assertToastIsShown, getByTestId} from "../index";
+import {assertMuiCheckboxSelected, assertToastIsShown, getByTestId} from "../index";
 
 export function getOpenWaitingListButton() {
   return getByTestId("open-waitinglist-view-action");
@@ -48,4 +48,58 @@ export function assertWaitingListTeamsParticipantsAssignmentView(expectedNumPart
 export function submitWaitingListTeamsParticipansAssignmentView() {
   getByTestId("waitinglist-assign-participants-teams-action")
     .click();
+}
+
+
+export function assertWaitingListTeamGenerationView(expectedNumParticipantsCanBeGenerated) {
+  getByTestId("waitinglist-teams-generation-view")
+    .should("exist")
+    .should("contain", `Es gibt ${expectedNumParticipantsCanBeGenerated} Teilnehmer welche als neue Teams eingeteilt werden können`);
+}
+
+export function assertWaitingListTeamGenerationViewRemainingParticipantsHint(expectedNumParticipantsRemaining, expectedNumParticipantsMissing) {
+  getByTestId("waitinglist-teams-generation-view")
+    .should("exist")
+    .should("contain", `${expectedNumParticipantsRemaining} Teilnehmer welche übrig bleiben`)
+    .should("contain", `${expectedNumParticipantsMissing} weitere Teilnehmer anmelden`);
+}
+
+export function assertNoWaitingListTeamGenerationViewRemainingParticipantsHint() {
+  getByTestId("waitinglist-teams-generation-view-remaining-participants-hint")
+    .should("not.exist");
+}
+
+export function assertFirstParticipantsAreSelected(numSelectedParticipants) {
+  for (let i = 0; i < numSelectedParticipants; i++) {
+    assertMuiCheckboxSelected(getWaitingListParticipantForTeamGeneration(i), true);
+  }
+}
+
+export function getWaitingListParticipantForTeamGeneration(index) {
+  return getByTestId("waitinglist-participant-for-teams-generation")
+          .eq(index);
+}
+
+export function getWaitinglistGenerateTeamsAction() {
+  return getByTestId("waitinglist-teams-generation-action");
+}
+
+export function assertWaitingListTeamsGeneratedSuccessMessage() {
+  assertToastIsShown("Neue Teams erfolgreich generiert");
+}
+
+export function assertWaitingListNotificationDinnerRouteHint(expectedToBeShown) {
+  const shouldChainer = expectedToBeShown ? "exist": "not.exist";
+  return getByTestId("waitinglist_notification_dinnerroute_hint")
+          .should(shouldChainer);
+}
+
+export function submitWaitinglistTeamsNotificationWithoutOpeningMessages() {
+  getByTestId("waitinglist_notification_teams_continue_without_messages_action")
+    .click();
+}
+
+export function assertWaitingListNotificationTeams(numExpectedTeams) {
+  return getByTestId("waitinglist_notification_team")
+          .should("have.length", numExpectedTeams);
 }

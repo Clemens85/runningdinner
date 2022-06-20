@@ -68,3 +68,4 @@ export * from "./landing/registrationHelper";
 export * from "./admin/teamsHelper";
 export * from "./admin/waitingListHelper";
 export * from "./admin/participantListHelper";
+export * from "./admin/messagesHelper";

@@ -14,8 +14,12 @@ export function getLabelOfMuiTextInput(inputField) {
 }
 
 export function assertMuiCheckboxByTestId(dataTestId, selected) {
+  return assertMuiCheckboxSelected(getByTestId(dataTestId), selected);
+}
+
+export function assertMuiCheckboxSelected(checkboxElement, selected) {
   const assertionPrefix = selected ? "" : "not.";
-  return getByTestId(dataTestId)
+  return checkboxElement
           .should(`${assertionPrefix}have.class`, "Mui-checked");
 }
 

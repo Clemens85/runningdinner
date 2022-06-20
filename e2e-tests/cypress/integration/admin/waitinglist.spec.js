@@ -1,14 +1,29 @@
 /// <reference types="cypress" />
 
 import {
+  acknowledgeRunningDinner,
+  assertFirstParticipantsAreSelected,
+  assertMuiCheckboxSelected,
+  assertNoWaitingListTeamGenerationViewRemainingParticipantsHint,
+  assertParticipantListInfoWithText,
   assertParticipantListLength,
   assertWaitingListDistributeToTeamsView,
+  assertWaitingListNotificationDinnerRouteHint,
+  assertWaitingListNotificationTeams,
   assertWaitingListParticipantsLength,
+  assertWaitingListTeamGenerationView,
+  assertWaitingListTeamGenerationViewRemainingParticipantsHint,
+  assertWaitingListTeamsGeneratedSuccessMessage,
   assertWaitingListTeamsParticipantsAssignmentView,
   cancelTeamAtIndex,
   generateTeamsAndRefresh,
-  getByTestId,
+  getWaitinglistGenerateTeamsAction,
+  getWaitingListParticipantForTeamGeneration,
   navigateParticipantsList,
+  openDeleteParticipantDialogAndSubmit,
+  selectParticipantOnWaitingList,
+  sendTeamMessagesToAllTeams,
+  submitWaitinglistTeamsNotificationWithoutOpeningMessages,
   submitWaitingListTeamsParticipansAssignmentView,
 } from "../../support";
 import { createRunningDinner } from "../../support/runningDinnerSetup"
@@ -17,6 +32,7 @@ import {
   closeWaitingList,
   getOpenWaitingListButton, selectParticipantForTeamAssignment
 } from "../../support";
+import {createParticipants} from "../../support/participantSetup";
 
 describe('team cancellation', () => {
 
@@ -91,7 +107,143 @@ describe('team cancellation', () => {
     closeWaitingList();
 
     assertWaitingListParticipantsLength(5 - 2 - 1);  // 2 - 1 from waitinglist are now assigned into teams
+
+    cy.log("Delete the two remaining participants on waitinglist and verify that waitinglist action is no longer visible");
+    selectParticipantOnWaitingList(0);
+    openDeleteParticipantDialogAndSubmit();
+    cy.wait(500);
+    assertWaitingListParticipantsLength(1);  // Only one left now
+
+    selectParticipantOnWaitingList(0); // Delete last participant on waitinglist
+    openDeleteParticipantDialogAndSubmit();
+    getOpenWaitingListButton()
+      .should("not.exist");
+    assertParticipantListInfoWithText("Warteliste leer");
   })
 
+  it('waitinglist dialog shows generate teams view when enough participants on waitinglist', () => {
+
+    generateTeamsAndRefresh(adminId);
+
+    createParticipants(adminId, 24, 24);
+
+    navigateParticipantsList(adminId);
+
+    getOpenWaitingListButton().click({ force: true });
+    assertWaitingListTeamGenerationView(6);
+    assertNoWaitingListTeamGenerationViewRemainingParticipantsHint();
+
+    cy.log("Assert all 6 participants selected and no one can be de-selected");
+    assertFirstParticipantsAreSelected(6);
+    // getWaitingListParticipantForTeamGeneration(0) // TODO
+    //   .click({ force: true });
+    // assertFirstParticipantsAreSelected(6);
+
+    cy.log("Generate teams should close dialog and show updated participant list");
+    getWaitinglistGenerateTeamsAction().click({ force: true});
+    assertWaitingListTeamsGeneratedSuccessMessage();
+    getOpenWaitingListButton()
+      .should("not.exist");
+    assertParticipantListInfoWithText("Warteliste leer");
+  })
+
+  it('waitinglist dialog shows generate teams view with remaining participants', () => {
+
+    generateTeamsAndRefresh(adminId);
+
+    cy.log("Generate 3 new participants, giving us in total 26 participants")
+    createParticipants(adminId, 24, 26);
+
+    navigateParticipantsList(adminId);
+
+    getOpenWaitingListButton().click({ force: true });
+    assertWaitingListTeamGenerationViewRemainingParticipantsHint(2, 4);
+
+    cy.log("Assert first 6 participants being selected and the remaining two ones de-selected");
+    assertFirstParticipantsAreSelected(6);
+    assertMuiCheckboxSelected(getWaitingListParticipantForTeamGeneration(6), false); // 7th participant
+    assertMuiCheckboxSelected(getWaitingListParticipantForTeamGeneration(7), false); // 8th participant
+
+    cy.log("Generate new teams and assert waitinglist still contains participants");
+    getWaitinglistGenerateTeamsAction().click({ force: true});
+    assertWaitingListTeamsGeneratedSuccessMessage();
+    assertWaitingListDistributeToTeamsView(2);
+    closeWaitingList();
+    getOpenWaitingListButton().should("exist");
+    assertWaitingListParticipantsLength(2);
+  })
+
+  it('waitinglist dialog can handle multiple teams to be generated', () => {
+
+    generateTeamsAndRefresh(adminId);
+
+    cy.log("Generate 7 new participants, giving us in total 12 participants on waitinglist")
+    createParticipants(adminId, 24, 30);
+
+    navigateParticipantsList(adminId);
+
+    getOpenWaitingListButton().click({ force: true });
+    assertWaitingListTeamGenerationView(12);
+    assertNoWaitingListTeamGenerationViewRemainingParticipantsHint();
+
+    cy.log("Assert first 6 participants being selected and the remaining two ones de-selected");
+    assertFirstParticipantsAreSelected(12);
+
+    cy.log("Generate new teams and assert dialog is closed and waitinglist still contains participants");
+    getWaitinglistGenerateTeamsAction().click({ force: true});
+    assertWaitingListTeamsGeneratedSuccessMessage();
+    getOpenWaitingListButton().should("not.exist");
+  })
+
+  it.only('waitinglist dialog shows notification view when team messages are already sent', () => {
+
+    generateTeamsAndRefresh(adminId);
+
+    acknowledgeRunningDinner(adminId);
+
+    cy.log("Generate 3 new participants, giving us in total 8 participants on waitinglist")
+    createParticipants(adminId, 24, 26);
+
+    cy.log("Send Team Arrangement Messages so that we can test notification view");
+    sendTeamMessagesToAllTeams(adminId);
+    cy.wait(500);
+
+    cy.log("Cancel first team and navigate back to participant list");
+    cancelTeamAtIndex(adminId, 0);
+    navigateParticipantsList(adminId);
+
+    getOpenWaitingListButton().click({ force: true });
+    cy.log("Assign 2 participants to cancelled teams");
+    assertWaitingListTeamsParticipantsAssignmentView(2);
+    selectParticipantForTeamAssignment(0,0);
+    selectParticipantForTeamAssignment(0,1);
+    submitWaitingListTeamsParticipansAssignmentView();
+    assertParticipantsAssignedToTeamsSuccessMessage();
+
+    cy.log("Assert notification view is shown after participants assignment");
+    assertWaitingListNotificationDinnerRouteHint(false);
+    assertWaitingListNotificationTeams(1);
+    submitWaitinglistTeamsNotificationWithoutOpeningMessages();
+
+    cy.log("Generate teams view is shown");
+    assertWaitingListTeamGenerationView(6);
+    assertNoWaitingListTeamGenerationViewRemainingParticipantsHint();
+    assertFirstParticipantsAreSelected(6);
+    getWaitinglistGenerateTeamsAction().click({ force: true});
+
+    cy.log("Assert notification view is shown after team generation");
+    assertWaitingListNotificationDinnerRouteHint(false);
+    assertWaitingListNotificationTeams(3);
+
+
+  })
+
+  it.skip('waitinglist dialog shows team generation hint when teams not yet generated', () => {
+
+  })
+
+  it.skip('waitinglist dialog handles team generation validation properly', () => {
+
+  })
 
 })
