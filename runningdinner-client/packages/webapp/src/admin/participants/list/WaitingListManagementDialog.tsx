@@ -335,7 +335,7 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
           <Subtitle>{t('admin:team_notify_cancellation')}</Subtitle>
           <Paragraph>{t("admin:waitinglist_notification_teams_info")}</Paragraph>
           <ul>
-            { affectedTeams.map(team => <li key={team.id}>{getTeamNameMembers(team)}</li>) }
+            { affectedTeams.map(team => <li key={team.id} data-testid={"waitinglist_notification_team"}>{getTeamNameMembers(team)}</li>) }
           </ul>
         </Grid>
       </SpacingGrid>
@@ -343,7 +343,7 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
       { dinnerRouteMessagesAlreadySent &&
         <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
           <Grid item {... GRID_SIZES}>
-            <Alert severity={"warning"}>
+            <Alert severity={"warning"} data-testid={"waitinglist_notification_dinnerroute_hint"}>
               <AlertTitle>{t('common:attention')}</AlertTitle>
               <Trans i18nKey='admin:waitinglist_notification_dinnerroutes_sent' />
             </Alert>
@@ -354,11 +354,13 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
       <SpacingGrid container justify={"center"} px={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
         <Grid item {... GRID_SIZES}>
           <PrimarySuccessButtonAsync onClick={() => handleSendNotifications(true)}
-                                     size={"large"} className={commonClasses.fullWidth}>
+                                     size={"large"} className={commonClasses.fullWidth}
+                                     data-testid={"waitinglist_notification_teams_open_messages_action"}>
             {t('admin:waitinglist_notification_teams_sendmessages')}
           </PrimarySuccessButtonAsync>
           <SpacingButton onClick={() => handleSendNotifications(false)} mt={DIALOG_SPACING_X}
-                         color={"primary"} variant={"outlined"} className={commonClasses.fullWidth}>
+                         color={"primary"} variant={"outlined"} className={commonClasses.fullWidth}
+                         data-testid={"waitinglist_notification_teams_continue_without_messages_action"}>
             {t('admin:waitinglist_notification_teams_continue_without_messages')}
           </SpacingButton>
         </Grid>
@@ -370,6 +372,7 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
 function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssignmentProps & TeamParticipantsAssignment) {
 
   const {team, selectedParticipants, allSelectableParticipants, onAddToTeam, onRemoveFromTeam, teamSizeOfRunningDinner} = props;
+  const {t} = useTranslation("admin");
 
   const selectableParticipantControls = allSelectableParticipants.map(participant =>
     <Box key={participant.id} >
@@ -406,7 +409,7 @@ function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssig
         { renderTeamMembers() }
       </SpacingPaper>
       <Box my={2}>
-        <small>(Wähle die Teilnehmer aus die zu diesem Team hinzufügen willst)</small>
+        <small>{t("admin:waitinglist_assign_participants_teams_select_hint")}</small>
       </Box>
       { selectableParticipantControls }
     </div>
@@ -438,7 +441,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
     const participantsForTeamsGeneration = participantList.filter(p => p.selected);
     try {
       await generateNewTeamsFromWaitingListAsync(runningDinner.adminId, participantsForTeamsGeneration);
-      showSuccess("Teams erfolgreich generiert");
+      showSuccess(t("admin:waitinglist_generate_teams_success"));
       onSave([], true, false); // TODO: Get new teams out of new generated ones!
     } catch (e) {
       showHttpErrorDefaultNotification(e);
@@ -477,19 +480,21 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
 
   const participantsAssignableControls = participantList.map(participant =>
     <Box key={participant.id} >
-      <SelectableEntity entity={participant} onSelectionChange={handleParticipantSelectionChange} />
+      <SelectableEntity entity={participant}
+                        onSelectionChange={handleParticipantSelectionChange}
+                        data-testid={"waitinglist-participant-for-teams-generation"} />
     </Box>
   );
 
   return (
-    <>
+    <div data-testid={"waitinglist-teams-generation-view"}>
       <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
         <SpacingGrid item {... GRID_SIZES} px={DIALOG_SPACING_X}>
-          <Subtitle>Es gibt <strong>{numParticipantsAssignable}</strong> Teilnehmer welche als neue Teams eingeteilt werden können!</Subtitle>
+          <Subtitle><Trans i18nKey={"admin:waitinglist_generate_teams_num_participants"} values={{ numParticipants: numParticipantsAssignable }}/></Subtitle>
           { numRemainingParticipants > 0 &&
-            <Paragraph>
-              Es gibt noch <strong>{numRemainingParticipants}</strong> Teilnehmer welche übrig bleiben. Falls sich noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> weitere Teilnehmer
-              anmelden, so kannst du alle diese später ebenfalls noch als weitere Teams hinzufügen.
+            <Paragraph data-testid={"waitinglist-teams-generation-view-remaining-participants-hint"}>
+              <Trans i18nKey={"admin:waitinglist_generate_teams_num_participants_remaining"} values={{ numRemainingParticipants }} />
+              <Trans i18nKey={"admin:waitinglist_generate_teams_num_participants_missing"} values={{ numMissingParticipantsForFullTeamArrangement }} />
             </Paragraph>
           }
         </SpacingGrid>
@@ -501,19 +506,19 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
             { participantsAssignableControls }
           </SpacingPaper>
           <Box my={2}>
-            <small>(Wähle die Teilnehmer aus, welche als neue Teams eingeteilt werden sollen)</small>
+            <small>{t("admin:waitinglist_generate_teams_select_hint")}</small>
           </Box>
         </SpacingGrid>
       </SpacingGrid>
 
       <SpacingGrid container justify={"center"}>
         <SpacingGrid item {... GRID_SIZES} px={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
-          <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams} size={"large"} className={commonClasses.fullWidth}>
-            {t('Teilnehmer in Teams einteilen!')}
+          <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams} size={"large"} className={commonClasses.fullWidth} data-testid={"waitinglist-teams-generation-action"}>
+            {t('admin:waitinglist_generate_teams')}
           </PrimarySuccessButtonAsync>
         </SpacingGrid>
       </SpacingGrid>
-    </>
+    </div>
   );
 }
 

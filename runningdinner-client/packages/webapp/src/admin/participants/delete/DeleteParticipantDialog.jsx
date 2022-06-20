@@ -55,7 +55,7 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
   const isAssignedToTeam = !isStringEmpty(participant.teamId);
 
   return (
-      <Dialog open={open} onClose={cancel}>
+      <Dialog open={open} onClose={cancel} data-testid={"delete-participant-dialog"}>
         <DialogTitleCloseable onClose={cancel}>
           {t('participant_deletion_confirmation_headline', {fullname: fullName})}
         </DialogTitleCloseable>

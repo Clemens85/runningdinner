@@ -18,7 +18,8 @@ function ParagraphWithoutSpacing(props) {
   const {t} = useTranslation(ns);
 
   if (isStringEmpty(i18n)) {
-    return <Typography variant={"body1"} component="p">{ props.children }</Typography>;
+    const {children, ...rest} = props;
+    return <Typography variant={"body1"} component="p" {...rest}>{ props.children }</Typography>;
   }
 
   const parameters = props.parameters ? props.parameters : {};

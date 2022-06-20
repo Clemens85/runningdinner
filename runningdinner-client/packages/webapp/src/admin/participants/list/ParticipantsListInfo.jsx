@@ -23,7 +23,7 @@ export default function ParticipantsListInfo(props) {
       <Box mb={isOpen ? 3 : undefined}>
       {
         (isOpen && !hasSearchText) &&
-            <Alert severity={severity} variant="outlined" onClose={close}>
+            <Alert severity={severity} variant="outlined" onClose={close} data-testid={"participant-list-info-box"}>
               <AlertTitle>{title}</AlertTitle>
               {message}
             </Alert>
