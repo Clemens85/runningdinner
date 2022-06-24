@@ -29,4 +29,6 @@ public interface IssueKeys {
   String TEAM_SWAP_VIOLATES_TEAM_PARTNER_WISH = "team_swap_violates_team_partner_wish";
   
 	String INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_ASSIGN = "invalid_size_waitinglist_participants_to_assign";
+	String INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS = "invalid_size_waitinglist_participants_to_generate_teams";
+	String INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS_TOO_FEW = "invalid_size_waitinglist_participants_to_generate_teams_too_few";
 }

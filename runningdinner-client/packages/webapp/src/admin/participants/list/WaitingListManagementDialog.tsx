@@ -39,6 +39,7 @@ import {
   useTeamNameMembers,
   WaitingListAction,
   WaitingListActionAdditional,
+  WaitingListActionResult,
   WaitingListActionUI,
   WaitingListInfo
 } from '@runningdinner/shared';
@@ -92,7 +93,7 @@ type ReFetchCallback = {
   reFetch: () => Promise<WaitingListInfo>;
 };
 type SaveCallback = {
-  onSave: (affectedTeams: Team[], showNotificationView: boolean, triggerRefetch: boolean) => unknown;
+  onSave: (waitingListActionResult: WaitingListActionResult) => unknown;
 };
 
 type SingleTeamParticipantsAssignmentProps = {
@@ -151,22 +152,18 @@ function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetch
     setCurrentWaitingListAction(isArrayNotEmpty(possibleActions) ? possibleActions[0] : undefined);
   }, possibleActions);
 
-  async function handleSave(affectedTeams: Team[], showNotificationView: boolean, triggerRefetch: boolean) {
-    if (triggerRefetch) {
+  async function handleSave(waitingListActionResult: WaitingListActionResult) {
+    const {affectedTeams} = waitingListActionResult;
+    const showNotificationView = (waitingListActionResult.dinnerRouteMessagesAlreadySent || waitingListActionResult.teamMessagesAlreadySent) && isArrayNotEmpty(affectedTeams);
+    if (!showNotificationView) {
       reloadWaitingListContent();
-    } else if (showNotificationView) {
-      const activities = await findTeamOrDinnerRouteMessageActivitiesAsync(runningDinner.adminId);
-      if (isArrayEmpty(activities)) {
-        // Although we wanted to show notification view, there is no need for it, due to there were no messages sent so far.
-        // => Hence we trigger refetch for determining if there is anything left to be done for the user (we know it better here than our child compponent which called us)
-        reloadWaitingListContent();
-        return;
-      } // else: show notification view
-      setTeamNotificationModel({
-        affectedTeams,
-        dinnerRouteMessagesAlreadySent: isArrayNotEmpty(filterActivitiesByType(activities, ActivityType.DINNERROUTE_MAIL_SENT))
-      });
+      return;
     }
+    // else: show notification view
+    setTeamNotificationModel({
+      affectedTeams,
+      dinnerRouteMessagesAlreadySent: waitingListActionResult.dinnerRouteMessagesAlreadySent
+    });
   }
 
   async function findTeamOrDinnerRouteMessageActivitiesAsync(adminId: string) {
@@ -252,9 +249,9 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
   async function handleAssignToExistingTeams() {
     const {teamParticipantAssignments} = teamParticipantsAssignmentModel;
     try {
-      const affectedTeams = await assignParticipantsToExistingTeamsAsync(runningDinner.adminId, teamParticipantAssignments);
+      const result = await assignParticipantsToExistingTeamsAsync(runningDinner.adminId, teamParticipantAssignments);
       showSuccess(t("admin:waitinglist_assign_participants_teams_success"));
-      onSave(affectedTeams, true, false);
+      onSave(result);
     } catch (e) {
       showHttpErrorDefaultNotification(e, {
         showGenericMesssageOnValidationError: false,
@@ -325,7 +322,8 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
     if (openMessagesView) {
       window.open(generateTeamMessagesPath(adminId, MessageSubType.TEAMS_MODIFIED_WAITINGLIST, affectedTeams), '_blank');
     }
-    onSave(affectedTeams, false, true);
+    // Dummy object for indicating that notification view shall not be shown again:
+    onSave({ affectedTeams: [], teamMessagesAlreadySent: false, dinnerRouteMessagesAlreadySent: false });
   }
 
   return (
@@ -440,9 +438,9 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
   async function handleGenerateNewTeams() {
     const participantsForTeamsGeneration = participantList.filter(p => p.selected);
     try {
-      await generateNewTeamsFromWaitingListAsync(runningDinner.adminId, participantsForTeamsGeneration);
+      const result = await generateNewTeamsFromWaitingListAsync(runningDinner.adminId, participantsForTeamsGeneration);
       showSuccess(t("admin:waitinglist_generate_teams_success"));
-      onSave([], true, false); // TODO: Get new teams out of new generated ones!
+      onSave(result);
     } catch (e) {
       showHttpErrorDefaultNotification(e);
     }

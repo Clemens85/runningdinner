@@ -2,7 +2,7 @@ package org.runningdinner.participant.rest;
 
 import java.util.List;
 
-import org.runningdinner.participant.Team;
+import org.runningdinner.participant.WaitingListActionResult;
 import org.runningdinner.participant.WaitingListData;
 import org.runningdinner.participant.WaitingListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +30,17 @@ public class WaitingListServiceRest {
   }
 	
   @PutMapping("/runningdinner/{adminId}/generate-new-teams")
-  public void generateNewTeams(@PathVariable("adminId") String adminId, @RequestBody ParticipantListTO participantList) {
+  public WaitingListActionResult generateNewTeams(@PathVariable("adminId") String adminId, @RequestBody ParticipantListTO participantList) {
 
   	List<ParticipantTO> participants = participantList.getParticipants();
-  	waitingListService.generateNewTeams(adminId, participants);
+  	return waitingListService.generateNewTeams(adminId, participants);
   }
   
   @PutMapping("/runningdinner/{adminId}/assign-participants-teams")
-  public TeamArrangementListTO assignParticipantsToExistingTeams(@PathVariable("adminId") String adminId, 
-  																							@RequestBody @Validated TeamParticipantsAssignmentListTO teamParticipantsAssignmentList) {
-
+  public WaitingListActionResult assignParticipantsToExistingTeams(@PathVariable("adminId") String adminId, 
+  																															 @RequestBody @Validated TeamParticipantsAssignmentListTO teamParticipantsAssignmentList) {
   	
-  	List<Team> result = waitingListService.assignParticipantsToExistingTeams(adminId, teamParticipantsAssignmentList.getTeamParticipantsAssignments());
-  	return new TeamArrangementListTO(TeamTO.convertTeamList(result), adminId);
+  	return waitingListService.assignParticipantsToExistingTeams(adminId, teamParticipantsAssignmentList.getTeamParticipantsAssignments());
   }
   
 }

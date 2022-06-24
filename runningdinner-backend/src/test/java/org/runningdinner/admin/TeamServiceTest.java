@@ -22,6 +22,7 @@ import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.activity.ActivityType;
 import org.runningdinner.common.exception.ValidationException;
+import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RunningDinner;
@@ -114,7 +115,7 @@ public class TeamServiceTest {
     TeamCancellation teamCancellation = new TeamCancellation();
     teamCancellation.setReplaceTeam(true);
     teamCancellation.setTeamId(team.getId());
-    teamCancellation.setReplacementParticipantIds(RepositoryUtil.getEntityIds(Arrays.asList(firstAddedParticipant, secondAddedParticipant)));
+    teamCancellation.setReplacementParticipantIds(IdentifierUtil.getIds(Arrays.asList(firstAddedParticipant, secondAddedParticipant)));
 
     TeamCancellationResult result = teamService.cancelTeam(runningDinner.getAdminId(), teamCancellation);
     assertTeamCancellationResultWithoutNotification(result, oldTeamMembers);
@@ -179,7 +180,7 @@ public class TeamServiceTest {
     Team firstTeam = findFirstTeam();
     assertHostTeamAndGuestTeamMappingSize(firstTeam, 2);
      
-    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId());
+    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
     
     numberOfTeams = teamService.getNumberOfTeams(runningDinner.getAdminId());
     assertThat(numberOfTeams).isEqualTo(9);
@@ -196,12 +197,8 @@ public class TeamServiceTest {
     Team firstTeam = findFirstTeam();
     teamService.cancelTeamMember(runningDinner.getAdminId(), firstTeam.getId(), firstTeam.getHostTeamMember().getId());
     
-    try {
-      teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId());
-      Assert.fail("Expected NoPossibleRunningDinnerException to be thrown!");
-    } catch (NoPossibleRunningDinnerException e) {
-      // NOP
-    }
+    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
+    Assert.fail("Expected NoPossibleRunningDinnerException to be thrown!");
     
     // Assert teams are not deleted!
     assertThat(teamService.getNumberOfTeams(runningDinner.getAdminId())).isEqualTo(9);
@@ -313,7 +310,7 @@ public class TeamServiceTest {
     participantsWithChangedData
       .forEach(p -> participantService.updateParticipant(runningDinner.getAdminId(), p.getId(), p));
     // ... Now re-generate teams so that team partner wishes will get applied:
-    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId());
+    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
     
     // Setup another now known email-address for later test:
     participants.get(0).setEmail("ohne@freund.de");
@@ -341,7 +338,7 @@ public class TeamServiceTest {
     participantsWithChangedData
       .forEach(p -> participantService.updateParticipant(runningDinner.getAdminId(), p.getId(), p));
     // ... Now re-generate teams so that team partner wishes will get applied:
-    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId());
+    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
     
     participants = participantService.findParticipants(runningDinner.getAdminId(), false);
     List<TeamPartnerWishTuple> teamPartnerWishTuples = TeamPartnerWishService.getTeamPartnerWishTuples(participants, runningDinner.getConfiguration());
@@ -457,7 +454,7 @@ public class TeamServiceTest {
 
   private void assertParticipantsAreDeleted(Set<Participant> participants) {
 
-    List<Participant> result = participantService.findParticipantsByIds(runningDinner.getAdminId(), RepositoryUtil.getEntityIds(participants));
+    List<Participant> result = participantService.findParticipantsByIds(runningDinner.getAdminId(), IdentifierUtil.getIds(participants));
     assertThat(result).isEmpty();
   }
   

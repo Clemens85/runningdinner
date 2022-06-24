@@ -1,17 +1,17 @@
 package org.runningdinner.core;
 
-import org.junit.Test;
-import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
-import org.runningdinner.core.test.helper.Configurations;
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.Team;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
+import org.runningdinner.core.test.helper.Configurations;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.Team;
 
 public class TeamRouteBuilderTest {
 
@@ -22,8 +22,8 @@ public class TeamRouteBuilderTest {
 
 		List<Participant> participants = ParticipantGenerator.generateParticipants(18);
 		RunningDinnerConfig config = Configurations.standardConfig;
-		GeneratedTeamsResult generatedTeams = calc.generateTeams(config, participants, Collections::shuffle);
-		calc.assignRandomMealClasses(generatedTeams, config.getMealClasses());
+		GeneratedTeamsResult generatedTeams = calc.generateTeams(config, participants, Collections.emptyList(), Collections::shuffle);
+		calc.assignRandomMealClasses(generatedTeams, config.getMealClasses(), Collections.emptyList());
 
 		List<Team> teams = generatedTeams.getRegularTeams();
 		assertEquals(9, teams.size());

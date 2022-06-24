@@ -9,18 +9,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.runningdinner.admin.RepositoryUtil;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.RunningDinnerSessionData;
+import org.runningdinner.admin.activity.Activity;
+import org.runningdinner.admin.activity.ActivityService;
+import org.runningdinner.admin.activity.ActivityType;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
-import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.LocalizationProviderService;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
+import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerCalculator;
 import org.runningdinner.participant.rest.ParticipantTO;
@@ -45,6 +46,8 @@ public class WaitingListService {
 	private RunningDinnerCalculator runningDinnerCalculator;
 
 	private TeamRepository teamRepository;
+
+	private ActivityService activityService;
 	
 	@Autowired
 	public WaitingListService(TeamService teamService, 
@@ -52,7 +55,8 @@ public class WaitingListService {
 														RunningDinnerService runningDinnerService, 
 														ParticipantService participantService, 
 														LocalizationProviderService localizationProviderService,
-													  RunningDinnerCalculator runningDinnerCalculator) {
+													  RunningDinnerCalculator runningDinnerCalculator,
+													  ActivityService activityService) {
 
 		this.teamService = teamService;
 		this.teamRepository = teamRepository;
@@ -60,6 +64,7 @@ public class WaitingListService {
 		this.participantService = participantService;
 		this.localizationProviderService = localizationProviderService;
 		this.runningDinnerCalculator = runningDinnerCalculator;
+		this.activityService = activityService;
 	}
 
 	public WaitingListData findWaitingListData(@ValidateAdminId String adminId) {
@@ -111,9 +116,9 @@ public class WaitingListService {
 	  
 	}
 	
-	public void generateNewTeams(@ValidateAdminId String adminId, List<ParticipantTO> incomingParticipants) {
+	public WaitingListActionResult generateNewTeams(@ValidateAdminId String adminId, List<ParticipantTO> incomingParticipants) {
 		
-		Set<UUID> participantIds = RepositoryUtil.getIds(incomingParticipants);
+		Set<UUID> participantIds = IdentifierUtil.getIds(incomingParticipants);
 		List<Participant> participants = participantService.findParticipantsByIds(adminId, participantIds);
 		Assert.state(participants.size() == incomingParticipants.size(), "Not all participants were found for " + participantIds  + ": " +  participants);
 		
@@ -124,25 +129,34 @@ public class WaitingListService {
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 		int nextParticipantsOffsetSize = getNextParticipantsOffsetSize(runningDinner);
 		
+	  List<Team> teamsWithCancelStatusOrCancelledMembers = teamService.findTeamArrangementsWaitingListFillable(adminId);
+	  int totalNumberOfMissingTeamMembers = calculateTotalNumberOfMissingTeamMembers(teamsWithCancelStatusOrCancelledMembers, runningDinner.getConfiguration().getTeamSize());
+	  
 		int numParticipantsForNewTeams = participants.size();
-		if (numParticipantsForNewTeams < nextParticipantsOffsetSize) {
-			throw new ValidationException(new IssueList(new Issue("Too few", IssueType.VALIDATION)));
+		if (numParticipantsForNewTeams < (nextParticipantsOffsetSize + totalNumberOfMissingTeamMembers)) {
+			throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS_TOO_FEW, IssueType.VALIDATION)));
 		}
 		
-		int remainder = numParticipantsForNewTeams % nextParticipantsOffsetSize;
+		int remainder = (numParticipantsForNewTeams - totalNumberOfMissingTeamMembers) % nextParticipantsOffsetSize;
 		if (remainder != 0) {
-			throw new ValidationException(new IssueList(new Issue("Must be nth of 6", IssueType.VALIDATION)));
+			throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS, IssueType.VALIDATION)));
 		}
 		
-		try {
-			teamService.dropAndReCreateTeamAndVisitationPlans(adminId);
-		} catch (NoPossibleRunningDinnerException e) { // TODO
-			throw new TechnicalException(e);
+		List<Activity> activities = findRelevantActivities(adminId);
+		
+		List<TeamTO> affectedTeams;
+		if (needToKeepExistingTeams(activities)) {
+			affectedTeams = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, participants).getTeams();
+			affectedTeams = filterTeamsByContainedTeamMembers(affectedTeams, participantIds);
+		} else {
+			affectedTeams = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, Collections.emptyList()).getTeams();
 		}
+		
+		return new WaitingListActionResult(affectedTeams, activities);
 	}
 
 	@Transactional
-	public List<Team> assignParticipantsToExistingTeams(@ValidateAdminId String adminId, List<TeamParticipantsAssignmentTO> teamParticipantsAssignments) {
+	public WaitingListActionResult assignParticipantsToExistingTeams(@ValidateAdminId String adminId, List<TeamParticipantsAssignmentTO> teamParticipantsAssignments) {
 		
 		List<TeamParticipantsAssignmentTO> teamParticipantsAssignmentsToApply = teamParticipantsAssignments
 																																							.stream()
@@ -159,7 +173,9 @@ public class WaitingListService {
 		for (TeamParticipantsAssignmentTO singleTeamParticipantsAssignment : teamParticipantsAssignmentsToApply) {
 			affectedTeams.add(assignParticipantsToExistingTeam(runningDinner, singleTeamParticipantsAssignment.getTeamId(), singleTeamParticipantsAssignment.getParticipantIds()));
 		}
-		return affectedTeams;
+		
+		List<Activity> activities = findRelevantActivities(adminId);
+		return new WaitingListActionResult(TeamTO.convertTeamList(affectedTeams), activities);
 	}
 	
 	private void validateAtLeastOneIncomingParticipantId(List<TeamParticipantsAssignmentTO> teamParticipantsAssignmentsToApply) {
@@ -257,5 +273,30 @@ public class WaitingListService {
 											.reduce(0, Integer::sum);
 		return result;
 	}
+	
 
+	private static List<TeamTO> filterTeamsByContainedTeamMembers(List<TeamTO> teams, Set<UUID> teamMemberIdsToFilter) {
+		
+		List<TeamTO> result = new ArrayList<TeamTO>();
+		
+		for (TeamTO team : teams) {
+			Set<UUID> teamMemberIds = IdentifierUtil.getIds(team.getTeamMembers());
+			if (CollectionUtils.containsAny(teamMemberIds, teamMemberIdsToFilter)) {
+				result.add(team);
+			}
+		}
+		
+		return result;
+	}
+	
+	
+	private List<Activity> findRelevantActivities(String adminId) {
+		// TODO: Need to consider also swaps and team-host-change
+		return activityService.findActivitiesByTypes(adminId, ActivityType.DINNERROUTE_MAIL_SENT, ActivityType.TEAMARRANGEMENT_MAIL_SENT);//, ActivityType.CUSTOM_ADMIN_CHANGE);
+	}
+
+	private static boolean needToKeepExistingTeams(List<Activity> activities) {
+		return CollectionUtils.isNotEmpty(activities);
+	}
+	
 }

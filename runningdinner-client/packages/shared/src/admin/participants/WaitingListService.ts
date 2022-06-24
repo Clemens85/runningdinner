@@ -41,6 +41,12 @@ export interface WaitingListInfo {
   possibleActions: WaitingListActionUI[];
 }
 
+export type WaitingListActionResult = {
+  affectedTeams: Team[];
+  teamMessagesAlreadySent: boolean;
+  dinnerRouteMessagesAlreadySent: boolean;
+};
+
 export async function findWaitingListInfoAsync(adminId: string): Promise<WaitingListInfo> {
   const url = BackendConfig.buildUrl(`/waitinglistservice/v1/runningdinner/${adminId}`);
   const response = await axios.get(url);
@@ -53,15 +59,15 @@ export async function findWaitingListInfoAsync(adminId: string): Promise<Waiting
   return waitingListInfo;
 }
 
-export async function generateNewTeamsFromWaitingListAsync(adminId: string, participants: Participant[]): Promise<void> {
+export async function generateNewTeamsFromWaitingListAsync(adminId: string, participants: Participant[]): Promise<WaitingListActionResult> {
   const url = BackendConfig.buildUrl(`/waitinglistservice/v1/runningdinner/${adminId}/generate-new-teams`);
-  const response = await axios.put(url, {
+  const result = await axios.put(url, {
     participants
   });
-  return response.data;
+  return result.data;
 }
 
-export async function assignParticipantsToExistingTeamsAsync(adminId: string, teamParticipantsAssignmentList: TeamParticipantsAssignment[]): Promise<Team[]> {
+export async function assignParticipantsToExistingTeamsAsync(adminId: string, teamParticipantsAssignmentList: TeamParticipantsAssignment[]): Promise<WaitingListActionResult> {
   const url = BackendConfig.buildUrl(`/waitinglistservice/v1/runningdinner/${adminId}/assign-participants-teams`);
   const teamParticipantsAssignments = teamParticipantsAssignmentList.filter(tpa => isArrayNotEmpty(tpa.selectedParticipants));
 
@@ -72,10 +78,10 @@ export async function assignParticipantsToExistingTeamsAsync(adminId: string, te
     };
   });
 
-  const result = await axios.put<TeamArrangementList>(url, {
+  const result = await axios.put(url, {
     teamParticipantsAssignments: teamParticipantsAssignmentsNormalized
   });
-  return result.data.teams;
+  return result.data;
 }
 
 export function setupAssignParticipantsToTeamsModel(teams: Team[], participants: Participant[]): TeamParticipantsAssignmentModel {
