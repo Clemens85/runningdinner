@@ -382,6 +382,13 @@ public class ActivityService {
     return result;
   }
   
+  public static boolean containsActivityType(List<Activity> activities, ActivityType activityType) {
+  	
+  	return activities
+  					.stream()
+  					.anyMatch(a -> a.getActivityType() == activityType);
+  }
+  
   protected static String replaceParticipantName(String template, String participantName) {
     
     return template.replaceAll("\\{participantName\\}",  participantName);
