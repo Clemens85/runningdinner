@@ -1,11 +1,6 @@
 
 package org.runningdinner.core.util;
 
-import org.apache.commons.lang3.StringUtils;
-import org.runningdinner.core.FuzzyBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +10,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.core.FuzzyBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains some helper method used throughout the whole project
@@ -79,6 +79,23 @@ public class CoreUtil {
 
     Set<T> result = new HashSet<>();
     excludeFromCollection(exclude, theSet, result);
+    return result;
+  }
+  
+  /**
+   * Returns a new set with all objects that were passed by theSet except the collection to exclude.<br>
+   * In other words: Result = theSet - excludeCollection
+   * 
+   * @param excludeCollection The collection that shall be excluded
+   * @param theSet Original Set that contains all objects. This set will not be modified.
+   * @return New constructed set with the result of the subtraction
+   */
+  public static <T> Set<T> excludeMultipleFromSet(final Collection<T> excludeCollection, final Set<T> theSet) {
+
+    Set<T> result = theSet;
+    for (T exclude : excludeCollection) {
+    	result = excludeFromSet(exclude, result);
+    }
     return result;
   }
   
