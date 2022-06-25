@@ -39,6 +39,10 @@ export function assertWaitingListDistributeToTeamsView(expectedNumParticipantsLe
     .should("contain", `Die ${expectedNumParticipantsLeft} verbleibenden Teilnehmer auf der Warteliste können nicht als neue Teams hinzugefügt werden`);
 }
 
+export function assertWaitingListTeamsNotGeneratedView() {
+  return getByTestId("waitinglist-teams-not-generated-view");
+}
+
 export function assertWaitingListTeamsParticipantsAssignmentView(expectedNumParticipantsCanBeAssigned) {
   getByTestId("waitinglist-teams-participants-assignment-view")
     .should("exist")
@@ -108,4 +112,12 @@ export function submitWaitinglistTeamsNotificationWithOpeningMessages() {
 export function assertWaitingListNotificationTeams(numExpectedTeams) {
   return getByTestId("waitinglist_notification_team")
           .should("have.length", numExpectedTeams);
+}
+
+export function assertNotEnoughWaitingListParticipantsSelectedForTeamGenerationMessage() {
+  assertToastIsShown("Du hast zu wenige Teilenhmer ausgewählt");
+}
+
+export function assertTooMuchWaitingListParticipantsSelectedForTeamGenerationMessage() {
+  assertToastIsShown("Du kannst maximal 6 Teilnehmer auswählen. Bitte wähle erst andere Teilnehmer ab");
 }

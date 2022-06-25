@@ -265,15 +265,24 @@
 	"waitinglist_generate_teams_select_hint": "(Wähle die Teilnehmer aus, welche als neue Teams eingeteilt werden sollen)",
 	"waitinglist_generate_teams": "Teilnehmer in Teams einteilen!",
 	"waitinglist_generate_teams_success": "Neue Teams erfolgreich generiert!",
+	"waitinglist_generate_teams_selected_too_much": "Du kannst maximal {{ numParticipants }} Teilnehmer auswählen. Bitte wähle erst andere Teilnehmer ab.",
 
 	"waitinglist_generate_teams_num_participants": "Es gibt <strong>{{ numParticipants }}</strong> Teilnehmer welche als neue Teams eingeteilt werden können",
 	"waitinglist_generate_teams_num_participants_remaining": "Es gibt noch <strong>{{ numRemainingParticipants }}</strong> Teilnehmer welche übrig bleiben. ",
 	"waitinglist_generate_teams_num_participants_missing": "Falls sich noch <strong>{{ numMissingParticipantsForFullTeamArrangement }}</strong> weitere Teilnehmer anmelden, so kannst du alle diese später ebenfalls noch als weitere Teams hinzufügen.",
+
+	"waitinglist_teams_not_generated": "Je nach Anzahl der Teilnehmer kann es vorkommen, dass nicht alle angemeldeten Teilnehmer in Teams eingeteilt werden können. Hier kannst du alle übrig gebliebenen Teilnehmer verwalten <strong>nachdem</strong> du die Team-Einteilungen vorgenommen hast.",
+	"waitinglist_teams_not_generated_options": "Folgende Optionen stehen dir <strong>dann</strong> zur Verfügung:",
+	"waitinglist_teams_not_generated_option_1": "Abgesagte Teilnehmer / Teams durch Teilnehmer auf Warteliste ersetzen",
+	"waitinglist_teams_not_generated_option_2": "Bei genügend großer Anzahl auf Warteliste, Teilnehmer nachträglich als Teams hinzufügen",
+	"waitinglist_teams_not_generated_option_3": "Übrig gebliebene Teilnehmer auf existierende Teams verteilen (noch nicht verfügbar, kommt aber bald... bis dahin musst du dies händisch mit Zettel + Stift erledigen)",
+	"waitinglist_teams_not_generated_hint": "Es macht generell Sinn, die Team-Einteilung immer so spät wie möglich und so früh wie nötig vorzunehmen.",
 
 	"waitinglist_notification_dinnerroutes_sent": "Du hast ausserdem bereits die Dinner-Routen versandt. Durch deine Änderungen kann es potenziell mehrfache Änderungen an den Routen einzelner Teams geben.<br/>Es wird daher empfohlen, dass du später zusätzlich alle Dinner-Routen nochmals versendest.",
 	"waitinglist_notification_teams_info": "Da sich nun folgende Teams in der Zusammenstellung geändert haben, solltest du diese über die Änderungen benachrichtigen:",
 	"waitinglist_notification_teams_sendmessages": "Teams benachrichtigen (öffnet neues Fenster)",
 	"waitinglist_notification_teams_continue_without_messages": "Weiter ohne Benachrichtigungen",
 
-	"invalid_size_waitinglist_participants_to_assign": "Bitte wähle Teilnehmer aus mit denen du die Teams auffüllen möchtest"
+	"invalid_size_waitinglist_participants_to_assign": "Bitte wähle Teilnehmer aus mit denen du die Teams auffüllen möchtest",
+	"invalid_size_waitinglist_participants_to_generate_teams_too_few": "Du hast zu wenige Teilenhmer ausgewählt"
 }

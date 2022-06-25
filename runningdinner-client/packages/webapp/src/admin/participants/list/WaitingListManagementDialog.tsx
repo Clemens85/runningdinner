@@ -448,7 +448,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
 
   function handleParticipantSelectionChange(participant: SelectableParticipant, selected: boolean) {
     if (getNumSelectedParticipantsParticipantsInState() >= numParticipantsAssignable && selected) {
-      showInfo("Erst unchecken");
+      showInfo(t("admin:waitinglist_generate_teams_selected_too_much", {numParticipants: numParticipantsAssignable}));
       return;
     }
     setParticipantList(prevState => {
@@ -555,21 +555,20 @@ function TeamsNotGeneratedView() {
   const {t} = useTranslation(["admin", "common"]);
 
   return (
-    <Grid container justify={"center"}>
+    <Grid container justify={"center"} data-testid={"waitinglist-teams-not-generated-view"}>
       <Grid item {... GRID_SIZES}>
         <Box m={DIALOG_SPACING_X}>
           <Paragraph>
-            Je nach Anzahl der Teilnehmer kann es vorkommen, dass nicht alle angemeldeten Teilnehmer in Teams eingeteilt werden können.
-            Hier kannst du alle übrig gebliebenen Teilnehmer verwalten <strong>nachdem</strong> du die Team-Einteilungen vorgenommen hast.
-            <br/>Folgende Optionen stehen dir dann zur Verfügung:
+            <Trans i18nKey={"admin:waitinglist_teams_not_generated"} /><br/>
+            <Trans i18nKey={"admin:waitinglist_teams_not_generated_options"} />
           </Paragraph>
           <ul>
-            <li>Abgesagte Teilnehmer / Teams durch Teilnehmer auf Warteliste ersetzen</li>
-            <li>Bei genügend großer Anzahl auf Warteliste, Teilnehmer nachträglich als Teams hinzufügen</li>
-            <li><strong>{t("common:preview")}</strong>: Übrig gebliebene Teilnehmer auf existierende Teams verteilen (<strong>noch nicht verfügbar, kommt aber bald ...</strong> bis dahin musst du dies händisch mit Zettel + Stift erledigen)</li>
+            <li><Trans i18nKey={"admin:waitinglist_teams_not_generated_option_1"} /></li>
+            <li><Trans i18nKey={"admin:waitinglist_teams_not_generated_option_2"} /></li>
+            <li><strong>{t("common:preview")}</strong>: <Trans i18nKey={"admin:waitinglist_teams_not_generated_option_3"} /></li>
           </ul>
           <Paragraph>
-            <strong>{t('common:note')}</strong>: Es macht generell Sinn, die Team-Einteilung immer so spät wie möglich und so früh wie nötig vorzunehmen.
+            <strong>{t('common:note')}</strong>: <Trans i18nKey={"admin:waitinglist_teams_not_generated_hint"} />
           </Paragraph>
         </Box>
       </Grid>

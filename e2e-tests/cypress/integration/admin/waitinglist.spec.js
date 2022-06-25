@@ -1,12 +1,15 @@
 /// <reference types="cypress" />
 
 import {
-  acknowledgeRunningDinner, assertDashboardAdminActivityContains,
+  acknowledgeRunningDinner,
+  assertDashboardAdminActivityContains,
   assertFirstParticipantsAreSelected,
   assertMuiCheckboxSelected,
+  assertNotEnoughWaitingListParticipantsSelectedForTeamGenerationMessage,
   assertNoWaitingListTeamGenerationViewRemainingParticipantsHint,
   assertParticipantListInfoWithText,
   assertParticipantListLength,
+  assertTooMuchWaitingListParticipantsSelectedForTeamGenerationMessage,
   assertWaitingListDistributeToTeamsView,
   assertWaitingListNotificationDinnerRouteHint,
   assertWaitingListNotificationTeams,
@@ -14,15 +17,18 @@ import {
   assertWaitingListTeamGenerationView,
   assertWaitingListTeamGenerationViewRemainingParticipantsHint,
   assertWaitingListTeamsGeneratedSuccessMessage,
+  assertWaitingListTeamsNotGeneratedView,
   assertWaitingListTeamsParticipantsAssignmentView,
   cancelTeamAtIndex,
   generateTeamsAndRefresh,
   getWaitinglistGenerateTeamsAction,
-  getWaitingListParticipantForTeamGeneration, navigateAdminDashboard,
+  getWaitingListParticipantForTeamGeneration,
+  navigateAdminDashboard,
   navigateParticipantsList,
   openDeleteParticipantDialogAndSubmit,
   selectParticipantOnWaitingList,
-  sendTeamMessagesToAllTeams, submitWaitinglistTeamsNotificationWithOpeningMessages,
+  sendTeamMessagesToAllTeams,
+  submitWaitinglistTeamsNotificationWithOpeningMessages,
   submitWaitinglistTeamsNotificationWithoutOpeningMessages,
   submitWaitingListTeamsParticipansAssignmentView,
 } from "../../support";
@@ -126,7 +132,7 @@ describe('team cancellation', () => {
     assertParticipantListInfoWithText("Warteliste leer");
   })
 
-  it('waitinglist dialog shows generate teams view when enough participants on waitinglist', () => {
+  it.only('waitinglist dialog shows generate teams view when enough participants on waitinglist', () => {
 
     generateTeamsAndRefresh(adminId);
 
@@ -138,11 +144,19 @@ describe('team cancellation', () => {
     assertWaitingListTeamGenerationView(6);
     assertNoWaitingListTeamGenerationViewRemainingParticipantsHint();
 
-    cy.log("Assert all 6 participants selected and no one can be de-selected");
+    cy.log("Assert all 6 participants selected and deselection causes error when submitting");
     assertFirstParticipantsAreSelected(6);
-    // getWaitingListParticipantForTeamGeneration(0) // TODO
-    //   .click({ force: true });
-    // assertFirstParticipantsAreSelected(6);
+    getWaitingListParticipantForTeamGeneration(0)
+      .click({ force: true });
+    getWaitinglistGenerateTeamsAction().click({ force: true});
+    cy.log("Assert we are still on this view with only 5 selected participants");
+    assertNotEnoughWaitingListParticipantsSelectedForTeamGenerationMessage();
+    assertWaitingListTeamGenerationView(6);
+
+    cy.log("Select first participant again");
+    getWaitingListParticipantForTeamGeneration(0)
+      .click({ force: true });
+    assertFirstParticipantsAreSelected(6);
 
     cy.log("Generate teams should close dialog and show updated participant list");
     getWaitinglistGenerateTeamsAction().click({ force: true});
@@ -206,7 +220,7 @@ describe('team cancellation', () => {
     assertDashboardAdminActivityContains(0, "Du hast 15 neue Teams von der Warteliste generiert");
   })
 
-  it.only('waitinglist dialog shows notification view when team messages are already sent', () => {
+  it('waitinglist dialog shows notification view when team messages are already sent', () => {
 
     generateTeamsAndRefresh(adminId);
 
@@ -248,12 +262,31 @@ describe('team cancellation', () => {
     submitWaitinglistTeamsNotificationWithOpeningMessages();
   })
 
-  it.skip('waitinglist dialog shows team generation hint when teams not yet generated', () => {
-
+  it('waitinglist dialog shows team generation hint when teams not yet generated', () => {
+    navigateParticipantsList(adminId);
+    getOpenWaitingListButton().click({ force: true });
+    assertWaitingListTeamsNotGeneratedView();
+    closeWaitingList();
+    getOpenWaitingListButton().should("exist");
   })
 
-  it.skip('waitinglist dialog handles team generation validation properly', () => {
+  it('waitinglist dialog handles team generation validation properly', () => {
+    generateTeamsAndRefresh(adminId);
 
+    createParticipants(adminId, 24, 25); // We have now 7 participants on waitinglsit
+
+    navigateParticipantsList(adminId);
+
+    getOpenWaitingListButton().click({ force: true });
+    assertWaitingListTeamGenerationView(6);
+    assertWaitingListTeamGenerationViewRemainingParticipantsHint(1, 5);
+
+    cy.log("Try to select also 7th participant");
+    assertFirstParticipantsAreSelected(6);
+    getWaitingListParticipantForTeamGeneration(6)
+      .click({ force: true });
+    assertFirstParticipantsAreSelected(6);
+    assertTooMuchWaitingListParticipantsSelectedForTeamGenerationMessage();
   })
 
 })
