@@ -11,6 +11,9 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.runningdinner.admin.activity.Activity;
+import org.runningdinner.admin.activity.ActivityService;
+import org.runningdinner.admin.activity.ActivityType;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.team.TeamMessage;
@@ -55,7 +58,10 @@ public class WaitingListServiceTest {
 
 	@Autowired
 	private MessageService messageService;
-  
+
+	@Autowired
+	private ActivityService activityService;
+	
   private RunningDinner runningDinner;
 
 	private String adminId;
@@ -95,6 +101,8 @@ public class WaitingListServiceTest {
 		
 		assertThat(result.isTeamMessagesAlreadySent()).isFalse();
 		assertThat(result.isDinnerRouteMessagesAlreadySent()).isFalse();
+		
+		assertActivityTypeContained(ActivityType.WAITINGLIST_PARTICIPANTS_ASSIGNED);
   }
 
 	@Test
@@ -146,6 +154,8 @@ public class WaitingListServiceTest {
    	for (int i = 0; i < 9; i++) {
    		checkTeamsAtIndexAreSame(allTeams, teamsBeforeGeneration, i);
    	}
+   	
+		assertActivityTypeContained(ActivityType.WAITINGLIST_TEAMS_GENERATED);
   }
 	
 	private static void checkTeamsAtIndexAreSame(List<Team> teamsAfterGeneration, List<Team> teamsBeforeGeneration, int index) {
@@ -251,5 +261,13 @@ public class WaitingListServiceTest {
     
     testHelperService.awaitMessageJobFinished(messageJob);
 	}
+  
+  private void assertActivityTypeContained(ActivityType expectedActivityType) {
+  	
+    List<Activity> activities = activityService.findAdministrationActivityStream(runningDinner);
+    assertThat(activities)
+    	.extracting("activityType", ActivityType.class)
+    	.contains(expectedActivityType);
+  }
   
 }

@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.RunningDinnerSessionData;
 import org.runningdinner.admin.activity.Activity;
@@ -24,12 +25,18 @@ import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerCalculator;
+import org.runningdinner.event.WaitingListParticipantsAssignedEvent;
+import org.runningdinner.event.WaitingListTeamsGeneratedEvent;
+import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamParticipantsAssignmentTO;
 import org.runningdinner.participant.rest.TeamTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
 @Service
@@ -48,7 +55,9 @@ public class WaitingListService {
 	private TeamRepository teamRepository;
 
 	private ActivityService activityService;
-	
+
+	private EventPublisher eventPublisher;
+
 	@Autowired
 	public WaitingListService(TeamService teamService, 
 			 										  TeamRepository teamRepository,
@@ -56,7 +65,8 @@ public class WaitingListService {
 														ParticipantService participantService, 
 														LocalizationProviderService localizationProviderService,
 													  RunningDinnerCalculator runningDinnerCalculator,
-													  ActivityService activityService) {
+													  ActivityService activityService,
+													  EventPublisher eventPublisher) {
 
 		this.teamService = teamService;
 		this.teamRepository = teamRepository;
@@ -65,6 +75,7 @@ public class WaitingListService {
 		this.localizationProviderService = localizationProviderService;
 		this.runningDinnerCalculator = runningDinnerCalculator;
 		this.activityService = activityService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	public WaitingListData findWaitingListData(@ValidateAdminId String adminId) {
@@ -116,6 +127,7 @@ public class WaitingListService {
 	  
 	}
 	
+	@Transactional
 	public WaitingListActionResult generateNewTeams(@ValidateAdminId String adminId, List<ParticipantTO> incomingParticipants) {
 		
 		Set<UUID> participantIds = IdentifierUtil.getIds(incomingParticipants);
@@ -152,6 +164,8 @@ public class WaitingListService {
 			affectedTeams = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, Collections.emptyList()).getTeams();
 		}
 		
+		emitWaitingListEventAfterCommit(new WaitingListTeamsGeneratedEvent(this, affectedTeams, runningDinner));
+		
 		return new WaitingListActionResult(affectedTeams, activities);
 	}
 
@@ -175,6 +189,9 @@ public class WaitingListService {
 		}
 		
 		List<Activity> activities = findRelevantActivities(adminId);
+		
+		emitWaitingListEventAfterCommit(new WaitingListParticipantsAssignedEvent(this, affectedTeams, runningDinner));
+		
 		return new WaitingListActionResult(TeamTO.convertTeamList(affectedTeams), activities);
 	}
 	
@@ -218,8 +235,6 @@ public class WaitingListService {
     
     Assert.notNull(team.getHostTeamMember(), "Expected " + team + " to have one host team member");
     return teamRepository.save(team);
-    
-    // TODO: Emit event for activity
 	}
 	
 	private List<Participant> findParticipantsToAssign(String adminId, List<UUID> participantIds) {
@@ -288,15 +303,35 @@ public class WaitingListService {
 		
 		return result;
 	}
-	
+
+  protected void emitWaitingListEventAfterCommit(ApplicationEvent event) {
+
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+      @Override
+      public void afterCommit() {
+
+        eventPublisher.notifyEvent(event);
+      }
+    });
+  }
 	
 	private List<Activity> findRelevantActivities(String adminId) {
-		// TODO: Need to consider also swaps and team-host-change
-		return activityService.findActivitiesByTypes(adminId, ActivityType.DINNERROUTE_MAIL_SENT, ActivityType.TEAMARRANGEMENT_MAIL_SENT);//, ActivityType.CUSTOM_ADMIN_CHANGE);
+		return activityService.findActivitiesByTypes(adminId, ActivityType.DINNERROUTE_MAIL_SENT, ActivityType.TEAMARRANGEMENT_MAIL_SENT, ActivityType.CUSTOM_ADMIN_CHANGE);
 	}
 
 	private static boolean needToKeepExistingTeams(List<Activity> activities) {
-		return CollectionUtils.isNotEmpty(activities);
+		
+		if (ActivityService.containsActivityType(activities, ActivityType.TEAMARRANGEMENT_MAIL_SENT) ||
+				ActivityService.containsActivityType(activities, ActivityType.DINNERROUTE_MAIL_SENT)) {
+			return true;
+		}
+
+		boolean hasRelevantAdminChange = activities
+																			.stream()
+																			.anyMatch(ac -> StringUtils.equals(ac.getActivityHeadline(), ActivityService.TEAM_MEMBERS_SWAPPED_HEADLINE) || 
+																											StringUtils.equals(ac.getActivityHeadline(), ActivityService.TEAM_HOST_CHANGED_BY_ADMIN_HEADLINE));
+		return hasRelevantAdminChange;
 	}
 	
 }

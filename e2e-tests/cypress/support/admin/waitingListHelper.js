@@ -99,6 +99,12 @@ export function submitWaitinglistTeamsNotificationWithoutOpeningMessages() {
     .click();
 }
 
+export function submitWaitinglistTeamsNotificationWithOpeningMessages() {
+  getByTestId("waitinglist_notification_teams_open_messages_action")
+    .invoke('removeAttr', 'target')
+    .click();
+}
+
 export function assertWaitingListNotificationTeams(numExpectedTeams) {
   return getByTestId("waitinglist_notification_team")
           .should("have.length", numExpectedTeams);

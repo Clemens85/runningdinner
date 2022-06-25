@@ -19,6 +19,7 @@ import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellationResult;
 import org.runningdinner.participant.TeamStatus;
+import org.runningdinner.participant.rest.TeamTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ActivityService {
   
-  private static final Logger LOGGER = LoggerFactory.getLogger(ActivityService.class);
-	
   public static final int PARTICIPANT_ACTIVITES_PAGE_SIZE = 18;
+  
+  public static final String TEAM_MEMBERS_SWAPPED_HEADLINE = "Team Mitglieder getauscht";
+  public static final String TEAM_HOST_CHANGED_BY_ADMIN_HEADLINE = "Gastgeber geändert";
   
   static final Collection<ActivityType> ADMIN_ACTIVITY_TYPES =
           Arrays.asList(
@@ -47,7 +49,9 @@ public class ActivityService {
               ActivityType.TEAMS_RECREATED,
               ActivityType.CUSTOM_ADMIN_CHANGE,
               ActivityType.MEAL_TIMES_UPDATED,
-              ActivityType.PARTICIPANT_CHANGED_TEAMHOST
+              ActivityType.PARTICIPANT_CHANGED_TEAMHOST,
+              ActivityType.WAITINGLIST_PARTICIPANTS_ASSIGNED,
+              ActivityType.WAITINGLIST_TEAMS_GENERATED
           );
 
       static final Collection<ActivityType> PARTICIPANT_ACTIVITY_TYPES =
@@ -91,6 +95,13 @@ public class ActivityService {
   private static final String RUNNING_DINNER_REGISTRATION_DEACTIVATED = "Du hast die Registrierung für dein Event deaktiviert, damit kann sich ab jetzt kein Teilnehmer mehr selbst anmelden.";
 
   private static final String RUNNING_DINNER_REGISTRATION_ACTIVATED = "Du hast die Registrierung für dein Event wieder aktiviert, damit können sich ab jetzt Teilnehmer wieder selbst anmelden.";
+  
+  private static final String WAITINGLIST_PARTICIPANTS_ASSIGNED_TEMPLATE = "Du hast {numTeams} mit Teilnehmern von der Warteliste aufgefüllt.";
+  
+  private static final String WAITINGLIST_TEAMS_GENERATED_TEMPLATE = "Du hast {numTeams} von der Warteliste generiert";
+  
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActivityService.class);
+  
   @Autowired
   private ActivityRepository activityRepository;
   
@@ -165,6 +176,27 @@ public class ActivityService {
   }
   
   @Transactional
+  public Activity createActivityForWaitingListParticipantsAssigned(List<Team> teams, RunningDinner runningDinner) {
+    
+  	AffectedTeamsInfo affectedTeamsInfo = new AffectedTeamsInfo(teams);
+    Activity result = new Activity(affectedTeamsInfo.getActivityDate(), ActivityType.WAITINGLIST_PARTICIPANTS_ASSIGNED, runningDinner.getEmail(), runningDinner);
+    result.setActivityMessage(getActivityMessageForWaitingListParticipantsAssigned(WAITINGLIST_PARTICIPANTS_ASSIGNED_TEMPLATE, affectedTeamsInfo));
+    result.setActivityHeadline("Teams durch Teilnehmer der Warteliste aufgefüllt");
+    result = activityRepository.save(result);
+    return result;
+  }
+  
+  @Transactional
+  public Activity createActivityForWaitingListTeamsGenerated(List<TeamTO> teams, RunningDinner runningDinner) {
+    
+    Activity result = new Activity(LocalDateTime.now(), ActivityType.WAITINGLIST_TEAMS_GENERATED, runningDinner.getEmail(), runningDinner);
+    result.setActivityMessage(getActivityMessageForWaitingListTeamsGenerated(WAITINGLIST_TEAMS_GENERATED_TEMPLATE, teams.size()));
+    result.setActivityHeadline("Teams von Warteliste hinzugefügt");
+    result = activityRepository.save(result);
+    return result;
+  }
+  
+  @Transactional
   public Activity createActivityForTeamMembersSwapped(Participant firstParticipant, Participant secondParticipant,
       List<Team> affectedParentTeams, RunningDinner runningDinner) {
   
@@ -178,7 +210,7 @@ public class ActivityService {
     activityMessage = activityMessage.replaceAll("\\{participantName2\\}",  secondParticipant.getName().getFullnameFirstnameFirst());
     result.setActivityMessage(activityMessage);
     
-    result.setActivityHeadline("Team Mitglieder getauscht");
+    result.setActivityHeadline(TEAM_MEMBERS_SWAPPED_HEADLINE);
     
     result = activityRepository.save(result);
     return result;
@@ -311,7 +343,7 @@ public class ActivityService {
       activityMessage = replaceParticipantName(activityMessage, hostTeamMember.getName().getFullnameFirstnameFirst());
       activityMessage = activityMessage.replaceAll("\\{originator\\}", result.getOriginator());
       result.setActivityMessage(activityMessage);
-      result.setActivityHeadline("Gastgeber geändert");
+      result.setActivityHeadline(TEAM_HOST_CHANGED_BY_ADMIN_HEADLINE);
       if (result.getActivityType() == ActivityType.PARTICIPANT_CHANGED_TEAMHOST) {
         result.setActivityHeadline("Gastgeber durch Teilnehmer geändert");
       }
@@ -462,4 +494,51 @@ public class ActivityService {
     return null;
   }
 
+  private static String getActivityMessageForWaitingListParticipantsAssigned(String template, AffectedTeamsInfo affectedTeamsInfo) {
+  	if (affectedTeamsInfo.getNumTeams() == 1) {
+    	return template.replaceAll("\\{numTeams\\}", affectedTeamsInfo.getNumTeamsStr() + " Team");
+  	} else {
+    	return template.replaceAll("\\{numTeams\\}", affectedTeamsInfo.getNumTeamsStr() + " Teams");
+  	}
+  }
+
+  private static String getActivityMessageForWaitingListTeamsGenerated(String template, int numTeams) {
+  	if (numTeams == 1) {
+    	return template.replaceAll("\\{numTeams\\}", numTeams + " neues Team");
+  	} else {
+    	return template.replaceAll("\\{numTeams\\}", numTeams + " neue Teams");
+  	}
+  }
+  
+  static final class AffectedTeamsInfo {
+  	
+  	private int numTeams = 0;
+  	private LocalDateTime activityDate = LocalDateTime.now();
+  	
+		public AffectedTeamsInfo(int numTeams, LocalDateTime activityDate) {
+			this.numTeams = numTeams;
+			this.activityDate = activityDate;
+		}
+
+		public AffectedTeamsInfo(List<Team> teams) {
+	    if (CoreUtil.isNotEmpty(teams)) {
+	      numTeams = teams.size();
+	      Team lastCreatedTeam = teams.get(numTeams - 1);
+	      activityDate = lastCreatedTeam.getModifiedAt();
+	    }
+		}
+
+		public int getNumTeams() {
+			return numTeams;
+		}
+
+		public String getNumTeamsStr() {
+			return String.valueOf(numTeams);
+		}
+		
+		public LocalDateTime getActivityDate() {
+			return activityDate;
+		}
+  }
+  
 }

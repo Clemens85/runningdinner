@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 import {
-  acknowledgeRunningDinner,
+  acknowledgeRunningDinner, assertDashboardAdminActivityContains,
   assertFirstParticipantsAreSelected,
   assertMuiCheckboxSelected,
   assertNoWaitingListTeamGenerationViewRemainingParticipantsHint,
@@ -18,11 +18,11 @@ import {
   cancelTeamAtIndex,
   generateTeamsAndRefresh,
   getWaitinglistGenerateTeamsAction,
-  getWaitingListParticipantForTeamGeneration,
+  getWaitingListParticipantForTeamGeneration, navigateAdminDashboard,
   navigateParticipantsList,
   openDeleteParticipantDialogAndSubmit,
   selectParticipantOnWaitingList,
-  sendTeamMessagesToAllTeams,
+  sendTeamMessagesToAllTeams, submitWaitinglistTeamsNotificationWithOpeningMessages,
   submitWaitinglistTeamsNotificationWithoutOpeningMessages,
   submitWaitingListTeamsParticipansAssignmentView,
 } from "../../support";
@@ -85,7 +85,12 @@ describe('team cancellation', () => {
 
     assertWaitingListParticipantsLength(5 - 2);  // 2 from waitinglist are now assigned into teams
 
+    cy.log("Assert dashboard contains activity for waitinglist participant assignment");
+    navigateAdminDashboard(adminId);
+    assertDashboardAdminActivityContains(0, "Du hast 1 Team mit Teilnehmern von der Warteliste aufgefüllt");
+
     // *********************************** //
+    navigateParticipantsList(adminId);
 
     cy.log("Cancel second team and navigate back to participant list");
     cancelTeamAtIndex(adminId, 1);
@@ -171,6 +176,7 @@ describe('team cancellation', () => {
     closeWaitingList();
     getOpenWaitingListButton().should("exist");
     assertWaitingListParticipantsLength(2);
+
   })
 
   it('waitinglist dialog can handle multiple teams to be generated', () => {
@@ -193,6 +199,11 @@ describe('team cancellation', () => {
     getWaitinglistGenerateTeamsAction().click({ force: true});
     assertWaitingListTeamsGeneratedSuccessMessage();
     getOpenWaitingListButton().should("not.exist");
+
+    cy.log("Assert dashboard contains activity for waitinglist temas generation");
+    navigateAdminDashboard(adminId);
+    // 15 teams due to all teams were completly new generated (due to no team-messages had been sent)
+    assertDashboardAdminActivityContains(0, "Du hast 15 neue Teams von der Warteliste generiert");
   })
 
   it.only('waitinglist dialog shows notification view when team messages are already sent', () => {
@@ -234,8 +245,7 @@ describe('team cancellation', () => {
     cy.log("Assert notification view is shown after team generation");
     assertWaitingListNotificationDinnerRouteHint(false);
     assertWaitingListNotificationTeams(3);
-
-
+    submitWaitinglistTeamsNotificationWithOpeningMessages();
   })
 
   it.skip('waitinglist dialog shows team generation hint when teams not yet generated', () => {

@@ -233,10 +233,10 @@ public class TeamService {
 
     List<Team> teams = createTeamsAndVisitationPlan(runningDinner, existingTeamInfosToRestore);
 
-    if (generateAdditionalTeamsFromWaitingList) {
-    	emitTeamsReCreatedEvent(runningDinner, teams); // TODO: Use other event
-    } else {
-    	emitTeamsReCreatedEvent(runningDinner, teams);
+    if (!generateAdditionalTeamsFromWaitingList) {
+    	// Default case for only re-generate teams. 
+    	// If teams are added from waitinglist (generateAdditionalTeamsFromWaitingList == true) ,then the waitinglist fires its own event instead.
+    	emitTeamsReCreatedEvent(runningDinner, teams); 
     }
     
     return newTeamArrangementList(teams, adminId);
