@@ -16,7 +16,7 @@ export default function ParticipantRow({participant, selected, onClick, runningD
 
   return (
       <TableRow hover className={classes.cursorPointer} onClick={() => onClick(participant)} selected={selected} data-testid="participant-row">
-        <TableCell>{participantNumber}</TableCell>
+        <TableCell data-testid={"participant-number"}>{participantNumber}</TableCell>
         <TableCell><Fullname {...participant} /></TableCell>
         <Hidden xsDown>
           <TableCell>

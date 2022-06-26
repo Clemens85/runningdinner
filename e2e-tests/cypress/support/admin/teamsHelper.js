@@ -36,7 +36,7 @@ export function generateTeamsAndRefresh(adminId) {
   });
 }
 
-export function cancelTeamAtIndex(adminId, index) {
+export function cancelTeamAtIndex(adminId, index, numParticipantsToDeselect) {
   navigateTeamsList(adminId);
 
   getTeamAt(index).click({ force: true});
@@ -46,12 +46,10 @@ export function cancelTeamAtIndex(adminId, index) {
 
   assertTeamCancelOverviewDialog(() => {
     cy.log("Assert the first two recipients are pre-selected as proposal, and de-select them so that team gets not replaced");
-    assertMuiCheckboxByTestId("replacement-participant-0", true)
-      .click();
-    assertMuiCheckboxByTestId("replacement-participant-1", true)
-      .click();
-    // Other recipients shall not be selected
-    assertMuiCheckboxByTestId("replacement-participant-2", false);
+    for (let i = 0; i < numParticipantsToDeselect; i++) {
+      assertMuiCheckboxByTestId(`replacement-participant-${i}`, true)
+        .click();
+    }
     submitStandardDialog();
   });
 

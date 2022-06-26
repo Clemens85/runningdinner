@@ -68,7 +68,7 @@ describe('team cancellation', () => {
     closeWaitingList();
 
     cy.log("Cancel first team and navigate back to participant list");
-    cancelTeamAtIndex(adminId, 0);
+    cancelTeamAtIndex(adminId, 0, 2);
     navigateParticipantsList(adminId);
 
     getOpenWaitingListButton().click({ force: true });
@@ -99,7 +99,7 @@ describe('team cancellation', () => {
     navigateParticipantsList(adminId);
 
     cy.log("Cancel second team and navigate back to participant list");
-    cancelTeamAtIndex(adminId, 1);
+    cancelTeamAtIndex(adminId, 1, 2);
     navigateParticipantsList(adminId);
 
     getOpenWaitingListButton().click({ force: true });
@@ -234,7 +234,7 @@ describe('team cancellation', () => {
     cy.wait(500);
 
     cy.log("Cancel first team and navigate back to participant list");
-    cancelTeamAtIndex(adminId, 0);
+    cancelTeamAtIndex(adminId, 0, 2);
     navigateParticipantsList(adminId);
 
     getOpenWaitingListButton().click({ force: true });
@@ -290,7 +290,7 @@ describe('team cancellation', () => {
     closeWaitingList();
 
     cy.log("Cancel first team and navigate back to participant list");
-    cancelTeamAtIndex(adminId, 0);
+    cancelTeamAtIndex(adminId, 0, 2);
     navigateParticipantsList(adminId);
 
     cy.log("Expected 2 participants to be assignable in total in teams participants assignment view");
