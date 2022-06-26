@@ -1,5 +1,5 @@
 import React from 'react'
-import { TableContainer, Paper, Table, TableBody, Grid, Box, }from "@material-ui/core";
+import { TableContainer, Paper, Table, TableBody, Box }from "@material-ui/core";
 import ParticipantRow from "./ParticipantRow";
 import {
   getAssignableParticipants,
@@ -11,6 +11,7 @@ import {
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import { WaitingListManagementAlert } from './WaitingListManagementAlert';
+import {SpacingGrid} from "../../../common/theme/SpacingGrid";
 
 export default function ParticipantsList({participants, selectedParticipant, participantsListInfo, hasSearchText, onClick, onRefetch}) {
 
@@ -36,8 +37,8 @@ export default function ParticipantsList({participants, selectedParticipant, par
   const showParticiapntsOnWaitingListInOwnSection = !hasSearchText && numberOfParticipantsWaitingList > 0;
 
   return (
-      <Grid container>
-        <Grid item xs={12}>
+      <SpacingGrid container>
+        <SpacingGrid item xs={12} mb={2}>
 
           {participantsListInfo}
 
@@ -64,8 +65,8 @@ export default function ParticipantsList({participants, selectedParticipant, par
             </Box>
           }
 
-        </Grid>
-      </Grid>
+        </SpacingGrid>
+      </SpacingGrid>
   );
 
 }

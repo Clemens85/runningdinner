@@ -17,7 +17,6 @@ import {
   BaseRunningDinnerProps,
   calculateCancelledTeamMembersNumArr,
   CallbackHandler,
-  filterActivitiesByType,
   findAdminActivitiesByAdminIdAndTypesAsync,
   findEntityById,
   findWaitingListInfoAsync,
@@ -25,7 +24,6 @@ import {
   generateNewTeamsFromWaitingListAsync,
   getNumCancelledTeamMembers,
   getTeamParticipantsAssignment,
-  isArrayEmpty,
   isArrayNotEmpty,
   MessageSubType,
   removeSelectedParticipantFromTeam,
@@ -230,6 +228,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
     const teamParticipantsAssignment = getTeamParticipantsAssignment(teamParticipantsAssignmentModel, team);
     const numCancelledTeamMembers = getNumCancelledTeamMembers(team, teamParticipantsAssignment.selectedParticipants.length, teamSize);
     if (numCancelledTeamMembers <= 0) {
+      // TODO i18n
       showWarning("Es können nur max. " + teamSize + " Teilnehmer in einem Team sein!");
       return;
     }
@@ -524,26 +523,21 @@ function NoSimpleActionView({numMissingParticipantsForFullTeamArrangement, remai
 
   const {t} = useTranslation(["admin", "common"]);
 
-  const numRemainingParticpants = remainingParticipants.length;
+  const numRemainingParticipants = remainingParticipants.length;
 
   return (
     <Grid container justify={"center"} data-testid={"waitinglist-distribute-to-teams-view"}>
       <Grid item {... GRID_SIZES}>
         <Box m={DIALOG_SPACING_X}>
           <Paragraph>
-            Die {numRemainingParticpants} verbleibenden Teilnehmer auf der Warteliste können nicht als neue Teams hinzugefügt werden.<br/>
-            Hierzu fehlen derzeit noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> zusätzliche Teilnehmer.
+            <Trans i18nKey={"admin:waitinglist_no_simple_action_missing_participants_info"} values={{ numRemainingParticipants, numMissingParticipantsForFullTeamArrangement }} />
           </Paragraph>
-          <Paragraph>Folgende Optionen stehen dir zur Verfügung:</Paragraph>
+          <Paragraph i18n={"admin:waitinglist_no_simple_action_distribution_options"} />
           <ul>
-            <li>First come first serve: Die übrig gebliebenen Teilnehmer nehmen zunächst nicht am Event teil, können aber bei Bedarf z.B. später mögliche Teilnehmer/Team-Absagen ersetzen.</li>
-            <li>Falls sich doch noch <strong>{numMissingParticipantsForFullTeamArrangement}</strong> zusätzliche Teilnehmer anmelden, kannst du diese als neue Teams hinzufügen.</li>
+            <li><Trans i18nKey={"admin:waitinglist_no_simple_action_distribution_option_1"} /></li>
+            <li><Trans i18nKey={"admin:waitinglist_no_simple_action_distribution_option_2"} /></li>
           </ul>
-          <Paragraph>
-            <strong>{t('common:note')}</strong>: Aktuell gibt es noch keine Möglichkeit übrig gebliebene Teilnehmer automatisch auf existierende Teams zu verteilen.
-            An diesem Feature wird derzeit gearbeitet, aber es ist noch nicht verfübar. Bis dahin und falls du dies tun willst, musst du das händisch mit Zettel und Stift erledigen und kannst aber ggfalls
-            über das Tool dann die betroffenen Teams via Team-Nachrichten-Versand benachrichtigen.
-          </Paragraph>
+          <Paragraph><strong>{t('common:note')}</strong>: <Trans i18nKey={"admin:waitinglist_no_simple_action_distribution_info"} /></Paragraph>
         </Box>
       </Grid>
     </Grid>

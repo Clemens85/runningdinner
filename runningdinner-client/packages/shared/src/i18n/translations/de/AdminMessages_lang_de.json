@@ -278,6 +278,12 @@
 	"waitinglist_teams_not_generated_option_3": "Übrig gebliebene Teilnehmer auf existierende Teams verteilen (noch nicht verfügbar, kommt aber bald... bis dahin musst du dies händisch mit Zettel + Stift erledigen)",
 	"waitinglist_teams_not_generated_hint": "Es macht generell Sinn, die Team-Einteilung immer so spät wie möglich und so früh wie nötig vorzunehmen.",
 
+	"waitinglist_no_simple_action_distribution_info": "Aktuell gibt es noch keine Möglichkeit übrig gebliebene Teilnehmer automatisch auf existierende Teams zu verteilen. An diesem Feature wird derzeit gearbeitet, aber es ist noch nicht verfügbar. Bis dahin, und falls du dies tun willst, musst du das händisch mit Zettel und Stift erledigen und kannst aber anschließend die betroffenen Teams via Team-Nachrichten-Versand bequem benachrichtigen.",
+	"waitinglist_no_simple_action_missing_participants_info": "Die {{ numRemainingParticipants }} verbleibenden Teilnehmer auf der Warteliste können nicht als neue Teams hinzugefügt werden.<br/> Hierzu fehlen derzeit noch <strong>{{ numMissingParticipantsForFullTeamArrangement }}</strong> zusätzliche Teilnehmer.",
+	"waitinglist_no_simple_action_distribution_options": "Folgende Optionen stehen dir zur Verfügung:",
+	"waitinglist_no_simple_action_distribution_option_1": "First come first serve: Die übrig gebliebenen Teilnehmer nehmen zunächst nicht am Event teil, können aber bei Bedarf z.B. später mögliche Teilnehmer / Team-Absagen ersetzen.",
+	"waitinglist_no_simple_action_distribution_option_2": "Falls sich doch noch <strong>{{ numMissingParticipantsForFullTeamArrangement }}</strong> zusätzliche Teilnehmer anmelden, kannst du diese als neue Teams hinzufügen.",
+
 	"waitinglist_notification_dinnerroutes_sent": "Du hast ausserdem bereits die Dinner-Routen versandt. Durch deine Änderungen kann es potenziell mehrfache Änderungen an den Routen einzelner Teams geben.<br/>Es wird daher empfohlen, dass du später zusätzlich alle Dinner-Routen nochmals versendest.",
 	"waitinglist_notification_teams_info": "Da sich nun folgende Teams in der Zusammenstellung geändert haben, solltest du diese über die Änderungen benachrichtigen:",
 	"waitinglist_notification_teams_sendmessages": "Teams benachrichtigen (öffnet neues Fenster)",

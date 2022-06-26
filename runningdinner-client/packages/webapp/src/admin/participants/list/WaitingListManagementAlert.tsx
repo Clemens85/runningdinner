@@ -23,7 +23,7 @@ export function WaitingListManagementAlert(props: WaitingListManagementAlertProp
 
   return (
     <>
-      <Alert severity={"info"} variant="outlined">
+      <Alert severity={"success"} variant="outlined">
         <AlertTitle>{t('participants_remaining_not_assignable_headline')}</AlertTitle>
         {t('participants_remaining_not_assignable_text')}
         <Box mt={2}>
