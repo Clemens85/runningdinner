@@ -18,7 +18,7 @@ import {
   assertWaitingListTeamGenerationViewRemainingParticipantsHint,
   assertWaitingListTeamsGeneratedSuccessMessage,
   assertWaitingListTeamsNotGeneratedView,
-  assertWaitingListTeamsParticipantsAssignmentView,
+  assertWaitingListTeamsParticipantsAssignmentView, assertWaitingListTooMuchParticipantsSelectedForAssignmentMessage,
   cancelTeamAtIndex,
   generateTeamsAndRefresh,
   getWaitinglistGenerateTeamsAction,
@@ -132,7 +132,7 @@ describe('team cancellation', () => {
     assertParticipantListInfoWithText("Warteliste leer");
   })
 
-  it.only('waitinglist dialog shows generate teams view when enough participants on waitinglist', () => {
+  it('waitinglist dialog shows generate teams view when enough participants on waitinglist', () => {
 
     generateTeamsAndRefresh(adminId);
 
@@ -270,7 +270,7 @@ describe('team cancellation', () => {
     getOpenWaitingListButton().should("exist");
   })
 
-  it('waitinglist dialog handles team generation validation properly', () => {
+  it('waitinglist dialog handles validations properly', () => {
     generateTeamsAndRefresh(adminId);
 
     createParticipants(adminId, 24, 25); // We have now 7 participants on waitinglsit
@@ -287,6 +287,27 @@ describe('team cancellation', () => {
       .click({ force: true });
     assertFirstParticipantsAreSelected(6);
     assertTooMuchWaitingListParticipantsSelectedForTeamGenerationMessage();
+    closeWaitingList();
+
+    cy.log("Cancel first team and navigate back to participant list");
+    cancelTeamAtIndex(adminId, 0);
+    navigateParticipantsList(adminId);
+
+    cy.log("Expected 2 participants to be assignable in total in teams participants assignment view");
+    getOpenWaitingListButton().click({ force: true });
+    assertWaitingListTeamsParticipantsAssignmentView(2);
+    cy.log("Assert validation message is shown when too much participants are selected");
+
+    selectParticipantForTeamAssignment(0,0);
+    selectParticipantForTeamAssignment(0,1);
+    selectParticipantForTeamAssignment(0,2);
+    assertWaitingListTooMuchParticipantsSelectedForAssignmentMessage();
+    cy.log("Submit participants assignment. If this works, the validation before also worked")
+    submitWaitingListTeamsParticipansAssignmentView();
+
+    cy.log("Expected the 5 participants to be shown as remaining participants on waitinglist");
+    assertWaitingListDistributeToTeamsView(5);
+    closeWaitingList();
   })
 
 })

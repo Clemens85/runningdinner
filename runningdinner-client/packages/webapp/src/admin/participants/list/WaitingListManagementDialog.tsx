@@ -228,8 +228,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
     const teamParticipantsAssignment = getTeamParticipantsAssignment(teamParticipantsAssignmentModel, team);
     const numCancelledTeamMembers = getNumCancelledTeamMembers(team, teamParticipantsAssignment.selectedParticipants.length, teamSize);
     if (numCancelledTeamMembers <= 0) {
-      // TODO i18n
-      showWarning("Es können nur max. " + teamSize + " Teilnehmer in einem Team sein!");
+      showWarning(t("admin:waitinglist_assign_participants_teams_select_max_warning", { teamSize }));
       return;
     }
     setTeamParticipantsAssignmentModel(prevState => {
@@ -419,7 +418,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
   const {numMissingParticipantsForFullTeamArrangement, participtantsForTeamArrangement, remainingParticipants, runningDinner, onSave } = props;
 
   const commonClasses = useCommonStyles();
-  const {showInfo, showSuccess} = useCustomSnackbar();
+  const {showWarning, showSuccess} = useCustomSnackbar();
   const {t} = useTranslation(['admin', 'common']);
 
   const {getIssuesTranslated} = useBackendIssueHandler({
@@ -447,7 +446,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
 
   function handleParticipantSelectionChange(participant: SelectableParticipant, selected: boolean) {
     if (getNumSelectedParticipantsParticipantsInState() >= numParticipantsAssignable && selected) {
-      showInfo(t("admin:waitinglist_generate_teams_selected_too_much", {numParticipants: numParticipantsAssignable}));
+      showWarning(t("admin:waitinglist_generate_teams_selected_too_much", {numParticipants: numParticipantsAssignable}));
       return;
     }
     setParticipantList(prevState => {

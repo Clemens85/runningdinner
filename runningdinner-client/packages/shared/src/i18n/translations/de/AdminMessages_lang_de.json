@@ -258,6 +258,7 @@
 	"waitinglist_assign_participants_teams": "Teams durch Teilnehmer der Warteliste auffüllen",
 	"waitinglist_assign_participants_teams_success": "Teams durch ausgewählte Teilnehmer aufgefüllt!",
 	"waitinglist_assign_participants_teams_select_hint": "(Wähle die Teilnehmer aus die zu diesem Team hinzufügen willst)",
+	"waitinglist_assign_participants_teams_select_max_warning": "Es können nur max. {{ teamSize }} Teilnehmer in einem Team sein!",
 	"waitinglist_num_participants_assignment_info": "Nutze diese um die folgenden Teams, welche durch Absagen nicht mehr vollständig sind, aufzufüllen.",
 	"waitinglist_num_participants_list_info": "Du hast derzeit <strong>{{ numParticipants }}</strong> Teilnehmer auf der Warteliste.",
 	"waitinglist_num_missing_teammembers": "Hierfür kannst du insgesamt <strong>{{ totalNumberOfMissingTeamMembers }}</strong> Teilnehmer verwenden.",

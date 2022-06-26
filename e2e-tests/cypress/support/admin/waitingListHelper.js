@@ -121,3 +121,7 @@ export function assertNotEnoughWaitingListParticipantsSelectedForTeamGenerationM
 export function assertTooMuchWaitingListParticipantsSelectedForTeamGenerationMessage() {
   assertToastIsShown("Du kannst maximal 6 Teilnehmer auswählen. Bitte wähle erst andere Teilnehmer ab");
 }
+
+export function assertWaitingListTooMuchParticipantsSelectedForAssignmentMessage() {
+  assertToastIsShown("Es können nur max. 2 Teilnehmer in einem Team sein");
+}
