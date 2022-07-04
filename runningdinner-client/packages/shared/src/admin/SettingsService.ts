@@ -2,7 +2,6 @@ import {isSameDay} from '../date';
 import {RunningDinnerBasicDetails} from "../types";
 import {CONSTANTS} from "../Constants";
 import { findParticipantsAsync } from '.';
-import { isArrayNotEmpty } from '..';
 
 function isChangeInDate(a: RunningDinnerBasicDetails, b: RunningDinnerBasicDetails) {
   return !isSameDay(a.date, b.date);
@@ -35,8 +34,8 @@ export async function getSettingsChangeTypeListAsync(original: RunningDinnerBasi
   }
 
   if (isChangeInDate(original, updated)) {
-    const participants = await findParticipantsAsync(adminId);
-    if (isArrayNotEmpty(participants)) {
+    const participantList = await findParticipantsAsync(adminId);
+    if (participantList.numParticipantsTotal > 0) {
       result.push(SettingsChangeType.CHANGE_IN_DATE_WITH_REGISTERED_PARTICIPANTS);
     }
   } 

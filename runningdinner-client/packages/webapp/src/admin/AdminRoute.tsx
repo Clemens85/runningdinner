@@ -1,6 +1,6 @@
 import React from 'react';
 import {DinnerRouteMessages, ParticipantMessages, TeamMessages} from "./messages/MessagesContainer";
-import ParticipantsContainer from "./participants/ParticipantsContainer";
+import ParticipantsPage from "./participants/ParticipantsPage";
 import TeamsContainer from "./teams/TeamsContainer";
 import Dashboard from "./dashboard/Dashboard";
 import {Route, Switch} from "react-router-dom";
@@ -31,10 +31,10 @@ export default function AdminRoute({path}: AdminRouteProps) {
           <ParticipantMessages adminId={adminId} />
         </Route>
         <Route path={`${path}/participants/:participantId`}>
-          <ParticipantsContainer runningDinner={runningDinner} />
+          <ParticipantsPage runningDinner={runningDinner} />
         </Route>
         <Route path={`${path}/participants`}>
-          <ParticipantsContainer runningDinner={runningDinner} />
+          <ParticipantsPage runningDinner={runningDinner} />
         </Route>
 
         <Route path={`${path}/dinnerroute/messages`}>

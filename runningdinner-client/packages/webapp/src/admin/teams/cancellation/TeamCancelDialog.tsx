@@ -18,9 +18,17 @@ import {
   findEntityById,
   removeEntityFromList,
   cancelTeamDryRunAsync,
-  findNotAssignedParticipantsAsync,
   getFullnameList,
-  useBackendIssueHandler, RunningDinner, Team, Participant, TeamCancellationResult, CallbackHandler, CallbackHandlerAsync, isArrayEmpty, cancelTeamAsync
+  useBackendIssueHandler,
+  RunningDinner,
+  Team,
+  Participant,
+  TeamCancellationResult,
+  CallbackHandler,
+  CallbackHandlerAsync,
+  isArrayEmpty,
+  cancelTeamAsync,
+  findParticipantsAsync
 } from "@runningdinner/shared";
 import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from "lodash/cloneDeep";
@@ -158,13 +166,13 @@ function TeamCancelOverview({runningDinner, team, onCancelDialog, onShowPreview,
             <Span i18n="admin:team_cancel_info_text" />
           </Box>
           <Box mt={3}>
-            <Fetch asyncFunction={findNotAssignedParticipantsAsync}
+            <Fetch asyncFunction={findParticipantsAsync}
                    parameters={[adminId]}
                    render={resultObj => <TeamCancelOverviewContent
                                             team={team}
                                             runningDinner={runningDinner}
                                             onReplacementParticipantSelectionChange={onReplacementParticipantSelectionChange}
-                                            notAssignedParticipants={resultObj.result} /> }/>
+                                            notAssignedParticipants={resultObj.result.participantsWaitinglist} /> }/>
           </Box>
         </DialogContent>
         <DialogActionsPanel onOk={onShowPreview} onCancel={onCancelDialog} okLabel={okLabel} cancelLabel={t('common:cancel')} danger={false}/>

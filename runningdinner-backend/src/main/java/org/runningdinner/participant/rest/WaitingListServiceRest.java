@@ -30,9 +30,9 @@ public class WaitingListServiceRest {
   }
 	
   @PutMapping("/runningdinner/{adminId}/generate-new-teams")
-  public WaitingListActionResult generateNewTeams(@PathVariable("adminId") String adminId, @RequestBody ParticipantListTO participantList) {
+  public WaitingListActionResult generateNewTeams(@PathVariable("adminId") String adminId, @RequestBody WaitingListGenerateTeamsRequestTO waitingListGenerateTeamsRequest) {
 
-  	List<ParticipantTO> participants = participantList.getParticipants();
+  	List<ParticipantTO> participants = waitingListGenerateTeamsRequest.getParticipants();
   	return waitingListService.generateNewTeams(adminId, participants);
   }
   

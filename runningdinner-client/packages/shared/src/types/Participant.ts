@@ -36,6 +36,23 @@ export interface Participant extends BaseEntity {
   geocodingResult?: GeocodingResult;
 }
 
+export interface ParticipantList {
+  participants: ParticipantListable[];
+  participantsWaitinglist: ParticipantListable[];
+  teamsGenerated: boolean;
+  numParticipantsTotal: number;
+  missingParticipantsInfo: MissingParticipantsInfo
+}
+
+export interface ParticipantListable extends Participant {
+  listNumber: number;
+}
+
+export interface MissingParticipantsInfo {
+  numMinParticipantsNeeded: number;
+  numParticipantsMissing: number;
+}
+
 export interface SelectableParticipant extends Participant {
   selected?: boolean;
 }

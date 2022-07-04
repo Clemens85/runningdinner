@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.geocoder.GeocodingResult;
-import org.runningdinner.participant.AssignmentType;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
@@ -24,7 +23,7 @@ public class ParticipantTO extends BaseParticipantTO {
 
   private UUID teamId;
 
-  private AssignmentType assignmentType;
+//  private AssignmentType assignmentType;
   
   private LocalDateTime activationDate;
   
@@ -40,7 +39,7 @@ public class ParticipantTO extends BaseParticipantTO {
     this.participantNumber = participant.getParticipantNumber();
     
     this.teamId = participant.getTeamId();
-    this.assignmentType = participant.getAssignmentType();
+//    this.assignmentType = participant.getAssignmentType();
     
     this.activationDate = participant.getActivationDate();
     
@@ -67,15 +66,15 @@ public class ParticipantTO extends BaseParticipantTO {
     this.numSeats = numSeats;
   }
 
-  public AssignmentType getAssignmentType() {
-
-    return assignmentType;
-  }
-
-  public void setAssignmentType(AssignmentType assignmentType) {
-
-    this.assignmentType = assignmentType;
-  }
+//  public AssignmentType getAssignmentType() {
+//
+//    return assignmentType;
+//  }
+//
+//  public void setAssignmentType(AssignmentType assignmentType) {
+//
+//    this.assignmentType = assignmentType;
+//  }
 
   public UUID getTeamId() {
   

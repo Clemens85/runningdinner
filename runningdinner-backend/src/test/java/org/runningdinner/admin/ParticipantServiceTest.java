@@ -19,10 +19,11 @@ import org.junit.runner.RunWith;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.participant.AssignmentType;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.rest.ParticipantListActive;
+import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
 import org.runningdinner.queue.QueueProviderFactoryService;
 import org.runningdinner.queue.QueueProviderMockInMemory;
 import org.runningdinner.test.util.ApplicationTest;
@@ -68,43 +69,43 @@ public class ParticipantServiceTest {
   @Test
   public void testGetParticipantsWithoutTeamAssignment() {
 
-    List<Participant> resultList = participantService.findActiveParticipantsWithAssignableInfo(runningDinner.getAdminId());
-    assertParticipantListSizeAndNumbers(resultList, TOTAL_NUMBER_OF_PARTICIPANTS);
+    ParticipantListActive participantList = participantService.findActiveParticipantList(runningDinner.getAdminId());
+   
+    assertParticipantListNumbers(participantList.getParticipants(), 1, 18);
+    assertThat(participantList.getParticipants()).hasSize(18);
+ 
+    assertThat(participantList.getParticipants())
+    							.extracting("teamId")
+    							.allMatch(t -> t == null);
     
-    assertThat(resultList)
-      .filteredOn(p -> p.getParticipantNumber() <= 18)
-      .extracting("assignmentType", AssignmentType.class)
-      .allMatch(a -> a == AssignmentType.ASSIGNABLE);
+    assertParticipantListNumbers(participantList.getParticipantsWaitingList(), 19, 22);
+    assertThat(participantList.getParticipantsWaitingList()).hasSize(4);
     
-    assertThat(resultList).extracting("teamId").allMatch(t -> t == null);
-    
-    assertThat(resultList)
-      .filteredOn(p -> p.getParticipantNumber() > 18)
-      .extracting("assignmentType", AssignmentType.class)
-      .allMatch(a -> a == AssignmentType.NOT_ASSIGNABLE);
+    assertThat(participantList.getNumParticipantsTotal()).isEqualTo(TOTAL_NUMBER_OF_PARTICIPANTS);
+    assertThat(participantList.getMissingParticipantsInfo().getNumParticipantsMissing()).isZero();
+    assertThat(participantList.getMissingParticipantsInfo().getNumMinParticipantsNeeded()).isEqualTo(18);
   }
 
   @Test
-  public void testGetParticipantsWithTeamAssignment()
-    throws NoPossibleRunningDinnerException {
+  public void testGetParticipantsWithTeamAssignment() {
 
     teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
 
-    List<Participant> resultList = participantService.findActiveParticipantsWithAssignableInfo(runningDinner.getAdminId());
-    assertParticipantListSizeAndNumbers(resultList, TOTAL_NUMBER_OF_PARTICIPANTS);
-
-    assertThat(resultList)
-      .filteredOn(p -> p.getParticipantNumber() <= 18)
-      .extracting("assignmentType", AssignmentType.class)
-      .allMatch(a -> a == AssignmentType.ASSIGNED_TO_TEAM);
+    ParticipantListActive participantList = participantService.findActiveParticipantList(runningDinner.getAdminId());
     
-    assertThat(resultList).filteredOn(p -> p.getParticipantNumber() <= 18).extracting("teamId").allMatch(t -> t != null);
+    assertParticipantListNumbers(participantList.getParticipants(), 1, 18);
+    assertThat(participantList.getParticipants()).hasSize(18);
+    
+    assertThat(participantList.getParticipants())
+    	.extracting("teamId")
+    	.allMatch(t -> t != null);
   
-    assertThat(resultList)
-    .filteredOn(p -> p.getParticipantNumber() > 18)
-    .extracting("assignmentType", AssignmentType.class)
-    .allMatch(a -> a == AssignmentType.NOT_ASSIGNABLE);
-
+    assertParticipantListNumbers(participantList.getParticipantsWaitingList(), 19, 22);
+    assertThat(participantList.getParticipantsWaitingList()).hasSize(4);
+    
+    assertThat(participantList.getNumParticipantsTotal()).isEqualTo(TOTAL_NUMBER_OF_PARTICIPANTS);
+    assertThat(participantList.getMissingParticipantsInfo().getNumParticipantsMissing()).isZero();
+    assertThat(participantList.getMissingParticipantsInfo().getNumMinParticipantsNeeded()).isEqualTo(18);
   }
   
   @Test(expected = ValidationException.class)
@@ -160,12 +161,13 @@ public class ParticipantServiceTest {
     assertThat(participantIdsInMessageEntries).contains(firstParticipant.getId().toString());
   }
 
-  private void assertParticipantListSizeAndNumbers(List<Participant> resultList, int expectedTotalNumberOfParticipants) {
+  private void assertParticipantListNumbers(List<ParticipantWithListNumberTO> resultList, int expectedStartNumber, int expectedEndNumber) {
 
-    assertThat(resultList).hasSize(expectedTotalNumberOfParticipants);
-
-    List<Integer> expectedParticipantNumbers = IntStream.rangeClosed(1, expectedTotalNumberOfParticipants).boxed().collect(Collectors.toList());
+    List<Integer> expectedParticipantNumbers = IntStream.rangeClosed(expectedStartNumber, expectedEndNumber).boxed().collect(Collectors.toList());
     assertThat(resultList).extracting("participantNumber", Integer.class).containsExactlyElementsOf(expectedParticipantNumbers);
+    assertThat(resultList).extracting("listNumber", Integer.class).containsExactlyElementsOf(expectedParticipantNumbers);
+
+    
   }
 
 
