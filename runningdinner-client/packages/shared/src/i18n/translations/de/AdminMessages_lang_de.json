@@ -137,6 +137,8 @@
 	"participant_teampartnerwish_update_participant": "{{ fullnameThis }} wurde ebenfalls als Wunschpartner bei {{ fullnameOther }} eingetragen.",
 	"participants_all_assignable_headline": "Warteliste leer",
 	"participants_all_assignable_text": "Herzlichen Glückwunsch, du kannst alle aufgelisteten Teilnehmer in dein Running Dinner unterbringen.",
+	"participants_waitinglist_info_headline": "Info",
+	"participants_waitinglist_info_text": "Es können aktuell nicht alle Teilnehmer in Teams aufgeteilt werden, du findest diese weiter unten.",
 	"participants_count_closed_event": "Aktuell sind <strong>{{ numParticipants }}</strong> Teilnehmer in deinem Dinner vorhanden.",
 	"participants_count_public_event": "Aktuell sind <strong>{{ numParticipants }}</strong> Teilnehmer angemeldet.",
 	"participants_count_sufficient": "Damit würden sich aktuell <strong>{{ numExpectedTeams }}</strong> Teams ergeben. Es gibt <strong>{{ numNotAssignableParticipants }}</strong> Teilnehmer die nicht in Teams eingeteilt werden können.",

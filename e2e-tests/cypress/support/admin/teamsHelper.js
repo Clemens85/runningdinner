@@ -8,11 +8,15 @@ import {
 
 export function generateTeams(adminId, postFunctionToExecute) {
   navigateTeamsList(adminId);
-  getByTestId("generate-teams-action").click({ force: true});
+  getGenerateTeamsButton().click({ force: true});
   getByTestId("team-row").should("exist");
   if (postFunctionToExecute) {
     postFunctionToExecute();
   }
+}
+
+export function getGenerateTeamsButton() {
+  return getByTestId("generate-teams-action");
 }
 
 export function getTeamAt(index) {

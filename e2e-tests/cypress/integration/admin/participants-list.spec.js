@@ -70,10 +70,9 @@ describe('participants list', () => {
 
     navigateParticipantsList(adminId);
     getOpenWaitingListButton().should("exist");
-    assertParticipantListInfoWithText("Warteliste TODO");
+    assertParticipantListInfoWithText("Es können aktuell nicht alle Teilnehmer in Teams aufgeteilt werden, du findest diese weiter unten");
     assertWaitingListParticipantsLength(1);
   })
-
 
   it('waitinglist is displayed when we have < 18 participants, but cancelled team', () => {
 
@@ -85,7 +84,7 @@ describe('participants list', () => {
 
     navigateParticipantsList(adminId);
     getOpenWaitingListButton().should("exist");
-    // assertParticipantListInfoWithText("Warteliste TODO"); // TODO
+    assertParticipantListInfoWithText("Es können aktuell nicht alle Teilnehmer in Teams aufgeteilt werden, du findest diese weiter unten");
 
     assertParticipantListLength(17);
     assertWaitingListParticipantsLength(1);

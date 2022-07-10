@@ -24,7 +24,7 @@ export function useParticipantsListInfo(participantList: ParticipantList): Parti
 
   function _calculateParticipantInfo() {
 
-    const {numParticipantsTotal} = participantList;
+    const {numParticipantsTotal, teamsGenerated} = participantList;
 
     let result = emptyParticipantListInfo;
 
@@ -36,18 +36,24 @@ export function useParticipantsListInfo(participantList: ParticipantList): Parti
         show: true
       };
     } else {
-      const notAssignableParticipants = participantList.participantsWaitingList;
-      if (notAssignableParticipants.length === 0 && participantList.missingParticipantsInfo.numParticipantsMissing <= 0) {
+      const { participantsWaitingList } = participantList;
+      if (participantsWaitingList.length === 0 && participantList.missingParticipantsInfo.numParticipantsMissing <= 0) {
         result = {
           title: t('participants_all_assignable_headline'),
           message: t('participants_all_assignable_text'),
           severity: 'success',
           show: true
         };
+      } else if (participantsWaitingList.length > 0 && teamsGenerated) {
+        result = {
+          title: t('participants_waitinglist_info_headline'),
+          message: t('participants_waitinglist_info_text'),
+          severity: 'info',
+          show: true
+        };
       } else {
         const numParticipantsMissing = participantList.missingParticipantsInfo.numParticipantsMissing;
         const numMinParticipantsNeeded = participantList.missingParticipantsInfo.numMinParticipantsNeeded;
-        const {teamsGenerated} = participantList;
         if (numParticipantsMissing > 0 && !teamsGenerated) {
           result = {
             title: t('participants_not_enough'),
