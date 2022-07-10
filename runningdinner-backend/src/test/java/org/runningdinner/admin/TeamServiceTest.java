@@ -197,9 +197,13 @@ public class TeamServiceTest {
     Team firstTeam = findFirstTeam();
     teamService.cancelTeamMember(runningDinner.getAdminId(), firstTeam.getId(), firstTeam.getHostTeamMember().getId());
     
-    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
-    Assert.fail("Expected NoPossibleRunningDinnerException to be thrown!");
-    
+    try {
+    	teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
+      Assert.fail("Expected ValidationException to be thrown!");
+    } catch (ValidationException e) {
+    	assertThat(e.getIssues().getIssues()).hasSize(1);
+    	assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo("dinner_not_possible");
+    }
     // Assert teams are not deleted!
     assertThat(teamService.getNumberOfTeams(runningDinner.getAdminId())).isEqualTo(9);
   }
