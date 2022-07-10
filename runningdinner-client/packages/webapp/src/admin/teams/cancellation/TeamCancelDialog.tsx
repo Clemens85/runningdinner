@@ -172,7 +172,7 @@ function TeamCancelOverview({runningDinner, team, onCancelDialog, onShowPreview,
                                             team={team}
                                             runningDinner={runningDinner}
                                             onReplacementParticipantSelectionChange={onReplacementParticipantSelectionChange}
-                                            notAssignedParticipants={resultObj.result.participantsWaitinglist} /> }/>
+                                            notAssignedParticipants={resultObj.result.participantsWaitingList} /> }/>
           </Box>
         </DialogContent>
         <DialogActionsPanel onOk={onShowPreview} onCancel={onCancelDialog} okLabel={okLabel} cancelLabel={t('common:cancel')} danger={false}/>

@@ -36,7 +36,7 @@ export function useParticipantsListInfo(participantList: ParticipantList): Parti
         show: true
       };
     } else {
-      const notAssignableParticipants = participantList.participantsWaitinglist;
+      const notAssignableParticipants = participantList.participantsWaitingList;
       if (notAssignableParticipants.length === 0 && participantList.missingParticipantsInfo.numParticipantsMissing <= 0) {
         result = {
           title: t('participants_all_assignable_headline'),
@@ -45,7 +45,6 @@ export function useParticipantsListInfo(participantList: ParticipantList): Parti
           show: true
         };
       } else {
-
         const numParticipantsMissing = participantList.missingParticipantsInfo.numParticipantsMissing;
         const numMinParticipantsNeeded = participantList.missingParticipantsInfo.numMinParticipantsNeeded;
         const {teamsGenerated} = participantList;

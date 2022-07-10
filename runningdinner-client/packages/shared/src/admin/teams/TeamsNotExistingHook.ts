@@ -45,7 +45,7 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
       numNotAssignableParticipants = numParticipantsTotal;
       numAssignableParticipants = 0;
     } else {
-      numNotAssignableParticipants = participantList.participantsWaitinglist.length;
+      numNotAssignableParticipants = participantList.participantsWaitingList.length;
       numAssignableParticipants = participantList.participants.length;
     }
 

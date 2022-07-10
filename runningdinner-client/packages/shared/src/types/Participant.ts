@@ -38,10 +38,14 @@ export interface Participant extends BaseEntity {
 
 export interface ParticipantList {
   participants: ParticipantListable[];
-  participantsWaitinglist: ParticipantListable[];
+  participantsWaitingList: ParticipantListable[];
   teamsGenerated: boolean;
   numParticipantsTotal: number;
   missingParticipantsInfo: MissingParticipantsInfo
+}
+
+export function concatParticipantList(participantList: ParticipantList): ParticipantListable[] {
+  return participantList.participants.concat(participantList.participantsWaitingList);
 }
 
 export interface ParticipantListable extends Participant {

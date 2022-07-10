@@ -55,3 +55,7 @@ export function assertNoParticipantListInfo() {
 export function getParticipantRows() {
   return getByTestId("participant-row");
 }
+
+export function getParticipantListSearchTextInput() {
+  return getByTestId("participant-list-search-input");
+}

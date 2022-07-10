@@ -18,7 +18,7 @@ export function useNumberOfParticipants(participantList: ParticipantList): Numbe
   function _calculateNumberOfParticipants() {
 
     const numberOfParticipantsTotal = participantList.numParticipantsTotal;
-    const numberOfParticipantsWaitingList = participantList.participantsWaitinglist.length;
+    const numberOfParticipantsWaitingList = participantList.participantsWaitingList.length;
     const hasNotEnoughParticipantsForDinner = participantList.missingParticipantsInfo.numParticipantsMissing > 0;
 
     setNumberOfParticipants({

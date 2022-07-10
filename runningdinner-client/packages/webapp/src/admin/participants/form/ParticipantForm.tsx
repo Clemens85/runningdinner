@@ -61,7 +61,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
     if (!participantToEdit) {
       participantToEdit = newEmptyParticipantInstance();
     } else {
-      participantToEdit = mapNullFieldsToEmptyStrings(participantToEdit, "assignmentType");
+      participantToEdit = mapNullFieldsToEmptyStrings(participantToEdit);
     }
     reset(participantToEdit);
     clearErrors();

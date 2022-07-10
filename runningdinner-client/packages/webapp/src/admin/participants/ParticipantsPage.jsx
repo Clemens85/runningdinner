@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import ParticipantsListHeader from "./list/ParticipantsListHeader";
-import ParticipantsList from "./list/ParticipantsList";
+import { ParticipantsListHeader }  from "./list/ParticipantsListHeader";
 import {useParams} from "react-router-dom";
 import ParticipantForm from "./form/ParticipantForm";
 import { Grid } from "@material-ui/core";
@@ -13,9 +12,16 @@ import {TeamPartnerWishDialog} from "./teampartnerwish/TeamPartnerWishDialog";
 import {
   CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION
 } from "./teampartnerwish/TeamPartnerWishAction";
-import {findEntityById, findParticipantsAsync, findTeamPartnerWishInfoAsync, useDisclosure} from "@runningdinner/shared";
+import {
+  concatParticipantList,
+  findEntityById,
+  findParticipantsAsync,
+  findTeamPartnerWishInfoAsync,
+  useDisclosure
+} from "@runningdinner/shared";
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
+import ParticipantsListView from "./list/ParticipantsListView";
 
 export default function ParticipantsPage({runningDinner}) {
 
@@ -34,11 +40,10 @@ export default function ParticipantsPage({runningDinner}) {
 
 const ParticipantsView = ({runningDinner, participantList, selectedParticipantId, reFetch}) => {
 
-  const { adminId, sessionData } = runningDinner;
+  const { adminId } = runningDinner;
 
   const [selectedParticipant, setSelectedParticipant] = useState();
-  const [participants, setParticipants] = useState(participantList.participants.concat(participantList.participantsWaitinglist));
-  const [hasSearchText, setHasSearchText] = useState(false);
+  const [participantSearchResult, setParticipantSearchResult] = useState({ hasSearchText: false, filteredParticipants: [] });
 
   const { isOpen: isTeamPartnerWishDialogOpen,
           close: closeTeamPartnerWishDialog,
@@ -48,8 +53,8 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
   const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
 
   useEffect(() => {
-    const allParticipants = participantList.participants.concat(participantList.participantsWaitinglist);
-    setParticipants(allParticipants);
+    const allParticipants = concatParticipantList(participantList);
+    // setParticipants(allParticipants);
     if (selectedParticipantId) {
       const foundSelectedParticipant = findEntityById(allParticipants, selectedParticipantId);
       if (foundSelectedParticipant) {
@@ -101,12 +106,11 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
   }
 
   function handleParticipantSearchChange(searchResult) {
-    setParticipants(searchResult.filteredParticiants);
-    setHasSearchText(searchResult.hasSearchText);
+    setParticipantSearchResult(searchResult);
   }
 
   const numberOfParticipants = <NumberOfParticipants participantList={participantList} />;
-  const participantsListInfo = <ParticipantsListInfo participantList={participantList} hasSearchText={hasSearchText}/>;
+  const participantsListInfo = <ParticipantsListInfo participantList={participantList} hasSearchText={participantSearchResult.hasSearchText}/>;
 
   return (
       <>
@@ -115,18 +119,18 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
             ? <BackToListButton onBackToList={() => setShowDetailsView(false)} />
             : <ParticipantsListHeader adminId={adminId}
                                       numberOfParticipants={numberOfParticipants}
-                                      searchableParticipants={incomingParticipants}
+                                      participantList={participantList}
                                       onParticipantSearchChanged={handleParticipantSearchChange} />
         }
         <Grid container spacing={2}>
           { showListView &&
             <Grid item xs={12} md={7}>
-              <ParticipantsList participantsListInfo={participantsListInfo}
-                                participantList={participantList}
-                                selectedParticipant={selectedParticipant}
-                                hasSearchText={hasSearchText}
-                                onRefetch={reFetch}
-                                onClick={editParticipant} />
+              <ParticipantsListView participantsListInfo={participantsListInfo}
+                                    participantList={participantList}
+                                    selectedParticipant={selectedParticipant}
+                                    participantSearchResult={participantSearchResult}
+                                    onReFetch={reFetch}
+                                    onClick={editParticipant} />
             </Grid>
           }
           <Grid item xs={12} md={5}>

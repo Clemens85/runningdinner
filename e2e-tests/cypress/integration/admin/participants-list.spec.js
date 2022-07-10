@@ -9,7 +9,7 @@ import {
   generateTeams,
   generateTeamsAndRefresh,
   getByTestId,
-  getOpenWaitingListButton,
+  getOpenWaitingListButton, getParticipantListSearchTextInput, getParticipantRows,
   navigateParticipantsList
 } from "../../support";
 import { createRunningDinner } from "../../support/runningDinnerSetup"
@@ -75,7 +75,7 @@ describe('participants list', () => {
   })
 
 
-  it.only('waitinglist is displayed when we have < 18 participants, but cancelled team', () => {
+  it('waitinglist is displayed when we have < 18 participants, but cancelled team', () => {
 
     createParticipants(adminId, 1, 18); // Ensure we have 18 participants
     generateTeamsAndRefresh(adminId);
@@ -92,6 +92,26 @@ describe('participants list', () => {
 
     cy.log("Expect numbering of 1 ... 17");
     assertCorrectParticipantNumbers(17);
+  })
+
+  it("search should filter participant list", () => {
+    createParticipants(adminId, 1, 18); // Ensure we have 18 participants
+    navigateParticipantsList(adminId);
+
+    getParticipantListSearchTextInput().type("Firstname2");
+
+    assertParticipantListLength(1);
+    getParticipantRows()
+      .eq(0)
+      .within(() => {
+        cy.contains("firstname2@lastname2.de")
+      });
+
+    getParticipantListSearchTextInput().clear();
+    assertParticipantListLength(18);
+
+    getParticipantListSearchTextInput().type("asdf");
+    getParticipantRows().should("not.exist");
   })
 
 

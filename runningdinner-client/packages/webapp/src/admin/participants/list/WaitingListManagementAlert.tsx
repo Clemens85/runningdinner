@@ -6,11 +6,11 @@ import { PrimaryButton } from '../../../common/theme/PrimaryButton';
 import { BaseRunningDinnerProps, useDisclosure } from '@runningdinner/shared';
 import { WaitingListManagementDialog } from './WaitingListManagementDialog';
 
-interface WaitingListManagementAlertProps extends BaseRunningDinnerProps {
-  onRefetch: () => Promise<any>;
-}
+export type ReFetchParticipantsCallback = {
+  onReFetch: () => Promise<any>;
+};
 
-export function WaitingListManagementAlert(props: WaitingListManagementAlertProps) {
+export function WaitingListManagementAlert(props: BaseRunningDinnerProps & ReFetchParticipantsCallback) {
 
   const {t} = useTranslation('admin');
 
@@ -18,7 +18,7 @@ export function WaitingListManagementAlert(props: WaitingListManagementAlertProp
 
   function handleClose() {
     close();
-    props.onRefetch();
+    props.onReFetch();
   }
 
   return (

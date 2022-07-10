@@ -22,6 +22,7 @@ import {
 } from "../types";
 import {CONSTANTS} from "../Constants";
 import find from "lodash/find";
+import {filterParticipantsOrganizedInTeams} from "@runningdinner/shared";
 
 export async function findMessageJobsByAdminIdAndTypeAsync(adminId: string, messageType: MessageType): Promise<MessageJob[]> {
   const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs?messageType=${messageType}`);
@@ -185,8 +186,8 @@ export function getNumberOfSelectedRecipients(recipients: Recipient[], recipient
 }
 
 function _getNumberOfSelectedParticipants(participants: Participant[], participantSelection: string): number | null {
-  const assignedParticipants = filter(participants, {'assignmentType': CONSTANTS.ASSIGNMENT_TYPE.ASSIGNED_TO_TEAM});
-  var assignedParticipantsSize = assignedParticipants.length;
+  const assignedParticipants = filterParticipantsOrganizedInTeams(participants);
+  const assignedParticipantsSize = assignedParticipants.length;
   if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.ASSIGNED_TO_TEAM) {
     return assignedParticipantsSize;
   } else if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.NOT_ASSIGNED_TO_TEAM) {
