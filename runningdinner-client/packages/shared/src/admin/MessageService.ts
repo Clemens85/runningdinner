@@ -2,7 +2,6 @@ import {BackendConfig} from "../BackendConfig";
 import axios from "axios";
 import {isArrayEmpty, isStringEmpty} from "../Utils";
 import cloneDeep from 'lodash/cloneDeep';
-import filter from 'lodash/filter';
 import get from 'lodash/get';
 import {
   BaseEntity,
@@ -22,7 +21,7 @@ import {
 } from "../types";
 import {CONSTANTS} from "../Constants";
 import find from "lodash/find";
-import {filterParticipantsOrganizedInTeams} from "@runningdinner/shared";
+import {filterParticipantsOrganizedInTeams} from "./ParticipantService";
 
 export async function findMessageJobsByAdminIdAndTypeAsync(adminId: string, messageType: MessageType): Promise<MessageJob[]> {
   const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs?messageType=${messageType}`);
