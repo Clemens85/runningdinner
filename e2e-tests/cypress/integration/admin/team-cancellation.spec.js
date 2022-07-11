@@ -25,7 +25,6 @@ describe('team cancellation', () => {
 
   it('can cancel complete team', () => {
 
-
     generateTeamsAndRefresh(adminId);
 
     getByTestId("team-row").should("have.length", 9);

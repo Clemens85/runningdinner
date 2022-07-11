@@ -137,6 +137,7 @@
 	"participants_all_assignable_headline": "Waiting list is empty",
 	"participants_all_assignable_text": "Congratulations, all of your participants can be mixed up into teams.",
 	"participants_count_closed_event": "Currently you have <strong>{{ numParticipants }}</strong> participants in your event.",
+	"participants_waitinglist_info_text": "Currently not all participants can be arranged into teams. You can find more information about this in the list below.",
 	"participants_count_public_event": "Currently there are <strong>{{ numParticipants }}</strong> participants registrated.",
 	"participants_count_sufficient": "With these participants you would be ableto create <strong>{{ numExpectedTeams }}</strong> Teams. There are <strong>{{ numNotAssignableParticipants }}</strong> participants which cannot be mixed up into teams.",
 	"participants_count_too_few": "Currently you have not enough participants for generating teams.",
@@ -146,7 +147,8 @@
 	"participants_number": "<strong>{{ numberParticipants }}</strong> participants",
 	"participants_number_waiting_list": " (with {{ numRemainingNotAssignableParticipants }} on waiting list)",
 	"participants_remaining_not_assignable_headline": "Waiting list",
-	"participants_remaining_not_assignable_text": "Following participants could not be mixed up into teams and are thus placed on the waiting list for now.",
+	"participants_remaining_not_assignable_text": "The following participants cannot currently be arranged into teams and are therefore on the waitinglist.",
+	"participants_remaining_not_assignable_teams_generated_text": "The following participants are currently on the waitinglist.",
 	"participants_selection": "Participant selection",
 	"participants_too_few_text": "Unfortunately you have too few participants for a Running Dinner event. You need at least a total of {{ minSizeNeeded }} participants, hence you need still at least {{ missingParticipants }} more participants.",
 	"participant_manual_activation_success": "Manual activation of subscription for {{ participantEmail }} succeeded",
@@ -209,7 +211,7 @@
 	"team_member_cancel_delete": "Cancel & Delete",
 	"team_member_cancel_goto_team_cancel": "Goto team cancellation...",
 	"team_member_cancel_host_info": "Due to this team member was the host, another team member will automatically become the new host.",
-	"team_member_cancel_info": "Team member <strong>{{ teamMemberToCancel }}</strong> will be removed, the team will however still exist. This means that {{ remainingTeamMemberNames }} will cook alone. You can also cancel the complete team, if {{ remainingTeamMemberNames }} will not participate any longer.<br /> You can also replace team members by participants that are on the waiting list (if any).",
+	"team_member_cancel_info": "Team member <strong>{{ teamMemberToCancel }}</strong> will be removed, the team will however still exist. This means that {{ remainingTeamMemberNames }} will cook alone. You can also cancel the complete team, if {{ remainingTeamMemberNames }} will not participate any longer.<br /> You can later replace team members by participants that are on the waiting list (if any).",
 	"team_member_cancel_whole_team": "<strong>{{ teamMemberToCancel }}</strong> is the last team member of this team. Therefore the complete team must be cancelled which can be performed in the next step.",
 	"team_message": "Message to team",
 	"team_notify_cancellation": "Notify all affected teams...",
@@ -247,11 +249,50 @@
 	"teams_reset_success_text": "Old team arrangements were removed and new team arrangements have been generated",
 	"teams_selection": "Team selection",
 	"teams_show_dinnerroute": "Show dinner route",
-	"teams_modified_waitinglist_message_headline": "Team Changes by Waitinglist",
+	"teams_modified_waitinglist_message_headline": "Team Changes by waitinglist",
 	"time_schedule": "Time schedule",
 	"time_schedule_edit": "Edit time schedule",
 	"transfer": "Transfer",
 
-	"waitinglist_management": "Waitinglist management"
+	"waitinglist_management": "Waitinglist management",
+
+	"waitinglist_assign_participants_teams": "Fill up teams with participants from the waitinglist",
+	"waitinglist_assign_participants_teams_success": "Teams filled up by selected participants!",
+	"waitinglist_assign_participants_teams_select_hint": "(Select the participants you want to add to this team)",
+	"waitinglist_assign_participants_teams_select_max_warning": "There can only be max. {{ teamSize }} participant(s) in a team!",
+	"waitinglist_num_participants_assignment_info": "Use this to fill up the following teams that are no longer complete due to cancellations.",
+	"waitinglist_num_participants_list_info": "You currently have <strong>{{ numParticipants }}</strong> participants on the waitinglist.",
+	"waitinglist_num_missing_teammembers": "For this you can use a total of <strong>{{ totalNumberOfMissingTeamMembers }}</strong> participants.",
+
+	"waitinglist_generate_teams_select_hint": "(Select the participants to be arranged as new teams)",
+	"waitinglist_generate_teams": "Arrange participants into teams!",
+	"waitinglist_generate_teams_success": "New teams successfully generated!",
+	"waitinglist_generate_teams_selected_too_much": "You can select a maximum of {{ numParticipants }} participants. Please deselect other participants first.",
+
+	"waitinglist_generate_teams_num_participants": "There are <strong>{{ numParticipants }}</strong> participants which can be arranged as new teams",
+	"waitinglist_generate_teams_num_participants_remaining": "There are still <strong>{{ numRemainingParticipants }}</strong> participants which remain. ",
+	"waitinglist_generate_teams_num_participants_missing": "If there are <strong>{{ numMissingParticipantsForFullTeamArrangement }}</strong> more participants, you can add all of them later as additional teams as well.",
+
+	"waitinglist_teams_not_generated": "Depending on the number of participants, it may not be possible to arrange all registered participants into teams. Here you can manage all remaining participants <strong>after</strong> you have generated the teams.",
+	"waitinglist_teams_not_generated_options": "The following options are available to you <strong>then</strong>:",
+	"waitinglist_teams_not_generated_option_1": "Replace cancelled participants / cancelled teams with participants on waitinglist",
+	"waitinglist_teams_not_generated_option_2": "With sufficient number on waitinglist, add participants as teams afterwards",
+	"waitinglist_teams_not_generated_option_3": "Distribute remaining participants to existing teams (not yet available, but coming soon... until then you have to do this manually with paper + pen)",
+	"waitinglist_teams_not_generated_hint": "It generally makes sense to always do the team generation as late as possible and as early as necessary.",
+
+	"waitinglist_no_simple_action_distribution_info": "Currently there is no possibility to automatically distribute leftover participants to existing teams. This feature is currently being worked on, but it is not yet available. Until then, and if you want to do this, you will have to do it manually with pen and paper, but afterwards you can conveniently notify the affected teams via team messaging.",
+	"waitinglist_no_simple_action_missing_participants_info": "The {{ numRemainingParticipants }} remaining participants on the waitinglist cannot be added as new teams.<br/> For this, <strong>{{ numMissingParticipantsForFullTeamArrangement }}</strong> additional participants are currently still missing.",
+	"waitinglist_no_simple_action_distribution_options": "The following options are available to you:",
+	"waitinglist_no_simple_action_distribution_option_1": "First come first serve: The remaining participants do not take part in the event at first, but can replace possible participant cancellations / team cancellations later on, if necessary.",
+	"waitinglist_no_simple_action_distribution_option_2": "If <strong>{{ numMissingParticipantsForFullTeamArrangement }}</strong> additional participants register, you can add them as new teams.",
+
+	"waitinglist_notification_dinnerroutes_sent": "You have also already sent out the dinner routes. Due to your changes, there may be multiple changes to the routes of individual teams.<br/>It is therefore recommended that you additionally resend all dinner routes later.",
+	"waitinglist_notification_teams_info": "Now that the following teams have changed in composition, you should notify them of the changes:",
+	"waitinglist_notification_teams_sendmessages": "Notify teams (opens new window)",
+	"waitinglist_notification_teams_continue_without_messages": "Continue without sending notifications",
+
+	"invalid_size_waitinglist_participants_to_assign": "Please select the participants you would like to fill the teams with",
+	"invalid_size_waitinglist_participants_to_generate_teams_too_few": "You have selected too few participants"
+
 
 }

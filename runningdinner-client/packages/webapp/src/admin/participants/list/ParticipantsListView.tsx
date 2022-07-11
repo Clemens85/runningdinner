@@ -4,7 +4,8 @@ import ParticipantRow, {ParticipantClickCallback} from "./ParticipantRow";
 import {
   getRunningDinnerMandatorySelector, isArrayNotEmpty,
   isSameEntity,
-  Participant, ParticipantList, ParticipantListable,
+  ParticipantList,
+  ParticipantListable,
   useAdminSelector,
 } from "@runningdinner/shared";
 import {ReFetchParticipantsCallback, WaitingListManagementAlert} from './WaitingListManagementAlert';
@@ -59,7 +60,7 @@ export default function ParticipantsListView({participantList, selectedParticipa
           {showParticipantsOnWaitingListInOwnSection &&
             <Box mt={2} data-testid={"waitinglist-participants"}>
               <Box mb={2}>
-                <WaitingListManagementAlert runningDinner={runningDinner} onReFetch={onReFetch} />
+                <WaitingListManagementAlert runningDinner={runningDinner} onReFetch={onReFetch} teamsGenerated={participantList.teamsGenerated}/>
               </Box>
               <TableContainer component={Paper}>
                 <Table size={"small"}>

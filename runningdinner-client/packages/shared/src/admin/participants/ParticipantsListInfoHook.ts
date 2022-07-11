@@ -46,9 +46,9 @@ export function useParticipantsListInfo(participantList: ParticipantList): Parti
         };
       } else if (participantsWaitingList.length > 0 && teamsGenerated) {
         result = {
-          title: t('participants_waitinglist_info_headline'),
+          title: '',
           message: t('participants_waitinglist_info_text'),
-          severity: 'info',
+          severity: 'success',
           show: true
         };
       } else {

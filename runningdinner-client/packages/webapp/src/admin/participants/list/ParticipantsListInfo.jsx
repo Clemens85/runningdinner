@@ -1,6 +1,6 @@
 import React from 'react'
 import { Alert, AlertTitle } from '@material-ui/lab';
-import {useDisclosure, useParticipantsListInfo} from "@runningdinner/shared";
+import {isStringNotEmpty, useDisclosure, useParticipantsListInfo} from "@runningdinner/shared";
 import { Box } from '@material-ui/core';
 
 export default function ParticipantsListInfo(props) {
@@ -24,7 +24,7 @@ export default function ParticipantsListInfo(props) {
       {
         (isOpen && !hasSearchText) &&
             <Alert severity={severity} variant="outlined" onClose={close} data-testid={"participant-list-info-box"}>
-              <AlertTitle>{title}</AlertTitle>
+              { isStringNotEmpty(title) && <AlertTitle>{title}</AlertTitle> }
               {message}
             </Alert>
       }
