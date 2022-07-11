@@ -40,7 +40,7 @@ import {
 } from "../../support";
 import {createParticipants} from "../../support/participantSetup";
 
-describe('team cancellation', () => {
+describe('waitinglist', () => {
 
   let runningDinner, adminId;
 

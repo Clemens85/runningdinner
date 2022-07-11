@@ -6,7 +6,6 @@ import {
   assertParticipantListLength,
   assertWaitingListParticipantsLength,
   cancelTeamAtIndex,
-  generateTeams,
   generateTeamsAndRefresh,
   getByTestId,
   getOpenWaitingListButton, getParticipantListSearchTextInput, getParticipantRows,
@@ -70,7 +69,7 @@ describe('participants list', () => {
 
     navigateParticipantsList(adminId);
     getOpenWaitingListButton().should("exist");
-    assertParticipantListInfoWithText("Es können aktuell nicht alle Teilnehmer in Teams aufgeteilt werden, du findest diese weiter unten");
+    assertParticipantListInfoWithText("Es können aktuell nicht alle Teilnehmer in Teams aufgeteilt werden");
     assertWaitingListParticipantsLength(1);
   })
 
@@ -84,7 +83,7 @@ describe('participants list', () => {
 
     navigateParticipantsList(adminId);
     getOpenWaitingListButton().should("exist");
-    assertParticipantListInfoWithText("Es können aktuell nicht alle Teilnehmer in Teams aufgeteilt werden, du findest diese weiter unten");
+    assertParticipantListInfoWithText("Es können aktuell nicht alle Teilnehmer in Teams aufgeteilt werden");
 
     assertParticipantListLength(17);
     assertWaitingListParticipantsLength(1);
