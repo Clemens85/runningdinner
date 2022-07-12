@@ -1,5 +1,9 @@
 const NewsMessages_en: any = {
 
+  news_title_20220712: 'Finally: New waitinglist functions',
+  news_content_20220712: 'Often requested, now finally available: There is a new function in the admin area for waitinglist management with which leftover participants can be added as new teams afterwards or existing teams can be filled up. ' +
+    'This should simplify the organization of a Running Dinner event.',
+
   news_title_20220413: 'Fixed line breaks',
   news_content_20220413: 'In case you wondered why your event description looked so weird (i.e. no paragraphs were displayed): That (plus a few other minor bugs) is fixed now. If in doubt, you can edit your description again in the settings.',
 

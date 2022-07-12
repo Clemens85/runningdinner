@@ -17,6 +17,7 @@ import org.runningdinner.event.TeamsReCreatedEvent;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellationResult;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Component;
@@ -92,6 +93,11 @@ public class EventPublisher implements ApplicationEventPublisherAware {
   public void notifyRunningDinnerSettingsUpdated(RunningDinnerSettingsUpdatedEvent runningDinnerSettingsUpdatedEvent) {
 
     applicationEventPublisher.publishEvent(runningDinnerSettingsUpdatedEvent);
+  }
+  
+  public void notifyEvent(ApplicationEvent event) {
+  	
+  	applicationEventPublisher.publishEvent(event);
   }
   
   @Override

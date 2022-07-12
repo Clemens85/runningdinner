@@ -511,5 +511,9 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
     return result;
   }
 
+  void setTeamNumber(int teamNumber) {
+  	
+  	this.teamNumber = teamNumber;
+  }
 
 }

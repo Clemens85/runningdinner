@@ -4,8 +4,8 @@ import {Icon, IconButton} from "@material-ui/core";
 
 export interface ParticipantGenderIconProps {
   gender: string;
-  color: string;
-  onClick: CallbackHandler;
+  color?: string;
+  onClick?: CallbackHandler;
 }
 
 const ParticipantGenderIcon = React.forwardRef( (props: ParticipantGenderIconProps, ref) => {

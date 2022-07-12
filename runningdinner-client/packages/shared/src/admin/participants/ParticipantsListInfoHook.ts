@@ -1,9 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
-import get from 'lodash/get';
-import find from 'lodash/find';
 import {useTranslation} from "react-i18next";
-import { getNotAssignableParticipants } from "../ParticipantService";
-import {Participant, RunningDinnerSessionData} from "../../types";
+import { ParticipantList } from "../../types";
 
 export interface ParticipantListInfo {
   title: string,
@@ -19,7 +16,7 @@ const emptyParticipantListInfo: ParticipantListInfo = {
   show: false
 };
 
-export function useParticipantsListInfo(participants: Participant[], runningDinnerSessionData: RunningDinnerSessionData): ParticipantListInfo {
+export function useParticipantsListInfo(participantList: ParticipantList): ParticipantListInfo {
 
   const [participantInfo, setParticipantInfo] = useState<ParticipantListInfo>(emptyParticipantListInfo);
 
@@ -27,11 +24,11 @@ export function useParticipantsListInfo(participants: Participant[], runningDinn
 
   function _calculateParticipantInfo() {
 
-    const numParticipants = participants ? participants.length : 0;
+    const {numParticipantsTotal, teamsGenerated} = participantList;
 
     let result = emptyParticipantListInfo;
 
-    if (numParticipants === 0) {
+    if (numParticipantsTotal === 0) {
       result = {
         title: t('participants_no_existing'),
         message: t('participants_no_existing_text'),
@@ -39,20 +36,28 @@ export function useParticipantsListInfo(participants: Participant[], runningDinn
         show: true
       };
     } else {
-      const notAssignableParticipants = getNotAssignableParticipants(participants);
-      if (notAssignableParticipants.length === 0) {
+      const { participantsWaitingList } = participantList;
+      if (participantsWaitingList.length === 0 && participantList.missingParticipantsInfo.numParticipantsMissing <= 0) {
         result = {
           title: t('participants_all_assignable_headline'),
           message: t('participants_all_assignable_text'),
           severity: 'success',
           show: true
         };
+      } else if (participantsWaitingList.length > 0 && teamsGenerated) {
+        result = {
+          title: '',
+          message: t('participants_waitinglist_info_text'),
+          severity: 'success',
+          show: true
+        };
       } else {
-        const {minSizeNeeded, missingParticipants, teamsAlreadyGenerated} = _getInfoForNotEnoughParticipants();
-        if (missingParticipants >= 1 && !teamsAlreadyGenerated) {
+        const numParticipantsMissing = participantList.missingParticipantsInfo.numParticipantsMissing;
+        const numMinParticipantsNeeded = participantList.missingParticipantsInfo.numMinParticipantsNeeded;
+        if (numParticipantsMissing > 0 && !teamsGenerated) {
           result = {
             title: t('participants_not_enough'),
-            message: t('participants_too_few_text', { minSizeNeeded: minSizeNeeded, missingParticipants: missingParticipants }),
+            message: t('participants_too_few_text', { minSizeNeeded: numMinParticipantsNeeded, missingParticipants: numParticipantsMissing }),
             severity: 'info',
             show: true
           };
@@ -62,23 +67,9 @@ export function useParticipantsListInfo(participants: Participant[], runningDinn
 
     setParticipantInfo(result);
   }
-
-  function _getInfoForNotEnoughParticipants() {
-    const numParticipants = participants ? participants.length : 0;
-    const minSizeNeeded = get(runningDinnerSessionData, 'assignableParticipantSizes.minimumParticipantsNeeded', '') || '';
-    const missingParticipants = minSizeNeeded !== '' ? (minSizeNeeded - numParticipants) : '';
-    const teamsAlreadyGenerated = !!find(participants, 'teamId'); // If at least one participant has teamId set, then we know that there were enough participants
-    return {
-      minSizeNeeded,
-      missingParticipants,
-      teamsAlreadyGenerated
-    };
-  }
-
   const calculateParticipantInfo = useCallback(() => {
     _calculateParticipantInfo(); // eslint-disable-next-line
-  }, [participants]);
-
+  }, [participantList]);
 
   useEffect(() => {
     calculateParticipantInfo();

@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.rest.TeamTO;
@@ -32,7 +33,7 @@ public class DinnerRouteTO implements Serializable {
 
   public static DinnerRouteTO newInstance(UUID currentTeamId, List<Team> dinnerRouteTeams, String mealSpecificsOfGuestTeams) {
     
-    Team currentTeam = Team.filterListForId(dinnerRouteTeams, currentTeamId); 
+    Team currentTeam = IdentifierUtil.filterListForIdMandatory(dinnerRouteTeams, currentTeamId); 
     return new DinnerRouteTO(currentTeam, dinnerRouteTeams, mealSpecificsOfGuestTeams);
   }
   

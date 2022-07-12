@@ -1,4 +1,3 @@
-import {getTextInputByName} from "./mui/muiHelper";
 
 export function createParticipants(adminId, startNumber, endNumber, participantOverrides) {
   return new Cypress.Promise((resolve) => {

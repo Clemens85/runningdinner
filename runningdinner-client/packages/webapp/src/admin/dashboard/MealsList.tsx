@@ -6,9 +6,12 @@ import {useTranslation} from "react-i18next";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import {
-  BaseAdminIdProps, BaseRunningDinnerProps, DashboardAdminActivities,
-  Meal, RunningDinner,
-  updateMealTimesAsync, useBackendIssueHandler,
+  BaseRunningDinnerProps,
+  DashboardAdminActivities,
+  Meal,
+  RunningDinner,
+  updateMealTimesAsync,
+  useBackendIssueHandler,
 } from "@runningdinner/shared";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";

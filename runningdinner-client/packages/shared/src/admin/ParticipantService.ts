@@ -3,15 +3,14 @@ import filter from 'lodash/filter';
 import lowerCase from 'lodash/lowerCase';
 import includes from 'lodash/includes';
 import { BackendConfig } from "../BackendConfig";
-import {isNewEntity} from "../Utils";
-import {Participant, TeamPartnerWishInfo} from "../types";
+import {isNewEntity, isStringNotEmpty} from "../Utils";
+import {Participant, TeamPartnerWishInfo, ParticipantList} from "../types";
 import {CONSTANTS} from "../Constants";
 
-export async function findParticipantsAsync(adminId: string): Promise<Participant[]> {
+export async function findParticipantsAsync(adminId: string): Promise<ParticipantList> {
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants`);
   const response = await axios.get(url);
-  const { participants } = response.data;
-  return participants;
+  return response.data;
 }
 
 export async function saveParticipantAsync(adminId: string, participant: Participant): Promise<Participant> {
@@ -30,12 +29,6 @@ export async function saveParticipantAsync(adminId: string, participant: Partici
     data: participant
   });
   return response.data;
-}
-
-export async function findNotAssignedParticipantsAsync(adminId: string): Promise<Participant[]> {
-  const participants = await findParticipantsAsync(adminId);
-  const result = getNotAssignableParticipants(participants);
-  return result;
 }
 
 export async function findNotActivatedParticipantsByAdminIdAndIdsAsync(adminId: string, participantIds: string[]): Promise<Participant[]> {
@@ -89,19 +82,11 @@ export function getFullnameList(participants: Participant[]): string {
   return participantNames.join(', ');
 }
 
-export function getAssignableParticipants(participants: Participant[]): Participant[] {
-  return filter(participants, ['assignmentType', CONSTANTS.ASSIGNMENT_TYPE.ASSIGNABLE]) || [];
+export function filterParticipantsOrganizedInTeams<T extends Participant>(participants: T[]): T[] {
+  return participants.filter(p => isStringNotEmpty(p.teamId));
 }
 
-export function getNotAssignableParticipants(participants: Participant[]): Participant[] {
-  return filter(participants, ['assignmentType', CONSTANTS.ASSIGNMENT_TYPE.NOT_ASSIGNABLE]) || [];
-}
-
-export function getParticipantsOrganizedInTeams(participants: Participant[]): Participant[] {
-  return filter(participants, ['assignmentType', CONSTANTS.ASSIGNMENT_TYPE.ASSIGNED_TO_TEAM]) || [];
-}
-
-export function searchParticipants(participants: Participant[], searchText: string): Participant[] {
+export function searchParticipants<T extends Participant>(participants: T[], searchText: string): T[] {
   const searchTextLowerCase = lowerCase(searchText);
   return filter(participants, function(p) {
     let content = getFullname(p);

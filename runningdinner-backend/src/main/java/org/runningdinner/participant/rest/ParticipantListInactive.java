@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticipantListTO implements Serializable {
+public class ParticipantListInactive implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -13,11 +13,11 @@ public class ParticipantListTO implements Serializable {
 
   private String adminId;
 
-  public ParticipantListTO() {
+  public ParticipantListInactive() {
     super();
   }
 
-  public ParticipantListTO(List<ParticipantTO> participants, String adminId) {
+  public ParticipantListInactive(List<ParticipantTO> participants, String adminId) {
     super();
     this.participants = participants;
     this.adminId = adminId;

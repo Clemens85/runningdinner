@@ -3,8 +3,6 @@ package org.runningdinner.core;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Access;
@@ -33,7 +31,7 @@ import com.google.common.base.MoreObjects;
 @SuppressWarnings("serial")
 @MappedSuperclass
 @Access(AccessType.FIELD)
-public abstract class AbstractEntity implements Serializable {
+public abstract class AbstractEntity implements Serializable, Identifiable {
 
   /**
    * Primary Key identifier
@@ -75,7 +73,8 @@ public abstract class AbstractEntity implements Serializable {
     setObjectId(UUID.randomUUID());
   }
 
-  public UUID getId() {
+  @Override
+	public UUID getId() {
 
     return id;
   }
@@ -115,12 +114,14 @@ public abstract class AbstractEntity implements Serializable {
     this.modifiedAt = modifiedAt;
   }
 
-  public boolean isNew() {
+  @Override
+	public boolean isNew() {
 
     return id == null;
   }
   
-  public boolean isSameId(UUID id) {
+  @Override
+	public boolean isSameId(UUID id) {
     
     return this.id.equals(id);
   }
@@ -178,15 +179,6 @@ public abstract class AbstractEntity implements Serializable {
 
     AbstractEntity entity = (AbstractEntity) obj;
     return new EqualsBuilder().append(objectId, entity.objectId).isEquals();
-  }
-  
-  public static <T extends AbstractEntity> T filterListForId(List<T> entityList, UUID entityId) {
-    
-    return entityList
-            .stream()
-            .filter(e -> Objects.equals(entityId, e.getId()))
-            .findAny()
-            .orElseThrow(() -> new IllegalStateException("Expected " + entityList + " to contain requested " + entityId));
   }
 
   @Override

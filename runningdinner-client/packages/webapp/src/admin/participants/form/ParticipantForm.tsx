@@ -61,7 +61,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
     if (!participantToEdit) {
       participantToEdit = newEmptyParticipantInstance();
     } else {
-      participantToEdit = mapNullFieldsToEmptyStrings(participantToEdit, "assignmentType");
+      participantToEdit = mapNullFieldsToEmptyStrings(participantToEdit);
     }
     reset(participantToEdit);
     clearErrors();
@@ -130,7 +130,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
               <Grid container justify={"flex-end"}>
                 <Grid item>
-                  { showDeleteBtn && <SecondaryButton onClick={() => setOpenDeleteDialog(true)}>{t('delete')}</SecondaryButton> }
+                  { showDeleteBtn && <SecondaryButton onClick={() => setOpenDeleteDialog(true)} data-testid={"delete-participant-dialog-action"}>{t('delete')}</SecondaryButton> }
                   <PrimaryButton onClick={handleSubmit(updateParticipant)} disabled={isSubmitting} size={"large"}
                                  className={classes.buttonSpacingLeft}>
                     {t('save')}

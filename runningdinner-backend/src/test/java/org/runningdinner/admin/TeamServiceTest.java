@@ -22,6 +22,7 @@ import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.activity.ActivityType;
 import org.runningdinner.common.exception.ValidationException;
+import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RunningDinner;
@@ -84,9 +85,7 @@ public class TeamServiceTest {
     assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
     Set<Participant> oldTeamMembers = team.getTeamMembers();
 
-    TeamCancellation teamCancellation = new TeamCancellation();
-    teamCancellation.setReplaceTeam(false);
-    teamCancellation.setTeamId(team.getId());
+    TeamCancellation teamCancellation = newCancellationWithoutReplacement(team); 
 
     TeamCancellationResult result = teamService.cancelTeam(runningDinner.getAdminId(), teamCancellation);
     assertTeamCancellationResultWithoutNotification(result, oldTeamMembers);
@@ -116,7 +115,7 @@ public class TeamServiceTest {
     TeamCancellation teamCancellation = new TeamCancellation();
     teamCancellation.setReplaceTeam(true);
     teamCancellation.setTeamId(team.getId());
-    teamCancellation.setReplacementParticipantIds(RepositoryUtil.getEntityIds(Arrays.asList(firstAddedParticipant, secondAddedParticipant)));
+    teamCancellation.setReplacementParticipantIds(IdentifierUtil.getIds(Arrays.asList(firstAddedParticipant, secondAddedParticipant)));
 
     TeamCancellationResult result = teamService.cancelTeam(runningDinner.getAdminId(), teamCancellation);
     assertTeamCancellationResultWithoutNotification(result, oldTeamMembers);
@@ -181,7 +180,7 @@ public class TeamServiceTest {
     Team firstTeam = findFirstTeam();
     assertHostTeamAndGuestTeamMappingSize(firstTeam, 2);
      
-    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId());
+    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
     
     numberOfTeams = teamService.getNumberOfTeams(runningDinner.getAdminId());
     assertThat(numberOfTeams).isEqualTo(9);
@@ -199,12 +198,12 @@ public class TeamServiceTest {
     teamService.cancelTeamMember(runningDinner.getAdminId(), firstTeam.getId(), firstTeam.getHostTeamMember().getId());
     
     try {
-      teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId());
-      Assert.fail("Expected NoPossibleRunningDinnerException to be thrown!");
-    } catch (NoPossibleRunningDinnerException e) {
-      // NOP
+    	teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
+      Assert.fail("Expected ValidationException to be thrown!");
+    } catch (ValidationException e) {
+    	assertThat(e.getIssues().getIssues()).hasSize(1);
+    	assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo("dinner_not_possible");
     }
-    
     // Assert teams are not deleted!
     assertThat(teamService.getNumberOfTeams(runningDinner.getAdminId())).isEqualTo(9);
   }
@@ -315,7 +314,7 @@ public class TeamServiceTest {
     participantsWithChangedData
       .forEach(p -> participantService.updateParticipant(runningDinner.getAdminId(), p.getId(), p));
     // ... Now re-generate teams so that team partner wishes will get applied:
-    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId());
+    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
     
     // Setup another now known email-address for later test:
     participants.get(0).setEmail("ohne@freund.de");
@@ -343,7 +342,7 @@ public class TeamServiceTest {
     participantsWithChangedData
       .forEach(p -> participantService.updateParticipant(runningDinner.getAdminId(), p.getId(), p));
     // ... Now re-generate teams so that team partner wishes will get applied:
-    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId());
+    teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
     
     participants = participantService.findParticipants(runningDinner.getAdminId(), false);
     List<TeamPartnerWishTuple> teamPartnerWishTuples = TeamPartnerWishService.getTeamPartnerWishTuples(participants, runningDinner.getConfiguration());
@@ -400,7 +399,37 @@ public class TeamServiceTest {
     assertThat(teamService.findTeamArrangements(runningDinner.getAdminId(), true)).hasSize(8);
   }
   
-
+  @Test
+  public void teamsToBeUsedForWaitingList() {
+  	
+    String adminId = runningDinner.getAdminId();
+		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
+    	.isEmpty();
+    
+    List<Team> allTeams = teamService.findTeamArrangements(adminId, false);
+    Team firstTeam = allTeams.get(0);
+    Team lastTeam = allTeams.get(8);
+    
+    teamService.cancelTeamMember(adminId, firstTeam.getId(), firstTeam.getHostTeamMember().getId());
+    
+		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
+			.containsExactly(firstTeam);
+		
+		teamService.cancelTeam(adminId, newCancellationWithoutReplacement(lastTeam));
+		
+		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
+			.containsExactly(firstTeam, lastTeam);
+  }
+  
+  private TeamCancellation newCancellationWithoutReplacement(Team team) {
+  	
+  	TeamCancellation result = new TeamCancellation();
+  	result.setTeamId(team.getId());
+  	result.setDryRun(false);
+  	result.setReplaceTeam(false);
+  	return result;
+  }
+  
   private Team findFirstTeam() {
 
     List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
@@ -429,7 +458,7 @@ public class TeamServiceTest {
 
   private void assertParticipantsAreDeleted(Set<Participant> participants) {
 
-    List<Participant> result = participantService.findParticipantsByIds(runningDinner.getAdminId(), RepositoryUtil.getEntityIds(participants));
+    List<Participant> result = participantService.findParticipantsByIds(runningDinner.getAdminId(), IdentifierUtil.getIds(participants));
     assertThat(result).isEmpty();
   }
   

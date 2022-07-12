@@ -1,27 +1,30 @@
 package org.runningdinner.core;
 
-import org.junit.Test;
-import org.runningdinner.core.test.helper.Configurations;
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.Team;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.runningdinner.core.test.helper.Configurations;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.Team;
+import org.runningdinner.participant.rest.TeamTO;
 
 public class StandardTeamDistributionTest {
 
 	private RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
 
+	private static final List<TeamTO> NO_TEAMS_TO_KEEP = Collections.emptyList();
+	
 	@Test
 	public void testTeamsWithoutDistributing() throws NoPossibleRunningDinnerException {
 		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(18);
 
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfigWithoutDistributing, teamMembers, Collections::shuffle);
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfigWithoutDistributing, teamMembers, NO_TEAMS_TO_KEEP, Collections::shuffle);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
 		assertEquals(9, teamsResult.getRegularTeams().size());
 
@@ -36,7 +39,7 @@ public class StandardTeamDistributionTest {
 	public void testTeamsWithBalancedDistributing() throws NoPossibleRunningDinnerException {
 		List<Participant> participants = ParticipantGenerator.generateEqualBalancedParticipants(0);
 
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, participants, Collections::shuffle);
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, participants, NO_TEAMS_TO_KEEP, Collections::shuffle);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
 		assertEquals(9, teamsResult.getRegularTeams().size());
 
@@ -54,7 +57,7 @@ public class StandardTeamDistributionTest {
 		List<Participant> participants = ParticipantGenerator.generateParticipants(18);
 		ParticipantGenerator.distributeSeats(participants, 6, 4);
 
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, participants, Collections::shuffle);
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, participants, NO_TEAMS_TO_KEEP, Collections::shuffle);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
 		assertEquals(9, teamsResult.getRegularTeams().size());
 
@@ -79,7 +82,7 @@ public class StandardTeamDistributionTest {
 	@Test
 	public void testNotAssignedTeamMembers() throws NoPossibleRunningDinnerException {
 		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(19);
-		GeneratedTeamsResult result = runningDinnerCalculator.generateTeams(Configurations.standardConfig, teamMembers, Collections::shuffle);
+		GeneratedTeamsResult result = runningDinnerCalculator.generateTeams(Configurations.standardConfig, teamMembers, NO_TEAMS_TO_KEEP, Collections::shuffle);
 		assertEquals(true, result.hasNotAssignedParticipants());
 		assertEquals(1, result.getNotAssignedParticipants().size());
 		assertEquals(9, result.getRegularTeams().size());
@@ -102,7 +105,7 @@ public class StandardTeamDistributionTest {
 		assertEquals(teamMembers.size(), notAssignableParticipants.size());
 
 		try {
-			runningDinnerCalculator.generateTeams(Configurations.standardConfig, teamMembers, Collections::shuffle);
+			runningDinnerCalculator.generateTeams(Configurations.standardConfig, teamMembers, NO_TEAMS_TO_KEEP, Collections::shuffle);
 			fail("Expected NoPossibleRunningDinnerException to be thrown");
 		}
 		catch (NoPossibleRunningDinnerException e) {

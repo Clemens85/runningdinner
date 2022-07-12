@@ -1,8 +1,8 @@
 import {useAsync} from "react-async-hook";
 import { isAfterInDays } from "../../date";
-import { findParticipantsAsync, getNotAssignableParticipants, getAssignableParticipants } from "../ParticipantService";
+import { findParticipantsAsync } from "../ParticipantService";
 import { isClosedDinner } from "../RunningDinnerService";
-import {Participant, RunningDinner} from "../../types";
+import {ParticipantList, RunningDinner} from "../../types";
 
 export interface TeamsNotExistingInfo {
   numParticipants: number,
@@ -33,13 +33,24 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
     teamsNotExistingInfo = calculateTeamsNotExistingInfo(asyncResult.result);
   }
 
-  function calculateTeamsNotExistingInfo(participants: Participant[]): TeamsNotExistingInfo {
+  function calculateTeamsNotExistingInfo(participantList: ParticipantList): TeamsNotExistingInfo {
 
-    const numAssignableParticipants = getAssignableParticipants(participants).length;
-    const numNotAssignableParticipants = getNotAssignableParticipants(participants).length;
+    let numAssignableParticipants;
+    let numNotAssignableParticipants;
+
+    const {numParticipantsTotal} = participantList;
+    const {missingParticipantsInfo} = participantList;
+
+    if (missingParticipantsInfo.numParticipantsMissing > 0) {
+      numNotAssignableParticipants = numParticipantsTotal;
+      numAssignableParticipants = 0;
+    } else {
+      numNotAssignableParticipants = participantList.participantsWaitingList.length;
+      numAssignableParticipants = participantList.participants.length;
+    }
 
     const result: TeamsNotExistingInfo = {
-      numParticipants: participants.length,
+      numParticipants: numParticipantsTotal,
       numAssignableParticipants,
       numNotAssignableParticipants,
       registrationStillRunning: false,

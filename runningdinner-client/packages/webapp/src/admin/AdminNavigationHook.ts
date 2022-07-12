@@ -90,6 +90,7 @@ export function useAdminNavigation() {
     generateTeamPath,
     navigateToTeam,
     generateParticipantMessagesPath,
+    generateTeamMessagesPath,
     generateMessageJobDetailsPath,
     navigateToTeamMemberCancellation,
     generateDashboardPath,

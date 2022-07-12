@@ -168,8 +168,8 @@ public class DinnerRouteMessageFormatterTest {
 		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(18);
 		try {
 			RunningDinnerConfig runningDinnerConfig = runningDinner.getConfiguration();
-			GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(runningDinnerConfig, teamMembers, Collections::shuffle);
-			runningDinnerCalculator.assignRandomMealClasses(teamsResult, runningDinnerConfig.getMealClasses());
+			GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(runningDinnerConfig, teamMembers, Collections.emptyList(), Collections::shuffle);
+			runningDinnerCalculator.assignRandomMealClasses(teamsResult, runningDinnerConfig.getMealClasses(), Collections.emptyList());
 			runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, runningDinnerConfig);
 			return teamsResult.getRegularTeams();
 		} catch (NoPossibleRunningDinnerException e) {

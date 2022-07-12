@@ -36,6 +36,31 @@ export interface Participant extends BaseEntity {
   geocodingResult?: GeocodingResult;
 }
 
+export interface ParticipantList {
+  participants: ParticipantListable[];
+  participantsWaitingList: ParticipantListable[];
+  teamsGenerated: boolean;
+  numParticipantsTotal: number;
+  missingParticipantsInfo: MissingParticipantsInfo
+}
+
+export function concatParticipantList(participantList: ParticipantList): ParticipantListable[] {
+  return participantList.participants.concat(participantList.participantsWaitingList);
+}
+
+export interface ParticipantListable extends Participant {
+  listNumber: number;
+}
+
+export interface MissingParticipantsInfo {
+  numMinParticipantsNeeded: number;
+  numParticipantsMissing: number;
+}
+
+export interface SelectableParticipant extends Participant {
+  selected?: boolean;
+}
+
 export enum TeamPartnerWishState {
   NOT_EXISTING = "NOT_EXISTING",
   EXISTS_EMPTY_TEAM_PARTNER_WISH = "EXISTS_EMPTY_TEAM_PARTNER_WISH",

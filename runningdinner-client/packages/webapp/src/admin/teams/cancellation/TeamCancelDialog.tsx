@@ -18,9 +18,17 @@ import {
   findEntityById,
   removeEntityFromList,
   cancelTeamDryRunAsync,
-  findNotAssignedParticipantsAsync,
   getFullnameList,
-  useBackendIssueHandler, RunningDinner, Team, Participant, TeamCancellationResult, CallbackHandler, CallbackHandlerAsync, isArrayEmpty, cancelTeamAsync
+  useBackendIssueHandler,
+  RunningDinner,
+  Team,
+  Participant,
+  TeamCancellationResult,
+  CallbackHandler,
+  CallbackHandlerAsync,
+  isArrayEmpty,
+  cancelTeamAsync,
+  findParticipantsAsync
 } from "@runningdinner/shared";
 import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from "lodash/cloneDeep";
@@ -158,13 +166,13 @@ function TeamCancelOverview({runningDinner, team, onCancelDialog, onShowPreview,
             <Span i18n="admin:team_cancel_info_text" />
           </Box>
           <Box mt={3}>
-            <Fetch asyncFunction={findNotAssignedParticipantsAsync}
+            <Fetch asyncFunction={findParticipantsAsync}
                    parameters={[adminId]}
                    render={resultObj => <TeamCancelOverviewContent
                                             team={team}
                                             runningDinner={runningDinner}
                                             onReplacementParticipantSelectionChange={onReplacementParticipantSelectionChange}
-                                            notAssignedParticipants={resultObj.result} /> }/>
+                                            notAssignedParticipants={resultObj.result.participantsWaitingList} /> }/>
           </Box>
         </DialogContent>
         <DialogActionsPanel onOk={onShowPreview} onCancel={onCancelDialog} okLabel={okLabel} cancelLabel={t('common:cancel')} danger={false}/>
@@ -211,11 +219,13 @@ function TeamCancelOverviewContent({team, runningDinner, notAssignedParticipants
     );
   };
 
-  const selectableParticipantsToReplace = notAssignedParticipants.map(notAssignedParticipant =>
+  const selectableParticipantsToReplace = notAssignedParticipants.map((notAssignedParticipant, index) =>
       <Box key={notAssignedParticipant.id}>
         <SelectableEntity disabled={!hasEnoughNotAssignedParticipantsToReplaceTeam}
                           entity={notAssignedParticipant}
-                          onSelectionChange={onReplacementParticipantSelectionChange} />
+                          onSelectionChange={onReplacementParticipantSelectionChange}
+                          data-testid={`replacement-participant-${index}`}
+        />
       </Box>
   );
 
@@ -336,7 +346,7 @@ function TeamCancelPreview({teamCancelPreviewData, onPerformCancellation, onCanc
 
   const okLabel = isReplacement ? t('team_cancel_replace_team_members') : t('team_cancel_button');
   return (
-      <Dialog open={true} onClose={onCancelDialog} aria-labelledby="form-dialog-title" maxWidth={"md"} fullWidth={true}>
+      <Dialog open={true} onClose={onCancelDialog} aria-labelledby="form-dialog-title" maxWidth={"md"} fullWidth={true} data-testid={"team-cancel-dialog-preview"}>
         <DialogTitleCloseable onClose={onCancelDialog}>{headline}</DialogTitleCloseable>
         <DialogContent>
           <Box>

@@ -1,5 +1,15 @@
 package org.runningdinner.participant.rest;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.common.exception.TechnicalException;
@@ -15,16 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/rest/participantservice/v1")
@@ -40,14 +47,9 @@ public class ParticipantServiceRest {
 	private TeamPartnerWishService teamPartnerWishService;
 	
 	@RequestMapping(value = "/runningdinner/{adminId}/participants", method = RequestMethod.GET)
-	public ParticipantListTO findParticipants(@PathVariable("adminId") final String adminId) {
+	public ParticipantListActive findActiveParticipantsList(@PathVariable("adminId") final String adminId) {
 
-		ParticipantListTO result = new ParticipantListTO();
-
-		List<Participant> participants = participantService.findActiveParticipantsWithAssignableInfo(adminId);
-		result.setParticipants(ParticipantTO.convertParticipantList(participants));
-		result.setAdminId(adminId);
-
+		ParticipantListActive result = participantService.findActiveParticipantList(adminId);
 		return result;
 	}
 
@@ -85,12 +87,12 @@ public class ParticipantServiceRest {
 	}
 
   @RequestMapping(value = "/runningdinner/{adminId}/participants/not-active", method = RequestMethod.PUT)
-  public ParticipantListTO findNotActivatedParticipants(@PathVariable("adminId") final String adminId,
-                                                        @RequestBody RunningDinnerRelatedIdListTO participantIdList) {
+  public ParticipantListInactive findNotActivatedParticipants(@PathVariable("adminId") final String adminId,
+                                                        	 	  @RequestBody RunningDinnerRelatedIdListTO participantIdList) {
 
     Assert.state(StringUtils.equals(adminId, participantIdList.getAdminId()), "Expected adminId " + adminId + " in path to match id in participantIdList " + participantIdList);
     
-    ParticipantListTO result = new ParticipantListTO();
+    ParticipantListInactive result = new ParticipantListInactive();
 
     List<Participant> participants = participantService.findNotActivatedParticipantsByIds(adminId, participantIdList.getEntityIds());
     result.setParticipants(ParticipantTO.convertParticipantList(participants));

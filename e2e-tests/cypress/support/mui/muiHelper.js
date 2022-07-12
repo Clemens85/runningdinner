@@ -1,3 +1,5 @@
+import {getByTestId} from "../index";
+
 export function getTextInputByName(inputFieldName, optionalOptions) {
   const options = optionalOptions ? optionalOptions : {};
   const inputSelector = `input[name="${inputFieldName}"]`;
@@ -9,6 +11,16 @@ export function getLabelOfMuiTextInput(inputField) {
     .parents('.MuiTextField-root')
     .first()
     .find("label")
+}
+
+export function assertMuiCheckboxByTestId(dataTestId, selected) {
+  return assertMuiCheckboxSelected(getByTestId(dataTestId), selected);
+}
+
+export function assertMuiCheckboxSelected(checkboxElement, selected) {
+  const assertionPrefix = selected ? "" : "not.";
+  return checkboxElement
+          .should(`${assertionPrefix}have.class`, "Mui-checked");
 }
 
 export function selectHourInTimePicker(hourToSelect) {
@@ -32,5 +44,5 @@ export function assertToastIsShown(toastText) {
 }
 
 export function assertFormValidationToastIsShown() {
-  cy.contains("Ein paar Eingaben sind noch nicht ganz korrekt, bitte prüfe die Einträge in den rot markierten Feldern");
+  assertToastIsShown("Ein paar Eingaben sind noch nicht ganz korrekt, bitte prüfe die Einträge in den rot markierten Feldern");
 }

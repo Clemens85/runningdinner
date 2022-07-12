@@ -15,7 +15,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -97,9 +96,6 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
   private Team team;
 
   private UUID teamId;
-
-  @Transient
-  private AssignmentType assignmentType;
 
   @Embedded
   private GeocodingResult geocodingResult = new GeocodingResult();
@@ -304,16 +300,6 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
 
     return teamId;
   }
-
-  public AssignmentType getAssignmentType() {
-
-    return assignmentType;
-  }
-
-  public void setAssignmentType(AssignmentType assignmentType) {
-
-    this.assignmentType = assignmentType;
-  }
   
   protected void removeTeamReference() {
     
@@ -405,7 +391,6 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     Participant result = new Participant(getParticipantNumber());
     result.setAddress(getAddress().createDetachedClone());
     result.setAge(getAge());
-    result.setAssignmentType(getAssignmentType());
     result.setEmail(getEmail());
     result.setGender(getGender());
     result.setHost(host);

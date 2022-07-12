@@ -1,5 +1,9 @@
 const NewsMessages_de: any = {
 
+  news_title_20220712: 'Endlich: Wartelisten Funktionen erweitert',
+  news_content_20220712: 'Immer wieder angefragt, nun endlich verfügbar: Es gibt im Veranstaltungs-Admin-Bereich eine neue Funktion zur Wartelisten Verwaltung, ' +
+    'mit welcher übrig geliebene Teilnehmer nachträglich als neue Teams hinzugefügt werden können oder bestehende Teams aufgefüllt werden können. Das sollte die Organisation eines Running Dinners etwas vereinfachen.',
+
   news_title_20220413: 'Zeilenumbrüche gefixt',
   news_content_20220413: 'Falls ihr euch gewundert habt warum eure Event-Beschreibung so komisch aussah (d.h. keine Absätze angezeigt wurden): ' +
     'Das (plus ein paar andere kleinere Fehler) ist jetzt behoben. Im Zweifel könnt ihr in den Einstellungen eure Beschreibung nochmal neu editieren.',

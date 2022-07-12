@@ -12,7 +12,7 @@ import {
   isOneMessageJobNotFinished,
   getExampleParticipantMessage,
   getExampleTeamMessage,
-  getMessagePreviewAsync, getBackendIssuesFromErrorResponse, getExampleDinnerRouteMessage
+  getMessagePreviewAsync, getBackendIssuesFromErrorResponse, getExampleDinnerRouteMessage, concatParticipantList
 } from "../../";
 import {
   PreviewMessage,
@@ -72,9 +72,14 @@ const fetchRecipients = createAsyncThunk(
   'fetchRecipients',
   async (props: MessageTypeAdminIdPayload) => {
     const {adminId, messageType} = props;
-    const recipientsRequest = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? findParticipantsAsync(adminId) : findTeamsNotCancelledAsync(adminId);
-    const result = await recipientsRequest;
-    return result as Recipient[];
+    if (messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS) {
+      const participantList = await findParticipantsAsync(adminId);
+      const allParticipants = concatParticipantList(participantList);
+      return allParticipants as Recipient[];
+    } else {
+      const teams = await findTeamsNotCancelledAsync(adminId);
+      return teams as Recipient[];
+    }
   }
 );
 

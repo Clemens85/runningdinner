@@ -1,6 +1,7 @@
 package org.runningdinner.participant.rest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,11 +10,6 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.runningdinner.common.Issue;
-import org.runningdinner.common.IssueList;
-import org.runningdinner.common.IssueType;
-import org.runningdinner.common.exception.ValidationException;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellation;
 import org.runningdinner.participant.TeamCancellationResult;
@@ -51,40 +47,35 @@ public class TeamServiceRest {
 	
   @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.GET)
   public TeamArrangementListTO findTeamArrangements(@PathVariable("adminId") String adminId, 
-                                                    @RequestParam(value = "filterCancelledTeams", defaultValue = "false", required = false) boolean filterCancelledTeams) {
+                                                    @RequestParam(value = "filterCancelledTeams", defaultValue = "false", required = false) boolean excludeCancelledTeams) {
 
-    TeamArrangementListTO result = new TeamArrangementListTO();
-    List<Team> teams = teamService.findTeamArrangements(adminId, filterCancelledTeams);
+    List<Team> teams = teamService.findTeamArrangements(adminId, excludeCancelledTeams);
 
-    for (Team team : teams) {
+    TeamArrangementListTO result = mapToTeamArrangementList(adminId, teams);
+    return result;
+  }
+
+	private TeamArrangementListTO mapToTeamArrangementList(String adminId, List<Team> teams) {
+		
+		TeamArrangementListTO result = new TeamArrangementListTO();
+		for (Team team : teams) {
       result.addTeam(new TeamTO(team));
     }
     result.setDinnerAdminId(adminId);
-
     return result;
-  }
+	} 
   
   @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.POST)
   public TeamArrangementListTO generateTeamArrangements(@PathVariable("adminId") final String adminId) {
     
-    TeamArrangementListTO result;
-    try {
-      result = teamService.createTeamAndVisitationPlans(adminId);
-    } catch (NoPossibleRunningDinnerException e) {
-      throw new ValidationException(new IssueList(new Issue("dinner_not_possible", IssueType.VALIDATION)));
-    }
+    TeamArrangementListTO result = teamService.createTeamAndVisitationPlans(adminId);
     return result;
   }
   
   @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.PUT)
   public TeamArrangementListTO reGenerateTeamArrangements(@PathVariable("adminId") final String adminId) {
     
-    TeamArrangementListTO result;
-    try {
-      result = teamService.dropAndReCreateTeamAndVisitationPlans(adminId);
-    } catch (NoPossibleRunningDinnerException e) {
-      throw new ValidationException(new IssueList(new Issue("dinner_not_possible", IssueType.VALIDATION)));
-    }
+    TeamArrangementListTO result = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, Collections.emptyList());
     return result;
   }
 

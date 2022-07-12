@@ -1,12 +1,29 @@
 
 package org.runningdinner.participant;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
-import org.runningdinner.common.*;
+import org.runningdinner.common.Issue;
+import org.runningdinner.common.IssueKeys;
+import org.runningdinner.common.IssueList;
+import org.runningdinner.common.IssueType;
+import org.runningdinner.common.ResourceLoader;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.ValidatorService;
@@ -17,10 +34,19 @@ import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConverterFactory;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
 import org.runningdinner.core.converter.FileConverter;
-import org.runningdinner.core.converter.config.*;
+import org.runningdinner.core.converter.config.AddressColumnConfig;
+import org.runningdinner.core.converter.config.EmailColumnConfig;
+import org.runningdinner.core.converter.config.GenderColumnConfig;
+import org.runningdinner.core.converter.config.NameColumnConfig;
+import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
+import org.runningdinner.core.converter.config.ParsingConfiguration;
+import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
+import org.runningdinner.participant.rest.MissingParticipantsInfo;
+import org.runningdinner.participant.rest.ParticipantListActive;
+import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +56,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ParticipantService {
@@ -94,21 +113,53 @@ public class ParticipantService {
   }
 
   @Transactional(readOnly = true)
-  public List<Participant> findActiveParticipantsWithAssignableInfo(@ValidateAdminId String adminId) {
+  public ParticipantListActive findActiveParticipantList(@ValidateAdminId String adminId) {
+  	
+    final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 
-    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-
-    List<Participant> participants = participantRepository.findByAdminIdAndActivationDateIsNotNullOrderByParticipantNumber(adminId);
-
-    participants.stream().filter(p -> p.getTeamId() != null).forEach(p -> p.setAssignmentType(AssignmentType.ASSIGNED_TO_TEAM));
-
-    List<Participant> participantsWithoutTeams = participants.stream().filter(p -> p.getTeamId() == null).collect(Collectors.toList());
-    setAssignableInformation(participantsWithoutTeams, runningDinner);
-
-    return participants;
+    final List<Participant> allParticipants = participantRepository.findByAdminIdAndActivationDateIsNotNullOrderByParticipantNumber(adminId);
+    final int numParticipantsTotal = allParticipants.size();
+    
+    final AssignableParticipantSizes assignableParticipantSizes = AssignableParticipantSizes.create(runningDinner.getConfiguration());
+    final int minimumParticipantsNeeded = assignableParticipantSizes.getMinimumParticipantsNeeded();
+    
+    List<Participant> participantsAssignedIntoTeams = filterParticipantsAssignedIntoTeams(allParticipants);
+    boolean hasExistingTeams = CollectionUtils.isNotEmpty(participantsAssignedIntoTeams);
+    
+    List<Participant> participants;
+    List<Participant> participantsWaitingList = Collections.emptyList();
+    MissingParticipantsInfo missingParticipantsInfo;
+    
+    if (hasExistingTeams) {
+    	participants = participantsAssignedIntoTeams;
+      Set<Participant> participantsWaitingListAsSet = CoreUtil.excludeMultipleFromSet(participantsAssignedIntoTeams, new HashSet<>(allParticipants));
+      participantsWaitingList = new ArrayList<>(participantsWaitingListAsSet);
+      Collections.sort(participantsWaitingList);
+      missingParticipantsInfo = MissingParticipantsInfo.newWithExistingTeams(minimumParticipantsNeeded);
+    } else {
+      int numParticipantsMissing = minimumParticipantsNeeded - numParticipantsTotal;
+  		missingParticipantsInfo = MissingParticipantsInfo.newMissingParticipantsInfo(minimumParticipantsNeeded, Math.max(numParticipantsMissing, 0));
+  		
+  		int nextParticipantsOffsetSize = assignableParticipantSizes.getNextParticipantsOffsetSize();
+      if (allParticipants.size() >= minimumParticipantsNeeded && numParticipantsTotal % nextParticipantsOffsetSize != 0) {
+      	int numNotAssignableParticipants = numParticipantsTotal % nextParticipantsOffsetSize;
+      	participantsWaitingList = allParticipants.subList(numParticipantsTotal - numNotAssignableParticipants, numParticipantsTotal);
+      	participants = allParticipants.subList(0, numParticipantsTotal - numNotAssignableParticipants);
+      } else {
+      	participants = allParticipants;
+      }
+    }
+    
+    ParticipantListActive result = new ParticipantListActive();
+    result.setTeamsGenerated(hasExistingTeams);
+    result.setNumParticipantsTotal(numParticipantsTotal);
+    result.setParticipants(applyListNumbers(participants, 1));
+    result.setParticipantsWaitingList(applyListNumbers(participantsWaitingList, participants.size() + 1));
+    result.setMissingParticipantsInfo(missingParticipantsInfo);
+    return result;
   }
 
-  @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
   public void exportParticipantsAsExcel(@ValidateAdminId String adminId, OutputStream outputStream) throws IOException {
 
     List<Participant> participants = findParticipants(adminId, true);
@@ -117,34 +168,6 @@ public class ParticipantService {
     FileConverter fileConverter = ConverterFactory.newFileConverter(parsingConfiguration, INPUT_FILE_TYPE.XSSF);
     fileConverter.writeParticipants(participants, outputStream);
   }
-
-  private void setAssignableInformation(List<Participant> participantsWithoutTeam, RunningDinner runningDinner) {
-
-    AssignableParticipantSizes assignableParticipantSizes = AssignableParticipantSizes.create(runningDinner.getConfiguration());
-    int nextParticipantsOffsetSize = assignableParticipantSizes.getNextParticipantsOffsetSize();
-    int minimumParticipantsNeeded = assignableParticipantSizes.getMinimumParticipantsNeeded();
-
-    if (participantsWithoutTeam.size() < minimumParticipantsNeeded) {
-      participantsWithoutTeam.forEach(p -> p.setAssignmentType(AssignmentType.NOT_ASSIGNABLE));
-      return;
-    }
-
-    participantsWithoutTeam.stream().limit(minimumParticipantsNeeded).forEach(p -> p.setAssignmentType(AssignmentType.ASSIGNABLE));
-
-    List<Participant> remainingParticipants = participantsWithoutTeam.size() == minimumParticipantsNeeded ? Collections.emptyList() : participantsWithoutTeam.subList(
-      minimumParticipantsNeeded, participantsWithoutTeam.size());
-
-    if (remainingParticipants.size() < nextParticipantsOffsetSize) {
-      remainingParticipants.stream().forEach(p -> p.setAssignmentType(AssignmentType.NOT_ASSIGNABLE));
-    } else {
-      List<List<Participant>> remainingParticipantChunks = Lists.partition(remainingParticipants, nextParticipantsOffsetSize);
-      for (List<Participant> participantChunk : remainingParticipantChunks) {
-        boolean assignable = participantChunk.size() >= nextParticipantsOffsetSize;
-        participantChunk.stream().forEach(p -> p.setAssignmentType(assignable ? AssignmentType.ASSIGNABLE : AssignmentType.NOT_ASSIGNABLE));
-      }
-    }
-  }
-
 
   /**
    * Updates existing participant of a running dinner
@@ -358,6 +381,14 @@ public class ParticipantService {
     }
   }
   
+  public static List<Participant> filterParticipantsAssignedIntoTeams(List<Participant> participants) {
+  	
+    return participants
+    				.stream()
+    				.filter(p -> p.getTeamId() != null)
+    				.collect(Collectors.toList());
+  }
+  
   private void checkNoOtherParticipantHasEmail(Participant participant, String newEmailAddress) {
 
     List<Participant> participants = participantRepository.findByEmailIgnoreCaseAndIdNotAndAdminId(newEmailAddress, participant.getId(), participant.getAdminId());
@@ -393,6 +424,16 @@ public class ParticipantService {
         }
       }
     });
+  }
+  
+  private static List<ParticipantWithListNumberTO> applyListNumbers(List<Participant> participants, int startNumber) {
+  	
+  	List<ParticipantWithListNumberTO> result = new ArrayList<>(participants.size());
+  	int listNumber = startNumber;
+    for (Participant p : participants) {
+      result.add(new ParticipantWithListNumberTO(p, listNumber++));
+    }
+    return result;
   }
 
 }

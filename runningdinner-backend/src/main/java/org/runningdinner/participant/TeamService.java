@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.runningdinner.admin.RepositoryUtil;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
@@ -29,6 +28,7 @@ import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.GeneratedTeamsResult;
+import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerCalculator;
@@ -86,23 +86,43 @@ public class TeamService {
   @Autowired
   private LocalizationProviderService localizationProviderService;
   
-  public List<Team> findTeamArrangements(@ValidateAdminId String adminId, boolean filterCancelledTeams) {
+  public List<Team> findTeamArrangements(@ValidateAdminId String adminId, boolean excludeCancelledTeams) {
 
     List<Team> teams = teamRepository.findWithTeamMembersAndMealClassDistinctByAdminIdOrderByTeamNumber(adminId);
-    if (filterCancelledTeams) {
+    if (excludeCancelledTeams) {
       teams = filterCancelledTeams(teams);
     }
     return teams;
   }
 
-  public TeamMeetingPlan findTeamMeetingPlan(@ValidateAdminId String adminId, UUID teamId) {
+	public List<Team> findTeamArrangementsWaitingListFillable(@ValidateAdminId String adminId) {
+		
+		final List<Team> teams = findTeamArrangements(adminId, false);
+		
+    final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    
+		List<Team> result = teams
+													.stream()
+													.filter(t -> t.getStatus() == TeamStatus.CANCELLED || hasCancelledTeamMember(t, runningDinner.getConfiguration()))
+													.distinct()
+													.collect(Collectors.toList());
+		
+		return result;
+	}
+  
+  private boolean hasCancelledTeamMember(Team team, RunningDinnerConfig configuration) {
+  	
+  	return configuration.getTeamSize() > team.getTeamMembers().size();
+	}
+
+	public TeamMeetingPlan findTeamMeetingPlan(@ValidateAdminId String adminId, UUID teamId) {
 
     Team team = teamRepository.findWithVisitationPlanByIdAndAdminId(teamId, adminId);
     Set<Team> hostTeamReferencess = team.getHostTeams();
     Set<Team> guestTeamReferences = team.getGuestTeams();
 
-    List<Team> hostTeams = teamRepository.findWithVisitationPlanDistinctByIdInAndAdminIdOrderByTeamNumber(RepositoryUtil.getEntityIds(hostTeamReferencess), adminId);
-    List<Team> guestTeams = teamRepository.findWithVisitationPlanDistinctByIdInAndAdminIdOrderByTeamNumber(RepositoryUtil.getEntityIds(guestTeamReferences), adminId);
+    List<Team> hostTeams = teamRepository.findWithVisitationPlanDistinctByIdInAndAdminIdOrderByTeamNumber(IdentifierUtil.getIds(hostTeamReferencess), adminId);
+    List<Team> guestTeams = teamRepository.findWithVisitationPlanDistinctByIdInAndAdminIdOrderByTeamNumber(IdentifierUtil.getIds(guestTeamReferences), adminId);
 
     TeamMeetingPlan result = new TeamMeetingPlan(team);
     result.setGuestTeams(guestTeams);
@@ -136,7 +156,7 @@ public class TeamService {
     
     List<Team> dinnerRoute = TeamRouteBuilder.generateDinnerRoute(teamMeetingPlan.getTeam());
     
-    Team dinnerRouteTeam = Team.filterListForId(dinnerRoute, teamId); 
+    Team dinnerRouteTeam = IdentifierUtil.filterListForIdMandatory(dinnerRoute, teamId); 
 
     Locale localeOfDinner = localizationProviderService.getLocaleOfDinner(runningDinner);
     
@@ -176,14 +196,14 @@ public class TeamService {
    * @throws NoPossibleRunningDinnerException
    */
   @Transactional(rollbackFor = { NoPossibleRunningDinnerException.class, RuntimeException.class })
-  public TeamArrangementListTO createTeamAndVisitationPlans(@ValidateAdminId String adminId) throws NoPossibleRunningDinnerException {
+  public TeamArrangementListTO createTeamAndVisitationPlans(@ValidateAdminId String adminId) {
 
     final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     LOGGER.info("Create random teams and visitation-plans for dinner {}", adminId);
     
     Assert.state(getNumberOfTeams(adminId) == 0, "createTeamAndVisitationPlans can only be called with no teams already created");
     
-    List<Team> savedTeams = createTeamsAndVisitationPlan(runningDinner);
+    List<Team> savedTeams = createTeamsAndVisitationPlan(runningDinner, Collections.emptyList());
     
     emitTeamsArrangedEvent(runningDinner, savedTeams);
     
@@ -192,30 +212,50 @@ public class TeamService {
   
 
   @Transactional(rollbackFor = { NoPossibleRunningDinnerException.class, RuntimeException.class })
-  public TeamArrangementListTO dropAndReCreateTeamAndVisitationPlans(@ValidateAdminId String adminId) throws NoPossibleRunningDinnerException {
+  public TeamArrangementListTO dropAndReCreateTeamAndVisitationPlans(@ValidateAdminId String adminId, 
+  																																	 List<Participant> participantsForAdditionalGeneration) {
 
     final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-    LOGGER.info("Drop existing teams and re-create teams and visitation-plans for dinner {}", adminId);
+    LOGGER.info("Drop existing teams and re-create teams and visitation-plans for dinner {}. Use additional participants from waitinglist", 
+    					  adminId, participantsForAdditionalGeneration);
 
+    List<TeamTO> existingTeamInfosToRestore = Collections.emptyList();
+    
+    boolean generateAdditionalTeamsFromWaitingList = CollectionUtils.isNotEmpty(participantsForAdditionalGeneration);
+    
+    if (generateAdditionalTeamsFromWaitingList) {
+	    List<Team> existingTeams = findTeamArrangements(adminId, true);
+	    existingTeamInfosToRestore = TeamTO.convertTeamList(existingTeams);
+    }
+    
     participantRepository.updateTeamReferenceAndHostToNull(adminId);
     teamRepository.deleteByAdminId(adminId);
 
-    List<Team> teams = createTeamsAndVisitationPlan(runningDinner);
-    
-    emitTeamsReCreatedEvent(runningDinner, teams);
+    List<Team> teams = createTeamsAndVisitationPlan(runningDinner, existingTeamInfosToRestore);
+
+    if (!generateAdditionalTeamsFromWaitingList) {
+    	// Default case for only re-generate teams. 
+    	// If teams are added from waitinglist (generateAdditionalTeamsFromWaitingList == true) ,then the waitinglist fires its own event instead.
+    	emitTeamsReCreatedEvent(runningDinner, teams); 
+    }
     
     return newTeamArrangementList(teams, adminId);
   }
-
-  private List<Team> createTeamsAndVisitationPlan(RunningDinner runningDinner) throws NoPossibleRunningDinnerException {
+  
+  private List<Team> createTeamsAndVisitationPlan(RunningDinner runningDinner, 
+  																							  List<TeamTO> existingTeamInfosToRestore) {
     
     List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
 
     // create new team- and visitation-plans
     LOGGER.info("Generating teams for {}", runningDinner);
-    GeneratedTeamsResult result = generateTeamPlan(runningDinner.getConfiguration(), participants);
-
-    List<Team> regularTeams = result.getRegularTeams();
+    List<Team> regularTeams;
+    try {
+    	GeneratedTeamsResult result = generateTeamPlan(runningDinner.getConfiguration(), existingTeamInfosToRestore, participants);
+    	regularTeams = result.getRegularTeams();
+    } catch (NoPossibleRunningDinnerException e) {
+      throw new ValidationException(new IssueList(new Issue("dinner_not_possible", IssueType.VALIDATION)));
+    }
 
     // #1 Set dinner to team:
     regularTeams.forEach(t -> t.setRunningDinner(runningDinner));
@@ -233,7 +273,7 @@ public class TeamService {
     return savedTeams;
   }
   
-  private TeamArrangementListTO newTeamArrangementList(List<Team> teams, String adminId) {
+	private TeamArrangementListTO newTeamArrangementList(List<Team> teams, String adminId) {
 
     List<TeamTO> teamTOs = teams
             .stream()
@@ -267,11 +307,12 @@ public class TeamService {
     });
   }
 
-  protected GeneratedTeamsResult generateTeamPlan(final RunningDinnerConfig runningDinnerConfig, final List<Participant> participants)
-    throws NoPossibleRunningDinnerException {
+  protected GeneratedTeamsResult generateTeamPlan(final RunningDinnerConfig runningDinnerConfig, 
+  																							  final List<TeamTO> existingTeamsToKeep, 
+  																							  final List<Participant> participants) throws NoPossibleRunningDinnerException {
 
-    GeneratedTeamsResult generatedTeams = runningDinnerCalculator.generateTeams(runningDinnerConfig, participants, Collections::shuffle);
-    runningDinnerCalculator.assignRandomMealClasses(generatedTeams, runningDinnerConfig.getMealClasses());
+    GeneratedTeamsResult generatedTeams = runningDinnerCalculator.generateTeams(runningDinnerConfig, participants, existingTeamsToKeep, Collections::shuffle);
+    runningDinnerCalculator.assignRandomMealClasses(generatedTeams, runningDinnerConfig.getMealClasses(), existingTeamsToKeep);
     runningDinnerCalculator.generateDinnerExecutionPlan(generatedTeams, runningDinnerConfig);
     return generatedTeams;
   }
