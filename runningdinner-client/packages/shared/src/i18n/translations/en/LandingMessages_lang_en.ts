@@ -120,7 +120,7 @@ const LandingMessages_en: any = {
     teaser_workflow_team_host: 'The assigned meal is cooked in the flat of one team member.',
     teaser_workflow_team_guest: 'Two other teams join this meal as a guest (thus each team cooks for 6 persons total).',
     teaser_workflow_dinner_route: 'After you are finished with eating the meal, you will move on to another team, till all meals are taken.',
-    teaser_workflow_dinner_route_finish: 'At the end of the event, each team has met 8 other teams.',
+    teaser_workflow_dinner_route_finish: 'At the end of the event, each team has met 6 other teams.',
 
     teaser_example_appetizer: 'The appetizer is cooked in the own flat of one team member. Here two other teams join this meal.',
     teaser_example_main_course: 'After you are finished with eating, you have to hurry to the next flat of another team. ' +
