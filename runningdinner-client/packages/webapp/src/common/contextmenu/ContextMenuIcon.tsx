@@ -1,4 +1,4 @@
-import React, {HTMLProps} from "react";
+import React from "react";
 import {IconButton, Menu, MenuItem} from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import {CallbackHandler, isStringNotEmpty} from "@runningdinner/shared";

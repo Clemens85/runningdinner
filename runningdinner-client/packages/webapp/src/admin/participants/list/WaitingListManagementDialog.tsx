@@ -11,13 +11,11 @@ import {
   Typography
 } from '@material-ui/core';
 import {
-  ActivityType,
   addSelectedParticipantToTeam,
   assignParticipantsToExistingTeamsAsync,
   BaseRunningDinnerProps,
   calculateCancelledTeamMembersNumArr,
   CallbackHandler,
-  findAdminActivitiesByAdminIdAndTypesAsync,
   findEntityById,
   findWaitingListInfoAsync,
   Fullname,
@@ -148,7 +146,7 @@ function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetch
 
   React.useEffect(() => {
     setCurrentWaitingListAction(isArrayNotEmpty(possibleActions) ? possibleActions[0] : undefined);
-  }, possibleActions);
+  }, [possibleActions]);
 
   async function handleSave(waitingListActionResult: WaitingListActionResult) {
     const {affectedTeams} = waitingListActionResult;
@@ -162,11 +160,6 @@ function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetch
       affectedTeams,
       dinnerRouteMessagesAlreadySent: waitingListActionResult.dinnerRouteMessagesAlreadySent
     });
-  }
-
-  async function findTeamOrDinnerRouteMessageActivitiesAsync(adminId: string) {
-    const activityList = await findAdminActivitiesByAdminIdAndTypesAsync(adminId, [ActivityType.TEAMARRANGEMENT_MAIL_SENT, ActivityType.DINNERROUTE_MAIL_SENT]);
-    return activityList.activities || [];
   }
 
   function reloadWaitingListContent() {
@@ -222,6 +215,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
   useEffect(() => {
     const model = setupAssignParticipantsToTeamsModel(teamsWithCancelStatusOrCancelledMembers, allParticipantsOnWaitingList);
     setTeamParticipantsAssignmentModel(model);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleAddToTeam(team: Team, participant: SelectableParticipant) {
@@ -471,6 +465,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
     }
     initialParticipantList = initialParticipantList.concat(cloneDeep(remainingParticipants));
     setParticipantList(initialParticipantList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
