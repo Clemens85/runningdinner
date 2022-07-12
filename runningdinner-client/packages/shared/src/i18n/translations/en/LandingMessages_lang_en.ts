@@ -133,9 +133,12 @@ const LandingMessages_en: any = {
 
     create_your_own_event_hedline: 'Create your own running dinner event',
     quickstart_description: 'You can create your own running dinner event with just a few clicks by using the wizard.',
-    uncertain_headline: 'Having doubts?',
-    uncertain_description: 'You can also create a demo running dinner event for test purposes. ' +
-      'This event will automatically be populated with example participants. So you can test all features before starting with a "real" running dinner event.',
+    uncertain_headline: 'Unsure? Want just a quick test?',
+    uncertain_description: 'No problem. You can easily create a running dinner event in demo mode before you start with a "real" event. ' +
+      '<br/>This allows you to conveniently test all the functionalities first and get a feel for what you can do.<br/>' +
+      'Only you see this event and you can do what you want with it. Of course you can also create several demo events. ' +
+      '<br/>Each demo event is automatically pre-filled with some participants, so that you can test everything directly without having to laboriously create individual participants. ' +
+      'Of course you can add as many participants by yourself as you like.',
     create_demo_dinner_link: 'Create Demo Dinner',
 
     visibilities_text: 'Choose between 3 different kinds of visibility',

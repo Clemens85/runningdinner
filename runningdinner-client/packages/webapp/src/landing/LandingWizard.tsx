@@ -1,6 +1,6 @@
 import React from 'react';
 import {PageTitle, Span} from "../common/theme/typography/Tags";
-import {useTranslation} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 import {Box, Grid} from "@material-ui/core";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {DEMO_WIZARD_ROOT_PATH, WIZARD_ROOT_PATH} from "../common/mainnavigation/NavigationPaths";
@@ -29,7 +29,7 @@ export function LandingWizard() {
           </Grid>
           <Grid item xs={12} md={6}>
             <TeaserCard titleI18nKey={"landing:uncertain_headline"}>
-              <Span i18n={"landing:uncertain_description"} />
+              <Span><Trans i18nKey={"landing:uncertain_description"} /></Span>
               <Box pt={2}>
                 <PrimaryButton href={DEMO_WIZARD_ROOT_PATH} target="_blank" data-testid={"wizard-open-action-demo"}>{t('landing:create_demo_dinner_link')}</PrimaryButton>
               </Box>

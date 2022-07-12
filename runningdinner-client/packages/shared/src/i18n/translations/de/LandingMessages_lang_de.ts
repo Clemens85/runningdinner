@@ -123,20 +123,24 @@ const LandingMessages_de: any = {
     teaser_workflow_team_host: 'Die zugeteilte Speise wird in der Wohnung eines Teampartners gekocht.',
     teaser_workflow_team_guest: 'Es sind immer zwei andere Teams zu Gast (d.h. jedes Team kocht insgesamt für 6 Personen).',
     teaser_workflow_dinner_route: 'Nach dem Kochen der eigenen Speise geht es weiter zu einem anderen Team bis man alle Speisen eingenommen hat.',
-    teaser_workflow_dinner_route_finish: 'Am Ende des Abends ist jedes Team auf 8 andere Teams getroffen.',
+    teaser_workflow_dinner_route_finish: 'Am Ende des Abends ist jedes Team auf 6 andere Teams getroffen.',
 
     teaser_example_appetizer: 'Die Vorspeise wird in der eigenen Wohnung eines Teams gekocht, in welcher dann zwei weitere Teams dazu stoßen.',
     teaser_example_main_course: 'Nach dem Essen heißt es dann ruckzuck weiter in die nächste Küche, in der dieses Team zwei neue Koch-Teams kennenlernt.<br/>' +
       'Diesmal darf dieses Team also selbst Gast sein und zusammen mit einem weiteren Gast-Team die Hauptspeise des Gastgeber-Teams genießen.',
     teaser_example_dessert: 'Das gleiche Spiel folgt beim Dessert.',
     teaser_example_summary: 'Jeder Gang wird folglich mit anderen Kochteams eingenommen, sodass jedes Team am Ende des Abends mit 12 verschiedenen Personen gegessen hat. ' +
-      'Im Endeffekt wissen die jeweiligen Teams (hoffentlich) nicht wer zu Ihnen zu Gast kommt und die anderen Teams kennen nur die Gastgeber-Adresse.',
+      'Im Endeffekt wissen die jeweiligen Teams (hoffentlich) nicht wer zu Ihnen zu Besuch ist und die anderen Teams kennen nur die Gastgeber-Adresse.',
 
     create_your_own_event_hedline: 'Veranstalte dein eigenes Running Dinner Event',
     quickstart_description: 'Mit dem Wizard erstellst du mit wenigen Klicks ein neues Running Dinner Event.',
-    uncertain_headline: 'Unsicher?',
-    uncertain_description: 'Du kannst dir auch ein Demo Running Dinner Event erstellen, welches mit Demo-Teilnehmern vorbefüllt wird, ' +
-      'so dass du direkt alle Funktionalitäten testen kannst, bevor du mit einem "echten" Running Dinner Event loslegst.',
+    uncertain_headline: 'Unsicher? Einfach mal schnell testen?',
+    uncertain_description: 'Kein Problem. Du kannst dir hier kinderleicht ein Running Dinner Event im Demo-Modus erstellen, bevor du mit einem "echten" Event loslegst. ' +
+      '<br/>Damit kannst du bequem alle Funktionalitäten erst einmal testen und ein Gefühl dafür entwickeln, was du alles tun kannst.<br/>' +
+      'Dieses Event siehst nur du und du kannst damit tun was du willst. Du kannst natürlich auch mehrere Demo Events anlegen zum austesten. ' +
+      '<br/>Jedes Demo Event wird automatisch mit einigen Teilnehmern vorbefüllt, so dass du direkt alles testen kannst ohne mühsam einzelne Teilnehmer anlegen zu müssen. ' +
+      'Selbstverständlich kannst du aber beliebig viele weitere Teilmnehmer hinzufügen.',
+
     create_demo_dinner_link: 'Demo Dinner erstellen',
     visibilities_text: 'Wähle zwischen 3 Sichtbarkeits-Stufen.',
 

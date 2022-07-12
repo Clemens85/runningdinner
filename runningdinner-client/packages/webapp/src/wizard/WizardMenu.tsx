@@ -99,7 +99,7 @@ export default function WizardMenu() {
               variant="h5"
               color="inherit"
               align="center"
-              noWrap>Run your Dinner Wizard</Typography>
+              noWrap>Run Your Dinner Wizard</Typography>
           </Toolbar>
           <AppBar position="static" className={classes.appBar}>
             <Toolbar component={"nav"} className={classes.toolBar}>
