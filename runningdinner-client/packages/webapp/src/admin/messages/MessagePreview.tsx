@@ -81,6 +81,7 @@ interface PreviewSelectionProps {
 }
 function PreviewSelection({recipients, selectedRecipient, onSelectionChange}: PreviewSelectionProps) {
 
+  const {t} = useTranslation(['admin']);
   const {getRecipientName} = useRecipientName();
 
   function handleChange(changeEvent: React.ChangeEvent<{ value: unknown}>) {
@@ -100,7 +101,7 @@ function PreviewSelection({recipients, selectedRecipient, onSelectionChange}: Pr
 
   const selectedValue = selectedRecipient ? selectedRecipient.id : '';
 
-  const selectionLabel = 'Auswahl für Vorschau';
+  const selectionLabel = t('admin:messages_preview_selection');
   return (
       <FormControl fullWidth>
         <InputLabel>{selectionLabel}</InputLabel>
