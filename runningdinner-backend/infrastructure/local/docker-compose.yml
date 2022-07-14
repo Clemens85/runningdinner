@@ -17,7 +17,7 @@ services:
       - "runningdinner-backend:${DOCKER_HOST_IP}"
 
   postgres:
-    image: postgres:9.6.6
+    image: postgres:12.11
     container_name: db
     ports:
       - "5432:5432"
