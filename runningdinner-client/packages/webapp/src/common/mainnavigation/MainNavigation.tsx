@@ -28,7 +28,14 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     background: "#333333"
+  },
+  homeLink: {
+    textDecoration: "none",
+    "&:focus, &:hover, &:visited, &:link, &:active": {
+      textDecoration: "none"
+    }
   }
+
 }));
 
 export interface MainNavigationProps {
@@ -82,7 +89,12 @@ export const MainNavigation = ({baseUrl, mainTitle, navigationItems, topNotifica
                   <Grid item>
                     <Grid container alignItems={"center"}>
                       <Grid item>
-                        <Typography variant="h6" className={classes.title}>{mainTitle}</Typography>
+                        <Link to={`${normalizedUrl}${navigationItems[0].routePath}`}
+                              component={RouterLink}
+                              className={classes.homeLink}
+                              color="inherit">
+                          <Typography variant="h6" className={classes.title}>{mainTitle}</Typography>
+                        </Link>
                       </Grid>
                       <Grid item>
                         { navigationItems.map(navigationItem => createLink(navigationItem)) }
