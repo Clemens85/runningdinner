@@ -3,7 +3,7 @@ import filter from 'lodash/filter';
 import lowerCase from 'lodash/lowerCase';
 import includes from 'lodash/includes';
 import { BackendConfig } from "../BackendConfig";
-import {isNewEntity, isStringNotEmpty} from "../Utils";
+import {isNewEntity, isStringNotEmpty, trimStringsInObject} from "../Utils";
 import {Participant, TeamPartnerWishInfo, ParticipantList} from "../types";
 import {CONSTANTS} from "../Constants";
 
@@ -23,10 +23,12 @@ export async function saveParticipantAsync(adminId: string, participant: Partici
     method = 'put';
   }
 
+  const participantWithTrimmedStringFields = trimStringsInObject(participant);
+
   const response = await axios.request<Participant>({
     url: url,
     method: method,
-    data: participant
+    data: participantWithTrimmedStringFields
   });
   return response.data;
 }

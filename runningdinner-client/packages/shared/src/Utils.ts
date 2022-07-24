@@ -6,7 +6,12 @@ import isArray from "lodash/isArray";
 import {BaseEntity} from "./types";
 import truncate from "lodash/truncate";
 import mergeWith from 'lodash/mergeWith';
-
+import isString from 'lodash/isString';
+import trim from 'lodash/trim';
+import isObjectLike from "lodash/isObjectLike";
+import isDate from "lodash/isDate";
+import forIn from "lodash/forIn";
+import set from "lodash/set";
 /**
  * Iterates the passed list and tries to find the entity with the passed id.
  * @param entities
@@ -19,7 +24,7 @@ export function findEntityById(entities: any, id?: string | null) {
     return null;
   }
 
-  var result = filter(entities, { 'id': id });
+  const result = filter(entities, { 'id': id });
   if (!result || result.length !== 1) {
     return null;
   }
@@ -35,11 +40,11 @@ export function isNewEntity(entity: any): boolean {
   if (!entity) {
     return true;
   }
-  var id = get(entity, "id", null);
+  const id = get(entity, "id", null);
   if (!id) {
     return true;
   }
-  var len = id.length;
+  const len = id.length;
   return !len || len <= 0;
 }
 
@@ -59,6 +64,25 @@ export function mapNullFieldsToEmptyStrings(obj: any, ...fieldsToIgnore: string[
     }
   }
   return resultObj;
+}
+
+export function trimStringsInObject(obj: any) {
+  if (!obj) {
+    return obj;
+  }
+  const resultObj = cloneDeep(obj);
+  _trimStringsInObject(resultObj);
+  return resultObj;
+}
+
+function _trimStringsInObject(object: any) {
+  forIn(object, function(value, key) {
+    if(isString(value)) {
+      set(object, key, trim(value));
+    } else if (!isDate(value) && !Array.isArray(value) && isObjectLike(value)) {
+      _trimStringsInObject(value);
+    }
+  });
 }
 
 export function exchangeEntityInList<T extends BaseEntity>(entityList?: Array<T>, entity?: T): Array<T> {
