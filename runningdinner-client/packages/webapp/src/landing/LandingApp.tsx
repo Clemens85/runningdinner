@@ -1,19 +1,17 @@
 import React from 'react';
 import {useMediaQuery} from "@material-ui/core";
-import {useRouteMatch} from "react-router-dom";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 import {LandingRoute} from "./LangingRoute";
 import {useTranslation} from "react-i18next";
 import {
   IMPRESSUM_PATH,
-  LANDING_CREATE_RUNNING_DINNER_PATH,
+  LANDING_CREATE_RUNNING_DINNER_PATH, LANDING_NEWS_PATH, LANDING_START_PATH,
   RUNNING_DINNER_EVENTS_PATH
 } from "../common/mainnavigation/NavigationPaths";
 
 
 export default function LandingApp() {
 
-  const {url} = useRouteMatch();
   const {t} = useTranslation(["landing", "common"]);
 
   const showMainTitle = useMediaQuery('(min-width:1090px)');
@@ -21,10 +19,10 @@ export default function LandingApp() {
 
   const navigationItems = [
     {
-      routePath: "/running-dinner-veranstalten-teilnehmen",
+      routePath: LANDING_START_PATH,
       title: "Start"
     }, {
-      routePath: "/news",
+      routePath: LANDING_NEWS_PATH,
       title: t("common:news")
     }, {
       routePath: RUNNING_DINNER_EVENTS_PATH,
@@ -40,8 +38,7 @@ export default function LandingApp() {
 
   return (
     <div>
-      <MainNavigation baseUrl={url}
-                      mainTitle={mainTitle}
+      <MainNavigation mainTitle={mainTitle}
                       navigationItems={navigationItems} />
       <LandingRoute />
     </div>

@@ -67,7 +67,7 @@ import FormTextField from "../../../common/input/FormTextField";
 export function MessageJobDetailsList({runningDinner}: BaseRunningDinnerProps) {
 
   const params = useParams<Record<string, string>>();
-  const messageJobId = params.messageJobId;
+  const messageJobId = params.messageJobId || "";
   const {adminId} = runningDinner;
 
   const dispatch = useAdminDispatch();

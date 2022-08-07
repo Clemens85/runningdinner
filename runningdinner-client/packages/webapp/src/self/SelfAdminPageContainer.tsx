@@ -20,7 +20,9 @@ export interface SelfAdminPageContainerProps extends Parent {
 
 export function SelfAdminPageContainer({children, htmlPageTitleI18n}: SelfAdminPageContainerProps) {
 
-  const {selfAdminId, participantId} = useParams<Record<string, string>>();
+  const urlParams = useParams<Record<string, string>>();
+  const selfAdminId = urlParams.selfAdminId || "";
+  const participantId = urlParams.participantId || "";
 
   const { i18n, t } = useTranslation('selfadmin');
 

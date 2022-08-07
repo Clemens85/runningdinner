@@ -1,5 +1,5 @@
 import { RUNNING_DINNER_EVENTS_PATH } from "../common/mainnavigation/NavigationPaths";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 export function generateRegistrationFinishedPath(publicDinnerId: string) {
   return `${RUNNING_DINNER_EVENTS_PATH}/${publicDinnerId}/registration-finished`;
@@ -7,14 +7,14 @@ export function generateRegistrationFinishedPath(publicDinnerId: string) {
 
 export function useLandingNavigation() {
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   function navigateToRegistrationFinished(publicDinnerId: string) {
-    history.push(generateRegistrationFinishedPath(publicDinnerId));
+    navigate(generateRegistrationFinishedPath(publicDinnerId));
   }
 
   function navigateToRunningDinnerEventList() {
-    history.push(RUNNING_DINNER_EVENTS_PATH);
+    navigate(`/${RUNNING_DINNER_EVENTS_PATH}`);
   }
 
   return {

@@ -3,7 +3,7 @@ import {DinnerRouteMessages, ParticipantMessages, TeamMessages} from "./messages
 import ParticipantsPage from "./participants/ParticipantsPage";
 import TeamsContainer from "./teams/TeamsContainer";
 import Dashboard from "./dashboard/Dashboard";
-import {Route, Switch} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import {getRunningDinnerFetchSelector, useAdminSelector} from "@runningdinner/shared";
 import Acknowledge from "./common/Acknowledge";
 import TeamDinnerRoute from "./teams/TeamDinnerRoute";
@@ -11,11 +11,7 @@ import {MessageJobDetailsList} from "./messages/messagejobs/MessageJobDetailsLis
 import {SettingsPage} from "./settings/SettingsPage";
 import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 
-export interface AdminRouteProps {
-  path: string;
-}
-
-export default function AdminRoute({path}: AdminRouteProps) {
+export default function AdminRoute() {
 
   const runningDinnerFetchData = useAdminSelector(getRunningDinnerFetchSelector);
   if (!runningDinnerFetchData.data) {
@@ -26,45 +22,35 @@ export default function AdminRoute({path}: AdminRouteProps) {
   const {adminId} = runningDinner;
 
   return (
-      <Switch>
-        <Route path={`${path}/participants/messages`}>
-          <ParticipantMessages adminId={adminId} />
-        </Route>
-        <Route path={`${path}/participants/:participantId`}>
-          <ParticipantsPage runningDinner={runningDinner} />
-        </Route>
-        <Route path={`${path}/participants`}>
-          <ParticipantsPage runningDinner={runningDinner} />
-        </Route>
+      <Routes>
+        <Route path={`participants/messages`} element={<ParticipantMessages adminId={adminId} />} />
 
-        <Route path={`${path}/dinnerroute/messages`}>
-          <DinnerRouteMessages adminId={adminId} />
-        </Route>
-        <Route path={`${path}/teams/messages`}>
-          <TeamMessages adminId={adminId} />
-        </Route>
-        <Route path={`${path}/teams/:teamId/dinnerroute`}>
-          <TeamDinnerRoute />
-        </Route>
-        <Route path={`${path}/teams/:teamId`}>
-          <TeamsContainer />
-        </Route>
-        <Route path={`${path}/teams`}>
-          <TeamsContainer />
-        </Route>
-        <Route path={`${path}/:acknowledgeId/acknowledge`}>
-          <Acknowledge runningDinner={runningDinner} />
-        </Route>
-        <Route path={`${path}/mailprotocols/:messageJobId`}>
-          <MessageJobDetailsList runningDinner={runningDinner} />
-        </Route>
-        <Route path={`${path}/settings`}>
-          <SettingsPage runningDinner={runningDinner} />
-          <BrowserTitle  namespaces={"common"} titleI18nKey={"common:settings"} />
-        </Route>
-        <Route path="/">
-          <Dashboard runningDinner={runningDinner} />
-        </Route>
-      </Switch>
+        <Route path={`participants/:participantId`} element={<ParticipantsPage runningDinner={runningDinner} />} />
+
+        <Route path={`participants`} element={<ParticipantsPage runningDinner={runningDinner} />} />
+
+        <Route path={`dinnerroute/messages`} element={<DinnerRouteMessages adminId={adminId} />} />
+
+        <Route path={`teams/messages`} element={<TeamMessages adminId={adminId} />} />
+
+        <Route path={`teams/:teamId/dinnerroute`} element={<TeamDinnerRoute />} />
+
+        <Route path={`teams/:teamId`} element={<TeamsContainer />} />
+
+        <Route path={`teams`} element={<TeamsContainer />} />
+
+        <Route path={`:acknowledgeId/acknowledge`} element={<Acknowledge runningDinner={runningDinner} />} />
+
+        <Route path={`mailprotocols/:messageJobId`} element={<MessageJobDetailsList runningDinner={runningDinner} />} />
+
+        <Route path={`settings`} element={
+          <>
+            <SettingsPage runningDinner={runningDinner} />
+            <BrowserTitle  namespaces={"common"} titleI18nKey={"common:settings"} />
+          </>
+        } />
+
+        <Route path={"*"} element={<Dashboard runningDinner={runningDinner} />} />
+      </Routes>
   );
 }

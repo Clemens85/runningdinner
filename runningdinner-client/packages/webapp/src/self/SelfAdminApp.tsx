@@ -1,5 +1,4 @@
 import React from 'react'
-import { useRouteMatch } from "react-router-dom";
 import { Container } from "@material-ui/core";
 import {Provider} from 'react-redux';
 import {
@@ -22,8 +21,6 @@ export default function SelfAdminApp() {
 
 function SelfAdminAppPage() {
 
-  const {path} = useRouteMatch();
-
   const showLoadingProgress = useSelfAdminSelector(isFetchingSelfAdminDataSelector);
   const fetchError = useSelfAdminSelector(getSelfAdminFetchDataErrorSelector);
 
@@ -31,7 +28,7 @@ function SelfAdminAppPage() {
     <div>
       <ProgressBar fetchError={fetchError} showLoadingProgress={showLoadingProgress} />
       <Container maxWidth="xl">
-        <SelfAdminRoute path={path} />
+        <SelfAdminRoute />
       </Container>
     </div>
   );

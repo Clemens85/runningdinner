@@ -54,19 +54,15 @@ export function LandingBanner() {
 
         <SpacingGrid container py={4} justify='center' spacing={4}>
           <SpacingGrid item>
-            <PrimaryRouterButton to={LANDING_CREATE_RUNNING_DINNER_PATH} size='large'>
+            <PrimaryRouterButton to={`/${LANDING_CREATE_RUNNING_DINNER_PATH}`} size='large'>
               {t('landing:teaser_organize_event_text')}
             </PrimaryRouterButton>
           </SpacingGrid>
           <SpacingGrid item>
-            {/* <Button color={"primary"}
-                    variant={"outlined"}
-                    to={RUNNING_DINNER_EVENTS_PATH}
-                    component={RouterLink}>{t('landing:teaser_search_public_event_text')}</Button> */}
             <Button className={landingStyles.teaserSearchPublicEventsButton}
                     size='large'
                     variant={"outlined"}
-                    to={RUNNING_DINNER_EVENTS_PATH}
+                    to={`/${RUNNING_DINNER_EVENTS_PATH}`}
                     component={RouterLink}>{t('landing:teaser_search_public_event_text')}</Button>
           </SpacingGrid>
         </SpacingGrid>

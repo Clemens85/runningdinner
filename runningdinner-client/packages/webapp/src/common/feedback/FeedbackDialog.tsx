@@ -89,7 +89,7 @@ export function FeedbackDialog({onClose}: FeedbackDialogProps) {
               <Grid item xs={12}>
                 <small>
                   <Trans i18nKey={"common:feedback_privacy_text"}
-                         values={{ impressumLink: IMPRESSUM_PATH }}
+                         values={{ impressumLink: `/${IMPRESSUM_PATH}` }}
                          // @ts-ignore
                          components={{ anchor: <LinkExtern /> }}/>
                 </small>
