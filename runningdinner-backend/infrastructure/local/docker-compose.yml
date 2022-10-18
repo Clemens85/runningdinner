@@ -22,7 +22,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /tmp/pgdata:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
       - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     environment:
       - POSTGRES_PASSWORD=root
@@ -50,3 +50,5 @@ services:
 volumes:
   verdaccio:
     driver: local
+
+  postgres-data:
