@@ -106,7 +106,7 @@ function NoPublicDinnerEventsPage() {
       <Alert severity={"success"} variant={"outlined"}>
         <AlertTitle>{t('landing:public_dinner_events_empty_headline')}</AlertTitle>
         <Span i18n={"landing:public_dinner_events_empty_text"} />
-        <LinkIntern pathname={LANDING_CREATE_RUNNING_DINNER_PATH}><Paragraph>{t("landing:public_dinner_events_empty_goto_wizard")}</Paragraph></LinkIntern>
+        <LinkIntern pathname={`/${LANDING_CREATE_RUNNING_DINNER_PATH}`}><Paragraph>{t("landing:public_dinner_events_empty_goto_wizard")}</Paragraph></LinkIntern>
       </Alert>
     </div>
   );
