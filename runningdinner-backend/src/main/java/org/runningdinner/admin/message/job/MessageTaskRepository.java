@@ -43,6 +43,8 @@ public interface MessageTaskRepository extends RunningDinnerRelatedRepository<Me
                                                                                      MessageType messageType, 
                                                                                      String adminId);  
   
+  long countByAdminIdAndSendingResultDelieveryFailed(String adminId, boolean delieveryFailed);
+  
   long countByAdminIdAndParentJobIdAndSendingResultDelieveryFailed(String adminId, UUID parentJobId, boolean delieveryFailed);
 
   List<MessageTask> findBySendingStatusAndModifiedAtBeforeOrderByModifiedAtAscParentJobId(SendingStatus sendingStatus, LocalDateTime lastModifiedDateBefore);

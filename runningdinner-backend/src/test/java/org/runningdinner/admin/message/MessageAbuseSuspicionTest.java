@@ -3,8 +3,11 @@ package org.runningdinner.admin.message;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -20,9 +23,13 @@ import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
+import org.runningdinner.mail.sendgrid.SuppressedEmail;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,6 +70,9 @@ public class MessageAbuseSuspicionTest {
   @Autowired
   private MailSenderFactory mailSenderFactory;
   
+  @Autowired
+  private ParticipantService participantService;
+  
   private MailSenderMockInMemory mailSenderInMemory;
   
   private RunningDinner runningDinner;
@@ -102,6 +112,35 @@ public class MessageAbuseSuspicionTest {
     
     messageJob = messageTasks.get(0).getParentJob();
     assertThat(messageJob.getSendingStatus()).isEqualTo(SendingStatus.SENDING_FINISHED);
+    
+    // Verify that only succeeded messageTasks are taken into account
+    for (MessageTask mt : messageTasks) {
+      messageService.updateMessageTaskAsFailedInNewTransaction(mt.getId(), newSuppressedEmail());
+    }
+    
+    participantMessage.setParticipantSelection(ParticipantSelection.CUSTOM_SELECTION);
+    participantMessage.setCustomSelectedParticipantIds(getFirstParticipantAsList());
+    messageJob = messageService.sendParticipantMessages(runningDinner.getAdminId(), participantMessage);
+    assertThat(messageJob).isNotNull();
+    
+    testHelperService.awaitMessageJobFinished(messageJob);
+    messages = mailSenderInMemory.getMessages();
+    assertThat(messages).isNotEmpty();
+    messageTasks = messageTaskRepository.findByParentJobIdOrderByCreatedAtAsc(messageJob.getId());
+    assertThat(messageTasks).hasSize(1);
+    assertThat(messageTasks.get(0).getSendingResult().isDelieveryFailed()).isFalse(); // This means we succeeded
   }
   
+  private List<UUID> getFirstParticipantAsList() {
+    List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), false);
+    return Collections.singletonList(participants.get(0).getId());
+  }
+
+  private SuppressedEmail newSuppressedEmail() {
+    SuppressedEmail result = new SuppressedEmail();
+    ZonedDateTime now = ZonedDateTime.now(DateTimeUtil.getTimeZoneForEuropeBerlin());
+    result.setCreated(now.toEpochSecond());
+    result.setFailureType(FailureType.ABUSE_SUSPICION);
+    return result;
+  }
 }

@@ -77,8 +77,8 @@ public class MessageJobBatchProcessorService {
     boolean messageAbuseDetected = messageTaskPage.getNumberOfElements() >= maxAllowedTasksPerJob && messageTaskPage.hasNext();
       
     if (!messageAbuseDetected) {
-      long totalNumberOfMessageTasks = messageTaskRepository.countByAdminId(messageJob.getAdminId());
-      messageAbuseDetected = totalNumberOfMessageTasks > maxAllowedTasksPerDinner;
+      long totalNumberOfMessageTasksNotFailed = messageTaskRepository.countByAdminIdAndSendingResultDelieveryFailed(messageJob.getAdminId(), false);
+      messageAbuseDetected = totalNumberOfMessageTasksNotFailed > maxAllowedTasksPerDinner;
     }
 
     if (messageAbuseDetected) {
