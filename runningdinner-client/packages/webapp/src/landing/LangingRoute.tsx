@@ -53,6 +53,12 @@ export function LandingRoute() {
           <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:registration_finished_title"} />
         </Container>
       } />
+      <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/registration/*`} element={
+        <Container maxWidth="xl">
+          <PublicDinnerEventRegistrationPage showRegistrationForm={true} />
+          <BrowserTitle namespaces={"landing"} titleI18nKey={"landing:registration_finished_title"} />
+        </Container>
+      } />
       <Route path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId`} element={
         <Container maxWidth="xl">
           <PublicDinnerEventRegistrationPage />

@@ -40,7 +40,12 @@ import LinkExtern from "../common/theme/LinkExtern";
 import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
 import { TextViewHtml } from '../common/TextViewHtml';
 
-export function PublicDinnerEventRegistrationPage() {
+
+type RegistrationFormSettingsType = {
+  showRegistrationForm?: boolean;
+};
+
+export function PublicDinnerEventRegistrationPage({showRegistrationForm}: RegistrationFormSettingsType) {
 
   const params = useParams<Record<string, string>>();
   const publicDinnerId = params.publicDinnerId;
@@ -49,7 +54,7 @@ export function PublicDinnerEventRegistrationPage() {
                 parameters={[publicDinnerId]}
                 render={publicRunningDinner =>
                   <div>
-                    <PublicDinnerEventDetailsView publicRunningDinner={publicRunningDinner.result} />
+                    <PublicDinnerEventDetailsView publicRunningDinner={publicRunningDinner.result} showRegistrationForm={showRegistrationForm} />
                   </div>
                 } />;
 }
@@ -60,7 +65,7 @@ const useMealListStyles = makeStyles(() => ({
   }
 }));
 
-export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDinnerProps) {
+export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrationForm}: BasePublicDinnerProps & RegistrationFormSettingsType) {
 
   const {t} = useTranslation(["landing", "common"]);
 
@@ -68,7 +73,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner}: BasePublicDi
 
   const mealListClasses = useMealListStyles();
 
-  const { isOpen: isRegistrationFormOpen, open: openRegistrationForm, close: closeRegistrationForm } = useDisclosure();
+  const { isOpen: isRegistrationFormOpen, open: openRegistrationForm, close: closeRegistrationForm } = useDisclosure(showRegistrationForm);
 
   const {publicSettings} = publicRunningDinner;
   const isPublicContactInfoAvailable = isStringNotEmpty(publicSettings.publicContactName) ||
