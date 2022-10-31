@@ -479,6 +479,8 @@ public class MessageService {
     return result;
   }
   
+  public void resend
+  
   private MessageJob markParentMessageJobSuccessfulIfAllMessageTasksSucceeded(MessageJob parentJob) {
 
     long numberOfRemainingFailedTasks = messageTaskRepository.countByAdminIdAndParentJobIdAndSendingResultDelieveryFailed(parentJob.getAdminId(), parentJob.getId(), true);
