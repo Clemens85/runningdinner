@@ -27,7 +27,6 @@ public class NewRunningDinnerMailListener implements ApplicationListener<NewRunn
   public void onApplicationEvent(NewRunningDinnerEvent event) {
 
     RunningDinner newRunningDinner = event.getNewRunningDinner();
-    RunningDinnerRelatedMessage newRunningDinnerCreatedMessage = runningDinnerEventCreatedMessageFormatter.formatRunningDinnerCreatedMessage(newRunningDinner);
-    messageService.sendNewRunningDinnerMessage(newRunningDinnerCreatedMessage);
+    messageService.sendRunningDinnerCreatedMessage(newRunningDinner);
   }
 }

@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.runningdinner.admin.ReSendRunningDinnerCreatedMessage;
+import org.runningdinner.admin.ReSendRunningDinnerCreatedMessageService;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.UrlGenerator;
@@ -42,6 +44,9 @@ public class RunningDinnerServiceRest {
 	
 	@Autowired
 	private UrlGenerator urlGenerator;
+	
+	@Autowired
+	private ReSendRunningDinnerCreatedMessageService reSendRunningDinnerCreatedMessageService;
 
 	@RequestMapping(value = "/{adminId}", method = RequestMethod.GET)
 	public RunningDinnerAdminTO getRunningDinner(@PathVariable("adminId") String adminId, Locale locale) {
@@ -84,6 +89,15 @@ public class RunningDinnerServiceRest {
 
     RunningDinner updatedRunningDinner = runningDinnerService.updateRegistrationActiveState(adminId, enable);
     return mapRunningDinnerAdminTO(updatedRunningDinner, locale);
+  }
+  
+  @RequestMapping(value = "/{adminId}/resend-runningdinner-created-message", method = RequestMethod.PUT)
+  public RunningDinnerAdminTO reSendRunningDinnerCreatedMessage(@PathVariable("adminId") String adminId,
+  																															@Valid @RequestBody ReSendRunningDinnerCreatedMessage reSendRunningDinnerCreatedMesssage, 
+  																															Locale locale) {
+ 
+  	RunningDinner runningDinner = reSendRunningDinnerCreatedMessageService.reSendRunningDinnerCreatedMessage(adminId, reSendRunningDinnerCreatedMesssage);
+  	return mapRunningDinnerAdminTO(runningDinner, locale);
   }
 
   @RequestMapping(value = "/{adminId}/example/participants", method = RequestMethod.GET)
