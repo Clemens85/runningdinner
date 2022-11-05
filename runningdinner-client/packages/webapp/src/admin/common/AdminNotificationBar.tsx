@@ -5,17 +5,26 @@ import {
   isNotificationRequired,
   formatLocalDateWithSeconds,
   reSendRunningDinnerCreatedMessageAsync,
-  useDisclosure, useAdminSelector, getRunningDinnerFetchSelector, RunningDinner, 
-  CallbackHandler, BaseRunningDinnerProps, ReSendRunningDinnerCreatedMessageModel
+  useDisclosure, useAdminSelector, getRunningDinnerFetchSelector, RunningDinner,
+  CallbackHandler, BaseRunningDinnerProps, ReSendRunningDinnerCreatedMessageModel,
+  useBackendIssueHandler, useAdminDispatch,
+  setUpdatedRunningDinner,
+  HttpError, newReSendRunningdinnerCreatedMessageModel
 } from "@runningdinner/shared";
-import {useTranslation} from "react-i18next";
-import {Box} from "@material-ui/core";
+import {Trans, useTranslation} from "react-i18next";
+import {Box, Dialog, DialogContent, Grid} from "@material-ui/core";
 import AlertCentered from "../../common/theme/AlertCentered";
 import {FetchData} from "@runningdinner/shared/src/redux";
-import LinkIntern from '../../common/theme/LinkIntern';
 import LinkAction from '../../common/theme/LinkAction';
-import { runningDinnerTheme } from '../../common/theme/RunningDinnerTheme';
 import { FeedbackButton } from '../../common/feedback/FeedbackButton';
+import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
+import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
+import {FormProvider, useForm} from "react-hook-form";
+import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
+import { Span } from '../../common/theme/typography/Tags';
+import FormTextField from '../../common/input/FormTextField';
+import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
+import {Color} from "@material-ui/lab/Alert/Alert";
 
 export default function AdminNotificationBar() {
 
@@ -54,7 +63,7 @@ export default function AdminNotificationBar() {
     }
   }
 
-  let severity = !acknowledgedDate ? "warn" : "info";
+  let severity:Color = !acknowledgedDate ? "warning" : "info";
   severity = cancellationDate ? "error" : severity;
  
   return (
@@ -74,42 +83,48 @@ function ReSendRunningDinnerCreatedMessageContainer({runningDinner}: BaseRunning
 
   return (
     <>
-      <Box>
-        {t("notification_dinner_acknowledge_required")}
-        {t("Keine Mail bekommen?")} <LinkAction onClick={open}>Hier erneut versuchen</LinkAction>
-      </Box>
+      <Grid container spacing={1} alignContent={"center"} justify={"center"}>
+        <Grid item>
+          <Span>{t("notification_dinner_acknowledge_required")}</Span>
+        </Grid>
+        <Grid item>
+          <Span>{t("admin:acknowledge_link_no_mail_received")}</Span>
+        </Grid>
+        <Grid item>
+          <LinkAction onClick={open}><Span>{t("admin:acknowledge_link_no_mail_received_action")}</Span></LinkAction>
+        </Grid>
+      </Grid>
       { isOpen && <ReSendRunningDinnerCreatedMessageDialog onClose={close} runningDinner={runningDinner} /> }
     </>
   )
 }
 
 
-type ReSendRunningDinnerCreatedMessageDialogProps {
+type ReSendRunningDinnerCreatedMessageDialogProps = {
   onClose: CallbackHandler;
-}
+};
 
 function ReSendRunningDinnerCreatedMessageDialog({onClose, runningDinner}: ReSendRunningDinnerCreatedMessageDialogProps & BaseRunningDinnerProps) {
   
-  const title = "Aktivierungs-Link erneut versenden";
-
   const {showSuccess} = useCustomSnackbar();
   
-  const dispatch = useDispatch();
+  const dispatch = useAdminDispatch();
+  const {t} = useTranslation(['admin', 'common']);
+
+  const title = t("admin:acknowledge_link_resend_title");
 
   const formMethods = useForm({
-    defaultValues: {
-      newEmailAddress: ""
-    },
+    defaultValues: newReSendRunningdinnerCreatedMessageModel(""),
     mode: 'onTouched'
   });
 
-  const { clearErrors, setError, reset } = formMethods;
+  const { clearErrors, setError, reset, handleSubmit } = formMethods;
 
   const {applyValidationIssuesToForm} = useBackendIssueHandler();
   const {showHttpErrorDefaultNotification} = useNotificationHttpError();
 
   React.useEffect(() => {
-    reset(runningDinner.email);
+    reset(newReSendRunningdinnerCreatedMessageModel(runningDinner.email));
     clearErrors();
   }, [reset, clearErrors, runningDinner.email]);
 
@@ -120,7 +135,7 @@ function ReSendRunningDinnerCreatedMessageDialog({onClose, runningDinner}: ReSen
     try {
       const updatedRunningDinner = await reSendRunningDinnerCreatedMessageAsync(runningDinner.adminId, valuesToSubmit);
       onClose();
-      showSuccess("Email mit Aktivierungs-Link wurde erneut versandt, bitte überprüfe dein Postfach. (Es kann einige Minuten dauern bis die Mail bei dir angekommen ist");
+      showSuccess("Email mit Bestätigungslink wurde erneut versandt, bitte überprüfe dein Postfach (es kann einige Minuten dauern bis die Mail bei dir angekommen ist)");
       dispatch(setUpdatedRunningDinner(updatedRunningDinner));
     } catch(e) {
       applyValidationIssuesToForm(e as HttpError, setError);
@@ -135,26 +150,34 @@ function ReSendRunningDinnerCreatedMessageDialog({onClose, runningDinner}: ReSen
       </DialogTitleCloseable>
       <DialogContent>
         <Span>
-          <Trans i18nKey="Falls du die EMail mit dem Aktivierungslink nicht erhalten hast, kannst du sie dir hier erneut zuschicken lassen"
+          <Trans i18nKey="admin:acknowledge_link_resend_description"
                  ns="admin"
                  components={{ italic: <em /> }} />
         </Span>
         <FormProvider {...formMethods}>
           <form>
-            <Span>Du kannst deine verwendete EMail-Adresse hier auch nachträglich ändern, falls diese z.B. nicht korrekt war.</Span>
+            <Span>{t("admin:acknowledge_link_resend_change_email")}</Span>
+            <br />
             <FormTextField name="newEmailAddress"
                            label={t('common:email' )}
                            variant="outlined"
                            fullWidth/>
           </form>
         </FormProvider>
-        <Span>
-          Falls es einfach nicht klappen will, wende dich bitte an uns: <FeedbackButton />
-        </Span>
+        <Box mt={3}>
+          <Grid container alignContent={"center"} spacing={1}>
+            <Grid item>
+              <Span>{t("admin:acknowledge_link_resend_change_email_contact")}</Span>
+            </Grid>
+            <Grid item>
+              <FeedbackButton showAsLinkWithoutIcon={true} labelOverridden={<Span>{t("common:contact_help")}</Span>}/>
+            </Grid>
+          </Grid>
+        </Box>
       </DialogContent>
-      <DialogActionsPanel onOk={submitReSendRunningDinnerCreatedMessageAsync} 
+      <DialogActionsPanel onOk={handleSubmit(submitReSendRunningDinnerCreatedMessageAsync)}
                           onCancel={onClose} 
-                          okLabel={"Senden"} cancelLabel={t('common:cancel')} />
+                          okLabel={t("admin:send")} cancelLabel={t('common:cancel')} />
     </Dialog>
   );
 }

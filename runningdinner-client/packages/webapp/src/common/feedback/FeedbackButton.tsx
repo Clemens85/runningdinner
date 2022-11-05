@@ -5,18 +5,29 @@ import {FeedbackDialog} from "./FeedbackDialog";
 import {Box, Button, Grid, useMediaQuery, useTheme} from "@material-ui/core";
 import Paragraph from "../theme/typography/Paragraph";
 import FeedbackIcon from '@material-ui/icons/Feedback';
+import LinkAction from "../theme/LinkAction";
 
-export function FeedbackButton() {
+export type FeedbackButtonProps = {
+  labelOverridden?: React.ReactNode;
+  showAsLinkWithoutIcon?: boolean;
+};
+
+export function FeedbackButton({labelOverridden, showAsLinkWithoutIcon}: FeedbackButtonProps) {
 
   const {isOpen, close, open} = useDisclosure();
 
   const {t} = useTranslation("common");
 
+  const label = labelOverridden  ? labelOverridden : t("common:feedback_label");
+
   return (
     <>
-      <Button onClick={open} color="primary" startIcon={<FeedbackIcon />}>
-        <Paragraph>{t("common:feedback_label")}</Paragraph>
-      </Button>
+      {showAsLinkWithoutIcon ?
+        <LinkAction onClick={open}>{label}</LinkAction> :
+        <Button onClick={open} color="primary" startIcon={<FeedbackIcon />}>
+          <Paragraph>{label}</Paragraph>
+        </Button>
+      }
       { isOpen && <FeedbackDialog onClose={close} /> }
     </>
   );

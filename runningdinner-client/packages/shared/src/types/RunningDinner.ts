@@ -137,3 +137,9 @@ export function newEmptyRunningDinnerBasicDetailsFormModel(): RunningDinnerBasic
 export interface ReSendRunningDinnerCreatedMessageModel {
   newEmailAddress?: string;
 }
+
+export function newReSendRunningdinnerCreatedMessageModel(email: string): ReSendRunningDinnerCreatedMessageModel {
+  return {
+    newEmailAddress: email
+  };
+}

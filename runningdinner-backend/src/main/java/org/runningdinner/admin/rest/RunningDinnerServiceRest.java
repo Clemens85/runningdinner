@@ -93,8 +93,8 @@ public class RunningDinnerServiceRest {
   
   @RequestMapping(value = "/{adminId}/resend-runningdinner-created-message", method = RequestMethod.PUT)
   public RunningDinnerAdminTO reSendRunningDinnerCreatedMessage(@PathVariable("adminId") String adminId,
-  																															@Valid @RequestBody ReSendRunningDinnerCreatedMessage reSendRunningDinnerCreatedMesssage, 
-  																															Locale locale) {
+  																@Valid @RequestBody ReSendRunningDinnerCreatedMessage reSendRunningDinnerCreatedMesssage, 
+  																Locale locale) {
  
   	RunningDinner runningDinner = reSendRunningDinnerCreatedMessageService.reSendRunningDinnerCreatedMessage(adminId, reSendRunningDinnerCreatedMesssage);
   	return mapRunningDinnerAdminTO(runningDinner, locale);

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BackendConfig } from "../BackendConfig";
 import cloneDeep from "lodash/cloneDeep";
-import {Meal, RunningDinner, RunningDinnerBasicDetailsFormModel, RunningDinnerBasicDetails,
+import {Meal, RunningDinner, RunningDinnerBasicDetailsFormModel,
         RunningDinnerOptions, RunningDinnerPublicSettings, ReSendRunningDinnerCreatedMessageModel} from "../types";
 import {CONSTANTS} from "../Constants";
 import {getDaysBetweenDates} from '../date';
