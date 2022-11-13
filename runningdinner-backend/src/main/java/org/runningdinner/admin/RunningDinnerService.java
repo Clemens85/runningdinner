@@ -246,7 +246,12 @@ public class RunningDinnerService implements ApplicationContextAware {
   	
   	RunningDinner runningDinner = findRunningDinnerByAdminId(adminId);
   	Assert.hasText(newAdminEmail, "Expected incoming newAdminEmail to be not empty for dinner " + adminId);
+  	boolean publicContactMailUpdateNeeded = runningDinner.getPublicSettings() != null && 
+  	                                        StringUtils.equalsIgnoreCase(runningDinner.getPublicSettings().getPublicContactEmail(), runningDinner.getEmail());
   	runningDinner.setEmail(newAdminEmail);
+  	if (publicContactMailUpdateNeeded) {
+  	  runningDinner.getPublicSettings().setPublicContactEmail(newAdminEmail);
+  	}
   	return runningDinnerRepository.save(runningDinner);
   }
   

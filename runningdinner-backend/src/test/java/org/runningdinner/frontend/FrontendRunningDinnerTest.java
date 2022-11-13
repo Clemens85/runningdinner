@@ -183,7 +183,7 @@ public class FrontendRunningDinnerTest {
     RunningDinner firstPublicDinner = testHelperService.createPublicRunningDinner(todayIn40Days, 3);
     RunningDinner secondPublicDinner = testHelperService.createPublicRunningDinner(todayIn41Days, 3);
 
-    RunningDinner closedRunningDinner = testHelperService.createPublicRunningDinner(todayIn40Days, 3, RegistrationType.OPEN);
+    RunningDinner closedRunningDinner = testHelperService.createPublicRunningDinner(todayIn40Days, 3, RegistrationType.OPEN, true);
 
     List<RunningDinner> publicRunningDinners = frontendRunningDinnerService.findPublicRunningDinners(todayIn35Days);
     assertThat(publicRunningDinners).contains(firstPublicDinner, secondPublicDinner);

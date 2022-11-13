@@ -127,4 +127,15 @@ public class MailSenderMockInMemory implements MailSender {
     }
     
   }
+
+  public SimpleMailMessage filterForMessageTo(String to) {
+
+    Set<SimpleMailMessage> messages = getMessages();
+    for (SimpleMailMessage message : messages) {
+      if (message.getTo() != null && message.getTo().length >= 1 && message.getTo()[0].equals(to)) {
+        return message;
+      }
+    }
+    return null;
+  }
 }

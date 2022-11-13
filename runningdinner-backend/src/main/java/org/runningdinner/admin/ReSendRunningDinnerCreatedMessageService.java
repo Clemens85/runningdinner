@@ -15,35 +15,33 @@ public class ReSendRunningDinnerCreatedMessageService {
 	
   private static Logger LOGGER = LoggerFactory.getLogger(ReSendRunningDinnerCreatedMessageService.class);
 
-	private RunningDinnerService runningDinnerService;
+  private RunningDinnerService runningDinnerService;
 	
-	private MessageService messageService;
+  private MessageService messageService;
 
-	@Autowired
-	public ReSendRunningDinnerCreatedMessageService(RunningDinnerService runningDinnerService,
-			MessageService messageService) {
-		this.runningDinnerService = runningDinnerService;
-		this.messageService = messageService;
-	}
+  @Autowired
+  public ReSendRunningDinnerCreatedMessageService(RunningDinnerService runningDinnerService, MessageService messageService) {
+    this.runningDinnerService = runningDinnerService;
+	this.messageService = messageService;
+  }
 	
-	@Transactional
-	public RunningDinner reSendRunningDinnerCreatedMessage(@ValidateAdminId String adminId, ReSendRunningDinnerCreatedMessage reSendRunningDinnerCreatedMesssage) {
-		
-		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-		if (runningDinner.isAcknowledged()) {
-	  	LOGGER.warn("{} is already acknowledged but was tried to re-send the initial email", runningDinner);
-		  return runningDinner;
-	  }
-		
-		String newEmailAddress = reSendRunningDinnerCreatedMesssage.getNewEmailAddress();
-		if (StringUtils.isNotEmpty(newEmailAddress) && !StringUtils.equalsIgnoreCase(newEmailAddress, runningDinner.getEmail())) {
-			runningDinner = runningDinnerService.updateRunningDinnerAdminEmail(adminId, newEmailAddress);
-		}
+  @Transactional
+  public RunningDinner reSendRunningDinnerCreatedMessage(@ValidateAdminId String adminId, ReSendRunningDinnerCreatedMessage reSendRunningDinnerCreatedMesssage) {
 
-		messageService.sendRunningDinnerCreatedMessage(runningDinner);
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    if (runningDinner.isAcknowledged()) {
+      LOGGER.warn("{} is already acknowledged but was tried to re-send the initial email", runningDinner);
+      return runningDinner;
+    }
 
-		return runningDinner;
-	}
-	
+    String newEmailAddress = reSendRunningDinnerCreatedMesssage.getNewEmailAddress();
+    if (StringUtils.isNotEmpty(newEmailAddress) && !StringUtils.equalsIgnoreCase(newEmailAddress, runningDinner.getEmail())) {
+      runningDinner = runningDinnerService.updateRunningDinnerAdminEmail(adminId, newEmailAddress);
+    }
+
+    messageService.sendRunningDinnerCreatedMessage(runningDinner);
+
+    return runningDinner;
+  }
 	
 }

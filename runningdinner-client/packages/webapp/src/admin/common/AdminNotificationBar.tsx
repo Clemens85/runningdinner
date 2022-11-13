@@ -50,20 +50,22 @@ export default function AdminNotificationBar() {
   const runningDinner = runningDinnerFetchData.data!;
   const {cancellationDate, acknowledgedDate, runningDinnerType} = runningDinner;
 
+  const acknowledgeRequired = isAcknowledgeRequired(runningDinner);
+
   let notificationMessage = [];
   if (cancellationDate) {
     const cancellationDateFormatted = formatLocalDateWithSeconds(cancellationDate);
     notificationMessage.push(<Box key="cancellationDate">{t('notification_dinner_cancellation_text', { cancellationDate: cancellationDateFormatted })}</Box>);
-  } else if (isAcknowledgeRequired(runningDinner)) {
+  } else if (acknowledgeRequired) {
     notificationMessage.push(<ReSendRunningDinnerCreatedMessageContainer key="acknowledgedDate" runningDinner={runningDinner} />);
   } else if (runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO) {
     notificationMessage.push(<Box key="demo">{t("notification_dinner_demo_mode")}</Box>);
     if (!acknowledgedDate) {
-      notificationMessage.push(<Box key="acknowledgedDate">{t("notification_dinner_acknowledge_required")}</Box>);
+      notificationMessage.push(<ReSendRunningDinnerCreatedMessageContainer key="acknowledgedDate" runningDinner={runningDinner} />);
     }
   }
 
-  let severity:Color = !acknowledgedDate ? "warning" : "info";
+  let severity:Color = acknowledgeRequired ? "warning" : "info";
   severity = cancellationDate ? "error" : severity;
  
   return (
@@ -135,7 +137,7 @@ function ReSendRunningDinnerCreatedMessageDialog({onClose, runningDinner}: ReSen
     try {
       const updatedRunningDinner = await reSendRunningDinnerCreatedMessageAsync(runningDinner.adminId, valuesToSubmit);
       onClose();
-      showSuccess("Email mit Bestätigungslink wurde erneut versandt, bitte überprüfe dein Postfach (es kann einige Minuten dauern bis die Mail bei dir angekommen ist)");
+      showSuccess(t("admin:acknowledge_link_resend_success"), { autoHideDuration: 6500 });
       dispatch(setUpdatedRunningDinner(updatedRunningDinner));
     } catch(e) {
       applyValidationIssuesToForm(e as HttpError, setError);
