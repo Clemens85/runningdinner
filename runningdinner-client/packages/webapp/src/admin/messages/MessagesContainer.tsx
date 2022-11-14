@@ -175,8 +175,8 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
     try {
       const sendMessagesPromise = dispatch(sendMessages(values)).unwrap();
       window.scrollTo(0, 0);
-      showSuccess(t("admin:mails_sending_submitted"));
       await sendMessagesPromise;
+      showSuccess(t("admin:mails_sending_submitted"));
     } catch(e) {
       applyValidationIssuesToForm(e, setError);
       showHttpErrorDefaultNotification(e);
