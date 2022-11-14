@@ -9,7 +9,6 @@ import {
 } from "@runningdinner/shared";
 import {Card, CardContent, Grid, makeStyles, Typography} from "@material-ui/core";
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
-import parse from "html-react-parser";
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import GroupIcon from '@material-ui/icons/Group';
 import SaveIcon from '@material-ui/icons/Save';
@@ -21,6 +20,7 @@ import LinkIntern from "../../common/theme/LinkIntern";
 import {useTranslation} from "react-i18next";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
+import {TextViewHtml} from "../../common/TextViewHtml";
 
 export interface AdminActivitiesTimelineProps {
   dashboardAdminActivities: DashboardAdminActivities;
@@ -91,7 +91,7 @@ function TimelineContentPanel({activityDate, activityType, activityHeadline, act
         <Typography variant={"caption"}><Time date={activityDate} /></Typography>
       </div>
       <div className={activityStyles.timelineBody}>
-        <Span>{parse(activityMessage)}</Span>
+        <Span><TextViewHtml text={activityMessage} /></Span>
         { relatedMessageJobOverview && <div>
           <LinkIntern pathname={ generateMessageJobDetailsPath(relatedMessageJobOverview.adminId, relatedMessageJobOverview.messageJobId) } color="primary">
             {relatedMessageJobOverview.numMessagesSucceeded} erfolgreich

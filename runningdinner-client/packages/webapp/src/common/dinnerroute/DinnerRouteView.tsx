@@ -29,6 +29,7 @@ import {useGeoPosition} from "../hooks/GeoPositionHook";
 import {useDynamicFullscreenHeight} from "../hooks/DynamicFullscreenHeightHook";
 import {Helmet} from "react-helmet-async";
 import LinkExtern from '../theme/LinkExtern';
+import {TextViewHtml} from "../TextViewHtml";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -51,7 +52,7 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
         <SpacingGrid container>
           { isStringNotEmpty(mealSpecificsOfGuestTeams) &&
             <SpacingGrid item xs={12} mb={2}>
-              <Subtitle>{mealSpecificsOfGuestTeams}</Subtitle>
+              <Subtitle><TextViewHtml text={mealSpecificsOfGuestTeams} /></Subtitle>
             </SpacingGrid>
           }
           <SpacingGrid container mb={2} spacing={4}>
