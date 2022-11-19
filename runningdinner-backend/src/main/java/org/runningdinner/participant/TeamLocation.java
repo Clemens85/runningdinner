@@ -16,15 +16,18 @@ public class TeamLocation {
   
   private GeocodingResult geodata;
   
+  private TeamStatus teamStatus;
+  
   protected TeamLocation() {
     
   }
   
-  public TeamLocation(UUID id, UUID mealId, ParticipantAddress address, GeocodingResult geodata) {
+  public TeamLocation(UUID id, UUID mealId, TeamStatus teamStatus, ParticipantAddress address, GeocodingResult geodata) {
     this.id = id;
     this.mealId = mealId;
     this.address = address;
     this.geodata = geodata;
+    this.teamStatus = teamStatus;
   }
 
   public UUID getId() {
@@ -57,6 +60,14 @@ public class TeamLocation {
 
   public void setGeodata(GeocodingResult geodata) {
     this.geodata = geodata;
+  }
+  
+  public TeamStatus getTeamStatus() {
+    return teamStatus;
+  }
+
+  public void setTeamStatus(TeamStatus teamStatus) {
+    this.teamStatus = teamStatus;
   }
 
   @Override

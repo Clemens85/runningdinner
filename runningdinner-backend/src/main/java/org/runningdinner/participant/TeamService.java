@@ -1,5 +1,6 @@
 package org.runningdinner.participant;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -684,10 +685,15 @@ public class TeamService {
     List<MealClass> mealClasses = runningDinner.getConfiguration().getMealClasses();
     List<Team> teams = findTeamArrangements(adminId, false);
     
-    List<TeamLocation> teamLocations = teams
-                                        .stream()
-                                        .map(t -> new TeamLocation(t.getId(), t.getMealClass().getId(), t.getHostTeamMember().getAddress(), t.getHostTeamMember().getGeocodingResult()))
-                                        .collect(Collectors.toList());
+    List<TeamLocation> teamLocations = new ArrayList<TeamLocation>();
+    for (Team t : teams) {
+      if (t.getStatus() == TeamStatus.CANCELLED) {
+        teamLocations.add(new TeamLocation(t.getId(), t.getMealClass().getId(), t.getStatus(), null, null));
+      } else {
+        teamLocations.add(new TeamLocation(t.getId(), t.getMealClass().getId(), t.getStatus(), t.getHostTeamMember().getAddress(), t.getHostTeamMember().getGeocodingResult()));
+      }
+    }
+    
     TeamLocationsEventData result = new TeamLocationsEventData(runningDinner.getAdminId(), MealTO.fromMeals(mealClasses), teamLocations);
     result.setAfterPartyLocation(null); // TODO
     return result;
