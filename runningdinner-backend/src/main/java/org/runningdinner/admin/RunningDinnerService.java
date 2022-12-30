@@ -22,6 +22,7 @@ import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.common.service.ValidatorService;
+import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.AssignableParticipantSizes;
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.MealClassSorter;
@@ -106,9 +107,10 @@ public class RunningDinnerService implements ApplicationContextAware {
    * @return
    */
   @Transactional
-  public RunningDinner createRunningDinner(RunningDinnerInfo runningDinnerInfo, RunningDinnerConfig runningDinnerConfig, String email, RunningDinnerType runningDinnerType) {
+  public RunningDinner createRunningDinner(RunningDinnerInfo runningDinnerInfo, RunningDinnerConfig runningDinnerConfig, String email, 
+                                           RunningDinnerType runningDinnerType, AfterPartyLocation afterPartyLocation) {
 
-    return createRunningDinner(runningDinnerInfo, runningDinnerConfig, null, email, runningDinnerType);
+    return createRunningDinner(runningDinnerInfo, runningDinnerConfig, null, email, runningDinnerType, afterPartyLocation);
   }
 
   @Transactional
@@ -116,16 +118,18 @@ public class RunningDinnerService implements ApplicationContextAware {
                                            RunningDinnerConfig runningDinnerConfig, 
                                            PublicSettings publicSettings, 
                                            String email, 
-                                           RunningDinnerType runningDinnerType) {
+                                           RunningDinnerType runningDinnerType,
+                                           AfterPartyLocation afterPartyLocation) {
 
-    return createRunningDinnerInternal(runningDinnerInfo, runningDinnerConfig, publicSettings, email, runningDinnerType);
+    return createRunningDinnerInternal(runningDinnerInfo, runningDinnerConfig, publicSettings, email, runningDinnerType, afterPartyLocation);
   }
 
   protected RunningDinner createRunningDinnerInternal(RunningDinnerInfo runningDinnerInfo, 
                                                       RunningDinnerConfig runningDinnerConfig, 
                                                       PublicSettings publicSettings, 
                                                       String email, 
-                                                      RunningDinnerType runningDinnerType) {
+                                                      RunningDinnerType runningDinnerType,
+                                                      AfterPartyLocation afterPartyLocation) {
 
     String adminId = idGenerator.generateAdminId();
 
@@ -155,6 +159,10 @@ public class RunningDinnerService implements ApplicationContextAware {
     
     LOGGER.info("Saving complete running dinner {}", adminId);
     result = runningDinnerRepository.save(result);
+    
+    if (afterPartyLocation != null) {
+      result.setAfterPartyLocation(afterPartyLocation);
+    }
 
     emitNewRunningDinnerEvent(result);
 
@@ -275,8 +283,7 @@ public class RunningDinnerService implements ApplicationContextAware {
     
     dinnerToUpdate.getConfiguration().setTeamPartnerWishDisabled(basicSettings.isTeamPartnerWishDisabled());
     
-    RunningDinner result = runningDinnerRepository.save(dinnerToUpdate);
-    result = urlGenerator.addPublicDinnerUrl(result);
+    RunningDinner result = saveRunningDinner(dinnerToUpdate); 
             
     emitRunningDinnerSettingsUpdatedEvent(new RunningDinnerSettingsUpdatedEvent(this, result, basicDetailsUnmodified));
     
@@ -299,8 +306,7 @@ public class RunningDinnerService implements ApplicationContextAware {
     publicSettingsToUpdate.setPublicContactMobileNumber(publicSettings.getPublicContactMobileNumber());
     publicSettingsToUpdate.setPublicContactName(publicSettings.getPublicContactName());
     
-    RunningDinner result = runningDinnerRepository.save(dinnerToUpdate);
-    result = urlGenerator.addPublicDinnerUrl(result);
+    RunningDinner result = saveRunningDinner(dinnerToUpdate); 
             
     emitRunningDinnerSettingsUpdatedEvent(new RunningDinnerSettingsUpdatedEvent(this, result, publicSettingsUnmodified));
     
@@ -316,8 +322,7 @@ public class RunningDinnerService implements ApplicationContextAware {
     PublicSettings publicSettingsUnmodified = dinnerToUpdate.getPublicSettings().createDetachedClone();
     
     dinnerToUpdate.getPublicSettings().setRegistrationDeactivated(!enable);
-    RunningDinner result = runningDinnerRepository.save(dinnerToUpdate);
-    result = urlGenerator.addPublicDinnerUrl(result);
+    RunningDinner result = saveRunningDinner(dinnerToUpdate); 
     
     emitRunningDinnerSettingsUpdatedEvent(new RunningDinnerSettingsUpdatedEvent(this, result, publicSettingsUnmodified));
     
@@ -430,6 +435,13 @@ public class RunningDinnerService implements ApplicationContextAware {
     return idGenerator.generateAdminId();
   }
 
+  
+  protected RunningDinner saveRunningDinner(RunningDinner dinnerToUpdate) {
+    
+    RunningDinner result = runningDinnerRepository.save(dinnerToUpdate);
+    return urlGenerator.addPublicDinnerUrl(result);
+  }
+  
   protected void checkRunningDinnerExists(final String adminId) {
 
     RunningDinner runningDinner = runningDinnerRepository.findByAdminId(adminId);
@@ -449,7 +461,7 @@ public class RunningDinnerService implements ApplicationContextAware {
     });
   }
   
-  private void emitRunningDinnerSettingsUpdatedEvent(RunningDinnerSettingsUpdatedEvent runningDinnerSettingsUpdatedEvent) {
+  protected void emitRunningDinnerSettingsUpdatedEvent(RunningDinnerSettingsUpdatedEvent runningDinnerSettingsUpdatedEvent) {
 
     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 

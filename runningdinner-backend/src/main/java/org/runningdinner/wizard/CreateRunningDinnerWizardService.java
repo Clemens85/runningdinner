@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.rest.RunningDinnerAdminTO;
 import org.runningdinner.common.Issue;
@@ -16,6 +17,7 @@ import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.contract.Contract;
 import org.runningdinner.contract.ContractService;
+import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.PublicSettings;
 import org.runningdinner.core.RegistrationType;
@@ -60,6 +62,7 @@ public class CreateRunningDinnerWizardService {
     RunningDinnerInfo runningDinnerInfo = runningDinnerTO.getBasicDetails();
     String email = runningDinnerTO.getEmail();
     RunningDinnerType runningDinnerType = runningDinnerTO.getRunningDinnerType();
+    AfterPartyLocation afterPartyLocation = runningDinnerTO.getAfterPartyLocation();
 
     List<Participant> demoParticipants = Collections.emptyList();
     if (runningDinnerType == RunningDinnerType.DEMO) {
@@ -70,11 +73,13 @@ public class CreateRunningDinnerWizardService {
     
     RegistrationType registrationType = runningDinnerInfo.getRegistrationType();
     if (registrationType == RegistrationType.CLOSED) {
-      result = createRunningDinnerWithParticipants(runningDinnerInfo, runningDinnerConfig, email, runningDinnerType, runningDinnerTO.getContract(), demoParticipants);
+      result = createRunningDinnerWithParticipants(runningDinnerInfo, runningDinnerConfig, email, runningDinnerType, 
+                                                   runningDinnerTO.getContract(), afterPartyLocation, demoParticipants);
     }
     else {
       PublicSettings publicSettings = runningDinnerTO.getPublicSettings().toPublicSettingsDetached();
-      result = createRunningDinnerWithParticipants(runningDinnerInfo, runningDinnerConfig, publicSettings, email, runningDinnerType, runningDinnerTO.getContract(), demoParticipants);
+      result = createRunningDinnerWithParticipants(runningDinnerInfo, runningDinnerConfig, publicSettings, email, runningDinnerType, 
+                                                   runningDinnerTO.getContract(), afterPartyLocation, demoParticipants);
     }
     
     return result;
@@ -86,9 +91,10 @@ public class CreateRunningDinnerWizardService {
                                                            String email,
                                                            RunningDinnerType runningDinnerType,
                                                            Contract contract,
+                                                           AfterPartyLocation afterPartyLocation,
                                                            List<Participant> participants) {
 
-    RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, runningDinnerConfig, email, runningDinnerType);
+    RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, runningDinnerConfig, email, runningDinnerType, afterPartyLocation);
     contractService.createContractIfNeeded(contract, result);
     return saveParticipantsToDinner(result, participants);
   }
@@ -100,9 +106,10 @@ public class CreateRunningDinnerWizardService {
                                                            String email, 
                                                            RunningDinnerType runningDinnerType,
                                                            Contract contract,
+                                                           AfterPartyLocation afterPartyLocation,
                                                            List<Participant> participants) {
 
-    RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, runningDinnerConfig, publicSettings, email, runningDinnerType);
+    RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, runningDinnerConfig, publicSettings, email, runningDinnerType, afterPartyLocation);
     contractService.createContractIfNeeded(contract, result);
     return saveParticipantsToDinner(result, participants);
   }
@@ -181,6 +188,8 @@ public class CreateRunningDinnerWizardService {
     if (registrationType != RegistrationType.CLOSED && runningDinnerAdminTO.getPublicSettings() == null) {
       throw new ValidationException(new IssueList(new Issue("error.required.publicsettings", IssueType.VALIDATION)));
     }
+    
+    AfterPartyLocationService.validateAfterPartyLocation(runningDinnerAdminTO.getAfterPartyLocation());
   }
 
 }

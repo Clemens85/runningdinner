@@ -11,11 +11,13 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.admin.ReSendRunningDinnerCreatedMessage;
 import org.runningdinner.admin.ReSendRunningDinnerCreatedMessageService;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.UrlGenerator;
+import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
@@ -26,7 +28,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,6 +51,9 @@ public class RunningDinnerServiceRest {
 
   @Autowired
   private ReSendRunningDinnerCreatedMessageService reSendRunningDinnerCreatedMessageService;
+  
+  @Autowired
+  private AfterPartyLocationService afterPartyLocationService;
 
   @RequestMapping(value = "/{adminId}", method = RequestMethod.GET)
   public RunningDinnerAdminTO getRunningDinner(@PathVariable("adminId") String adminId, Locale locale) {
@@ -79,6 +86,23 @@ public class RunningDinnerServiceRest {
                                                    Locale locale) {
 
     RunningDinner updatedRunningDinner = runningDinnerService.updatePublicSettings(adminId, publicSettings);
+    return mapRunningDinnerAdminTO(updatedRunningDinner, locale);
+  }
+  
+  @PutMapping(value = "/{adminId}/afterpartylocation", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public RunningDinnerAdminTO updateAfterPartyLocation(@PathVariable("adminId") String adminId,
+                                                       @Valid @RequestBody AfterPartyLocation afterPartyLocation, 
+                                                       Locale locale) {
+
+    RunningDinner updatedRunningDinner = afterPartyLocationService.updateAfterPartyLocation(adminId, afterPartyLocation);
+    return mapRunningDinnerAdminTO(updatedRunningDinner, locale);
+  }
+  
+  @DeleteMapping(value = "/{adminId}/afterpartylocation")
+  public RunningDinnerAdminTO deleteAfterPartyLocation(@PathVariable("adminId") String adminId,
+                                                       Locale locale) {
+
+    RunningDinner updatedRunningDinner = afterPartyLocationService.deleteAfterPartyLocation(adminId);
     return mapRunningDinnerAdminTO(updatedRunningDinner, locale);
   }
   

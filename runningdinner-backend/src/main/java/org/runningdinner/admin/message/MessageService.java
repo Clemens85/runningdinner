@@ -139,7 +139,7 @@ public class MessageService {
       .filter(p -> StringUtils.isNotEmpty(p.getEmail()))
       .map(p -> {
         MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
-        String text = participantMessageFormatter.formatParticipantMessage(p, participantMessage);
+        String text = participantMessageFormatter.formatParticipantMessage(runningDinner, p, participantMessage);
         messageTask.setMessage(new Message(participantMessage.getSubject(), text, replyTo));
         messageTask.setRecipientEmail(getRecipientEmail(p));
         return messageTask;
@@ -149,11 +149,13 @@ public class MessageService {
 
   public List<PreviewMessage> getParticipantMailPreview(@ValidateAdminId String adminId, ParticipantMessage participantMessage) {
 
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    
     // Can of course be optimized to not load too much participants...:
     List<Participant> participants = getParticipants(adminId, participantMessage);
     Participant participant = participants.get(0);
     Assert.state(participants.size() == 1, "Expected exactly one participant for preview but found " + participants.size());
-    String message = participantMessageFormatter.formatParticipantMessage(participant, participantMessage);
+    String message = participantMessageFormatter.formatParticipantMessage(runningDinner, participant, participantMessage);
     return Collections.singletonList(new PreviewMessage(participant.getId(), message));
   }
   

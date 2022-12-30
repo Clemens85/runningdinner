@@ -17,7 +17,15 @@ import {
 } from "./CreateWizardService";
 import {WizardRootState} from "./WizardStore";
 import find from "lodash/find";
-import {RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings, RunningDinnerType, Meal, HttpError} from "../types";
+import {
+  RunningDinnerBasicDetails,
+  RunningDinnerOptions,
+  RunningDinnerPublicSettings,
+  RunningDinnerType,
+  Meal,
+  HttpError,
+  newAfterPartyLocation, AfterPartyLocation
+} from "../types";
 import {isStringEmpty, isStringNotEmpty} from "../Utils";
 import {findGenderAspectsAsync, findRegistrationTypesAsync} from "../masterdata";
 import {getMinimumParticipantsNeeded, isClosedDinner} from "../admin";
@@ -29,7 +37,9 @@ export const updateBasicDetails = createAction<RunningDinnerBasicDetails>('updat
 export const updatePublicSettings = createAction<RunningDinnerPublicSettings>('updatePublicSettings');
 export const updateRunningDinnerOptions = createAction<RunningDinnerOptions>('updateRunningDinnerOptions');
 export const updateMeals = createAction<Meal[]>('updateMeals');
+export const updateAfterPartyLocation = createAction<AfterPartyLocation>('updateAfterPartyLocation');
 export const updateWithCreatedRunningDinner = createAction<CreateRunningDinnerResponse>('updateRunningDinnerCreated');
+export const enableAfterPartyLocation = createAction<boolean>('enableAfterPartyLocation');
 export const setNextNavigationStep = createAction<NavigationStep | undefined>('setNextNavigationStep');
 export const setPreviousNavigationStep = createAction<NavigationStep | undefined>('setPreviousNavigationStep');
 
@@ -85,6 +95,16 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
         state.runningDinner = action.payload.runningDinner;
         state.administrationUrl = action.payload.administrationUrl;
         state.completedNavigationSteps.push(FinishNavigationStep);
+      })
+      .addCase(enableAfterPartyLocation, (state, action) => {
+        if (action.payload) {
+          state.runningDinner.afterPartyLocation = newAfterPartyLocation(state.runningDinner);
+        } else {
+          state.runningDinner.afterPartyLocation = undefined;
+        }
+      })
+      .addCase(updateAfterPartyLocation, (state, action) => {
+        state.runningDinner.afterPartyLocation = action.payload;
       })
       .addCase(setNextNavigationStep, (state, action) => {
         state.nextNavigationStep = action.payload;
@@ -167,6 +187,7 @@ export const getCurrentNavigationStepSelector = createSelector(
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
 export const getRunningDinnerBasicDetailsSelector = (state: WizardRootState) => state.runningDinner.basicDetails;
 export const getRunningDinnerOptionsSelector = (state: WizardRootState) => state.runningDinner.options;
+export const getRunningDinnerAfterPartyLocationSelector = (state: WizardRootState) => state.runningDinner.afterPartyLocation;
 export const getRunningDinnerPublicSettingsSelector = (state: WizardRootState) => state.runningDinner.publicSettings;
 export const isClosedDinnerSelector = (state: WizardRootState) => isClosedDinner(state.runningDinner);
 export const getAdministrationUrlSelector = (state: WizardRootState) => state.administrationUrl!;

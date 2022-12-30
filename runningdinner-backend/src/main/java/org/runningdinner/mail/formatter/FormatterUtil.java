@@ -65,6 +65,7 @@ public class FormatterUtil {
   public static final String MEALSPECIFICS = "\\{mealspecifics\\}";
   public static final String MEALSPECIFICS_NOTE = "\\{mealspecifics-note\\}";
 
+  public static final String AFTER_PARTY_LOCATION = "\\{afterparty\\}";
   
   private FormatterUtil() {
     // NOP
@@ -122,7 +123,7 @@ public class FormatterUtil {
     }
     return result;
   }
-
+  
   /**
    * Takes the given input string and formats it as html escaped message
    * 

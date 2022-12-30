@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.MealSpecifics;
@@ -24,115 +25,126 @@ import org.springframework.util.Assert;
 @Component
 public class DinnerRouteMessageFormatter {
 
-	private UrlGenerator urlGenerator;
+  private UrlGenerator urlGenerator;
 
-	private MessageSource messageSource;
+  private MessageSource messageSource;
 
-	private LocalizationProviderService localizationProviderService;
+  private LocalizationProviderService localizationProviderService;
+
+  private AfterPartyLocationService afterPartyLocationService;
 	
-	@Autowired
-	public DinnerRouteMessageFormatter(UrlGenerator urlGenerator, MessageSource messageSource, LocalizationProviderService localizationProviderService) {
-		this.urlGenerator = urlGenerator;
-		this.messageSource = messageSource;
-		this.localizationProviderService = localizationProviderService;
-	}
+  @Autowired
+  public DinnerRouteMessageFormatter(UrlGenerator urlGenerator, 
+	                                 MessageSource messageSource, 
+	                                 LocalizationProviderService localizationProviderService, 
+	                                 AfterPartyLocationService afterPartyLocationService) {
+    this.urlGenerator = urlGenerator;
+    this.messageSource = messageSource;
+    this.localizationProviderService = localizationProviderService;
+    this.afterPartyLocationService = afterPartyLocationService;
+  }
 
-	public String formatDinnerRouteMessage(final RunningDinner runningDinner, final Participant teamMember, final Team parentTeam, final List<Team> dinnerRoute,
-			final DinnerRouteTextMessage dinnerRouteTextMessage) {
+  public String formatDinnerRouteMessage(final RunningDinner runningDinner, final Participant teamMember,
+      final Team parentTeam, final List<Team> dinnerRoute,
+      final DinnerRouteTextMessage dinnerRouteTextMessage) {
 
-		Locale locale = localizationProviderService.getUserLocale();
-		DateTimeFormatter timeFormat = localizationProviderService.getTimeFormatter();
-		
-		String hostsTemplate = dinnerRouteTextMessage.getHostsTemplate();
-		String selfTemplate = dinnerRouteTextMessage.getSelfTemplate();
-		String theMessage = dinnerRouteTextMessage.getMessage();
-		Assert.state(StringUtils.isNotEmpty(selfTemplate), "Self part template must not be empty!");
-		Assert.state(StringUtils.isNotEmpty(hostsTemplate), "Hosts part template must not be empty!");
-		Assert.state(StringUtils.isNotEmpty(theMessage), "Message template must not be empty!");
+    Locale locale = localizationProviderService.getUserLocale();
+    DateTimeFormatter timeFormat = localizationProviderService.getTimeFormatter();
 
-		final String noTimeText = messageSource.getMessage("message.template.no.time", null, locale);
+    String hostsTemplate = dinnerRouteTextMessage.getHostsTemplate();
+    String selfTemplate = dinnerRouteTextMessage.getSelfTemplate();
+    String theMessage = dinnerRouteTextMessage.getMessage();
+    Assert.state(StringUtils.isNotEmpty(selfTemplate), "Self part template must not be empty!");
+    Assert.state(StringUtils.isNotEmpty(hostsTemplate), "Hosts part template must not be empty!");
+    Assert.state(StringUtils.isNotEmpty(theMessage), "Message template must not be empty!");
+
+    final String noTimeText = messageSource.getMessage("message.template.no.time", null, locale);
     final String noMobileText = messageSource.getMessage("message.template.no.mobile", null, locale);
 
-		theMessage = theMessage.replaceAll(FormatterUtil.FIRSTNAME, teamMember.getName().getFirstnamePart());
-		theMessage = theMessage.replaceAll(FormatterUtil.LASTNAME, teamMember.getName().getLastname());
-		String routeLink = urlGenerator.constructPrivateDinnerRouteUrl(runningDinner.getSelfAdministrationId(), parentTeam.getId(), teamMember.getId());
-		theMessage = theMessage.replaceAll(FormatterUtil.ROUTELINK, routeLink);
+    theMessage = theMessage.replaceAll(FormatterUtil.FIRSTNAME, teamMember.getName().getFirstnamePart());
+    theMessage = theMessage.replaceAll(FormatterUtil.LASTNAME, teamMember.getName().getLastname());
+    String routeLink = urlGenerator.constructPrivateDinnerRouteUrl(runningDinner.getSelfAdministrationId(), parentTeam.getId(), teamMember.getId());
+    theMessage = theMessage.replaceAll(FormatterUtil.ROUTELINK, routeLink);
 
-		final int dinnerRouteSize = dinnerRoute.size();
+    theMessage = afterPartyLocationService.replaceAfterPartyLocationTemplate(theMessage, runningDinner);
 
-		StringBuilder plan = new StringBuilder();
-		int cnt = 0;
-		for (Team dinnerRouteTeam : dinnerRoute) {
+    final int dinnerRouteSize = dinnerRoute.size();
 
-			Participant hostTeamMember = dinnerRouteTeam.getHostTeamMember();
+    StringBuilder plan = new StringBuilder();
+    int cnt = 0;
+    for (Team dinnerRouteTeam : dinnerRoute) {
 
-			String mealLabel = dinnerRouteTeam.getMealClass().getLabel();
-			LocalDateTime mealTime = dinnerRouteTeam.getMealClass().getTime();
+      Participant hostTeamMember = dinnerRouteTeam.getHostTeamMember();
 
-			// The plan-part for the team of the participant to which to send this message:
-			if (dinnerRouteTeam.equals(parentTeam)) {
-				String self = selfTemplate;
-				self = self.replaceAll(FormatterUtil.FIRSTNAME, hostTeamMember.getName().getFirstnamePart());
-				self = self.replaceAll(FormatterUtil.LASTNAME, hostTeamMember.getName().getLastname());
-				self = self.replaceAll(FormatterUtil.MEAL, mealLabel);
-				self = self.replaceAll(FormatterUtil.MEALTIME, FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText));
-				String mealSpecificsOfGuestTeams = getMealSpecificsOfGuestTeams(parentTeam, locale);
-				self = self.replaceAll(FormatterUtil.MEALSPECIFICS, mealSpecificsOfGuestTeams);
-				if (StringUtils.isEmpty(mealSpecificsOfGuestTeams) /*&& (self.endsWith("\\n") || self.endsWith("\\r"))*/) {
-				  // TODO: Don't know why if check with new line doesnt work
-				  self = StringUtils.chop(self); // prevent unnecessary newline
-				}
-				plan.append(self);
-			}
-			// The plan-part(s) for the host-teams:
-			else {
-			  String host = hostsTemplate;
-			  if (dinnerRouteTeam.getStatus() != TeamStatus.CANCELLED) {
-			    host = host.replaceAll(FormatterUtil.FIRSTNAME, hostTeamMember.getName().getFirstnamePart());
-		      host = host.replaceAll(FormatterUtil.LASTNAME, hostTeamMember.getName().getLastname());
-	        host = host.replaceAll(FormatterUtil.MEAL, mealLabel);
-	        host = host.replaceAll(FormatterUtil.MEALTIME, FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText));
-	        
-	        String address = FormatterUtil.generateAddressString(hostTeamMember); 
-  	      host = host.replaceFirst(FormatterUtil.HOSTADDRESS, address);
-  	      
-  	      String mobileNumberStr = TeamRouteBuilder.getMobileNumbersCommaSeparated(dinnerRouteTeam);
-  	      mobileNumberStr = StringUtils.defaultIfEmpty(mobileNumberStr, noMobileText);
-  	      host = host.replaceAll(FormatterUtil.MOBILENUMBER, mobileNumberStr);
-			  } else {
-		      host = generateHostCancelledMessage(dinnerRouteTeam, locale, timeFormat, noTimeText);
-			  }
+      String mealLabel = dinnerRouteTeam.getMealClass().getLabel();
+      LocalDateTime mealTime = dinnerRouteTeam.getMealClass().getTime();
 
-				plan.append(host);
-			}
+      // The plan-part for the team of the participant to which to send this message:
+      if (dinnerRouteTeam.equals(parentTeam)) {
+        String self = selfTemplate;
+        self = self.replaceAll(FormatterUtil.FIRSTNAME, hostTeamMember.getName().getFirstnamePart());
+        self = self.replaceAll(FormatterUtil.LASTNAME, hostTeamMember.getName().getLastname());
+        self = self.replaceAll(FormatterUtil.MEAL, mealLabel);
+        self = self.replaceAll(FormatterUtil.MEALTIME,
+            FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText));
+        String mealSpecificsOfGuestTeams = getMealSpecificsOfGuestTeams(parentTeam, locale);
+        self = self.replaceAll(FormatterUtil.MEALSPECIFICS, mealSpecificsOfGuestTeams);
+        if (StringUtils.isEmpty(mealSpecificsOfGuestTeams) /* && (self.endsWith("\\n") || self.endsWith("\\r")) */) {
+          // TODO: Don't know why if check with new line doesnt work
+          self = StringUtils.chop(self); // prevent unnecessary newline
+        }
+        plan.append(self);
+      }
+      // The plan-part(s) for the host-teams:
+      else {
+        String host = hostsTemplate;
+        if (dinnerRouteTeam.getStatus() != TeamStatus.CANCELLED) {
+          host = host.replaceAll(FormatterUtil.FIRSTNAME, hostTeamMember.getName().getFirstnamePart());
+          host = host.replaceAll(FormatterUtil.LASTNAME, hostTeamMember.getName().getLastname());
+          host = host.replaceAll(FormatterUtil.MEAL, mealLabel);
+          host = host.replaceAll(FormatterUtil.MEALTIME,
+              FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText));
 
-			if (++cnt < dinnerRouteSize) {
-				plan.append(FormatterUtil.TWO_NEWLINES);
-				plan.append(FormatterUtil.NEWLINE);
-			}
-		}
+          String address = FormatterUtil.generateAddressString(hostTeamMember);
+          host = host.replaceFirst(FormatterUtil.HOSTADDRESS, address);
 
-		theMessage = theMessage.replaceFirst(FormatterUtil.ROUTE, plan.toString());
+          String mobileNumberStr = TeamRouteBuilder.getMobileNumbersCommaSeparated(dinnerRouteTeam);
+          mobileNumberStr = StringUtils.defaultIfEmpty(mobileNumberStr, noMobileText);
+          host = host.replaceAll(FormatterUtil.MOBILENUMBER, mobileNumberStr);
+        } else {
+          host = generateHostCancelledMessage(dinnerRouteTeam, locale, timeFormat, noTimeText);
+        }
 
-		return theMessage;
+        plan.append(host);
+      }
 
-	}
+      if (++cnt < dinnerRouteSize) {
+        plan.append(FormatterUtil.TWO_NEWLINES);
+        plan.append(FormatterUtil.NEWLINE);
+      }
+    }
 
-	public String getMealSpecificsOfGuestTeams(Team parentTeam, Locale locale) {
+    theMessage = theMessage.replaceFirst(FormatterUtil.ROUTE, plan.toString());
 
-    List<MealSpecifics> allGuestMealspecifics = parentTeam.getMealSpecificsOfGuestTeams(); 
-    
+    return theMessage;
+
+  }
+
+  public String getMealSpecificsOfGuestTeams(Team parentTeam, Locale locale) {
+
+    List<MealSpecifics> allGuestMealspecifics = parentTeam.getMealSpecificsOfGuestTeams();
+
     if (CollectionUtils.isEmpty(allGuestMealspecifics)) {
       return StringUtils.EMPTY;
     }
-    
+
     MealSpecifics resultingMealSpecifics = new MealSpecifics();
     for (MealSpecifics guestMealspecifics : allGuestMealspecifics) {
       resultingMealSpecifics.unionWith(guestMealspecifics);
     }
-   
+
     final String mealSpecificsNotes = getMealSpecificsNotes(allGuestMealspecifics);
-    
+
     String result = StringUtils.EMPTY;
     if (resultingMealSpecifics.isOneSelected()) {
       result = messageSource.getMessage("message.template.dinnerroute.mealspecifics", null, locale);
@@ -142,11 +154,12 @@ public class DinnerRouteMessageFormatter {
       if (resultingMealSpecifics.isOneSelected()) {
         result += FormatterUtil.NEWLINE;
       }
-      String mealSepcificsNotesText = messageSource.getMessage("message.template.dinnerroute.mealspecifics-note", null, locale);
+      String mealSepcificsNotesText = messageSource.getMessage("message.template.dinnerroute.mealspecifics-note", null,
+          locale);
       mealSepcificsNotesText = mealSepcificsNotesText.replaceAll(FormatterUtil.MEALSPECIFICS_NOTE, mealSpecificsNotes);
       result += mealSepcificsNotesText;
     }
-    
+
     return result;
   }
 
@@ -166,23 +179,24 @@ public class DinnerRouteMessageFormatter {
       }
       result.append(note);
     }
-    
+
     return result.toString();
   }
 
   public void setUrlGenerator(UrlGenerator urlGenerator) {
-		this.urlGenerator = urlGenerator;
-	}
+    this.urlGenerator = urlGenerator;
+  }
 
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
-	}
-	
-	private static String generateHostCancelledMessage(Team team, Locale locale, DateTimeFormatter timeFormat, String noTimeText) {
-	  
+  public void setMessageSource(MessageSource messageSource) {
+    this.messageSource = messageSource;
+  }
+
+  private static String generateHostCancelledMessage(Team team, Locale locale, DateTimeFormatter timeFormat,
+      String noTimeText) {
+
     LocalDateTime mealTime = team.getMealClass().getTime();
     String mealLabel = team.getMealClass().getLabel();
-	  return mealLabel + " (" + FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText) + " Uhr) ENTFÄLLT";
+    return mealLabel + " (" + FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText) + " Uhr) ENTFÄLLT";
   }
 
 }

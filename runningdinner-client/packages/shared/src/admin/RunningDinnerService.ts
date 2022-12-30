@@ -1,12 +1,15 @@
 import axios from 'axios';
 import { BackendConfig } from "../BackendConfig";
 import cloneDeep from "lodash/cloneDeep";
-import {Meal, RunningDinner, RunningDinnerBasicDetailsFormModel,
-        RunningDinnerOptions, RunningDinnerPublicSettings, ReSendRunningDinnerCreatedMessageModel} from "../types";
+import {
+  Meal, RunningDinner, RunningDinnerBasicDetailsFormModel,
+  RunningDinnerOptions, RunningDinnerPublicSettings, ReSendRunningDinnerCreatedMessageModel, AfterPartyLocation
+} from "../types";
 import {CONSTANTS} from "../Constants";
 import {getDaysBetweenDates} from '../date';
 import {CreateRunningDinnerWizardModel} from "../wizard";
 import {hasClosedRegistrationType} from "./SettingsService"
+import {isStringNotEmpty} from "@runningdinner/shared";
 
 export async function findRunningDinnerAsync(adminId: string): Promise<RunningDinner> {
   const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}`);
@@ -64,6 +67,18 @@ export async function reSendRunningDinnerCreatedMessageAsync(adminId: string, re
   return response.data;
 }
 
+export async function updateAfterPartyLocationAsync(adminId: string, afterPartyLocation: AfterPartyLocation): Promise<RunningDinner> {
+  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/afterpartylocation`);
+  const response = await axios.put<RunningDinner>(url, afterPartyLocation);
+  return response.data;
+}
+
+export async function deleteAfterPartyLocationAsync(adminId: string): Promise<RunningDinner> {
+  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/afterpartylocation`);
+  const response = await axios.delete<RunningDinner>(url);
+  return response.data;
+}
+
 export function isClosedDinner(dinner: RunningDinner | CreateRunningDinnerWizardModel): boolean {
   return hasClosedRegistrationType(dinner.basicDetails);
 }
@@ -88,4 +103,8 @@ export function getMinimumParticipantsNeeded(runningDinnerOptions: RunningDinner
   const numMeals = runningDinnerOptions.meals.length;
   const teamSize = runningDinnerOptions.teamSize;
   return numMeals * numMeals * teamSize;
+}
+
+export function isAfterPartyLocationDefined(afterPartyLocation?: AfterPartyLocation) {
+  return afterPartyLocation !== undefined && afterPartyLocation != null && isStringNotEmpty(afterPartyLocation.street);
 }

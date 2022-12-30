@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RunningDinner;
@@ -28,6 +29,9 @@ public class TeamArrangementMessageFormatter {
 
   @Autowired
   LocalizationProviderService localizationProviderService;
+  
+  @Autowired
+  AfterPartyLocationService afterPartyLocationService;
 
   public String formatTeamMemberMessage(RunningDinner runningDinner, Participant teamMember, Team parentTeam, TeamArrangementTextMessage teamArrangementTextMessage) {
 
@@ -50,9 +54,10 @@ public class TeamArrangementMessageFormatter {
     theMessage = theMessage.replaceAll(FormatterUtil.FIRSTNAME, teamMember.getName().getFirstnamePart());
     theMessage = theMessage.replaceAll(FormatterUtil.LASTNAME, teamMember.getName().getLastname());
     theMessage = theMessage.replaceAll(FormatterUtil.MEAL, parentTeam.getMealClass().getLabel());
-    theMessage = theMessage.replaceAll(FormatterUtil.MEALTIME,
-      FormatterUtil.getFormattedTime(parentTeam.getMealClass().getTime(), timeFormat, noTimeText));
+    theMessage = theMessage.replaceAll(FormatterUtil.MEALTIME, FormatterUtil.getFormattedTime(parentTeam.getMealClass().getTime(), timeFormat, noTimeText));
 
+    theMessage = afterPartyLocationService.replaceAfterPartyLocationTemplate(theMessage, runningDinner);
+    
     Set<Participant> partners = CoreUtil.excludeFromSet(teamMember, parentTeam.getTeamMembers());
 
     int cnt = 0;

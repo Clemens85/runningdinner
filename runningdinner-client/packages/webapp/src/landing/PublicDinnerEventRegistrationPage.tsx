@@ -4,7 +4,7 @@ import {Fetch} from "../common/Fetch";
 import {
   AddressLocation, BasePublicDinnerProps,
   findPublicRunningDinnerByPublicId,
-  formatLocalDate,
+  formatLocalDate, isAfterPartyLocationDefined,
   isStringEmpty,
   isStringNotEmpty,
   LocalDate,
@@ -13,7 +13,7 @@ import {
   Time,
   useDisclosure
 } from "@runningdinner/shared";
-import {PageTitle} from "../common/theme/typography/Tags";
+import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
 import {
   Box, Grid,
@@ -86,6 +86,9 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
 
   const endOfRegistrationDateStr = formatLocalDate(publicSettings.endOfRegistrationDate);
 
+  const { afterPartyLocation } = publicRunningDinner;
+  const hasAfterPartyLocation = isAfterPartyLocationDefined(afterPartyLocation);
+
   function renderMealListItem(meal: Meal) {
     return (
       <ListItem key={meal.id} disableGutters>
@@ -157,6 +160,16 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
         <FormFieldset>{t("common:description")}</FormFieldset>
         <Paragraph><TextViewHtml text={publicSettings.description}/></Paragraph>
       </Box>
+
+      { hasAfterPartyLocation &&
+        <Box mt={2}>
+          <FormFieldset>{t("common:after_event_party")} {t('common:at_time')} <Time date={afterPartyLocation!.time} /></FormFieldset>
+          { isStringNotEmpty(afterPartyLocation!.addressName) && <Paragraph>{afterPartyLocation!.addressName}</Paragraph> }
+          <Paragraph>{afterPartyLocation!.street} {afterPartyLocation!.streetNr}</Paragraph>
+          <Paragraph>{afterPartyLocation!.zip} {afterPartyLocation!.cityName}</Paragraph>
+          { isStringNotEmpty(afterPartyLocation!.addressRemarks) && <Paragraph>{afterPartyLocation!.addressRemarks}</Paragraph> }
+        </Box>
+      }
 
       { isPublicContactInfoAvailable &&
         <Box mt={2}>

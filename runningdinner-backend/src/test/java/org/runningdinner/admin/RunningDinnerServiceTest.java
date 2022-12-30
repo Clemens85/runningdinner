@@ -100,7 +100,7 @@ public class RunningDinnerServiceTest {
     
     List<Participant> participants = ParticipantGenerator.generateParticipants(DINNER_NUM_PARTICIPANTS);
     return createRunningDinnerWizardService.createRunningDinnerWithParticipants(info, runningDinnerConfig, DINNER_EMAIL, RunningDinnerType.STANDARD, 
-                                                                                CreateRunningDinnerInitializationService.createContract(), participants);
+                                                                                CreateRunningDinnerInitializationService.createContract(), null, participants);
   }
 
   
@@ -204,7 +204,7 @@ public class RunningDinnerServiceTest {
 
     List<Participant> participants = ParticipantGenerator.generateParticipants(DINNER_NUM_PARTICIPANTS);
     RunningDinner result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(basicDetails, runningDinnerConfig, DINNER_EMAIL, RunningDinnerType.STANDARD, 
-                                                                                                CreateRunningDinnerInitializationService.createContract(), participants);
+                                                                                                CreateRunningDinnerInitializationService.createContract(), null, participants);
 
     assertThat(result.getConfiguration().getMealClasses()).extracting("label").containsExactly("Vor", "Haupt", "Nach");
 

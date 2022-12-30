@@ -53,7 +53,8 @@ public class CreateRunningDinnerInitializationService {
     PublicSettings publicSettings = new PublicSettings("Running Dinner in Freiburg", generatePublicDescription(), dinnerDate.minusDays(5), false);
     publicSettings.setPublicContactEmail(DEFAULT_DINNER_CREATION_ADDRESS);
     publicSettings.setPublicContactName("Max Mustermann");
-    RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, runningDinnerConfig, publicSettings, DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD);
+    RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, runningDinnerConfig, publicSettings, 
+                                                                    DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, null);
 
     acknowledgeRunningDinner(result);
     
@@ -70,7 +71,7 @@ public class CreateRunningDinnerInitializationService {
     List<Participant> participants = ParticipantService.newParticipantsFromDemoXls(); 
     Contract contract = CreateRunningDinnerInitializationService.createContract();
     RunningDinner result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(runningDinnerInfo, runningDinnerConfig, DEFAULT_DINNER_CREATION_ADDRESS, 
-                                                                                                RunningDinnerType.STANDARD, contract, participants);
+                                                                                                RunningDinnerType.STANDARD, contract, null, participants);
     
     acknowledgeRunningDinner(result);
     

@@ -1,7 +1,12 @@
 import React, {useState} from 'react';
 import {FormProvider, useForm} from "react-hook-form";
 import {
-  BaseRunningDinnerProps, findRegistrationTypesAsync, HttpError, isClosedDinner, LabelValue, RunningDinner,
+  BaseRunningDinnerProps,
+  findRegistrationTypesAsync,
+  HttpError,
+  isClosedDinner,
+  LabelValue,
+  RunningDinner,
   RunningDinnerBasicDetailsFormModel,
   newEmptyRunningDinnerBasicDetailsFormModel,
   updateBasicSettingsAsync,
@@ -19,7 +24,13 @@ import {
   cancelRunningDinnerAsync,
   setUpdatedRunningDinner,
   updateRegistrationActiveState,
-  newObjectWithDefaultValuesIfNotSet
+  newObjectWithDefaultValuesIfNotSet,
+  AfterPartyLocation,
+  newAfterPartyLocation,
+  isAfterPartyLocationDefined,
+  BaseAdminIdProps,
+  updateAfterPartyLocationAsync,
+  deleteAfterPartyLocationAsync
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import { SpacingGrid } from '../../common/theme/SpacingGrid';
@@ -42,6 +53,8 @@ import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useDispatch } from 'react-redux';
 import FormCheckbox from '../../common/input/FormCheckbox';
+import {AfterPartyLocationToggleButton} from "../../common/dinnersettings/AfterPartyLocationToggleButton";
+import {AfterPartyLocationFormControl} from "../../common/dinnersettings/AfterPartyLocationFormControl";
 
 export function SettingsPage({runningDinner}: BaseRunningDinnerProps) {
 
@@ -115,6 +128,8 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
     );
   }
 
+  const paddingRightOfLeftCol = !isMobileDevice ? 6 : undefined;
+
   return (
     <>
       <PageTitle>{t('common:settings')}</PageTitle>
@@ -126,14 +141,15 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
         </SpacingGrid> 
       }
       <SpacingGrid container>
-        <SpacingGrid item xs={12} md={7} pr={!isMobileDevice ? 6 : undefined}>
+        <SpacingGrid item xs={12} md={7} pr={paddingRightOfLeftCol}>
           <BasicDinnerSettingsView registrationTypes={registrationTypes} 
                                    runningDinner={currentRunningDinner} 
                                    onSettingsSaved={handleRunningDinnerUpdated} />
+          <AfterPartyLocationSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
         </SpacingGrid>
         { !isClosedDinner(currentRunningDinner) &&
           <SpacingGrid item xs={12} md={5}>
-            <PublicDinnerSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} registrationTypes={registrationTypes}/>
+            <PublicDinnerSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
           </SpacingGrid>
         }
       </SpacingGrid>
@@ -148,12 +164,11 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
 
 }
 
-
-interface BasicDinnerSettingsViewProps extends SettingsViewControllerProps {
+type OnSettingsSavedCallback = {
   onSettingsSaved: (runningDinner: RunningDinner) => unknown;
-}
+};
 
-function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSaved}: BasicDinnerSettingsViewProps) {
+function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSaved}: SettingsViewControllerProps & OnSettingsSavedCallback) {
 
   const {t} = useTranslation(['common', 'admin']);
 
@@ -281,7 +296,7 @@ function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSa
   );
 }
 
-export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: BasicDinnerSettingsViewProps) {
+function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: BaseRunningDinnerProps & OnSettingsSavedCallback) {
 
   const {t} = useTranslation(['common', 'admin']);
 
@@ -377,6 +392,119 @@ export function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: Basic
                                                                      dialogTitle={getUpdateRegistrationStateLabel()}
                                                                      buttonConfirmText={"Ok"}
                                                                      buttonCancelText={t('common:cancel')} /> }
+      </FormProvider>
+    </>
+  );
+}
+
+function AfterPartyLocationSettingsView({runningDinner, onSettingsSaved}: BaseRunningDinnerProps & OnSettingsSavedCallback) {
+
+  const {adminId} = runningDinner;
+
+  const {showSuccess} = useCustomSnackbar();
+  const {t} = useTranslation(['admin', 'common']);
+
+  const [currentAfterPartyLocation, setCurrentAfterPartyLocation] = useState(isAfterPartyLocationDefined(runningDinner.afterPartyLocation) ? runningDinner.afterPartyLocation : undefined);
+
+  const {open: openDeleteConfirmationDialog,
+        isOpen: isDeleteConfirmationDialogOpen,
+        close: closeDeleteConfirmationDialog} = useDisclosure();
+
+  async function handleToggleAfterPartyLocation(enable: boolean) {
+    if (enable) {
+      setCurrentAfterPartyLocation(isAfterPartyLocationDefined(runningDinner.afterPartyLocation) ? runningDinner.afterPartyLocation : newAfterPartyLocation(runningDinner));
+    } else {
+      if (!isAfterPartyLocationDefined(runningDinner.afterPartyLocation)) {
+        setCurrentAfterPartyLocation(undefined);
+        return;
+      } else {
+        openDeleteConfirmationDialog();
+      }
+    }
+  }
+
+  async function handleDeleteAfterPartyLocation(confirmed: boolean) {
+    if (!confirmed) {
+      closeDeleteConfirmationDialog();
+      return;
+    }
+    const updatedRunningDinner = await deleteAfterPartyLocationAsync(adminId);
+    showSuccess(t("admin:settings_saved_success"));
+    closeDeleteConfirmationDialog();
+    setCurrentAfterPartyLocation(undefined);
+    onSettingsSaved(updatedRunningDinner);
+  }
+
+  return (
+    <>
+      <AfterPartyLocationToggleButton afterPartyLocationEnabled={!!currentAfterPartyLocation} onToggleAfterPartyLocation={handleToggleAfterPartyLocation} mb={3}  />
+      { currentAfterPartyLocation && <AfterPartyLocationFormView afterPartyLocation={currentAfterPartyLocation} adminId={adminId} onSettingsSaved={onSettingsSaved} /> }
+      { isDeleteConfirmationDialogOpen && <ConfirmationDialog buttonConfirmText={t("common:delete")}
+                                                              onClose={handleDeleteAfterPartyLocation}
+                                                              danger={true}
+                                                              dialogTitle={t("common:after_party_location_remove")}
+                                                              dialogContent={t("common:after_party_location_remove_confirmation")} /> }
+    </>
+  );
+}
+
+type AfterPartyLocationFormViewProps = {
+  afterPartyLocation: AfterPartyLocation;
+} & OnSettingsSavedCallback & BaseAdminIdProps;
+
+function AfterPartyLocationFormView({adminId, afterPartyLocation, onSettingsSaved}: AfterPartyLocationFormViewProps) {
+
+  const {t} = useTranslation(['admin', 'common']);
+
+  const commonStyles = useCommonStyles();
+  const {showSuccess} = useCustomSnackbar();
+
+  const formMethods = useForm({
+    defaultValues: afterPartyLocation,
+    mode: 'onTouched'
+  });
+  const { clearErrors, setError, handleSubmit, reset, formState } = formMethods;
+
+  React.useEffect(() => {
+    if (afterPartyLocation) {
+      reset({
+        ...afterPartyLocation
+      });
+    }
+    clearErrors();
+    // eslint-disable-next-line
+  }, [afterPartyLocation, reset, clearErrors]);
+
+  const {applyValidationIssuesToForm} = useBackendIssueHandler();
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError();
+
+  async function handleSubmitAfterPartyLocation(values: AfterPartyLocation) {
+    clearErrors();
+    try {
+      const afterPartyLocationToSubmit = { ...values };
+      const updatedRunningDinner = await updateAfterPartyLocationAsync(adminId, afterPartyLocationToSubmit);
+      showSuccess(t("admin:settings_saved_success"));
+      onSettingsSaved(updatedRunningDinner);
+    } catch (e) {
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
+    }
+  }
+
+  return (
+    <>
+      <FormProvider {...formMethods}>
+        <form>
+          <AfterPartyLocationFormControl />
+          <SpacingGrid container justify={"flex-end"}>
+            <SpacingGrid item pt={3} pb={6}>
+              <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitAfterPartyLocation)}
+                             className={commonStyles.buttonSpacingLeft}>
+                { t('common:save') }
+              </PrimaryButton>
+            </SpacingGrid>
+          </SpacingGrid>
+        </form>
       </FormProvider>
     </>
   );

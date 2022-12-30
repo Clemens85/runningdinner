@@ -1,4 +1,4 @@
-import {BaseEntity} from "./Base";
+import {BaseEntity, GeocodingResult} from "./Base";
 import {CONSTANTS} from "../Constants";
 import clone from "lodash/clone";
 import {isStringEmpty} from "../";
@@ -74,11 +74,6 @@ export interface TeamPartnerWishInfo {
   state: TeamPartnerWishState;
   subscribedParticipant: Participant;
   matchingParticipant: Participant;
-}
-
-export interface GeocodingResult {
-  lat?: number;
-  lng?: number;
 }
 
 const EMPTY_PARTICIPANT: Participant = {

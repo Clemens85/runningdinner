@@ -20,59 +20,59 @@ import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
 public class ParticipantAddress {
 
   @SafeHtml
-	private String street;
-  
-  @SafeHtml
-	private String streetNr;
+  private String street;
 
   @SafeHtml
-	private String zip;
-  @SafeHtml
-	private String cityName;
+  private String streetNr;
 
   @SafeHtml
-	private String addressName;
+  private String zip;
   @SafeHtml
-	private String remarks;
+  private String cityName;
 
-	public ParticipantAddress(final String street, final String streetNr, final String zip) {
-		this.setStreet(street);
-		this.setStreetNr(streetNr);
-		this.setZip(zip);
-	}
+  @SafeHtml
+  private String addressName;
+  @SafeHtml
+  private String remarks;
 
-	/**
-	 * Used only for JPA and Spring MVC
-	 */
-	public ParticipantAddress() {
-		// JPA and Spring MVC
-	}
+  public ParticipantAddress(final String street, final String streetNr, final String zip) {
+    this.setStreet(street);
+    this.setStreetNr(streetNr);
+    this.setZip(zip);
+  }
 
-	/**
-	 * Tries to construct a new address from the passed string.<br>
-	 * The passed string is to be expected in the following format:<br>
-	 * <br>
-	 * Street Street-Number \n<br>
-	 * Zip City<br>
-	 * 
-	 * @param completeAddressString
-	 * @throws IllegalArgumentException If string could not be parsed
-	 * @return
-	 */
-	public static ParticipantAddress parseFromString(String completeAddressString) {
-		String[] addressParts = completeAddressString.split("\\r?\\n");
+  /**
+   * Used only for JPA and Spring MVC
+   */
+  public ParticipantAddress() {
+    // JPA and Spring MVC
+  }
 
-		if (addressParts.length != 2) {
-			throw new InvalidAddressException("Address must be provided in format like MyStreet 12 NEWLINE 12345 MyCity");
-		}
+  /**
+   * Tries to construct a new address from the passed string.<br>
+   * The passed string is to be expected in the following format:<br>
+   * <br>
+   * Street Street-Number \n<br>
+   * Zip City<br>
+   * 
+   * @param completeAddressString
+   * @throws IllegalArgumentException If string could not be parsed
+   * @return
+   */
+  public static ParticipantAddress parseFromString(String completeAddressString) {
+    String[] addressParts = completeAddressString.split("\\r?\\n");
 
-		String streetWithNr = addressParts[0].trim();
-		String zipAndCity = addressParts[1].trim();
-		ParticipantAddress result = new ParticipantAddress();
-		result.setStreetAndNr(streetWithNr);
-		result.setZipAndCity(zipAndCity);
-		return result;
-	}
+    if (addressParts.length != 2) {
+      throw new InvalidAddressException("Address must be provided in format like MyStreet 12 NEWLINE 12345 MyCity");
+    }
+
+    String streetWithNr = addressParts[0].trim();
+    String zipAndCity = addressParts[1].trim();
+    ParticipantAddress result = new ParticipantAddress();
+    result.setStreetAndNr(streetWithNr);
+    result.setZipAndCity(zipAndCity);
+    return result;
+  }
 
 	/**
 	 * Tries to construct a new address from the passed string.<br>
@@ -195,7 +195,7 @@ public class ParticipantAddress {
 	}
 
 	public String getStreetWithNr() {
-		return street + " " + streetNr;
+		return formatStreetWithNr(street, streetNr);
 	}
 
 	public void setStreet(String street) {
@@ -223,10 +223,7 @@ public class ParticipantAddress {
 	}
 
 	public String getZipWithCity() {
-		if (StringUtils.isNotEmpty(cityName)) {
-			return zip + " " + cityName;
-		}
-		return String.valueOf(zip);
+	  return formatZipWithCity(zip, cityName);
 	}
 
 	public String getCityName() {
@@ -253,21 +250,33 @@ public class ParticipantAddress {
 		this.remarks = StringUtils.trim(remarks);
 	}
 
-	public ParticipantAddress createDetachedClone() {
+    public ParticipantAddress createDetachedClone() {
 
-    ParticipantAddress result = new ParticipantAddress();
-    result.addressName = addressName;
-    result.cityName = cityName;
-    result.zip = zip;
-    result.street = street;
-    result.streetNr = streetNr;
-    result.remarks = remarks;
-    return result;
-	}
+      ParticipantAddress result = new ParticipantAddress();
+      result.addressName = addressName;
+      result.cityName = cityName;
+      result.zip = zip;
+      result.street = street;
+      result.streetNr = streetNr;
+      result.remarks = remarks;
+      return result;
+    }
+    
+    public static String formatStreetWithNr(String street, String streetNr) {
+      return street + " " + streetNr;
+    }
+    
+    public static String formatZipWithCity(String zip, String cityName) {
+      if (StringUtils.isNotEmpty(cityName)) {
+        return zip + " " + cityName;
+      }
+      return String.valueOf(zip);
+    }
+    
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(3, 19).append(getZip()).append(getStreet()).append(getStreetNr()).hashCode();
+	  return new HashCodeBuilder(3, 19).append(getZip()).append(getStreet()).append(getStreetNr()).hashCode();
 	}
 
 	@Override

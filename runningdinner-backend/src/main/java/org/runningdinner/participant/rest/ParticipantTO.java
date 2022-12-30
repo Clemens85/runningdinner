@@ -23,8 +23,6 @@ public class ParticipantTO extends BaseParticipantTO {
 
   private UUID teamId;
 
-//  private AssignmentType assignmentType;
-  
   private LocalDateTime activationDate;
   
   private GeocodingResult geocodingResult;
@@ -39,7 +37,6 @@ public class ParticipantTO extends BaseParticipantTO {
     this.participantNumber = participant.getParticipantNumber();
     
     this.teamId = participant.getTeamId();
-//    this.assignmentType = participant.getAssignmentType();
     
     this.activationDate = participant.getActivationDate();
     
@@ -65,16 +62,6 @@ public class ParticipantTO extends BaseParticipantTO {
 
     this.numSeats = numSeats;
   }
-
-//  public AssignmentType getAssignmentType() {
-//
-//    return assignmentType;
-//  }
-//
-//  public void setAssignmentType(AssignmentType assignmentType) {
-//
-//    this.assignmentType = assignmentType;
-//  }
 
   public UUID getTeamId() {
   

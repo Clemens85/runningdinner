@@ -15,6 +15,8 @@ public class RunningDinnerSettingsUpdatedEvent extends ApplicationEvent {
   private RunningDinnerInfo oldBasicSettings;
   
   private PublicSettings oldPublicSettings;
+  
+  private boolean afterPartyLocationUpdate;
 
   public RunningDinnerSettingsUpdatedEvent(final Object source, final RunningDinner runningDinner, RunningDinnerInfo oldBasicSettings) {
 
@@ -30,6 +32,19 @@ public class RunningDinnerSettingsUpdatedEvent extends ApplicationEvent {
     Assert.notNull(oldPublicSettings, "old public settings must be passed");
     this.runningDinner = runningDinner;
     this.oldPublicSettings = oldPublicSettings;
+  }
+  
+  public RunningDinnerSettingsUpdatedEvent(final Object source, final RunningDinner runningDinner) {
+
+    super(source);
+    this.runningDinner = runningDinner;
+    this.afterPartyLocationUpdate = true;
+  }
+  
+  
+  public boolean isAfterPartyLocationUpdate() {
+    
+    return afterPartyLocationUpdate;
   }
   
   public boolean isBasicSettingsUpdate() {
@@ -51,5 +66,6 @@ public class RunningDinnerSettingsUpdatedEvent extends ApplicationEvent {
 
     return runningDinner;
   }
+
 }
 

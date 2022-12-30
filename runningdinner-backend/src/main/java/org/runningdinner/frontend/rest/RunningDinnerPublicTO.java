@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.runningdinner.admin.rest.MealTO;
+import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.wizard.PublicSettingsTO;
@@ -12,6 +13,8 @@ import org.runningdinner.wizard.PublicSettingsTO;
 public class RunningDinnerPublicTO {
 
   private PublicSettingsTO publicSettings;
+  
+  private AfterPartyLocation afterPartyLocation;
 
   private LocalDate date;
 
@@ -45,6 +48,7 @@ public class RunningDinnerPublicTO {
     this.languageCode = runningDinner.getLanguageCode();
     this.runningDinnerType = runningDinner.getRunningDinnerType();
     this.teamPartnerWishDisabled = runningDinner.getConfiguration().isTeamPartnerWishDisabled();
+    this.afterPartyLocation = runningDinner.getAfterPartyLocation().orElse(null);
   }
 
   public PublicSettingsTO getPublicSettings() {
@@ -145,6 +149,14 @@ public class RunningDinnerPublicTO {
   public void setTeamPartnerWishDisabled(boolean teamPartnerWishDisabled) {
   
     this.teamPartnerWishDisabled = teamPartnerWishDisabled;
+  }
+
+  public AfterPartyLocation getAfterPartyLocation() {
+    return afterPartyLocation;
+  }
+
+  public void setAfterPartyLocation(AfterPartyLocation afterPartyLocation) {
+    this.afterPartyLocation = afterPartyLocation;
   }
 
   @Override
