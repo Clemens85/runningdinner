@@ -16,8 +16,8 @@ export function AfterPartyLocationFormControl() {
     <>
       <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
         <Grid item xs={12} md={9}>
-          <Span i18n={"Falls ihr eine After-Event-Party veranstaltet, kannst du hier den Ort dafür angeben."}/>
-          <Span i18n={"Dieser Ort wird später in der Event-Beschreibeung und in den Dinner-Routen angezeigt."}/>
+          <Span i18n={"common:after_event_party_help_1"}/>
+          <Span i18n={"common:after_event_party_help_2"}/>
         </Grid>
       </SpacingGrid>
       <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>

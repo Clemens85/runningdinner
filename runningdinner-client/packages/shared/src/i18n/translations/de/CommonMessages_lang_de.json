@@ -7,6 +7,8 @@
 	"address_remarks_placeholder": "Nur ausfüllen bei Besonderheiten",
 	"address_street_nr_invalid": "Die Straße ist ungültig",
 	"after_event_party": "After-Event-Party",
+	"after_event_party_help_1": "Falls ihr eine After-Event-Party veranstaltet, kannst du hier den Ort dafür angeben.",
+	"after_event_party_help_2": "Dieser Ort wird später in der Event-Beschreibeung und in den Dinner-Routen angezeigt.",
 	"after_party_location_name": "Name",
 	"after_party_location_name_help": "Name oder Bezeichnung des Orts (optional)",
 	"after_party_location_remarks": "Weitere Bemerkungen",

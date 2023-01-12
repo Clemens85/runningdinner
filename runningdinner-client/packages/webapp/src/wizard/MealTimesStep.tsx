@@ -28,10 +28,8 @@ import { cloneDeep } from 'lodash';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {FormProvider, useForm} from "react-hook-form";
 import {useMediaQuery, useTheme} from "@material-ui/core";
-import SecondaryButton from "../common/theme/SecondaryButton";
-import Grid from "@material-ui/core/Grid";
-import FormTextField from "../common/input/FormTextField";
-import FormTimePicker from "../common/input/FormTimePicker";
+import { AfterPartyLocationToggleButton } from '../common/dinnersettings/AfterPartyLocationToggleButton';
+import {AfterPartyLocationFormControl} from "../common/dinnersettings/AfterPartyLocationFormControl";
 
 export default function MealTimesStep() {
 
@@ -130,7 +128,6 @@ export default function MealTimesStep() {
         <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
       </SpacingGrid>
   );
-
   const mealTimeFieldsDirection = isSmallDevice ? "column" : "row";
 
   return (
@@ -141,97 +138,13 @@ export default function MealTimesStep() {
             {mealTimeFields}
           </SpacingGrid>
 
-          <SpacingGrid container justify={"flex-start"} mt={5} mb={3}>
-            <SpacingGrid item>
-              { !afterPartyLocation &&
-                <SecondaryButton color={"primary"} variant={"outlined"} onClick={() => dispatch(enableAfterPartyLocation(true))}>
-                  After-Event-Party hinzufügen...
-                </SecondaryButton> }
-              { afterPartyLocation &&
-                <SecondaryButton color={"secondary"} variant={"outlined"} onClick={() => dispatch(enableAfterPartyLocation(false))}>
-                  After-Event-Party entfernen
-                </SecondaryButton> }
-            </SpacingGrid>
-          </SpacingGrid>
-
-          { afterPartyLocation && <AfterEventPartyFormView /> }
+          <AfterPartyLocationToggleButton afterPartyLocationEnabled={!!afterPartyLocation}
+                                          onToggleAfterPartyLocation={enable => dispatch(enableAfterPartyLocation(enable)) }
+                                          mt={5} mb={3} />
+          { afterPartyLocation && <AfterPartyLocationFormControl /> }
 
           <WizardButtons onSubmitData={submitTimesAsync} />
         </FormProvider>
       </div>
-  );
-}
-
-function AfterEventPartyFormView() {
-
-  const {t} = useTranslation(['wizard', 'common']);
-
-  const afterPartyLocationMt = 1;
-
-  return (
-    <>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
-        <Grid item xs={12} md={9}>
-          <Span i18n={"Falls ihr eine After-Event-Party veranstaltet, kannst du hier den Ort dafür angeben."} />
-          <Span i18n={"Dieser Ort wird später in der Event-Beschreibeung und in den Dinner-Routen angezeigt."} />
-        </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
-        <Grid item xs={12} md={9}>
-          <FormTextField name="addressName"
-                         label={t('common:after_party_location_name' )}
-                         helperText={t("common:after_party_location_name_help")}
-                         variant="outlined"
-                         fullWidth />
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <FormTimePicker
-            id={"time"}
-            label={t("common:time")}
-            name={"time"}
-            data-testid={`after-event-party-time`} />
-        </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
-        <Grid item xs={12} md={9}>
-          <FormTextField fullWidth
-                         variant="outlined"
-                         required
-                         name="street"
-                         label={t('common:street' )}/>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <FormTextField fullWidth
-                         variant="outlined"
-                         required
-                         name="streetNr"
-                         label={t('common:street_nr' )}/>
-        </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
-        <Grid item xs={12} md={3}>
-          <FormTextField name="zip"
-                         label={t('common:zip' )}
-                         required
-                         variant="outlined"
-                         fullWidth/>
-        </Grid>
-        <Grid item xs={12} md={9}>
-          <FormTextField name="cityName"
-                         label={t('common:city' )}
-                         required
-                         variant="outlined"
-                         fullWidth/>
-        </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
-        <Grid item xs={12} md={9}>
-          <FormTextField fullWidth
-                         variant="outlined"
-                         name="addressRemarks"
-                         label={t("common:after_party_location_remarks")}/>
-        </Grid>
-      </SpacingGrid>
-    </>
   );
 }
