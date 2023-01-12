@@ -8,6 +8,7 @@ import {isStringNotEmpty} from "@runningdinner/shared";
 export interface MiscSectionProps {
   teamPartnerWishHelperText?: string;
   miscNotesHelperText?: string;
+  teamPartnerWishDisabled: boolean;
 }
 
 export default function MiscSection(props: MiscSectionProps) {
@@ -16,18 +17,22 @@ export default function MiscSection(props: MiscSectionProps) {
 
   const teamPartnerWishHelperText = isStringNotEmpty(props.teamPartnerWishHelperText) ? props.teamPartnerWishHelperText : t('admin:team_partner_wish_help');
 
+  const {teamPartnerWishDisabled} = props;
+
   return (
       <>
         <FormFieldset>{t('misc')}</FormFieldset>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <FormTextField fullWidth
-                           helperText={teamPartnerWishHelperText}
-                           variant="filled"
-                           name="teamPartnerWish"
-                           label={t('teampartner_wish')}/>
-          </Grid>
-          <Grid item xs={12} md={6}>
+          { !teamPartnerWishDisabled &&
+            <Grid item xs={12} md={6}>
+              <FormTextField fullWidth
+                             helperText={teamPartnerWishHelperText}
+                             variant="filled"
+                             name="teamPartnerWish"
+                             label={t('teampartner_wish')}/>
+            </Grid>
+          }
+          <Grid item xs={12} md={teamPartnerWishDisabled ? 12 : 6}>
             <FormTextField fullWidth
                            helperText={props.miscNotesHelperText}
                            variant="filled"

@@ -205,6 +205,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
       </Box>
 
       { isRegistrationFormOpen && <PublicDinnerEventRegistrationForm publicDinnerId={publicSettings.publicDinnerId}
+                                                                     teamPartnerWishDisabled={publicRunningDinner.teamPartnerWishDisabled}
                                                                      onRegistrationPerformed={handleRegistrationPerformed}
                                                                      onCancel={closeRegistrationForm} /> }
 

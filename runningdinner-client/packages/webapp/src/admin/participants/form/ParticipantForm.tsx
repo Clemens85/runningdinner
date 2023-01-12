@@ -27,12 +27,13 @@ export interface ParticipantFormProps {
   participant: Participant;
   adminId: string;
   onParticipantSaved: CallbackHandler;
-  onParticipantDeleted: CallbackHandler
+  onParticipantDeleted: CallbackHandler;
+  teamPartnerWishDisabled: boolean;
 }
 
 // Validation, see: https://www.reactnativeschool.com/build-and-validate-forms-with-formik-and-yup/handling-server-errors
 // and: https://github.com/jaredpalmer/formik/issues/150 and https://github.com/jaredpalmer/formik/issues/33
-export default function ParticipantForm({participant, adminId, onParticipantSaved, onParticipantDeleted}: ParticipantFormProps) {
+export default function ParticipantForm({participant, adminId, onParticipantSaved, onParticipantDeleted, teamPartnerWishDisabled}: ParticipantFormProps) {
 
   const {t} = useTranslation('common');
 
@@ -123,7 +124,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
                 <MealSpecificsSection />
               </Box>
               <Box mb={3}>
-                <MiscSection />
+                <MiscSection teamPartnerWishDisabled={teamPartnerWishDisabled} />
               </Box>
 
               {isSubmitting && <LinearProgress />}

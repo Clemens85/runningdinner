@@ -137,6 +137,7 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
             { showDetailsView
                 ? <ParticipantForm participant={selectedParticipant}
                                    adminId={adminId}
+                                   teamPartnerWishDisabled={runningDinner.options.teamPartnerWishDisabled}
                                    onParticipantSaved={onParticipantSaved}
                                    onParticipantDeleted={onParticipantDeleted} />
                 : <EmptyDetails labelI18n='participant_empty_selection' />

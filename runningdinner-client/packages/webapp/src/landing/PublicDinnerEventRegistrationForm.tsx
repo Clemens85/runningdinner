@@ -67,6 +67,7 @@ export interface PublicDinnerEventRegistrationFormProps {
   onCancel: CallbackHandler;
   onRegistrationPerformed: (registrationData: RegistrationData) => unknown;
   publicDinnerId: string;
+  teamPartnerWishDisabled: boolean;
 }
 
 interface RegistrationDataCollection {
@@ -74,7 +75,7 @@ interface RegistrationDataCollection {
   registrationSummary: RegistrationSummary;
 }
 
-export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, publicDinnerId}: PublicDinnerEventRegistrationFormProps) {
+export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, publicDinnerId, teamPartnerWishDisabled}: PublicDinnerEventRegistrationFormProps) {
 
   const {t} = useTranslation(['landing', 'common']);
 
@@ -161,6 +162,7 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
                   </Box>
                   <Box mb={3}>
                     <MiscSection miscNotesHelperText={t('landing:misc_notes_help')}
+                                 teamPartnerWishDisabled={teamPartnerWishDisabled}
                                  teamPartnerWishHelperText={t('landing:team_partner_wish_help')} />
                   </Box>
                   <Box mb={3}>
