@@ -5,7 +5,12 @@ import {
   DinnerRouteTeam,
   filterDinnerRouteTeamsForValidGeocdingResults,
   Fullname,
-  getCenterPosition, getFullname, isArrayEmpty, isGeocdingResultValidForAllTeams, isGeocodingResultValid,
+  getCenterPosition,
+  getFullname,
+  isAfterPartyLocationDefined,
+  isArrayEmpty,
+  isGeocdingResultValidForAllTeams,
+  isGeocodingResultValid,
   isSameDinnerRouteTeam,
   isStringNotEmpty,
   Team,
@@ -30,6 +35,7 @@ import {useDynamicFullscreenHeight} from "../hooks/DynamicFullscreenHeightHook";
 import {Helmet} from "react-helmet-async";
 import LinkExtern from '../theme/LinkExtern';
 import {TextViewHtml} from "../TextViewHtml";
+import AfterPartyLocationHeadline from "@runningdinner/shared/src/afterpartylocation/AfterPartyLocationHeadline";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -37,7 +43,7 @@ export interface DinnerRouteProps {
 
 export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
 
-  const {mealSpecificsOfGuestTeams, teams} = dinnerRoute;
+  const {mealSpecificsOfGuestTeams, teams, afterPartyLocation} = dinnerRoute;
 
   const teamCardNodes = teams.map((team, index) =>
     <SpacingGrid item xs={12} md={4} key={team.teamNumber}>
@@ -58,6 +64,18 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
           <SpacingGrid container mb={2} spacing={4}>
             {teamCardNodes}
           </SpacingGrid>
+          { afterPartyLocation && isAfterPartyLocationDefined(afterPartyLocation) &&
+            <SpacingGrid container mb={1} spacing={4}>
+              <SpacingGrid item xs={12}>
+                <Span>
+                  <strong><AfterPartyLocationHeadline {...afterPartyLocation} />: </strong>
+                  { isStringNotEmpty(afterPartyLocation.addressName) && <>{afterPartyLocation.addressName}, </> }
+                  <>{afterPartyLocation.street} {afterPartyLocation.streetNr}, {afterPartyLocation.zip} {afterPartyLocation.cityName}</>
+                  <>{ isStringNotEmpty(afterPartyLocation.addressRemarks) && <><br />{afterPartyLocation.addressRemarks}</> }</>
+                </Span>
+              </SpacingGrid>
+            </SpacingGrid>
+          }
           <SpacingGrid item xs={12} mb={2}>
             <MapContainer dinnerRoute={dinnerRoute} />
           </SpacingGrid>

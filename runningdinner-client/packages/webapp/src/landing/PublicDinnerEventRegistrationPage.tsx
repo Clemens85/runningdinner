@@ -13,7 +13,7 @@ import {
   Time,
   useDisclosure
 } from "@runningdinner/shared";
-import {PageTitle, Span} from "../common/theme/typography/Tags";
+import {PageTitle} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
 import {
   Box, Grid,
@@ -39,6 +39,7 @@ import {Alert} from '@material-ui/lab';
 import LinkExtern from "../common/theme/LinkExtern";
 import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
 import { TextViewHtml } from '../common/TextViewHtml';
+import AfterPartyLocationHeadline from "@runningdinner/shared/src/afterpartylocation/AfterPartyLocationHeadline";
 
 
 type RegistrationFormSettingsType = {
@@ -163,7 +164,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
 
       { hasAfterPartyLocation &&
         <Box mt={2}>
-          <FormFieldset>{t("common:after_event_party")} {t('common:at_time')} <Time date={afterPartyLocation!.time} /></FormFieldset>
+          <FormFieldset><AfterPartyLocationHeadline {...afterPartyLocation!} /></FormFieldset>
           { isStringNotEmpty(afterPartyLocation!.addressName) && <Paragraph>{afterPartyLocation!.addressName}</Paragraph> }
           <Paragraph>{afterPartyLocation!.street} {afterPartyLocation!.streetNr}</Paragraph>
           <Paragraph>{afterPartyLocation!.zip} {afterPartyLocation!.cityName}</Paragraph>

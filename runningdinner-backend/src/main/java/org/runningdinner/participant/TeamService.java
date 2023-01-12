@@ -165,7 +165,7 @@ public class TeamService {
     
     String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(dinnerRouteTeam, localeOfDinner);
     
-    DinnerRouteTO result = DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams);
+    DinnerRouteTO result = DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams, runningDinner.getAfterPartyLocation());
     
     return result;
   }

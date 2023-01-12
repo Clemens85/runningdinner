@@ -14,7 +14,7 @@ import {
   updateAfterPartyLocation,
   updateMeals, validateRunningDinnerAfterPartyLocation,
 } from "@runningdinner/shared";
-import {PageTitle, Span} from "../common/theme/typography/Tags";
+import {PageTitle} from "../common/theme/typography/Tags";
 import {SpacingGrid} from "../common/theme/SpacingGrid";
 import WizardButtons from "./WizardButtons";
 import {useTranslation} from "react-i18next";

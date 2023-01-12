@@ -1,4 +1,4 @@
-import { Meal } from "./RunningDinner";
+import {AfterPartyLocation, Meal} from "./RunningDinner";
 import {Team, TeamStatus} from "./Team";
 import {Participant} from "./Participant";
 import {GeocodingResult} from "./Base";
@@ -7,6 +7,7 @@ export interface DinnerRoute {
   currentTeam: Team;
   mealSpecificsOfGuestTeams: string;
   teams: DinnerRouteTeam[];
+  afterPartyLocation?: AfterPartyLocation;
 }
 
 export interface DinnerRouteTeam {
