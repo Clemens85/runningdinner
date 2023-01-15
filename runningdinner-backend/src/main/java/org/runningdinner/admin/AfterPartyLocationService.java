@@ -77,7 +77,7 @@ public class AfterPartyLocationService {
       return runningDinner;
     }
     
-    runningDinner.getAfterPartyLocation().get().setGeocode(incomingGeocodingResult);
+    runningDinner.getAfterPartyLocation().get().setGeocodingResult(incomingGeocodingResult);
     return runningDinnerService.saveRunningDinner(runningDinner); 
   }
   

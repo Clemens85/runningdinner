@@ -66,7 +66,7 @@ public class AfterPartyLocation {
     @AttributeOverride(name = "formattedAddress", column = @Column(name = "afterPartyLocationFormattedAddress", length = 512)),
     @AttributeOverride(name = "resultType", column = @Column(name = "afterPartyLocationResultType", length = 32))
   })
-  private GeocodingResult geocode = new GeocodingResult();
+  private GeocodingResult geocodingResult = new GeocodingResult();
   
   @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
   @NotNull
@@ -120,12 +120,12 @@ public class AfterPartyLocation {
     this.addressRemarks = addressRemarks;
   }
 
-  public GeocodingResult getGeocode() {
-    return geocode;
+  public GeocodingResult getGeocodingResult() {
+    return geocodingResult;
   }
 
-  public void setGeocode(GeocodingResult geocode) {
-    this.geocode = geocode;
+  public void setGeocodingResult(GeocodingResult geocodingResult) {
+    this.geocodingResult = geocodingResult;
   }
 
   public LocalDateTime getTime() {
@@ -150,7 +150,7 @@ public class AfterPartyLocation {
     dest.setAddressName(src.getAddressName());
     dest.setAddressRemarks(src.getAddressRemarks());
     dest.setCityName(src.getCityName());
-    dest.setGeocode(src.getGeocode());
+    dest.setGeocodingResult(src.getGeocodingResult());
     dest.setStreet(src.getStreet());
     dest.setStreetNr(src.getStreetNr());
     dest.setTime(src.getTime());
@@ -161,7 +161,7 @@ public class AfterPartyLocation {
   public String toString() {
     return MoreObjects.toStringHelper(this)
       .add("address", street)
-      .add("geocode", geocode)
+      .add("geocodingResult", geocodingResult)
       .add("time", time)
       .toString();
   }

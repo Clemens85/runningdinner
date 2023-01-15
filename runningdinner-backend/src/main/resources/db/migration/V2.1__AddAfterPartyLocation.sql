@@ -1,11 +1,11 @@
 ALTER TABLE runningdinner.runningdinner
 	
-	ADD COLUMN afterPartyLocationAddressName varchar(255),
-	ADD COLUMN afterPartyLocationCityName varchar(255),
-	ADD COLUMN afterPartyLocationRemarks varchar(255),
-	ADD COLUMN afterPartyLocationStreet varchar(255),
-	ADD COLUMN afterPartyLocationStreetNr varchar(255),
-	ADD COLUMN afterPartyLocationZip varchar(255),
+	ADD COLUMN afterPartyLocationAddressName text,
+	ADD COLUMN afterPartyLocationCityName text,
+	ADD COLUMN afterPartyLocationRemarks text,
+	ADD COLUMN afterPartyLocationStreet text,
+	ADD COLUMN afterPartyLocationStreetNr text,
+	ADD COLUMN afterPartyLocationZip text,
 
 	ADD COLUMN afterPartyLocationLat varchar(64),
 	ADD COLUMN afterPartyLocationLng varchar(64),
