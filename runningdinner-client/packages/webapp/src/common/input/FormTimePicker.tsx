@@ -33,7 +33,6 @@ export default function FormTimePicker({name, label, helperText, defaultValue, .
               ampm={false}
               error={hasErrors}
               autoOk={false}
-              variant="inline"
               id={name}
               label={label}
               onChange={(newDate) => remainder.onChange(newDate)}
