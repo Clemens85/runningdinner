@@ -1,4 +1,11 @@
-import {BaseAddress, CONSTANTS, CreateRunningDinnerWizardModel, GeocodingResult, minusDays, plusHours} from "..";
+import {
+  BaseAddress,
+  CONSTANTS,
+  CreateRunningDinnerWizardModel,
+  HasGeocoding,
+  minusDays,
+  plusHours
+} from "..";
 import { BaseEntity, GenderAspects, LabelValue } from "./Base";
 
 export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
@@ -116,8 +123,7 @@ export interface AfterPartyLocationAddress extends BaseAddress {
   addressRemarks?: string;
 }
 
-export interface AfterPartyLocation extends AfterPartyLocationAddress {
-  geocode?: GeocodingResult;
+export interface AfterPartyLocation extends AfterPartyLocationAddress, HasGeocoding {
   time: Date;
 }
 

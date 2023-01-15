@@ -1,4 +1,4 @@
-import {BaseEntity, GeocodingResult} from "./Base";
+import {BaseEntity, GeocodingResult, HasGeocoding} from "./Base";
 import {CONSTANTS} from "../Constants";
 import clone from "lodash/clone";
 import {isStringEmpty} from "../";
@@ -11,7 +11,7 @@ export interface MealSpecifics {
   note: string;
 }
 
-export interface Participant extends BaseEntity {
+export interface Participant extends BaseEntity, HasGeocoding {
   participantNumber?: number;
   firstnamePart: string,
   lastname: string,
@@ -33,7 +33,6 @@ export interface Participant extends BaseEntity {
   teamPartnerWish: string;
   notes: string;
   teamId?: string;
-  geocodingResult?: GeocodingResult;
 }
 
 export interface ParticipantList {

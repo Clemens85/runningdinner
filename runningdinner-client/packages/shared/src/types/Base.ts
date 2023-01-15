@@ -90,3 +90,7 @@ export interface GeocodingResult {
   lat?: number;
   lng?: number;
 }
+
+export interface HasGeocoding {
+  geocodingResult?: GeocodingResult
+}
