@@ -9,7 +9,7 @@ import {CONSTANTS} from "../Constants";
 import {getDaysBetweenDates} from '../date';
 import {CreateRunningDinnerWizardModel} from "../wizard";
 import {hasClosedRegistrationType} from "./SettingsService"
-import {isStringNotEmpty} from "@runningdinner/shared";
+import {isStringNotEmpty} from "../Utils";
 
 export async function findRunningDinnerAsync(adminId: string): Promise<RunningDinner> {
   const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}`);
