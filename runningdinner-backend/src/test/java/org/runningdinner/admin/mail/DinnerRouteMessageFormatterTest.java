@@ -29,6 +29,7 @@ import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
+import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.springframework.context.MessageSource;
@@ -48,6 +49,9 @@ public class DinnerRouteMessageFormatterTest {
 	@Mock
 	private LocalizationProviderService localizationProviderService;
 	
+    @Mock
+    private MessageFormatterHelperService messageFormatterHelperService;
+
 	private RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
 	
 	@Before
@@ -62,7 +66,8 @@ public class DinnerRouteMessageFormatterTest {
 		Mockito.when(messageSource.getMessage(Mockito.any(), Mockito.any(), Mockito.any()))
 						.thenReturn("N/A");
     
-		this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService);
+        this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService,
+            messageFormatterHelperService);
 	}
 	
 	@Test

@@ -1,18 +1,20 @@
 package org.runningdinner.core.converter.impl;
 
-import com.google.common.base.Optional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.runningdinner.core.converter.ConversionException;
+import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
+import com.google.common.base.Optional;
 
 /**
  * Entry point for parsing "new" XLSX excel files.<br>
@@ -36,9 +38,11 @@ public class XssfConverter extends AbstractExcelConverterHighLevel implements Fi
 	}
 
 	@Override
-	public void writeParticipants(List<Participant> participants, OutputStream outputStream) throws IOException {
+    public void writeParticipants(List<Participant> participants, OutputStream outputStream,
+        ConverterWriteContext converterWriteContext)
+        throws IOException {
 		XSSFSheet sheet = createNewSheet();
-		writeParticipants(sheet, participants);
+        writeParticipants(sheet, participants, converterWriteContext);
 		XSSFWorkbook workbook = sheet.getWorkbook();
 		workbook.write(outputStream);
 	}

@@ -30,6 +30,7 @@ public interface FileConverter extends RowConverter {
 	 */
 	List<Participant> parseParticipants(InputStream inputStream) throws IOException, ConversionException;
 
-	void writeParticipants(List<Participant> participants, OutputStream outputStream) throws IOException;
+    void writeParticipants(List<Participant> participants, OutputStream outputStream,
+        ConverterWriteContext converterWriteContext) throws IOException;
 
 }
