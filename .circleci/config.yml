@@ -40,7 +40,7 @@ jobs:
           name: Build + Test
           command: |
             cd runningdinner-backend
-            ./mvnw package
+            ./mvnw package -DskipTests
 #      - save_cache:
 #          paths:
 #            - ~/.m2
@@ -58,6 +58,26 @@ jobs:
           paths:
             - runningdinner.tar.gz
             - deploy.sh
+
+  build_docker_image:
+    docker:
+      - image: docker:17.05.0-ce-git
+      - image: cimg/openjdk:17.0.3     
+    steps:
+      - checkout
+      - attach_workspace:
+          at: runningdinner-backend/target
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: |
+            java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted/
+            docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner .
+      - run:
+          name: Push to Dockerhub
+          command: |
+            docker login -u ${DOCKERHUB_USERNAME} -p password ${DOCKERHUB_PASSWORD}
+            docker push clemensstich/runningdinner
 
   build_webclient:
     docker:
@@ -177,6 +197,10 @@ workflows:
           context: workspace
           requires:
             - build_webclient
+      - build_docker_image:
+          context: workspace
+          requires:
+            - build_test_backend
       - confirm-app-deployment:
           type: approval
           filters:
