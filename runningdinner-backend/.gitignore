@@ -31,3 +31,4 @@
 /server-log.json
 /infrastructure/local/verdaccio/storage/*
 /infrastructure/local/.env
+/infrastructure/local/volume/

@@ -19,6 +19,7 @@ import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
@@ -95,6 +96,15 @@ public class RunningDinnerServiceRest {
                                                        Locale locale) {
 
     RunningDinner updatedRunningDinner = afterPartyLocationService.updateAfterPartyLocation(adminId, afterPartyLocation);
+    return mapRunningDinnerAdminTO(updatedRunningDinner, locale);
+  }
+  
+  @RequestMapping(value = "/{adminId}/afterpartylocation/geocode", method = RequestMethod.PUT)
+  public RunningDinnerAdminTO updateAfterPartyLocationGeocode(@PathVariable("adminId") final String adminId, 
+                                                              @RequestBody GeocodingResult geocodingResult, 
+                                                              Locale locale) {
+
+    RunningDinner updatedRunningDinner = afterPartyLocationService.updateAfterPartyLocationGeocode(adminId, geocodingResult);
     return mapRunningDinnerAdminTO(updatedRunningDinner, locale);
   }
   
