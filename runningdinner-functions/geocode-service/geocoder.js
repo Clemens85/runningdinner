@@ -1,9 +1,17 @@
 const axios = require('axios');
 const lodash = require('lodash');
+const {getSsmParameterCached} = require("./ssm");
 
-const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const getGoogleMapsApiKey = getSsmParameterCached({
+  Name: "/runningdinner/googlemaps/apikey",
+  WithDecryption: true,
+}, 180 * 1000); // 3 Minutes
+
+// const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 const fetchGeocode = async ({street, streetNr, zip, cityName}) => {
+
+  const API_KEY = await getGoogleMapsApiKey();
 
   if (!street || (!zip && !cityName)) {
     throw new Error("Missing street or zip/cityName");

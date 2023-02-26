@@ -23,31 +23,46 @@ org: runyourdinner
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: prod
+  stage: dev
   region: eu-central-1
+  #deploymentBucket:
+  #  name: geocode-service-prod-serverlessdeploymentbucket-1m9l8yhnx68z2
   environment:
     BACKEND_BASE_URL: ${self:custom.backendBaseUrl.${opt:stage, self:provider.stage}}
-    GOOGLE_MAPS_API_KEY: ${self:custom.secrets.GOOGLE_MAPS_API_KEY}
-    # NODE_TLS_REJECT_UNAUTHORIZED: 0
+    GOOGLE_MAPS_API_KEY: ${env:GOOGLE_MAPS_API_KEY}
+    NODE_TLS_REJECT_UNAUTHORIZED: 0
 
 custom:
-  secrets: ${file(secrets.${opt:stage, self:provider.stage}.yml)}
+  # secrets: ${file(secrets.${sls:stage}.yml)}
   stages:
     - dev
     - prod
   backendBaseUrl:
-    dev: 'https://localhost/rest'
+    dev: 'http://localhost:9090/rest'
     prod: 'https://runyourdinner.eu/rest'
+
+  localstack:
+    stages: [dev]
+    host: http://127.0.0.1
+    debug: true
+
 
   serverless-offline-sqs:
     autoCreate: true                 # create queue if not exists
     apiVersion: '2012-11-05'
-    endpoint: http://0.0.0.0:9324
+    # endpoint: http://0.0.0.0:9324
+    endpoint: http://localhost:4566
     region: eu-central-1
-    accountId: x
+    # accountId: x
+    accountId: 000000000000
     accessKeyId: root
     secretAccessKey: root
     skipCacheInvalidation: false
+
+  geocodeARN: arn:aws:sqs:eu-central-1:*:geocode
+#    dev: arn:aws:sqs:eu-central-1:000000000000:geocode
+#    prod: arn:aws:sqs:eu-central-1:*:geocode
+
 
 # you can add packaging information here
 #package:
@@ -64,17 +79,8 @@ functions:
     events:
       - sqs:
           batchSize: 1
-          queueName: geocode
-          arn:
-            Fn::Join:
-              - ':'
-              - - arn
-                - aws
-                - sqs
-                - Ref: AWS::Region
-                - Ref: AWS::AccountId
-                - geocode
-#      - sqs: arn:aws:sqs:eu-central-1:x:geocode #-${self:provider.stage}
+          # arn: ${self:custom.geocodeARN.${opt:stage, self:provider.stage}}
+          arn: ${self:custom.geocodeARN}
 
 #  update-http:
 #    handler: geocode-service/handlerHttp.update
@@ -97,7 +103,8 @@ package:
   individually: true
 
 plugins:
-  - serverless-plugin-reducer
+#  - serverless-plugin-reducer
+  # - serverless-localstack
   - serverless-offline-sqs
   - serverless-offline
-  - serverless-secrets-plugin
+#  - serverless-secrets-plugin
