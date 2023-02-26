@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellation;
 import org.runningdinner.participant.TeamCancellationResult;
+import org.runningdinner.participant.TeamLocationsEventData;
 import org.runningdinner.participant.TeamMeetingPlan;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
@@ -135,6 +136,12 @@ public class TeamServiceRest {
 
     return teamService.findDinnerRoute(adminId, teamId)
                         .withMealSpecificsInHtmlFormat();
+  }
+  
+  @RequestMapping(value = "/runningdinner/{adminId}/team-locations-event-data", method = RequestMethod.GET)
+  public TeamLocationsEventData findTeamLocationsEventData(@PathVariable("adminId") String adminId) {
+    
+    return teamService.findTeamLocationsEventData(adminId);
   }
 
   protected Map<UUID, UUID> convertToTeamHostMap(final List<TeamTO> teams) {

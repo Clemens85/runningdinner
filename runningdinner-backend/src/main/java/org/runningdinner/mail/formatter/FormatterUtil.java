@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
@@ -131,9 +132,9 @@ public class FormatterUtil {
   public static String getHtmlFormattedMessage(final String inputMessage) {
 
     String htmlMessage = inputMessage; // HtmlUtils.htmlEscape(inputMessage);
-    htmlMessage = StringUtils.replaceAll(htmlMessage, NEWLINE, "<br/>");
-    htmlMessage = StringUtils.replaceAll(htmlMessage, "\n", "<br/>");
-    htmlMessage = StringUtils.replaceAll(htmlMessage, "\r", "<br/>");
+    htmlMessage = RegExUtils.replaceAll(htmlMessage, NEWLINE, "<br/>");
+    htmlMessage = RegExUtils.replaceAll(htmlMessage, "\n", "<br/>");
+    htmlMessage = RegExUtils.replaceAll(htmlMessage, "\r", "<br/>");
     return htmlMessage;
   }
 

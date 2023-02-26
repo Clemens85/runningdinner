@@ -18,8 +18,8 @@ export function ParticipantActivationPage() {
   const {t} = useTranslation("landing");
 
   const params = useParams<Record<string, string>>();
-  const publicDinnerId = params.publicDinnerId;
-  const participantId = params.participantId;
+  const publicDinnerId = params.publicDinnerId || "";
+  const participantId = params.participantId || "";
 
   const activationAsyncResult = useAsync(activateSubscribedParticipant, [publicDinnerId, participantId]);
   const publicDinnerAsyncResult = useAsync(findPublicRunningDinnerByPublicId, [publicDinnerId]);

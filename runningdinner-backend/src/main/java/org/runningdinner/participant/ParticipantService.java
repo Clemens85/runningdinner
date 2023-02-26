@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -26,6 +27,7 @@ import org.runningdinner.common.IssueType;
 import org.runningdinner.common.ResourceLoader;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.exception.ValidationException;
+import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.AssignableParticipantSizes;
 import org.runningdinner.core.RunningDinner;
@@ -33,6 +35,7 @@ import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConverterFactory;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
+import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.AddressColumnConfig;
 import org.runningdinner.core.converter.config.EmailColumnConfig;
@@ -43,6 +46,7 @@ import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
+import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
 import org.runningdinner.participant.rest.MissingParticipantsInfo;
 import org.runningdinner.participant.rest.ParticipantListActive;
@@ -76,6 +80,12 @@ public class ParticipantService {
 
   @Autowired
   private ParticipantGeocodeEventPublisher participantGeocodeEventPublisher;
+
+  @Autowired
+  private MessageFormatterHelperService messageFormatterHelperService;
+
+  @Autowired
+  private LocalizationProviderService localizationProviderService;
 
   public Participant findParticipantById(@ValidateAdminId String adminId, UUID participantId) {
 
@@ -164,9 +174,13 @@ public class ParticipantService {
 
     List<Participant> participants = findParticipants(adminId, true);
 
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
+
     ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
     FileConverter fileConverter = ConverterFactory.newFileConverter(parsingConfiguration, INPUT_FILE_TYPE.XSSF);
-    fileConverter.writeParticipants(participants, outputStream);
+    fileConverter.writeParticipants(participants, outputStream,
+        new ConverterWriteContext(locale, messageFormatterHelperService));
   }
 
   /**

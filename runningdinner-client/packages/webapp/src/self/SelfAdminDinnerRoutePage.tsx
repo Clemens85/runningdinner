@@ -10,7 +10,10 @@ import {
 
 export default function SelfAdminDinnerRoutePage() {
 
-  const {selfAdminId, participantId, teamId} = useParams<Record<string, string>>();
+  const urlParams = useParams<Record<string, string>>();
+  const selfAdminId = urlParams.selfAdminId || "";
+  const participantId = urlParams.participantId || "";
+  const teamId = urlParams.teamId || "";
 
   const dispatch = useSelfAdminDispatch();
 

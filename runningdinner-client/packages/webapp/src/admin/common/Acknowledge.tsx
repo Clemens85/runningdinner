@@ -26,7 +26,7 @@ export default function Acknowledge({runningDinner}: BaseRunningDinnerProps) {
   const {generateDashboardPath} = useAdminNavigation();
 
   const urlParams = useParams<Record<string, string>>();
-  const {acknowledgeId} = urlParams;
+  const acknowledgeId = urlParams.acknowledgeId || "";
 
   const {loading, error, result} = useAsync(acknowledgeRunningDinnerAsync, [adminId, acknowledgeId]);
 

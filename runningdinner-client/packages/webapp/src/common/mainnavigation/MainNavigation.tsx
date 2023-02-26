@@ -1,7 +1,7 @@
 import React from 'react';
 import {AppBar, Drawer, Grid, Hidden, IconButton, Link, List, ListItem, ListItemText, makeStyles, Toolbar, Typography} from "@material-ui/core";
 import {LanguageSwitch} from "../i18n/LanguageSwitch";
-import {Link as RouterLink} from "react-router-dom";
+import {Link as RouterLink, useLocation} from "react-router-dom";
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from "clsx";
 import {FeedbackButtonContainerRightAligned} from "../feedback/FeedbackButton";
@@ -28,11 +28,17 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     background: "#333333"
+  },
+  homeLink: {
+    textDecoration: "none",
+    "&:focus, &:hover, &:visited, &:link, &:active": {
+      textDecoration: "none"
+    }
   }
+
 }));
 
 export interface MainNavigationProps {
-  baseUrl: string;
   navigationItems: NavigationItem[];
   mainTitle?: string;
   topNotificationBar?: React.ReactNode;
@@ -46,19 +52,21 @@ interface NavigationItem {
 
 const breakpoints: Array<Breakpoint> = ["xs", "sm", "md", "lg", "xl"];
 
-export const MainNavigation = ({baseUrl, mainTitle, navigationItems, topNotificationBar, mobileBreakpoint = "sm"}: MainNavigationProps) => {
+export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, mobileBreakpoint = "sm"}: MainNavigationProps) => {
 
   const classes = useStyles();
+  const [showFeedback, setShowFeedback] = React.useState(isShowFeedbackButton());
 
-  const normalizedUrl = baseUrl.replace(/\/$/, ""); // Remove last trailing slash (if existing)
-
-  const showFeedback = isShowFeedbackButton();
+  const location = useLocation();
+  React.useEffect(() => {
+    setShowFeedback(isShowFeedbackButton());
+  }, [location]);
 
   const hiddenForMobileView = getMobileBreakpointsDown(mobileBreakpoint);
   const hiddenForDesktopView = getMobileBreakpointsUp(mobileBreakpoint);
 
   function createLink(navigationItem: NavigationItem) {
-    return <Link to={`${normalizedUrl}${navigationItem.routePath}`}
+    return <Link to={`${navigationItem.routePath}`}
                  component={RouterLink}
                  color="inherit"
                  key={navigationItem.title}
@@ -75,14 +83,19 @@ export const MainNavigation = ({baseUrl, mainTitle, navigationItems, topNotifica
               <Grid container alignItems={"center"}>
                 <Hidden only={hiddenForDesktopView}>
                   <Grid item>
-                    <MobileNavigation baseUrl={normalizedUrl} navigationItems={navigationItems} />
+                    <MobileNavigation navigationItems={navigationItems} />
                   </Grid>
                 </Hidden>
                 <Hidden only={hiddenForMobileView}>
                   <Grid item>
                     <Grid container alignItems={"center"}>
                       <Grid item>
-                        <Typography variant="h6" className={classes.title}>{mainTitle}</Typography>
+                        <Link to={`${navigationItems[0].routePath}`}
+                              component={RouterLink}
+                              className={classes.homeLink}
+                              color="inherit">
+                          <Typography variant="h6" className={classes.title}>{mainTitle}</Typography>
+                        </Link>
                       </Grid>
                       <Grid item>
                         { navigationItems.map(navigationItem => createLink(navigationItem)) }
@@ -123,7 +136,7 @@ function getMobileBreakpointsUp(breakpoint: Breakpoint): Breakpoint[] {
   return breakpoints.slice(indexOfIncomingBreakpoint + 1);
 }
 
-function MobileNavigation({baseUrl, navigationItems}: MainNavigationProps) {
+function MobileNavigation({navigationItems}: MainNavigationProps) {
 
   const classes = useStyles();
 
@@ -135,7 +148,7 @@ function MobileNavigation({baseUrl, navigationItems}: MainNavigationProps) {
 
   function createLink(navigationItem: NavigationItem) {
 
-    const link = <Link to={`${baseUrl}${navigationItem.routePath}`}
+    const link = <Link to={`${navigationItem.routePath}`}
                        component={RouterLink}
                        color="inherit"
                        onClick={toggleMobileDrawerNavigation}

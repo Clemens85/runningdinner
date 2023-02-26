@@ -1,7 +1,6 @@
 import React from "react";
 import {PaperGrey} from "../../common/theme/PaperGrey";
 import {Box, FormControl, InputLabel, LinearProgress, MenuItem, Select, Typography} from "@material-ui/core";
-import parse from 'html-react-parser';
 import SendToMeButton from "./SendToMeButton";
 import {Span, Subtitle, Title} from "../../common/theme/typography/Tags";
 import {
@@ -19,6 +18,7 @@ import {
 } from "@runningdinner/shared";
 import {FetchStatus} from "@runningdinner/shared/src/redux";
 import {useTranslation} from "react-i18next";
+import {TextViewHtml} from "../../common/TextViewHtml";
 
 export function MessagePreview({adminId, messageType}: MessageTypeAdminIdPayload) {
 
@@ -50,7 +50,7 @@ export function MessagePreview({adminId, messageType}: MessageTypeAdminIdPayload
         <PaperGrey variant={"outlined"} square>
           <Box p={1} style={{overflowX: 'scroll'}}>
             <Title>{messageObject.subject}</Title>
-            <Span>{parse(previewMessage.message)}</Span>
+            <Span><TextViewHtml text={previewMessage.message} /></Span>
           </Box>
         </PaperGrey>
       </Box>);

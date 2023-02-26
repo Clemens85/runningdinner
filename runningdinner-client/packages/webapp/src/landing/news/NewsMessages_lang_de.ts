@@ -1,5 +1,9 @@
 const NewsMessages_de: any = {
 
+  news_title_20221029: 'Fehler behoben beim Versand von Einladungs-Mails an Team-Partner',
+  news_content_20221029: 'Leider gab es einen Fehler der beim Versand der Einladungs EMails an potenzielle Team-Partner auftrat ' +
+                         'und dazu führte dass die Links zur Event-Registrierung nicht korrekt funktionierten. Das ist mittlerweile behoben.',
+
   news_title_20220712: 'Endlich: Wartelisten Funktionen erweitert',
   news_content_20220712: 'Immer wieder angefragt, nun endlich verfügbar: Es gibt im Veranstaltungs-Admin-Bereich eine neue Funktion zur Wartelisten Verwaltung, ' +
     'mit welcher übrig geliebene Teilnehmer nachträglich als neue Teams hinzugefügt werden können oder bestehende Teams aufgefüllt werden können. Das sollte die Organisation eines Running Dinners etwas vereinfachen.',

@@ -1,11 +1,11 @@
 package org.runningdinner.participant;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -19,16 +19,17 @@ import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.activity.ActivityType;
 import org.runningdinner.admin.check.ValidateAdminId;
+import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
-import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.GeneratedTeamsResult;
 import org.runningdinner.core.IdentifierUtil;
+import org.runningdinner.core.MealClass;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerCalculator;
@@ -83,9 +84,6 @@ public class TeamService {
   @Autowired
   private DinnerRouteMessageFormatter dinnerRouteMessageFormatter;
 
-  @Autowired
-  private LocalizationProviderService localizationProviderService;
-  
   public List<Team> findTeamArrangements(@ValidateAdminId String adminId, boolean excludeCancelledTeams) {
 
     List<Team> teams = teamRepository.findWithTeamMembersAndMealClassDistinctByAdminIdOrderByTeamNumber(adminId);
@@ -158,9 +156,8 @@ public class TeamService {
     
     Team dinnerRouteTeam = IdentifierUtil.filterListForIdMandatory(dinnerRoute, teamId); 
 
-    Locale localeOfDinner = localizationProviderService.getLocaleOfDinner(runningDinner);
-    
-    String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(dinnerRouteTeam, localeOfDinner);
+    String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(dinnerRouteTeam,
+        runningDinner);
     
     DinnerRouteTO result = DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams);
     
@@ -673,6 +670,27 @@ public class TeamService {
     }
     throw new ValidationException(new IssueList(new Issue("replacementParticipantIds",
       IssueKeys.INVALID_SIZE_REPLACEMENT_PARTICIPANTS_TOO_MANY, IssueType.VALIDATION)));
+  }
+
+  public TeamLocationsEventData findTeamLocationsEventData(@ValidateAdminId String adminId) {
+
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    
+    List<MealClass> mealClasses = runningDinner.getConfiguration().getMealClasses();
+    List<Team> teams = findTeamArrangements(adminId, false);
+    
+    List<TeamLocation> teamLocations = new ArrayList<TeamLocation>();
+    for (Team t : teams) {
+      if (t.getStatus() == TeamStatus.CANCELLED) {
+        teamLocations.add(new TeamLocation(t.getId(), t.getMealClass().getId(), t.getStatus(), null, null));
+      } else {
+        teamLocations.add(new TeamLocation(t.getId(), t.getMealClass().getId(), t.getStatus(), t.getHostTeamMember().getAddress(), t.getHostTeamMember().getGeocodingResult()));
+      }
+    }
+    
+    TeamLocationsEventData result = new TeamLocationsEventData(runningDinner.getAdminId(), MealTO.fromMeals(mealClasses), teamLocations);
+    result.setAfterPartyLocation(null); // TODO
+    return result;
   }
 
 }

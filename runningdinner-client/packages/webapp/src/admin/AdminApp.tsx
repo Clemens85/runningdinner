@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRouteMatch, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Container } from "@material-ui/core";
 import AdminMenu from "./AdminMenu";
 import AdminRoute from "./AdminRoute";
@@ -18,6 +18,9 @@ import "../timeline.css";
 export default function AdminApp() {
 
   const {adminId} = useParams<Record<string, string>>();
+  if (!adminId) {
+    return null; // TODO
+  }
 
   return (
     <Provider store={adminStore}>
@@ -28,7 +31,6 @@ export default function AdminApp() {
 
 function AdminAppPage({adminId}: BaseAdminIdProps) {
 
-  const {path} = useRouteMatch();
   const dispatch = useDispatch();
 
   const showLoadingProgress = useAdminSelector(isFetchingDataSelector);
@@ -43,7 +45,7 @@ function AdminAppPage({adminId}: BaseAdminIdProps) {
         <AdminMenu />
         <ProgressBar showLoadingProgress={showLoadingProgress} fetchError={fetchError} />
         <Container maxWidth="xl">
-          <AdminRoute path={path} />
+          <AdminRoute />
         </Container>
       </div>
   );

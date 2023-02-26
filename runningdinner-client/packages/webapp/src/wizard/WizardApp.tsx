@@ -1,11 +1,11 @@
 import React from 'react';
 import WizardMenu from './WizardMenu';
 import {Container, Grid} from "@material-ui/core";
-import {Route, Switch, useRouteMatch} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import BasicDetailsStep from "./BasicDetailsStep";
 import OptionsStep from "./OptionsStep";
 import {Provider, useDispatch} from "react-redux";
-import {useWizardSelector, wizardStore} from "@runningdinner/shared";
+import {BasicDetailsNavigationStep, useWizardSelector, wizardStore} from "@runningdinner/shared";
 import {useQuery} from "../common/hooks/QueryHook";
 import {fetchGenderAspects, fetchRegistrationTypes, getRunningDinnerOptionsSelector, updateMeals, updateRunningDinnerType} from "@runningdinner/shared";
 import {
@@ -50,7 +50,6 @@ interface WizardAppProps {
 
 function WizardPage({demoDinner}: WizardAppProps) {
 
-  const {path} = useRouteMatch();
   const dispatch = useDispatch();
 
   const {meals} = useWizardSelector(getRunningDinnerOptionsSelector);
@@ -80,29 +79,15 @@ function WizardPage({demoDinner}: WizardAppProps) {
         <Container maxWidth="xl">
           <Grid container>
             <Grid item xs={12} md={8}>
-              <Switch>
-                <Route path={`${path}${OptionsNavigationStep.value}`}>
-                  <OptionsStep/>
-                </Route>
-                <Route path={`${path}${MealTimesNavigationStep.value}`}>
-                  <MealTimesStep />
-                </Route>
-                <Route path={`${path}${ParticipantPreviewNavigationStep.value}`}>
-                  <ParticipantPreviewStep />
-                </Route>
-                <Route path={`${path}${PublicRegistrationNavigationStep.value}`}>
-                  <PublicRegistrationStep />
-                </Route>
-                <Route path={`${path}${FinishNavigationStep.value}`}>
-                  <FinishStep />
-                </Route>
-                <Route path={`${path}${SummaryNavigationStep.value}`}>
-                  <SummaryStep />
-                </Route>
-                <Route path="/">
-                  <BasicDetailsStep />
-                </Route>
-              </Switch>
+              <Routes>
+                <Route path={`${OptionsNavigationStep.value}`} element={<OptionsStep/>} />
+                <Route path={`${MealTimesNavigationStep.value}`} element={<MealTimesStep />} />
+                <Route path={`${ParticipantPreviewNavigationStep.value}`} element={<ParticipantPreviewStep />} />
+                <Route path={`${PublicRegistrationNavigationStep.value}`} element={<PublicRegistrationStep />} />
+                <Route path={`${FinishNavigationStep.value}`} element={<FinishStep />} />
+                <Route path={`${SummaryNavigationStep.value}`} element={<SummaryStep />} />
+                <Route path={`${BasicDetailsNavigationStep.value}`}  element={<BasicDetailsStep />} />
+              </Routes>
             </Grid>
           </Grid>
         </Container>

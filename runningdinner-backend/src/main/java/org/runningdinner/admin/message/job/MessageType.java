@@ -17,7 +17,7 @@ public enum MessageType {
   
   public boolean isAcknowledgedDinnerNeeded() {
     
-    return this != NEW_RUNNING_DINNER && this != PARTICIPANT_SUBSCRIPTION_ACTIVATION;
+    return this != NEW_RUNNING_DINNER && this != PARTICIPANT_SUBSCRIPTION_ACTIVATION && this != MessageType.TEAM_PARTNER_WISH;
   }
   
   public boolean isSendingToDinnerAdminInDemoModeNeeded() {

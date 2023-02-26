@@ -7,7 +7,11 @@ import {PrimaryRouterButton} from "../common/theme/PrimaryButton";
 import {Link as RouterLink} from "react-router-dom";
 import { Button } from '@material-ui/core';
 import {useLandingStyles} from "./LandingStyles";
-import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "../common/mainnavigation/NavigationPaths";
+import {
+  IMPRESSUM_PATH,
+  LANDING_CREATE_RUNNING_DINNER_PATH,
+  RUNNING_DINNER_EVENTS_PATH
+} from "../common/mainnavigation/NavigationPaths";
 import { SpacingGrid } from '../common/theme/SpacingGrid';
 import Paragraph from '../common/theme/typography/Paragraph';
 import Zoom from 'react-medium-image-zoom';
@@ -27,7 +31,6 @@ import FastfoodIcon from '@material-ui/icons/Fastfood';
 import EventSeatIcon from '@material-ui/icons/EventSeat';
 import GroupIcon from '@material-ui/icons/Group';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
-
 
 export function LandingStart() {
 
@@ -69,7 +72,7 @@ export function LandingStart() {
           <SpacingGrid item xs={12} md={6}>
             <Box my={2} display="flex" alignItems={"center"}>
               <GroupIcon color="primary" className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
-              <Paragraph i18n="landing:teaser_workflow_team_generation"></Paragraph>
+              <Paragraph i18n="landing:teaser_workflow_team_generation" />
             </Box>
             <Box my={2} display="flex" alignItems={"center"}>
               <FastfoodIcon color="primary" className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
@@ -77,11 +80,11 @@ export function LandingStart() {
             </Box>
             <Box my={2} display="flex" alignItems={"center"}>
               <EventSeatIcon fontSize='large' color='primary' className={landingStyles.teaserExplanationIconPadding}/>
-              <Paragraph i18n="landing:teaser_workflow_team_host"></Paragraph>
+              <Paragraph i18n="landing:teaser_workflow_team_host" />
             </Box>
             <Box my={2} display="flex" alignItems={"center"}>
               <EventSeatIcon fontSize='large' color='primary' className={landingStyles.teaserExplanationIconPadding}/>
-              <Paragraph i18n="landing:teaser_workflow_team_guest"></Paragraph>
+              <Paragraph i18n="landing:teaser_workflow_team_guest" />
             </Box>
             <Box my={2} display={"flex"} alignItems={"center"}>
               <DirectionsRunIcon color='primary' className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
@@ -95,16 +98,16 @@ export function LandingStart() {
           <SpacingGrid item xs={12} md={6}>
             <Typography variant={"h4"} component="h4" gutterBottom>{t("common:example")}</Typography>
             <Box my={2}>
-              <Paragraph i18n="landing:teaser_example_appetizer"></Paragraph>
+              <Paragraph i18n="landing:teaser_example_appetizer" />
             </Box>
             <Box my={2}>
-              <Paragraph i18n="landing:teaser_example_main_course" html={true}></Paragraph>
+              <Paragraph i18n="landing:teaser_example_main_course" html={true} />
             </Box>
             <Box my={2}>
-              <Paragraph i18n="landing:teaser_example_dessert" html={true}></Paragraph>
+              <Paragraph i18n="landing:teaser_example_dessert" html={true} />
             </Box>
             <Box mt={2}>
-              <Paragraph i18n="landing:teaser_example_summary" html={true}></Paragraph>
+              <Paragraph i18n="landing:teaser_example_summary" html={true} />
             </Box>
           </SpacingGrid>
         </SpacingGrid>
@@ -130,7 +133,7 @@ export function LandingStart() {
                   </SpacingGrid>
                 </SpacingGrid>
                 <Box pt={2}>
-                  <PrimaryRouterButton to={LANDING_CREATE_RUNNING_DINNER_PATH}>{t('landing:create_event_headline')}</PrimaryRouterButton>
+                  <PrimaryRouterButton to={`/${LANDING_CREATE_RUNNING_DINNER_PATH}`}>{t('landing:create_event_headline')}</PrimaryRouterButton>
                 </Box>
               </TeaserCard>
             </Box>
@@ -152,7 +155,7 @@ export function LandingStart() {
                 <Box pt={2}>
                   <Button color={"primary"}
                           variant={"outlined"}
-                          to={LANDING_CREATE_RUNNING_DINNER_PATH}
+                          to={`/${LANDING_CREATE_RUNNING_DINNER_PATH}`}
                           component={RouterLink}>{t('landing:manage_event_link')}</Button>
                 </Box>
               </TeaserCard>
@@ -184,7 +187,7 @@ export function LandingStart() {
                   </SpacingGrid>
                 </SpacingGrid>
                 <Box pt={2}>
-                  <PrimaryRouterButton to={RUNNING_DINNER_EVENTS_PATH}>{t('landing:discover_public_events_link')}</PrimaryRouterButton>
+                  <PrimaryRouterButton to={`/${RUNNING_DINNER_EVENTS_PATH}`}>{t('landing:discover_public_events_link')}</PrimaryRouterButton>
                 </Box>
               </TeaserCard>
             </Box>
@@ -201,7 +204,7 @@ export function LandingStart() {
                 <Box pt={2}>
                   <Button color={"primary"}
                           variant={"outlined"}
-                          to={"/impressum"}
+                          to={`/${IMPRESSUM_PATH}`}
                           component={RouterLink}>{t('landing:privacy_more_infos_link')}</Button>
                 </Box>
               </TeaserCard>

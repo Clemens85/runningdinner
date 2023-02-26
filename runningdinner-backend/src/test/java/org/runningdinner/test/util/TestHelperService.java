@@ -59,7 +59,7 @@ public class TestHelperService {
     RunningDinner result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(info, getDefaultRunningDinnerConfig(date), email, RunningDinnerType.STANDARD, 
                                                                                                 contract, participants);
 
-    Assert.state(result != null, "runningDinner");
+    Assert.notNull(result, "runningDinner");
     Assert.hasLength(result.getAdminId(), "adminId");
 
     return acknowledgeRunningDinner(result);
@@ -67,18 +67,23 @@ public class TestHelperService {
 
   public RunningDinner createPublicRunningDinner(LocalDate date, int numDaysRegistrationEndsBeforeDate) {
 
-    return createPublicRunningDinner(date, numDaysRegistrationEndsBeforeDate, RegistrationType.PUBLIC);
+    return createPublicRunningDinner(date, numDaysRegistrationEndsBeforeDate, RegistrationType.PUBLIC, true);
   }
 
-  public RunningDinner createPublicRunningDinner(LocalDate date, int numDaysRegistrationEndsBeforeDate, RegistrationType registrationType) {
+  public RunningDinner createPublicRunningDinner(LocalDate date, int numDaysRegistrationEndsBeforeDate, RegistrationType registrationType, boolean autoAcknowledge) {
 
     LocalDate endOfRegistrationDate = date.minusDays(numDaysRegistrationEndsBeforeDate);
 
     RunningDinnerInfo runningDinnerInfo = TestUtil.newBasicDetails("Title", date, "City", registrationType);
 
-    RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, getDefaultRunningDinnerConfig(date), new PublicSettings("Public Title",
-      "Public Description", endOfRegistrationDate, false), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD);
+    PublicSettings publicSettings = new PublicSettings("Public Title", "Public Description", endOfRegistrationDate, false);
+    publicSettings.setPublicContactEmail(CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
+    RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, getDefaultRunningDinnerConfig(date), publicSettings, 
+                                                                    CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD);
     
+    if (!autoAcknowledge) {
+      return result;
+    }
     return acknowledgeRunningDinner(result);
   }
 

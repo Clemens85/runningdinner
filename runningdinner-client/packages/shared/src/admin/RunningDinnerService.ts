@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { BackendConfig } from "../BackendConfig";
 import cloneDeep from "lodash/cloneDeep";
-import {Meal, RunningDinner, RunningDinnerBasicDetailsFormModel, RunningDinnerBasicDetails, RunningDinnerOptions, RunningDinnerPublicSettings} from "../types";
+import {Meal, RunningDinner, RunningDinnerBasicDetailsFormModel,
+        RunningDinnerOptions, RunningDinnerPublicSettings, ReSendRunningDinnerCreatedMessageModel} from "../types";
 import {CONSTANTS} from "../Constants";
 import {getDaysBetweenDates} from '../date';
 import {CreateRunningDinnerWizardModel} from "../wizard";
@@ -54,6 +55,12 @@ export async function acknowledgeRunningDinnerAsync(adminId: string, acknowledge
 export async function cancelRunningDinnerAsync(adminId: string): Promise<RunningDinner> {
   const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}`);
   const response = await axios.delete<RunningDinner>(url);
+  return response.data;
+}
+
+export async function reSendRunningDinnerCreatedMessageAsync(adminId: string, reSendRunningDinnerCreatedMessageModel: ReSendRunningDinnerCreatedMessageModel): Promise<RunningDinner> {
+  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/resend-runningdinner-created-message`);
+  const response = await axios.put<RunningDinner>(url, reSendRunningDinnerCreatedMessageModel);
   return response.data;
 }
 

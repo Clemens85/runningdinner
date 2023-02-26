@@ -133,3 +133,13 @@ export function newEmptyRunningDinnerBasicDetailsFormModel(): RunningDinnerBasic
     teamPartnerWishDisabled: false
   };
 }
+
+export interface ReSendRunningDinnerCreatedMessageModel {
+  newEmailAddress?: string;
+}
+
+export function newReSendRunningdinnerCreatedMessageModel(email: string): ReSendRunningDinnerCreatedMessageModel {
+  return {
+    newEmailAddress: email
+  };
+}

@@ -13,13 +13,13 @@ import org.runningdinner.participant.rest.TeamTO;
 
 public class DinnerRouteTO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 	
-	private TeamTO currentTeam;
+  private TeamTO currentTeam;
 
-	private List<DinnerRouteTeamTO> teams;
+  private List<DinnerRouteTeamTO> teams;
 	
-	private String mealSpecificsOfGuestTeams = StringUtils.EMPTY;
+  private String mealSpecificsOfGuestTeams = StringUtils.EMPTY;
 	
   protected DinnerRouteTO() {
     

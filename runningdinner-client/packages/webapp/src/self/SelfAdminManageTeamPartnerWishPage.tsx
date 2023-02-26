@@ -38,7 +38,10 @@ interface SelfAdminManageTeamPartnerWishViewProps {
 function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdminManageTeamPartnerWishViewProps) {
 
   const {t} = useTranslation(['selfadmin', 'common']);
-  const {selfAdminId, participantId} = useParams<Record<string, string>>();
+
+  const urlParams = useParams<Record<string, string>>();
+  const selfAdminId = urlParams.selfAdminId || "";
+  const participantId = urlParams.participantId || "";
 
   const [teamPartnerWishEmail, setTeamPartnerWishEmail] = useState(teamPartnerWishQueryParam);
   const [teamPartnerWishUpdateSucceeded, setTeamPartnerWishUpdateSucceeded] = useState(false);

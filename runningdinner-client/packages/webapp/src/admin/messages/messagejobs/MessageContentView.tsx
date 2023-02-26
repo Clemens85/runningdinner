@@ -1,6 +1,6 @@
 import React from 'react';
 import {getTruncatedText, mapNewLineToHtmlLineBreaks, MessageTask} from "@runningdinner/shared";
-import parse from "html-react-parser";
+import {TextViewHtml} from "../../../common/TextViewHtml";
 
 interface MessageContentViewProps {
   messageTask: MessageTask;
@@ -15,7 +15,7 @@ export function MessageContentView({messageTask, truncateMessageContentToNumChar
       <div>
         <strong>{messageTask.message.subject}</strong>
       </div>
-      <div>{parse(messageTeaser)}</div>
+      <div><TextViewHtml text={messageTeaser} /></div>
     </>
   );
 }

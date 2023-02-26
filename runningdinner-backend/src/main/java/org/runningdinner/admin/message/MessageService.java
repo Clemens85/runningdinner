@@ -51,6 +51,7 @@ import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.mail.formatter.ParticipantMessageFormatter;
+import org.runningdinner.mail.formatter.RunningDinnerEventCreatedMessageFormatter;
 import org.runningdinner.mail.formatter.TeamArrangementMessageFormatter;
 import org.runningdinner.mail.sendgrid.SuppressedEmail;
 import org.runningdinner.participant.Participant;
@@ -98,6 +99,9 @@ public class MessageService {
  
   @Autowired
   private DinnerRouteMessageFormatter dinnerRouteMessageFormatter;
+  
+  @Autowired
+  private RunningDinnerEventCreatedMessageFormatter runningDinnerEventCreatedMessageFormatter;
   
   @Autowired
   private MessageJobProcessorHelperService messageJobProcessorHelperService;
@@ -260,9 +264,10 @@ public class MessageService {
   }
   
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public MessageJob sendNewRunningDinnerMessage(RunningDinnerRelatedMessage newRunningDinnerMessage) {
+  public MessageJob sendRunningDinnerCreatedMessage(RunningDinner runningDinner) {
     
-    final MessageJob messageJob = createNewRunningDinnerMessageJob(newRunningDinnerMessage);
+    RunningDinnerRelatedMessage runningDinnerCreatedMessage = runningDinnerEventCreatedMessageFormatter.formatRunningDinnerCreatedMessage(runningDinner);
+    final MessageJob messageJob = createNewRunningDinnerMessageJob(runningDinnerCreatedMessage);
     executeSendMessagesJobAfterCommit(messageJob);
     return messageJob;
   }

@@ -9,7 +9,7 @@ import axios from "axios";
 import {BackendConfig} from "../BackendConfig";
 import {RegistrationData} from "../types/Registration";
 import {getBackendIssuesFromErrorResponse} from "../issue";
-import { isArrayNotEmpty } from "..";
+import {isArrayNotEmpty, trimStringsInObject} from "..";
 
 export async function findPublicRunningDinnersAsync(): Promise<PublicRunningDinner[]> {
   const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner`);
@@ -39,7 +39,10 @@ async function executePerformRegistrationRequest(publicDinnerId: string, registr
       message: "num_seats_invalid"
     }]);
   }
-  const response = await axios.post<RegistrationSummary>(url, registrationData);
+
+  const registrationDataWithTrimmedStringFields = trimStringsInObject(registrationData);
+
+  const response = await axios.post<RegistrationSummary>(url, registrationDataWithTrimmedStringFields);
   return response.data;
 }
 

@@ -35,7 +35,10 @@ import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 
 export default function SelfAdminChangeTeamHostPage() {
 
-  const {selfAdminId, participantId, teamId} = useParams<Record<string, string>>();
+  const urlParams = useParams<Record<string, string>>();
+  const selfAdminId = urlParams.selfAdminId || "";
+  const participantId = urlParams.participantId || "";
+  const teamId = urlParams.teamId || "";
 
   const dispatch = useSelfAdminDispatch();
 
@@ -59,7 +62,10 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
 
   const {t} = useTranslation(['selfadmin', 'common']);
 
-  const {selfAdminId, participantId, teamId} = useParams<Record<string, string>>();
+  const urlParams = useParams<Record<string, string>>();
+  const selfAdminId = urlParams.selfAdminId || "";
+  const participantId = urlParams.participantId || "";
+  const teamId = urlParams.teamId || "";
 
   const [newHostTeamMember, setNewHostTeamMember] = useState<Participant>(team.hostTeamMember);
   const [currentTeam, setCurrentTeam] = useState<Team>(team);

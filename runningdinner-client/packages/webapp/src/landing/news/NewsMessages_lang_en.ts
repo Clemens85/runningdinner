@@ -1,5 +1,8 @@
 const NewsMessages_en: any = {
 
+  news_title_20221029: 'Error fixed when sending invitation mails to team partners',
+  news_content_20221029: 'Unfortunately, there was an error that occurred when sending invitation emails to potential team partners and caused the event registration links to not work correctly. This has been fixed in the meantime.',
+
   news_title_20220712: 'Finally: New waitinglist functions',
   news_content_20220712: 'Often requested, now finally available: There is a new function in the admin area for waitinglist management with which leftover participants can be added as new teams afterwards or existing teams can be filled up. ' +
     'This should simplify the organization of a Running Dinner event.',
