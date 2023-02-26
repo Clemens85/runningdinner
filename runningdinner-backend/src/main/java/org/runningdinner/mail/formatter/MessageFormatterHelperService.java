@@ -71,7 +71,7 @@ public class MessageFormatterHelperService {
       result.append(translateMealSpecificItem("vegan", locale));
     }
     if (mealSpecifics.isVegetarian()) {
-      result.append(translateMealSpecificItem("vegatarian", locale));
+      result.append(translateMealSpecificItem("vegetarian", locale));
     }
     if (mealSpecifics.isLactose()) {
       result.append(translateMealSpecificItem("lactose", locale));
