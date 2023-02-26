@@ -29,6 +29,9 @@ public class TeamArrangementMessageFormatter {
   @Autowired
   LocalizationProviderService localizationProviderService;
 
+  @Autowired
+  MessageFormatterHelperService messageFormatterHelperService;
+
   public String formatTeamMemberMessage(RunningDinner runningDinner, Participant teamMember, Team parentTeam, TeamArrangementTextMessage teamArrangementTextMessage) {
 
     Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
@@ -77,7 +80,8 @@ public class TeamArrangementMessageFormatter {
       if (partner.getMealSpecifics().isOneSelected()) {
         partnerInfo.append(FormatterUtil.NEWLINE);
         String mealsepcificsText = messageSource.getMessage("message.template.teampartner.mealspecifics", null, locale);
-        mealsepcificsText = mealsepcificsText.replaceAll(FormatterUtil.MEALSPECIFICS, partner.getMealSpecifics().toCommaSeparatedString());
+        mealsepcificsText = mealsepcificsText.replaceAll(FormatterUtil.MEALSPECIFICS,
+            messageFormatterHelperService.formatMealSpecificItems(partner.getMealSpecifics(), locale));
         partnerInfo.append(mealsepcificsText);
       }
       if (StringUtils.isNotEmpty(partner.getMealSpecifics().getNote())) {

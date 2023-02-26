@@ -67,7 +67,7 @@ const useMealListStyles = makeStyles(() => ({
 
 export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrationForm}: BasePublicDinnerProps & RegistrationFormSettingsType) {
 
-  const {t} = useTranslation(["landing", "common"]);
+  const {t, i18n} = useTranslation(["landing", "common"]);
 
   const {navigateToRegistrationFinished, navigateToRunningDinnerEventList} = useLandingNavigation();
 
@@ -85,6 +85,10 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
                                    isCurrentUserSubscribedToEvent();
 
   const endOfRegistrationDateStr = formatLocalDate(publicSettings.endOfRegistrationDate);
+
+  React.useEffect(() => {
+    i18n.changeLanguage(publicRunningDinner.languageCode);
+  }, [i18n, publicRunningDinner.languageCode]);
 
   function renderMealListItem(meal: Meal) {
     return (

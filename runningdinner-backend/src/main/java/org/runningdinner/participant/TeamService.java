@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +25,6 @@ import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
-import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.GeneratedTeamsResult;
@@ -86,9 +84,6 @@ public class TeamService {
   @Autowired
   private DinnerRouteMessageFormatter dinnerRouteMessageFormatter;
 
-  @Autowired
-  private LocalizationProviderService localizationProviderService;
-  
   public List<Team> findTeamArrangements(@ValidateAdminId String adminId, boolean excludeCancelledTeams) {
 
     List<Team> teams = teamRepository.findWithTeamMembersAndMealClassDistinctByAdminIdOrderByTeamNumber(adminId);
@@ -161,9 +156,8 @@ public class TeamService {
     
     Team dinnerRouteTeam = IdentifierUtil.filterListForIdMandatory(dinnerRoute, teamId); 
 
-    Locale localeOfDinner = localizationProviderService.getLocaleOfDinner(runningDinner);
-    
-    String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(dinnerRouteTeam, localeOfDinner);
+    String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(dinnerRouteTeam,
+        runningDinner);
     
     DinnerRouteTO result = DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams);
     

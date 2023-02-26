@@ -101,27 +101,6 @@ public class MealSpecifics {
 
     return CoreUtil.isOneTrue(vegan, vegetarian, gluten, lactose);
   }
-
-  public String toCommaSeparatedString() {
-
-    StringBuilder result = new StringBuilder();
-    if (vegan) {
-      result.append("Vegan, ");
-    }
-    if (vegetarian) {
-      result.append("Vegetarisch, ");
-    }
-    if (lactose) {
-      result.append("Laktose-Frei, ");
-    }
-    if (gluten) {
-      result.append("Glutenfrei, ");
-    }
-    if (result.length() > 0) {
-      return result.substring(0, result.length() - 2);
-    }
-    return StringUtils.EMPTY;
-  }
 	
 	@Override
 	public int hashCode() {

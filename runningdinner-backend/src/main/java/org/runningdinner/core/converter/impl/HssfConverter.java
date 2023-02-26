@@ -1,19 +1,21 @@
 package org.runningdinner.core.converter.impl;
 
-import com.google.common.base.Optional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.runningdinner.core.converter.ConversionException;
+import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
+import com.google.common.base.Optional;
 
 /**
  * Entry point for parsing "old" XLS excel files
@@ -34,7 +36,8 @@ public class HssfConverter extends AbstractExcelConverterHighLevel implements Fi
 	}
 
 	@Override
-	public void writeParticipants(List<Participant> participants, OutputStream outputStream) {
+    public void writeParticipants(List<Participant> participants, OutputStream outputStream,
+        ConverterWriteContext converterWriteContext) {
 		throw new UnsupportedOperationException("currently not implemented");
 	}
 

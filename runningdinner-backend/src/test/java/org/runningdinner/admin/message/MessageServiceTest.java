@@ -296,7 +296,7 @@ public class MessageServiceTest {
     dinnerRouteMessage.setMessage("{route}");
     
     PreviewMessage previewMessage = messageService.getDinnerRoutePreview(runningDinner.getAdminId(), dinnerRouteMessage).get(0);
-    assertThat(previewMessage.getMessage()).contains("Vegetarisch", "Vegan", "Laktose-Frei", "Glutenfrei");
+    assertThat(previewMessage.getMessage()).contains("Vegetarisch", "Vegan", "Laktosefrei", "Glutenfrei");
 
     // Now verify that for this team nothing special is contained due this team has no guests with meal specifics:
     dinnerRouteMessage.setCustomSelectedTeamIds(Collections.singletonList(guestTeams.get(1).getId()));
@@ -305,7 +305,7 @@ public class MessageServiceTest {
     assertThat(previewMessage.getMessage())
       .doesNotContain("Vegetarisch")
       .doesNotContain("Vegan")
-      .doesNotContain("Laktose-Frei")
+      .doesNotContain("Laktosefrei")
       .doesNotContain("Glutenfrei");
 
   }

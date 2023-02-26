@@ -3,6 +3,7 @@ package org.runningdinner.core.converter.impl;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
+import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.AbstractColumnConfig;
 import org.runningdinner.core.converter.config.AddressColumnConfig;
@@ -24,6 +26,7 @@ import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.converter.config.SequenceColumnConfig;
 import org.runningdinner.core.util.CoreUtil;
+import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
@@ -154,9 +157,14 @@ public class AbstractExcelConverterHighLevel {
 	}
 
 
-	public void writeParticipants(Sheet sheet, List<Participant> participants) {
+    public void writeParticipants(Sheet sheet, List<Participant> participants,
+        ConverterWriteContext converterWriteContext) {
 
 		createHeaderRow(sheet);
+
+      MessageFormatterHelperService messageFormatterHelperService = converterWriteContext
+          .getMessageFormatterHelperService();
+      Locale locale = converterWriteContext.getLocale();
 
 		int rowIndex = 1;
 		for (Participant p : participants) {
@@ -177,7 +185,7 @@ public class AbstractExcelConverterHighLevel {
 			writeNumberToCell(row, cellIndex++, p.getNumSeats());
 			writeStringToCell(row, cellIndex++, p.getMobileNumber());
 			writeStringToCell(row, cellIndex++, p.getNotes());
-			String mealSpecifics = p.getMealSpecifics().toCommaSeparatedString();
+            String mealSpecifics = messageFormatterHelperService.formatMealSpecificItems(p.getMealSpecifics(), locale);
 			if (StringUtils.isNotEmpty(p.getMealSpecifics().getNote())) {
 				mealSpecifics += " (" + p.getMealSpecifics().getNote() + ")";
 			}
