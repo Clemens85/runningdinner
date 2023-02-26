@@ -5,24 +5,38 @@ const lodash = require('lodash');
 
 module.exports.update = async event => {
 
-  console.info("Processing SQS event: " + event);
+  console.info("Processing SQS event: " + JSON.stringify(event));
 
   let asyncJobs = [];
 
   let records = event.Records || [];
-  for (var i = 0; i < records.length; i++) {
+  for (let i = 0; i < records.length; i++) {
     asyncJobs.push(processSqsRecord(records[i]));
   }
 
-  for (var j = 0; j < asyncJobs.length; j++) {
+  for (let j = 0; j < asyncJobs.length; j++) {
     await asyncJobs[j];
   }
 };
 
 function processSqsRecord(record) {
-  console.info("Processing record: " + record);
-  let adminId = lodash.get(record, "messageAttributes.adminId.stringValue");
-  let participantId = lodash.get(record, "messageAttributes.participantId.stringValue");
-  console.info("Retrieved participantId: " + participantId);
+  const adminId = lodash.get(record, "messageAttributes.adminId.stringValue");
+  const body = getMessageBodyParsed(record);
+
+  if (isRequestForAfterPartyLocation(body)) {
+    return controller.updateGeocodingInformationForAfterPartyLocation(adminId, body);
+  }
+
+  const participantId = lodash.get(record, "messageAttributes.participantId.stringValue");
   return controller.updateGeocodingInformation(adminId, participantId);
+}
+
+function isRequestForAfterPartyLocation(body) {
+  return body && body.runningDinnerType && body.runningDinnerType.length > 0;
+}
+
+function getMessageBodyParsed(record) {
+  const messageBody = lodash.get(record, "body");
+  const result = messageBody && messageBody.length > 0 ? JSON.parse(messageBody) : undefined;
+  return result;
 }
