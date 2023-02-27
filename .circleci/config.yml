@@ -81,7 +81,7 @@ jobs:
       - run:
           name: Push to Dockerhub
           command: |
-            docker login -u ${DOCKERHUB_USERNAME} -p password ${DOCKERHUB_PASSWORD}
+            docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
             docker push clemensstich/runningdinner
 
   build_webclient:
