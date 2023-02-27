@@ -77,7 +77,7 @@ jobs:
           command: |
             cd runningdinner-backend
             ls -la target/extracted/application
-            docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner .
+            docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_BUILD_NUM .
       - run:
           name: Push to Dockerhub
           command: |
