@@ -3,5 +3,6 @@ ARG EXTRACTED=target/extracted
 COPY ${EXTRACTED}/dependencies/ ./
 COPY ${EXTRACTED}/spring-boot-loader/ ./
 COPY ${EXTRACTED}/snapshot-dependencies/ ./
+RUN true
 COPY ${EXTRACTED}/application/ ./
 ENTRYPOINT ["java",  "-Dspring.profiles.active=dev", "org.springframework.boot.loader.JarLauncher"]
