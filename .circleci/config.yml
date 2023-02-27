@@ -62,21 +62,22 @@ jobs:
             - extracted
 
   build_docker_image:
-    docker:
-      - image: docker:17.05.0-ce-git
+     machine:
+      image: ubuntu-2204:2022.04.2
+    # docker:
+    #   - image: docker:17.05.0-ce-git
     steps:
       - checkout
       - attach_workspace:
           at: runningdinner-backend/target
-      - setup_remote_docker:
-          docker_layer_caching: false
+      # - setup_remote_docker:
+      #     docker_layer_caching: false
       - run:
           name: Build Docker Image
           command: |
             cd runningdinner-backend
-            ls -la target/extracted
             ls -la target/extracted/application
-            DOCKER_BUILDKIT=1 docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner .
+            docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner .
       - run:
           name: Push to Dockerhub
           command: |
