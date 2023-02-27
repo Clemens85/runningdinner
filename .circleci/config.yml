@@ -41,6 +41,7 @@ jobs:
           command: |
             cd runningdinner-backend
             ./mvnw package -DskipTests
+            java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted/
 #      - save_cache:
 #          paths:
 #            - ~/.m2
@@ -58,11 +59,11 @@ jobs:
           paths:
             - runningdinner.tar.gz
             - deploy.sh
+            - extracted
 
   build_docker_image:
     docker:
       - image: docker:17.05.0-ce-git
-      - image: cimg/openjdk:17.0.3     
     steps:
       - checkout
       - attach_workspace:
@@ -71,7 +72,7 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted/
+            cd runningdinner-backend
             docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner .
       - run:
           name: Push to Dockerhub
