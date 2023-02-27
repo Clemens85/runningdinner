@@ -69,11 +69,14 @@ jobs:
       - attach_workspace:
           at: runningdinner-backend/target
       - setup_remote_docker
+          docker_layer_caching: false
       - run:
           name: Build Docker Image
           command: |
             cd runningdinner-backend
-            docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner .
+            ls -la target/extracted
+            ls -la target/extracted/application
+            DOCKER_BUILDKIT=1 docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner .
       - run:
           name: Push to Dockerhub
           command: |
