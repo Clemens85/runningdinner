@@ -82,7 +82,7 @@ jobs:
           name: Push to Dockerhub
           command: |
             docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
-            docker push clemensstich/runningdinner
+            docker push --all-tags clemensstich/runningdinner
 
   build_webclient:
     docker:
