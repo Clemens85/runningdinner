@@ -23,19 +23,17 @@ jobs:
       - run:
           name: Setup application-prod.properties # Not very nice, but sufficient for now
           command: |
-            echo "aws.sqs.geocode.url=${PROD_AWS_SQS_GEOCODE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            #echo "aws.sqs.geocode.url=${PROD_AWS_SQS_GEOCODE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
 
             echo "sendgrid.api.key=${PROD_SENDGRID_API_KEY}" >> runningdinner-backend/src/main/resources/application-prod.properties
-
             echo 'host.context.url=https://runyourdinner.eu' >> runningdinner-backend/src/main/resources/application-prod.properties
 
-            echo "spring.datasource.password=${PROD_SPRING_DATASOURCE_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "spring.datasource.username=${PROD_SPRING_DATASOURCE_USERNAME}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "spring.datasource.url=${PROD_SPRING_DATASOURCE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.password=${PROD_SPRING_DATASOURCE_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.username=${PROD_SPRING_DATASOURCE_USERNAME}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.url=${PROD_SPRING_DATASOURCE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
 
-            echo "spring.flyway.password=${PROD_SPRING_FLYWAY_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "spring.flyway.user=${PROD_SPRING_FLYWAY_USER}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "spring.flyway.url=${PROD_SPRING_FLYWAY_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.flyway.password=${PROD_SPRING_FLYWAY_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.flyway.user=${PROD_SPRING_FLYWAY_USER}" >> runningdinner-backend/src/main/resources/application-prod.properties
       - run:
           name: Build + Test
           command: |
