@@ -27,7 +27,7 @@ jobs:
 
             echo "sendgrid.api.key=${PROD_SENDGRID_API_KEY}" >> runningdinner-backend/src/main/resources/application-prod.properties
             echo 'host.context.url=https://runyourdinner.eu' >> runningdinner-backend/src/main/resources/application-prod.properties
-
+            echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
             # echo "spring.datasource.password=${PROD_SPRING_DATASOURCE_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
             # echo "spring.datasource.username=${PROD_SPRING_DATASOURCE_USERNAME}" >> runningdinner-backend/src/main/resources/application-prod.properties
             # echo "spring.datasource.url=${PROD_SPRING_DATASOURCE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
