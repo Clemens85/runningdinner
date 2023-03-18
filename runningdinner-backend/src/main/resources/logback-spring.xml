@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- <include resource="org/springframework/boot/logging/logback/base.xml"/> -->
+
+<!--    <springProperty scope="context" name="loggingPath" source="logging.path" defaultValue="." />-->
+    <property name="loggingPath" value="${LOGGING_PATH:-.}" />
+
     <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <Pattern>%d{yyyy-MM-dd} %d{HH:mm:ss.SSS} %-5level [%thread] %logger{10} : %msg [%X{req.method} %X{req.requestURI}?%X{req.queryString} %X{req.remoteHost}] %n</Pattern>
@@ -11,10 +15,10 @@
     </appender>
 
     <appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>server.log</File>
+        <File>${loggingPath}/server.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <!-- Hourly rollover -->
-            <FileNamePattern>server.%i.log</FileNamePattern>
+            <FileNamePattern>${loggingPath}/server.%i.log</FileNamePattern>
             <minIndex>1</minIndex>
             <maxIndex>3</maxIndex>
         </rollingPolicy>
@@ -30,10 +34,10 @@
     </appender>
 
     <appender name="jsonFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>server-log.json</file>
+        <file>${loggingPath}/server-log.json</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <!-- Hourly rollover -->
-            <FileNamePattern>server-log.%i.json</FileNamePattern>
+            <FileNamePattern>${loggingPath}/server-log.%i.json</FileNamePattern>
             <minIndex>1</minIndex>
             <maxIndex>3</maxIndex>
         </rollingPolicy>
