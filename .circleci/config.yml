@@ -38,7 +38,7 @@ jobs:
           name: Build + Test
           command: |
             cd runningdinner-backend
-            ./mvnw package -DskipTests
+            ./mvnw package
             java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted/
 #      - save_cache:
 #          paths:
