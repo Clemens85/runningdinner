@@ -58,18 +58,22 @@ public class WaitingListService {
 
 	private EventPublisher eventPublisher;
 
-	@Autowired
-	public WaitingListService(TeamService teamService, 
-			 										  TeamRepository teamRepository,
-														RunningDinnerService runningDinnerService, 
-														ParticipantService participantService, 
-														LocalizationProviderService localizationProviderService,
-													  RunningDinnerCalculator runningDinnerCalculator,
-													  ActivityService activityService,
-													  EventPublisher eventPublisher) {
+    private ParticipantRepository participantRepository;
+
+    @Autowired
+    public WaitingListService(TeamService teamService,
+                              TeamRepository teamRepository,
+                              ParticipantRepository participantRepository,
+                              RunningDinnerService runningDinnerService,
+                              ParticipantService participantService,
+                              LocalizationProviderService localizationProviderService,
+                              RunningDinnerCalculator runningDinnerCalculator,
+                              ActivityService activityService,
+                              EventPublisher eventPublisher) {
 
 		this.teamService = teamService;
 		this.teamRepository = teamRepository;
+		this.participantRepository = participantRepository;
 		this.runningDinnerService = runningDinnerService;
 		this.participantService = participantService;
 		this.localizationProviderService = localizationProviderService;
@@ -216,25 +220,29 @@ public class WaitingListService {
 
 	private Team assignParticipantsToExistingTeam(RunningDinner runningDinner, UUID teamId, List<UUID> participantIds) {
 		
-		String adminId = runningDinner.getAdminId();
+      String adminId = runningDinner.getAdminId();
+
+      final int teamSize = runningDinner.getConfiguration().getTeamSize();
+
+      Team team = teamService.findTeamByIdWithTeamMembers(adminId, teamId);
+      Assert.state(team.getTeamMembersOrdered().size() < teamSize,
+          team + " is not allowed to be in status OK, but must either be cancelled or have a cancelled team member");
+
+      List<Participant> participantsToAssign = findParticipantsToAssign(adminId, participantIds);
+
+      List<Participant> teamMembers = team.getTeamMembersOrdered();
+      teamMembers.addAll(participantsToAssign);
+      Assert.state(teamMembers.size() <= teamSize,
+          "Team " + teamId + " can not have more than " + teamSize + " members, but tried to set " + teamMembers);
 		
-		final int teamSize = runningDinner.getConfiguration().getTeamSize();
-		
-		Team team = teamService.findTeamByIdWithTeamMembers(adminId, teamId);
-		Assert.state(team.getTeamMembersOrdered().size() < teamSize, team + " is not allowed to be in status OK, but must either be cancelled or have a cancelled team member");
-		
-		List<Participant> participantsToAssign = findParticipantsToAssign(adminId, participantIds); 
-		
-		List<Participant> teamMembers = team.getTeamMembersOrdered();
-		teamMembers.addAll(participantsToAssign);
-		Assert.state(teamMembers.size() <= teamSize, "Team " + teamId + " can not have more than " + teamSize + " members, but tried to set " + teamMembers);
-		
-    team.setTeamMembers(new HashSet<>(teamMembers));
-    runningDinnerCalculator.setHostingParticipant(team, runningDinner.getConfiguration());
-    team.setStatus(team.getStatus() == TeamStatus.CANCELLED ? TeamStatus.REPLACED : TeamStatus.OK);
+      team.setTeamMembers(new HashSet<>(teamMembers));
+      runningDinnerCalculator.setHostingParticipant(team, runningDinner.getConfiguration());
+      team.setStatus(team.getStatus() == TeamStatus.CANCELLED ? TeamStatus.REPLACED : TeamStatus.OK);
     
-    Assert.notNull(team.getHostTeamMember(), "Expected " + team + " to have one host team member");
-    return teamRepository.save(team);
+      Assert.notNull(team.getHostTeamMember(), "Expected " + team + " to have one host team member");
+      Participant hostTeamMember = team.getHostTeamMember();
+      participantRepository.save(hostTeamMember);
+      return teamRepository.save(team);
 	}
 	
 	private List<Participant> findParticipantsToAssign(String adminId, List<UUID> participantIds) {
