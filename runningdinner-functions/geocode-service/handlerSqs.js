@@ -2,6 +2,9 @@
 
 const controller = require('./controller');
 const lodash = require('lodash');
+const {getAwsBaseParams} = require('./baseAwsParams');
+
+console.info(`Starting with aws params ${JSON.stringify(getAwsBaseParams())}`);
 
 module.exports.update = async event => {
 

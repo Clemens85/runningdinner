@@ -10,3 +10,5 @@ geocode-service/.serverless
 *.iml
 /secrets.dev.yml
 /secrets.prod.yml
+.esbuild
+

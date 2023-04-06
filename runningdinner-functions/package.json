@@ -9,17 +9,22 @@
   },
   "author": "Clemens Stich",
   "license": "ISC",
+  "devDependencies": {
+    "esbuild": "0.17.15",
+    "serverless": "3.30.0",
+    "serverless-esbuild": "1.43.0",
+    "serverless-localstack": "^1.0.2",
+    "serverless-offline": "^12.0.4",
+    "serverless-offline-sqs": "^7.3.2",
+    "serverless-plugin-optimize": "4.2.1-rc.1",
+    "serverless-plugin-reducer": "4.0.1"
+  },
   "dependencies": {
-    "aws-sdk": "^2.1314.0",
+    "@aws-sdk/client-ssm": "3.303.0",
     "axios": "0.19.0",
     "jest": "^24.9.0",
     "knex": "0.20.1",
     "lodash": "4.17.15",
-    "pg": "7.12.1",
-    "serverless-localstack": "^1.0.2",
-    "serverless-offline": "^12.0.4",
-    "serverless-offline-sqs": "^7.3.2",
-    "serverless-plugin-reducer": "^4.0.1",
-    "serverless-secrets-plugin": "^0.1.0"
+    "pg": "7.12.1"
   }
 }

@@ -1,5 +1,12 @@
-const AWS = require('aws-sdk');
-const ssm = new AWS.SSM();
+const { SSMClient, GetParameterCommand } = require("@aws-sdk/client-ssm")
+const {getAwsBaseParams} = require("./baseAwsParams");
+
+// const client = new SSMClient({
+//   region: "eu-central-1",
+//   endpoint: "http://localhost:4566"
+// });
+
+const client = new SSMClient(getAwsBaseParams());
 
 const getSsmParameterCached = (params, cacheTime) => {
   let lastRefreshed = undefined;
@@ -13,7 +20,9 @@ const getSsmParameterCached = (params, cacheTime) => {
       if (lastResult === undefined ||
         lastRefreshed + cacheTime < currentTime) {
         // refresh the value
-        lastResult = await ssm.getParameter(params).promise();
+        const getParameterCommand = new GetParameterCommand(params);
+        lastResult = await client.send(getParameterCommand);
+        //lastResult = await ssm.getParameter(params).promise();
         lastRefreshed = currentTime;
       }
       return lastResult;

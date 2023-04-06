@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-let backendBaseUrl = process.env.BACKEND_BASE_URL;
+const backendBaseUrl = process.env.BACKEND_BASE_URL;
 
 const findParticipantByAdminIdAndId = async (adminId, participantId) => {
   console.log(`Retrieving participant with ${adminId} and ${participantId}`);
