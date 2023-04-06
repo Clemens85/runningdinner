@@ -48,23 +48,26 @@ public class DinnerRouteMessageFormatterTest {
   @Mock
   private UrlGenerator urlGenerator;
 
-	@Mock
-	private MessageSource messageSource;
-	
-	@Mock
-	private LocalizationProviderService localizationProviderService;
-	
-	@Mock
-	private MessageFormatterHelperService messageFormatterHelperService;
+  @Mock
+  private MessageSource messageSource;
 
-	@Mock
-	private AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
+  @Mock
+  private LocalizationProviderService localizationProviderService;
 
-	private RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
+  @Mock
+  private MessageFormatterHelperService messageFormatterHelperService;
+
+  @Mock
+  private AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
+
+  private RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
+
+  @Mock
+  private RunningDinnerService runningDinnerService;
 	
-	@Before
-	public void setUp() {
-		
+  @Before
+  public void setUp() {
+
     MockitoAnnotations.initMocks(this);
 
     setupLocalizationProviderServiceMock();
@@ -74,11 +77,12 @@ public class DinnerRouteMessageFormatterTest {
     Mockito.when(messageSource.getMessage(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn("N/A");
 
-    this.afterPartyLocationService = new AfterPartyLocationService(runningDinnerService, afterPartyLocationGeocodeEventPublisher, localizationProviderService, messageSource);
-    
-        this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService,
-            messageFormatterHelperService, afterPartyLocationService);
-	}
+    this.afterPartyLocationService = new AfterPartyLocationService(runningDinnerService,
+        afterPartyLocationGeocodeEventPublisher, localizationProviderService, messageSource);
+
+    this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService,
+        messageFormatterHelperService, afterPartyLocationService);
+  }
 	
 	@Test
 	public void mobileNumbersFormattedForBothTeamMembers() {
