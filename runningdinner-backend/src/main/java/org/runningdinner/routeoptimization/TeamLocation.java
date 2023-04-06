@@ -1,8 +1,10 @@
-package org.runningdinner.participant;
+package org.runningdinner.routeoptimization;
 
 import java.util.UUID;
 
 import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.participant.ParticipantAddress;
+import org.runningdinner.participant.TeamStatus;
 
 import com.google.common.base.MoreObjects;
 

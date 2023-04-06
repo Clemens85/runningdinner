@@ -1,7 +1,19 @@
 import axios from "axios";
 import { BackendConfig } from "../BackendConfig";
-import {GenderAspects, LabelValue, Meal, RunningDinner, RunningDinnerBasicDetails, RunningDinnerOptions, DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER,
-        RunningDinnerPublicSettings, RunningDinnerType, newEmptyRunningDinnerBasicDetails, newEmptyRunningDinnerPublicSettings} from "../types";
+import {
+  GenderAspects,
+  LabelValue,
+  Meal,
+  RunningDinner,
+  RunningDinnerBasicDetails,
+  RunningDinnerOptions,
+  DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER,
+  RunningDinnerPublicSettings,
+  RunningDinnerType,
+  newEmptyRunningDinnerBasicDetails,
+  newEmptyRunningDinnerPublicSettings,
+  AfterPartyLocation
+} from "../types";
 import {CONSTANTS} from "../Constants";
 import {getHoursOfDate, getMinutesOfDate, isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute, isAfterInDays} from "../date";
 import {isClosedDinner} from "../admin";
@@ -29,6 +41,11 @@ export async function validatePublicSettings(publicSettings: RunningDinnerPublic
   const dinnerDateQueryStr = toLocalDateQueryString(runningDinnerDate);
   const url = BackendConfig.buildUrl(`/wizardservice/v1/validate/publicsettings?runningDinnerDate=${dinnerDateQueryStr}`);
   await axios.put<void>(url, publicSettings);
+}
+
+export async function validateRunningDinnerAfterPartyLocation(afterPartyLocation: AfterPartyLocation) {
+  const url = BackendConfig.buildUrl(`/wizardservice/v1/validate/afterpartylocation`);
+  await axios.put<void>(url, afterPartyLocation);
 }
 
 export async function createRunningDinnerAsync(runningDinner: CreateRunningDinnerWizardModel): Promise<CreateRunningDinnerResponse> {
@@ -171,6 +188,7 @@ const initialState: WizardState = {
       considerShortestPaths: false,
       teamPartnerWishDisabled: false
     },
+    afterPartyLocation: undefined,
     publicSettings: newEmptyRunningDinnerPublicSettings(),
     contract: {
       fullname: "",

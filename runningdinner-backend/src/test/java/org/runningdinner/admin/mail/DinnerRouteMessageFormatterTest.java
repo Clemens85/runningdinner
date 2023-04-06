@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.runningdinner.admin.AfterPartyLocationService;
+import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.message.dinnerroute.DinnerRouteMessage;
 import org.runningdinner.admin.message.team.TeamSelection;
 import org.runningdinner.common.exception.TechnicalException;
@@ -28,6 +30,7 @@ import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.core.util.DateTimeUtil;
+import org.runningdinner.geocoder.AfterPartyLocationGeocodeEventPublisher;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.Participant;
@@ -36,12 +39,14 @@ import org.springframework.context.MessageSource;
 
 public class DinnerRouteMessageFormatterTest {
 
-	private static final Locale GERMAN = Locale.GERMAN;
+  private static final Locale GERMAN = Locale.GERMAN;
 
-	private DinnerRouteMessageFormatter formatter;
-	
-	@Mock
-	private UrlGenerator urlGenerator;
+  private DinnerRouteMessageFormatter formatter;
+
+  private AfterPartyLocationService afterPartyLocationService;
+
+  @Mock
+  private UrlGenerator urlGenerator;
 
 	@Mock
 	private MessageSource messageSource;
@@ -49,8 +54,11 @@ public class DinnerRouteMessageFormatterTest {
 	@Mock
 	private LocalizationProviderService localizationProviderService;
 	
-    @Mock
-    private MessageFormatterHelperService messageFormatterHelperService;
+	@Mock
+	private MessageFormatterHelperService messageFormatterHelperService;
+
+	@Mock
+	private AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
 
 	private RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
 	
@@ -58,16 +66,18 @@ public class DinnerRouteMessageFormatterTest {
 	public void setUp() {
 		
     MockitoAnnotations.initMocks(this);
-    
+
     setupLocalizationProviderServiceMock();
-    
-		Mockito.when(urlGenerator.constructPrivateDinnerRouteUrl(Mockito.any(), Mockito.any(), Mockito.any()))
-						.thenReturn("SelfAdminId");
-		Mockito.when(messageSource.getMessage(Mockito.any(), Mockito.any(), Mockito.any()))
-						.thenReturn("N/A");
+
+    Mockito.when(urlGenerator.constructPrivateDinnerRouteUrl(Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenReturn("SelfAdminId");
+    Mockito.when(messageSource.getMessage(Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenReturn("N/A");
+
+    this.afterPartyLocationService = new AfterPartyLocationService(runningDinnerService, afterPartyLocationGeocodeEventPublisher, localizationProviderService, messageSource);
     
         this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService,
-            messageFormatterHelperService);
+            messageFormatterHelperService, afterPartyLocationService);
 	}
 	
 	@Test
@@ -141,11 +151,11 @@ public class DinnerRouteMessageFormatterTest {
 
 	private Team findOtherHostingTeamInDinnerRoute(List<Team> dinnerRoute, Team team) {
 		
-		return dinnerRoute
-						.stream()
-						.filter(t -> !Objects.equals(t, team))
-						.findFirst()
-						.orElseThrow(IllegalStateException::new);
+	  return dinnerRoute
+	          .stream()
+	          .filter(t -> !Objects.equals(t, team))
+	          .findFirst()
+	          .orElseThrow(IllegalStateException::new);
 	}
 
 	private DinnerRouteMessage newDinnerRouteMessage() {

@@ -3,8 +3,11 @@ package org.runningdinner.core;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -60,6 +63,17 @@ public class RunningDinner extends AbstractEntity implements RunningDinnerInfo {
 
   @Embedded
   private PublicSettings publicSettings = new PublicSettings();
+  
+  @Embedded 
+  @AttributeOverrides({
+    @AttributeOverride(name = "street", column = @Column(name = "afterPartyLocationStreet")),
+    @AttributeOverride(name = "streetNr", column = @Column(name = "afterPartyLocationStreetNr")),
+    @AttributeOverride(name = "zip", column = @Column(name = "afterPartyLocationZip")),
+    @AttributeOverride(name = "cityName", column = @Column(name = "afterPartyLocationCityName")),
+    @AttributeOverride(name = "addressName", column = @Column(name = "afterPartyLocationAddressName")),
+    @AttributeOverride(name = "addressRemarks", column = @Column(name = "afterPartyLocationRemarks"))
+  })
+  private AfterPartyLocation afterPartyLocation = new AfterPartyLocation();
 
   @Embedded
   private RunningDinnerConfig configuration;
@@ -265,6 +279,14 @@ public class RunningDinner extends AbstractEntity implements RunningDinnerInfo {
   public void setLanguageCode(String languageCode) {
   
     this.languageCode = StringUtils.trim(StringUtils.lowerCase(languageCode));
+  }
+  
+  public Optional<AfterPartyLocation> getAfterPartyLocation() {
+    return afterPartyLocation != null && afterPartyLocation.isDefined() ? Optional.of(afterPartyLocation) : Optional.empty();
+  }
+
+  public void setAfterPartyLocation(AfterPartyLocation afterPartyLocation) {
+    this.afterPartyLocation = afterPartyLocation;
   }
 
   public RunningDinnerInfo createDetachedCloneRunningDinnerInfo() {

@@ -1,5 +1,5 @@
 
-package org.runningdinner.participant;
+package org.runningdinner.routeoptimization;
 
 import java.util.List;
 

@@ -1,4 +1,11 @@
-import { CONSTANTS, minusDays } from "..";
+import {
+  BaseAddress,
+  CONSTANTS,
+  CreateRunningDinnerWizardModel,
+  HasGeocoding,
+  minusDays,
+  plusHours
+} from "..";
 import { BaseEntity, GenderAspects, LabelValue } from "./Base";
 
 export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
@@ -72,6 +79,8 @@ export interface RunningDinner {
   options: RunningDinnerOptions;
   publicSettings: RunningDinnerPublicSettings;
 
+  afterPartyLocation?: AfterPartyLocation;
+
   cancellationDate?: Date;
 
   runningDinnerType: RunningDinnerType;
@@ -95,6 +104,7 @@ export interface PublicRunningDinner extends Omit<RunningDinnerBasicDetails, "re
   teamPartnerWishDisabled: boolean;
   meals: Meal[];
   publicSettings: RunningDinnerPublicSettings;
+  afterPartyLocation?: AfterPartyLocation;
 }
 
 export function newEmptyRunningDinnerBasicDetails(): RunningDinnerBasicDetails {
@@ -105,6 +115,38 @@ export function newEmptyRunningDinnerBasicDetails(): RunningDinnerBasicDetails {
     date: new Date(),
     registrationType: CONSTANTS.REGISTRATION_TYPE.OPEN,
     languageCode: "de"
+  };
+}
+
+export interface AfterPartyLocationAddress extends BaseAddress {
+  addressName?: string;
+  addressRemarks?: string;
+}
+
+export interface AfterPartyLocation extends AfterPartyLocationAddress, HasGeocoding {
+  time: Date;
+}
+
+export function newAfterPartyLocation(runningDinner?: CreateRunningDinnerWizardModel): AfterPartyLocation {
+
+  const zip = runningDinner?.basicDetails?.zip || "";
+  const cityName = runningDinner?.basicDetails?.city || "";
+
+  let time = new Date();
+  const meals = runningDinner?.options?.meals || [];
+  if (meals.length > 0) {
+    const lastMeal = meals[meals.length - 1];
+    time = plusHours(lastMeal.time, 2);
+  }
+
+  return {
+    street: '',
+    streetNr: '',
+    zip,
+    cityName,
+    addressName: '',
+    addressRemarks: '',
+    time
   };
 }
 

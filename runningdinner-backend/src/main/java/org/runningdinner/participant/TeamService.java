@@ -43,6 +43,8 @@ import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
 import org.runningdinner.participant.rest.TeamTO;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
+import org.runningdinner.routeoptimization.TeamLocation;
+import org.runningdinner.routeoptimization.TeamLocationsEventData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +161,7 @@ public class TeamService {
     String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(dinnerRouteTeam,
         runningDinner);
     
-    DinnerRouteTO result = DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams);
+    DinnerRouteTO result = DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams, runningDinner.getAfterPartyLocation());
     
     return result;
   }

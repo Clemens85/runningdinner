@@ -26,7 +26,8 @@ public class QueueProviderFactoryService {
       queueProvider = new QueueProviderMockInMemory();
     } else if (envUtilService.isProfileActive("dev")) {
       LOGGER.info("*** Using Local Dev Queue Provider ***");
-      queueProvider = new QueueProviderDev();
+      String endpoint = envUtilService.getConfigProperty("aws.sqs.url");
+      queueProvider = new QueueProviderDev(endpoint);
     } else {
       LOGGER.info("*** Using AWS SQS Queue Provider ***");
       queueProvider = new QueueProviderSqs();

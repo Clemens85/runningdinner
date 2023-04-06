@@ -89,6 +89,8 @@ public class ActivityService {
   private static final String RUNNING_DINNER_CANCELLED_MESSAGE_TEMPLATE = "Du hast dieses Running Dinner endgültig abgesagt. Es wird demnächst automatisch gelöscht.";
 
   private static final String RUNNING_DINNER_BASIC_SETTINGS_EDITED_TEMPLATE = "Du hast die Basis Einstellungen deines Running Dinners nachträglich bearbeitet.";
+
+  private static final String RUNNING_DINNER_AFTER_PARTY_LOCATION_EDITED_TEMPLATE = "Du hast die After-Event-Party deines Running Dinners nachträglich bearbeitet.";
   
   private static final String RUNNING_DINNER_PUBLIC_SETTINGS_EDITED_TEMPLATE = "Du hast die öffentlichen Einstellungen deines Running Dinners nachträglich bearbeitet.";
 
@@ -314,6 +316,9 @@ public class ActivityService {
     if (runningDinnerSettingsUpdatedEvent.isBasicSettingsUpdate()) {
       result.setActivityHeadline("Running Dinner Basis Einstellungen geändert");
       result.setActivityMessage(RUNNING_DINNER_BASIC_SETTINGS_EDITED_TEMPLATE);
+    } else if (runningDinnerSettingsUpdatedEvent.isAfterPartyLocationUpdate()) {
+      result.setActivityHeadline("Running Dinner After-Event-Party geändert");
+      result.setActivityMessage(RUNNING_DINNER_AFTER_PARTY_LOCATION_EDITED_TEMPLATE);
     } else if (runningDinnerSettingsUpdatedEvent.isRegistrationActiveStatusUpdate()) {
       if ( runningDinner.getPublicSettings().isRegistrationDeactivated()) {
         result.setActivityHeadline("Registrierung deaktiviert");

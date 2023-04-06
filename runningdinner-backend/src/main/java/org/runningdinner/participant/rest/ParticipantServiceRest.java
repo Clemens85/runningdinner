@@ -37,14 +37,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rest/participantservice/v1")
 public class ParticipantServiceRest {
 
-	@Autowired 
-	private ParticipantService participantService;
-	
-	@Autowired 
+  @Autowired
+  private ParticipantService participantService;
+
+  @Autowired
   private RunningDinnerService runningDinnerService;
-	
-	@Autowired
-	private TeamPartnerWishService teamPartnerWishService;
+
+  @Autowired
+  private TeamPartnerWishService teamPartnerWishService;
 	
 	@RequestMapping(value = "/runningdinner/{adminId}/participants", method = RequestMethod.GET)
 	public ParticipantListActive findActiveParticipantsList(@PathVariable("adminId") final String adminId) {
@@ -78,13 +78,13 @@ public class ParticipantServiceRest {
 	}
 
 	@RequestMapping(value = "/runningdinner/{adminId}/participants/{participantId}/geocode", method = RequestMethod.PUT)
-	public ParticipantTO updateParticipantGeocode(@PathVariable("adminId") final String adminId,
-																			 	 			  @PathVariable("participantId") final UUID participantId,
-																								@RequestBody GeocodingResult geocodingResult) {
+    public ParticipantTO updateParticipantGeocode(@PathVariable("adminId") final String adminId,
+        @PathVariable("participantId") final UUID participantId,
+        @RequestBody GeocodingResult geocodingResult) {
 
-		Participant participant = participantService.updateParticipantGeocode(adminId, participantId, geocodingResult);
-		return new ParticipantTO(participant);
-	}
+      Participant participant = participantService.updateParticipantGeocode(adminId, participantId, geocodingResult);
+      return new ParticipantTO(participant);
+    }
 
   @RequestMapping(value = "/runningdinner/{adminId}/participants/not-active", method = RequestMethod.PUT)
   public ParticipantListInactive findNotActivatedParticipants(@PathVariable("adminId") final String adminId,
