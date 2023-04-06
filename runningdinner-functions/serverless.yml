@@ -30,7 +30,6 @@ provider:
   environment:
     BACKEND_BASE_URL: ${self:custom.backendBaseUrl.${opt:stage, self:provider.stage}}
     AWS_ENDPOINT_URL_OVERWRITE: ${param:aws_endpoint_url_overwrite}
-    AWS_REGION: ${self:provider.region}
     NODE_TLS_REJECT_UNAUTHORIZED: 0
 
 custom:
@@ -77,10 +76,15 @@ custom:
 params:
   local:
     aws_endpoint_url_overwrite: http://localhost:4566
+  dev:
+    aws_endpoint_url_overwrite: ""
+  prod:
+    aws_endpoint_url_overwrite:
 
 functions:
   update-sqs:
     handler: geocode-service/handlerSqs.update
+    logRetentionInDays: 30
     events:
       - sqs:
           batchSize: 1
@@ -110,6 +114,7 @@ plugins:
   - serverless-offline-sqs
   - serverless-offline
   - serverless-esbuild
+  - serverless-plugin-log-retention
   # - serverless-plugin-optimize
   # - serverless-plugin-reducer
   # - serverless-localstack

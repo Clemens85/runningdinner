@@ -16,8 +16,7 @@
     "serverless-localstack": "^1.0.2",
     "serverless-offline": "^12.0.4",
     "serverless-offline-sqs": "^7.3.2",
-    "serverless-plugin-optimize": "4.2.1-rc.1",
-    "serverless-plugin-reducer": "4.0.1"
+    "serverless-plugin-log-retention": "2.0.0"
   },
   "dependencies": {
     "@aws-sdk/client-ssm": "3.303.0",
