@@ -79,7 +79,7 @@ params:
   dev:
     aws_endpoint_url_overwrite: ""
   prod:
-    aws_endpoint_url_overwrite:
+    aws_endpoint_url_overwrite: ""
 
 functions:
   update-sqs:
