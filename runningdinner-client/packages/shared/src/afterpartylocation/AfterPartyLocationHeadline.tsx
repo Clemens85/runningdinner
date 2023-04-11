@@ -1,6 +1,7 @@
 import React from 'react';
-import {AfterPartyLocation, Time} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
+import { Time } from '../date';
+import { AfterPartyLocation } from '../types';
 
 export default function AfterPartyLocationHeadline({time}: AfterPartyLocation) {
   const {t} = useTranslation(["common"]);
