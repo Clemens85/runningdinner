@@ -7,7 +7,7 @@ jobs:
   build_test_backend:
     docker:
       - image: cimg/openjdk:17.0.3
-      - image: cimg/postgres:9.6.24
+      - image: cimg/postgres:13.4
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: root
