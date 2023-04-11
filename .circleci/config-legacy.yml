@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   maven: circleci/maven@1.0.3
-  aws-ecs: circleci/aws-ecs@3.2.0
 
 jobs:
   build_test_backend:
@@ -24,9 +23,17 @@ jobs:
       - run:
           name: Setup application-prod.properties # Not very nice, but sufficient for now
           command: |
+            #echo "aws.sqs.geocode.url=${PROD_AWS_SQS_GEOCODE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
+
             echo "sendgrid.api.key=${PROD_SENDGRID_API_KEY}" >> runningdinner-backend/src/main/resources/application-prod.properties
             echo 'host.context.url=https://runyourdinner.eu' >> runningdinner-backend/src/main/resources/application-prod.properties
             echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.password=${PROD_SPRING_DATASOURCE_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.username=${PROD_SPRING_DATASOURCE_USERNAME}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.url=${PROD_SPRING_DATASOURCE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
+
+            # echo "spring.flyway.password=${PROD_SPRING_FLYWAY_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.flyway.user=${PROD_SPRING_FLYWAY_USER}" >> runningdinner-backend/src/main/resources/application-prod.properties
       - run:
           name: Build + Test
           command: |
@@ -55,6 +62,8 @@ jobs:
   build_docker_image:
     machine:
       image: ubuntu-2204:2022.04.2
+    # docker:
+    #   - image: docker:17.05.0-ce-git
     steps:
       - checkout
       - attach_workspace:
@@ -66,11 +75,7 @@ jobs:
           command: |
             cd runningdinner-backend
             ls -la target/extracted/application
-            if [ $CIRCLE_BRANCH == "spring-boot-upgrade-afterpartylocation" ]; then
-              docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_BUILD_NUM .
-            else
-              docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:$CIRCLE_BUILD_NUM .
-            fi
+            docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_BUILD_NUM .
       - run:
           name: Push to Dockerhub
           command: |
@@ -104,32 +109,52 @@ jobs:
             mv -v runningdinner-client/packages/webapp/build/* runningdinner-backend/src/main/resources/static
             mv runningdinner-backend/src/main/client/resources/ runningdinner-backend/src/main/resources/static/resources
       - persist_to_workspace:
-          root: runningdinner-client/packages/webapp
+          root: runningdinner-backend/src/main/resources
           paths:
-            - build
-            
+            - static
+
   deploy_runningdinner_app:
     machine:
       image: ubuntu-2004:202201-02
     steps:
       - checkout
       - attach_workspace:
-          at: runningdinner-client/packages/webapp
-      - aws-ecs/deploy-service-update:
-          cluster: "runningdinner-ecs-cluster"
-          family: "runningdinner-backend"
-          container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_BUILD_NUM}'
-          aws-access-key-id: $DEV_AWS_ACCESS_KEY_ID
-          aws-secret-access-key: $DEV_AWS_SECRET_ACCESS_KEY
-          aws-region: "eu-central-1"
+          at: runningdinner-backend/target
+      - add_ssh_keys:
+          fingerprints:
+            - "f8:85:06:d1:12:e5:0f:76:e6:dd:30:7b:41:f0:af:5e"
       - run:
-          name: Deploy Webclient files to S3
+          name: Allow SSH Access
           command: |
-            aws s3 sync ./runningdinner-client/packages/webapp/build/ s3://runningdinner-web-dev --delete
+            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+            runningdinner-backend/infrastructure/deployment/allow-ssh-access.sh
+      - run: touch ssh-access-granted.txt
+      - run:
+          name: Upload artifacts
+          command: |
+            chmod +x runningdinner-backend/target/deploy.sh
+            scp runningdinner-backend/target/deploy.sh runningdinner-backend/target/runningdinner.tar.gz $SSH_USER@$SSH_HOST:~/upload
+      - run:
+          name: Run Deploy script
+          command: |
+            ssh $SSH_USER@$SSH_HOST "./upload/deploy.sh"
       - run:
           name: Check App is healthy
           command: |
-            curl -k -XGET https://dev.runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+            curl -k -XGET https://runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+      - run:
+          name: Remove SSH Access
+          command: |
+            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+            if [[ -f "ssh-access-granted.txt" ]] ; then
+              echo "Removing ssh access..."
+              runningdinner-backend/infrastructure/deployment/remove-ssh-access.sh
+            else
+              echo "Do not remove ssh access due to ssh-access-granted.txt did not exist..."
+            fi
+          when: always
 
   deploy_runningdinner_functions:
     docker:
@@ -155,6 +180,10 @@ jobs:
             export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
             export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
             export SERVERLESS_ACCESS_KEY=$PROD_SERVERLESS_ACCESS_KEY
+            echo "GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_KEY_JS}" > secrets.prod.yml
+            # I don't know why the encrypt/decrypt does not work... hence use the workaround above for now...
+            # serverless decrypt --stage prod --password '${PROD_GEOCODE_SECRETS_PASSWORD}'
+
             echo "Starting deploy..."
             serverless deploy --stage prod --verbose
       - save_cache:
@@ -169,6 +198,8 @@ workflows:
           context: workspace
       - build_test_backend:
           context: workspace
+          requires:
+            - build_webclient
       - build_docker_image:
           context: workspace
           requires:
@@ -181,8 +212,7 @@ workflows:
       - deploy_runningdinner_app:
           context: workspace
           requires:
-            - build_docker_image
-            - build_webclient
+            - build_test_backend
             - confirm-app-deployment
           filters:
             branches:
