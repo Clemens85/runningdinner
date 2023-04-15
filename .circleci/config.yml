@@ -200,7 +200,6 @@ workflows:
             - build_docker_image
             - build_webclient
             - confirm-app-deployment
-          name: "Deploy RunningDinner Backend to ECS"
           cluster: "runningdinner-ecs-cluster"
           family: "runningdinner-backend"
           container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_BUILD_NUM}'
