@@ -121,41 +121,22 @@ jobs:
           at: runningdinner-client/packages/webapp
       - run:
           name: Debug Directory layout
-          command: >
+          command: |
             echo "printing Dir"
             ls -la
       - run:
           name: Execute aws s3 sync
-          command: >
+          command: |
             CONTENT_BUILD_DIR="runningdinner-client/packages/webapp/build/"
             if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then
               echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
               exit 1
             fi
             aws s3 sync "$CONTENT_BUILD_DIR" s3://runningdinner-web-dev --delete --region eu-central-1
-
-  # deploy_runningdinner_app:
-  #   machine:
-  #     image: ubuntu-2004:202201-02
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: runningdinner-client/packages/webapp
-  #     - aws-ecs/deploy-service-update:
-  #         cluster: "runningdinner-ecs-cluster"
-  #         family: "runningdinner-backend"
-  #         container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_BUILD_NUM}'
-  #         aws-access-key-id: $DEV_AWS_ACCESS_KEY_ID
-  #         aws-secret-access-key: $DEV_AWS_SECRET_ACCESS_KEY
-  #         aws-region: "eu-central-1"
-  #     - run:
-  #         name: Deploy Webclient files to S3
-  #         command: |
-  #           aws s3 sync ./runningdinner-client/packages/webapp/build/ s3://runningdinner-web-dev --delete
-  #     - run:
-  #         name: Check App is healthy
-  #         command: |
-  #           curl -k -XGET https://dev.runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+      - run:
+          name: Check App is healthy
+          command: |
+            curl -k -XGET https://dev.runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
 
   deploy_runningdinner_functions:
     docker:
@@ -213,7 +194,7 @@ workflows:
           cluster: "runningdinner-ecs-cluster"
           family: "runningdinner-backend"
           service-name: "runningdinner-service"
-          container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_BUILD_NUM}'
+          container-image-name-updates: 'container=runningdinner-backend,tag=latest'
           aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
           aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
       - deploy_webclient_s3:
