@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   maven: circleci/maven@1.0.3
   aws-ecs: circleci/aws-ecs@3.2.0
+  aws-cli: circleci/aws-cli@3.1.5
 
 jobs:
   build_test_backend:
@@ -107,29 +108,45 @@ jobs:
           root: runningdinner-client/packages/webapp
           paths:
             - build
-            
-  deploy_runningdinner_app:
-    machine:
-      image: ubuntu-2004:202201-02
+
+  deploy_webclient_s3:
+    executor: aws-cli/default
     steps:
-      - checkout
-      - attach_workspace:
-          at: runningdinner-client/packages/webapp
-      - aws-ecs/deploy-service-update:
-          cluster: "runningdinner-ecs-cluster"
-          family: "runningdinner-backend"
-          container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_BUILD_NUM}'
+      - aws-cli/install
+      - aws-cli/setup:
           aws-access-key-id: $DEV_AWS_ACCESS_KEY_ID
           aws-secret-access-key: $DEV_AWS_SECRET_ACCESS_KEY
           aws-region: "eu-central-1"
+      - checkout
+      - attach_workspace:
+          at: runningdinner-client/packages/webapp
       - run:
-          name: Deploy Webclient files to S3
-          command: |
+          name: Execute aws s3 sync
+          command: >
             aws s3 sync ./runningdinner-client/packages/webapp/build/ s3://runningdinner-web-dev --delete
-      - run:
-          name: Check App is healthy
-          command: |
-            curl -k -XGET https://dev.runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+
+  # deploy_runningdinner_app:
+  #   machine:
+  #     image: ubuntu-2004:202201-02
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: runningdinner-client/packages/webapp
+  #     - aws-ecs/deploy-service-update:
+  #         cluster: "runningdinner-ecs-cluster"
+  #         family: "runningdinner-backend"
+  #         container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_BUILD_NUM}'
+  #         aws-access-key-id: $DEV_AWS_ACCESS_KEY_ID
+  #         aws-secret-access-key: $DEV_AWS_SECRET_ACCESS_KEY
+  #         aws-region: "eu-central-1"
+  #     - run:
+  #         name: Deploy Webclient files to S3
+  #         command: |
+  #           aws s3 sync ./runningdinner-client/packages/webapp/build/ s3://runningdinner-web-dev --delete
+  #     - run:
+  #         name: Check App is healthy
+  #         command: |
+  #           curl -k -XGET https://dev.runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
 
   deploy_runningdinner_functions:
     docker:
@@ -175,18 +192,38 @@ workflows:
             - build_test_backend
       - confirm-app-deployment:
           type: approval
-          filters:
-            branches:
-              only: main
-      - deploy_runningdinner_app:
-          context: workspace
+          # filters:
+          #   branches:
+          #     only: main
+      - aws-ecs/deploy-service-update:
           requires:
             - build_docker_image
             - build_webclient
             - confirm-app-deployment
-          filters:
-            branches:
-              only: main
+          name: "Deploy RunningDinner Backend to ECS"
+          cluster: "runningdinner-ecs-cluster"
+          family: "runningdinner-backend"
+          container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_BUILD_NUM}'
+          aws-access-key-id: $DEV_AWS_ACCESS_KEY_ID
+          aws-secret-access-key: $DEV_AWS_SECRET_ACCESS_KEY
+          aws-region: "eu-central-1"
+      - deploy_webclient_s3:
+          context: workspace
+          requires:
+            - build_webclient
+            - confirm-app-deployment
+            - aws-ecs/deploy-service-update
+
+
+      # - deploy_runningdinner_app:
+      #     context: workspace
+      #     requires:
+      #       - build_docker_image
+      #       - build_webclient
+      #       - confirm-app-deployment
+          # filters:
+          #   branches:
+          #     only: main
 
   deploy_functions:
     jobs:
