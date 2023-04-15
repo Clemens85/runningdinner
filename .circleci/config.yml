@@ -114,9 +114,9 @@ jobs:
     steps:
       - aws-cli/install
       - aws-cli/setup:
-          aws-access-key-id: $DEV_AWS_ACCESS_KEY_ID
-          aws-secret-access-key: $DEV_AWS_SECRET_ACCESS_KEY
-          aws-region: "eu-central-1"
+          aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
+          aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_REGION
       - checkout
       - attach_workspace:
           at: runningdinner-client/packages/webapp
@@ -204,9 +204,9 @@ workflows:
           cluster: "runningdinner-ecs-cluster"
           family: "runningdinner-backend"
           container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_BUILD_NUM}'
-          aws-access-key-id: $DEV_AWS_ACCESS_KEY_ID
-          aws-secret-access-key: $DEV_AWS_SECRET_ACCESS_KEY
-          aws-region: "eu-central-1"
+          aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
+          aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_REGION
       - deploy_webclient_s3:
           context: workspace
           requires:
