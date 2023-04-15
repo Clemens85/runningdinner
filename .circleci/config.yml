@@ -98,12 +98,6 @@ jobs:
           paths:
             - ~/usr/local/lib/node_modules
           key: dependencies-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
-      - run: 
-          name: Move client artifacts to static folder
-          command: |
-            mkdir -p runningdinner-backend/src/main/resources/static
-            mv -v runningdinner-client/packages/webapp/build/* runningdinner-backend/src/main/resources/static
-            mv runningdinner-backend/src/main/client/resources/ runningdinner-backend/src/main/resources/static/resources
       - persist_to_workspace:
           root: runningdinner-client/packages/webapp
           paths:
@@ -116,29 +110,24 @@ jobs:
       - aws-cli/setup:
           aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
           aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
-      - checkout
       - attach_workspace:
-          at: runningdinner-client/packages/webapp
+          at: webapp-build
       - run:
           name: Debug Directory layout
           command: |
             echo "printing Dir"
             ls -la
-            echo "printing Dir 2"
-            ls -la runningdinner-client
-            echo "printing Dir 3"
-            ls -la runningdinner-client/packages/webapp/
-            echo "printing Dir 4"
-            ls -la runningdinner-client/packages/webapp/build
+            echo "printing Dir 1"
+            ls -la webapp-build
       - run:
           name: Execute aws s3 sync
           command: |
-            CONTENT_BUILD_DIR="runningdinner-client/packages/webapp/build/"
+            CONTENT_BUILD_DIR="webapp-build"
             if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then
               echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
               exit 1
             fi
-            aws s3 sync "$CONTENT_BUILD_DIR" s3://runningdinner-web-dev --delete --region eu-central-1
+            aws s3 sync "$CONTENT_BUILD_DIR/" s3://runningdinner-web-dev --delete --region eu-central-1
       - run:
           name: Check App is healthy
           command: |
