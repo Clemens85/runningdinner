@@ -196,6 +196,7 @@ workflows:
           #   branches:
           #     only: main
       - aws-ecs/deploy-service-update:
+          context: workspace
           requires:
             - build_docker_image
             - build_webclient
@@ -211,7 +212,7 @@ workflows:
           requires:
             - build_webclient
             - confirm-app-deployment
-            - aws-ecs/deploy-service-update
+            # - aws-ecs/deploy-service-update
 
 
       # - deploy_runningdinner_app:
