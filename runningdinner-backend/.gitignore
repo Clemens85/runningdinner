@@ -6,10 +6,6 @@
 /*.iml
 /src/main/client/vendor
 /src/main/client/css/*.css
-/src/main/resources/static
-/src/main/resources/static/*.html
-/src/main/resources/static/*.css
-/src/main/resources/static/fonts/*.*
 /node_modules
 /.project
 /.classpath
