@@ -113,25 +113,24 @@ jobs:
       - attach_workspace:
           at: webapp-build
       - run:
-          name: Debug Directory layout
-          command: |
-            echo "printing Dir"
-            ls -la
-            echo "printing Dir 1"
-            ls -la webapp-build
-      - run:
           name: Execute aws s3 sync
           command: |
-            CONTENT_BUILD_DIR="webapp-build"
+            CONTENT_BUILD_DIR="webapp-build/build"
             if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then
               echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
               exit 1
             fi
             aws s3 sync "$CONTENT_BUILD_DIR/" s3://runningdinner-web-dev --delete --region eu-central-1
+
+  check_backend_health:
+    machine:
+      image: ubuntu-2204:2022.04.2
+    steps:
       - run:
-          name: Check App is healthy
+          name: Check Backend REST service can be reached
           command: |
             curl -k -XGET https://dev.runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+
 
   deploy_runningdinner_functions:
     docker:
@@ -192,23 +191,16 @@ workflows:
           container-image-name-updates: 'container=runningdinner-backend,tag=latest'
           aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
           aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
+      - check_backend_health:
+          requires:
+            - aws-ecs/deploy-service-update
       - deploy_webclient_s3:
           context: workspace
           requires:
             - build_webclient
             - confirm-app-deployment
-            # - aws-ecs/deploy-service-update
-
-
-      # - deploy_runningdinner_app:
-      #     context: workspace
-      #     requires:
-      #       - build_docker_image
-      #       - build_webclient
-      #       - confirm-app-deployment
-          # filters:
-          #   branches:
-          #     only: main
+            - aws-ecs/deploy-service-update
+            - check_backend_health
 
   deploy_functions:
     jobs:
