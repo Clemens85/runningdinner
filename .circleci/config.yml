@@ -124,6 +124,12 @@ jobs:
           command: |
             echo "printing Dir"
             ls -la
+            echo "printing Dir 2"
+            ls -la runningdinner-client
+            echo "printing Dir 3"
+            ls -la runningdinner-client/packages/webapp/
+            echo "printing Dir 4"
+            ls -la runningdinner-client/packages/webapp/build
       - run:
           name: Execute aws s3 sync
           command: |
