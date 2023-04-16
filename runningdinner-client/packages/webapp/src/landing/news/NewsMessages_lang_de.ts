@@ -1,5 +1,9 @@
 const NewsMessages_de: any = {
 
+  news_title_20230416: 'Infrastruktur modernisiert',
+  news_content_20230416: 'Auch das muss mal sein: Die zugrunde liegende Infrastruktur musste neu und moderner aufgesetzt werden, was ein längerer Prozess war, der nun aber fertig ist. ' +
+                         'Es wurde alles sorgfältig getestet um zu gewährleisten, dass es keine Beeinträchtigungen gibt. Falls doch etwas plötzlich nicht mehr funktionieren sollte, bitte direkt via Feedback melden.',
+
   news_title_20221029: 'Fehler behoben beim Versand von Einladungs-Mails an Team-Partner',
   news_content_20221029: 'Leider gab es einen Fehler der beim Versand der Einladungs EMails an potenzielle Team-Partner auftrat ' +
                          'und dazu führte dass die Links zur Event-Registrierung nicht korrekt funktionierten. Das ist mittlerweile behoben.',
