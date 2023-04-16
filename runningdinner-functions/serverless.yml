@@ -31,6 +31,16 @@ provider:
     BACKEND_BASE_URL: ${self:custom.backendBaseUrl.${opt:stage, self:provider.stage}}
     AWS_ENDPOINT_URL_OVERWRITE: ${param:aws_endpoint_url_overwrite}
     NODE_TLS_REJECT_UNAUTHORIZED: 0
+  iam:
+    role:
+      statements:
+        # Allow to read SSM parameters
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+            - ssm:GetParameters
+          Resource:
+            - 'arn:aws:ssm:eu-central-1:*:parameter/runningdinner/googlemaps/apikey'
 
 custom:
   stages:
