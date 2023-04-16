@@ -68,9 +68,9 @@ jobs:
             cd runningdinner-backend
             ls -la target/extracted/application
             if [ $CIRCLE_BRANCH == "spring-boot-upgrade-afterpartylocation" ]; then
-              docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_BUILD_NUM .
+              docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_SHA1 .
             else
-              docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:$CIRCLE_BUILD_NUM .
+              docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:$CIRCLE_SHA1 .
             fi
       - run:
           name: Push to Dockerhub
@@ -131,6 +131,27 @@ jobs:
           command: |
             curl -k -XGET https://dev.runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
 
+  verify_backend_deployment:
+    executor: aws-cli/default
+    steps:
+      - aws-cli/install
+      - aws-cli/setup:
+          aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
+          aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
+      - run:
+          name: Get last task definition
+          command: >
+            TASK_DEFINITION_ARN=$(aws ecs describe-task-definition \
+                --task-definition runningdinner-backend \
+                --output text \
+                --query 'taskDefinition.taskDefinitionArn')
+            echo "export TASK_DEFINITION_ARN='${TASK_DEFINITION_ARN}'" >> "$BASH_ENV"
+      - aws-ecs/verify-revision-is-deployed:
+          cluster: "runningdinner-ecs-cluster"
+          family: "runningdinner-backend"
+          service-name: "runningdinner-service"
+          task-definition-arn: '${TASK_DEFINITION_ARN}'
+
 
   deploy_runningdinner_functions:
     docker:
@@ -188,10 +209,13 @@ workflows:
           cluster: "runningdinner-ecs-cluster"
           family: "runningdinner-backend"
           service-name: "runningdinner-service"
-          container-image-name-updates: 'container=runningdinner-backend,tag=latest'
+          container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_SHA1}'
           aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
           aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
       - check_backend_health:
+          requires:
+            - aws-ecs/deploy-service-update
+      - verify_backend_deployment:
           requires:
             - aws-ecs/deploy-service-update
       - deploy_webclient_s3:
@@ -201,6 +225,7 @@ workflows:
             - confirm-app-deployment
             - aws-ecs/deploy-service-update
             - check_backend_health
+            # - verify_backend_deployment
 
   deploy_functions:
     jobs:
