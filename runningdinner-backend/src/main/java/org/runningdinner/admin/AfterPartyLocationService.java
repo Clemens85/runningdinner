@@ -56,7 +56,7 @@ public class AfterPartyLocationService {
   
   public void putGeocodeEventToQueue(final RunningDinner runningDinner) {
     
-    if (runningDinner.getRunningDinnerType() == RunningDinnerType.DEMO || runningDinner.getAfterPartyLocation() == null) {
+    if (runningDinner.getRunningDinnerType() == RunningDinnerType.DEMO || !runningDinner.getAfterPartyLocation().isPresent()) {
       return;
     }
     try {
@@ -73,7 +73,7 @@ public class AfterPartyLocationService {
 
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     
-    if (runningDinner.getAfterPartyLocation().isEmpty()) {
+    if (!runningDinner.getAfterPartyLocation().isPresent()) {
       return runningDinner;
     }
     
@@ -122,7 +122,7 @@ public class AfterPartyLocationService {
   }
   
   public String replaceAfterPartyLocationTemplate(String message, RunningDinner runningDinner) {
-    if (runningDinner.getAfterPartyLocation() == null) {
+    if (!runningDinner.getAfterPartyLocation().isPresent()) {
       return message;
     }
     return message.replaceAll(FormatterUtil.AFTER_PARTY_LOCATION, generateAfterPartyLocationString(runningDinner));
