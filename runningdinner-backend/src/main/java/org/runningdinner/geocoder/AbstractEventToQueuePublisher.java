@@ -25,7 +25,6 @@ public abstract class AbstractEventToQueuePublisher<T> {
   
   private static final Logger LOG = LoggerFactory.getLogger(AbstractEventToQueuePublisher.class);
 
-  // @Value("${aws.sqs.geocode.url}")
   private String queueUrl;
 
   @Value("${host.context.url}")
