@@ -125,6 +125,20 @@ jobs:
               exit 1
             fi
             aws s3 sync "$CONTENT_BUILD_DIR/" s3://runningdinner-web-dev --delete --region eu-central-1
+      - run:
+          name: Cloudfront invalidation
+          command: |
+            distributions=$(aws cloudfront list-distributions --query 'DistributionList.Items[*].{Id:Id}' --output text)
+            # Check if there is only one distribution
+            if [ $(echo "$distributions" | wc -l) -ne 1 ]; then
+              echo "Error: There are either no CloudFront distributions or multiple distributions in the account." >&2
+              exit 1
+            fi
+
+            # Get the distribution ID
+            distribution_id=$(echo "$distributions" | awk '{print $1}')
+            echo "Invalidating $distribution_id"
+            aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
 
   check_backend_health:
     machine:
