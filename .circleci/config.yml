@@ -195,11 +195,16 @@ workflows:
           context: workspace
           requires:
             - build_test_backend
+          filters:
+            branches:
+              only: 
+                - spring-boot-upgrade-afterpartylocation
       - confirm-app-deployment:
           type: approval
-          # filters:
-          #   branches:
-          #     only: main
+          filters:
+            branches:
+              only:
+                - spring-boot-upgrade-afterpartylocation
       - aws-ecs/deploy-service-update:
           context: workspace
           requires:
@@ -216,6 +221,7 @@ workflows:
           requires:
             - aws-ecs/deploy-service-update
       - verify_backend_deployment:
+          context: workspace
           requires:
             - aws-ecs/deploy-service-update
       - deploy_webclient_s3:
