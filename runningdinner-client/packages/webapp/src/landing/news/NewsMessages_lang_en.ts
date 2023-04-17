@@ -1,7 +1,7 @@
 const NewsMessages_en: any = {
 
   news_title_20230419: 'Added After-Event-Party',
-  news_content_20230419: 'Frequently asked for, now available: When creating an event the location of an after-event party can be added (and/or it can also be added in the settings). ' +
+  news_content_20230419: 'Frequently asked for, now available: When creating an event, the location of an after-event party can be added (and/or it can also be added in the settings). ' +
     'This will then be displayed during participant registration and also in the dinner routes.',
 
   news_title_20230416: 'Modernized infrastructure',
