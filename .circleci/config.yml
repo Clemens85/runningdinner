@@ -90,7 +90,7 @@ jobs:
           name: Build Docker Image
           command: |
             cd runningdinner-backend
-            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.main-stage-branch >>" ]; then
               docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_SHA1 .
             else
               docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:$CIRCLE_SHA1 .
@@ -130,17 +130,7 @@ jobs:
     executor: aws-cli/default
     steps:
       - aws-cli/install
-      - run:
-          name: Setup AWS Credential Environment
-          command: |
-            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
-              echo "export AWS_ACCESS_KEY_ID='${DEV_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
-              echo "export AWS_SECRET_ACCESS_KEY='${DEV_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
-            else
-              echo "export AWS_ACCESS_KEY_ID='${PROD_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
-              echo "export AWS_SECRET_ACCESS_KEY='${PROD_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
-            fi
-            source "$BASH_ENV"
+      - setup-aws-credentials-from-env
       - aws-cli/setup:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
