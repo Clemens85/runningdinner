@@ -23,7 +23,7 @@ commands:
             source "$BASH_ENV"
 
 orbs:
-  maven: circleci/maven@1.0.3
+  maven: circleci/maven@1.4.1
   aws-ecs: circleci/aws-ecs@3.2.0
   aws-cli: circleci/aws-cli@3.1.5
 
@@ -260,31 +260,21 @@ workflows:
           filters:
             branches:
               only: 
-                - spring-boot-upgrade-afterpartylocation
+                - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
       - confirm-app-deployment:
           type: approval
           filters:
             branches:
               only:
-                - spring-boot-upgrade-afterpartylocation
+                - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
       - deploy_backend_ecs:
           context: workspace
           requires:
             - build_docker_image
             - build_webclient
             - confirm-app-deployment
-      # - aws-ecs/deploy-service-update:
-      #     context: workspace
-      #     requires:
-      #       - build_docker_image
-      #       - build_webclient
-      #       - confirm-app-deployment
-      #     cluster: "runningdinner-ecs-cluster"
-      #     family: "runningdinner-backend"
-      #     service-name: "runningdinner-service"
-      #     container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_SHA1}'
-      #     aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
-      #     aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
       - check_backend_health:
           requires:
             - deploy_backend_ecs
