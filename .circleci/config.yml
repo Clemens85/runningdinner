@@ -165,6 +165,20 @@ jobs:
             echo "Invalidating $distribution_id"
             aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
 
+  deploy_backend_ecs:
+    executor: aws-cli/default
+    steps:
+      - aws-cli/install
+      - setup-aws-credentials-from-env
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+      - aws-ecs/update-service:
+          cluster: "runningdinner-ecs-cluster"
+          family: "runningdinner-backend"
+          service-name: "runningdinner-service"
+          container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_SHA1}'
+
   check_backend_health:
     machine:
       image: ubuntu-2204:2022.04.2
@@ -253,31 +267,37 @@ workflows:
             branches:
               only:
                 - spring-boot-upgrade-afterpartylocation
-      - aws-ecs/deploy-service-update:
+      - deploy_backend_ecs:
           context: workspace
           requires:
             - build_docker_image
             - build_webclient
             - confirm-app-deployment
-          cluster: "runningdinner-ecs-cluster"
-          family: "runningdinner-backend"
-          service-name: "runningdinner-service"
-          container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_SHA1}'
-          aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
-          aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
+      # - aws-ecs/deploy-service-update:
+      #     context: workspace
+      #     requires:
+      #       - build_docker_image
+      #       - build_webclient
+      #       - confirm-app-deployment
+      #     cluster: "runningdinner-ecs-cluster"
+      #     family: "runningdinner-backend"
+      #     service-name: "runningdinner-service"
+      #     container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_SHA1}'
+      #     aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
+      #     aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
       - check_backend_health:
           requires:
-            - aws-ecs/deploy-service-update
+            - deploy_backend_ecs
       - verify_backend_deployment:
           context: workspace
           requires:
-            - aws-ecs/deploy-service-update
+            - deploy_backend_ecs
       - deploy_webclient_s3:
           context: workspace
           requires:
             - build_webclient
             - confirm-app-deployment
-            - aws-ecs/deploy-service-update
+            - deploy_backend_ecs
             - check_backend_health
             - verify_backend_deployment
 
