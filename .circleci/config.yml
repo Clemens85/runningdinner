@@ -1,5 +1,27 @@
 version: 2.1
 
+parameters:
+  dev-stage-branch:
+    type: string
+    default: "spring-boot-upgrade-afterpartylocation"
+  main-stage-branch:
+    type: string
+    default: "main"
+
+commands:
+  setup-aws-credentials-from-env:
+    steps:
+      - run:
+          command: |
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              echo "export AWS_ACCESS_KEY_ID='${DEV_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
+              echo "export AWS_SECRET_ACCESS_KEY='${DEV_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
+            else
+              echo "export AWS_ACCESS_KEY_ID='${PROD_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
+              echo "export AWS_SECRET_ACCESS_KEY='${PROD_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
+            fi
+            source "$BASH_ENV"
+
 orbs:
   maven: circleci/maven@1.0.3
   aws-ecs: circleci/aws-ecs@3.2.0
@@ -25,8 +47,12 @@ jobs:
       - run:
           name: Setup application-prod.properties # Not very nice, but sufficient for now
           command: |
+            STAGE_SUBDOMAIN=""
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              STAGE_SUBDOMAIN="dev."
+            fi
             echo "sendgrid.api.key=${PROD_SENDGRID_API_KEY}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo 'host.context.url=https://runyourdinner.eu' >> runningdinner-backend/src/main/resources/application-prod.properties
+            echo "host.context.url=https://${STAGE_SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
             echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
       - run:
           name: Build + Test
@@ -64,8 +90,7 @@ jobs:
           name: Build Docker Image
           command: |
             cd runningdinner-backend
-            ls -la target/extracted/application
-            if [ $CIRCLE_BRANCH == "spring-boot-upgrade-afterpartylocation" ]; then
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
               docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_SHA1 .
             else
               docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:$CIRCLE_SHA1 .
@@ -108,8 +133,13 @@ jobs:
       - run:
           name: Setup AWS Credential Environment
           command: |
-            echo "export AWS_ACCESS_KEY_ID='${DEV_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
-            echo "export AWS_SECRET_ACCESS_KEY='${DEV_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              echo "export AWS_ACCESS_KEY_ID='${DEV_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
+              echo "export AWS_SECRET_ACCESS_KEY='${DEV_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
+            else
+              echo "export AWS_ACCESS_KEY_ID='${PROD_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
+              echo "export AWS_SECRET_ACCESS_KEY='${PROD_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
+            fi
             source "$BASH_ENV"
       - aws-cli/setup:
           aws-access-key-id: AWS_ACCESS_KEY_ID
@@ -124,7 +154,12 @@ jobs:
               echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
               exit 1
             fi
-            aws s3 sync "$CONTENT_BUILD_DIR/" s3://runningdinner-web-dev --delete --region eu-central-1
+
+            STAGE="prod"
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              STAGE="dev"
+            fi
+            aws s3 sync "$CONTENT_BUILD_DIR/" "s3://runningdinner-web-${STAGE}" --delete --region eu-central-1
       - run:
           name: Cloudfront invalidation
           command: |
@@ -147,15 +182,20 @@ jobs:
       - run:
           name: Check Backend REST service can be reached
           command: |
-            curl -k -XGET https://dev.runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+            STAGE_SUBDOMAIN=""
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              STAGE_SUBDOMAIN="dev."
+            fi
+            curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"
 
   verify_backend_deployment:
     executor: aws-cli/default
     steps:
       - aws-cli/install
+      - setup-aws-credentials-from-env
       - aws-cli/setup:
-          aws-access-key-id: DEV_AWS_ACCESS_KEY_ID
-          aws-secret-access-key: DEV_AWS_SECRET_ACCESS_KEY
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
       - run:
           name: Get last task definition
           command: >
