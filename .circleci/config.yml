@@ -6,7 +6,7 @@ parameters:
     default: "spring-boot-upgrade-afterpartylocation"
   main-stage-branch:
     type: string
-    default: "main"
+    default: "main-aws-release"
 
 commands:
   setup-aws-credentials-from-env:
