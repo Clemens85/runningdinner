@@ -71,7 +71,7 @@ custom:
   geocodeARN:
     local: arn:aws:sqs:eu-central-1:000000000000:geocode
     dev: arn:aws:sqs:eu-central-1:858092556984:geocode-participant
-    prod: arn:aws:sqs:eu-central-1:*:geocode
+    prod: arn:aws:sqs:eu-central-1:332135779582:geocode-participant
 
 
 # you can add packaging information here
