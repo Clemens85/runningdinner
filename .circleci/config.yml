@@ -214,38 +214,6 @@ jobs:
           service-name: "runningdinner-service"
           task-definition-arn: '${TASK_DEFINITION_ARN}'
 
-
-  deploy_runningdinner_functions:
-    docker:
-      - image: cimg/node:current
-    environment:
-      SERVERLESS_ACCESS_KEY: $PROD_SERVERLESS_ACCESS_KEY
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - npm-deps-{{ checksum "runningdinner-functions/package.json" }}
-            - npm-deps-
-      - run:
-          name: Install serverless framework and all needed dependencies
-          command: |
-            cd runningdinner-functions
-            sudo npm install -g serverless
-            npm install
-      - run:
-          name: Deploy runningdinner-functions lambda(s)
-          command: |
-            cd runningdinner-functions
-            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
-            export SERVERLESS_ACCESS_KEY=$PROD_SERVERLESS_ACCESS_KEY
-            echo "Starting deploy..."
-            serverless deploy --stage prod --verbose
-      - save_cache:
-          paths:
-            - ~/usr/local/lib/node_modules
-          key: dependencies-{{ checksum "runningdinner-functions/package.json" }}
-
 workflows:
   build_test_deploy_app:
     jobs:
@@ -310,18 +278,3 @@ workflows:
               only:
                 - << pipeline.parameters.dev-stage-branch >>
                 - << pipeline.parameters.main-stage-branch >>
-
-  deploy_functions:
-    jobs:
-      - confirm-functions-deployment:
-          type: approval
-          filters:
-            branches:
-              only: obsolete
-      - deploy_runningdinner_functions:
-          context: workspace
-          requires:
-            - confirm-functions-deployment
-          filters:
-            branches:
-              only: obsolete
