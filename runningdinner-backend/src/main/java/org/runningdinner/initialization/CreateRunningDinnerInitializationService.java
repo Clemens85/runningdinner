@@ -32,7 +32,7 @@ public class CreateRunningDinnerInitializationService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CreateRunningDinnerInitializationService.class);
 
-  public static final String DEFAULT_DINNER_CREATION_ADDRESS = "clemensstich@googlemail.com";
+  public static final String DEFAULT_DINNER_CREATION_ADDRESS = "runyourdinner@gmail.com";
 
   @Autowired
   private RunningDinnerService runningDinnerService;
