@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   dev-stage-branch:
     type: string
-    default: "dev-aws"
+    default: "develop"
   main-stage-branch:
     type: string
     default: "main"
