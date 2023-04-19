@@ -3,10 +3,10 @@ version: 2.1
 parameters:
   dev-stage-branch:
     type: string
-    default: "spring-boot-upgrade-afterpartylocation"
+    default: "dev-aws"
   main-stage-branch:
     type: string
-    default: "main-aws-release"
+    default: "main"
 
 commands:
   setup-aws-credentials-from-env:
