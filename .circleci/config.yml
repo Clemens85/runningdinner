@@ -275,13 +275,28 @@ workflows:
             - build_docker_image
             - build_webclient
             - confirm-app-deployment
+          filters:
+            branches:
+              only:
+                - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
       - check_backend_health:
           requires:
             - deploy_backend_ecs
+          filters:
+            branches:
+              only:
+                - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
       - verify_backend_deployment:
           context: workspace
           requires:
             - deploy_backend_ecs
+          filters:
+            branches:
+              only:
+                - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
       - deploy_webclient_s3:
           context: workspace
           requires:
@@ -290,6 +305,11 @@ workflows:
             - deploy_backend_ecs
             - check_backend_health
             - verify_backend_deployment
+          filters:
+            branches:
+              only:
+                - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
 
   deploy_functions:
     jobs:
@@ -297,11 +317,11 @@ workflows:
           type: approval
           filters:
             branches:
-              only: main
+              only: obsolete
       - deploy_runningdinner_functions:
           context: workspace
           requires:
             - confirm-functions-deployment
           filters:
             branches:
-              only: main
+              only: obsolete
