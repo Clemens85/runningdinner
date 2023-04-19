@@ -7,7 +7,7 @@ test('fetchGeocode is rejected for missing data', async () => {
           .rejects.toThrow(Error);
 });
 
-test('fetchGeocode is works for complete data', async () => {
+test('fetchGeocode works for complete data', async () => {
   jest.setTimeout(30000);
   let participant = newParticipant();
   let resultArr = await geocoder.fetchGeocode(participant);

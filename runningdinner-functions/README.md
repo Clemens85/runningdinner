@@ -32,7 +32,8 @@ For minifying the packaged Javascript code the esbuild-plugin is used which seem
 
 We have 2 stages to deploy to: dev and prod
 
-``./deploy-dev.sh``
+* ``./deploy.sh dev``
+* ``./deploy.sh prod``
 
 ---
 
