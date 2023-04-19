@@ -19,13 +19,18 @@ Voll funktionsfähige Anwendung unter folgender URL:
 <a href="https://runyourdinner.eu/create-running-dinner/" target="_blank">https://runyourdinner.eu/create-running-dinner/</a>
 
 ## Overview
-* runningdinner-backend contains the backend Java application based upon Spring Boot. 
-The AngularJS web-client is also contained in here, and is bundled as static resources (will be replaced by the new React client when the port to React is finished)
-* runningdinner-functions contains a lambda function based upon the serverless framework for geocoding addresses.
-* runningdinner-webclient is a complete rewrite of the "old" AngularJS code into React (WIP).
+* `runningdinner-backend` contains the backend Java application based upon Spring Boot. 
+* `runningdinner-functions` contains a lambda function based upon the serverless framework for geocoding addresses.
+* `runningdinner-client` contains the frontend with React and MaterialUI
+* `e2e-tests` contains some Cypress End2End tests
+
 
 ## Build
-Currently the software is built on a local Jenkins but is in a migration process to CircleCI.
+Currently the software is built on CircleCI and also deployed from there to AWS.
+
+## Infrastructure
+The AWS infrastructure is managed by Terraform within <a href="https://github.com/Clemens85/runningdinner-infrastructure" target="_blank">https://github.com/Clemens85/runningdinner-infrastructure</a>.
+This repo contains also code for starting the local development environment.
 
 ## Author
 **Clemens Stich**
