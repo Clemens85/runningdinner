@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.test.util.ApplicationTest;
@@ -51,7 +50,6 @@ public class FeedbackServiceTest {
 
     this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
     this.mailSenderInMemory.setUp();
-    this.mailSenderInMemory.addIgnoreRecipientEmail(CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
   }
   
   @Test
