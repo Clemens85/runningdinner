@@ -8,12 +8,21 @@ test('fetchGeocode is rejected for missing data', async () => {
 });
 
 test('fetchGeocode is works for complete data', async () => {
+  jest.setTimeout(30000);
   let participant = newParticipant();
-  const resultArr = await geocoder.fetchGeocode(participant);
-  const [ result ] = resultArr;
-  expect(result.lat).toBeGreaterThan(48);
+  let resultArr = await geocoder.fetchGeocode(participant);
+  let [ result ] = resultArr;
+  expect(result.lat).toBeGreaterThan(47);
   expect(result.lng).toBeGreaterThan(7.8);
-  expect(result.exact).toBe(true);
+  expect(result.exactness).toBe("APPROXIMATE");
+
+  // Try without wrong zip which should yield in exact result:
+  participant.zip = "";
+  resultArr = await geocoder.fetchGeocode(participant);
+  [ result ] = resultArr;
+  expect(result.lat).toBeGreaterThan(47);
+  expect(result.lng).toBeGreaterThan(7.8);
+  expect(result.exactness).toBe("EXACT");
 });
 
 function newParticipant() {

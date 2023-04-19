@@ -18,8 +18,8 @@ public class QueueProviderDev implements QueueProvider {
 
   private AmazonSQS localSqsClient;
 
-  public QueueProviderDev() {
-    localSqsClient = newLocalSqsClient();
+  public QueueProviderDev(String endpoint) {
+    localSqsClient = newLocalSqsClient(endpoint);
   }
 
   @Override
@@ -42,9 +42,8 @@ public class QueueProviderDev implements QueueProvider {
     throw new IllegalStateException("Could not find local geocode sqs queue");
   }
 
-  private AmazonSQS newLocalSqsClient() {
+  private AmazonSQS newLocalSqsClient(String endpoint) {
 
-    String endpoint = "http://localhost:9324";
     String region = "eu-central-1";
     String accessKey = "x";
     String secretKey = "x";

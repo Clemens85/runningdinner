@@ -91,7 +91,7 @@ public class TestUtil {
     List<Participant> participants = ParticipantGenerator.generateParticipants(18 + 1);
 
     Contract contract = CreateRunningDinnerInitializationService.createContract();
-    RunningDinner dinner = createService.createRunningDinnerWithParticipants(info, runningDinnerConfig, "email@email.de", RunningDinnerType.STANDARD, contract, participants);
+    RunningDinner dinner = createService.createRunningDinnerWithParticipants(info, runningDinnerConfig, "email@email.de", RunningDinnerType.STANDARD, contract, null, participants);
     teamService.createTeamAndVisitationPlans(dinner.getAdminId());
 
     assertThat(teamService.findTeamArrangements(dinner.getAdminId(), false)).hasSize(9);

@@ -17,7 +17,7 @@ services:
       - "runningdinner-backend:${DOCKER_HOST_IP}"
 
   postgres:
-    image: postgres:9.6.6
+    image: postgres:12.11
     container_name: db
     ports:
       - "5432:5432"
@@ -28,13 +28,30 @@ services:
       - POSTGRES_PASSWORD=root
 
 
-  sqs:
-    image: softwaremill/elasticmq
-    container_name: sqs
+#  sqs:
+#    image: softwaremill/elasticmq
+#    container_name: sqs
+#    ports:
+#      - "9324:9324"
+#    volumes:
+#      - ./elasticmq.conf:/opt/elasticmq.conf
+
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
     ports:
-      - "9324:9324"
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+#      - DEBUG=${DEBUG-}
+      - DEBUG=1
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+      - LAMBDA_REMOTE_DOCKER=false
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_DEFAULT_REGION=eu-central-1
     volumes:
-      - ./elasticmq.conf:/opt/elasticmq.conf
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
   verdaccio:
     image: verdaccio/verdaccio:4

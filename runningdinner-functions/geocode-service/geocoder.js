@@ -1,9 +1,22 @@
 const axios = require('axios');
 const lodash = require('lodash');
+const {getSsmParameterCached} = require("./ssm");
 
-const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const EXACTNESS_TYPE = {
+  EXACT: "EXACT",
+  UNKNOWN: "UNKNOWN",
+  APPROXIMATE: "APPROXIMATE"
+}
+
+const getGoogleMapsApiKey = getSsmParameterCached({
+  Name: "/runningdinner/googlemaps/apikey",
+  WithDecryption: true,
+}, 180 * 1000); // 3 Minutes
 
 const fetchGeocode = async ({street, streetNr, zip, cityName}) => {
+
+  const apiKeyParam = await getGoogleMapsApiKey();
+  const API_KEY = apiKeyParam.Parameter.Value;
 
   if (!street || (!zip && !cityName)) {
     throw new Error("Missing street or zip/cityName");
@@ -32,16 +45,19 @@ function mapGoogleResult(googleResult) {
     return {};
   }
 
-  let types = googleResult.types || [];
   let locationType = lodash.get(googleResult, "geometry.location_type", "");
   let lat = lodash.get(googleResult, "geometry.location.lat", -1);
   let lng = lodash.get(googleResult, "geometry.location.lng", -1);
 
-  let exact = locationType === 'ROOFTOP';
-  exact = exact && types.includes("street_address");
+  let exactness = EXACTNESS_TYPE.UNKNOWN;
+  if (locationType === 'ROOFTOP') {
+    exactness = EXACTNESS_TYPE.EXACT;
+  } else if (locationType === 'APPROXIMATE') {
+    exactness = EXACTNESS_TYPE.APPROXIMATE;
+  }
 
   return {
-    exact,
+    exactness,
     lat,
     lng,
     formattedAddress: googleResult.formatted_address
@@ -49,5 +65,6 @@ function mapGoogleResult(googleResult) {
 }
 
 module.exports = {
-  fetchGeocode
+  fetchGeocode,
+  EXACTNESS_TYPE
 };

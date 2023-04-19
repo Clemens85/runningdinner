@@ -78,3 +78,19 @@ export interface BasePublicDinnerProps {
 export interface BasePublicIdProps {
   publicDinnerId: string;
 }
+
+export interface BaseAddress {
+  street: string;
+  streetNr: string;
+  zip: string;
+  cityName: string;
+}
+
+export interface GeocodingResult {
+  lat?: number;
+  lng?: number;
+}
+
+export interface HasGeocoding {
+  geocodingResult?: GeocodingResult
+}

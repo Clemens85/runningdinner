@@ -1,5 +1,13 @@
 const NewsMessages_de: any = {
 
+  news_title_20230418: 'Infrastruktur modernisiert',
+  news_content_20230418: 'Auch das muss mal sein: Die zugrunde liegende Infrastruktur musste neu und moderner aufgesetzt werden, was ein längerer Prozess war, der nun aber fertig ist. ' +
+                         'Es wurde alles sorgfältig getestet um zu gewährleisten, dass es keine Beeinträchtigungen gibt. Falls doch etwas plötzlich nicht mehr funktionieren sollte, bitte direkt via Feedback melden.',
+
+  news_title_20230417: 'After-Event-Party hinzugefügt',
+  news_content_20230417: 'Öfters nachgefragt, nun verfügbar: Bei Erstellung eines Events (oder nachträglich in den Einstellungen) kann der Ort einer After-Event-Party hinzugefügt werden. ' +
+    'Dieser wird dann bei der Teilnehmer-Registrierung und auch bei den Dinner-Routen angezeigt.',
+
   news_title_20221029: 'Fehler behoben beim Versand von Einladungs-Mails an Team-Partner',
   news_content_20221029: 'Leider gab es einen Fehler der beim Versand der Einladungs EMails an potenzielle Team-Partner auftrat ' +
                          'und dazu führte dass die Links zur Event-Registrierung nicht korrekt funktionierten. Das ist mittlerweile behoben.',

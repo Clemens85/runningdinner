@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.MealSpecifics;
@@ -22,28 +23,32 @@ import org.springframework.util.Assert;
 @Component
 public class DinnerRouteMessageFormatter {
 
-	private UrlGenerator urlGenerator;
+  private UrlGenerator urlGenerator;
 
-	private MessageSource messageSource;
+  private MessageSource messageSource;
 
-	private LocalizationProviderService localizationProviderService;
-	
-    private MessageFormatterHelperService messageFormatterHelperService;
+  private LocalizationProviderService localizationProviderService;
+
+  private AfterPartyLocationService afterPartyLocationService;
+
+	private MessageFormatterHelperService messageFormatterHelperService;
 
 	@Autowired
-    public DinnerRouteMessageFormatter(UrlGenerator urlGenerator,
-        MessageSource messageSource,
-        LocalizationProviderService localizationProviderService,
-        MessageFormatterHelperService messageFormatterHelperService) {
-
-		this.urlGenerator = urlGenerator;
-		this.messageSource = messageSource;
-		this.localizationProviderService = localizationProviderService;
-        this.messageFormatterHelperService = messageFormatterHelperService;
+  public DinnerRouteMessageFormatter(UrlGenerator urlGenerator,
+	                                 MessageSource messageSource,
+	                                 LocalizationProviderService localizationProviderService,
+																	 MessageFormatterHelperService messageFormatterHelperService,
+	                                 AfterPartyLocationService afterPartyLocationService) {
+    this.urlGenerator = urlGenerator;
+    this.messageSource = messageSource;
+    this.localizationProviderService = localizationProviderService;
+    this.afterPartyLocationService = afterPartyLocationService;
+		this.messageFormatterHelperService = messageFormatterHelperService;
 	}
 
-	public String formatDinnerRouteMessage(final RunningDinner runningDinner, final Participant teamMember, final Team parentTeam, final List<Team> dinnerRoute,
-			final DinnerRouteTextMessage dinnerRouteTextMessage) {
+  public String formatDinnerRouteMessage(final RunningDinner runningDinner, final Participant teamMember,
+      final Team parentTeam, final List<Team> dinnerRoute,
+      final DinnerRouteTextMessage dinnerRouteTextMessage) {
 
       Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
       DateTimeFormatter timeFormat = localizationProviderService.getTimeFormatterOfDinner(runningDinner);
@@ -64,7 +69,9 @@ public class DinnerRouteMessageFormatter {
           parentTeam.getId(), teamMember.getId());
       theMessage = theMessage.replaceAll(FormatterUtil.ROUTELINK, routeLink);
 
-      final int dinnerRouteSize = dinnerRoute.size();
+    theMessage = afterPartyLocationService.replaceAfterPartyLocationTemplate(theMessage, runningDinner);
+
+    final int dinnerRouteSize = dinnerRoute.size();
 
       StringBuilder plan = new StringBuilder();
       int cnt = 0;
@@ -125,7 +132,7 @@ public class DinnerRouteMessageFormatter {
 
       return theMessage;
 
-	}
+  }
 
     public String getMealSpecificsOfGuestTeams(Team parentTeam, RunningDinner runningDinner) {
       List<MealSpecifics> allGuestMealspecifics = parentTeam.getMealSpecificsOfGuestTeams();

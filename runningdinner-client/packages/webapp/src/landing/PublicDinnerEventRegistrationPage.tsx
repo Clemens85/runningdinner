@@ -4,7 +4,7 @@ import {Fetch} from "../common/Fetch";
 import {
   AddressLocation, BasePublicDinnerProps,
   findPublicRunningDinnerByPublicId,
-  formatLocalDate,
+  formatLocalDate, isAfterPartyLocationDefined,
   isStringEmpty,
   isStringNotEmpty,
   LocalDate,
@@ -39,6 +39,7 @@ import {Alert} from '@material-ui/lab';
 import LinkExtern from "../common/theme/LinkExtern";
 import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
 import { TextViewHtml } from '../common/TextViewHtml';
+import AfterPartyLocationHeadline from "@runningdinner/shared/src/afterpartylocation/AfterPartyLocationHeadline";
 
 
 type RegistrationFormSettingsType = {
@@ -85,6 +86,9 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
                                    isCurrentUserSubscribedToEvent();
 
   const endOfRegistrationDateStr = formatLocalDate(publicSettings.endOfRegistrationDate);
+
+  const { afterPartyLocation } = publicRunningDinner;
+  const hasAfterPartyLocation = isAfterPartyLocationDefined(afterPartyLocation);
 
   React.useEffect(() => {
     i18n.changeLanguage(publicRunningDinner.languageCode);
@@ -161,6 +165,16 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
         <FormFieldset>{t("common:description")}</FormFieldset>
         <Paragraph><TextViewHtml text={publicSettings.description}/></Paragraph>
       </Box>
+
+      { hasAfterPartyLocation &&
+        <Box mt={2}>
+          <FormFieldset><AfterPartyLocationHeadline {...afterPartyLocation!} /></FormFieldset>
+          { isStringNotEmpty(afterPartyLocation!.addressName) && <Paragraph>{afterPartyLocation!.addressName}</Paragraph> }
+          <Paragraph>{afterPartyLocation!.street} {afterPartyLocation!.streetNr}</Paragraph>
+          <Paragraph>{afterPartyLocation!.zip} {afterPartyLocation!.cityName}</Paragraph>
+          { isStringNotEmpty(afterPartyLocation!.addressRemarks) && <Paragraph>{afterPartyLocation!.addressRemarks}</Paragraph> }
+        </Box>
+      }
 
       { isPublicContactInfoAvailable &&
         <Box mt={2}>

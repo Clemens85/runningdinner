@@ -22,32 +22,57 @@ org: runyourdinner
 
 provider:
   name: aws
-  runtime: nodejs12.x
-  stage: prod
+  runtime: nodejs18.x
+  stage: dev
   region: eu-central-1
+  #deploymentBucket:
+  #  name: geocode-service-prod-serverlessdeploymentbucket-1m9l8yhnx68z2
   environment:
     BACKEND_BASE_URL: ${self:custom.backendBaseUrl.${opt:stage, self:provider.stage}}
-    GOOGLE_MAPS_API_KEY: ${self:custom.secrets.GOOGLE_MAPS_API_KEY}
-    # NODE_TLS_REJECT_UNAUTHORIZED: 0
+    AWS_ENDPOINT_URL_OVERWRITE: ${param:aws_endpoint_url_overwrite}
+    NODE_TLS_REJECT_UNAUTHORIZED: 0
+  iam:
+    role:
+      statements:
+        # Allow to read SSM parameters
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+            - ssm:GetParameters
+          Resource:
+            - 'arn:aws:ssm:eu-central-1:*:parameter/runningdinner/googlemaps/apikey'
 
 custom:
-  secrets: ${file(secrets.${opt:stage, self:provider.stage}.yml)}
   stages:
+    - local
     - dev
     - prod
   backendBaseUrl:
-    dev: 'https://localhost/rest'
+    local: 'http://localhost:9090/rest'
+    dev: 'https://dev.runyourdinner.eu/rest'
     prod: 'https://runyourdinner.eu/rest'
+
+  localstack:
+    stages: [local]
+    host: http://127.0.0.1
+    debug: true
 
   serverless-offline-sqs:
     autoCreate: true                 # create queue if not exists
     apiVersion: '2012-11-05'
-    endpoint: http://0.0.0.0:9324
+    # endpoint: http://0.0.0.0:9324
+    endpoint: http://localhost:4566
     region: eu-central-1
-    accountId: x
+    accountId: 000000000000
     accessKeyId: root
     secretAccessKey: root
     skipCacheInvalidation: false
+
+  geocodeARN:
+    local: arn:aws:sqs:eu-central-1:000000000000:geocode
+    dev: arn:aws:sqs:eu-central-1:858092556984:geocode-participant
+    prod: arn:aws:sqs:eu-central-1:332135779582:geocode-participant
+
 
 # you can add packaging information here
 #package:
@@ -58,23 +83,22 @@ custom:
 #    - exclude-me.js
 #    - exclude-me-dir/**
 
+params:
+  local:
+    aws_endpoint_url_overwrite: http://localhost:4566
+  dev:
+    aws_endpoint_url_overwrite: ""
+  prod:
+    aws_endpoint_url_overwrite: ""
+
 functions:
   update-sqs:
     handler: geocode-service/handlerSqs.update
+    logRetentionInDays: 30
     events:
       - sqs:
           batchSize: 1
-          queueName: geocode
-          arn:
-            Fn::Join:
-              - ':'
-              - - arn
-                - aws
-                - sqs
-                - Ref: AWS::Region
-                - Ref: AWS::AccountId
-                - geocode
-#      - sqs: arn:aws:sqs:eu-central-1:x:geocode #-${self:provider.stage}
+          arn: ${self:custom.geocodeARN.${opt:stage}}
 
 #  update-http:
 #    handler: geocode-service/handlerHttp.update
@@ -97,7 +121,10 @@ package:
   individually: true
 
 plugins:
-  - serverless-plugin-reducer
   - serverless-offline-sqs
   - serverless-offline
-  - serverless-secrets-plugin
+  - serverless-esbuild
+  - serverless-plugin-log-retention
+  # - serverless-plugin-optimize
+  # - serverless-plugin-reducer
+  # - serverless-localstack

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- <include resource="org/springframework/boot/logging/logback/base.xml"/> -->
+
+<!--    <springProperty scope="context" name="loggingPath" source="logging.path" defaultValue="." />-->
+    <property name="loggingPath" value="${LOGGING_PATH:-.}" />
+
     <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <Pattern>%d{yyyy-MM-dd} %d{HH:mm:ss.SSS} %-5level [%thread] %logger{10} : %msg [%X{req.method} %X{req.requestURI}?%X{req.queryString} %X{req.remoteHost}] %n</Pattern>
@@ -11,13 +15,16 @@
     </appender>
 
     <appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>server.log</File>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- monthly rollover -->
-            <FileNamePattern>server.%d{yyyy-MM}.log</FileNamePattern>
-            <maxHistory>6</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
+        <File>${loggingPath}/server.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <!-- Hourly rollover -->
+            <FileNamePattern>${loggingPath}/server.%i.log</FileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>3</maxIndex>
         </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>25MB</maxFileSize>
+        </triggeringPolicy>
         <encoder>
             <Pattern>%d{yyyy-MM-dd} %d{HH:mm:ss.SSS} %-5level [%thread] %logger{10} : %msg [%X{req.method} %X{req.requestURI}?%X{req.queryString} %X{req.remoteHost}] %n</Pattern>
         </encoder>
@@ -27,15 +34,17 @@
     </appender>
 
     <appender name="jsonFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>server-log.json</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <file>${loggingPath}/server-log.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <!-- Hourly rollover -->
-            <FileNamePattern>server-log.%d{yyyy-MM-dd_HH}_%i.json</FileNamePattern>
-            <maxHistory>3</maxHistory>
-            <maxFileSize>${LOG_MAX_FILE_SIZE:-200MB}</maxFileSize>
-            <totalSizeCap>${LOG_TOTAL_SIZE_CAP:-500MB}</totalSizeCap>
+            <FileNamePattern>${loggingPath}/server-log.%i.json</FileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>3</maxIndex>
         </rollingPolicy>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"></encoder>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
 	<logger name="org.runningdinner" level="INFO" additivity="false">

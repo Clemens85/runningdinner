@@ -19,19 +19,18 @@ export default function AdminRoute() {
   }
 
   const runningDinner = runningDinnerFetchData.data;
-  const {adminId} = runningDinner;
 
   return (
       <Routes>
-        <Route path={`participants/messages`} element={<ParticipantMessages adminId={adminId} />} />
+        <Route path={`participants/messages`} element={<ParticipantMessages runningDinner={runningDinner} />} />
 
         <Route path={`participants/:participantId`} element={<ParticipantsPage runningDinner={runningDinner} />} />
 
         <Route path={`participants`} element={<ParticipantsPage runningDinner={runningDinner} />} />
 
-        <Route path={`dinnerroute/messages`} element={<DinnerRouteMessages adminId={adminId} />} />
+        <Route path={`dinnerroute/messages`} element={<DinnerRouteMessages runningDinner={runningDinner} />} />
 
-        <Route path={`teams/messages`} element={<TeamMessages adminId={adminId} />} />
+        <Route path={`teams/messages`} element={<TeamMessages runningDinner={runningDinner} />} />
 
         <Route path={`teams/:teamId/dinnerroute`} element={<TeamDinnerRoute />} />
 

@@ -1,13 +1,37 @@
 version: 2.1
 
+parameters:
+  dev-stage-branch:
+    type: string
+    default: "spring-boot-upgrade-afterpartylocation"
+  main-stage-branch:
+    type: string
+    default: "main-aws-release"
+
+commands:
+  setup-aws-credentials-from-env:
+    steps:
+      - run:
+          command: |
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              echo "export AWS_ACCESS_KEY_ID='${DEV_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
+              echo "export AWS_SECRET_ACCESS_KEY='${DEV_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
+            else
+              echo "export AWS_ACCESS_KEY_ID='${PROD_AWS_ACCESS_KEY_ID}'" >> "$BASH_ENV"
+              echo "export AWS_SECRET_ACCESS_KEY='${PROD_AWS_SECRET_ACCESS_KEY}'" >> "$BASH_ENV"
+            fi
+            source "$BASH_ENV"
+
 orbs:
-  maven: circleci/maven@1.0.3
+  maven: circleci/maven@1.4.1
+  aws-ecs: circleci/aws-ecs@3.2.0
+  aws-cli: circleci/aws-cli@3.1.5
 
 jobs:
   build_test_backend:
     docker:
       - image: cimg/openjdk:17.0.3
-      - image: cimg/postgres:9.6.24
+      - image: cimg/postgres:13.4
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: root
@@ -23,24 +47,19 @@ jobs:
       - run:
           name: Setup application-prod.properties # Not very nice, but sufficient for now
           command: |
-            echo "aws.sqs.geocode.url=${PROD_AWS_SQS_GEOCODE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
-
+            STAGE_SUBDOMAIN=""
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              STAGE_SUBDOMAIN="dev."
+            fi
             echo "sendgrid.api.key=${PROD_SENDGRID_API_KEY}" >> runningdinner-backend/src/main/resources/application-prod.properties
-
-            echo 'host.context.url=https://runyourdinner.eu' >> runningdinner-backend/src/main/resources/application-prod.properties
-
-            echo "spring.datasource.password=${PROD_SPRING_DATASOURCE_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "spring.datasource.username=${PROD_SPRING_DATASOURCE_USERNAME}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "spring.datasource.url=${PROD_SPRING_DATASOURCE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
-
-            echo "spring.flyway.password=${PROD_SPRING_FLYWAY_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "spring.flyway.user=${PROD_SPRING_FLYWAY_USER}" >> runningdinner-backend/src/main/resources/application-prod.properties
-            echo "spring.flyway.url=${PROD_SPRING_FLYWAY_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            echo "host.context.url=https://${STAGE_SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
+            echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
       - run:
           name: Build + Test
           command: |
             cd runningdinner-backend
             ./mvnw package
+            java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted/
 #      - save_cache:
 #          paths:
 #            - ~/.m2
@@ -58,6 +77,29 @@ jobs:
           paths:
             - runningdinner.tar.gz
             - deploy.sh
+            - extracted
+
+  build_docker_image:
+    machine:
+      image: ubuntu-2204:2022.04.2
+    steps:
+      - checkout
+      - attach_workspace:
+          at: runningdinner-backend/target
+      - run:
+          name: Build Docker Image
+          command: |
+            cd runningdinner-backend
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.main-stage-branch >>" ]; then
+              docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_SHA1 .
+            else
+              docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:$CIRCLE_SHA1 .
+            fi
+      - run:
+          name: Push to Dockerhub
+          command: |
+            docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
+            docker push --all-tags clemensstich/runningdinner
 
   build_webclient:
     docker:
@@ -79,59 +121,99 @@ jobs:
           paths:
             - ~/usr/local/lib/node_modules
           key: dependencies-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
-      - run: 
-          name: Move client artifacts to static folder
-          command: |
-            mkdir -p runningdinner-backend/src/main/resources/static
-            mv -v runningdinner-client/packages/webapp/build/* runningdinner-backend/src/main/resources/static
-            mv runningdinner-backend/src/main/client/resources/ runningdinner-backend/src/main/resources/static/resources
       - persist_to_workspace:
-          root: runningdinner-backend/src/main/resources
+          root: runningdinner-client/packages/webapp
           paths:
-            - static
+            - build
 
-  deploy_runningdinner_app:
-    machine:
-      image: ubuntu-2004:202201-02
+  deploy_webclient_s3:
+    executor: aws-cli/default
     steps:
-      - checkout
+      - aws-cli/install
+      - setup-aws-credentials-from-env
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
       - attach_workspace:
-          at: runningdinner-backend/target
-      - add_ssh_keys:
-          fingerprints:
-            - "f8:85:06:d1:12:e5:0f:76:e6:dd:30:7b:41:f0:af:5e"
+          at: webapp-build
       - run:
-          name: Allow SSH Access
+          name: Execute aws s3 sync
           command: |
-            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
-            runningdinner-backend/infrastructure/deployment/allow-ssh-access.sh
-      - run: touch ssh-access-granted.txt
-      - run:
-          name: Upload artifacts
-          command: |
-            chmod +x runningdinner-backend/target/deploy.sh
-            scp runningdinner-backend/target/deploy.sh runningdinner-backend/target/runningdinner.tar.gz $SSH_USER@$SSH_HOST:~/upload
-      - run:
-          name: Run Deploy script
-          command: |
-            ssh $SSH_USER@$SSH_HOST "./upload/deploy.sh"
-      - run:
-          name: Check App is healthy
-          command: |
-            curl -k -XGET https://runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
-      - run:
-          name: Remove SSH Access
-          command: |
-            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
-            if [[ -f "ssh-access-granted.txt" ]] ; then
-              echo "Removing ssh access..."
-              runningdinner-backend/infrastructure/deployment/remove-ssh-access.sh
-            else
-              echo "Do not remove ssh access due to ssh-access-granted.txt did not exist..."
+            CONTENT_BUILD_DIR="webapp-build/build"
+            if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then
+              echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
+              exit 1
             fi
-          when: always
+
+            STAGE="prod"
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              STAGE="dev"
+            fi
+            aws s3 sync "$CONTENT_BUILD_DIR/" "s3://runningdinner-web-${STAGE}" --delete --region eu-central-1
+      - run:
+          name: Cloudfront invalidation
+          command: |
+            distributions=$(aws cloudfront list-distributions --query 'DistributionList.Items[*].{Id:Id}' --output text)
+            # Check if there is only one distribution
+            if [ $(echo "$distributions" | wc -l) -ne 1 ]; then
+              echo "Error: There are either no CloudFront distributions or multiple distributions in the account." >&2
+              exit 1
+            fi
+
+            # Get the distribution ID
+            distribution_id=$(echo "$distributions" | awk '{print $1}')
+            echo "Invalidating $distribution_id"
+            aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
+
+  deploy_backend_ecs:
+    executor: aws-cli/default
+    steps:
+      - aws-cli/install
+      - setup-aws-credentials-from-env
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+      - aws-ecs/update-service:
+          cluster: "runningdinner-ecs-cluster"
+          family: "runningdinner-backend"
+          service-name: "runningdinner-service"
+          container-image-name-updates: 'container=runningdinner-backend,tag=${CIRCLE_SHA1}'
+
+  check_backend_health:
+    machine:
+      image: ubuntu-2204:2022.04.2
+    steps:
+      - run:
+          name: Check Backend REST service can be reached
+          command: |
+            STAGE_SUBDOMAIN=""
+            if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+              STAGE_SUBDOMAIN="dev."
+            fi
+            curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"
+
+  verify_backend_deployment:
+    executor: aws-cli/default
+    steps:
+      - aws-cli/install
+      - setup-aws-credentials-from-env
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+      - run:
+          name: Get last task definition
+          command: >
+            TASK_DEFINITION_ARN=$(aws ecs describe-task-definition \
+                --task-definition runningdinner-backend \
+                --output text \
+                --query 'taskDefinition.taskDefinitionArn')
+            echo "export TASK_DEFINITION_ARN='${TASK_DEFINITION_ARN}'" >> "$BASH_ENV"
+      - aws-ecs/verify-revision-is-deployed:
+          cluster: "runningdinner-ecs-cluster"
+          family: "runningdinner-backend"
+          service-name: "runningdinner-service"
+          task-definition-arn: '${TASK_DEFINITION_ARN}'
+
 
   deploy_runningdinner_functions:
     docker:
@@ -157,10 +239,6 @@ jobs:
             export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
             export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
             export SERVERLESS_ACCESS_KEY=$PROD_SERVERLESS_ACCESS_KEY
-            echo "GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_KEY_JS}" > secrets.prod.yml
-            # I don't know why the encrypt/decrypt does not work... hence use the workaround above for now...
-            # serverless decrypt --stage prod --password '${PROD_GEOCODE_SECRETS_PASSWORD}'
-
             echo "Starting deploy..."
             serverless deploy --stage prod --verbose
       - save_cache:
@@ -175,21 +253,43 @@ workflows:
           context: workspace
       - build_test_backend:
           context: workspace
+      - build_docker_image:
+          context: workspace
           requires:
-            - build_webclient
+            - build_test_backend
+          filters:
+            branches:
+              only: 
+                - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
       - confirm-app-deployment:
           type: approval
           filters:
             branches:
-              only: main
-      - deploy_runningdinner_app:
+              only:
+                - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
+      - deploy_backend_ecs:
           context: workspace
           requires:
-            - build_test_backend
+            - build_docker_image
+            - build_webclient
             - confirm-app-deployment
-          filters:
-            branches:
-              only: main
+      - check_backend_health:
+          requires:
+            - deploy_backend_ecs
+      - verify_backend_deployment:
+          context: workspace
+          requires:
+            - deploy_backend_ecs
+      - deploy_webclient_s3:
+          context: workspace
+          requires:
+            - build_webclient
+            - confirm-app-deployment
+            - deploy_backend_ecs
+            - check_backend_health
+            - verify_backend_deployment
 
   deploy_functions:
     jobs:

@@ -1,6 +1,17 @@
 import React from "react";
 import Geocode from "react-geocode";
-import {DinnerRouteTeam, GeocodingResult, isSameDinnerRouteTeam, Participant, TeamStatus, Team} from "./types";
+import {
+  DinnerRouteTeam,
+  GeocodingResult,
+  isSameDinnerRouteTeam,
+  TeamStatus,
+  Team,
+  AfterPartyLocation, BaseAddress, HasGeocoding
+} from "./types";
+import {isAfterPartyLocationDefined} from "./admin";
+import cloneDeep from "lodash/cloneDeep";
+
+export const AFTER_PARTY_LOCATION_MARKER_NUMBER = "A";
 
 export function isGeocodingResultValid(geocodingResult?: GeocodingResult): geocodingResult is GeocodingResult {
   if (!geocodingResult || typeof geocodingResult === 'undefined') {
@@ -10,27 +21,30 @@ export function isGeocodingResultValid(geocodingResult?: GeocodingResult): geoco
   return geocodingResult?.lat >= 0 && geocodingResult?.lng >= 0;
 }
 
-export function createMarkerIconUrl(markerNumber: number, isCurrent: boolean): string {
+export function createMarkerIconUrl(markerNumber: string, isCurrent: boolean): string {
   const textColor = '000000';
   let bgColor = '999999';
   if (isCurrent) {
     bgColor = '6db33f';
   }
+  if (markerNumber === AFTER_PARTY_LOCATION_MARKER_NUMBER) {
+    bgColor = "f50057";
+  }
   return `https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld=${markerNumber}|${bgColor}|${textColor}`;
 }
 
-export function filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams: DinnerRouteTeam[]) {
-  return dinnerRouteTeams
-            .filter(dinnerRouteTeam => isGeocodingResultValid(dinnerRouteTeam.geocodingResult));
+export function filterForValidGeocdingResults<T extends HasGeocoding>(geocodedObjects: T[]): T[] {
+  return geocodedObjects
+            .filter(geocodedObject => isGeocodingResultValid(geocodedObject.geocodingResult));
 }
 
 export function isGeocdingResultValidForAllTeams(dinnerRouteTeams: DinnerRouteTeam[]): boolean {
   const dinnerRouteTeamsNotCancelled = dinnerRouteTeams.filter(drt => drt.status !== TeamStatus.CANCELLED);
-  return dinnerRouteTeamsNotCancelled.length === filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeamsNotCancelled).length;
+  return dinnerRouteTeamsNotCancelled.length === filterForValidGeocdingResults(dinnerRouteTeamsNotCancelled).length;
 }
 
 export function getCenterPosition(dinnerRouteTeams: DinnerRouteTeam[], currentTeam: DinnerRouteTeam | Team): GeocodingResult | undefined {
-  const centerPositionCandidates = filterDinnerRouteTeamsForValidGeocdingResults(dinnerRouteTeams);
+  const centerPositionCandidates = filterForValidGeocdingResults(dinnerRouteTeams);
   if (centerPositionCandidates.length === 0) {
     return undefined;
   }
@@ -51,11 +65,12 @@ export function useGeocoder(googleMapsApiKey: string, language = 'de') {
     Geocode.setLanguage(language);
   }, [googleMapsApiKey, language]);
 
-  async function getGeocodePosition(participant: Participant): Promise<GeocodingResult> {
-    if (isGeocodingResultValid(participant.geocodingResult)) {
-      return participant.geocodingResult;
+
+  async function getGeocodePosition<T extends BaseAddress & HasGeocoding>(addressObject: T): Promise<GeocodingResult> {
+    if (isGeocodingResultValid(addressObject.geocodingResult)) {
+      return addressObject.geocodingResult;
     }
-    const address = getAddress(participant);
+    const address = getAddress(addressObject);
     const response = await Geocode.fromAddress(address);
     return response.results[0].geometry.location;
   }
@@ -92,12 +107,29 @@ export function useGeocoder(googleMapsApiKey: string, language = 'de') {
     return result;
   }
 
-  function getAddress(participant: Participant) {
+  async function getGeocodePositionOfAfterPartyLocation(afterPartyLocation?: AfterPartyLocation): Promise<AfterPartyLocation | undefined> {
+    if (!afterPartyLocation || !isAfterPartyLocationDefined(afterPartyLocation)) {
+      return undefined;
+    }
+
+    const result = cloneDeep(afterPartyLocation);
+    try {
+      const geocodingResult = await getGeocodePosition(afterPartyLocation);
+      result.geocodingResult = geocodingResult;
+    } catch (e) {
+      // @ts-ignore
+      console.log(`Failed to fetch geocoding for afterPartyLocation with address ${getAddress(afterPartyLocation)}: ${JSON.stringify(e)}`);
+    }
+    return result;
+  }
+
+  function getAddress(participant: BaseAddress) {
     return `${participant.streetNr} ${participant.street}, ${participant.zip} ${participant.cityName || ''}`;
   }
 
   return {
     getGeocodePosition,
-    getGeocodePositionsOfTeamHosts
+    getGeocodePositionsOfTeamHosts,
+    getGeocodePositionOfAfterPartyLocation
   };
 }

@@ -57,7 +57,7 @@ public class TestHelperService {
 
     Contract contract = CreateRunningDinnerInitializationService.createContract();
     RunningDinner result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(info, getDefaultRunningDinnerConfig(date), email, RunningDinnerType.STANDARD, 
-                                                                                                contract, participants);
+                                                                                                contract, null, participants);
 
     Assert.notNull(result, "runningDinner");
     Assert.hasLength(result.getAdminId(), "adminId");
@@ -79,7 +79,7 @@ public class TestHelperService {
     PublicSettings publicSettings = new PublicSettings("Public Title", "Public Description", endOfRegistrationDate, false);
     publicSettings.setPublicContactEmail(CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
     RunningDinner result = runningDinnerService.createRunningDinner(runningDinnerInfo, getDefaultRunningDinnerConfig(date), publicSettings, 
-                                                                    CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD);
+                                                                    CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, null);
     
     if (!autoAcknowledge) {
       return result;
@@ -106,12 +106,12 @@ public class TestHelperService {
     RunningDinner result;
     if (registrationType.isClosed()) {
       result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(
-        info, getDefaultRunningDinnerConfig(date), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, contract, participants);
+        info, getDefaultRunningDinnerConfig(date), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, contract, null, participants);
     } else {
       PublicSettings publicSettings = new PublicSettings("Public Title", "Public Description", date.minusDays(2), false);
       result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(
         info, getDefaultRunningDinnerConfig(date), publicSettings, CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, contract,
-        participants);
+        null, participants);
     }
     return acknowledgeRunningDinner(result);
   }

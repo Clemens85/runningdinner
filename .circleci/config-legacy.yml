@@ -1,0 +1,234 @@
+version: 2.1
+
+orbs:
+  maven: circleci/maven@1.0.3
+
+jobs:
+  build_test_backend:
+    docker:
+      - image: cimg/openjdk:17.0.3
+      - image: cimg/postgres:9.6.24
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: runningdinner
+    steps:
+      - checkout
+#      - restore_cache:
+#          keys:
+#            - dependencies-{{ checksum "runningdinner-backend/pom.xml" }} # appends cache key with a hash of pom.xml file
+#            - dependencies- # fallback in case previous cache key is not found
+      - attach_workspace:
+          at: runningdinner-backend/src/main/resources
+      - run:
+          name: Setup application-prod.properties # Not very nice, but sufficient for now
+          command: |
+            #echo "aws.sqs.geocode.url=${PROD_AWS_SQS_GEOCODE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
+
+            echo "sendgrid.api.key=${PROD_SENDGRID_API_KEY}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            echo 'host.context.url=https://runyourdinner.eu' >> runningdinner-backend/src/main/resources/application-prod.properties
+            echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.password=${PROD_SPRING_DATASOURCE_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.username=${PROD_SPRING_DATASOURCE_USERNAME}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.datasource.url=${PROD_SPRING_DATASOURCE_URL}" >> runningdinner-backend/src/main/resources/application-prod.properties
+
+            # echo "spring.flyway.password=${PROD_SPRING_FLYWAY_PASSWORD}" >> runningdinner-backend/src/main/resources/application-prod.properties
+            # echo "spring.flyway.user=${PROD_SPRING_FLYWAY_USER}" >> runningdinner-backend/src/main/resources/application-prod.properties
+      - run:
+          name: Build + Test
+          command: |
+            cd runningdinner-backend
+            ./mvnw package
+            java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted/
+#      - save_cache:
+#          paths:
+#            - ~/.m2
+#          key: dependencies-{{ checksum "runningdinner-backend/pom.xml" }}
+      - run: cp runningdinner-backend/infrastructure/deployment/deploy.sh runningdinner-backend/target/deploy.sh
+      - maven/process_test_results:
+          test_results_path: runningdinner-backend/target/surefire-reports
+      - run: cd runningdinner-backend/target && tar -cvzf runningdinner.tar.gz runningdinner-2.0.0.jar && cd -
+      - store_artifacts:
+          path: runningdinner-backend/target/runningdinner.tar.gz
+      - store_artifacts:
+          path: runningdinner-backend/target/deploy.sh
+      - persist_to_workspace:
+          root: runningdinner-backend/target
+          paths:
+            - runningdinner.tar.gz
+            - deploy.sh
+            - extracted
+
+  build_docker_image:
+    machine:
+      image: ubuntu-2204:2022.04.2
+    # docker:
+    #   - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - attach_workspace:
+          at: runningdinner-backend/target
+      # - setup_remote_docker:
+      #     docker_layer_caching: false
+      - run:
+          name: Build Docker Image
+          command: |
+            cd runningdinner-backend
+            ls -la target/extracted/application
+            docker build -f infrastructure/deployment/docker/Dockerfile -t clemensstich/runningdinner:latest -t clemensstich/runningdinner:$CIRCLE_BUILD_NUM .
+      - run:
+          name: Push to Dockerhub
+          command: |
+            docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
+            docker push --all-tags clemensstich/runningdinner
+
+  build_webclient:
+    docker:
+      - image: cimg/node:16.13.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
+            - npm-deps-
+      - run: cd runningdinner-client && yarn install
+      - run: # TODO CI=false should be removed again!
+          name: Build webclient
+          command: |
+            export REACT_APP_GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
+            cd runningdinner-client
+            CI=false yarn run build
+      - save_cache:
+          paths:
+            - ~/usr/local/lib/node_modules
+          key: dependencies-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
+      - run: 
+          name: Move client artifacts to static folder
+          command: |
+            mkdir -p runningdinner-backend/src/main/resources/static
+            mv -v runningdinner-client/packages/webapp/build/* runningdinner-backend/src/main/resources/static
+            mv runningdinner-backend/src/main/client/resources/ runningdinner-backend/src/main/resources/static/resources
+      - persist_to_workspace:
+          root: runningdinner-backend/src/main/resources
+          paths:
+            - static
+
+  deploy_runningdinner_app:
+    machine:
+      image: ubuntu-2004:202201-02
+    steps:
+      - checkout
+      - attach_workspace:
+          at: runningdinner-backend/target
+      - add_ssh_keys:
+          fingerprints:
+            - "f8:85:06:d1:12:e5:0f:76:e6:dd:30:7b:41:f0:af:5e"
+      - run:
+          name: Allow SSH Access
+          command: |
+            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+            runningdinner-backend/infrastructure/deployment/allow-ssh-access.sh
+      - run: touch ssh-access-granted.txt
+      - run:
+          name: Upload artifacts
+          command: |
+            chmod +x runningdinner-backend/target/deploy.sh
+            scp runningdinner-backend/target/deploy.sh runningdinner-backend/target/runningdinner.tar.gz $SSH_USER@$SSH_HOST:~/upload
+      - run:
+          name: Run Deploy script
+          command: |
+            ssh $SSH_USER@$SSH_HOST "./upload/deploy.sh"
+      - run:
+          name: Check App is healthy
+          command: |
+            curl -k -XGET https://runyourdinner.eu/rest/masterdataservice/v1/registrationtypes
+      - run:
+          name: Remove SSH Access
+          command: |
+            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+            if [[ -f "ssh-access-granted.txt" ]] ; then
+              echo "Removing ssh access..."
+              runningdinner-backend/infrastructure/deployment/remove-ssh-access.sh
+            else
+              echo "Do not remove ssh access due to ssh-access-granted.txt did not exist..."
+            fi
+          when: always
+
+  deploy_runningdinner_functions:
+    docker:
+      - image: cimg/node:current
+    environment:
+      SERVERLESS_ACCESS_KEY: $PROD_SERVERLESS_ACCESS_KEY
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "runningdinner-functions/package.json" }}
+            - npm-deps-
+      - run:
+          name: Install serverless framework and all needed dependencies
+          command: |
+            cd runningdinner-functions
+            sudo npm install -g serverless
+            npm install
+      - run:
+          name: Deploy runningdinner-functions lambda(s)
+          command: |
+            cd runningdinner-functions
+            export AWS_ACCESS_KEY_ID=$PROD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PROD_AWS_SECRET_ACCESS_KEY
+            export SERVERLESS_ACCESS_KEY=$PROD_SERVERLESS_ACCESS_KEY
+            echo "GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_KEY_JS}" > secrets.prod.yml
+            # I don't know why the encrypt/decrypt does not work... hence use the workaround above for now...
+            # serverless decrypt --stage prod --password '${PROD_GEOCODE_SECRETS_PASSWORD}'
+
+            echo "Starting deploy..."
+            serverless deploy --stage prod --verbose
+      - save_cache:
+          paths:
+            - ~/usr/local/lib/node_modules
+          key: dependencies-{{ checksum "runningdinner-functions/package.json" }}
+
+workflows:
+  build_test_deploy_app:
+    jobs:
+      - build_webclient:
+          context: workspace
+      - build_test_backend:
+          context: workspace
+          requires:
+            - build_webclient
+      - build_docker_image:
+          context: workspace
+          requires:
+            - build_test_backend
+      - confirm-app-deployment:
+          type: approval
+          filters:
+            branches:
+              only: main
+      - deploy_runningdinner_app:
+          context: workspace
+          requires:
+            - build_test_backend
+            - confirm-app-deployment
+          filters:
+            branches:
+              only: main
+
+  deploy_functions:
+    jobs:
+      - confirm-functions-deployment:
+          type: approval
+          filters:
+            branches:
+              only: main
+      - deploy_runningdinner_functions:
+          context: workspace
+          requires:
+            - confirm-functions-deployment
+          filters:
+            branches:
+              only: main

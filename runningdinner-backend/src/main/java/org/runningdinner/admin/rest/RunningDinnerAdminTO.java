@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import org.runningdinner.admin.RunningDinnerSessionData;
 import org.runningdinner.common.rest.BaseTO;
 import org.runningdinner.contract.Contract;
+import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
@@ -55,6 +56,8 @@ public class RunningDinnerAdminTO extends BaseTO implements RunningDinnerInfo, S
 
   private Contract contract;
   
+  private AfterPartyLocation afterPartyLocation;
+  
   public RunningDinnerAdminTO() {
 
   }
@@ -69,6 +72,7 @@ public class RunningDinnerAdminTO extends BaseTO implements RunningDinnerInfo, S
     this.cancellationDate = runningDinner.getCancellationDate();
     this.acknowledgedDate = runningDinner.getAcknowledgedDate();
     this.runningDinnerType = runningDinner.getRunningDinnerType();
+    this.afterPartyLocation = runningDinner.getAfterPartyLocation().orElse(null);
   }
 
   public String getEmail() {
@@ -200,6 +204,16 @@ public class RunningDinnerAdminTO extends BaseTO implements RunningDinnerInfo, S
   public void setContract(Contract contract) {
   
     this.contract = contract;
+  }
+
+  public AfterPartyLocation getAfterPartyLocation() {
+    
+    return afterPartyLocation;
+  }
+
+  public void setAfterPartyLocation(AfterPartyLocation afterPartyLocation) {
+    
+    this.afterPartyLocation = afterPartyLocation;
   }
   
 }

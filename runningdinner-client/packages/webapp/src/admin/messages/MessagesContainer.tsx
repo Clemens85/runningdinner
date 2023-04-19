@@ -35,7 +35,7 @@ import {
   useAdminSelector,
   useBackendIssueHandler,
   CONSTANTS,
-  setupInitialMessageType
+  setupInitialMessageType, BaseRunningDinnerProps, isAfterPartyLocationDefined, RunningDinner
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
@@ -43,8 +43,10 @@ import {useMessagesQueryHandler} from "./MessagesQueryHandlerHook";
 import {FetchStatus} from "@runningdinner/shared/src/redux";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 
-export function TeamMessages({adminId}: BaseAdminIdProps) {
-  const templates = ['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'];
+export function TeamMessages({runningDinner}: BaseRunningDinnerProps) {
+
+  const {adminId} = runningDinner;
+  const templates = createMessageTemplates(['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'], runningDinner);
 
   const dispatch = useAdminDispatch();
   useEffect(() => {
@@ -64,9 +66,10 @@ export function TeamMessages({adminId}: BaseAdminIdProps) {
 }
 
 
-export function DinnerRouteMessages({adminId}: BaseAdminIdProps) {
+export function DinnerRouteMessages({runningDinner}: BaseRunningDinnerProps) {
 
-  const templates = ['{firstname}', '{lastname}', '{route}', '{routelink}'];
+  const {adminId} = runningDinner;
+  const templates = createMessageTemplates(['{firstname}', '{lastname}', '{route}', '{routelink}'], runningDinner);
 
   const dispatch = useAdminDispatch();
   useEffect(() => {
@@ -86,13 +89,16 @@ export function DinnerRouteMessages({adminId}: BaseAdminIdProps) {
 }
 
 
-export function ParticipantMessages({adminId}: BaseAdminIdProps) {
-  const templates = ['{firstname}', '{lastname}'];
+export function ParticipantMessages({runningDinner}: BaseRunningDinnerProps) {
+
+  const {adminId} = runningDinner;
 
   const dispatch = useAdminDispatch();
   useEffect(() => {
     dispatch(fetchInitialMessageData(adminId, MessageType.MESSAGE_TYPE_PARTICIPANTS))
   }, [dispatch, adminId]);
+
+  const templates = createMessageTemplates(['{firstname}', '{lastname}'], runningDinner);
 
   return (
     <>
@@ -104,6 +110,14 @@ export function ParticipantMessages({adminId}: BaseAdminIdProps) {
       <BrowserTitle titleI18nKey={"admin:mails_send_participants_title"} namespaces={"admin"} />
     </>
   );
+}
+
+function createMessageTemplates(templates: string[], runningDinner: RunningDinner) {
+  let result = templates;
+  if (isAfterPartyLocationDefined(runningDinner.afterPartyLocation)) {
+    result = templates.concat(['{afterparty}']);
+  }
+  return result;
 }
 
 interface MessagesViewProps<T extends BaseMessage> extends BaseAdminIdProps {

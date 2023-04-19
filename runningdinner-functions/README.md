@@ -1,20 +1,41 @@
-## Overview
+# Overview
 
 Contains a quite simple lambda for geocoding addresses, that is invoked by SQS events which are sent from backend application.
 
+## Prerequisites
+
+* SQS needs to be setup in front
+* SSM (Parameter Store) is used to get hold of the Google Maps API Key and must be setup in front
+
 ## Run locally
 
-``serverless offline start --stage dev``
+``./start-local.sh``
 
-This mocks a local SQS.
+* Serverless offline plugin is used for being able to run the lambda locally
+* It provides also a local SQS queue which is backed by Localstack
+* The parameter store (SSM) is also provided by Localstack 
+
+See the scripts in runningdinner-infrastructure/local for more information. There is also a convenience script for adding a
+Google Maps Key to the local SSM Parameter Store.
+
+## Running the Tests
+
+The test is quite a full integration test for performing a real geocoding operation.
+It needs therefore a Google Maps Key provided by Localstack.<br/>
+Furthermore we need to overwrite the SSM parameter store endpoint to Localstack by setting the env-var:
+`AWS_ENDPOINT_URL_OVERWRITE = http://localhost:4566`
+
+## Esbuild
+For minifying the packaged Javascript code the esbuild-plugin is used which seems to work also with the latest Nodejs 18x version.
 
 ## Deploy
 
-``serverless login``
+We have 2 stages to deploy to: dev and prod
 
-``serverless decrypt --stage prod --password 'MY_PASSWORD' ``
+``./deploy-dev.sh``
 
-``serverless deploy --stage prod``
+---
+
 
 ## Helpful Links
 
