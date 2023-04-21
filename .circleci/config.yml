@@ -222,9 +222,9 @@ jobs:
       - checkout
       - gh/setup
       - run:
-          name: Create Git tag and push it
+          name: Create Github Release and Tag
           command: |
-            currentDate=$(date +'%Y-%m-%d-%H-%M')
+            currentDate=$(date +'%Y-%m-%d_%H-%M')
             gh release create "Release_$currentDate" --target $CIRCLE_BRANCH
 
 workflows:
@@ -294,13 +294,13 @@ workflows:
 
       - create_release_and_git_tag:
           context: workspace
-          # requires:
-            # - build_webclient
-            # - confirm-app-deployment
-            # - deploy_backend_ecs
-            # - check_backend_health
-            # - verify_backend_deployment
+          requires:
+            - build_webclient
+            - confirm-app-deployment
+            - deploy_backend_ecs
+            - check_backend_health
+            - verify_backend_deployment
           filters:
             branches:
               only:
-              - << pipeline.parameters.dev-stage-branch >>
+                - << pipeline.parameters.main-stage-branch >>
