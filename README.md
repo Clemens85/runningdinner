@@ -20,7 +20,6 @@ Voll funktionsfähige Anwendung unter folgender URL:
 
 ## Overview
 * `runningdinner-backend` contains the backend Java application based upon Spring Boot. 
-* `runningdinner-functions` contains a lambda function based upon the serverless framework for geocoding addresses.
 * `runningdinner-client` contains the frontend with React and MaterialUI
 * `e2e-tests` contains some Cypress End2End tests
 

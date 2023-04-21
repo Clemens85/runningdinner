@@ -1,4 +1,0 @@
-- https://www.sitepoint.com/multilingual-support-for-angularjs/
-- https://stackoverflow.com/questions/36623377/how-can-i-switch-languages-dynamically-with-angular-translate-and-angular-ui-rou
-- https://angular.de/artikel/angularjs-i18n-ng-translate/
-
