@@ -26,6 +26,7 @@ orbs:
   maven: circleci/maven@1.4.1
   aws-ecs: circleci/aws-ecs@3.2.0
   aws-cli: circleci/aws-cli@3.1.5
+  gh: circleci/github-cli@2.2.0
 
 jobs:
   build_test_backend:
@@ -214,17 +215,17 @@ jobs:
           service-name: "runningdinner-service"
           task-definition-arn: '${TASK_DEFINITION_ARN}'
 
-  create_git_tag:
+  create_release_and_git_tag:
     machine:
       image: ubuntu-2204:2022.04.2
     steps:
       - checkout
+      - gh/setup
       - run:
           name: Create Git tag and push it
           command: |
-            current_date=$(date +'%Y-%m-%d-%H-%M')
-            git tag -a "$current_date" -m "Release version on $current_date"
-            git push origin --tags
+            currentDate=$(date +'%Y-%m-%d-%H-%M')
+            gh release create "Release_$currentDate" --generate-notes --target $CIRCLE_BRANCH
 
 workflows:
   build_test_deploy_app:
@@ -291,7 +292,7 @@ workflows:
                 - << pipeline.parameters.dev-stage-branch >>
                 - << pipeline.parameters.main-stage-branch >>
 
-      - create_git_tag:
+      - create_release_and_git_tag:
           context: workspace
           # requires:
             # - build_webclient
