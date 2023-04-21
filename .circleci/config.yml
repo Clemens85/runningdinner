@@ -293,7 +293,7 @@ workflows:
 
       - create_git_tag:
           context: workspace
-          requires:
+          # requires:
             # - build_webclient
             # - confirm-app-deployment
             # - deploy_backend_ecs
