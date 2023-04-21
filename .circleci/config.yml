@@ -224,7 +224,7 @@ jobs:
           command: |
             current_date=$(date +'%Y-%m-%d-%H-%M')
             git tag -a "$current_date" -m "Release version on $current_date"
-            git push --follow-tags
+            git push origin --tags
 
 workflows:
   build_test_deploy_app:
@@ -294,7 +294,7 @@ workflows:
       - create_git_tag:
           context: workspace
           requires:
-            - build_webclient
+            # - build_webclient
             # - confirm-app-deployment
             # - deploy_backend_ecs
             # - check_backend_health
