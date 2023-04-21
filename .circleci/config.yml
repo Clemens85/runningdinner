@@ -225,7 +225,7 @@ jobs:
           name: Create Git tag and push it
           command: |
             currentDate=$(date +'%Y-%m-%d-%H-%M')
-            gh release create "Release_$currentDate" --generate-notes --target $CIRCLE_BRANCH
+            gh release create "Release_$currentDate" --target $CIRCLE_BRANCH
 
 workflows:
   build_test_deploy_app:
