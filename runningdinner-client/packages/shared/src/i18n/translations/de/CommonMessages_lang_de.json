@@ -106,6 +106,7 @@
 	"no_thanks": "Nein, danke",
 	"note": "Hinweis",
 	"number_seats": "Anzahl Plätze",
+	"number_seats_help": "Gesamtanzahl (inklusive Kochpaar)",
 	"num_seats_invalid": "Gib bitte eine Zahl ein (0 erlaubt)",
 
 	"on_date": "am",

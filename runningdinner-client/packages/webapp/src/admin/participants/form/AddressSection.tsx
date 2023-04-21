@@ -25,6 +25,7 @@ export default function AddressSection(props: AddressSectionProps) {
   const zip = t('zip');
   const addressRemarks = t('address_remarks');
   const numberSeats = t('number_seats');
+  const numberSeatsHelp = t('number_seats_help');
 
   const headline = isStringNotEmpty(props.headline) ? props.headline : t('address');
 
@@ -75,6 +76,7 @@ export default function AddressSection(props: AddressSectionProps) {
                   label={numberSeats}
                   onChange={newVal => props.onChange(newVal)}
                   value={props.value}
+                  helperText={numberSeatsHelp}
                   emptyValue={0}
                   fullWidth />
               }
