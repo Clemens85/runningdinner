@@ -214,6 +214,17 @@ jobs:
           service-name: "runningdinner-service"
           task-definition-arn: '${TASK_DEFINITION_ARN}'
 
+  create_git_tag:
+    machine:
+      image: ubuntu-2204:2022.04.2
+    steps:
+      - run:
+          name: Create Git tag and push it
+          command: |
+            current_date=$(date +'%Y-%m-%d-%H-%M')
+            git tag -a "$current_date" -m "Release version on $current_date"
+            git push --follow-tags
+
 workflows:
   build_test_deploy_app:
     jobs:
@@ -278,3 +289,16 @@ workflows:
               only:
                 - << pipeline.parameters.dev-stage-branch >>
                 - << pipeline.parameters.main-stage-branch >>
+
+      - create_git_tag:
+          context: workspace
+          requires:
+            - build_webclient
+            # - confirm-app-deployment
+            # - deploy_backend_ecs
+            # - check_backend_health
+            # - verify_backend_deployment
+          filters:
+            branches:
+              only:
+              - << pipeline.parameters.dev-stage-branch >>
