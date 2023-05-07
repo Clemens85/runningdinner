@@ -354,7 +354,7 @@ public class WaitingListService {
 
       if (ActivityService.containsActivityType(activities, ActivityType.TEAMARRANGEMENT_MAIL_SENT) ||
           ActivityService.containsActivityType(activities, ActivityType.DINNERROUTE_MAIL_SENT)) {
-        retur)n true;
+        return true;
       }
 
       boolean hasRelevantAdminChange = activities
