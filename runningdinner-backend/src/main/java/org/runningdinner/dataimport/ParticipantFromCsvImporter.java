@@ -35,13 +35,14 @@ public final class ParticipantFromCsvImporter {
     return new ParticipantFromCsvImporter(applicationUrl, adminId, participantNrOffset);
   }
   
-  public void addRandomParticipantsToDinnerFromCsv(String filePath) {
+  public void addRandomParticipantsToDinnerFromCsv(String filePath, int maxParticipantsToImport) {
     
     List<String> csvLines = readLines(filePath, 1);
     System.out.println("Parsed " + csvLines.size() + " csv lines for being imported");
     
 //    csvLines = csvLines.subList(currentParticipantNr, csvLines.size());
     
+    int cnt = 0;
     for (String csvLine : csvLines) {
       int participantNr = this.currentParticipantNr + 1;
       ParticipantTO p = parseParticipant(csvLine, participantNr);
@@ -49,6 +50,14 @@ public final class ParticipantFromCsvImporter {
       addParticipantToDinner(p);
       sleep(250);
       this.currentParticipantNr++;
+      
+      if (maxParticipantsToImport < 0) {
+        continue;
+      }
+      
+      if (++cnt >= maxParticipantsToImport) {
+        break;
+      }
     }
   }
 
@@ -120,4 +129,8 @@ public final class ParticipantFromCsvImporter {
     }
   }
   
+//  public static void main(String[] args) {
+//    ParticipantFromCsvImporter.newInstance("http://localhost:9090", "53f2ec8f-0230-4266-89d7-85565f73a440-Qe5Xl", 40)
+//    .addRandomParticipantsToDinnerFromCsv("/home/stichc/Projects/runningdinner/RUDI-MZ.csv", 6);
+//  }
 }
