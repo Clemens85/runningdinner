@@ -1,20 +1,23 @@
-import {BaseEntity, GeocodingResult, HasGeocoding} from "./Base";
+import {BaseEntity, HasGeocoding} from "./Base";
 import {CONSTANTS} from "../Constants";
 import clone from "lodash/clone";
-import {isStringEmpty} from "../";
+import {isStringEmpty, isStringNotEmpty} from "../";
 
 export interface MealSpecifics {
   vegetarian: boolean,
   lactose: boolean,
   gluten: boolean,
   vegan: boolean,
-  note: string;
+  mealSpecificsNote: string;
 }
 
-export interface Participant extends BaseEntity, HasGeocoding {
-  participantNumber?: number;
+export interface ParticipantName {
   firstnamePart: string,
   lastname: string,
+}
+
+export interface Participant extends BaseEntity, HasGeocoding, MealSpecifics, ParticipantName {
+  participantNumber?: number;
   gender: string,
   mobileNumber: string;
   email: string;
@@ -23,16 +26,19 @@ export interface Participant extends BaseEntity, HasGeocoding {
   zip: string;
   cityName: string;
   age: number;
-  vegetarian: false,
-  lactose: false,
-  gluten:false,
-  vegan: false,
-  mealSpecificsNote: string;
   numSeats: number,
   addressRemarks: string;
-  teamPartnerWish: string;
   notes: string;
   teamId?: string;
+  teamPartnerWishEmail?: string;
+  teamPartnerWishOriginatorId?: string;
+}
+
+export interface ParticipantFormModel extends Participant {
+  /**
+   * Is only relevant when creating new participants
+   */
+  teamPartnerWishRegistrationData?: TeamPartnerWishRegistrationData;
 }
 
 export interface ParticipantList {
@@ -49,6 +55,9 @@ export function concatParticipantList(participantList: ParticipantList): Partici
 
 export interface ParticipantListable extends Participant {
   listNumber: number;
+  childTeamPartnerWish?: ParticipantListable;
+  rootTeamPartnerWish?: ParticipantListable;
+  teamPartnerWishStateEmailInvitation?: TeamPartnerWishState;
 }
 
 export interface MissingParticipantsInfo {
@@ -75,6 +84,15 @@ export interface TeamPartnerWishInfo {
   matchingParticipant: Participant;
 }
 
+export enum TeamPartnerOption {
+  INVITATION="INVITATION",
+  REGISTRATION="REGISTRATION",
+  NONE="NONE"
+}
+
+export interface TeamPartnerWishRegistrationData extends ParticipantName {
+}
+
 const EMPTY_PARTICIPANT: Participant = {
   firstnamePart: '',
   lastname: '',
@@ -93,7 +111,7 @@ const EMPTY_PARTICIPANT: Participant = {
   mealSpecificsNote: '',
   numSeats: -1,
   addressRemarks: '',
-  teamPartnerWish: '',
+  teamPartnerWishEmail: '',
   notes: ''
 };
 
@@ -124,5 +142,9 @@ export function isNumSeatsPositiveIntegerOrEmpty(participant: Participant) {
     return true;
   }
   return /^(0|[1-9]\d*)$/.test(numSeatsStr);
-
 }
+
+export function hasTeamPartnerRegistrationData(teamPartnerWishRegistrationData?: TeamPartnerWishRegistrationData) {
+  return teamPartnerWishRegistrationData && isStringNotEmpty(teamPartnerWishRegistrationData.lastname);
+}
+

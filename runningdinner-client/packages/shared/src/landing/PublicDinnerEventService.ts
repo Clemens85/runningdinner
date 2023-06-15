@@ -3,7 +3,7 @@ import {
   isNumSeatsPositiveIntegerOrEmpty, newHttpError,
   PublicRunningDinner,
   PublicRunningDinnerList,
-  RegistrationSummary
+  RegistrationSummary, RunningDinnerSessionData
 } from "../types";
 import axios from "axios";
 import {BackendConfig} from "../BackendConfig";
@@ -32,7 +32,7 @@ export async function performRegistration(publicDinnerId: string, registrationDa
 }
 
 async function executePerformRegistrationRequest(publicDinnerId: string, registrationData: RegistrationData, validateOnly: boolean): Promise<RegistrationSummary> {
-  const url = BackendConfig.buildUrl(`/frontend/v2/runningdinner/${publicDinnerId}/register?validateOnly=${validateOnly}`);
+  const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/register?validateOnly=${validateOnly}`);
   if (!isNumSeatsPositiveIntegerOrEmpty(registrationData)) { // TODO: Not very nice, but it works for now. Should be replaced by client side validation
     throw newHttpError(406, [{
       field: "numSeats",
@@ -63,4 +63,10 @@ export async function activateSubscribedParticipant(publicDinnerId: string, part
       validationIssue: isArrayNotEmpty(backendValidationIssues) ? backendValidationIssues[0] : undefined
     };
   }
+}
+
+export async function findRunningDinnerSessionDataByPublicId(publicDinnerId: string): Promise<RunningDinnerSessionData> {
+  const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/sessiondata`);
+  const response = await axios.get<RunningDinnerSessionData>(url);
+  return response.data;
 }

@@ -12,7 +12,7 @@ import com.google.common.base.MoreObjects;
 
 public class TeamPartnerWish {
 
-  private TeamPartnerWishState state;
+  private TeamPartnerWishInvitationState state;
 
   private Participant subscribedParticipant;
 
@@ -24,7 +24,7 @@ public class TeamPartnerWish {
 
   }
 
-  public TeamPartnerWishState getState() {
+  public TeamPartnerWishInvitationState getState() {
 
     return state;
   }
@@ -47,7 +47,7 @@ public class TeamPartnerWish {
   public static TeamPartnerWish notExisting(Participant participant) {
 
     TeamPartnerWish result = new TeamPartnerWish();
-    result.state = TeamPartnerWishState.NOT_EXISTING;
+    result.state = TeamPartnerWishInvitationState.NOT_EXISTING;
     result.subscribedParticipant = participant;
     return result;
   }
@@ -55,7 +55,7 @@ public class TeamPartnerWish {
   public static TeamPartnerWish matchingButMatchHasNoPartnerWish(Participant participant, Participant matchingParticipant) {
 
     TeamPartnerWish result = new TeamPartnerWish();
-    result.state = TeamPartnerWishState.EXISTS_EMPTY_TEAM_PARTNER_WISH;
+    result.state = TeamPartnerWishInvitationState.EXISTS_EMPTY_TEAM_PARTNER_WISH;
     result.subscribedParticipant = participant;
     result.matchingParticipant = matchingParticipant;
     return result;
@@ -64,7 +64,7 @@ public class TeamPartnerWish {
   public static TeamPartnerWish matchingWithSamePartnerWish(Participant participant, Participant matchingParticipant) {
 
     TeamPartnerWish result = new TeamPartnerWish();
-    result.state = TeamPartnerWishState.EXISTS_SAME_TEAM_PARTNER_WISH;
+    result.state = TeamPartnerWishInvitationState.EXISTS_SAME_TEAM_PARTNER_WISH;
     result.subscribedParticipant = participant;
     result.matchingParticipant = matchingParticipant;
     return result;
@@ -73,7 +73,7 @@ public class TeamPartnerWish {
   public static TeamPartnerWish matchingButMatchHasOtherPartnerWish(Participant participant, Participant matchingParticipant) {
 
     TeamPartnerWish result = new TeamPartnerWish();
-    result.state = TeamPartnerWishState.EXISTS_OTHER_TEAM_PARTNER_WISH;
+    result.state = TeamPartnerWishInvitationState.EXISTS_OTHER_TEAM_PARTNER_WISH;
     result.subscribedParticipant = participant;
     result.matchingParticipant = matchingParticipant;
     return result;
@@ -82,7 +82,7 @@ public class TeamPartnerWish {
   public static TeamPartnerWish noPartnerWishButOtherTeamPartnerWishes(Participant participant, Collection<Participant> foundParticipants) {
 
     TeamPartnerWish result = new TeamPartnerWish();
-    result.state = TeamPartnerWishState.NO_PARTNER_WISH_BUT_OTHER_TEAM_PARTNER_WISHES;
+    result.state = TeamPartnerWishInvitationState.NO_PARTNER_WISH_BUT_OTHER_TEAM_PARTNER_WISHES;
     result.subscribedParticipant = participant;
     result.otherParticipantsWithThisTeamPartnerWish = new HashSet<>(foundParticipants);
     return result;

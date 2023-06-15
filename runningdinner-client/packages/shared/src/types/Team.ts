@@ -1,6 +1,8 @@
 import {Meal} from "./RunningDinner";
-import {Participant} from "./Participant";
+import {Participant, TeamPartnerOption} from "./Participant";
 import {BaseEntity} from "./Base";
+import {isArrayEmpty, isStringNotEmpty} from "../Utils";
+import {isTeamPartnerWishRegistration} from "../admin";
 
 export enum TeamStatus {
   OK = "OK",
@@ -41,4 +43,39 @@ export interface TeamCancellationResult {
 export interface TeamMemberCancelInfo {
   cancelWholeTeam: boolean;
   remainingTeamMemberNames: string[];
+}
+
+export function getTeamPartnerOptionOfTeam(team: Team): TeamPartnerOption {
+  if (!team) {
+    return TeamPartnerOption.NONE;
+  }
+
+  for (let i = 0; i < team.teamMembers.length; i++) {
+    const teamMember = team.teamMembers[i];
+    if (isTeamPartnerWishRegistration(teamMember)) {
+      return TeamPartnerOption.REGISTRATION;
+    } else if (isStringNotEmpty(teamMember.teamPartnerWishEmail)) {
+      return TeamPartnerOption.INVITATION;
+    }
+  }
+  return TeamPartnerOption.NONE;
+}
+
+export function hasAllTeamMembersSameTeamPartnerWish(team: Team, optionToCheck: TeamPartnerOption): boolean {
+  if (optionToCheck === TeamPartnerOption.NONE || isArrayEmpty(team.teamMembers) || team.teamMembers.length  <= 1) {
+    return false;
+  }
+  const valuesToCheck = team.teamMembers.map(p => {
+    if (optionToCheck === TeamPartnerOption.INVITATION) {
+      let invitationArr = [p.teamPartnerWishEmail || "", p.email || ""];
+      invitationArr = invitationArr.map(email => email.toLowerCase().trim());
+      invitationArr.sort();
+      return invitationArr.join("-");
+    } else if (optionToCheck === TeamPartnerOption.REGISTRATION) {
+      return p.teamPartnerWishOriginatorId || "";
+    }
+    return "";
+  });
+  const allSame = valuesToCheck.every(val => val === valuesToCheck[0] && isStringNotEmpty(val));
+  return allSame;
 }

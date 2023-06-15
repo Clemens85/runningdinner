@@ -189,6 +189,13 @@ const LandingMessages_en: any = {
     currentuser_already_registered_cancel: ' If you wish to unsubscribe, please email <anchor href="{{ email }}">{{ email }}</anchor>.',
     currentuser_already_registered_new_register: "If you want to register again, you can still do so here:",
 
+    teampartner_registration_summary_info: "You have added <italic>{{ firstname }} {{ lastname }}</italic> as your team partner. Thus both of you will be mixed in one team as fixed cooking pair.",
+    teampartner_wish_section_title: "Do you want to cook together with a friend?",
+    teampartner_wish_section_subtitle: "Do you have a preferred partner with whom you would definitely like to cook together? You can either register this person directly here or alternatively invite them to the event via email. " +
+      "You will then be arranged into one team.",
+    teampartner_wish_invitation_info: "You have been invited to this event by {{ invitingParticipantEmail }}. You will cook together as a team.",
+
+
     x: 'x'
 };
 

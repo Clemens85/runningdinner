@@ -91,7 +91,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}:
       }
       onClose(cancelledOrReplacedTeam);
     } catch (e) {
-      showHttpErrorDefaultNotification(e);
+      showHttpErrorDefaultNotification(e, { showGenericMesssageOnValidationError: false });
     }
   };
 
@@ -121,7 +121,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}:
         teamCancellationPreviewResult: teamCancellationPreviewResult
       });
     } catch (e) {
-      showHttpErrorDefaultNotification(e);
+      showHttpErrorDefaultNotification(e, { showGenericMesssageOnValidationError: false, showAllValidationErrorMessages: true });
     }
   };
 
@@ -211,10 +211,16 @@ function TeamCancelOverviewContent({team, runningDinner, notAssignedParticipants
   const renderEnoughParticipantsInfo = () => {
     const teamName = t('admin:team', {teamNumber: team.teamNumber});
     const { teamSize } = runningDinner.options;
+
+    let numNeededParticipants = teamSize;
+    if (team.teamMembers.length < teamSize) {
+      numNeededParticipants = teamSize - team.teamMembers.length;
+    }
+
     return (
         <Alert severity="success" variant="outlined">
           <AlertTitle>{t('admin:team_cancel_info_headline_sufficient_participants')}</AlertTitle>
-          <Span i18n='admin:team_cancel_info_text_sufficient_participants' parameters={{ teamSize: teamSize, teamName: teamName }} html={true} />
+          <Span i18n='admin:team_cancel_info_text_sufficient_participants' parameters={{ teamSize: numNeededParticipants, teamName: teamName }} html={true} />
         </Alert>
     );
   };

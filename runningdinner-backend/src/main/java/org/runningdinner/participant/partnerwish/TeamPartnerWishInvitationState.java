@@ -1,7 +1,7 @@
 package org.runningdinner.participant.partnerwish;
 
 
-public enum TeamPartnerWishState {
+public enum TeamPartnerWishInvitationState {
 
   NOT_EXISTING,
   

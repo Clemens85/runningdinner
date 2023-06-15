@@ -3,7 +3,7 @@ import filter from "lodash/filter";
 import cloneDeep from "lodash/cloneDeep";
 import remove from "lodash/remove";
 import isArray from "lodash/isArray";
-import {BaseEntity} from "./types";
+import {BaseEntity, KeyValue} from "./types";
 import truncate from "lodash/truncate";
 import mergeWith from 'lodash/mergeWith';
 import isString from 'lodash/isString';
@@ -19,11 +19,9 @@ import set from "lodash/set";
  * @returns {*} the found entity or null
  */
 export function findEntityById(entities: any, id?: string | null) {
-
   if (!entities || !id) {
     return null;
   }
-
   const result = filter(entities, { 'id': id });
   if (!result || result.length !== 1) {
     return null;

@@ -10,7 +10,7 @@ import {
   Typography
 } from "@material-ui/core";
 import {
-  CallbackHandler, CallbackHandlerAsync,
+  CallbackHandler, CallbackHandlerAsync, hasTeamPartnerRegistrationData,
   isStringEmpty,
   isStringNotEmpty,
   newEmptyRegistrationDataInstance,
@@ -20,7 +20,7 @@ import {
   RegistrationSummary,
   TeamPartnerWishState,
   useBackendIssueHandler,
-  useDisclosure, 
+  useDisclosure,
   useMealSpecificsStringify,
   ValueTranslate
 } from "@runningdinner/shared";
@@ -29,7 +29,7 @@ import useCommonStyles from "../common/theme/CommonStyles";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {FormProvider, useForm} from "react-hook-form";
 import {Span, Subtitle} from "../common/theme/typography/Tags";
-import PersonalDataSection from "../admin/participants/form/PersonalDataSection";
+import {PersonalDataSection} from "../admin/participants/form/PersonalDataSection";
 import AddressSection from "../admin/participants/form/AddressSection";
 import MealSpecificsSection from "../admin/participants/form/MealSpecificsSection";
 import MiscSection from "../admin/participants/form/MiscSection";
@@ -48,6 +48,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import { useQuery } from "../common/hooks/QueryHook";
 import { getDecodedQueryParam } from "../common/QueryParamDecoder";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import {TeamPartnerWishSectionRegistration} from "../admin/participants/form/TeamPartnerWishSectionRegistration";
 
 
 const drawerWidth = "1024px";
@@ -95,8 +96,11 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
   });
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
+  const invitingParticipantEmail = getDecodedQueryParam(query, "invitingParticipantEmail");
+  const prefilledEmailAddress = getDecodedQueryParam(query, "prefilledEmailAddress");
+
   const formMethods = useForm({
-    defaultValues: newEmptyRegistrationDataInstance(getDecodedQueryParam(query, "invitingParticipantEmail"), getDecodedQueryParam(query, "prefilledEmailAddress")),
+    defaultValues: newEmptyRegistrationDataInstance(invitingParticipantEmail, prefilledEmailAddress),
     mode: 'onTouched'
   });
   const {handleSubmit, clearErrors, setError, formState} = formMethods;
@@ -161,9 +165,10 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
                     <MealSpecificsSection />
                   </Box>
                   <Box mb={3}>
-                    <MiscSection miscNotesHelperText={t('landing:misc_notes_help')}
-                                 teamPartnerWishDisabled={teamPartnerWishDisabled}
-                                 teamPartnerWishHelperText={t('landing:team_partner_wish_help')} />
+                    { !teamPartnerWishDisabled && <TeamPartnerWishSectionRegistration invitingParticipantEmail={invitingParticipantEmail} publicDinnerId={publicDinnerId} /> }
+                  </Box>
+                  <Box mb={3}>
+                    <MiscSection miscNotesHelperText={t('landing:misc_notes_help')} />
                   </Box>
                   <Box mb={3}>
                     <FormCheckbox name="dataProcessingAcknowledged"
@@ -221,7 +226,7 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
 
   const {t} = useTranslation(["landing", "common"]);
 
-  const showNotEnoughSeatsMessage = isStringEmpty(registrationSummary.teamPartnerWish) && !registrationSummary.canHost;
+  const showNotEnoughSeatsMessage = isStringEmpty(registrationSummary.teamPartnerWishEmail) && !registrationSummary.canHost;
 
   const mealSpecificsAsString = useMealSpecificsStringify(registrationSummary?.mealSpecifics);
 
@@ -240,7 +245,6 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
           <div style={{ display: 'flex' }}>
             <MailIcon color={"primary"} />
             <Typography variant={"body1"} component="p" noWrap>&nbsp; {registrationSummary.email}</Typography>
-            {/*<Paragraph>&nbsp; {registrationSummary.email}</Paragraph>*/}
           </div>
           { isStringNotEmpty(registrationSummary.mobile) &&
               <div style={{ display: 'flex', marginTop: '10px' }}>
@@ -270,30 +274,41 @@ function RegistrationSummaryDialog({registrationSummary, onCancel, onPerformRegi
           { isStringNotEmpty(mealSpecificsAsString) && registrationSummary.mealSpecifics &&
             <Box>
               <Span>{t("mealspecifics_summary_text")}: {mealSpecificsAsString}</Span>
-              { isStringNotEmpty(registrationSummary.mealSpecifics.note) && <Span><em>{registrationSummary.mealSpecifics.note}</em></Span> }
+              { isStringNotEmpty(registrationSummary.mealSpecifics.mealSpecificsNote) && <Span><em>{registrationSummary.mealSpecifics.mealSpecificsNote}</em></Span> }
             </Box>
           }
         </Box>
 
-        { isStringNotEmpty(registrationSummary.teamPartnerWish) &&
+        { isStringNotEmpty(registrationSummary.teamPartnerWishEmail) &&
           <Box mb={2}>
-            { !registrationSummary.teamPartnerWishState &&
+            { !registrationSummary.teamPartnerWishEmail &&
               <Span noWrap={true}>
                 <Trans i18nKey={"landing:teampartner_wish_summary"}
                        components={{ italic: <em /> }}
-                       values={{ teamPartnerWish: registrationSummary.teamPartnerWish }} />
+                       values={{ teamPartnerWish: registrationSummary.teamPartnerWishEmail }} />
               </Span> }
             { registrationSummary.teamPartnerWishState === TeamPartnerWishState.EXISTS_SAME_TEAM_PARTNER_WISH &&
               <Span noWrap={true}>
                 <Trans i18nKey={"landing:teampartner_wish_summary_match"}
                        components={{ italic: <em /> }}
-                       values={{ teamPartnerWish: registrationSummary.teamPartnerWish }} />
+                       values={{ teamPartnerWish: registrationSummary.teamPartnerWishEmail }} />
               </Span> }
             { registrationSummary.teamPartnerWishState === TeamPartnerWishState.NOT_EXISTING &&
               <Span noWrap={true}><Trans i18nKey={"landing:teampartner_wish_summary_not_existing"}
                            components={{ italic: <em /> }}
-                           values={{ teamPartnerWish: registrationSummary.teamPartnerWish }} />
+                           values={{ teamPartnerWish: registrationSummary.teamPartnerWishEmail }} />
               </Span> }
+          </Box>
+        }
+
+        { hasTeamPartnerRegistrationData(registrationSummary.teamPartnerWishRegistrationData) &&
+          <Box mb={2}>
+            <Span noWrap={true}>
+              <Trans i18nKey={"landing:teampartner_registration_summary_info"}
+                     components={{ italic: <em /> }}
+                     values={{ firstname: registrationSummary.teamPartnerWishRegistrationData?.firstnamePart,
+                               lastname: registrationSummary.teamPartnerWishRegistrationData?.lastname }} />
+            </Span>
           </Box>
         }
 

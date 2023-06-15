@@ -3,11 +3,14 @@ package org.runningdinner.frontend;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import org.runningdinner.admin.RunningDinnerRepository;
+import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.RunningDinnerSessionData;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
@@ -21,15 +24,12 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
-import org.runningdinner.frontend.rest.RegistrationDataV2TO;
 import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWish;
+import org.runningdinner.participant.partnerwish.TeamPartnerWishInvitationState;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
-import org.runningdinner.participant.partnerwish.TeamPartnerWishState;
-import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,21 +44,24 @@ public class FrontendRunningDinnerService {
 
   @Autowired
   private TeamPartnerWishService teamPartnerWishService;
+
+  @Autowired
+  private ParticipantService participantService;
+
+  @Autowired
+  private RunningDinnerRepository runningDinnerRepository;
+
+  @Autowired
+  private RunningDinnerService runningDinnerService;
   
-	@Autowired
-	private ParticipantService participantService;
+  @Autowired
+  private UrlGenerator urlGenerator;
 
-	@Autowired
-	private RunningDinnerRepository runningDinnerRepository;
-	
-	@Autowired
-	private UrlGenerator urlGenerator;
+  @Autowired
+  private EventPublisher eventPublisher;
 
-	@Autowired
-	private EventPublisher eventPublisher;
-
-	@Autowired
-	private ValidatorService validatorService;
+  @Autowired
+  private ValidatorService validatorService;
 
 	/**
 	 * Finds a public running dinner identified by the passed id
@@ -70,15 +73,17 @@ public class FrontendRunningDinnerService {
 	 */
 	public RunningDinner findRunningDinnerByPublicId(String publicDinnerId, LocalDate now) {
 
-	  Set<RegistrationType> publicRegistationTypes = Sets.newHashSet(RegistrationType.OPEN, RegistrationType.PUBLIC);
+      Set<RegistrationType> publicRegistationTypes = Sets.newHashSet(RegistrationType.OPEN, RegistrationType.PUBLIC);
 
-		validatorService.checkPublicIdValid(publicDinnerId);
-		RunningDinner runningDinner = runningDinnerRepository.findByPublicSettingsPublicIdAndRegistrationTypeInAndCancellationDateIsNull(publicDinnerId, publicRegistationTypes);
+      validatorService.checkPublicIdValid(publicDinnerId);
+      RunningDinner runningDinner = runningDinnerRepository
+          .findByPublicSettingsPublicIdAndRegistrationTypeInAndCancellationDateIsNull(publicDinnerId,
+              publicRegistationTypes);
 
-		validatorService.checkRunningDinnerNotNull(runningDinner);
-		validatorService.checkRunningDinnerNotExpired(runningDinner, now);
+      validatorService.checkRunningDinnerNotNull(runningDinner);
+      validatorService.checkRunningDinnerNotExpired(runningDinner, now);
 
-		return urlGenerator.addPublicDinnerUrl(runningDinner);
+      return urlGenerator.addPublicDinnerUrl(runningDinner);
 	}
 
 	/**
@@ -94,60 +99,44 @@ public class FrontendRunningDinnerService {
     return urlGenerator.addPublicDinnerUrl(result);
   }
 
-	/**
-	 * Registers a new participant with the data backed by registrationData.
-	 * 
-	 * @param publicDinnerId The public dinner for which to perform a registration
-	 * @param registrationData
-	 * @param onlyPreviewAndValidation Don't persist the registration but only validate and generate a preview (if valid) for client
-	 */
-	@Transactional
-	public RegistrationSummary performRegistration(String publicDinnerId, RegistrationDataV2TO registrationData, boolean onlyPreviewAndValidation) {
+  /**
+   * Registers a new participant with the data backed by registrationData.
+   * 
+   * @param publicDinnerId           The public dinner for which to perform a
+   *                                 registration
+   * @param registrationData
+   * @param onlyPreviewAndValidation Don't persist the registration but only
+   *                                 validate and generate a preview (if valid)
+   *                                 for client
+   */
+  @Transactional
+  public RegistrationSummary performRegistration(String publicDinnerId, RegistrationDataTO registrationData, boolean onlyPreviewAndValidation) {
 
-		LocalDate now = LocalDate.now();
+    LocalDate now = LocalDate.now();
 
-		RunningDinner runningDinner = findRunningDinnerByPublicId(publicDinnerId, now);
+    RunningDinner runningDinner = findRunningDinnerByPublicId(publicDinnerId, now);
 
-		Assert.state(!runningDinner.getPublicSettings().isRegistrationDeactivated(), "Registration can only performed when not deactivated: " + runningDinner);
+    Assert.state(!runningDinner.getPublicSettings().isRegistrationDeactivated(),
+        "Registration can only performed when not deactivated: " + runningDinner);
 
-		ParticipantName participantName = ParticipantName.newName()
-																											.withFirstname(registrationData.getFirstnamePart())
-																											.andLastname(registrationData.getLastname());
+    ParticipantName participantName = ParticipantName.newName()
+        .withFirstname(registrationData.getFirstnamePart())
+        .andLastname(registrationData.getLastname());
 
-		checkRegistrationDate(runningDinner, now);
-		checkFullname(participantName.getFullnameFirstnameFirst());
-		participantService.checkDuplicatedRegistration(runningDinner.getAdminId(), registrationData.getEmail());
-		
-		Participant participant = new Participant();
-		participant.setName(participantName);
-		ParticipantAddress address = new ParticipantAddress();
-		address.setZip(registrationData.getZip());
-		address.setStreet(registrationData.getStreet());
-		address.setStreetNr(registrationData.getStreetNr());
-		address.setCityName(registrationData.getCityName());
-		address.setRemarks(registrationData.getAddressRemarks());
-		participant.setAddress(address);
-		participant.setAge(registrationData.getAgeNormalized());
-		participant.setEmail(registrationData.getEmail());
-		participant.setNumSeats(registrationData.getNumSeats());
-		participant.setGender(registrationData.getGenderNotNull());
-		participant.setMobileNumber(registrationData.getMobileNumber());
-		participant.setMealSpecifics(registrationData.getMealSpecifics());
-		participant.setNotes(registrationData.getNotes());
-		participant.setTeamPartnerWish(registrationData.getTeamPartnerWish());
+    checkRegistrationDate(runningDinner, now);
+    checkFullname(participantName.getFullnameFirstnameFirst());
+    
+    if (onlyPreviewAndValidation) {
+      Participant participant = participantService.mapParticipantInputToParticipant(registrationData, new Participant(), runningDinner, true);
+      return createRegistrationSummary(runningDinner, participant, registrationData);
+    }
 
-    TeamPartnerWishStateHandlerService.checkEmailDoesNotEqualTeamPartnerWish(participant);
-		
-		if (onlyPreviewAndValidation) {
-			return createRegistrationSummary(runningDinner, participant);
-		}
+    Participant registeredParticipant = participantService.addParticipant(runningDinner, registrationData, true);
 
-		Participant registeredParticipant = participantService.addParticipant(runningDinner, participant, true);
+    emitNewParticipantEvent(registeredParticipant, runningDinner);
 
-		emitNewParticipantEvent(registeredParticipant, runningDinner);
-
-		return createRegistrationSummary(runningDinner, registeredParticipant);
-	}
+    return createRegistrationSummary(runningDinner, registeredParticipant, registrationData);
+  }
 
   @Transactional
   public Participant activateSubscribedParticipant(String publicDinnerId, UUID participantId) {
@@ -157,33 +146,43 @@ public class FrontendRunningDinnerService {
     return participantService.updateParticipantSubscription(participantId, now, true, runningDinner);
   }
 
-  private RegistrationSummary createRegistrationSummary(RunningDinner runningDinner, Participant registeredParticipant) {
+  public RunningDinnerSessionData findRunningDinnerSessionDataByPublicId(String publicDinnerId, Locale locale, LocalDate now) {
 
-		FuzzyBoolean canHost = runningDinner.getConfiguration().canHost(registeredParticipant);
-		boolean teamPartnerWishDisabled = runningDinner.getConfiguration().isTeamPartnerWishDisabled();
-		
-		TeamPartnerWishState teamPartnerWishState = null;
-		
-		Optional<TeamPartnerWish> optionalTeamPartnerWish = teamPartnerWishService.calculateTeamPartnerWishInfo(registeredParticipant, runningDinner.getAdminId());
-		if (optionalTeamPartnerWish.isPresent() && !teamPartnerWishDisabled) {
-		  TeamPartnerWish teamPartnerWish = optionalTeamPartnerWish.get();
-		  if (teamPartnerWish.getState() == TeamPartnerWishState.EXISTS_SAME_TEAM_PARTNER_WISH || teamPartnerWish.getState() == TeamPartnerWishState.NOT_EXISTING) {
-		    teamPartnerWishState = teamPartnerWish.getState();
-		  }
-		}
-		
-		return new RegistrationSummary(registeredParticipant, canHost == FuzzyBoolean.TRUE, teamPartnerWishState);
-	}
+    RunningDinner runningDinner = findRunningDinnerByPublicId(publicDinnerId, now);
+    return runningDinnerService.calculateSessionData(runningDinner, locale);
+  }
+  
+  private RegistrationSummary createRegistrationSummary(RunningDinner runningDinner,
+      Participant registeredParticipant, RegistrationDataTO registrationData) {
 
-	protected void emitNewParticipantEvent(final Participant newParticipant, final RunningDinner runningDinner) {
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+    FuzzyBoolean canHost = runningDinner.getConfiguration().canHost(registeredParticipant);
+    boolean teamPartnerWishDisabled = runningDinner.getConfiguration().isTeamPartnerWishDisabled();
 
-			@Override
-			public void afterCommit() {
-				eventPublisher.notifyNewParticipant(newParticipant, runningDinner);
-			}
-		});
-	}
+    TeamPartnerWishInvitationState teamPartnerWishInvitationState = null;
+
+    Optional<TeamPartnerWish> optionalTeamPartnerWish = teamPartnerWishService
+        .calculateTeamPartnerWishInfo(registeredParticipant, runningDinner.getAdminId());
+    if (optionalTeamPartnerWish.isPresent() && !teamPartnerWishDisabled) {
+      TeamPartnerWish teamPartnerWish = optionalTeamPartnerWish.get();
+      if (teamPartnerWish.getState() == TeamPartnerWishInvitationState.EXISTS_SAME_TEAM_PARTNER_WISH
+          || teamPartnerWish.getState() == TeamPartnerWishInvitationState.NOT_EXISTING) {
+        teamPartnerWishInvitationState = teamPartnerWish.getState();
+      }
+    }
+
+    return new RegistrationSummary(registeredParticipant, canHost == FuzzyBoolean.TRUE, teamPartnerWishInvitationState,
+        registrationData.getTeamPartnerWishRegistrationData());
+  }
+
+  protected void emitNewParticipantEvent(final Participant newParticipant, final RunningDinner runningDinner) {
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+      @Override
+      public void afterCommit() {
+        eventPublisher.notifyNewParticipant(newParticipant, runningDinner);
+      }
+    });
+  }
 
   protected void checkFullname(String fullname) {
 

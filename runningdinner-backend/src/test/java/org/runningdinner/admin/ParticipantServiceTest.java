@@ -116,7 +116,7 @@ public class ParticipantServiceTest {
     Participant secondParticipant = participants.get(1);
     
     firstParticipant.setEmail(secondParticipant.getEmail()); // Duplicated Email
-    participantService.updateParticipant(runningDinner.getAdminId(), firstParticipant.getId(), firstParticipant);
+    testHelperService.updateParticipant(firstParticipant);
   }
   
   @Test
@@ -125,7 +125,7 @@ public class ParticipantServiceTest {
     List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
     Participant firstParticipant = participants.get(0);
     firstParticipant.setAge(25);
-    Participant result = participantService.updateParticipant(runningDinner.getAdminId(), firstParticipant.getId(), firstParticipant);
+    Participant result = testHelperService.updateParticipant(firstParticipant);
     assertThat(result.getAge()).isEqualTo(25);
   }
   
@@ -139,7 +139,7 @@ public class ParticipantServiceTest {
     Participant firstParticipant = participants.get(0);
     
     firstParticipant.getAddress().setStreet("New Street");
-    participantService.updateParticipant(runningDinner.getAdminId(), firstParticipant.getId(), firstParticipant);
+    testHelperService.updateParticipant(firstParticipant);
     
     Awaitility
       .await()

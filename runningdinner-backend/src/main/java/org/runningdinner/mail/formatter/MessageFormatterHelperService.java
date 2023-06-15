@@ -104,7 +104,7 @@ public class MessageFormatterHelperService {
 
     List<String> notes = mealSpecificsList
         .stream()
-        .map(MealSpecifics::getNote)
+        .map(MealSpecifics::getMealSpecificsNote)
         .filter(StringUtils::isNotBlank)
         .collect(Collectors.toList());
 

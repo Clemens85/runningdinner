@@ -7,13 +7,13 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.participant.partnerwish.TeamPartnerWish;
-import org.runningdinner.participant.partnerwish.TeamPartnerWishState;
+import org.runningdinner.participant.partnerwish.TeamPartnerWishInvitationState;
 
 public class TeamPartnerWishTO {
 
   private boolean relevant = false;
   
-  private TeamPartnerWishState state;
+  private TeamPartnerWishInvitationState state;
 
   private ParticipantTO subscribedParticipant;
 
@@ -23,7 +23,7 @@ public class TeamPartnerWishTO {
 
   }
 
-  public TeamPartnerWishState getState() {
+  public TeamPartnerWishInvitationState getState() {
 
     return state;
   }
@@ -42,7 +42,7 @@ public class TeamPartnerWishTO {
     return relevant;
   }
 
-  public static TeamPartnerWishTO newFromTeamPartnerWish(TeamPartnerWish teamPartnerWish, List<TeamPartnerWishState> relevantStatesList) {
+  public static TeamPartnerWishTO newFromTeamPartnerWish(TeamPartnerWish teamPartnerWish, List<TeamPartnerWishInvitationState> relevantStatesList) {
 
     TeamPartnerWishTO result = new TeamPartnerWishTO();
     if (teamPartnerWish.getMatchingParticipant() != null) {
@@ -53,7 +53,7 @@ public class TeamPartnerWishTO {
     }
     result.state = teamPartnerWish.getState();
 
-    Set<TeamPartnerWishState> relevantStates = Collections.emptySet();
+    Set<TeamPartnerWishInvitationState> relevantStates = Collections.emptySet();
     if (CollectionUtils.isNotEmpty(relevantStatesList)) {
       relevantStates = new HashSet<>(relevantStatesList);
     }

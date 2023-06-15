@@ -2,6 +2,7 @@
 package org.runningdinner.participant;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Access;
@@ -77,13 +78,14 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
   private boolean host;
 
   @Embedded
-  @AttributeOverride(name = "note", column = @Column(name = "mealspecificsnote"))
+  @AttributeOverride(name = "mealSpecificsNote", column = @Column(name = "mealspecificsnote"))
   private MealSpecifics mealSpecifics = new MealSpecifics();
 
   @Column(length = 512)
   private String notes;
 
-  private String teamPartnerWish;
+  @Column(name = "teamPartnerWish")
+  private String teamPartnerWishEmail;
   
   private LocalDateTime activationDate;
   
@@ -96,6 +98,9 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
   private Team team;
 
   private UUID teamId;
+  
+  @Column(columnDefinition = "uuid references runningdinner.Participant")
+  private UUID teamPartnerWishOriginatorId;
 
   @Embedded
   private GeocodingResult geocodingResult = new GeocodingResult();
@@ -275,14 +280,14 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     this.notes = notes;
   }
 
-  public String getTeamPartnerWish() {
+  public String getTeamPartnerWishEmail() {
 
-    return StringUtils.trim(teamPartnerWish);
+    return StringUtils.trim(teamPartnerWishEmail);
   }
 
-  public void setTeamPartnerWish(String teamPartnerWish) {
+  public void setTeamPartnerWishEmail(String teamPartnerWishEmail) {
 
-    this.teamPartnerWish = StringUtils.trim(teamPartnerWish);
+    this.teamPartnerWishEmail = StringUtils.trim(teamPartnerWishEmail);
   }
 
   public Team getTeam() {
@@ -342,6 +347,23 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     this.geocodingResult = geocodingResult;
   }
 
+  public UUID getTeamPartnerWishOriginatorId() {
+    return teamPartnerWishOriginatorId;
+  }
+
+  public void setTeamPartnerWishOriginatorId(UUID teamPartnerWishOriginatorId) {
+    this.teamPartnerWishOriginatorId = teamPartnerWishOriginatorId;
+  }
+
+  public boolean isTeamPartnerWishRegistratonRoot() {
+    return teamPartnerWishOriginatorId != null && getId() != null && Objects.equals(getTeamPartnerWishOriginatorId(), getId());
+  }
+  
+  public boolean isTeamPartnerWishRegistrationChildOf(Participant other) {
+    return Objects.equals(other.getTeamPartnerWishOriginatorId(), this.getId()) ||
+           Objects.equals(this.getTeamPartnerWishOriginatorId(), other.getId());
+  }
+  
   @Override
   public int hashCode() {
 
@@ -399,10 +421,11 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     result.setName(getName().createDetachedClone());
     result.setNotes(getNotes());
     result.setNumSeats(getNumSeats());
-    result.setTeamPartnerWish(getTeamPartnerWish());
+    result.setTeamPartnerWishEmail(getTeamPartnerWishEmail());
     result.setActivatedBy(getActivatedBy());
     result.setActivationDate(getActivationDate());
     result.setGeocodingResult(new GeocodingResult(getGeocodingResult()));
+    result.setTeamPartnerWishOriginatorId(getTeamPartnerWishOriginatorId());
     return result;
   }
 

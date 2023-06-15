@@ -54,7 +54,8 @@ export const CONSTANTS = {
 
   "VALIDATION_ISSUE_CONSTANTS": {
     "TEAM_NO_TEAM_MEMBERS_LEFT": "team_no_team_members_left",
-    "PARTICIPANT_ASSINGED_IN_TEAM": "participant_assigned_in_team"
+    "PARTICIPANT_ASSINGED_IN_TEAM": "participant_assigned_in_team",
+    "INVALID_TEAM_MEMBER_CANCELLATION_ROOT_TEAMPARTNER": "invalid_team_member_cancellation_root_teampartner"
   },
 
   "ACTIVITY": {

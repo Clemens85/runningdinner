@@ -30,6 +30,7 @@ import org.runningdinner.participant.WaitingListAction;
 import org.runningdinner.participant.WaitingListActionResult;
 import org.runningdinner.participant.WaitingListData;
 import org.runningdinner.participant.WaitingListService;
+import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamParticipantsAssignmentTO;
 import org.runningdinner.participant.rest.TeamTO;
@@ -244,9 +245,9 @@ public class WaitingListServiceTest {
   
   private void addParticipants(int numParticipantsToGenerate, int participantOffsetIndex) {
   	
-		ParticipantGenerator
-			.generateParticipants(numParticipantsToGenerate, participantOffsetIndex)
-			.forEach(p -> participantService.addParticipant(runningDinner, p, false));
+	ParticipantGenerator
+	  .generateParticipants(numParticipantsToGenerate, participantOffsetIndex)
+	  .forEach(p -> participantService.addParticipant(runningDinner, new ParticipantInputDataTO(p), false));
   }
 
   private void sendTeamMessages() {

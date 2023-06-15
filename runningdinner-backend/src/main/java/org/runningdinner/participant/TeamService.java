@@ -115,7 +115,7 @@ public class TeamService {
   	return configuration.getTeamSize() > team.getTeamMembers().size();
 	}
 
-	public TeamMeetingPlan findTeamMeetingPlan(@ValidateAdminId String adminId, UUID teamId) {
+  public TeamMeetingPlan findTeamMeetingPlan(@ValidateAdminId String adminId, UUID teamId) {
 
     Team team = teamRepository.findWithVisitationPlanByIdAndAdminId(teamId, adminId);
     Set<Team> hostTeamReferencess = team.getHostTeams();
@@ -242,7 +242,7 @@ public class TeamService {
   }
   
   private List<Team> createTeamsAndVisitationPlan(RunningDinner runningDinner, 
-  																							  List<TeamTO> existingTeamInfosToRestore) {
+  												  List<TeamTO> existingTeamInfosToRestore) {
     
     List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
 
@@ -250,8 +250,9 @@ public class TeamService {
     LOGGER.info("Generating teams for {}", runningDinner);
     List<Team> regularTeams;
     try {
-    	GeneratedTeamsResult result = generateTeamPlan(runningDinner.getConfiguration(), existingTeamInfosToRestore, participants);
-    	regularTeams = result.getRegularTeams();
+      GeneratedTeamsResult result = generateTeamPlan(runningDinner.getConfiguration(), existingTeamInfosToRestore,
+          participants);
+      regularTeams = result.getRegularTeams();
     } catch (NoPossibleRunningDinnerException e) {
       throw new ValidationException(new IssueList(new Issue("dinner_not_possible", IssueType.VALIDATION)));
     }
@@ -272,7 +273,7 @@ public class TeamService {
     return savedTeams;
   }
   
-	private TeamArrangementListTO newTeamArrangementList(List<Team> teams, String adminId) {
+  private TeamArrangementListTO newTeamArrangementList(List<Team> teams, String adminId) {
 
     List<TeamTO> teamTOs = teams
             .stream()
@@ -504,6 +505,9 @@ public class TeamService {
     LOGGER.debug("Try to assign new hoster to team {}", team.getTeamNumber());
 
     for (Participant teamMember : teamMembers) {
+      
+      Assert.state(teamMember.getTeamPartnerWishOriginatorId() == null, "Cannot update team host of team with fixed team partner wish registration");
+      
       if (teamMember.isSameId(newHostingParticipantId)) {
         if (!teamMember.isHost()) { // Prevent unnecessary SQL update if this participant was already the host
           teamMember.setHost(true);
@@ -550,7 +554,8 @@ public class TeamService {
       checkSizeOfReplacementParticipantIds(replacementParticipantIds, team);
 
       List<Participant> replacementParticipants = participantService.findParticipantsByIds(adminId, replacementParticipantIds);
-
+      checkReplacementNotDestroyingTeamPartnerRegistration(adminId, team, replacementParticipants);
+      
       team.setTeamMembers(new HashSet<>(replacementParticipants));
       runningDinnerCalculator.setHostingParticipant(team, runningDinner.getConfiguration());
 
@@ -576,6 +581,23 @@ public class TeamService {
     return result;
   }
 
+  private void checkReplacementNotDestroyingTeamPartnerRegistration(String adminId, Team team, List<Participant> replacementParticipants) {
+
+    if (!ParticipantService.hasConsistentTeamPartnerWishRegistration(replacementParticipants)) {
+      throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH, IssueType.VALIDATION)));
+    }
+
+    List<Participant> participantsWithTeamPartnerWishOriginatorId = replacementParticipants
+                                                                      .stream()
+                                                                      .filter(p -> p.getTeamPartnerWishOriginatorId() != null)
+                                                                      .collect(Collectors.toList());
+    if (participantsWithTeamPartnerWishOriginatorId.size() == 1) {
+      // This means that we have try to use an participant as replacement-participant with a fixed team partner wish, and that there must be another participant that
+      // won't be assigned (replaced) in the team, which would yield into an inconsistency.
+      throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH, IssueType.VALIDATION)));
+    }
+
+  }
 
   protected void emitTeamCancelledEvent(final TeamCancellationResult teamCancellationResult, final RunningDinner runningDinner) {
 
@@ -604,6 +626,15 @@ public class TeamService {
                                       .findAny()
                                       .orElseThrow(() -> new IllegalStateException("Could not find participant " + participantId + " in " + team));
 
+    if (teamMemberToCancel.getTeamPartnerWishOriginatorId() != null) {
+      if (teamMemberToCancel.isTeamPartnerWishRegistratonRoot()) {
+        throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_TEAM_MEMBER_CANCELLATION_ROOT_TEAMPARTNER, IssueType.VALIDATION)));
+      } else {
+        participantService.clearTeamPartnerWishOriginatorOfRootParticipant(adminId, teamMemberToCancel.getTeamPartnerWishOriginatorId());
+      }
+    }
+
+    
     final boolean needNewTeamHost = team.getHostTeamMember().isSameId(teamMemberToCancel.getId());
     
     participantRepository.delete(teamMemberToCancel);

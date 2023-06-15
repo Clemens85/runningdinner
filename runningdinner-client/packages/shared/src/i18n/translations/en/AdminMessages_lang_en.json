@@ -35,6 +35,7 @@
 	"dashboard": "Dashboard",
 	"deactivate_registration": "Deactivate registration",
 	"deactivate_registration_confirmation_text": "Do you really want to deactivate the registration of your event? By doing so, no new participants can sign up any longer (you can however still add participants manually).",
+	"delete_participant_success_message": "Successfully deleted {{ fullname }}",
 	"dinner_not_possible": "With the current settings and participants it is not possible to create a running dinner event. Most like there exist too few participants.",
 	"dismiss_save": "Dismiss changes",
 
@@ -258,13 +259,24 @@
 	"teams_selection": "Team selection",
 	"teams_show_dinnerroute": "Show dinner route",
 	"teams_modified_waitinglist_message_headline": "Team Changes by waitinglist",
-	"team_swap_violates_team_partner_wish": "The swap of those team members would violate at least one team partner wish and is hence blocked. If you really want to perform this action, then you have to remove the respective team partner wishes of the affected participants",
+	"team_swap_violates_team_partner_wish": "The swap of those team members would violate at least one team partner wish and is hence blocked. If you really want to perform this action, then you have to remove the respective team partner wishes of the affected participants.",
 	"time_schedule": "Time schedule",
 	"time_schedule_edit": "Edit time schedule",
 	"transfer": "Transfer",
 
-	"waitinglist_management": "Waitinglist management",
+	"team_partner_wish_registration_delete_child": "<strong>{{ fullname }}</strong> was registered as a fixed team partner by <strong>{{ root_fullname }}</strong>. Deleting automatically cancels this team partner request.",
+	"team_partner_wish_registration_delete_root": "<strong>{{ fullname }}</strong> registered <strong>{{ child_fullname }}</strong> as a fixed team partner request, thus <strong>{{ child_fullname }}</strong> will also automatically be deleted.",
+	"team_partner_wish_registration_change_teamhost_not_possible": "The host cannot be changed for this team, as it is a permanently registered fixed team, with only one given address.",
+	"team_partner_wish_registration_child_participant_child_info_1": "<anchor>{{ fullname }}</anchor> was registered as fixed team partner.",
+	"team_partner_wish_registration_child_participant_child_info_2": "All address- and contact-data can therefore be found with {{ fullname }}.",
+	"team_partner_wish_registration_child_participant_root_info_1": "Registered by {{ fullname }} as fixed team partner.",
+	"team_partner_wish_registration_child_participant_root_info_2": "The address- and contact-data can be found with <anchor>{{ fullname }}</anchor>, due to the registration was performeed by this participant.",
+	"team_partner_wish_registration_fulfilled": "Team partner wish fulfilled by registration",
+	"team_partner_wish_fulfilled": "Team partner wish fulfilled",
+	"team_partner_wish_invitation_not_found": "No participant can be assigned with the given team partner wish Email.",
+	"team_partner_wish_invitation_found": "Participant with given team partner wish email registered.",
 
+	"waitinglist_management": "Waitinglist management",
 	"waitinglist_assign_participants_teams": "Fill up teams with participants from the waitinglist",
 	"waitinglist_assign_participants_teams_success": "Teams filled up by selected participants!",
 	"waitinglist_assign_participants_teams_select_hint": "(Select the participants you want to add to this team)",
@@ -301,7 +313,7 @@
 	"waitinglist_notification_teams_continue_without_messages": "Continue without sending notifications",
 
 	"invalid_size_waitinglist_participants_to_assign": "Please select the participants you would like to fill the teams with",
-	"invalid_size_waitinglist_participants_to_generate_teams_too_few": "You have selected too few participants"
-
-
+	"invalid_size_waitinglist_participants_to_generate_teams_too_few": "You have selected too few participants",
+	"invalid_team_member_cancellation_root_teampartner": "You cannot remove {{ fullname }}, because {{ fullname }} has registered this team as a fixed cooking team. Instead, you must remove or cancel the entire team.",
+	"invalid_replacement_participants_inconsistent_teampartner_wish": "The selected participants cannot be used, as this will prevent at least one team partner request from being fulfilled."
 }

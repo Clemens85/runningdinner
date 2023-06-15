@@ -3,6 +3,7 @@ import {Controller, useFormContext} from "react-hook-form";
 import TextField, {TextFieldProps} from "@material-ui/core/TextField";
 import {styled} from "@material-ui/core";
 import {spacing} from "@material-ui/system";
+import get from "lodash/get";
 
 export type FormTextFieldProps = Omit<TextFieldProps, "name"> & {
   name: string;
@@ -14,11 +15,13 @@ const FormTextFieldInternal = ({name, label, defaultValue, ...other}: FormTextFi
 
   const {control, errors} = useFormContext();
 
-  const hasErrors = !!errors[name];
   let helperText = other.helperText;
+  let hasErrors = false;
 
-  if (hasErrors) {
-    helperText = errors[name].message;
+  const errorMessageObj = get(errors, name, undefined);
+  if (errorMessageObj) {
+    helperText = errorMessageObj.message;
+    hasErrors = true;
   }
 
   return (

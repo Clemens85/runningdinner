@@ -20,7 +20,7 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.RunningDinnerInfo;
-import org.runningdinner.frontend.rest.RegistrationDataV2TO;
+import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.mailserversettings.MailServerSettingsImpl;
 import org.runningdinner.participant.Participant;
@@ -57,9 +57,9 @@ public class TestUtil {
     return result;
   }
 
-  public static RegistrationDataV2TO createRegistrationData(String fullname, String email, ParticipantAddress address, int numberOfSeats) {
+  public static RegistrationDataTO createRegistrationData(String fullname, String email, ParticipantAddress address, int numberOfSeats) {
 
-    RegistrationDataV2TO registrationData = new RegistrationDataV2TO();
+    RegistrationDataTO registrationData = new RegistrationDataTO();
     registrationData.setEmail(email);
     ParticipantName participantName = ParticipantName.newName().withCompleteNameString(fullname);
     registrationData.setFirstnamePart(participantName.getFirstnamePart());
@@ -145,9 +145,9 @@ public class TestUtil {
                                                              boolean markParticipantActivated) {
     
     teamMembers.get(idx1).setEmail(email1);
-    teamMembers.get(idx1).setTeamPartnerWish(email2);
+    teamMembers.get(idx1).setTeamPartnerWishEmail(email2);
     teamMembers.get(idx2).setEmail(email2);
-    teamMembers.get(idx2).setTeamPartnerWish(email1);
+    teamMembers.get(idx2).setTeamPartnerWishEmail(email1);
     List<Participant> result = Arrays.asList(teamMembers.get(idx1), teamMembers.get(idx2));
     if (markParticipantActivated) {
       result.stream().forEach(p -> { 

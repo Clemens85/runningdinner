@@ -4,10 +4,10 @@ import org.runningdinner.participant.Participant;
 
 public class ParticipantWithListNumberTO extends ParticipantTO {
 
-	private static final long serialVersionUID = 1L;
-	
-	private int listNumber;
-	
+  private static final long serialVersionUID = 1L;
+
+  private int listNumber;
+
   protected ParticipantWithListNumberTO() {
   	// NOP
   }
@@ -17,8 +17,8 @@ public class ParticipantWithListNumberTO extends ParticipantTO {
     this.listNumber = listNumber;
   }
 
-	public int getListNumber() {
-		return listNumber;
-	}
+  public int getListNumber() {
+    return listNumber;
+  }
 
 }
