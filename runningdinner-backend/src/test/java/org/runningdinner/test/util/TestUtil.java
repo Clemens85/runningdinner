@@ -8,11 +8,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.runningdinner.admin.rest.BasicSettingsTO;
 import org.runningdinner.contract.Contract;
+import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RegistrationType;
@@ -27,7 +29,9 @@ import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamCancellation;
 import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.rest.TeamParticipantsAssignmentTO;
 import org.runningdinner.wizard.BasicDetailsTO;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 
@@ -170,4 +174,24 @@ public class TestUtil {
     }
     throw new RuntimeException("Team with " + teamMemberEmail + " not found in " + teams);
   }
+
+  public static TeamParticipantsAssignmentTO newTeamParticipantsAssignment(Team team, Participant...participants) {
+  	
+  	TeamParticipantsAssignmentTO result = new TeamParticipantsAssignmentTO();
+  	result.setTeamId(team.getId());
+  	result.setParticipantIds(new ArrayList<>(IdentifierUtil.getIds(Arrays.asList(participants))));
+  	return result;
+  }
+
+  public static TeamCancellation newCancellationWithoutReplacement(Team team) {
+  	
+  	TeamCancellation result = new TeamCancellation();
+  	result.setTeamId(team.getId());
+  	result.setDryRun(false);
+  	result.setReplaceTeam(false);
+  	return result;
+  }
+  
+  
+  
 }

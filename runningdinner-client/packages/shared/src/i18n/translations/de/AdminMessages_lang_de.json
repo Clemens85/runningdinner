@@ -316,5 +316,6 @@
 	"invalid_size_waitinglist_participants_to_assign": "Bitte wähle Teilnehmer aus mit denen du die Teams auffüllen möchtest",
 	"invalid_size_waitinglist_participants_to_generate_teams_too_few": "Du hast zu wenige Teilenhmer ausgewählt",
 	"invalid_team_member_cancellation_root_teampartner": "Du kannst {{ fullname }} nicht entfernen, da {{ fullname }} dieses Team als festes Koch-Paar angemeldet hat. Stattdessen musst du das ganze Team entfernen bzw. absagen.",
-	"invalid_replacement_participants_inconsistent_teampartner_wish": "Die ausgewählten Teilnehmer können nicht verwendet werden, da hierdurch mindestens ein Teampartner-Wunsch nicht mehr erfüllt werden kann."
+	"invalid_replacement_participants_inconsistent_teampartner_wish": "Die ausgewählten Teilnehmer können nicht verwendet werden, da hierdurch mindestens ein Teampartner-Wunsch nicht mehr erfüllt werden kann.",
+	"invalid_waitinglist_teamgeneration_inconsistent_teampartner_wish": "Die ausgewählten Teilnehmer können nicht verwendet werden, da hierdurch mindestens ein Teampartner-Wunsch nicht mehr erfüllt werden kann. Ändere bitte deine Auswahl."
 }

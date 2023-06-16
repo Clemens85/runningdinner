@@ -4,11 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,6 +38,8 @@ import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellation;
 import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.WaitingListService;
+import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
 import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.runningdinner.test.util.ApplicationTest;
@@ -75,6 +79,9 @@ public class TeamPartnerRegistrationTest {
   @Autowired
   private TeamService teamService;
 
+  @Autowired
+  private WaitingListService waitingListService;
+  
   private MailSenderMockInMemory mailSenderInMemory;
   
   private RunningDinner runningDinner;
@@ -324,6 +331,122 @@ public class TeamPartnerRegistrationTest {
     }
   }
   
+  @Test
+  public void waitingListAssignment() {
+    
+    String adminId = runningDinner.getAdminId();
+    
+    List<Participant> existingParticipants = ParticipantGenerator.generateParticipants(18);
+    createRunningDinnerWizardService.saveAndActivateParticipantsToDinner(runningDinner, existingParticipants);
+
+    TeamArrangementListTO teamGenerationResult = teamService.createTeamAndVisitationPlans(adminId);
+    UUID firstTeamId = teamGenerationResult.getTeams().get(0).getId();
+    Team firstTeam = teamService.findTeamByIdWithTeamMembers(adminId, firstTeamId);
+    
+    Participant rootParticipant = registerParticipantsAsFixedTeam();
+    Participant childParticipant = participantRepository.findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(rootParticipant.getTeamPartnerWishOriginatorId(), rootParticipant.getId(), adminId);
+    
+    firstTeam = teamService.cancelTeamMember(adminId, firstTeamId, firstTeam.getHostTeamMember().getId());
+    assertThat(firstTeam.getTeamMembersOrdered()).hasSize(1);  
+    
+    try {
+      waitingListService.assignParticipantsToExistingTeams(adminId, List.of(TestUtil.newTeamParticipantsAssignment(firstTeam, rootParticipant)));
+      Assert.fail("Expected ValidationExcpetion to be thrown");
+    } catch (ValidationException e) {
+      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH);
+    }
+    
+    try {
+      waitingListService.assignParticipantsToExistingTeams(adminId, List.of(TestUtil.newTeamParticipantsAssignment(firstTeam, childParticipant)));
+      Assert.fail("Expected ValidationExcpetion to be thrown");
+    } catch (ValidationException e) {
+      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH);
+    }
+    
+    teamService.cancelTeam(adminId, TestUtil.newCancellationWithoutReplacement(firstTeam));
+    firstTeam = teamService.findTeamByIdWithTeamMembers(adminId, firstTeamId);
+    assertThat(firstTeam.getTeamMembersOrdered()).isEmpty();
+      
+    waitingListService.assignParticipantsToExistingTeams(adminId, List.of(TestUtil.newTeamParticipantsAssignment(firstTeam, rootParticipant, childParticipant)));
+
+    firstTeam = teamService.findTeamByIdWithTeamMembers(adminId, firstTeamId);
+    assertThat(firstTeam.getTeamMembersOrdered()).containsExactly(rootParticipant, childParticipant);
+    assertThat(firstTeam.getHostTeamMember()).isEqualTo(rootParticipant);
+  }
+  
+  @Test
+  public void waitingListAddTeams() {
+    
+    String adminId = runningDinner.getAdminId();
+    
+    List<Participant> existingParticipants = ParticipantGenerator.generateParticipants(18);
+    createRunningDinnerWizardService.saveAndActivateParticipantsToDinner(runningDinner, existingParticipants);
+
+    teamService.createTeamAndVisitationPlans(adminId);
+    
+    Participant rootParticipant = registerParticipantsAsFixedTeam();
+    Participant childParticipant = participantRepository.findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(rootParticipant.getTeamPartnerWishOriginatorId(), rootParticipant.getId(), adminId);
+ 
+    // We have now 18 participants (arranged in teams) + 2 added participants (with teampartner registration) == 20 in total
+    // Add 5 other participants, so that we get 25 particants in total
+    List<Participant> otherParticipants = ParticipantGenerator.generateParticipants(5, 21);
+    createRunningDinnerWizardService.saveAndActivateParticipantsToDinner(runningDinner, otherParticipants);
+
+    List<ParticipantTO> otherParticipantsForTeamGeneration = otherParticipants
+                                                              .stream()
+                                                              .map(p -> new ParticipantTO(p))
+                                                              .collect(Collectors.toList());
+    
+    List<ParticipantTO> generateNewTeamsParticipantList = new ArrayList<>(otherParticipantsForTeamGeneration);
+    generateNewTeamsParticipantList.add(new ParticipantTO(rootParticipant));
+    try {
+      waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
+      Assert.fail("Expected ValidationException");
+    } catch (ValidationException e) {
+      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
+    }
+    
+    
+    generateNewTeamsParticipantList = new ArrayList<>(otherParticipantsForTeamGeneration);
+    generateNewTeamsParticipantList.add(new ParticipantTO(childParticipant));
+    try {
+      waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
+      Assert.fail("Expected ValidationException");
+    } catch (ValidationException e) {
+      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
+    }
+    
+    // Register other fixed team:
+    Participant otherRootParticipant = registerOtherParticipantsAsFixedTeam();
+    Participant otherChildParticipant = participantRepository.findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(otherRootParticipant.getTeamPartnerWishOriginatorId(), otherRootParticipant.getId(), adminId);
+  
+    // Try to generate out with one matching fixed teampartner registration (but with another one contianing only root participant) which should fail:
+    generateNewTeamsParticipantList = otherParticipantsForTeamGeneration.subList(0, 3);
+    generateNewTeamsParticipantList.addAll(List.of(new ParticipantTO(rootParticipant), new ParticipantTO(childParticipant), new ParticipantTO(otherRootParticipant)));
+    try {
+      waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
+      Assert.fail("Expected ValidationException");
+    } catch (ValidationException e) {
+      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
+    }
+  
+    
+    // Mix now both fixed team partner registrations and 2 normal participants, which should work:
+    generateNewTeamsParticipantList = otherParticipantsForTeamGeneration.subList(0, 2);
+    generateNewTeamsParticipantList.addAll(List.of(new ParticipantTO(rootParticipant), new ParticipantTO(childParticipant), 
+                                                   new ParticipantTO(otherChildParticipant), new ParticipantTO(otherRootParticipant)));
+    
+    waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
+    assertThat(teamService.findTeamArrangements(adminId, false)).hasSize(9 + 3);
+   
+    List<Participant> remainingParticipants = participantService.findActiveParticipantsNotAssignedToTeam(adminId);
+    assertThat(remainingParticipants).hasSize(3);
+    assertThat(remainingParticipants)
+      .extracting("teamPartnerWishOriginatorId")
+      .allMatch(teamPartnerWishOriginatorId -> teamPartnerWishOriginatorId == null);
+  }
+  
+  
   private Participant registerParticipantsAsFixedTeam() {
     
     // Register (and activate) fixed team
@@ -332,6 +455,19 @@ public class TeamPartnerRegistrationTest {
     frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
     
     Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), "max@muster.de")
+        .get(0);
+    return participantService.updateParticipantSubscription(rootParticipant.getId(), LocalDateTime.now(), true, runningDinner);
+  }
+  
+  
+  private Participant registerOtherParticipantsAsFixedTeam() {
+    
+    // Register (and activate) fixed team
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", "foo@bar.de", newAddress(), 6);
+    registrationData.setTeamPartnerWishRegistrationData(newTeamPartnerwithRegistrationData("Other", "Teampartner"));
+    frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
+    
+    Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), "foo@bar.de")
         .get(0);
     return participantService.updateParticipantSubscription(rootParticipant.getId(), LocalDateTime.now(), true, runningDinner);
   }

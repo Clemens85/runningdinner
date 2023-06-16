@@ -434,7 +434,10 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
       showSuccess(t("admin:waitinglist_generate_teams_success"));
       onSave(result);
     } catch (e) {
-      showHttpErrorDefaultNotification(e);
+      showHttpErrorDefaultNotification(e, {
+        showGenericMesssageOnValidationError: false,
+        showAllValidationErrorMessages: true
+      });
     }
   }
 

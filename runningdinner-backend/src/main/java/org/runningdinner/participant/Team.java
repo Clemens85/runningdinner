@@ -79,7 +79,7 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "teamId")
   @BatchSize(size = 30)
   @OrderBy("participantNumber")
-  protected Collection<Participant> teamMembers = new HashSet<>();
+  protected Set<Participant> teamMembers = new HashSet<>();
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @BatchSize(size = 30)

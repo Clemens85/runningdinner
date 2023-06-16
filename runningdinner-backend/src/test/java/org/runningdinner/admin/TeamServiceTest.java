@@ -85,7 +85,7 @@ public class TeamServiceTest {
     assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
     Set<Participant> oldTeamMembers = team.getTeamMembers();
 
-    TeamCancellation teamCancellation = newCancellationWithoutReplacement(team); 
+    TeamCancellation teamCancellation = TestUtil.newCancellationWithoutReplacement(team); 
 
     TeamCancellationResult result = teamService.cancelTeam(runningDinner.getAdminId(), teamCancellation);
     assertTeamCancellationResultWithoutNotification(result, oldTeamMembers);
@@ -415,19 +415,10 @@ public class TeamServiceTest {
 		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
 			.containsExactly(firstTeam);
 		
-		teamService.cancelTeam(adminId, newCancellationWithoutReplacement(lastTeam));
+		teamService.cancelTeam(adminId, TestUtil.newCancellationWithoutReplacement(lastTeam));
 		
 		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
 			.containsExactly(firstTeam, lastTeam);
-  }
-  
-  private TeamCancellation newCancellationWithoutReplacement(Team team) {
-  	
-  	TeamCancellation result = new TeamCancellation();
-  	result.setTeamId(team.getId());
-  	result.setDryRun(false);
-  	result.setReplaceTeam(false);
-  	return result;
   }
   
   private Team findFirstTeam() {

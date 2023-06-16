@@ -315,5 +315,6 @@
 	"invalid_size_waitinglist_participants_to_assign": "Please select the participants you would like to fill the teams with",
 	"invalid_size_waitinglist_participants_to_generate_teams_too_few": "You have selected too few participants",
 	"invalid_team_member_cancellation_root_teampartner": "You cannot remove {{ fullname }}, because {{ fullname }} has registered this team as a fixed cooking team. Instead, you must remove or cancel the entire team.",
-	"invalid_replacement_participants_inconsistent_teampartner_wish": "The selected participants cannot be used, as this will prevent at least one team partner request from being fulfilled."
+	"invalid_replacement_participants_inconsistent_teampartner_wish": "The selected participants cannot be used, as this will prevent at least one team partner request from being fulfilled.",
+	"invalid_waitinglist_teamgeneration_inconsistent_teampartner_wish": "The selected participants cannot be used, as this will prevent at least one team partner request from being fulfilled. Please change your selection."
 }

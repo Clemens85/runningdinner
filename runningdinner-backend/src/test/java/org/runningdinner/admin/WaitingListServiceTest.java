@@ -3,7 +3,6 @@ package org.runningdinner.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +35,7 @@ import org.runningdinner.participant.rest.TeamParticipantsAssignmentTO;
 import org.runningdinner.participant.rest.TeamTO;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
+import org.runningdinner.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -83,7 +83,7 @@ public class WaitingListServiceTest {
 		List<Participant> participantsOnWaitingList = participantService.findActiveParticipantsNotAssignedToTeam(adminId);
   	Participant firstParticipantOnWaitingList = participantsOnWaitingList.get(0);
     List<TeamParticipantsAssignmentTO> assignments = Arrays
-        .asList(newTeamParticipantsAssignment(firstTeam, firstParticipantOnWaitingList));
+        .asList(TestUtil.newTeamParticipantsAssignment(firstTeam, firstParticipantOnWaitingList));
 
 		WaitingListActionResult result = waitingListService.assignParticipantsToExistingTeams(adminId, assignments);
 		
@@ -235,14 +235,6 @@ public class WaitingListServiceTest {
 		teamService.createTeamAndVisitationPlans(adminId);
   }
 
-  private TeamParticipantsAssignmentTO newTeamParticipantsAssignment(Team team, Participant...participants) {
-  	
-  	TeamParticipantsAssignmentTO result = new TeamParticipantsAssignmentTO();
-  	result.setTeamId(team.getId());
-  	result.setParticipantIds(new ArrayList<>(IdentifierUtil.getIds(Arrays.asList(participants))));
-  	return result;
-  }
-  
   private void addParticipants(int numParticipantsToGenerate, int participantOffsetIndex) {
   	
 	ParticipantGenerator

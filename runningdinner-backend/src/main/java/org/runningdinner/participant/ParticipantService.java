@@ -479,6 +479,15 @@ public class ParticipantService {
     				.collect(Collectors.toList());
   }
   
+
+  public static List<Participant> filterParticipantsWithTeamPartnerRegistration(List<Participant> participants) {
+
+    return participants
+            .stream()
+            .filter(p -> p.getTeamPartnerWishOriginatorId() != null)
+            .collect(Collectors.toList());
+  }
+  
   public static boolean hasConsistentTeamPartnerWishRegistration(List<Participant> participants) {
     if (CollectionUtils.isEmpty(participants) || participants.size() == 1) {
       return true;
@@ -588,5 +597,6 @@ public class ParticipantService {
     participantRepository.save(teamPartnerWish);
     return participantRepository.save(participant);
   }
+
 
 }
