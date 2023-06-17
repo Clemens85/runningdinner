@@ -1,6 +1,7 @@
 import {
-  BackendIssue,
-  isNumSeatsPositiveIntegerOrEmpty, newHttpError,
+  isNumSeatsPositiveIntegerOrEmpty,
+  newHttpError,
+  ParticipantActivationResult,
   PublicRunningDinner,
   PublicRunningDinnerList,
   RegistrationSummary, RunningDinnerSessionData
@@ -46,20 +47,14 @@ async function executePerformRegistrationRequest(publicDinnerId: string, registr
   return response.data;
 }
 
-export interface ParticipantActivationResult {
-  activationSucceeded: boolean;
-  validationIssue?: BackendIssue;
-}
-
 export async function activateSubscribedParticipant(publicDinnerId: string, participantId: string): Promise<ParticipantActivationResult> {
   const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/${participantId}/activate`);
   try {
-    await axios.put<void>(url, {});
-    return { activationSucceeded: true };
+    const response = await axios.put<ParticipantActivationResult>(url, {});
+    return response.data;
   } catch (e) {
     const backendValidationIssues = getBackendIssuesFromErrorResponse(e, true);
     return {
-      activationSucceeded: false,
       validationIssue: isArrayNotEmpty(backendValidationIssues) ? backendValidationIssues[0] : undefined
     };
   }

@@ -30,6 +30,8 @@ import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWish;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishInvitationState;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
+import org.runningdinner.participant.rest.ParticipantTO;
+import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,11 +141,16 @@ public class FrontendRunningDinnerService {
   }
 
   @Transactional
-  public Participant activateSubscribedParticipant(String publicDinnerId, UUID participantId) {
+  public ParticipantActivationResult activateSubscribedParticipant(String publicDinnerId, UUID participantId) {
 
     LocalDateTime now = LocalDateTime.now();
     RunningDinner runningDinner = findRunningDinnerByPublicId(publicDinnerId, now.toLocalDate());
-    return participantService.updateParticipantSubscription(participantId, now, true, runningDinner);
+    Participant activatedParticipant = participantService.updateParticipantSubscription(participantId, now, true, runningDinner);
+    if (activatedParticipant.isTeamPartnerWishRegistratonRoot()) {
+      Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), activatedParticipant);
+      return new ParticipantActivationResult(new ParticipantTO(activatedParticipant), new TeamPartnerWishRegistrationDataTO(childParticipant.getName()));
+    }
+    return new ParticipantActivationResult(new ParticipantTO(activatedParticipant));
   }
 
   public RunningDinnerSessionData findRunningDinnerSessionDataByPublicId(String publicDinnerId, Locale locale, LocalDate now) {

@@ -1,11 +1,13 @@
 package org.runningdinner.participant.rest;
 
+import java.util.Objects;
+
 import javax.validation.constraints.NotBlank;
 
-import com.google.common.base.MoreObjects;
 import org.hibernate.validator.constraints.SafeHtml;
+import org.runningdinner.participant.ParticipantName;
 
-import java.util.Objects;
+import com.google.common.base.MoreObjects;
 
 public class TeamPartnerWishRegistrationDataTO {
 
@@ -16,6 +18,15 @@ public class TeamPartnerWishRegistrationDataTO {
   @NotBlank
   @SafeHtml
   private String lastname;
+
+  protected TeamPartnerWishRegistrationDataTO() {
+    // JSON
+  }
+  
+  public TeamPartnerWishRegistrationDataTO(ParticipantName name) {
+    this.firstnamePart = name.getFirstnamePart();
+    this.lastname = name.getLastname();
+  }
 
   public String getFirstnamePart() {
     return firstnamePart;

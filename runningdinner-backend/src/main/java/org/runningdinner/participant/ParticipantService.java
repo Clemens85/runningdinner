@@ -335,8 +335,7 @@ public class ParticipantService {
 
   private void handleTeamPartnerWishRegistrationSubscription(RunningDinner runningDinner, Participant activatedParticipant) {
     if (activatedParticipant.isTeamPartnerWishRegistratonRoot()) {
-      UUID activatedParticipantId = activatedParticipant.getId();
-      Participant autoRegisteredTeamPartnerWish = participantRepository.findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(activatedParticipantId, activatedParticipantId, runningDinner.getAdminId());
+      Participant autoRegisteredTeamPartnerWish = findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), activatedParticipant); 
       if (autoRegisteredTeamPartnerWish == null) {
         LOGGER.warn("It seems like that auto-registered team partner wish with id {} of {} is not existing any longer in this dinner, which can occur in rare cases", 
                      activatedParticipant.getTeamPartnerWishOriginatorId(), activatedParticipant);    
@@ -424,7 +423,7 @@ public class ParticipantService {
     
     if (participant.getTeamPartnerWishOriginatorId() != null) {
       if (participant.isTeamPartnerWishRegistratonRoot()) {
-        Participant childParticipant = participantRepository.findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(participant.getTeamPartnerWishOriginatorId(), participantId, adminId);
+        Participant childParticipant = findChildParticipantOfTeamPartnerRegistration(adminId, participant);
         participantRepository.delete(childParticipant);
       } else {
         clearTeamPartnerWishOriginatorOfRootParticipant(adminId, participant.getTeamPartnerWishOriginatorId());
@@ -442,6 +441,14 @@ public class ParticipantService {
     Assert.state(participant.isTeamPartnerWishRegistratonRoot(), "clearTeamPartnerWishOriginatorId only allowed for root participant, but " + participant + " was not");
     participant.setTeamPartnerWishOriginatorId(null);
     return participantRepository.save(participant);
+  }
+  
+  public Participant findChildParticipantOfTeamPartnerRegistration(@ValidateAdminId String adminId, Participant participant) {
+    
+    Assert.state(participant.isTeamPartnerWishRegistratonRoot(), 
+                 "findChildParticipantOfTeamPartnerRegistration can only be called for participant that is root participant, but " + participant + " was not.");
+
+    return participantRepository.findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(participant.getTeamPartnerWishOriginatorId(), participant.getId(), adminId);
   }
   
   public static void removeTeamReferences(Collection<Participant> participants) {

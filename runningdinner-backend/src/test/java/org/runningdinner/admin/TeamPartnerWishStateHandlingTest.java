@@ -16,6 +16,7 @@ import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
+import org.runningdinner.frontend.ParticipantActivationResult;
 import org.runningdinner.frontend.RegistrationSummary;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.participant.Participant;
@@ -188,8 +189,8 @@ public class TeamPartnerWishStateHandlingTest {
     
     assertNoTeamPartnerWishMessageTask();
     
-    Participant fooBarParticipant = frontendRunningDinnerService.activateSubscribedParticipant(publicId, registrationSummary.getParticipant().getId());
-    String confirmationUrlPart = "/teampartnerwish/" + fooBarParticipant.getId().toString() + "?email=already%40subscribed.de";
+    ParticipantActivationResult activationResult = frontendRunningDinnerService.activateSubscribedParticipant(publicId, registrationSummary.getParticipant().getId());
+    String confirmationUrlPart = "/teampartnerwish/" + activationResult.getActivatedParticipant().getId().toString() + "?email=already%40subscribed.de";
 
     MessageTask messageTask = assertTeamPartnerWishMessageTask();
     assertThat(messageTask.getMessage().getSubject()).contains("Already Subscribed", dinnerDateAsStr);

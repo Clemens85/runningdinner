@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.runningdinner.admin.RunningDinnerSessionData;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
+import org.runningdinner.frontend.ParticipantActivationResult;
 import org.runningdinner.frontend.RegistrationSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -55,10 +56,10 @@ public class FrontendRunningDinnerServiceRest {
 	   
 
 	@RequestMapping(value = "/runningdinner/{publicDinnerId}/{participantId}/activate", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void activateSubscribedParticipant(@PathVariable("publicDinnerId") String publicDinnerId,
+	public ParticipantActivationResult activateSubscribedParticipant(@PathVariable("publicDinnerId") String publicDinnerId,
                                               @PathVariable("participantId") UUID participantId) {
 
-	  frontendRunningDinnerService.activateSubscribedParticipant(publicDinnerId, participantId);
+	  return frontendRunningDinnerService.activateSubscribedParticipant(publicDinnerId, participantId);
 	}
 
 	@GetMapping("/runningdinner/{publicDinnerId}/sessiondata")

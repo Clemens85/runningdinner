@@ -21,6 +21,9 @@ const LandingMessages_de: any = {
     registration_activation_congratulation_text: 'Herzlichen Glückwunsch, du hast soeben deine Registrierung erfolgreich abgeschlossen und bist damit bei ' +
       '<strong><anchor href="{{ publicDinnerUrl }}" target="_blank">{{ publicDinnerTitle }}</anchor></strong> dabei! ' +
       '<br/>Du wirst demnächst nähere Infos vom Veranstalter (<anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>) bekommen.',
+    registration_activation_with_teampartner_congratulation_text: 'Herzlichen Glückwunsch, du hast soeben deine Registrierung für dich und deinen Partner {{ fullname }} erfolgreich abgeschlossen und bist damit bei ' +
+        '<strong><anchor href="{{ publicDinnerUrl }}" target="_blank">{{ publicDinnerTitle }}</anchor></strong> dabei! ' +
+        '<br/>Du wirst demnächst nähere Infos vom Veranstalter (<anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>) bekommen.',
 
     registration_activation_error_title: 'Fehler bei Bestätigung',
     registration_activation_error_text: 'Leider ist ein Fehler beim Versuch der Bestätigung der Registrierung aufgetreten. ' +

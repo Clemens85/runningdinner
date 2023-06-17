@@ -474,10 +474,7 @@ public class TeamPartnerRegistrationTest {
   
   
   private TeamPartnerWishRegistrationDataTO newTeamPartnerwithRegistrationData(String firstname, String lastname) {
-    TeamPartnerWishRegistrationDataTO result = new TeamPartnerWishRegistrationDataTO();
-    result.setFirstnamePart(firstname);
-    result.setLastname(lastname);
-    return result;
+    return new TeamPartnerWishRegistrationDataTO(ParticipantName.newName().withFirstname(firstname).andLastname(lastname));
   }
 
   private ParticipantAddress newAddress() {

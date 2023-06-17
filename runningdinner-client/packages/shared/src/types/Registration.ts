@@ -1,4 +1,12 @@
-import {newEmptyParticipantInstance, TeamPartnerWishState, MealSpecifics, ParticipantFormModel} from ".";
+import {
+  newEmptyParticipantInstance,
+  TeamPartnerWishState,
+  MealSpecifics,
+  ParticipantFormModel,
+  Participant,
+  ParticipantName,
+  BackendIssue
+} from ".";
 import { isStringNotEmpty, TeamPartnerWishRegistrationData } from "..";
 
 export interface RegistrationData extends ParticipantFormModel {
@@ -23,6 +31,17 @@ export interface RegistrationSummary {
   teamPartnerWishState: TeamPartnerWishState;
   teamPartnerWishRegistrationData?: TeamPartnerWishRegistrationData;
   notes?: string;
+}
+
+export interface ParticipantActivationResult {
+  activatedParticipant?: Participant;
+  activatedTeamPartnerRegistration?: ParticipantName;
+  validationIssue?: BackendIssue;
+}
+
+export function isParticipantActivationSuccessful(activationResult?: ParticipantActivationResult): boolean {
+  return activationResult !== undefined && activationResult != null &&
+         activationResult.activatedParticipant !== undefined && activationResult.activatedParticipant != null;
 }
 
 export function newEmptyRegistrationDataInstance(invitingParticipantEmailAddress?: string, prefilledEmailAddress?: string): RegistrationData {

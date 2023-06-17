@@ -21,6 +21,10 @@ const LandingMessages_en: any = {
       '<strong><anchor href="{{ publicDinnerUrl }}" target="_blank">{{ publicDinnerTitle }}</anchor></strong>!<br/>Soon you will receive further ' +
       'information from the organizer (<anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>) of the event.',
 
+    registration_activation_with_teampartner_congratulation_text: 'Congratulations, you have successfully confirmed your registration for yourself and for your team partnner {{ fullname }} for ' +
+      '<strong><anchor href="{{ publicDinnerUrl }}" target="_blank">{{ publicDinnerTitle }}</anchor></strong>!<br/>Soon you will receive further ' +
+      'information from the organizer (<anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>) of the event.',
+
     registration_activation_error_title: 'Error during confirmation',
     registration_activation_error_text: 'Unfortunately there occurred an error during trying to confirm your registration. ' +
       'Please try it again later. <br/> ' +
