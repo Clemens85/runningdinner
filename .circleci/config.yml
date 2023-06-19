@@ -65,19 +65,15 @@ jobs:
 #          paths:
 #            - ~/.m2
 #          key: dependencies-{{ checksum "runningdinner-backend/pom.xml" }}
-      - run: cp runningdinner-backend/infrastructure/deployment/deploy.sh runningdinner-backend/target/deploy.sh
       - maven/process_test_results:
           test_results_path: runningdinner-backend/target/surefire-reports
       - run: cd runningdinner-backend/target && tar -cvzf runningdinner.tar.gz runningdinner-2.0.0.jar && cd -
       - store_artifacts:
           path: runningdinner-backend/target/runningdinner.tar.gz
-      - store_artifacts:
-          path: runningdinner-backend/target/deploy.sh
       - persist_to_workspace:
           root: runningdinner-backend/target
           paths:
             - runningdinner.tar.gz
-            - deploy.sh
             - extracted
 
   build_docker_image:
