@@ -13,11 +13,8 @@ import {
   CONSTANTS,
   Fullname,
   isTeamPartnerWishChild,
-  getTeamPartnerOptionOfTeam,
-  hasAllTeamMembersSameTeamPartnerWish
 } from "@runningdinner/shared";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import {useTranslation} from "react-i18next";
+import {TeamPartnerWishIcon} from "./TeamPartnerWishIcon";
 
 const useParticipantStyles = makeStyles(() => ({
   cellPadding: {
@@ -74,7 +71,7 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
           <TableCell>
             <ChangeTeamHostButton handleOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} hostTeamMember={hostTeamMember} isCancelled={isCancelled} />
           </TableCell>
-          <TableCell><TeamPartnerWishIcon team={team} /></TableCell>
+          <TableCell><TeamPartnerWishIcon team={team} showLabelAsTooltip={true} /></TableCell>
         </Hidden>
       </TableRow>
   );
@@ -133,23 +130,4 @@ function DragAnDroppableTeamMember({participant, onTeamMemberSwap}) {
         </div>
       </div>
   );
-}
-
-function TeamPartnerWishIcon({team}) {
-
-  const {t} = useTranslation("admin");
-
-  const teamPartnerOption = getTeamPartnerOptionOfTeam(team);
-  const hasSameTeamPartnerWish = hasAllTeamMembersSameTeamPartnerWish(team, teamPartnerOption);
-
-  if (!hasSameTeamPartnerWish) {
-    return null;
-  }
-
-  const tooltipLabel = t("admin:team_partner_wish_fulfilled");
-  return (
-    <Tooltip title={tooltipLabel} aria-label={tooltipLabel} placement="top-end">
-      <FavoriteBorderIcon color={"primary"} />
-    </Tooltip>
-  )
 }

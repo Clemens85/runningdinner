@@ -59,7 +59,7 @@ function ParticipantDetailCells({participant, runningDinnerSessionData}: Partici
           <TableCell colSpan={4}>
             {t("admin:team_partner_wish_registration_child_participant_root_info_1", { fullname: getFullname(participant.rootTeamPartnerWish!) })}
           </TableCell>
-          <TableCell><TeamPartnerWishIcon {...participant} /></TableCell>
+          <TableCell><ParticipantTeamPartnerWishIcon {...participant} /></TableCell>
         </>
       }
       { !teamPartnerWishChild &&
@@ -72,7 +72,7 @@ function ParticipantDetailCells({participant, runningDinnerSessionData}: Partici
           <TableCell>{email}</TableCell>
           <TableCell><AddressLocation {...participant} /></TableCell>
           <TableCell><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} /></TableCell>
-          { showTeamPartnerInfo && <TableCell><TeamPartnerWishIcon {...participant} /></TableCell> }
+          { showTeamPartnerInfo && <TableCell><ParticipantTeamPartnerWishIcon {...participant} /></TableCell> }
           { !showTeamPartnerInfo && <TableCell></TableCell> }
         </>
       }
@@ -80,7 +80,7 @@ function ParticipantDetailCells({participant, runningDinnerSessionData}: Partici
   );
 }
 
-function TeamPartnerWishIcon({teamPartnerWishOriginatorId, teamPartnerWishEmail, teamPartnerWishStateEmailInvitation}: ParticipantListable) {
+function ParticipantTeamPartnerWishIcon({teamPartnerWishOriginatorId, teamPartnerWishEmail, teamPartnerWishStateEmailInvitation}: ParticipantListable) {
 
   let iconColor: 'primary' | 'secondary' = "primary";
   let tooltipLabel;

@@ -37,6 +37,7 @@ import {
 import {useAdminNavigation} from "../AdminNavigationHook";
 import concat from "lodash/concat";
 import {useAsync} from "react-async-hook";
+import {TeamPartnerWishIcon} from "./TeamPartnerWishIcon";
 
 export interface TeamDetailsProps {
   team: Team;
@@ -131,6 +132,9 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
                   <cite><Span i18n="admin:team_replaced_text" /></cite>
                 </Box>
               </Grid> }
+
+            <TeamPartnerWishIcon team={team} showLabelAsTooltip={false} mt={1} />
+
           </Grid>
 
           { isCancelled ? <Box mt={2}><CancelledTeamMember /></Box>
