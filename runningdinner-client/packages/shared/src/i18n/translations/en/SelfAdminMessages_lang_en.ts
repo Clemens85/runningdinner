@@ -25,7 +25,10 @@ const SelfAdminMessages_en: any = {
 
   dinnerroute_title: 'Run Your Dinner - Dinner Route',
 
-  invalid_url: "The link you called does not seem to be valid (anymore). In case of doubt, please contact the organizer of your event or <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />"
+  invalid_url: "The link you called does not seem to be valid (anymore). In case of doubt, please contact the organizer of your event or <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />",
+
+  team_partner_wish_registration_change_teamhost_not_possible: "Since you have registered as a fixed cooking team and have only given one address, you cannot change hosts. " +
+    "If you want to adjust your address, please contact the event organizer."
 
 };
 export default SelfAdminMessages_en;

@@ -19,7 +19,7 @@ import org.runningdinner.common.exception.DinnerNotFoundException;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.frontend.rest.RegistrationDataV2TO;
+import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.test.util.ApplicationTest;
@@ -76,7 +76,7 @@ public class FrontendRunningDinnerTest {
   @Test
   public void testRegistrationValidationSuccessful() {
 
-    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
       ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
 
     RegistrationSummary result = frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, true);
@@ -86,7 +86,7 @@ public class FrontendRunningDinnerTest {
   @Test
   public void testRegistrationInvalidName() {
 
-	  RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
+	  RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
 	  ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
 
 	  registrationData.setFirstnamePart(null);
@@ -108,7 +108,7 @@ public class FrontendRunningDinnerTest {
     LocalDate tomorrow = LocalDate.now().plusDays(1);
     runningDinner = testHelperService.createPublicRunningDinner(tomorrow, 2);
 
-    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
       ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
 
     try {
@@ -122,7 +122,7 @@ public class FrontendRunningDinnerTest {
   @Test
   public void testRegistrationSuccess() {
 
-	RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
+	RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
 			ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
 	RegistrationSummary firstParticipant = frontendRunningDinnerService.performRegistration(publicDinnerId,
 			registrationData, false);
@@ -150,7 +150,7 @@ public class FrontendRunningDinnerTest {
   @Test
   public void testDuplicatedRegistration() {
 
-	  RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
+	  RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
       ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
     RegistrationSummary firstParticipant = frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
     checkRegistrationSummary(firstParticipant, 1);

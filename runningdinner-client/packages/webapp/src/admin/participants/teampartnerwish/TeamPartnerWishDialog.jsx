@@ -42,7 +42,7 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
   const renderTeamPartnerWishNotExisting = () => {
     return (
       <>
-        <Span i18n="admin:team_partner_wish_not_existing_text" parameters={{ teamPartnerWish: participant.teamPartnerWish }} html={true} /><br />
+        <Span i18n="admin:team_partner_wish_not_existing_text" parameters={{ teamPartnerWish: participant.teamPartnerWishEmail }} html={true} /><br />
         { !isClosed &&
           <>
             <Span i18n="admin:team_partner_wish_not_existing_send_email_text" html={true} />
@@ -63,7 +63,7 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
   const handleSendInvitationEMail = () => {
     const sendInvitationAction = sendInvitationTeamPartnerWishAction(participant);
     handleTeamPartnerWishAction(adminId, sendInvitationAction).then(result => {
-      showSuccess(t("admin:participant_teampartnerwish_sent_invitation", {email: participant.teamPartnerWish}));
+      showSuccess(t("admin:participant_teampartnerwish_sent_invitation", {email: participant.teamPartnerWishEmail}));
       onClose(result);
     });
   };

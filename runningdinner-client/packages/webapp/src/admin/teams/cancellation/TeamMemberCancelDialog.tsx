@@ -50,7 +50,7 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
 
   const { cancelWholeTeam, remainingTeamMemberNames } = getTeamMemberCancelInfo(team, teamMemberToCancel);
 
-  const {showSuccess} = useCustomSnackbar();
+  const {showSuccess, showError} = useCustomSnackbar();
 
   const handleCancelTeamMember = async() => {
     try  {
@@ -61,6 +61,12 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
       const issues = getIssuesUntranslated(e);
       if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.TEAM_NO_TEAM_MEMBERS_LEFT)) {
         navigateToCancelWholeTeam();
+        return;
+      }
+      if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.INVALID_TEAM_MEMBER_CANCELLATION_ROOT_TEAMPARTNER)) {
+        showError(t(`admin:${CONSTANTS.VALIDATION_ISSUE_CONSTANTS.INVALID_TEAM_MEMBER_CANCELLATION_ROOT_TEAMPARTNER}`, { fullname: getFullname(teamMemberToCancel) }), {
+          autoHideDuration: 9000
+        });
         return;
       }
       showHttpErrorDefaultNotification(e);

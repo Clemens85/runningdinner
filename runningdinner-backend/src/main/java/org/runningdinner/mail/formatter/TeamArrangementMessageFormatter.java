@@ -89,10 +89,10 @@ public class TeamArrangementMessageFormatter {
             messageFormatterHelperService.formatMealSpecificItems(partner.getMealSpecifics(), locale));
         partnerInfo.append(mealsepcificsText);
       }
-      if (StringUtils.isNotEmpty(partner.getMealSpecifics().getNote())) {
+      if (StringUtils.isNotEmpty(partner.getMealSpecifics().getMealSpecificsNote())) {
         partnerInfo.append(FormatterUtil.NEWLINE);
         String mealsepcificsNoteText = messageSource.getMessage("message.template.teampartner.mealspecifics-note", null, locale);
-        mealsepcificsNoteText = mealsepcificsNoteText.replaceAll(FormatterUtil.MEALSPECIFICS_NOTE, partner.getMealSpecifics().getNote());
+        mealsepcificsNoteText = mealsepcificsNoteText.replaceAll(FormatterUtil.MEALSPECIFICS_NOTE, partner.getMealSpecifics().getMealSpecificsNote());
         partnerInfo.append(mealsepcificsNoteText);
       }
     }

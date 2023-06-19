@@ -21,6 +21,9 @@ const LandingMessages_de: any = {
     registration_activation_congratulation_text: 'Herzlichen Glückwunsch, du hast soeben deine Registrierung erfolgreich abgeschlossen und bist damit bei ' +
       '<strong><anchor href="{{ publicDinnerUrl }}" target="_blank">{{ publicDinnerTitle }}</anchor></strong> dabei! ' +
       '<br/>Du wirst demnächst nähere Infos vom Veranstalter (<anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>) bekommen.',
+    registration_activation_with_teampartner_congratulation_text: 'Herzlichen Glückwunsch, du hast soeben deine Registrierung für dich und deinen Partner {{ fullname }} erfolgreich abgeschlossen und bist damit bei ' +
+        '<strong><anchor href="{{ publicDinnerUrl }}" target="_blank">{{ publicDinnerTitle }}</anchor></strong> dabei! ' +
+        '<br/>Du wirst demnächst nähere Infos vom Veranstalter (<anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>) bekommen.',
 
     registration_activation_error_title: 'Fehler bei Bestätigung',
     registration_activation_error_text: 'Leider ist ein Fehler beim Versuch der Bestätigung der Registrierung aufgetreten. ' +
@@ -190,6 +193,11 @@ const LandingMessages_de: any = {
     currentuser_already_registered_cancel: 'Falls du dich abmelden willst, melde dich bitte per Mail an <anchor href="{{ email }}">{{ email }}</anchor>.',
     currentuser_already_registered_new_register: "Falls du dich erneut anmelden willst, kannst du dies dennoch hier tun:",
 
+    teampartner_registration_summary_info: "Du hast <italic>{{ firstname }} {{ lastname }}</italic> als Wunschpartner eingetragen. Damit werdet ihr automatisch als ein Team zusammen kochen.",
+    teampartner_wish_section_title: "Willst du zusammen mit einem/einer Freund/in kochen?",
+    teampartner_wish_section_subtitle: "Hast du einen Wunschpartner mit dem du auf jeden Fall zusammen kochen möchtest? Du kannst diese Person entweder direkt hier mit anmelden oder alternativ via Email zum Event einladen. " +
+                                       "Ihr werdet dann in ein Team eingeteilt.",
+    teampartner_wish_invitation_info: "Du wurdest von {{ invitingParticipantEmail }} zu diesem Event eingeladen. Ihr werdet zusammen als Team kochen.",
     x: 'x'
 };
 

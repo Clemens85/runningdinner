@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.core.AbstractEntity;
 import org.runningdinner.core.FuzzyBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,6 +212,15 @@ public class CoreUtil {
     }
   }
 
+  public static <T extends AbstractEntity> T findById(final Collection<T> entities, UUID id) {
+    for (T entity : entities) {
+      if (entity.isSameId(id)) {
+        return entity;
+      }
+    }
+    return null;
+  }
+  
   /**
    * Safely converts a string to a number <br>
    * If the passed string cannot be converted the passed fallback is returned.

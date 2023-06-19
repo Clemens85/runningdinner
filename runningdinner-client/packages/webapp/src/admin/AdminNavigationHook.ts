@@ -98,6 +98,7 @@ export function useAdminNavigation() {
     navigateToParticipantMessages,
     navigateToTeamMessages,
     navigateToDinnerRouteMessages,
+    generateParticipantPath,
     navigateToParticipant
   };
 

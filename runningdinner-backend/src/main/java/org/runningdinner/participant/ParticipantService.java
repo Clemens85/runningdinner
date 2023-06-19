@@ -30,6 +30,8 @@ import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.AssignableParticipantSizes;
+import org.runningdinner.core.FuzzyBoolean;
+import org.runningdinner.core.Gender;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.converter.ConversionException;
@@ -49,8 +51,10 @@ import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
 import org.runningdinner.participant.rest.MissingParticipantsInfo;
+import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.participant.rest.ParticipantListActive;
 import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
+import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.Assert;
 
 @Service
 public class ParticipantService {
@@ -169,7 +174,7 @@ public class ParticipantService {
     return result;
   }
 
-	@Transactional(readOnly = true)
+  @Transactional(readOnly = true)
   public void exportParticipantsAsExcel(@ValidateAdminId String adminId, OutputStream outputStream) throws IOException {
 
     List<Participant> participants = findParticipants(adminId, true);
@@ -192,21 +197,25 @@ public class ParticipantService {
    * @return
    */
   @Transactional
-  public Participant updateParticipant(@ValidateAdminId String adminId, UUID participantId, final Participant incomingParticipant) {
+  public Participant updateParticipant(@ValidateAdminId String adminId, UUID participantId, final ParticipantInputDataTO incomingParticipant) {
 
     LOGGER.info("Update participant {}", participantId);
 
+    final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    
     Participant existingParticipant = participantRepository.findByIdAndAdminId(participantId, adminId);
     validatorService.checkEntityNotNull(existingParticipant, "Could not load participant " + participantId + " for dinner " + adminId);
     
     checkNoOtherParticipantHasEmail(existingParticipant, incomingParticipant.getEmail());
-    TeamPartnerWishStateHandlerService.checkEmailDoesNotEqualTeamPartnerWish(incomingParticipant);
 
-    copyFields(existingParticipant, incomingParticipant);
+    mapParticipantInputToParticipant(incomingParticipant, existingParticipant, runningDinner, false);
 
     Participant result = participantRepository.save(existingParticipant);
 
-    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    if (incomingParticipant.isTeamPartnerWishRegistrationDataProvided()) {
+      result = handleTeamPartnerWishRegistrationData(result, incomingParticipant.getTeamPartnerWishRegistrationData());
+    }
+    
     putGeocodeEventToQueue(result, runningDinner);
 
     return result;
@@ -233,7 +242,7 @@ public class ParticipantService {
    * @return
    */
   @Transactional
-  public Participant addParticipant(@ValidateAdminId String adminId, Participant incomingParticipant) {
+  public Participant addParticipant(@ValidateAdminId String adminId, ParticipantInputDataTO incomingParticipant) {
 
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     return addParticipant(runningDinner, incomingParticipant, false);
@@ -247,18 +256,13 @@ public class ParticipantService {
    * @return
    */
   @Transactional
-  public Participant addParticipant(RunningDinner runningDinner, Participant incomingParticipant, boolean participantSubscription) {
+  public Participant addParticipant(RunningDinner runningDinner, ParticipantInputDataTO incomingParticipant, boolean participantSubscription) {
 
     checkDuplicatedRegistration(runningDinner.getAdminId(), incomingParticipant.getEmail());
-    TeamPartnerWishStateHandlerService.checkEmailDoesNotEqualTeamPartnerWish(incomingParticipant);
     
-    Participant participant = new Participant();
-    copyFields(participant, incomingParticipant);
+    Participant participant = mapParticipantInputToParticipant(incomingParticipant, new Participant(), runningDinner, true); 
 
-    int participantNumber = getNextParticipantNumber(runningDinner);
-    participant.setParticipantNumber(participantNumber);
-
-    participant.setRunningDinner(runningDinner);
+    setParticipantNumberAndRunningDinner(participant, runningDinner);
     
     if (!participantSubscription) {
       participant.setActivatedBy(runningDinner.getEmail());
@@ -266,10 +270,41 @@ public class ParticipantService {
     }
       
     Participant createdParticipant = participantRepository.save(participant);
+    
+    if (incomingParticipant.isTeamPartnerWishRegistrationDataProvided()) {
+      createdParticipant = handleTeamPartnerWishRegistrationData(createdParticipant, incomingParticipant.getTeamPartnerWishRegistrationData());
+    }
 
     putGeocodeEventToQueue(createdParticipant, runningDinner);
 
     return createdParticipant;
+  }
+
+  public Participant mapParticipantInputToParticipant(ParticipantInputDataTO incomingParticipantData,
+                                                      Participant dest,
+                                                      RunningDinner runningDinner, 
+                                                      boolean checkForDuplicatedEmail) {
+    
+    if (checkForDuplicatedEmail) {
+      checkDuplicatedRegistration(runningDinner.getAdminId(), incomingParticipantData.getEmail());
+    }
+    
+    Assert.state(!(incomingParticipantData.isTeamPartnerWishInvitationEmailAddressProvided() && incomingParticipantData.isTeamPartnerWishRegistrationDataProvided()), 
+        "Both teamPartnerWishInvitationEmailAddress and teamPartnerWishRegistrationData is provided by client, only one is allowed!");
+    
+    copyFields(incomingParticipantData, dest);
+    
+    if (incomingParticipantData.isTeamPartnerWishRegistrationDataProvided()) {
+      if (runningDinner.getConfiguration().canHost(dest) != FuzzyBoolean.TRUE) {
+        throw new ValidationException(new IssueList(new Issue("numSeats", IssueKeys.NUM_SEATS_TEAMPARTNER_REGISTRATION_INVALID, IssueType.VALIDATION)));
+      }
+    }
+    
+    if (incomingParticipantData.isTeamPartnerWishInvitationEmailAddressProvided()) {
+      TeamPartnerWishStateHandlerService.checkEmailDoesNotEqualTeamPartnerWish(dest);
+    }
+    
+    return dest;
   }
   
   @Transactional
@@ -291,10 +326,25 @@ public class ParticipantService {
     existingParticipant.setActivationDate(now);
 
     Participant result = participantRepository.save(existingParticipant);
+    handleTeamPartnerWishRegistrationSubscription(runningDinner, result);
     
     teamPartnerWishStateHandlerService.handleTeamPartnerWishForSubscribedParticipant(result, runningDinner);
    
     return result;
+  }
+
+  private void handleTeamPartnerWishRegistrationSubscription(RunningDinner runningDinner, Participant activatedParticipant) {
+    if (activatedParticipant.isTeamPartnerWishRegistratonRoot()) {
+      Participant autoRegisteredTeamPartnerWish = findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), activatedParticipant); 
+      if (autoRegisteredTeamPartnerWish == null) {
+        LOGGER.warn("It seems like that auto-registered team partner wish with id {} of {} is not existing any longer in this dinner, which can occur in rare cases", 
+                     activatedParticipant.getTeamPartnerWishOriginatorId(), activatedParticipant);    
+        return;
+      }
+      autoRegisteredTeamPartnerWish.setActivatedBy(activatedParticipant.getActivatedBy());
+      autoRegisteredTeamPartnerWish.setActivationDate(activatedParticipant.getActivationDate());
+      participantRepository.save(autoRegisteredTeamPartnerWish);
+    }
   }
   
   
@@ -311,44 +361,50 @@ public class ParticipantService {
     return result;
   }
 
-  protected void copyFields(Participant existingParticipant, Participant incomingParticipant) {
+  protected void copyFields(ParticipantInputDataTO incomingParticipant, Participant dest) {
 
-    existingParticipant.setGender(incomingParticipant.getGender());
+    dest.setGender(incomingParticipant.getGender());
 
-    existingParticipant.setEmail(incomingParticipant.getEmail());
+    dest.setEmail(incomingParticipant.getEmail());
 
-    existingParticipant.setNumSeats(incomingParticipant.getNumSeats());
+    dest.setNumSeats(incomingParticipant.getNumSeats());
 
-    existingParticipant.setName(ParticipantName.newName().withFirstname(incomingParticipant.getName().getFirstnamePart()).andLastname(
-      incomingParticipant.getName().getLastname()));
+    ParticipantName participantName = ParticipantName.newName()
+        .withFirstname(incomingParticipant.getFirstnamePart())
+        .andLastname(incomingParticipant.getLastname());
+    dest.setName(participantName);
+    
+    ParticipantAddress address = new ParticipantAddress();
+    address.setZip(incomingParticipant.getZip());
+    address.setStreet(incomingParticipant.getStreet());
+    address.setStreetNr(incomingParticipant.getStreetNr());
+    address.setCityName(incomingParticipant.getCityName());
+    address.setRemarks(incomingParticipant.getAddressRemarks());
+    address.setAddressName(incomingParticipant.getAddressName());
+    dest.setAddress(address);
 
-    existingParticipant.setAddress(new ParticipantAddress(incomingParticipant.getAddress().getStreet(),
-      incomingParticipant.getAddress().getStreetNr(), incomingParticipant.getAddress().getZip()));
-    existingParticipant.getAddress().setCityName(incomingParticipant.getAddress().getCityName());
-    existingParticipant.getAddress().setRemarks(incomingParticipant.getAddress().getRemarks());
-    existingParticipant.getAddress().setAddressName(incomingParticipant.getAddress().getAddressName());
+    dest.setAge(incomingParticipant.getAgeNormalized());
+    dest.setMobileNumber(incomingParticipant.getMobileNumber());
 
-    existingParticipant.setAge(incomingParticipant.getAge());
-    existingParticipant.setMobileNumber(incomingParticipant.getMobileNumber());
-
-    existingParticipant.setMealSpecifics(incomingParticipant.getMealSpecifics());
-    existingParticipant.setNotes(incomingParticipant.getNotes());
-    existingParticipant.setTeamPartnerWish(incomingParticipant.getTeamPartnerWish());
+    dest.setMealSpecifics(incomingParticipant.getMealSpecifics());
+    dest.setNotes(incomingParticipant.getNotes());
+    
+    dest.setTeamPartnerWishEmail(incomingParticipant.getTeamPartnerWishEmail());
   }
 
-  public Optional<Participant> findParticipantByEmail(String adminId, String email) {
+  public List<Participant> findParticipantByEmail(String adminId, String email) {
 
     if (StringUtils.isEmpty(email)) {
-      return Optional.empty();
+      return Collections.emptyList();
     }
     String normalizedEmail = email.trim();
-    return participantRepository.findByEmailIgnoreCaseAndAdminId(normalizedEmail, adminId);
+    return participantRepository.findByEmailIgnoreCaseAndAdminIdOrderByParticipantNumber(normalizedEmail, adminId);
   }
 
-  public void checkDuplicatedRegistration(String dinnerAdminId, String email) {
+  protected void checkDuplicatedRegistration(String dinnerAdminId, String email) {
 
-    Optional<Participant> existingParticipant = findParticipantByEmail(dinnerAdminId, email);
-    if (existingParticipant.isPresent()) {
+    List<Participant> existingParticipants = findParticipantByEmail(dinnerAdminId, email);
+    if (CollectionUtils.isNotEmpty(existingParticipants)) {
       throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION)));
     }
   }
@@ -364,8 +420,35 @@ public class ParticipantService {
     if (participant.getTeamId() != null) {
       throw new ValidationException(new IssueList(new Issue("teamId", IssueKeys.PARTICIPANT_ASSINGED_IN_TEAM, IssueType.VALIDATION)));
     }
+    
+    if (participant.getTeamPartnerWishOriginatorId() != null) {
+      if (participant.isTeamPartnerWishRegistratonRoot()) {
+        Participant childParticipant = findChildParticipantOfTeamPartnerRegistration(adminId, participant);
+        participantRepository.delete(childParticipant);
+      } else {
+        clearTeamPartnerWishOriginatorOfRootParticipant(adminId, participant.getTeamPartnerWishOriginatorId());
+      }
+    }
 
     participantRepository.delete(participant);
+  }
+  
+  @Transactional
+  public Participant clearTeamPartnerWishOriginatorOfRootParticipant(@ValidateAdminId String adminId, UUID rootParticipantId) {
+    
+    Participant participant = participantRepository.findByIdAndAdminId(rootParticipantId, adminId);
+    Assert.notNull(participant, "Participant not found for " + rootParticipantId + " in event " + adminId);
+    Assert.state(participant.isTeamPartnerWishRegistratonRoot(), "clearTeamPartnerWishOriginatorId only allowed for root participant, but " + participant + " was not");
+    participant.setTeamPartnerWishOriginatorId(null);
+    return participantRepository.save(participant);
+  }
+  
+  public Participant findChildParticipantOfTeamPartnerRegistration(@ValidateAdminId String adminId, Participant participant) {
+    
+    Assert.state(participant.isTeamPartnerWishRegistratonRoot(), 
+                 "findChildParticipantOfTeamPartnerRegistration can only be called for participant that is root participant, but " + participant + " was not.");
+
+    return participantRepository.findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(participant.getTeamPartnerWishOriginatorId(), participant.getId(), adminId);
   }
   
   public static void removeTeamReferences(Collection<Participant> participants) {
@@ -403,10 +486,45 @@ public class ParticipantService {
     				.collect(Collectors.toList());
   }
   
+
+  public static List<Participant> filterParticipantsWithTeamPartnerRegistration(List<Participant> participants) {
+
+    return participants
+            .stream()
+            .filter(p -> p.getTeamPartnerWishOriginatorId() != null)
+            .collect(Collectors.toList());
+  }
+  
+  public static boolean hasConsistentTeamPartnerWishRegistration(List<Participant> participants) {
+    if (CollectionUtils.isEmpty(participants) || participants.size() == 1) {
+      return true;
+    }
+    List<UUID> teamPartnerWishOriginatorIds = new ArrayList<>(1);
+    for (Participant p : participants) {
+      if (p.getTeamPartnerWishOriginatorId() == null) {
+        continue;
+      }
+      teamPartnerWishOriginatorIds.add(p.getTeamPartnerWishOriginatorId());
+    }
+    if (CollectionUtils.isEmpty(teamPartnerWishOriginatorIds)) {
+      return true;
+    }
+
+    Set<UUID> uniqueTeamPartnerWishOriginatorIds = new HashSet<>(teamPartnerWishOriginatorIds);
+    return uniqueTeamPartnerWishOriginatorIds.size() == 1 && teamPartnerWishOriginatorIds.size() == participants.size();
+  }
+  
   private void checkNoOtherParticipantHasEmail(Participant participant, String newEmailAddress) {
 
     List<Participant> participants = participantRepository.findByEmailIgnoreCaseAndIdNotAndAdminId(newEmailAddress, participant.getId(), participant.getAdminId());
-    if (CollectionUtils.isNotEmpty(participants)) {
+    if (CollectionUtils.isEmpty(participants)) {
+      return;
+    }
+    if (participants.size() > 1) {
+      throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION))); 
+    }
+    Participant participantWithSameEmail = participants.get(0);
+    if (!participant.isTeamPartnerWishRegistrationChildOf(participantWithSameEmail)) {
       throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION)));
     }
   }
@@ -449,5 +567,43 @@ public class ParticipantService {
     }
     return result;
   }
+  
+  
+  private void setParticipantNumberAndRunningDinner(Participant participant, RunningDinner runningDinner) {
+    
+    int participantNumber = getNextParticipantNumber(runningDinner);
+    participant.setParticipantNumber(participantNumber);
+    participant.setRunningDinner(runningDinner);    
+  }
+  
+  private Participant handleTeamPartnerWishRegistrationData(Participant participant,
+                                                            TeamPartnerWishRegistrationDataTO teamPartnerWishRegistrationData) {
+
+    if (participant.isTeamPartnerWishRegistratonRoot()) {
+      // update case (with already provided registration data on creation before) -> Do nothing (team partner wish participant needs to be updated for itself)
+      return participant;
+    }
+    
+    String firstnamePart = teamPartnerWishRegistrationData.getFirstnamePart();
+    String lastname = teamPartnerWishRegistrationData.getLastname();
+    
+    Participant teamPartnerWish = participant.createDetachedClone();
+    teamPartnerWish.setHost(false); // Not needed, but just to be sure
+    
+    teamPartnerWish.setName(ParticipantName.newName().withFirstname(firstnamePart).andLastname(lastname));
+    
+    teamPartnerWish.setAge(Participant.UNDEFINED_AGE);
+    teamPartnerWish.setNumSeats(0);
+    teamPartnerWish.setGender(Gender.UNDEFINED);
+    
+    setParticipantNumberAndRunningDinner(teamPartnerWish, participant.getRunningDinner());
+    
+    teamPartnerWish.setTeamPartnerWishOriginatorId(participant.getId());
+    participant.setTeamPartnerWishOriginatorId(participant.getId());
+    
+    participantRepository.save(teamPartnerWish);
+    return participantRepository.save(participant);
+  }
+
 
 }

@@ -94,3 +94,8 @@ export interface GeocodingResult {
 export interface HasGeocoding {
   geocodingResult?: GeocodingResult
 }
+
+export interface KeyValue {
+  key: string;
+  value: any;
+}

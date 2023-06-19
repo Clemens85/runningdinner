@@ -1,8 +1,9 @@
 import React from 'react'
 import Grid from "@material-ui/core/Grid";
 import FormFieldset from "../../../common/theme/FormFieldset";
-import {Controller, useFormContext} from "react-hook-form";
-import {NumberTextInputEmptyValue} from "../../../common/input/NumberTextInputEmptyValue";
+import {
+  NumberFormTextFieldEmptyValueAllowed
+} from "../../../common/input/NumberTextInputEmptyValue";
 import FormTextField from "../../../common/input/FormTextField";
 import {useTranslation} from "react-i18next";
 import {isStringNotEmpty} from "@runningdinner/shared";
@@ -15,8 +16,6 @@ export interface AddressSectionProps {
 }
 
 export default function AddressSection(props: AddressSectionProps) {
-
-  const {control} = useFormContext();
 
   const {t} = useTranslation('common');
   const street = t('street');
@@ -65,22 +64,12 @@ export default function AddressSection(props: AddressSectionProps) {
                            label={cityName}/>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Controller
-              name="numSeats"
-              control={control}
-              render={props =>
-                <NumberTextInputEmptyValue
-                  variant="filled"
-                  name="numSeats"
-                  required={isNumSeatsRequired}
-                  label={numberSeats}
-                  onChange={newVal => props.onChange(newVal)}
-                  value={props.value}
-                  helperText={numberSeatsHelp}
-                  emptyValue={0}
-                  fullWidth />
-              }
-            />
+            <NumberFormTextFieldEmptyValueAllowed name="numSeats"
+                                                  label={numberSeats}
+                                                  emptyValue={0}
+                                                  helperText={numberSeatsHelp}
+                                                  required={isNumSeatsRequired}
+                                                  fullWidth />
           </Grid>
           <Grid item xs={12} md={8}>
             <FormTextField fullWidth

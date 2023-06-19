@@ -2,6 +2,8 @@ package org.runningdinner.participant.rest;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -19,14 +21,15 @@ import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWish;
+import org.runningdinner.participant.partnerwish.TeamPartnerWishInvitationState;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
-import org.runningdinner.participant.partnerwish.TeamPartnerWishState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -88,7 +91,7 @@ public class ParticipantServiceRest {
 
   @RequestMapping(value = "/runningdinner/{adminId}/participants/not-active", method = RequestMethod.PUT)
   public ParticipantListInactive findNotActivatedParticipants(@PathVariable("adminId") final String adminId,
-                                                        	 	  @RequestBody RunningDinnerRelatedIdListTO participantIdList) {
+                                                      	 	  @RequestBody RunningDinnerRelatedIdListTO participantIdList) {
 
     Assert.state(StringUtils.equals(adminId, participantIdList.getAdminId()), "Expected adminId " + adminId + " in path to match id in participantIdList " + participantIdList);
     
@@ -111,23 +114,23 @@ public class ParticipantServiceRest {
     return new ParticipantTO(result);
   }
 
-	@RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}", method = RequestMethod.PUT)
-	public ParticipantTO updateParticipant(@PathVariable("adminId") String dinnerAdminId,
-			@PathVariable("participantId") UUID participantId, @Valid @RequestBody ParticipantTO participantTO, Locale locale) {
+  @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}", method = RequestMethod.PUT)
+  public ParticipantTO updateParticipant(@PathVariable("adminId") String dinnerAdminId,
+                                         @PathVariable("participantId") UUID participantId,
+                                         @Valid @RequestBody ParticipantInputDataTO participantTO, Locale locale) {
 
-		Participant participant = participantTO.toParticipant();
-		participant = participantService.updateParticipant(dinnerAdminId, participantId, participant);
-		return new ParticipantTO(participant);
-	}
+    Participant participant = participantService.updateParticipant(dinnerAdminId, participantId, participantTO);
+    return new ParticipantTO(participant);
+  }
 
-	@RequestMapping(value = "/runningdinner/{adminId}/participant", method = RequestMethod.POST)
-	public ParticipantTO createParticipant(@PathVariable("adminId") String adminId,
-		                                     @Valid @RequestBody ParticipantTO participantTO, Locale locale) {
+  @RequestMapping(value = "/runningdinner/{adminId}/participant", method = RequestMethod.POST)
+  public ParticipantTO createParticipant(@PathVariable("adminId") String adminId,
+                                         @Valid @RequestBody ParticipantInputDataTO participantTO,
+                                         Locale locale) {
 
-		Participant participant = participantTO.toParticipant();
-		Participant createdParticipant = participantService.addParticipant(adminId, participant);
-		return new ParticipantTO(createdParticipant);
-	}
+    Participant createdParticipant = participantService.addParticipant(adminId, participantTO);
+    return new ParticipantTO(createdParticipant);
+  }
 
 	@RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}", method = RequestMethod.DELETE)
 	public void deleteParticipant(@PathVariable("adminId") String dinnerAdminId,
@@ -139,14 +142,32 @@ public class ParticipantServiceRest {
 	@RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}/team-partner-wish", method = RequestMethod.GET)
 	public TeamPartnerWishTO getTeamPartnerWishInfo(@PathVariable("adminId") String dinnerAdminId,
 	                                                @PathVariable("participantId") UUID participantId,
-	                                                @RequestParam(name = "relevantState", required = false) List<TeamPartnerWishState> relevantStates) {
+	                                                @RequestParam(name = "relevantState", required = false) List<TeamPartnerWishInvitationState> relevantStates) {
 	  
-	  Participant participant = participantService.findParticipantById(dinnerAdminId, participantId);
-	  
-	  Optional<TeamPartnerWish> result = teamPartnerWishService.calculateTeamPartnerWishInfo(participant, dinnerAdminId);
-	  if (result.isPresent()) {
-      return TeamPartnerWishTO.newFromTeamPartnerWish(result.get(), relevantStates);
-	  }
-	  return new TeamPartnerWishTO();
-	}
+      Participant participant = participantService.findParticipantById(dinnerAdminId, participantId);
+      return calculateTeamPartnerWishInfo(dinnerAdminId, participant, relevantStates);
+    }
+	
+	@PutMapping("/runningdinner/{adminId}/participants/team-partner-wish")
+    public List<TeamPartnerWishTO> getTeamPartnerWishInfoList(@PathVariable("adminId") String dinnerAdminId,
+                                                              @Valid @RequestBody RunningDinnerRelatedIdListTO participantIdList,    
+                                                              @RequestParam(name = "relevantState", required = false) List<TeamPartnerWishInvitationState> relevantStates) {
+
+      List<TeamPartnerWishTO> result = new ArrayList<>();
+      List<Participant> participants = participantService.findParticipantsByIds(dinnerAdminId, new HashSet<>(participantIdList.getEntityIds()));
+      for (Participant participant : participants) {
+        result.add(calculateTeamPartnerWishInfo(dinnerAdminId, participant, relevantStates));
+      }
+      return result;
+    }
+
+    private TeamPartnerWishTO calculateTeamPartnerWishInfo(String dinnerAdminId, Participant participant,
+        List<TeamPartnerWishInvitationState> relevantStates) {
+      Optional<TeamPartnerWish> result = teamPartnerWishService.calculateTeamPartnerWishInfo(participant,
+          dinnerAdminId);
+      if (result.isPresent()) {
+        return TeamPartnerWishTO.newFromTeamPartnerWish(result.get(), relevantStates);
+      }
+      return TeamPartnerWishTO.newEmptyObject();
+    }
 }

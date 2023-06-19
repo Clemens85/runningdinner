@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.core.util.CoreUtil;
 
+import java.util.Objects;
+
 /**
  * Represents the name of a participant.
  * 
@@ -83,6 +85,19 @@ public class ParticipantName {
     participantName.lastname = lastname;
     return participantName;
   }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ParticipantName that = (ParticipantName) o;
+		return Objects.equals(firstnamePart, that.firstnamePart) && Objects.equals(lastname, that.lastname);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(firstnamePart, lastname);
+	}
 
 	@Override
 	public String toString() {

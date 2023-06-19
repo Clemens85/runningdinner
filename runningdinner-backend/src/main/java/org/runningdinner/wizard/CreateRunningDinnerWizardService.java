@@ -122,14 +122,21 @@ public class CreateRunningDinnerWizardService {
     Assert.state(numExistingParticipants == 0, 
                  "Expected no single existing participants in " + runningDinner + " when adding participants, but found " + numExistingParticipants);
     
+    saveAndActivateParticipantsToDinner(runningDinner, participants);
+    
+    return runningDinner;
+  }
+  
+  @Transactional
+  public List<Participant> saveAndActivateParticipantsToDinner(RunningDinner runningDinner, List<Participant> participants) {
+    
     participants.forEach(p -> { 
       p.setRunningDinner(runningDinner);
       p.setActivatedBy(runningDinner.getEmail());
       p.setActivationDate(LocalDateTime.now());
     });
     LOGGER.info("Saving {} participants for running dinner {}", participants.size(), runningDinner);
-    participantRepository.saveAll(participants);
-    return runningDinner;
+    return participantRepository.saveAll(participants);
   }
   
   public void validateMeals(List<MealClass> meals, LocalDate runningDinnerDate) {

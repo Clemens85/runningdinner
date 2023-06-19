@@ -33,7 +33,7 @@ import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.RunningDinnerInfo;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.RegistrationSummary;
-import org.runningdinner.frontend.rest.RegistrationDataV2TO;
+import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.HostTeamInfo;
 import org.runningdinner.participant.Participant;
@@ -42,6 +42,7 @@ import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamMeetingPlan;
 import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
@@ -296,7 +297,7 @@ public class RunningDinnerServiceTest {
     }
     
     // Ensure that manual participant creation is still possible:
-    Participant participant = participantService.addParticipant(dinner.getAdminId(), ParticipantGenerator.generateParticipant(30));
+    Participant participant = participantService.addParticipant(dinner.getAdminId(), new ParticipantInputDataTO(ParticipantGenerator.generateParticipant(30)));
     assertThat(participant).isNotNull();
     assertThat(participant.getActivationDate()).isNotNull();
     
@@ -306,7 +307,7 @@ public class RunningDinnerServiceTest {
     assertThat(result).isNotNull();
   }
   
-  private RegistrationDataV2TO newRegistationData() {
+  private RegistrationDataTO newRegistationData() {
     
     ParticipantAddress address = ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 12345 Musterstadt");
     return TestUtil.createRegistrationData("Max Mustermann", "max@max.de", address, 6);

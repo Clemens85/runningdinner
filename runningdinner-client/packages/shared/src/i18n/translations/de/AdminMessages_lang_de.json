@@ -35,6 +35,7 @@
 	"dashboard": "Übersicht",
 	"deactivate_registration": "Registrierung deaktivieren",
 	"deactivate_registration_confirmation_text": "Willst du die Registrierung für dein Event wirklich deaktivieren? Danach kann sich kein Teilnehmer mehr anmelden (du kannst jedoch noch selbst manuell Teilnehmer hinzufügen).",
+	"delete_participant_success_message": "{{ fullname }} erfolgreich gelöscht",
 	"dinner_not_possible": "Mit den aktuellen Einstellungen und der Teilnehmerliste kann kein Running Dinner erstellt werden. Sehr wahrscheinlich gibt es zu wenig Teilnehmer.",
 	"dismiss_save": "Änderungen verwerfen",
 
@@ -259,12 +260,23 @@
 	"teams_selection": "Team-Auswahl",
 	"teams_show_dinnerroute": "Dinnerroute anzeigen",
 	"teams_modified_waitinglist_message_headline": "Team Änderungen durch Warteliste",
-	"team_swap_violates_team_partner_wish": "Das Tauschen dieser Team-Mitglieder würde mindestens einen Team-Partner-Wunsch verletzen, und ist daher geblockt. Falls du dies dennoch wirklich tun willst, musst du die Team-Partner-Wünsche der betroffenen Teilnehmer händisch entfernen",
+	"team_swap_violates_team_partner_wish": "Das Tauschen dieser Team-Mitglieder würde mindestens einen Team-Partner-Wunsch verletzen, und ist daher geblockt. Falls du dies dennoch wirklich tun willst, musst du die Team-Partner-Wünsche der betroffenen Teilnehmer händisch entfernen.",
 	"text_host_saved": "Gastgeber erfolgreich gespeichert!",
 	"time_schedule": "Zeitplan",
 	"time_schedule_edit": "Zeitplan bearbeiten",
 	"transfer": "Übertragung",
 
+	"team_partner_wish_registration_delete_child": "<strong>{{ fullname }}</strong> wurde von <strong>{{ root_fullname }}</strong> als festes Koch-Paar angemeldet. Durch das Löschen wird dieser Teampartner-Wunsch automatisch aufgehoben.",
+	"team_partner_wish_registration_delete_root": "<strong>{{ fullname }}</strong> hat sich mit <strong>{{ child_fullname }}</strong> als festes Koch-Paar angemeldet, daher wird durch das Löschen auch automatisch <strong>{{ child_fullname }}</strong> gelöscht.",
+	"team_partner_wish_registration_change_teamhost_not_possible": "Für dieses Team kann der Gastgeber nicht geändert werden, da es ein fest angemeldetes Wunschpartner Koch-Team ist, mit nur einer hinterlegten Adresse.",
+	"team_partner_wish_registration_child_participant_child_info_1": "<anchor>{{ fullname }}</anchor> wurde als Kochpartner mit angemeldet.",
+	"team_partner_wish_registration_child_participant_child_info_2": "Alle Adresse- und Kontakt-Informationen laufen daher über {{ fullname }}.",
+	"team_partner_wish_registration_child_participant_root_info_1": "Angemeldet durch {{ fullname }} als Kochpartner.",
+	"team_partner_wish_registration_child_participant_root_info_2": "Die Adress- und Kontakt-Informationen findet du bei <anchor>{{ fullname }}</anchor>, da alles über diesen Teilnehmer geht.",
+	"team_partner_wish_registration_fulfilled": "Kochpartner-Wunsch erfüllt durch Registrierung",
+	"team_partner_wish_fulfilled": "Teampartner-Wunsch erfüllt",
+	"team_partner_wish_invitation_not_found": "Angegebene Wunschpartner-Email kann nicht zugeordnet werden",
+	"team_partner_wish_invitation_found": "Angegebene Wunschpartner-Email angemeldet",
 	"waitinglist_management": "Wartelisten Verwaltung",
 	"waitinglist_assign_participants_teams": "Teams durch Teilnehmer der Warteliste auffüllen",
 	"waitinglist_assign_participants_teams_success": "Teams durch ausgewählte Teilnehmer aufgefüllt!",
@@ -302,5 +314,8 @@
 	"waitinglist_notification_teams_continue_without_messages": "Weiter ohne Benachrichtigungen",
 
 	"invalid_size_waitinglist_participants_to_assign": "Bitte wähle Teilnehmer aus mit denen du die Teams auffüllen möchtest",
-	"invalid_size_waitinglist_participants_to_generate_teams_too_few": "Du hast zu wenige Teilenhmer ausgewählt"
+	"invalid_size_waitinglist_participants_to_generate_teams_too_few": "Du hast zu wenige Teilenhmer ausgewählt",
+	"invalid_team_member_cancellation_root_teampartner": "Du kannst {{ fullname }} nicht entfernen, da {{ fullname }} dieses Team als festes Koch-Paar angemeldet hat. Stattdessen musst du das ganze Team entfernen bzw. absagen.",
+	"invalid_replacement_participants_inconsistent_teampartner_wish": "Die ausgewählten Teilnehmer können nicht verwendet werden, da hierdurch mindestens ein Teampartner-Wunsch nicht mehr erfüllt werden kann.",
+	"invalid_waitinglist_teamgeneration_inconsistent_teampartner_wish": "Die ausgewählten Teilnehmer können nicht verwendet werden, da hierdurch mindestens ein Teampartner-Wunsch nicht mehr erfüllt werden kann. Ändere bitte deine Auswahl."
 }

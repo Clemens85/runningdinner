@@ -56,24 +56,24 @@ public class TeamPartnerWishStateHandlerService {
     
     TeamPartnerWish teamPartnerWish = teamPartnerWishOptional.get();
     
-    if (teamPartnerWish.getState() == TeamPartnerWishState.EXISTS_SAME_TEAM_PARTNER_WISH) {
+    if (teamPartnerWish.getState() == TeamPartnerWishInvitationState.EXISTS_SAME_TEAM_PARTNER_WISH) {
       Participant matchingParticipant = teamPartnerWish.getMatchingParticipant();
         // Super happy flow (wished team partner is already registered with exactly the same wish):
       RunningDinnerRelatedMessage message = newConfirmationMessage(runningDinner, participant, matchingParticipant, locale);
       messageService.sendTeamPartnerWishMail(message, matchingParticipant.getEmail(), participant.getEmail());
-    } else if (teamPartnerWish.getState() == TeamPartnerWishState.NOT_EXISTING) {
+    } else if (teamPartnerWish.getState() == TeamPartnerWishInvitationState.NOT_EXISTING) {
       // Happy flow: send email with invitation link
       sendTeamPartnerInvitationMessage(participant, runningDinner);
-    } else if (teamPartnerWish.getState() == TeamPartnerWishState.EXISTS_EMPTY_TEAM_PARTNER_WISH) {
+    } else if (teamPartnerWish.getState() == TeamPartnerWishInvitationState.EXISTS_EMPTY_TEAM_PARTNER_WISH) {
       // Semi-Happy-Flow: Versende Mail an diesen teilnehmer, dass der andere teilnehmer ihn gerne als partner hätte:
       // Damit muss der andere teilnehmer dies bestätigen
       RunningDinnerRelatedMessage message = newPartnerWishEmptyMessage(runningDinner, participant, teamPartnerWish.getMatchingParticipant(), locale);
       messageService.sendTeamPartnerWishMail(message, teamPartnerWish.getMatchingParticipant().getEmail(), participant.getEmail());
-    } else if (teamPartnerWish.getState() == TeamPartnerWishState.EXISTS_OTHER_TEAM_PARTNER_WISH) {
+    } else if (teamPartnerWish.getState() == TeamPartnerWishInvitationState.EXISTS_OTHER_TEAM_PARTNER_WISH) {
       // Unhappy-Flow: Anderer Teilnehmer angemeldet, aber hat nen anderen Partner-Wunsch.. Mail an diesen Partner, mit Bitte sich zu entscheiden
       RunningDinnerRelatedMessage message = newPartnerWishConflictMessage(runningDinner, participant, teamPartnerWish.getMatchingParticipant(), locale);
       messageService.sendTeamPartnerWishMail(message, teamPartnerWish.getMatchingParticipant().getEmail(), participant.getEmail());
-    } else if (teamPartnerWish.getState() == TeamPartnerWishState.NO_PARTNER_WISH_BUT_OTHER_TEAM_PARTNER_WISHES) {
+    } else if (teamPartnerWish.getState() == TeamPartnerWishInvitationState.NO_PARTNER_WISH_BUT_OTHER_TEAM_PARTNER_WISHES) {
       for (Participant otherParticipantWithThisPartnerWish : teamPartnerWish.getOtherParticipantsWithThisTeamPartnerWish()) {
         RunningDinnerRelatedMessage message = newOtherPartnerWishMessage(runningDinner, participant, otherParticipantWithThisPartnerWish, locale);
         messageService.sendTeamPartnerWishMail(message, participant.getEmail(), otherParticipantWithThisPartnerWish.getEmail());
@@ -86,7 +86,7 @@ public class TeamPartnerWishStateHandlerService {
     Assert.state(!runningDinner.getRegistrationType().isClosed(), "Can only be called for non-closed dinner, but was not: " + runningDinner);
     final Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
     RunningDinnerRelatedMessage message = newInvitationMessage(runningDinner, participant, locale);
-    return messageService.sendTeamPartnerWishMail(message, participant.getTeamPartnerWish(), participant.getEmail());
+    return messageService.sendTeamPartnerWishMail(message, participant.getTeamPartnerWishEmail(), participant.getEmail());
   }
   
   private RunningDinnerRelatedMessage newPartnerWishConflictMessage(RunningDinner runningDinner, 
@@ -100,7 +100,7 @@ public class TeamPartnerWishStateHandlerService {
     RunningDinnerRelatedMessage tmpResult = newParnerWishConflictOrEmptyMessage(runningDinner, subscribedParticipant, alreadyRegisteredParticipant, subject, message);
 
     message = tmpResult.getMessage();
-    message = message.replaceAll(FormatterUtil.TEAM_PARTNER_WISH_EMAIL, alreadyRegisteredParticipant.getTeamPartnerWish());
+    message = message.replaceAll(FormatterUtil.TEAM_PARTNER_WISH_EMAIL, alreadyRegisteredParticipant.getTeamPartnerWishEmail());
     return new RunningDinnerRelatedMessage(tmpResult.getSubject(), message, runningDinner);
   }
 
@@ -197,7 +197,7 @@ public class TeamPartnerWishStateHandlerService {
 
     String registrationLink = urlGenerator.constructPublicDinnerRegistrationUrl(runningDinner.getPublicSettings().getPublicId(), 
                                                                                 invitingParticipant.getEmail(),
-                                                                                invitingParticipant.getTeamPartnerWish());
+                                                                                invitingParticipant.getTeamPartnerWishEmail());
     
     String subject = replacePlaceholdersInSubject("message.subject.teampartnerwish.invitation", invitingParticipant, runningDinner, locale) ;
     
@@ -239,8 +239,8 @@ public class TeamPartnerWishStateHandlerService {
   
   public static void checkEmailDoesNotEqualTeamPartnerWish(Participant participant) {
   
-    if (StringUtils.isNotEmpty(participant.getTeamPartnerWish()) && StringUtils.isNotEmpty(participant.getEmail())) {
-      if (participant.getEmail().equalsIgnoreCase(participant.getTeamPartnerWish())) {
+    if (StringUtils.isNotEmpty(participant.getTeamPartnerWishEmail()) && StringUtils.isNotEmpty(participant.getEmail())) {
+      if (participant.getEmail().equalsIgnoreCase(participant.getTeamPartnerWishEmail())) {
         throw new ValidationException(new IssueList(new Issue("teamPartnerWish", IssueKeys.PARTICIPANT_EMAIL_EQUALS_TEAM_PARTNER_WISH, IssueType.VALIDATION)));
       }
     }

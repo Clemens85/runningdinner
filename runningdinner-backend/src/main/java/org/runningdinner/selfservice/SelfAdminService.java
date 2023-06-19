@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
@@ -18,6 +19,7 @@ import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTeamTO;
 import org.slf4j.Logger;
@@ -80,17 +82,18 @@ public class SelfAdminService {
     
     Participant participant = participantService.findParticipantById(runningDinner.getAdminId(), participantId);
     
-    Optional<Participant> teamPartnerWish = participantService.findParticipantByEmail(runningDinner.getAdminId(), email);
-    if (!teamPartnerWish.isPresent()) {
+    List<Participant> teamPartnerWishList = participantService.findParticipantByEmail(runningDinner.getAdminId(), email);
+    if (CollectionUtils.isEmpty(teamPartnerWishList) || teamPartnerWishList.size() != 1) {
       throw new ValidationException(new IssueList(new Issue(IssueKeys.TEAM_PARTNER_WISH_UPDATE_INVALID, IssueType.VALIDATION)));
     }
     
-    if (participant.getTeamId() != null || teamPartnerWish.get().getTeamId() != null) {
+    if (participant.getTeamId() != null || teamPartnerWishList.get(0).getTeamId() != null) {
       throw new ValidationException(new IssueList(new Issue(IssueKeys.TEAM_PARTNER_WISH_UPDATE_INVALID, IssueType.VALIDATION)));
     }
     
-    participant.setTeamPartnerWish(email); // TODO: Whats with team partnerwish state handling?!
-    participantService.updateParticipant(runningDinner.getAdminId(), participantId, participant);
+    participant.setTeamPartnerWishEmail(email); // TODO: Whats with team partnerwish state handling?!
+    
+    participantService.updateParticipant(runningDinner.getAdminId(), participantId, new ParticipantInputDataTO(participant));
   }
   
   public DinnerRouteTO findDinnerRoute(UUID selfAdministrationId, UUID participantId, UUID teamId) {

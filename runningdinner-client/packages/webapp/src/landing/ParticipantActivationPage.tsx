@@ -5,8 +5,9 @@ import {useAsync} from "react-async-hook";
 import {
   activateSubscribedParticipant, BackendIssue,
   CONSTANTS,
-  findPublicRunningDinnerByPublicId,
-  isStringEmpty, isStringNotEmpty,
+  findPublicRunningDinnerByPublicId, getFullname,
+  isParticipantActivationSuccessful,
+  isStringEmpty, isStringNotEmpty, ParticipantActivationResult,
   PublicRunningDinner, useBackendIssueHandler
 } from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
@@ -36,16 +37,16 @@ export function ParticipantActivationPage() {
       <PageTitle>{t("landing:registration_activation_title")}</PageTitle>
 
       { !activationPending &&
-        activationResult?.activationSucceeded &&
-        <ParticipantActivationSucceededView publicRunningDinnerLoading={publicRunningDinnerLoading}
+        isParticipantActivationSuccessful(activationResult) &&
+        <ParticipantActivationSucceededView activationResult={activationResult!}
                                             publicRunningDinnerResult={publicRunningDinnerResult} />
       }
 
       { !activationPending &&
-        activationResult?.activationSucceeded === false &&
+        !isParticipantActivationSuccessful(activationResult) &&
         <ParticipantActivationFailedView publicRunningDinnerLoading={publicRunningDinnerLoading}
                                          publicRunningDinnerResult={publicRunningDinnerResult}
-                                         validationIssue={activationResult.validationIssue} />
+                                         validationIssue={activationResult?.validationIssue} />
       }
 
     </div>
@@ -53,11 +54,11 @@ export function ParticipantActivationPage() {
 }
 
 interface PublicDinnerLoadingProps {
-  publicRunningDinnerLoading: boolean;
   publicRunningDinnerResult?: PublicRunningDinner;
+  activationResult: ParticipantActivationResult;
 }
 
-export function ParticipantActivationSucceededView({publicRunningDinnerResult}: PublicDinnerLoadingProps) {
+export function ParticipantActivationSucceededView({publicRunningDinnerResult, activationResult}: PublicDinnerLoadingProps) {
 
   const {t} = useTranslation("landing");
 
@@ -71,24 +72,39 @@ export function ParticipantActivationSucceededView({publicRunningDinnerResult}: 
       <Alert severity={"success"} variant={"outlined"}>
         <AlertTitle>{t('landing:registration_activation_congratulation_title')}</AlertTitle>
         <Span>
-          <Trans i18nKey={"landing:registration_activation_congratulation_text"}
-                 components={{
-                   // @ts-ignore
-                   anchor: <LinkExtern />
-                 }}
-                 values={{
-                   adminEmail: publicSettings.publicContactEmail,
-                   publicDinnerTitle: publicSettings.title,
-                   publicDinnerUrl: publicSettings.publicDinnerUrl
-                 }} />
+          { isStringNotEmpty(activationResult.activatedTeamPartnerRegistration?.lastname) ?
+            <Trans i18nKey={"landing:registration_activation_with_teampartner_congratulation_text"}
+                   components={{
+                     // @ts-ignore
+                     anchor: <LinkExtern />
+                   }}
+                   values={{
+                     adminEmail: publicSettings.publicContactEmail,
+                     publicDinnerTitle: publicSettings.title,
+                     publicDinnerUrl: publicSettings.publicDinnerUrl,
+                     fullname: getFullname(activationResult.activatedTeamPartnerRegistration!)
+                   }} /> :
+            <Trans i18nKey={"landing:registration_activation_congratulation_text"}
+                   components={{
+                     // @ts-ignore
+                     anchor: <LinkExtern />
+                   }}
+                   values={{
+                     adminEmail: publicSettings.publicContactEmail,
+                     publicDinnerTitle: publicSettings.title,
+                     publicDinnerUrl: publicSettings.publicDinnerUrl
+                   }} />
+          }
         </Span>
       </Alert>
     </div>
   );
 }
 
-interface ParticipantActivationFailedViewProps extends PublicDinnerLoadingProps {
+interface ParticipantActivationFailedViewProps {
   validationIssue?: BackendIssue;
+  publicRunningDinnerLoading: boolean;
+  publicRunningDinnerResult?: PublicRunningDinner;
 }
 
 export function ParticipantActivationFailedView({publicRunningDinnerResult, publicRunningDinnerLoading, validationIssue}: ParticipantActivationFailedViewProps) {

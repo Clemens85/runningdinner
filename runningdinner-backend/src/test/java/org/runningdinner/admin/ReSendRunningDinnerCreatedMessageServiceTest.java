@@ -16,7 +16,7 @@ import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.RegistrationSummary;
-import org.runningdinner.frontend.rest.RegistrationDataV2TO;
+import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.participant.Participant;
@@ -69,14 +69,14 @@ public class ReSendRunningDinnerCreatedMessageServiceTest {
   @Test
   public void notAcknowledgedDinnerAllowsRegistrationWithPartnerWish() {
     
-    RegistrationDataV2TO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de",
         ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
-    registrationData.setTeamPartnerWish("foo@bar.de");
+    registrationData.setTeamPartnerWishEmail("foo@bar.de");
     
     RegistrationSummary result = frontendRunningDinnerService.performRegistration(runningDinnerNotAcknowledged.getPublicSettings().getPublicId(), registrationData, false);
     assertThat(result).isNotNull();
     
-    Participant newRegisteredParticipant = participantService.findParticipantByEmail(runningDinnerNotAcknowledged.getAdminId(), "max@muster.de").get();
+    Participant newRegisteredParticipant = participantService.findParticipantByEmail(runningDinnerNotAcknowledged.getAdminId(), "max@muster.de").get(0);
     participantService.updateParticipantSubscription(newRegisteredParticipant.getId(), LocalDateTime.now(), true, runningDinnerNotAcknowledged);
     
     MessageJob messageJob = messageService.findMessageJobs(runningDinnerNotAcknowledged.getAdminId(), MessageType.TEAM_PARTNER_WISH).get(0);

@@ -26,6 +26,8 @@ import org.runningdinner.core.RunningDinnerInfo;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantRepository;
+import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,9 @@ public class TestHelperService {
   
   @Autowired
   private ParticipantRepository participantRepository;
+
+  @Autowired
+  private ParticipantService participantService;
 
   public RunningDinner createClosedRunningDinner(LocalDate date, String email) {
 
@@ -160,4 +165,15 @@ public class TestHelperService {
     
     return runningDinnerService.acknowledgeRunningDinner(runningDinner.getAdminId(), runningDinner.getObjectId(), LocalDateTime.now());
   }
+  
+  public Participant addParticipant(Participant p, RunningDinner runningDinner) {
+    
+    return participantService.addParticipant(runningDinner, new ParticipantInputDataTO(p), false);
+  }
+  
+  public Participant updateParticipant(Participant p) {
+    
+    return participantService.updateParticipant(p.getAdminId(), p.getId(), new ParticipantInputDataTO(p));
+  }
+  
 }

@@ -8,11 +8,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.runningdinner.admin.rest.BasicSettingsTO;
 import org.runningdinner.contract.Contract;
+import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RegistrationType;
@@ -20,14 +22,16 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.RunningDinnerInfo;
-import org.runningdinner.frontend.rest.RegistrationDataV2TO;
+import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.mailserversettings.MailServerSettingsImpl;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamCancellation;
 import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.rest.TeamParticipantsAssignmentTO;
 import org.runningdinner.wizard.BasicDetailsTO;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 
@@ -57,9 +61,9 @@ public class TestUtil {
     return result;
   }
 
-  public static RegistrationDataV2TO createRegistrationData(String fullname, String email, ParticipantAddress address, int numberOfSeats) {
+  public static RegistrationDataTO createRegistrationData(String fullname, String email, ParticipantAddress address, int numberOfSeats) {
 
-    RegistrationDataV2TO registrationData = new RegistrationDataV2TO();
+    RegistrationDataTO registrationData = new RegistrationDataTO();
     registrationData.setEmail(email);
     ParticipantName participantName = ParticipantName.newName().withCompleteNameString(fullname);
     registrationData.setFirstnamePart(participantName.getFirstnamePart());
@@ -145,9 +149,9 @@ public class TestUtil {
                                                              boolean markParticipantActivated) {
     
     teamMembers.get(idx1).setEmail(email1);
-    teamMembers.get(idx1).setTeamPartnerWish(email2);
+    teamMembers.get(idx1).setTeamPartnerWishEmail(email2);
     teamMembers.get(idx2).setEmail(email2);
-    teamMembers.get(idx2).setTeamPartnerWish(email1);
+    teamMembers.get(idx2).setTeamPartnerWishEmail(email1);
     List<Participant> result = Arrays.asList(teamMembers.get(idx1), teamMembers.get(idx2));
     if (markParticipantActivated) {
       result.stream().forEach(p -> { 
@@ -170,4 +174,24 @@ public class TestUtil {
     }
     throw new RuntimeException("Team with " + teamMemberEmail + " not found in " + teams);
   }
+
+  public static TeamParticipantsAssignmentTO newTeamParticipantsAssignment(Team team, Participant...participants) {
+  	
+  	TeamParticipantsAssignmentTO result = new TeamParticipantsAssignmentTO();
+  	result.setTeamId(team.getId());
+  	result.setParticipantIds(new ArrayList<>(IdentifierUtil.getIds(Arrays.asList(participants))));
+  	return result;
+  }
+
+  public static TeamCancellation newCancellationWithoutReplacement(Team team) {
+  	
+  	TeamCancellation result = new TeamCancellation();
+  	result.setTeamId(team.getId());
+  	result.setDryRun(false);
+  	result.setReplaceTeam(false);
+  	return result;
+  }
+  
+  
+  
 }

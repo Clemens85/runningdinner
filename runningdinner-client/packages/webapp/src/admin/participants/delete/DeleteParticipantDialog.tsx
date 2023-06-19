@@ -1,7 +1,7 @@
 import React from 'react';
-import { Dialog, DialogContent } from '@material-ui/core';
+import {Box, Dialog, DialogContent } from '@material-ui/core';
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
-import {useTranslation} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {Span} from "../../../common/theme/typography/Tags";
 import {
@@ -9,13 +9,25 @@ import {
   CONSTANTS,
   deleteParticipantAsync,
   getFullname,
-  useBackendIssueHandler, findIssueByMessage
+  useBackendIssueHandler,
+  findIssueByMessage,
+  BaseAdminIdProps,
+  ParticipantListable,
+  Participant,
+  isTeamPartnerWishRegistration, isTeamPartnerWishChild, isTeamPartnerWishRoot
 } from "@runningdinner/shared";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
+import { Alert } from '@material-ui/lab';
 
-export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) => {
+type DeleteParticipantDialogProps = {
+  participant: ParticipantListable;
+  onClose: (deletedParticipant: Participant | null) => unknown;
+  open: boolean;
+} & BaseAdminIdProps;
+
+export const DeleteParticipantDialog = ({adminId, participant, open, onClose}: DeleteParticipantDialogProps) => {
 
   const {t} = useTranslation(['admin', 'common']);
   const {showSuccess} = useCustomSnackbar();
@@ -30,13 +42,13 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
   const deleteParticipant = async () => {
     try {
       const deletedParticipant = await deleteParticipantAsync(adminId, participant);
-      showSuccess(getFullname(participant) + " erfolgreich gelöscht");
+      showSuccess(t("admin:delete_participant_success_message", {fullname: getFullname(participant) }));
       onClose(deletedParticipant);
     } catch (e) {
       const issues = getIssuesUntranslated(e);
       if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.PARTICIPANT_ASSINGED_IN_TEAM)) {
         onClose(null);
-        cancelTeamMember(adminId, participant);
+        cancelTeamMember();
       }
       showHttpErrorDefaultNotification(e);
     }
@@ -66,9 +78,41 @@ export const DeleteParticipantDialog = ({adminId, participant, open, onClose}) =
                 <strong>{t('common:note')}</strong>: {t('admin:participant_deletion_confirmation_team_hint')}
               </Span>
           }
+          <TeamPartnerWishRegistrationInfo {...participant} />
         </DialogContent>
         { !isAssignedToTeam && <DialogActionsPanel onOk={deleteParticipant} onCancel={cancel} okLabel={t('common:delete')} cancelLabel={t('common:cancel')} danger={true}/> }
         { isAssignedToTeam && <DialogActionsPanel onOk={cancelTeamMember} onCancel={cancel} okLabel={t('admin:participant_cancel')} cancelLabel={t('common:cancel')} danger={true}/>}
       </Dialog>
   );
 };
+
+function TeamPartnerWishRegistrationInfo(participant: ParticipantListable) {
+
+  if (!isTeamPartnerWishRegistration(participant)) {
+    return null;
+  }
+
+  if (isTeamPartnerWishChild(participant)) {
+    return (
+      <Box mt={2}>
+        <Alert severity={"info"} variant="outlined">
+          <Trans i18nKey={"admin:team_partner_wish_registration_delete_child"}
+                 values={{ fullname: getFullname(participant), root_fullname: getFullname(participant.rootTeamPartnerWish!) }} />
+        </Alert>
+      </Box>
+    );
+  } else if (isTeamPartnerWishRoot(participant)) {
+    return (
+      <Box mt={2}>
+        <Alert severity={"warning"} variant="outlined">
+          <Trans i18nKey={"admin:team_partner_wish_registration_delete_root"}
+                 values={{ fullname: getFullname(participant), child_fullname: getFullname(participant.childTeamPartnerWish!) }} />
+        </Alert>
+      </Box>
+    );
+  } else {
+    return null;
+  }
+
+
+}

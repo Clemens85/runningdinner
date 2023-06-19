@@ -34,7 +34,7 @@ export default function ParticipantGenderSelection(props: LabelValue) {
   };
 
   return (
-      <>
+      <div id="gender">
         <Typography variant="caption" display="block">
           {label}
         </Typography>
@@ -71,7 +71,7 @@ export default function ParticipantGenderSelection(props: LabelValue) {
               </Box>
             </Grid> }
         </Grid>
-      </>
+      </div>
   );
 
 }

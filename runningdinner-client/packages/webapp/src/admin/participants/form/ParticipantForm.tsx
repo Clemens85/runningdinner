@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { Grid, Paper, Box, LinearProgress } from "@material-ui/core";
 import ParticipantFormHeadline from "./ParticipantFormHeadline";
-import PersonalDataSection from "./PersonalDataSection";
+import {PersonalDataSection} from "./PersonalDataSection";
 import AddressSection from "./AddressSection";
 import MealSpecificsSection from "./MealSpecificsSection";
 import MiscSection from "./MiscSection";
@@ -10,7 +10,8 @@ import {
   CallbackHandler,
   getFullname,
   isNewEntity,
-  mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant,
+  isTeamPartnerWishChild,
+  mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant, ParticipantListable,
   saveParticipantAsync,
   useBackendIssueHandler
 } from "@runningdinner/shared";
@@ -22,9 +23,10 @@ import SecondaryButton from "../../../common/theme/SecondaryButton";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 import useCommonStyles from "../../../common/theme/CommonStyles";
+import {TeamPartnerWishSectionAdmin} from "./TeamPartnerWishSectionAdmin";
 
 export interface ParticipantFormProps {
-  participant: Participant;
+  participant: ParticipantListable;
   adminId: string;
   onParticipantSaved: CallbackHandler;
   onParticipantDeleted: CallbackHandler;
@@ -90,12 +92,14 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
     }
   };
 
-  function onDeleteDialogClosed(deletedParticipant: Participant) {
+  function onDeleteDialogClosed(deletedParticipant: Participant | null) {
     setOpenDeleteDialog(false);
     if (deletedParticipant) {
       onParticipantDeleted(deletedParticipant);
     }
   }
+
+  const teamPartnerWishChild = isTeamPartnerWishChild(participant);
 
   return (
       <Paper elevation={3}>
@@ -107,25 +111,36 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
                 <Grid item xs={12} md={8}>
                   <ParticipantFormHeadline />
                 </Grid>
-                <Grid item xs={12} md={4}>
-                  <div className={classes.textAlignRight}>
-                    <FillWithExampleDataLink />
-                  </div>
-                </Grid>
+                {!teamPartnerWishChild &&
+                  <Grid item xs={12} md={4}>
+                    <div className={classes.textAlignRight}>
+                      <FillWithExampleDataLink/>
+                    </div>
+                  </Grid>
+                }
               </Grid>
 
               <Box mb={3} mt={3}>
-                <PersonalDataSection />
+                <PersonalDataSection showOnlyNameFields={teamPartnerWishChild} />
               </Box>
+              { !teamPartnerWishChild &&
+                <>
+                  <Box mb={3}>
+                    <AddressSection />
+                  </Box>
+                  <Box mb={3}>
+                    <MealSpecificsSection />
+                  </Box>
+                </>
+              }
               <Box mb={3}>
-                <AddressSection />
+                { !teamPartnerWishDisabled && <TeamPartnerWishSectionAdmin {...participant} adminId={adminId} /> }
               </Box>
-              <Box mb={3}>
-                <MealSpecificsSection />
-              </Box>
-              <Box mb={3}>
-                <MiscSection teamPartnerWishDisabled={teamPartnerWishDisabled} />
-              </Box>
+              {!teamPartnerWishChild &&
+                <Box mb={3}>
+                  <MiscSection/>
+                </Box>
+              }
 
               {isSubmitting && <LinearProgress />}
 

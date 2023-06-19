@@ -2,8 +2,11 @@ package org.runningdinner.participant;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +34,8 @@ import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamParticipantsAssignmentTO;
 import org.runningdinner.participant.rest.TeamTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Service;
@@ -42,6 +47,8 @@ import org.springframework.util.Assert;
 @Service
 public class WaitingListService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(WaitingListService.class);
+  
 	private TeamService teamService;
 	
 	private RunningDinnerService runningDinnerService;
@@ -134,52 +141,72 @@ public class WaitingListService {
 	@Transactional
 	public WaitingListActionResult generateNewTeams(@ValidateAdminId String adminId, List<ParticipantTO> incomingParticipants) {
 		
-		Set<UUID> participantIds = IdentifierUtil.getIds(incomingParticipants);
-		List<Participant> participants = participantService.findParticipantsByIds(adminId, participantIds);
-		Assert.state(participants.size() == incomingParticipants.size(), "Not all participants were found for " + participantIds  + ": " +  participants);
+      Set<UUID> participantIds = IdentifierUtil.getIds(incomingParticipants);
+      List<Participant> participants = participantService.findParticipantsByIds(adminId, participantIds);
+      Assert.state(participants.size() == incomingParticipants.size(), "Not all participants were found for " + participantIds + ": " + participants);
+
+      for (Participant p : participants) {
+        Assert.isNull(p.getTeamId(), "Expected " + p + " to have no team assigenment, but is in team " + p.getTeamId());
+      }
+
+      RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+      int nextParticipantsOffsetSize = getNextParticipantsOffsetSize(runningDinner);
 		
-		for (Participant p : participants) {
-			Assert.isNull(p.getTeamId(), "Expected " + p + " to have no team assigenment, but is in team " + p.getTeamId());
-		}
-		
-		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-		int nextParticipantsOffsetSize = getNextParticipantsOffsetSize(runningDinner);
-		
-	  List<Team> teamsWithCancelStatusOrCancelledMembers = teamService.findTeamArrangementsWaitingListFillable(adminId);
-	  int totalNumberOfMissingTeamMembers = calculateTotalNumberOfMissingTeamMembers(teamsWithCancelStatusOrCancelledMembers, runningDinner.getConfiguration().getTeamSize());
+      List<Team> teamsWithCancelStatusOrCancelledMembers = teamService.findTeamArrangementsWaitingListFillable(adminId);
+      int totalNumberOfMissingTeamMembers = calculateTotalNumberOfMissingTeamMembers(teamsWithCancelStatusOrCancelledMembers, runningDinner.getConfiguration().getTeamSize());
+
+      int numParticipantsForNewTeams = participants.size();
+      if (numParticipantsForNewTeams < (nextParticipantsOffsetSize + totalNumberOfMissingTeamMembers)) {
+        throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS_TOO_FEW, IssueType.VALIDATION)));
+      }
+
+      int remainder = (numParticipantsForNewTeams - totalNumberOfMissingTeamMembers) % nextParticipantsOffsetSize;
+      if (remainder != 0) {
+        throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS, IssueType.VALIDATION)));
+      }
+
+      checkTeamGenerationWithParticipantsDoesNotDestroyTeamPartnerRegistrations(participants);
+      
+      List<Activity> activities = findRelevantActivities(adminId);
+
+      List<TeamTO> affectedTeams = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, participants).getTeams();
+      if (needToKeepExistingTeams(activities)) {
+        affectedTeams = filterTeamsByContainedTeamMembers(affectedTeams, participantIds);
+      } 
+
+      emitWaitingListEventAfterCommit(new WaitingListTeamsGeneratedEvent(this, affectedTeams, runningDinner));
+
+      return new WaitingListActionResult(affectedTeams, activities);
+    }
+
+	private static void checkTeamGenerationWithParticipantsDoesNotDestroyTeamPartnerRegistrations(List<Participant> participants) {
+      
+	  List<Participant> participantsWithTeamPartnerRegistration = ParticipantService.filterParticipantsWithTeamPartnerRegistration(participants);
 	  
-		int numParticipantsForNewTeams = participants.size();
-		if (numParticipantsForNewTeams < (nextParticipantsOffsetSize + totalNumberOfMissingTeamMembers)) {
-			throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS_TOO_FEW, IssueType.VALIDATION)));
-		}
-		
-		int remainder = (numParticipantsForNewTeams - totalNumberOfMissingTeamMembers) % nextParticipantsOffsetSize;
-		if (remainder != 0) {
-			throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS, IssueType.VALIDATION)));
-		}
-		
-		List<Activity> activities = findRelevantActivities(adminId);
-		
-		List<TeamTO> affectedTeams;
-		if (needToKeepExistingTeams(activities)) {
-			affectedTeams = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, participants).getTeams();
-			affectedTeams = filterTeamsByContainedTeamMembers(affectedTeams, participantIds);
-		} else {
-			affectedTeams = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, Collections.emptyList()).getTeams();
-		}
-		
-		emitWaitingListEventAfterCommit(new WaitingListTeamsGeneratedEvent(this, affectedTeams, runningDinner));
-		
-		return new WaitingListActionResult(affectedTeams, activities);
-	}
+	  Map<UUID, List<Participant>> participantsByTeamPartnerRegistrationOriginatorId = new HashMap<>();
+	  for (Participant p : participantsWithTeamPartnerRegistration) {
+	    List<Participant> participantList = participantsByTeamPartnerRegistrationOriginatorId.getOrDefault(p.getTeamPartnerWishOriginatorId(), new ArrayList<>(2));
+	    participantsByTeamPartnerRegistrationOriginatorId.put(p.getTeamPartnerWishOriginatorId(), participantList);
+	    participantList.add(p);
+	  }
+	  
+	  for (Entry<UUID, List<Participant>> entry : participantsByTeamPartnerRegistrationOriginatorId.entrySet()) {
+	    List<Participant> teamPartnerRegistationParticipants = entry.getValue();
+	    if (teamPartnerRegistationParticipants.size() != 2) {
+	      LOGGER.error("Cannot use {} for new teams generation in waitinglist, due to the teamPartnerWishOriginatorIds are not consistent (tpwoid = {})", 
+	                    teamPartnerRegistationParticipants, entry.getKey());
+	      throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH, IssueType.VALIDATION)));
+	    }
+	  }
+    }
 
 	@Transactional
 	public WaitingListActionResult assignParticipantsToExistingTeams(@ValidateAdminId String adminId, List<TeamParticipantsAssignmentTO> teamParticipantsAssignments) {
 		
 		List<TeamParticipantsAssignmentTO> teamParticipantsAssignmentsToApply = teamParticipantsAssignments
-																																							.stream()
-																																							.filter(tpa -> CollectionUtils.isNotEmpty(tpa.getParticipantIds()))
-																																							.collect(Collectors.toList());
+																					.stream()
+																					.filter(tpa -> CollectionUtils.isNotEmpty(tpa.getParticipantIds()))
+																					.collect(Collectors.toList());
 		
 		validateNoDuplicatedParticipantIds(teamParticipantsAssignmentsToApply);
 
@@ -189,7 +216,7 @@ public class WaitingListService {
 		
 		List<Team> affectedTeams = new ArrayList<>();
 		for (TeamParticipantsAssignmentTO singleTeamParticipantsAssignment : teamParticipantsAssignmentsToApply) {
-			affectedTeams.add(assignParticipantsToExistingTeam(runningDinner, singleTeamParticipantsAssignment.getTeamId(), singleTeamParticipantsAssignment.getParticipantIds()));
+		  affectedTeams.add(assignParticipantsToExistingTeam(runningDinner, singleTeamParticipantsAssignment.getTeamId(), singleTeamParticipantsAssignment.getParticipantIds()));
 		}
 		
 		List<Activity> activities = findRelevantActivities(adminId);
@@ -229,7 +256,8 @@ public class WaitingListService {
           team + " is not allowed to be in status OK, but must either be cancelled or have a cancelled team member");
 
       List<Participant> participantsToAssign = findParticipantsToAssign(adminId, participantIds);
-
+      teamService.checkReplacementNotDestroyingTeamPartnerRegistration(adminId, team, participantsToAssign);
+      
       List<Participant> teamMembers = team.getTeamMembersOrdered();
       teamMembers.addAll(participantsToAssign);
       Assert.state(teamMembers.size() <= teamSize,

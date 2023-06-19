@@ -7,11 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantAddress;
-import org.runningdinner.participant.ParticipantName;
 
 public class ParticipantTO extends BaseParticipantTO {
 
@@ -19,13 +16,13 @@ public class ParticipantTO extends BaseParticipantTO {
 
   private int participantNumber;
 
-  private int numSeats;
-
   private UUID teamId;
 
   private LocalDateTime activationDate;
   
   private GeocodingResult geocodingResult;
+  
+  private UUID teamPartnerWishOriginatorId;
   
   public ParticipantTO() {
 
@@ -33,14 +30,11 @@ public class ParticipantTO extends BaseParticipantTO {
 
   public ParticipantTO(final Participant participant) {
     super(participant);
-    this.numSeats = participant.getNumSeats();
     this.participantNumber = participant.getParticipantNumber();
-    
     this.teamId = participant.getTeamId();
-    
     this.activationDate = participant.getActivationDate();
-    
     this.geocodingResult = participant.getGeocodingResult();
+    this.teamPartnerWishOriginatorId = participant.getTeamPartnerWishOriginatorId();
   }
 
   public int getParticipantNumber() {
@@ -51,16 +45,6 @@ public class ParticipantTO extends BaseParticipantTO {
   public void setParticipantNumber(int participantNumber) {
 
     this.participantNumber = participantNumber;
-  }
-
-  public int getNumSeats() {
-
-    return numSeats;
-  }
-
-  public void setNumSeats(int numSeats) {
-
-    this.numSeats = numSeats;
   }
 
   public UUID getTeamId() {
@@ -87,6 +71,10 @@ public class ParticipantTO extends BaseParticipantTO {
 
     this.geocodingResult = geocodingResult;
   }
+  
+  public UUID getTeamPartnerWishOriginatorId() {
+    return teamPartnerWishOriginatorId;
+  }
 
   public static List<ParticipantTO> convertParticipantList(final Collection<Participant> participants) {
 
@@ -94,37 +82,6 @@ public class ParticipantTO extends BaseParticipantTO {
     for (Participant p : participants) {
       result.add(new ParticipantTO(p));
     }
-    return result;
-  }
-
-  public Participant toParticipant() {
-
-    Participant result = new Participant(this.participantNumber);
-
-    result.setAge(getAge());
-    result.setEmail(getEmail());
-    result.setMobileNumber(getMobileNumber());
-    result.setNumSeats(getNumSeats());
-
-    ParticipantAddress address = new ParticipantAddress(getStreet(), getStreetNr(), getZip());
-    address.setCityName(getCityName());
-    address.setRemarks(getAddressRemarks());
-    result.setAddress(address);
-
-    result.setGender(getGender());
-
-    result.setName(ParticipantName.newName().withFirstname(getFirstnamePart()).andLastname(getLastname()));
-
-    result.setMealSpecifics(new MealSpecifics(isLactose(), isGluten(), isVegetarian(), isVegan(), getMealSpecificsNote()));
-    
-    result.setNotes(getNotes());
-    
-    result.setActivationDate(getActivationDate());
-    
-    result.setTeamPartnerWish(getTeamPartnerWish());
-
-    result.setGeocodingResult(getGeocodingResult());
-
     return result;
   }
 

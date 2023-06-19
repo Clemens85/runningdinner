@@ -3,6 +3,7 @@ import React, {ReactElement} from "react";
 import {ProgressBar} from "./ProgressBar";
 import {getAsHttpErrorOrDefault} from "@runningdinner/shared";
 import {GENERIC_HTTP_ERROR} from "@runningdinner/shared/src/redux";
+import {isArray} from "lodash";
 
 export interface RenderArg<T> {
   reFetch: () => Promise<T>;
@@ -26,7 +27,13 @@ export function Fetch<T>(props: FetchProps<T>) {
     const httpFetchError = error ? getAsHttpErrorOrDefault(error, GENERIC_HTTP_ERROR) : undefined;
     return <ProgressBar showLoadingProgress={loading} fetchError={httpFetchError} />;
   } else {
-    const mergedResult = { result, reFetch: () => { return asyncResult.execute(parameters); }};
+    const mergedResult = { result, reFetch: () => {
+      if (isArray(parameters)) {
+        return asyncResult.execute(...parameters);
+      } else {
+        return asyncResult.execute(parameters);
+      }
+    }};
     // @ts-ignore
     return props.render(mergedResult) as ReactElement<any>;
   }

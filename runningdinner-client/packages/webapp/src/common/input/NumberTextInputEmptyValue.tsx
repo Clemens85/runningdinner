@@ -1,8 +1,15 @@
 import React, {useEffect} from 'react'
 import TextField from "@material-ui/core/TextField";
 import {CallbackHandler, isStringEmpty} from "@runningdinner/shared";
-import {useFormContext} from "react-hook-form";
+import {Controller, useFormContext} from "react-hook-form";
 import { BaseTextFieldProps } from '@material-ui/core';
+
+
+export interface NumberFormTextFieldEmptyValueAllowedProps extends BaseTextFieldProps {
+  emptyValue: number;
+  name: string;
+  label: string;
+}
 
 export interface NumberTextInputEmptyValueProps extends BaseTextFieldProps {
   onChange: CallbackHandler,
@@ -12,7 +19,44 @@ export interface NumberTextInputEmptyValueProps extends BaseTextFieldProps {
   value: string;
 }
 
-export const NumberTextInputEmptyValue = React.forwardRef(({onChange, emptyValue = -1, name, label, value, ...others}: NumberTextInputEmptyValueProps, ref) => {
+export function NumberFormTextFieldEmptyValueAllowed(props: NumberFormTextFieldEmptyValueAllowedProps) {
+
+  const {control, errors} = useFormContext();
+
+  const {name, label, required, defaultValue} = props;
+
+  const hasErrors = !!errors[name];
+
+  let helperText = props.helperText;
+  if (hasErrors) {
+    helperText = errors[name].message;
+  }
+
+  return (
+    <Controller
+      name={name}
+      error={hasErrors}
+      helperText={helperText}
+      label={label}
+      control={control}
+      defaultValue={defaultValue}
+      render={controllerProps =>
+        <NumberTextInputEmptyValue
+          variant="filled"
+          name={name}
+          required={required}
+          label={label}
+          onChange={newVal => controllerProps.onChange(newVal)}
+          value={controllerProps.value}
+          helperText={helperText}
+          emptyValue={0}
+          fullWidth />
+      }
+    />
+  );
+}
+
+const NumberTextInputEmptyValue = React.forwardRef(({onChange, emptyValue = -1, name, label, helperText, value, ...others}: NumberTextInputEmptyValueProps, ref) => {
 
   const handleDisplayValueChange = (changeEvt: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = changeEvt.target.value;
@@ -42,12 +86,13 @@ export const NumberTextInputEmptyValue = React.forwardRef(({onChange, emptyValue
 
 
   const hasError = errors[name] ? true : false;
-  const errorText = hasError ? errors[name].message : undefined;
+  // const errorText = hasError ? errors[name].message : undefined;
 
   return (
-      <TextField label={label}
+      <TextField
+                 label={label}
                  error={hasError}
-                 helperText={errorText}
+                 helperText={helperText}
                  innerRef={ref}
                  name={name}
                  {...others}

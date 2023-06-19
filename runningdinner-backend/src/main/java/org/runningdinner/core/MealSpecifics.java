@@ -10,85 +10,84 @@ import org.runningdinner.core.util.CoreUtil;
 @Embeddable
 public class MealSpecifics {
 
-	private boolean lactose;
+  private boolean lactose;
 
-	private boolean gluten;
+  private boolean gluten;
 
-	private boolean vegetarian;
+  private boolean vegetarian;
 
-	private boolean vegan;
+  private boolean vegan;
 
-	private String note = StringUtils.EMPTY;
-	
-	public static final MealSpecifics NONE = new MealSpecifics();
-	
-	public MealSpecifics(boolean lactose, boolean gluten, boolean vegetarian, boolean vegan, String note) {
-		this.lactose = lactose;
-		this.gluten = gluten;
-		this.vegetarian = vegetarian;
-		this.vegan = vegan;
-		this.setNote(note);
-	}
+  private String mealSpecificsNote = StringUtils.EMPTY;
 
-	public MealSpecifics() {
-	}
+  public static final MealSpecifics NONE = new MealSpecifics();
 
-	public boolean isLactose() {
-		return lactose;
-	}
+  public MealSpecifics(boolean lactose, boolean gluten, boolean vegetarian, boolean vegan, String note) {
+    this.lactose = lactose;
+    this.gluten = gluten;
+    this.vegetarian = vegetarian;
+    this.vegan = vegan;
+    this.setNote(note);
+  }
 
-	public void setLactose(boolean lactose) {
-		this.lactose = lactose;
-	}
+  public MealSpecifics() {
+  }
 
-	public boolean isGluten() {
-		return gluten;
-	}
+  public boolean isLactose() {
+    return lactose;
+  }
 
-	public void setGluten(boolean gluten) {
-		this.gluten = gluten;
-	}
+  public void setLactose(boolean lactose) {
+    this.lactose = lactose;
+  }
 
-	public boolean isVegetarian() {
-		return vegetarian;
-	}
+  public boolean isGluten() {
+    return gluten;
+  }
 
-	public void setVegetarian(boolean vegetarian) {
-		this.vegetarian = vegetarian;
-	}
+  public void setGluten(boolean gluten) {
+    this.gluten = gluten;
+  }
 
-	public boolean isVegan() {
-		return vegan;
-	}
+  public boolean isVegetarian() {
+    return vegetarian;
+  }
 
-	public void setVegan(boolean vegan) {
-		this.vegan = vegan;
-	}
+  public void setVegetarian(boolean vegetarian) {
+    this.vegetarian = vegetarian;
+  }
 
-	public String getNote() {
-		return note;
-	}
+  public boolean isVegan() {
+    return vegan;
+  }
 
-	public void setNote(String note) {
-		if (note == null) {
-			this.note = StringUtils.EMPTY;
-		}
-		else {
-			this.note = StringUtils.trim(note);
-		}
-	}
+  public void setVegan(boolean vegan) {
+    this.vegan = vegan;
+  }
 
-	public MealSpecifics createDetachedClone() {
+  public String getMealSpecificsNote() {
+    return mealSpecificsNote;
+  }
+
+  public void setNote(String mealSpecificsNote) {
+    if (mealSpecificsNote == null) {
+      this.mealSpecificsNote = StringUtils.EMPTY;
+    } else {
+      this.mealSpecificsNote = StringUtils.trim(mealSpecificsNote);
+    }
+  }
+
+  public MealSpecifics createDetachedClone() {
 
     MealSpecifics result = new MealSpecifics();
     result.gluten = gluten;
     result.lactose = lactose;
-    result.note = note;
+    result.mealSpecificsNote = mealSpecificsNote;
     result.vegan = vegan;
     result.vegetarian = vegetarian;
     return result;
-	}
-	
+  }
+
   public void unionWith(MealSpecifics incomingMealSpecifics) {
 
     this.vegan = this.vegan || incomingMealSpecifics.isVegan();
@@ -96,16 +95,20 @@ public class MealSpecifics {
     this.gluten = this.gluten || incomingMealSpecifics.isGluten();
     this.lactose = this.lactose || incomingMealSpecifics.isLactose();
   }
-  
+
   public boolean isOneSelected() {
 
     return CoreUtil.isOneTrue(vegan, vegetarian, gluten, lactose);
   }
-	
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(17, 113).append(isLactose()).append(isGluten()).append(isVegan()).append(isVegetarian()).append(
-				getNote()).toHashCode();
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 113)
+                .append(isLactose())
+                .append(isGluten())
+                .append(isVegan())
+                .append(isVegetarian())
+                .append(getMealSpecificsNote()).toHashCode();
 	}
 
 	@Override
@@ -121,12 +124,12 @@ public class MealSpecifics {
 		}
 		MealSpecifics other = (MealSpecifics)obj;
 		return new EqualsBuilder().append(isGluten(), other.isGluten()).append(isLactose(), other.isLactose()).append(isVegan(),
-				other.isVegan()).append(isVegetarian(), other.isVegetarian()).append(getNote(), other.getNote()).isEquals();
+				other.isVegan()).append(isVegetarian(), other.isVegetarian()).append(getMealSpecificsNote(), other.getMealSpecificsNote()).isEquals();
 	}
 
 	@Override
 	public String toString() {
-		return "lactose=" + lactose + ", gluten=" + gluten + ", vegetarian=" + vegetarian + ", vegan=" + vegan + ", notes=" + note;
+		return "lactose=" + lactose + ", gluten=" + gluten + ", vegetarian=" + vegetarian + ", vegan=" + vegan + ", notes=" + mealSpecificsNote;
 	}
 
 }

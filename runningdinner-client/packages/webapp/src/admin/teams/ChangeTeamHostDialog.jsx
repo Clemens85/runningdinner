@@ -10,10 +10,11 @@ import {
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import React, {useState} from "react";
 import Paragraph from "../../common/theme/typography/Paragraph";
-import {findEntityById, getFullname, updateTeamHostAsync} from "@runningdinner/shared";
+import {findEntityById, getFullname, isTeamPartnerWishRegistration, updateTeamHostAsync} from "@runningdinner/shared";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
+import Alert from "@material-ui/lab/Alert";
 
 
 export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHostChanged}) => {
@@ -41,6 +42,21 @@ export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHost
   const hostsToSelect = teamMembers.map((teamMember) =>
       <MenuItem value={teamMember.id} key={teamMember.id}>{getFullname(teamMember)}</MenuItem>
   );
+
+  if (isTeamPartnerWishRegistration(selectedHostTeamMember)) {
+    return (
+      <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true}>
+        <DialogTitleCloseable onClose={onClose}>{t('teams_host_change')}</DialogTitleCloseable>
+        <DialogContent>
+          <Subtitle i18n="admin:team" parameters={{ teamNumber }} />
+          <Box mt={2}>
+            <Alert severity={"info"} variant="outlined">{t("admin:team_partner_wish_registration_change_teamhost_not_possible")}</Alert>
+          </Box>
+        </DialogContent>
+        <DialogActionsPanel onOk={onClose} onCancel={onClose} okLabel={t('common:ok')} cancelLabel={t('common:cancel')} />
+      </Dialog>
+    );
+  }
 
   return (
       <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true}>

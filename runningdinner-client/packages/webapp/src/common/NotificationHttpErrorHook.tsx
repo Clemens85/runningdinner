@@ -22,6 +22,11 @@ export interface HttpErrorDefaultNotificationProps {
   showMessageForValidationErrorsWithoutSource?: boolean;
 
   /**
+   * If set to true, all issues that are contained in request are shown, despite if they are field related or not
+   */
+  showAllValidationErrorMessages?: boolean;
+
+  /**
    * Can be passed to overwrite default autoHideDuration, see {@link SnackbarProps.autoHideDuration} for more details.
    */
   autoHideDuration?: number | null;
@@ -65,6 +70,7 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
         : {
           showMessageForValidationErrorsWithoutSource: true,
           showGenericMesssageOnValidationError: true,
+          showAllValidationErrorMessages: false
         };
 
     if (isValidationError(httpError)) {
@@ -74,7 +80,9 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
         const errorMessage = t("validation_error_desc");
         showError(errorMessage);
       }
-      return;
+      if (!optionsToUse.showAllValidationErrorMessages) {
+        return;
+      }
     }
 
     const allIssues = issues.issuesWithoutField.concat(issues.issuesFieldRelated);

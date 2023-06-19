@@ -57,49 +57,53 @@ public class RunningDinnerCalculator {
 	 * @throws NoPossibleRunningDinnerException If there are too few participants
 	 */
 	public GeneratedTeamsResult generateTeams(final RunningDinnerConfig runningDinnerConfig,
-                                            final List<Participant> participants,
-                                            final List<TeamTO> existingTeamsToKeep,
-                                            final ParticipantListRandomizer participantListRandomizer) throws NoPossibleRunningDinnerException {
+                                              final List<Participant> participants,
+                                              final List<TeamTO> existingTeamsToKeep,
+                                              final ParticipantListRandomizer participantListRandomizer) throws NoPossibleRunningDinnerException {
 
-		int teamSize = runningDinnerConfig.getTeamSize();
-		int numParticipants = participants.size();
+      int teamSize = runningDinnerConfig.getTeamSize();
+      int numParticipants = participants.size();
 
-		if (teamSize >= numParticipants) {
-			throw new NoPossibleRunningDinnerException("There must be more participants as a team's size");
-		}
+      if (teamSize >= numParticipants) {
+        throw new NoPossibleRunningDinnerException("There must be more participants as a team's size");
+      }
 
-		TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);
+      TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);
 
-		GeneratedTeamsResult result = new GeneratedTeamsResult();
-		result.setTeamCombinationInfo(teamCombinationInfo);
+      GeneratedTeamsResult result = new GeneratedTeamsResult();
+      result.setTeamCombinationInfo(teamCombinationInfo);
 
-		List<Participant> participantsToAssign = splitRegularAndIrregularParticipants(participants, result, runningDinnerConfig);
+      List<Participant> participantsToAssign = splitRegularAndIrregularParticipants(participants, result,
+          runningDinnerConfig);
 
-		List<Team> regularTeams;
-		
-		if (CollectionUtils.isEmpty(existingTeamsToKeep)) {
-			regularTeams = buildRegularTeams(runningDinnerConfig, participantsToAssign, participantListRandomizer);
-		} else {
-			List<Participant> participantsFromExistingTeams = getParticipantsFromExistingTeams(participantsToAssign, existingTeamsToKeep);
-			regularTeams = buildRegularTeams(runningDinnerConfig, participantsFromExistingTeams, participantListRandomizer);
-			Set<Participant> newParticipantsFromWaitingList = CoreUtil.excludeMultipleFromSet(participantsFromExistingTeams, new HashSet<>(participantsToAssign));
-			
-			int teamNumberOffset = regularTeams.size() + 1;
-			
-			List<Team> newTeams = buildRegularTeams(runningDinnerConfig, new ArrayList<>(newParticipantsFromWaitingList), participantListRandomizer);
-			for (Team newTeam : newTeams) {
-				TeamNumberAccessor
-					.newAccessor(newTeam)
-					.setTeamNumber(teamNumberOffset++);
-				regularTeams.add(newTeam);
-			}
-		}
-		
-		result.setRegularTeams(regularTeams);
+      List<Team> regularTeams;
 
-		return result;
-	}
-	
+      if (CollectionUtils.isEmpty(existingTeamsToKeep)) {
+        regularTeams = buildRegularTeams(runningDinnerConfig, participantsToAssign, participantListRandomizer);
+      } else {
+        List<Participant> participantsFromExistingTeams = getParticipantsFromExistingTeams(participantsToAssign,
+            existingTeamsToKeep);
+        regularTeams = buildRegularTeams(runningDinnerConfig, participantsFromExistingTeams, participantListRandomizer);
+        Set<Participant> newParticipantsFromWaitingList = CoreUtil.excludeMultipleFromSet(participantsFromExistingTeams,
+            new HashSet<>(participantsToAssign));
+
+        int teamNumberOffset = regularTeams.size() + 1;
+
+        List<Team> newTeams = buildRegularTeams(runningDinnerConfig, new ArrayList<>(newParticipantsFromWaitingList),
+            participantListRandomizer);
+        for (Team newTeam : newTeams) {
+          TeamNumberAccessor
+              .newAccessor(newTeam)
+              .setTeamNumber(teamNumberOffset++);
+          regularTeams.add(newTeam);
+        }
+      }
+
+      result.setRegularTeams(regularTeams);
+
+      return result;
+    }
+
 	private static List<Participant> getParticipantsFromExistingTeams(List<Participant> allParticipantsToUse, List<TeamTO> existingTeamInfosToRestore) {
 		
 		Set<Participant> allParticipantsAsSet = new HashSet<>(allParticipantsToUse);
@@ -330,28 +334,29 @@ public class RunningDinnerCalculator {
 		Collections.sort(regularTeams);
 	}
 	
-	protected List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig,
-                                         final List<Participant> participantsToAssign,
-                                         final ParticipantListRandomizer participantListRandomizer) {
+    protected List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig,
+                                           final List<Participant> participantsToAssign,
+                                           final ParticipantListRandomizer participantListRandomizer) {
 
-		if (CoreUtil.isEmpty(participantsToAssign)) {
-			return new ArrayList<Team>(0);
-		}
+      if (CoreUtil.isEmpty(participantsToAssign)) {
+        return new ArrayList<Team>(0);
+      }
 
-    participantListRandomizer.shuffle(participantsToAssign);
+      participantListRandomizer.shuffle(participantsToAssign);
 
-		TeamDistributorHosting teamDistributorHosting = new TeamDistributorHosting(participantsToAssign, runningDinnerConfig);
-		List<Team> teams = teamDistributorHosting.calculateTeams();
-		
-	  TeamDistributorGender teamDistributorGender = new TeamDistributorGender(teams, runningDinnerConfig);
-	  teams = teamDistributorGender.calculateTeams();
+      TeamDistributorHosting teamDistributorHosting = new TeamDistributorHosting(participantsToAssign,
+          runningDinnerConfig);
+      List<Team> teams = teamDistributorHosting.calculateTeams();
 
-	  for (Team team : teams) {
-      setHostingParticipant(team, runningDinnerConfig);
+      TeamDistributorGender teamDistributorGender = new TeamDistributorGender(teams, runningDinnerConfig);
+      teams = teamDistributorGender.calculateTeams();
+
+      for (Team team : teams) {
+        setHostingParticipant(team, runningDinnerConfig);
+      }
+
+      return teams;
     }
-
-    return teams;
-	}
 
 	/**
 	 * Sets one participant in the team as the hosting participant.

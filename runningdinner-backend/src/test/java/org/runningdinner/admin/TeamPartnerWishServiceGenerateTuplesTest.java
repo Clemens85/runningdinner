@@ -58,7 +58,7 @@ public class TeamPartnerWishServiceGenerateTuplesTest {
   @Test
   public void singleTeamPartnerWishWithoutMatch() {
    
-    teamMembers.get(0).setTeamPartnerWish("foo@bar.de");
+    teamMembers.get(0).setTeamPartnerWishEmail("foo@bar.de");
     List<TeamPartnerWishTuple> result = TeamPartnerWishService.getTeamPartnerWishTuples(teamMembers, configuration);
     assertThat(result).isEmpty();
   }
@@ -67,7 +67,7 @@ public class TeamPartnerWishServiceGenerateTuplesTest {
   public void teamPartnerWishWithOneMatchAndOneAdditionalWishNotMatching() {
     
     setMatchingTeamPartnerWish(0, 10, "max@mustermann.de", "maria@musterfrau.de");
-    teamMembers.get(5).setTeamPartnerWish("max@mustermann.de");
+    teamMembers.get(5).setTeamPartnerWishEmail("max@mustermann.de");
     List<TeamPartnerWishTuple> result = TeamPartnerWishService.getTeamPartnerWishTuples(teamMembers, configuration);
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getParticipants()).extracting("participantNumber").containsExactlyInAnyOrder(1, 11); // idx + 1
@@ -91,7 +91,7 @@ public class TeamPartnerWishServiceGenerateTuplesTest {
     for (TeamPartnerWishTuple teamPartnerWishTuple : teamPartnerWishTuples) {
       boolean found = teamPartnerWishTuple.getParticipants()
                         .stream()
-                        .map(Participant::getTeamPartnerWish)
+                        .map(Participant::getTeamPartnerWishEmail)
                         .anyMatch(teamPartnerWishEmail::equalsIgnoreCase);
       if (found) {
         return teamPartnerWishTuple;

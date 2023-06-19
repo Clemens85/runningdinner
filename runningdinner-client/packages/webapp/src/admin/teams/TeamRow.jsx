@@ -1,4 +1,4 @@
-import { TableRow, TableCell, Hidden, Button } from "@material-ui/core";
+import {TableRow, TableCell, Hidden, Button, Tooltip} from "@material-ui/core";
 import React from "react";
 import NumSeats from "../participants/list/NumSeats";
 import ParticipantGenderTooltip from "../../common/gender/ParticipantGenderTooltip";
@@ -8,7 +8,16 @@ import HomeRoundedIcon from '@material-ui/icons/HomeRounded';
 import {makeStyles} from "@material-ui/core/styles";
 import {CancelledTeamMember} from "./CancelledTeamMember";
 import useCommonStyles from "../../common/theme/CommonStyles";
-import {generateCancelledTeamMembersAsNumberArray, CONSTANTS, Fullname} from "@runningdinner/shared";
+import {
+  generateCancelledTeamMembersAsNumberArray,
+  CONSTANTS,
+  Fullname,
+  isTeamPartnerWishChild,
+  getTeamPartnerOptionOfTeam,
+  hasAllTeamMembersSameTeamPartnerWish
+} from "@runningdinner/shared";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import {useTranslation} from "react-i18next";
 
 const useParticipantStyles = makeStyles(() => ({
   cellPadding: {
@@ -30,12 +39,18 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
       cancelledTeamMembers.map(cancelledTeamMember => <TeamMember key={cancelledTeamMember} participant={null} />)
   );
 
-  const teamMemberSeats = teamMembers.map(participant => <div key={participant.id} className={participantClasses.cellPadding}><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} /></div>);
+  const teamMemberSeats = teamMembers.map(participant => <div key={participant.id} className={participantClasses.cellPadding}>
+                                                            {!isTeamPartnerWishChild(participant) &&
+                                                              <NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData}/>
+                                                            }
+                                                          </div>);
   const teamMemberGenders = teamMembers.map(participant => <div key={participant.id}>
-                                                              <ParticipantGenderTooltip gender={participant.gender}>
-                                                                <ParticipantGenderIcon gender={participant.gender} disableRipple={true} disableTouchRipple={true}
-                                                                                       disableFocusRipple={true} style={{ backgroundColor: 'transparent', paddingTop: '1px', paddingBottom: '1px' }} />
-                                                              </ParticipantGenderTooltip>
+                                                              {!isTeamPartnerWishChild(participant) &&
+                                                                <ParticipantGenderTooltip gender={participant.gender}>
+                                                                  <ParticipantGenderIcon gender={participant.gender} disableRipple={true} disableTouchRipple={true}
+                                                                                         disableFocusRipple={true} style={{ backgroundColor: 'transparent', paddingTop: '1px', paddingBottom: '1px' }} />
+                                                                </ParticipantGenderTooltip>
+                                                              }
                                                             </div>);
 
   const handleOpenChangeTeamHostDialog = event => {
@@ -57,15 +72,23 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
         <TableCell>{meal.label}</TableCell>
         <Hidden xsDown>
           <TableCell>
-            {!isCancelled &&
-                <Button color="primary" startIcon={<HomeRoundedIcon/>}
-                        disableRipple={true} disableElevation={true} onClick={handleOpenChangeTeamHostDialog}
-                        style={{backgroundColor: 'transparent'}}><Fullname {...hostTeamMember} /></Button>
-            }
+            <ChangeTeamHostButton handleOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} hostTeamMember={hostTeamMember} isCancelled={isCancelled} />
           </TableCell>
+          <TableCell><TeamPartnerWishIcon team={team} /></TableCell>
         </Hidden>
       </TableRow>
   );
+}
+
+function ChangeTeamHostButton({isCancelled, hostTeamMember, handleOpenChangeTeamHostDialog}) {
+  if (!isCancelled) {
+    return <Button color="primary" startIcon={<HomeRoundedIcon/>}
+                   disableRipple={true} disableElevation={true} onClick={handleOpenChangeTeamHostDialog}
+                   style={{backgroundColor: 'transparent'}}>
+              <Fullname {...hostTeamMember} />
+          </Button>;
+  }
+  return null;
 }
 
 function TeamMember({participant}) {
@@ -110,4 +133,23 @@ function DragAnDroppableTeamMember({participant, onTeamMemberSwap}) {
         </div>
       </div>
   );
+}
+
+function TeamPartnerWishIcon({team}) {
+
+  const {t} = useTranslation("admin");
+
+  const teamPartnerOption = getTeamPartnerOptionOfTeam(team);
+  const hasSameTeamPartnerWish = hasAllTeamMembersSameTeamPartnerWish(team, teamPartnerOption);
+
+  if (!hasSameTeamPartnerWish) {
+    return null;
+  }
+
+  const tooltipLabel = t("admin:team_partner_wish_fulfilled");
+  return (
+    <Tooltip title={tooltipLabel} aria-label={tooltipLabel} placement="top-end">
+      <FavoriteBorderIcon color={"primary"} />
+    </Tooltip>
+  )
 }

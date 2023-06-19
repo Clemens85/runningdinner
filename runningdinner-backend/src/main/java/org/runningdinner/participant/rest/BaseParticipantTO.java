@@ -1,6 +1,8 @@
 package org.runningdinner.participant.rest;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -9,9 +11,12 @@ import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.common.rest.BaseTO;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.MealSpecifics;
+import org.runningdinner.participant.MealSpecificsAware;
 import org.runningdinner.participant.Participant;
 
-public class BaseParticipantTO extends BaseTO {
+import com.google.common.base.MoreObjects;
+
+public class BaseParticipantTO extends BaseTO implements MealSpecificsAware {
 
   @NotBlank
   @SafeHtml
@@ -46,6 +51,10 @@ public class BaseParticipantTO extends BaseTO {
   @SafeHtml
   private String country;
 
+  @Min(value = 0)
+  @NotNull
+  private int numSeats;
+  
   @NotBlank
   @Email
   @SafeHtml
@@ -75,7 +84,10 @@ public class BaseParticipantTO extends BaseTO {
 
   @Length(max = 512)
   @Email
-  private String teamPartnerWish;
+  private String teamPartnerWishEmail;
+  
+  @Valid
+  private TeamPartnerWishRegistrationDataTO teamPartnerWishRegistrationData;
 
   public BaseParticipantTO() {
   }
@@ -99,9 +111,10 @@ public class BaseParticipantTO extends BaseTO {
     this.vegetarian = mealSpecifics.isVegetarian();
     this.gluten = mealSpecifics.isGluten();
     this.lactose = mealSpecifics.isLactose();
-    this.mealSpecificsNote = mealSpecifics.getNote();
+    this.mealSpecificsNote = mealSpecifics.getMealSpecificsNote();
 
-    this.teamPartnerWish = participant.getTeamPartnerWish();
+    this.numSeats = participant.getNumSeats();
+    this.teamPartnerWishEmail = participant.getTeamPartnerWishEmail();
 
     this.notes = participant.getNotes();
   }
@@ -221,11 +234,19 @@ public class BaseParticipantTO extends BaseTO {
     return age;
   }
 
+  public int getAgeNormalized() {
+    if (getAge() <= 0) {
+      return Participant.UNDEFINED_AGE;
+    }
+    return getAge();
+  }
+  
   public void setAge(int age) {
 
     this.age = age;
   }
 
+  @Override
   public boolean isVegetarian() {
 
     return vegetarian;
@@ -236,6 +257,7 @@ public class BaseParticipantTO extends BaseTO {
     this.vegetarian = vegetarian;
   }
 
+  @Override
   public boolean isLactose() {
 
     return lactose;
@@ -246,6 +268,7 @@ public class BaseParticipantTO extends BaseTO {
     this.lactose = lactose;
   }
 
+  @Override
   public boolean isVegan() {
 
     return vegan;
@@ -256,6 +279,7 @@ public class BaseParticipantTO extends BaseTO {
     this.vegan = vegan;
   }
 
+  @Override
   public boolean isGluten() {
 
     return gluten;
@@ -266,6 +290,7 @@ public class BaseParticipantTO extends BaseTO {
     this.gluten = gluten;
   }
 
+  @Override
   public String getMealSpecificsNote() {
 
     return mealSpecificsNote;
@@ -285,15 +310,15 @@ public class BaseParticipantTO extends BaseTO {
 
     this.gender = gender;
   }
+  
+  public String getTeamPartnerWishEmail() {
 
-  public String getTeamPartnerWish() {
-
-    return teamPartnerWish;
+    return teamPartnerWishEmail;
   }
 
-  public void setTeamPartnerWish(String teamPartnerWish) {
+  public void setTeamPartnerWishEmail(String teamPartnerWishEmail) {
 
-    this.teamPartnerWish = teamPartnerWish;
+    this.teamPartnerWishEmail = teamPartnerWishEmail;
   }
 
   public String getNotes() {
@@ -306,4 +331,27 @@ public class BaseParticipantTO extends BaseTO {
     this.notes = notes;
   }
 
+  public int getNumSeats() {
+    return numSeats;
+  }
+
+  public void setNumSeats(int numSeats) {
+    this.numSeats = numSeats;
+  }
+
+  public TeamPartnerWishRegistrationDataTO getTeamPartnerWishRegistrationData() {
+    return teamPartnerWishRegistrationData;
+  }
+
+  public void setTeamPartnerWishRegistrationData(TeamPartnerWishRegistrationDataTO teamPartnerWishRegistrationData) {
+    this.teamPartnerWishRegistrationData = teamPartnerWishRegistrationData;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+      .add("firstnamePart", firstnamePart)
+      .add("lastname", lastname)
+      .toString();
+  }
 }

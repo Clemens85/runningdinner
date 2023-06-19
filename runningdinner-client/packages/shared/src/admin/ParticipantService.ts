@@ -3,14 +3,27 @@ import filter from 'lodash/filter';
 import lowerCase from 'lodash/lowerCase';
 import includes from 'lodash/includes';
 import { BackendConfig } from "../BackendConfig";
-import {isNewEntity, isStringNotEmpty, trimStringsInObject} from "../Utils";
-import {Participant, TeamPartnerWishInfo, ParticipantList} from "../types";
+import {
+  findEntityById, isArrayEmpty,
+  isNewEntity,
+  isStringEmpty,
+  isStringNotEmpty,
+  trimStringsInObject
+} from "../Utils";
+import {
+  Participant,
+  TeamPartnerWishInfo,
+  ParticipantList,
+  ParticipantListable,
+  TeamPartnerWishState,
+  ParticipantName
+} from "../types";
 import {CONSTANTS} from "../Constants";
 
 export async function findParticipantsAsync(adminId: string): Promise<ParticipantList> {
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants`);
   const response = await axios.get(url);
-  return response.data;
+  return enhanceTeamPartnerRegistrationData(adminId, response.data);
 }
 
 export async function saveParticipantAsync(adminId: string, participant: Participant): Promise<Participant> {
@@ -69,7 +82,20 @@ export async function findTeamPartnerWishInfoAsync(adminId: string, participant:
   return response.data;
 }
 
-export function getFullname(participant: Participant): string {
+export async function findTeamPartnerWishInfoForListAsync(adminId: string, participants: Participant[]): Promise<TeamPartnerWishInfo[]> {
+  const participantIds = participants.map(p => p.id);
+  if (isArrayEmpty(participantIds)) {
+    return [];
+  }
+  const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/team-partner-wish`);
+  const response = await axios.put(url, {
+    entityIds: participantIds,
+    adminId
+  });
+  return response.data;
+}
+
+export function getFullname(participant: ParticipantName): string {
   if (!participant || (!participant.firstnamePart && !participant.lastname)) {
     return '';
   }
@@ -109,4 +135,65 @@ export function canHost(participant: Participant, numSeatsNeededForHost: number)
 
 export function isNumSeatsUnknown(participant: Participant) {
   return participant.numSeats < 0;
+}
+
+/**
+ * Returns true if the passed participant was added by another participant
+ * (that means the user added a TeamPartnerRegisrtrationData during regisrtration to the root participant, which created the passed participant).
+ *
+ * @param participant
+ */
+export function isTeamPartnerWishChild(participant: Participant) {
+  return isTeamPartnerWishRegistration(participant) && participant.teamPartnerWishOriginatorId !== participant.id;
+}
+
+export function isTeamPartnerWishRoot(participant: Participant) {
+  return isTeamPartnerWishRegistration(participant) && participant.teamPartnerWishOriginatorId === participant.id;
+}
+
+export function isTeamPartnerWishRegistration(participant: Participant) {
+  return participant && isStringNotEmpty(participant.teamPartnerWishOriginatorId);
+}
+
+async function enhanceTeamPartnerRegistrationData(adminId: string, participantList: ParticipantList): Promise<ParticipantList> {
+  const allParticipants = participantList.participants.concat(participantList.participantsWaitingList || []);
+  await enhanceParticipantsWithTeamPartnerRegistrationData(adminId, participantList.participants, allParticipants);
+  await enhanceParticipantsWithTeamPartnerRegistrationData(adminId, participantList.participantsWaitingList, allParticipants);
+  return participantList;
+}
+
+async function enhanceParticipantsWithTeamPartnerRegistrationData(adminId: string, participants: ParticipantListable[], allParticipants: ParticipantListable[]) {
+  for (let i = 0; i < participants.length; i++) {
+    const participant = participants[i];
+    if (isStringEmpty(participant.teamPartnerWishOriginatorId)) {
+      continue;
+    }
+    if (isTeamPartnerWishChild(participant)) {
+      const rootParticipant = findEntityById(allParticipants, participant.teamPartnerWishOriginatorId);
+      if (!rootParticipant) {
+        continue;
+      }
+      participant.rootTeamPartnerWish   = {
+        ...rootParticipant
+      };
+    } else {
+      const childParticipant = filter(allParticipants, p => p.id !== participant.teamPartnerWishOriginatorId && p.teamPartnerWishOriginatorId === participant.id);
+      if (!childParticipant || childParticipant.length !== 1) {
+        continue;
+      }
+      participant.childTeamPartnerWish = {
+        ...childParticipant[0]
+      };
+    }
+  }
+
+  const participantsWithTeamPartnerWishEmail = filter(participants, p => isStringNotEmpty(p.teamPartnerWishEmail))
+  const teamPartnerWishInfos = await findTeamPartnerWishInfoForListAsync(adminId, participantsWithTeamPartnerWishEmail) || [];
+  for (let i = 0; i < teamPartnerWishInfos.length; i++) {
+    const teamPartnerWishInfo = teamPartnerWishInfos[i];
+    if (teamPartnerWishInfo.subscribedParticipant) {
+      const participantToEnhance = findEntityById(participants, teamPartnerWishInfo.subscribedParticipant.id);
+      participantToEnhance.teamPartnerWishStateEmailInvitation = teamPartnerWishInfo.state;
+    }
+  }
 }

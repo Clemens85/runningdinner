@@ -186,8 +186,8 @@ public class AbstractExcelConverterHighLevel {
 			writeStringToCell(row, cellIndex++, p.getMobileNumber());
 			writeStringToCell(row, cellIndex++, p.getNotes());
             String mealSpecifics = messageFormatterHelperService.formatMealSpecificItems(p.getMealSpecifics(), locale);
-			if (StringUtils.isNotEmpty(p.getMealSpecifics().getNote())) {
-				mealSpecifics += " (" + p.getMealSpecifics().getNote() + ")";
+			if (StringUtils.isNotEmpty(p.getMealSpecifics().getMealSpecificsNote())) {
+				mealSpecifics += " (" + p.getMealSpecifics().getMealSpecificsNote() + ")";
 			}
 			writeStringToCell(row, cellIndex, StringUtils.trim(mealSpecifics));
 		}

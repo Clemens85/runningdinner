@@ -85,7 +85,7 @@ public class TeamServiceTest {
     assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
     Set<Participant> oldTeamMembers = team.getTeamMembers();
 
-    TeamCancellation teamCancellation = newCancellationWithoutReplacement(team); 
+    TeamCancellation teamCancellation = TestUtil.newCancellationWithoutReplacement(team); 
 
     TeamCancellationResult result = teamService.cancelTeam(runningDinner.getAdminId(), teamCancellation);
     assertTeamCancellationResultWithoutNotification(result, oldTeamMembers);
@@ -104,9 +104,9 @@ public class TeamServiceTest {
   public void testCancelTeamWithReplacement() {
 
     List<Participant> twoAdditionalParticipants = ParticipantGenerator.generateParticipants(2, 18);
-    Participant firstAddedParticipant = participantService.addParticipant(runningDinner, twoAdditionalParticipants.get(0), false);
+    Participant firstAddedParticipant = testHelperService.addParticipant(twoAdditionalParticipants.get(0), runningDinner); 
     twoAdditionalParticipants.get(1).setNumSeats(10); // Mark second participant as host
-    Participant secondAddedParticipant = participantService.addParticipant(runningDinner, twoAdditionalParticipants.get(1), false);
+    Participant secondAddedParticipant = testHelperService.addParticipant(twoAdditionalParticipants.get(1), runningDinner); 
 
     Team team = findFirstTeam();
     assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
@@ -312,13 +312,13 @@ public class TeamServiceTest {
     List<Participant> participants = participantService.findActiveParticipantsAssignedToTeam(runningDinner.getAdminId());
     List<Participant> participantsWithChangedData = TestUtil.setMatchingTeamPartnerWish(participants, 3, 6, "max@mustermann.de", "maria@musterfrau.de", true);
     participantsWithChangedData
-      .forEach(p -> participantService.updateParticipant(runningDinner.getAdminId(), p.getId(), p));
+      .forEach(p -> testHelperService.updateParticipant(p));
     // ... Now re-generate teams so that team partner wishes will get applied:
     teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
     
     // Setup another now known email-address for later test:
     participants.get(0).setEmail("ohne@freund.de");
-    participantService.updateParticipant(runningDinner.getAdminId(), participants.get(0).getId(), participants.get(0));
+    testHelperService.updateParticipant(participants.get(0));
     
     List<Team> allTeams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
     Team team = TestUtil.findTeamByTeamMemberEmail(allTeams, "max@mustermann.de");
@@ -340,7 +340,7 @@ public class TeamServiceTest {
     List<Participant> participants = participantService.findActiveParticipantsAssignedToTeam(runningDinner.getAdminId());
     List<Participant> participantsWithChangedData = TestUtil.setMatchingTeamPartnerWish(participants, 3, 6, "max@mustermann.de", "maria@musterfrau.de", true);
     participantsWithChangedData
-      .forEach(p -> participantService.updateParticipant(runningDinner.getAdminId(), p.getId(), p));
+      .forEach(p -> testHelperService.updateParticipant(p));
     // ... Now re-generate teams so that team partner wishes will get applied:
     teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
     
@@ -415,19 +415,10 @@ public class TeamServiceTest {
 		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
 			.containsExactly(firstTeam);
 		
-		teamService.cancelTeam(adminId, newCancellationWithoutReplacement(lastTeam));
+		teamService.cancelTeam(adminId, TestUtil.newCancellationWithoutReplacement(lastTeam));
 		
 		assertThat(teamService.findTeamArrangementsWaitingListFillable(adminId))
 			.containsExactly(firstTeam, lastTeam);
-  }
-  
-  private TeamCancellation newCancellationWithoutReplacement(Team team) {
-  	
-  	TeamCancellation result = new TeamCancellation();
-  	result.setTeamId(team.getId());
-  	result.setDryRun(false);
-  	result.setReplaceTeam(false);
-  	return result;
   }
   
   private Team findFirstTeam() {
@@ -507,4 +498,5 @@ public class TeamServiceTest {
             .findAny()
             .orElseThrow(IllegalStateException::new);
   }
+
 }

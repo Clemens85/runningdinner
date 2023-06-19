@@ -44,15 +44,15 @@ const handleTeamPartnerWishAction = async (adminId, teamPartnerWishAction) => {
     case CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION:
       resultPayload = newEmptyParticipantInstance();
       resultPayload = { ...resultPayload,
-                        email: fromParticipant.teamPartnerWish,
-                        teamPartnerWish: fromParticipant.email };
+                        email: fromParticipant.teamPartnerWishEmail,
+                        teamPartnerWishEmail: fromParticipant.email };
       break;
     case SEND_INVITATION_TEAM_PARTNER_WISH_ACTION:
       resultPayload = await sendTeamPartnerWishInvitationAsync(adminId, fromParticipant);
       break;
     case UPDATE_PARTICIPANT_TEAM_PARTNER_WISH_ACTION:
       const {matchingParticipant} = teamPartnerWishAction;
-      matchingParticipant.teamPartnerWish = fromParticipant.email;
+      matchingParticipant.teamPartnerWishEmail = fromParticipant.email;
       resultPayload = await saveParticipantAsync(adminId, matchingParticipant);
       break;
     default:

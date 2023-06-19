@@ -4,22 +4,22 @@ import {
   fetchSelfAdminTeam,
   Fullname,
   getFullname,
-  getSelfAdminTeamFetchSelector, isSameEntity,
+  getSelfAdminTeamFetchSelector,
+  getTeamPartnerOptionOfTeam,
+  isSameEntity,
   Participant,
-  SelfAdminChangeTeamHostViewModel, SelfAdminUpdateTeamHostRequest,
-  Team, updateSelfAdminTeamHost, useBackendIssueHandler,
+  SelfAdminChangeTeamHostViewModel,
+  SelfAdminUpdateTeamHostRequest,
+  Team,
+  TeamPartnerOption,
+  updateSelfAdminTeamHost,
+  useBackendIssueHandler,
   useSelfAdminDispatch,
   useSelfAdminSelector
 } from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
 import {PageTitle} from "../common/theme/typography/Tags";
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText, useMediaQuery, useTheme
-} from '@material-ui/core';
+import {Box, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme} from '@material-ui/core';
 import Grid from "@material-ui/core/Grid";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {FormProvider, useForm} from "react-hook-form";
@@ -31,7 +31,7 @@ import useCommonStyles from "../common/theme/CommonStyles";
 import Paragraph from "../common/theme/typography/Paragraph";
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
-
+import {Alert} from "@material-ui/lab";
 
 export default function SelfAdminChangeTeamHostPage() {
 
@@ -51,6 +51,11 @@ export default function SelfAdminChangeTeamHostPage() {
   if (!team) {
     return null;
   }
+
+  if (getTeamPartnerOptionOfTeam(team) === TeamPartnerOption.REGISTRATION) {
+    return <SelfAdminChangeTeamHostNotPossibleView />;
+  }
+
   return <SelfAdminChangeTeamHostView team={team} />;
 }
 
@@ -192,6 +197,26 @@ function TeamMemberHostCheckboxIcon({checked, onChange}: TeamMemberHostCheckboxP
     <>
       { !checked && <CheckBoxOutlineBlankOutlinedIcon style={{ fontSize: 48 }} onClick={() => onChange(true) } /> }
       { checked && <CheckBoxOutlinedIcon color={"primary"} style={{ fontSize: 48 }} onClick={() => onChange(false) } /> }
+    </>
+  );
+}
+
+
+function SelfAdminChangeTeamHostNotPossibleView() {
+
+  const {t} = useTranslation(['selfadmin']);
+
+  return (
+    <>
+      <PageTitle>{t('selfadmin:change_team_host_title')}</PageTitle>
+      <Paragraph>{t('selfadmin:change_team_host_help')}</Paragraph>
+      <Box mt={3}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Alert severity={"info"} variant={"outlined"}>{t("selfadmin:team_partner_wish_registration_change_teamhost_not_possible")}</Alert>
+          </Grid>
+        </Grid>
+      </Box>
     </>
   );
 }
