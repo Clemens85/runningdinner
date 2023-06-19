@@ -1,5 +1,9 @@
 const NewsMessages_de: any = {
 
+  news_title_20230619: 'Direkt-Anmeldung als Kochteam möglich',
+  news_content_20230619: 'Es ist schon länger möglich über einen Einladungsprozess per Email einen festen Wunschpartner quasi mit anzugeben, welche/r sich aber dann dennoch mit sämtlichen Daten selbst anmelden musste. ' +
+                         'Das wurde nun vereinfacht, so dass bei der Anmeldung alternativ direkt der Name eins Wunschpartners angegeben werden kann, und man dadurch bereits als fixes Kochteam angemeldet ist.',
+
   news_title_20230418: 'Infrastruktur modernisiert',
   news_content_20230418: 'Auch das muss mal sein: Die zugrunde liegende Infrastruktur musste neu und moderner aufgesetzt werden, was ein längerer Prozess war, der nun aber fertig ist. ' +
                          'Es wurde alles sorgfältig getestet um zu gewährleisten, dass es keine Beeinträchtigungen gibt. Falls doch etwas plötzlich nicht mehr funktionieren sollte, bitte direkt via Feedback melden.',
