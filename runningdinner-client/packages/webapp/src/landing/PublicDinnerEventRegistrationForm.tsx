@@ -174,7 +174,7 @@ export function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerfo
                                     <>
                                       <Trans i18nKey="landing:data_processing_acknowledge" /><br />
                                       <Trans i18nKey="landing:data_processing_acknowledge_hint"
-                                             values={{privacyLink: IMPRESSUM_PATH}}
+                                             values={{ privacyLink: `/${IMPRESSUM_PATH}` }}
                                         // @ts-ignore
                                              components={{ anchor: <LinkExtern /> }} />
                                     </>

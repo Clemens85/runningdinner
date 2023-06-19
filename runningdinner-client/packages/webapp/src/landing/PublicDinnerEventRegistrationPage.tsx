@@ -127,7 +127,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
   function renderRegistrationNotPossibleText() {
     const textKey = publicRunningDinner.registrationDateExpired ?
                       "landing:registration_date_expired" :
-                     (publicRunningDinner.publicSettings.registrationDeactivated ? "landing:registration_deactivated_text" : "");
+                     (publicRunningDinner.publicSettings.registrationDeactivated ? "common:registration_deactivated_text" : "");
     if (isStringEmpty(textKey)) {
       return null;
     }
