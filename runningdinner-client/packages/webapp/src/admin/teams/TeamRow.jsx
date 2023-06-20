@@ -1,4 +1,4 @@
-import {TableRow, TableCell, Hidden, Button, Tooltip} from "@material-ui/core";
+import {TableRow, TableCell, Hidden, Button} from "@material-ui/core";
 import React from "react";
 import NumSeats from "../participants/list/NumSeats";
 import ParticipantGenderTooltip from "../../common/gender/ParticipantGenderTooltip";
