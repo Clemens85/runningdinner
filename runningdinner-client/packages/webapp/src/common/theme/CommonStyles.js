@@ -24,8 +24,13 @@ const useCommonStyles = makeStyles((theme) => ({
   },
   colorSecondary: {
     color: theme.palette.secondary.main
+  },
+  bottomBorderNone: {
+    borderBottom: "none"
+  },
+  paddingTopNone: {
+    paddingTop: 0
   }
-
 }));
 
 export default useCommonStyles;
