@@ -9,7 +9,7 @@ export function FormCheckboxSimple({name, label, helperText, defaultValue, useTa
         <div style={{display: useTableDisplay ? 'table-cell' : 'inline'}}>
           <Checkbox color="primary"
                     name={name}
-                    checked
+                    checked={checked}
                     {...rest} />
         </div>
       } />
