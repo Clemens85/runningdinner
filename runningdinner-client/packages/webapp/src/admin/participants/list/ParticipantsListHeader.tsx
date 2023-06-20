@@ -18,6 +18,7 @@ import {PageTitle} from "../../../common/theme/typography/Tags";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import Button from "@material-ui/core/Button";
 import useCommonStyles from "../../../common/theme/CommonStyles";
+import {FormCheckboxSimple} from "../../../common/input/FormCheckboxSimple";
 
 export type ParticipantSearchResult = {
   filteredParticipants: ParticipantListable[],
@@ -28,12 +29,17 @@ export type ParticipantSearchChangeCallback = {
   onParticipantSearchChanged: (result: ParticipantSearchResult) => unknown;
 };
 
+export type ParticipantShowMiscNotesCallback = {
+  onShowMiscNotesChange: (result: boolean) => unknown;
+};
+
 type ParticipantsListHeaderProps = {
   numberOfParticipants: React.ReactNode;
   participantList: ParticipantList
-} & BaseAdminIdProps & ParticipantSearchChangeCallback;
+  showMiscNotes: boolean;
+} & BaseAdminIdProps & ParticipantSearchChangeCallback & ParticipantShowMiscNotesCallback;
 
-export function ParticipantsListHeader({adminId, numberOfParticipants, participantList, onParticipantSearchChanged}: ParticipantsListHeaderProps) {
+export function ParticipantsListHeader({adminId, numberOfParticipants, participantList, onParticipantSearchChanged, showMiscNotes, onShowMiscNotesChange}: ParticipantsListHeaderProps) {
 
   const [search, setSearch] = useState({ searchText: '', isSearching: false });
   const [searchableParticipants, setSearchableParticipants] = useState<ParticipantListable[]>([]);
@@ -94,6 +100,16 @@ export function ParticipantsListHeader({adminId, numberOfParticipants, participa
             }
 
           </Grid>
+
+          <Grid container direction={"row"} spacing={2} alignItems={"center"} justify={"flex-start"}>
+            <Grid item xs={12} sm={7}>
+              <FormCheckboxSimple name={"showMiscNotes"}
+                                  label={t("admin:participants_show_misc_notes")}
+                                  onClick={() => {onShowMiscNotesChange(!showMiscNotes)}}
+                                  checked={showMiscNotes} />
+            </Grid>
+          </Grid>
+
         </Box>
       </Box>
   );

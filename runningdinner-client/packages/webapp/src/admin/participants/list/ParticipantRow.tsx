@@ -1,5 +1,5 @@
 import React from 'react'
-import {Hidden, TableCell, TableRow, Tooltip} from "@material-ui/core";
+import {Hidden, TableCell, TableRow, Tooltip, useMediaQuery, useTheme} from "@material-ui/core";
 import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
 import NumSeats from "./NumSeats";
@@ -15,6 +15,7 @@ import {
   TeamPartnerWishState
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
+import {Span} from "../../../common/theme/typography/Tags";
 
 
 export type ParticipantClickCallback = {
@@ -24,25 +25,40 @@ export type ParticipantClickCallback = {
 type ParticipantRowProps = {
   participant: ParticipantListable;
   selected: boolean;
+  showMiscNotes: boolean;
   runningDinnerSessionData: RunningDinnerSessionData;
 };
 
-export default function ParticipantRow({participant, selected, onClick, runningDinnerSessionData}: ParticipantRowProps & ParticipantClickCallback) {
+export default function ParticipantRow({participant, selected, onClick, showMiscNotes, runningDinnerSessionData}: ParticipantRowProps & ParticipantClickCallback) {
 
   const classes = useCommonStyles();
 
+  const theme = useTheme();
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('xs'));
+
   const {listNumber} = participant;
 
+  const showMiscNotesForParticipant = showMiscNotes && isStringNotEmpty(participant.notes);
+  const tableCellClass = showMiscNotesForParticipant ? classes.bottomBorderNone : "";
+  const cellsToShow = isSmallDevice ? 2 : 7;
+
   return (
-      <TableRow hover className={classes.cursorPointer} onClick={() => onClick(participant)} selected={selected} data-testid="participant-row">
-        <TableCell data-testid={"participant-number"}>{listNumber}</TableCell>
-        <TableCell><Fullname {...participant} /></TableCell>
-        <ParticipantDetailCells participant={participant} selected={selected} runningDinnerSessionData={runningDinnerSessionData} />
-      </TableRow>
+      <>
+        <TableRow hover className={classes.cursorPointer} onClick={() => onClick(participant)} selected={selected} data-testid="participant-row">
+            <TableCell className={tableCellClass} data-testid={"participant-number"}>{listNumber}</TableCell>
+            <TableCell className={tableCellClass}><Fullname {...participant} /></TableCell>
+            <ParticipantDetailCells participant={participant} selected={selected} runningDinnerSessionData={runningDinnerSessionData} showMiscNotes={showMiscNotes} />
+        </TableRow>
+        { showMiscNotesForParticipant &&
+          <TableRow hover className={classes.cursorPointer} onClick={() => onClick(participant)} selected={selected}>
+            <TableCell colSpan={cellsToShow} className={classes.paddingTopNone}><cite><Span>{participant.notes}</Span></cite></TableCell>
+          </TableRow>
+        }
+      </>
   );
 }
 
-function ParticipantDetailCells({participant, runningDinnerSessionData}: ParticipantRowProps) {
+function ParticipantDetailCells({participant, runningDinnerSessionData, showMiscNotes}: ParticipantRowProps) {
 
   const {t} = useTranslation("admin");
 
@@ -52,28 +68,33 @@ function ParticipantDetailCells({participant, runningDinnerSessionData}: Partici
   const {gender} = participant;
   const {email} = participant;
 
+  const classes = useCommonStyles();
+
+  const showMiscNotesForParticipant = showMiscNotes && isStringNotEmpty(participant.notes);
+  const tableCellClass = showMiscNotesForParticipant ? classes.bottomBorderNone : "";
+
   return (
     <Hidden xsDown>
       { teamPartnerWishChild &&
         <>
-          <TableCell colSpan={4}>
+          <TableCell colSpan={4} className={tableCellClass}>
             {t("admin:team_partner_wish_registration_child_participant_root_info_1", { fullname: getFullname(participant.rootTeamPartnerWish!) })}
           </TableCell>
-          <TableCell><ParticipantTeamPartnerWishIcon {...participant} /></TableCell>
+          <TableCell className={tableCellClass}><ParticipantTeamPartnerWishIcon {...participant} /></TableCell>
         </>
       }
       { !teamPartnerWishChild &&
         <>
-          <TableCell>
+          <TableCell className={tableCellClass}>
             <ParticipantGenderTooltip gender={gender}>
               <ParticipantGenderIcon gender={gender} />
             </ParticipantGenderTooltip>
           </TableCell>
-          <TableCell>{email}</TableCell>
-          <TableCell><AddressLocation {...participant} /></TableCell>
-          <TableCell><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} /></TableCell>
-          { showTeamPartnerInfo && <TableCell><ParticipantTeamPartnerWishIcon {...participant} /></TableCell> }
-          { !showTeamPartnerInfo && <TableCell></TableCell> }
+          <TableCell className={tableCellClass}>{email}</TableCell>
+          <TableCell className={tableCellClass}><AddressLocation {...participant} /></TableCell>
+          <TableCell className={tableCellClass} ><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} /></TableCell>
+          { showTeamPartnerInfo && <TableCell className={tableCellClass}><ParticipantTeamPartnerWishIcon {...participant} /></TableCell> }
+          { !showTeamPartnerInfo && <TableCell className={tableCellClass}></TableCell> }
         </>
       }
     </Hidden>

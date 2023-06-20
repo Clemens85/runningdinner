@@ -159,6 +159,7 @@
 	"participants_remaining_not_assignable_headline": "Warteliste",
 	"participants_remaining_not_assignable_text": "Folgende Teilnehmer können aktuell nicht in Teams eingeteilt werden und befinden sich daher momentan auf der Warteliste.",
 	"participants_remaining_not_assignable_teams_generated_text": "Folgende Teilnehmer befinden sich aktuell auf der Warteliste.",
+	"participants_show_misc_notes": "Zeige sonstige Anmerkungen",
 	"participants_selection": "Teilnehmer-Auswahl",
 	"participants_too_few_text": "Leider gibt es noch nicht genügend Teilnehmer, damit ein Running Dinner statt finden kann. Es werden mindestens {{ minSizeNeeded }} Teilnehmer benötigt. Dir fehlen also noch mindestens {{ missingParticipants }} Teilnehmer.",
 	"participant_manual_activation_success": "{{ participantEmail }} erfolgreich manuell bestätigt",

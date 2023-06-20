@@ -159,6 +159,7 @@
 	"participants_remaining_not_assignable_text": "The following participants cannot currently be arranged into teams and are therefore on the waitinglist.",
 	"participants_remaining_not_assignable_teams_generated_text": "The following participants are currently on the waitinglist.",
 	"participants_selection": "Participant selection",
+	"participants_show_misc_notes": "Show other remarks",
 	"participants_too_few_text": "Unfortunately you have too few participants for a Running Dinner event. You need at least a total of {{ minSizeNeeded }} participants, hence you need still at least {{ missingParticipants }} more participants.",
 	"participant_manual_activation_success": "Manual activation of subscription for {{ participantEmail }} succeeded",
 	"protocols": "Protocols",

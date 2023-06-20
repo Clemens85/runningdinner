@@ -17,9 +17,10 @@ export type ParticipantsListProps = {
   participantList: ParticipantList;
   participantSearchResult: ParticipantSearchResult;
   selectedParticipant?: ParticipantListable;
+  showMiscNotes: boolean;
 } & ParticipantClickCallback & ReFetchParticipantsCallback;
 
-export default function ParticipantsListView({participantList, selectedParticipant, participantsListInfo, participantSearchResult, onClick, onReFetch}: ParticipantsListProps) {
+export default function ParticipantsListView({participantList, selectedParticipant, participantsListInfo, participantSearchResult, onClick, onReFetch, showMiscNotes}: ParticipantsListProps) {
 
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
   const { sessionData } = runningDinner;
@@ -27,7 +28,9 @@ export default function ParticipantsListView({participantList, selectedParticipa
   function buildParticipantRows(_participants: ParticipantListable[]) {
     return _participants.map((participant) =>
       <ParticipantRow key={participant.id} participant={participant} onClick={onClick}
-                      selected={isSameEntity(selectedParticipant, participant)} runningDinnerSessionData={sessionData} />
+                      selected={isSameEntity(selectedParticipant, participant)}
+                      showMiscNotes={showMiscNotes}
+                      runningDinnerSessionData={sessionData} />
     );
   }
 

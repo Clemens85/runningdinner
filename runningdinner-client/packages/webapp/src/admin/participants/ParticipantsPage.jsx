@@ -44,6 +44,7 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
 
   const [selectedParticipant, setSelectedParticipant] = useState();
   const [participantSearchResult, setParticipantSearchResult] = useState({ hasSearchText: false, filteredParticipants: [] });
+  const [showMiscNotes, setShowMiscNotes] = useState(false);
 
   const { isOpen: isTeamPartnerWishDialogOpen,
           close: closeTeamPartnerWishDialog,
@@ -120,6 +121,8 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
             : <ParticipantsListHeader adminId={adminId}
                                       numberOfParticipants={numberOfParticipants}
                                       participantList={participantList}
+                                      onShowMiscNotesChange={(newVal) => setShowMiscNotes(newVal)}
+                                      showMiscNotes={showMiscNotes}
                                       onParticipantSearchChanged={handleParticipantSearchChange} />
         }
         <Grid container spacing={2}>
@@ -129,6 +132,7 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
                                     participantList={participantList}
                                     selectedParticipant={selectedParticipant}
                                     participantSearchResult={participantSearchResult}
+                                    showMiscNotes={showMiscNotes}
                                     onReFetch={reFetch}
                                     onClick={editParticipant} />
             </Grid>
