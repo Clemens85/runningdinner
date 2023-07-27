@@ -3,7 +3,7 @@ import {
   CONSTANTS,
   CreateRunningDinnerWizardModel,
   HasGeocoding,
-  minusDays,
+  minusDays, PaymentOptions,
   plusHours
 } from "..";
 import { BaseEntity, GenderAspects, LabelValue } from "./Base";
@@ -105,6 +105,7 @@ export interface PublicRunningDinner extends Omit<RunningDinnerBasicDetails, "re
   meals: Meal[];
   publicSettings: RunningDinnerPublicSettings;
   afterPartyLocation?: AfterPartyLocation;
+  paymentOptions?: PaymentOptions;
 }
 
 export function newEmptyRunningDinnerBasicDetails(): RunningDinnerBasicDetails {

@@ -3,21 +3,23 @@ package org.runningdinner.payment.paymentoptions.rest;
 import java.math.BigDecimal;
 
 import org.runningdinner.common.rest.BaseTO;
-import org.runningdinner.payment.paymentoptions.PaymentOptions;
 
 public class PaymentOptionsTO extends BaseTO {
 
   private BigDecimal pricePerRegistration;
+  
+  private String pricePerRegistrationFormatted;
 
   private String brandName;
 
-  public PaymentOptionsTO() {
+  protected PaymentOptionsTO() {
     // NOP
   }
   
-  public PaymentOptionsTO(PaymentOptions paymentOptions) {
-    this.brandName = paymentOptions.getBrandName();
-    this.pricePerRegistration = paymentOptions.getPricePerRegistration();
+  public PaymentOptionsTO(String brandName, BigDecimal pricePerRegistration, String pricePerRegistrationFormatted) {
+    this.brandName = brandName;
+    this.pricePerRegistration = pricePerRegistration;
+    this.pricePerRegistrationFormatted = pricePerRegistrationFormatted;
   }
   
   public BigDecimal getPricePerRegistration() {
@@ -36,5 +38,11 @@ public class PaymentOptionsTO extends BaseTO {
     this.brandName = brandName;
   }
 
-  
+  public String getPricePerRegistrationFormatted() {
+    return pricePerRegistrationFormatted;
+  }
+
+  public void setPricePerRegistrationFormatted(String pricePerRegistrationFormatted) {
+    this.pricePerRegistrationFormatted = pricePerRegistrationFormatted;
+  }
 }

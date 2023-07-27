@@ -8,7 +8,7 @@ import {
   isStringEmpty,
   isStringNotEmpty,
   LocalDate,
-  Meal,
+  Meal, PublicRunningDinner,
   RegistrationData,
   Time,
   useDisclosure
@@ -189,6 +189,7 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
       <Box mt={2}>
         <FormFieldset>{t("common:registration")}</FormFieldset>
         <Paragraph i18n={"landing:dinner_event_deadline_text"} parameters={{ endOfRegistrationDate: endOfRegistrationDateStr}} />
+        <PaymentInfo {...publicRunningDinner} />
       </Box>
 
       <Box my={2}>
@@ -228,4 +229,18 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
 
     </>
   );
+}
+
+function PaymentInfo(publicRunningDinner: PublicRunningDinner) {
+
+  const {t} = useTranslation(["landing"]);
+
+  if (publicRunningDinner.paymentOptions && publicRunningDinner.paymentOptions.pricePerRegistration > 0) {
+
+    const priceInfo = t("landing:registration_payment_price_single", { pricePerRegistration: publicRunningDinner.paymentOptions.pricePerRegistrationFormatted });
+    return (
+      <Paragraph>{priceInfo}</Paragraph>
+    );
+  }
+  return null;
 }

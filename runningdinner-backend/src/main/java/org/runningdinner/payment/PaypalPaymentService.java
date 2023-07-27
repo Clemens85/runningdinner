@@ -2,8 +2,6 @@ package org.runningdinner.payment;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +29,7 @@ import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.util.NumberUtil;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.participant.Participant;
@@ -193,7 +192,7 @@ public class PaypalPaymentService {
     PurchaseUnitTO purchaseUnit = new PurchaseUnitTO();
     MoneyTO amount = new MoneyTO();
     amount.setCurrencyCode(EUR);
-    amount.setValue(getFormattedAmountValue(amountValue, Locale.ENGLISH)); // Paypal expects something like 8.50 EUR
+    amount.setValue(NumberUtil.getFormattedAmountValue(amountValue, Locale.ENGLISH)); // Paypal expects something like 8.50 EUR
     purchaseUnit.setAmount(amount);
     return Collections.singletonList(purchaseUnit);
   }
@@ -206,10 +205,6 @@ public class PaypalPaymentService {
     return amountValue;
   }
   
-  public static String getFormattedAmountValue(BigDecimal amountValue, Locale locale) {
-    BigDecimal moneyAmount = amountValue.setScale(2, RoundingMode.FLOOR);
-    return NumberFormat.getNumberInstance(locale).format(moneyAmount);
-  }
 
   private static void checkRegistrationOrderNotCompleted(RegistrationOrder registrationOrder) {
     if (registrationOrder.getPaypalOrderStatus() == PaypalOrderStatus.COMPLETED) {

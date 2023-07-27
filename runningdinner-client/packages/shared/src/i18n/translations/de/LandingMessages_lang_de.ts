@@ -36,6 +36,7 @@ const LandingMessages_de: any = {
     registration_payment_info: "Mit dem Kauf meldest du dich für dieses Event an.<br />" +
       "Im nächsten Schritt wirst du zu PayPal zur Bezahlung weitergeleitet.<br />" +
       "Schließe bitte nicht den Browser während des Bezahlvorgangs.",
+    registration_payment_price_single: 'Kosten pro Anmeldung: {{ pricePerRegistration }} €',
     payment_processing: "Zahlung wird verarbeitet, bitte Browser nicht schließen",
     payment_finalize: 'Kauf abschließen',
     payment_check_contact_data: 'Bitte überprüfe nochmals deine Kontaktdaten',

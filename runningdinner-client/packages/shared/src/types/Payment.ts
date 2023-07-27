@@ -14,11 +14,13 @@ export interface PaymentOptions {
   id?: string;
   brandName: string;
   pricePerRegistration: number;
+  pricePerRegistrationFormatted: string;
 }
 
 export function newEmptyPaymentOptions(): PaymentOptions {
   return {
     brandName: "",
-    pricePerRegistration: 0.0
+    pricePerRegistration: 0.0,
+    pricePerRegistrationFormatted: ""
   };
 }

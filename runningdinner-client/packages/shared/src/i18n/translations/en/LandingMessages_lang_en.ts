@@ -36,6 +36,7 @@ const LandingMessages_en: any = {
     registration_payment_info: "With the purchase you register for this event.<br />" +
       "In the next step you will be redirected to PayPal for payment.<br />" +
       "Please do not close the browser during the payment process.",
+    registration_payment_price_single: 'Cost per registration: {{ pricePerRegistration }} €',
     payment_processing: "Payment is being processed, please do not close browser",
     payment_finalize: 'Complete Purchase',
     payment_check_contact_data: 'Please check your contact details again',

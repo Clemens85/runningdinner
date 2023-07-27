@@ -44,15 +44,15 @@ public class FrontendRunningDinnerServiceRest {
 
     LocalDate now = LocalDate.now();
     RunningDinner runningDinner = frontendRunningDinnerService.findRunningDinnerByPublicId(publicDinnerId, now);
-    return frontendRunningDinnerPaymentService.mapToRunningDinnerPublicTO(runningDinner, now);
+    return frontendRunningDinnerPaymentService.mapToRunningDinnerPublicTO(runningDinner, locale, now);
   }
 
   @GetMapping(value = "/runningdinner")
-  public RunningDinnerPublicListTO getPublicRunningDinnerList() {
+  public RunningDinnerPublicListTO getPublicRunningDinnerList(Locale locale) {
 
     LocalDate now = LocalDate.now();
     List<RunningDinner> publicRunningDinners = frontendRunningDinnerService.findPublicRunningDinners(now);
-    return frontendRunningDinnerPaymentService.mapToRunningDinnerPublicListTO(publicRunningDinners, now);
+    return frontendRunningDinnerPaymentService.mapToRunningDinnerPublicListTO(publicRunningDinners, locale, now);
   }
   
   @PostMapping(value = "/runningdinner/{publicDinnerId}/register/validate", consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -101,7 +101,7 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
                   </Typography>
                   { registrationPaymentSummary.teamPartnerRegistration &&
                     <Typography component="li" variant="subtitle1" align="center">
-                      { registrationType }: 2 x {registrationPaymentSummary.pricePerRegistration} €
+                      { registrationType }: 2 x {registrationPaymentSummary.pricePerRegistrationFormatted} €
                     </Typography>
                   }
                   <Typography component="li" variant="subtitle1" align="center">{t("landing:payment_check_contact_data")}:</Typography>

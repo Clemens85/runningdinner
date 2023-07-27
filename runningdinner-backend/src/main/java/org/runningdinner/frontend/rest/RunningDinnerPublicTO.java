@@ -1,13 +1,16 @@
 
 package org.runningdinner.frontend.rest;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
+import org.runningdinner.core.util.NumberUtil;
 import org.runningdinner.payment.paymentoptions.PaymentOptions;
 import org.runningdinner.payment.paymentoptions.rest.PaymentOptionsTO;
 import org.runningdinner.wizard.PublicSettingsTO;
@@ -41,7 +44,7 @@ public class RunningDinnerPublicTO {
   public RunningDinnerPublicTO() {
   }
 
-  public RunningDinnerPublicTO(RunningDinner runningDinner, PaymentOptions incomingPaymentOptions, LocalDate now) {
+  public RunningDinnerPublicTO(RunningDinner runningDinner, PaymentOptions incomingPaymentOptions, Locale locale, LocalDate now) {
     this.date = runningDinner.getDate();
     this.city = runningDinner.getCity();
     this.zip = runningDinner.getZip();
@@ -54,8 +57,14 @@ public class RunningDinnerPublicTO {
     this.teamPartnerWishDisabled = runningDinner.getConfiguration().isTeamPartnerWishDisabled();
     this.afterPartyLocation = runningDinner.getAfterPartyLocation().orElse(null);
     if (incomingPaymentOptions != null) {
-      this.paymentOptions = new PaymentOptionsTO(incomingPaymentOptions);
+      this.paymentOptions = newPaymentOptionsTO(incomingPaymentOptions, locale);
     }
+  }
+
+  private static PaymentOptionsTO newPaymentOptionsTO(PaymentOptions incomingPaymentOptions, Locale locale) {
+    
+    BigDecimal pricePerRegistration = incomingPaymentOptions.getPricePerRegistration();
+    return new PaymentOptionsTO(incomingPaymentOptions.getBrandName(), pricePerRegistration, NumberUtil.getFormattedAmountValue(pricePerRegistration, locale));
   }
 
   public PublicSettingsTO getPublicSettings() {

@@ -18,6 +18,7 @@ import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.util.NumberUtil;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.frontend.rest.RegistrationPaymentSummaryTO;
 import org.runningdinner.frontend.rest.RunningDinnerPublicListTO;
@@ -48,16 +49,16 @@ public class FrontendRunningDinnerPaymentService {
     this.paypalPaymentService = paypalPaymentService;
   }
 
-  public RunningDinnerPublicTO mapToRunningDinnerPublicTO(RunningDinner runningDinner, LocalDate now) {
+  public RunningDinnerPublicTO mapToRunningDinnerPublicTO(RunningDinner runningDinner, Locale locale, LocalDate now) {
     PaymentOptions paymentOptions = paymentOptionsService.findPaymentOptionsByAdminId(runningDinner.getAdminId()).orElse(null);
-    return new RunningDinnerPublicTO(runningDinner, paymentOptions, now);
+    return new RunningDinnerPublicTO(runningDinner, paymentOptions, locale, now);
   }
   
-  public RunningDinnerPublicListTO mapToRunningDinnerPublicListTO(List<RunningDinner> publicRunningDinnerList, LocalDate now) {
+  public RunningDinnerPublicListTO mapToRunningDinnerPublicListTO(List<RunningDinner> publicRunningDinnerList, Locale locale, LocalDate now) {
     
     List<RunningDinnerPublicTO> mappedPublicRunningDinners = publicRunningDinnerList
                                                               .stream()
-                                                              .map(r -> mapToRunningDinnerPublicTO(r,  now))
+                                                              .map(r -> mapToRunningDinnerPublicTO(r, locale, now))
                                                               .collect(Collectors.toList());
     
     RunningDinnerPublicListTO result = new RunningDinnerPublicListTO();
@@ -119,8 +120,11 @@ public class FrontendRunningDinnerPaymentService {
     boolean isTeamPartnerRegistration = registrationSummary.getTeamPartnerWishRegistrationData() != null && StringUtils.isNotBlank(registrationSummary.getTeamPartnerWishRegistrationData().getLastname());
     BigDecimal purchaseAmount = PaypalPaymentService.calculatePurchaseAmount(paymentOptions, isTeamPartnerRegistration);
 
-    RegistrationPaymentSummaryTO paymentSummary = new RegistrationPaymentSummaryTO(paymentOptions);
-    paymentSummary.setTotalPriceFormatted(PaypalPaymentService.getFormattedAmountValue(purchaseAmount, locale));
+    RegistrationPaymentSummaryTO paymentSummary = new RegistrationPaymentSummaryTO(paymentOptions.getBrandName(),
+                                                                                   paymentOptions.getPricePerRegistration(),
+                                                                                   NumberUtil.getFormattedAmountValue(paymentOptions.getPricePerRegistration(), locale));
+    
+    paymentSummary.setTotalPriceFormatted(NumberUtil.getFormattedAmountValue(purchaseAmount, locale));
     paymentSummary.setTeamPartnerRegistration(isTeamPartnerRegistration);
     registrationSummary.setRegistrationPaymentSummary(paymentSummary);
     
