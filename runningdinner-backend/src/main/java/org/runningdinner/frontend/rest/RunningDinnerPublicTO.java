@@ -8,6 +8,8 @@ import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
+import org.runningdinner.payment.paymentoptions.PaymentOptions;
+import org.runningdinner.payment.paymentoptions.rest.PaymentOptionsTO;
 import org.runningdinner.wizard.PublicSettingsTO;
 
 public class RunningDinnerPublicTO {
@@ -33,11 +35,13 @@ public class RunningDinnerPublicTO {
   private String languageCode;
   
   private boolean teamPartnerWishDisabled;
+  
+  private PaymentOptionsTO paymentOptions;
 
   public RunningDinnerPublicTO() {
   }
 
-  public RunningDinnerPublicTO(RunningDinner runningDinner, LocalDate now) {
+  public RunningDinnerPublicTO(RunningDinner runningDinner, PaymentOptions incomingPaymentOptions, LocalDate now) {
     this.date = runningDinner.getDate();
     this.city = runningDinner.getCity();
     this.zip = runningDinner.getZip();
@@ -49,6 +53,9 @@ public class RunningDinnerPublicTO {
     this.runningDinnerType = runningDinner.getRunningDinnerType();
     this.teamPartnerWishDisabled = runningDinner.getConfiguration().isTeamPartnerWishDisabled();
     this.afterPartyLocation = runningDinner.getAfterPartyLocation().orElse(null);
+    if (incomingPaymentOptions != null) {
+      this.paymentOptions = new PaymentOptionsTO(incomingPaymentOptions);
+    }
   }
 
   public PublicSettingsTO getPublicSettings() {
@@ -157,6 +164,14 @@ public class RunningDinnerPublicTO {
 
   public void setAfterPartyLocation(AfterPartyLocation afterPartyLocation) {
     this.afterPartyLocation = afterPartyLocation;
+  }
+  
+  public PaymentOptionsTO getPaymentOptions() {
+    return paymentOptions;
+  }
+
+  public void setPaymentOptions(PaymentOptionsTO paymentOptions) {
+    this.paymentOptions = paymentOptions;
   }
 
   @Override

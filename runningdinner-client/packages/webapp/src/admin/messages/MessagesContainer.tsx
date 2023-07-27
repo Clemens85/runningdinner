@@ -40,7 +40,7 @@ import {
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 import {useMessagesQueryHandler} from "./MessagesQueryHandlerHook";
-import {FetchStatus} from "@runningdinner/shared/src/redux";
+import {FetchStatus} from "@runningdinner/shared";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 
 export function TeamMessages({runningDinner}: BaseRunningDinnerProps) {

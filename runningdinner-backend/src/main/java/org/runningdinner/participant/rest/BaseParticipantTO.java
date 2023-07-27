@@ -14,6 +14,7 @@ import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.participant.MealSpecificsAware;
 import org.runningdinner.participant.Participant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 
 public class BaseParticipantTO extends BaseTO implements MealSpecificsAware {
@@ -234,6 +235,7 @@ public class BaseParticipantTO extends BaseTO implements MealSpecificsAware {
     return age;
   }
 
+  @JsonIgnore
   public int getAgeNormalized() {
     if (getAge() <= 0) {
       return Participant.UNDEFINED_AGE;

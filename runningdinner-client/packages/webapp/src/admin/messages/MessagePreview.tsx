@@ -16,7 +16,7 @@ import {
   useAdminDispatch,
   useRecipientName, useBackendIssueHandler, isArrayNotEmpty, BackendIssue
 } from "@runningdinner/shared";
-import {FetchStatus} from "@runningdinner/shared/src/redux";
+import {FetchStatus} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {TextViewHtml} from "../../common/TextViewHtml";
 

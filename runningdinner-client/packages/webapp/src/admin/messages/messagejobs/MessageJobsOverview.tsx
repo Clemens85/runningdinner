@@ -24,7 +24,7 @@ import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
 import {useAdminNavigation} from "../../AdminNavigationHook";
-import {FetchStatus} from "@runningdinner/shared/src/redux";
+import {FetchStatus} from "@runningdinner/shared";
 
 export function MessageJobsOverview({adminId}: MessageTypeAdminIdPayload) {
 

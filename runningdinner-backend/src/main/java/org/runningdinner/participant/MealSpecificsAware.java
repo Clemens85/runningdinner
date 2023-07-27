@@ -2,6 +2,8 @@ package org.runningdinner.participant;
 
 import org.runningdinner.core.MealSpecifics;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public interface MealSpecificsAware {
 
    boolean isVegetarian();
@@ -14,6 +16,7 @@ public interface MealSpecificsAware {
 
    String getMealSpecificsNote();
    
+   @JsonIgnore
    default MealSpecifics getMealSpecifics() {
      return new MealSpecifics(this.isLactose(), this.isGluten(), this.isVegetarian(), this.isVegan(), this.getMealSpecificsNote());
    }

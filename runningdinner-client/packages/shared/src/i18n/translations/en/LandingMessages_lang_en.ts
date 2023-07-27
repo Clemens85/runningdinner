@@ -30,6 +30,21 @@ const LandingMessages_en: any = {
       'Please try it again later. <br/> ' +
       'If the error still occurs, please send an email to <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
+    registration_payment_error: 'Unfortunately, something went wrong. Please try again in a few minutes. If it still does not work out, please contact the organizer.',
+    registration_not_possible_without_payment: 'For this event a paid registration is necessary',
+    registration_payment_continue: "Continue to payment...",
+    registration_payment_info: "With the purchase you register for this event.<br />" +
+      "In the next step you will be redirected to PayPal for payment.<br />" +
+      "Please do not close the browser during the payment process.",
+    payment_processing: "Payment is being processed, please do not close browser",
+    payment_finalize: 'Complete Purchase',
+    payment_check_contact_data: 'Please check your contact details again',
+    payment_purchase_now: "Purchase now",
+    payment_with_paypal: "Payment with PayPal",
+    payment_teampartner_registrataion: 'Registration with team partner',
+    payment_total_price: "Price {{ totalPriceFormatted }} €",
+    payment_no_paypal_contact: "You don't have PayPal and still want to participate? Please contact <anchor href=\"mailto:{{ publicContactEmail }}\">{{ publicContactEmail }}</anchor>.",
+
     teampartner_wish_summary_not_existing: 'You have entered <italic>{{ teamPartnerWish }}</italic> as team partner wish. ' +
       'This wished partner will receive an invitation email for this dinner event as soon as you confirm your registration. ' +
       'If <italic>{{ teamPartnerWish }}</italic> eventually registers to this event, you will be mixed up into one team.',

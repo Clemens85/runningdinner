@@ -36,7 +36,7 @@ import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "org.runningdinner" })
+@ComponentScan(basePackages = { "org.runningdinner", "org.payment.paypal" })
 @EntityScan("org.runningdinner")
 @EnableJpaRepositories
 @EnableScheduling

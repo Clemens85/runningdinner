@@ -10,6 +10,7 @@ import TeamDinnerRoute from "./teams/TeamDinnerRoute";
 import {MessageJobDetailsList} from "./messages/messagejobs/MessageJobDetailsList";
 import {SettingsPage} from "./settings/SettingsPage";
 import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
+import {PaymentOptionsPage} from "./paymentoptions/PaymentOptionsPage";
 
 export default function AdminRoute() {
 
@@ -48,6 +49,8 @@ export default function AdminRoute() {
             <BrowserTitle  namespaces={"common"} titleI18nKey={"common:settings"} />
           </>
         } />
+
+        <Route path={`paymentoptions`} element={<PaymentOptionsPage runningDinner={runningDinner} />} />
 
         <Route path={"*"} element={<Dashboard runningDinner={runningDinner} />} />
       </Routes>

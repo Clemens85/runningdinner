@@ -54,6 +54,8 @@ public class RegistrationSummaryTO implements Serializable {
   private TeamPartnerWishInvitationState teamPartnerWishState;
   
   private TeamPartnerWishRegistrationDataTO teamPartnerWishRegistrationData;
+  
+  private RegistrationPaymentSummaryTO registrationPaymentSummary;
 
   public RegistrationSummaryTO() {
 
@@ -96,6 +98,8 @@ public class RegistrationSummaryTO implements Serializable {
     this.teamPartnerWishState = registrationSummary.getTeamPartnerWishState();
     
     this.teamPartnerWishRegistrationData = registrationSummary.getTeamPartnerWishRegistrationData();
+    
+    this.registrationPaymentSummary = registrationSummary.getRegistrationPaymentSummary();
   }
 
   public String getFullname() {
@@ -227,6 +231,14 @@ public class RegistrationSummaryTO implements Serializable {
 
   public void setTeamPartnerWishRegistrationData(TeamPartnerWishRegistrationDataTO teamPartnerWishRegistrationData) {
     this.teamPartnerWishRegistrationData = teamPartnerWishRegistrationData;
+  }
+
+  public RegistrationPaymentSummaryTO getRegistrationPaymentSummary() {
+    return registrationPaymentSummary;
+  }
+
+  public void setRegistrationPaymentSummary(RegistrationPaymentSummaryTO registrationPaymentSummary) {
+    this.registrationPaymentSummary = registrationPaymentSummary;
   }
 
   @Override

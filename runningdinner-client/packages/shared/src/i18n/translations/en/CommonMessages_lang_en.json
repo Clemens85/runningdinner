@@ -24,6 +24,8 @@
 	"back_to_form": "Back to form",
 	"base_data": "Personal information",
 
+	"brand_name": "Name of the organizer",
+
 	"cancel": "Cancel",
 	"change": "Change",
 	"city": "City",
@@ -121,6 +123,7 @@
 	"participant_seats": "{{numSeats}} seats",
 	"participants": "Participants",
 	"preview": "Preview",
+	"price_per_registration": "Price per single registration",
 	"public_contact_email": "EMail address for questions of participants (will be displayed in event)",
 	"public_contact_email_help": "EMail address for questions of participants",
 	"public_contact_mobile_number": "(Optional) Mobile number for questions of participants (will be displayed in event)",

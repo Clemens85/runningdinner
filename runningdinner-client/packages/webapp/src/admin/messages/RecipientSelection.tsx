@@ -26,7 +26,7 @@ import {
   startEditCustomSelectedRecipients,
 } from "@runningdinner/shared";
 import {useDispatch} from "react-redux";
-import {FetchStatus} from "@runningdinner/shared/src/redux";
+import {FetchStatus} from "@runningdinner/shared";
 
 function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
 

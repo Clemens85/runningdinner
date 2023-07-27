@@ -5,13 +5,19 @@ import {
   ParticipantFormModel,
   Participant,
   ParticipantName,
-  BackendIssue
+  BackendIssue,
+  PaymentOptions
 } from ".";
 import { isStringNotEmpty, TeamPartnerWishRegistrationData } from "..";
 
 export interface RegistrationData extends ParticipantFormModel {
   dataProcessingAcknowledged: boolean;
   teamPartnerRegistrationDisabled?: boolean;
+}
+
+export interface RegistrationPaymentSummary extends Omit<PaymentOptions, "id"> {
+  teamPartnerRegistration: boolean;
+  totalPriceFormatted: string;
 }
 
 export interface RegistrationSummary {
@@ -31,12 +37,18 @@ export interface RegistrationSummary {
   teamPartnerWishState: TeamPartnerWishState;
   teamPartnerWishRegistrationData?: TeamPartnerWishRegistrationData;
   notes?: string;
+  registrationPaymentSummary?: RegistrationPaymentSummary
 }
 
 export interface ParticipantActivationResult {
   activatedParticipant?: Participant;
   activatedTeamPartnerRegistration?: ParticipantName;
   validationIssue?: BackendIssue;
+}
+
+export interface RegistrationDataCollection {
+  registrationData: RegistrationData;
+  registrationSummary: RegistrationSummary;
 }
 
 export function isParticipantActivationSuccessful(activationResult?: ParticipantActivationResult): boolean {

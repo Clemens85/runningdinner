@@ -36,3 +36,32 @@ export const useLandingStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2)
   }
 }));
+
+export const usePaymentStyles = makeStyles((theme) => ({
+  cardList: {
+    margin: 0,
+    padding: 0,
+    listStyle: 'none'
+  },
+  cardHeader: {
+    backgroundColor:
+      theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
+  },
+  cardPricing: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'baseline',
+    marginBottom: theme.spacing(2),
+  }
+}));
+
+const drawerWidth = "1024px";
+export const useDrawerStyles = makeStyles((theme) => ({
+  drawer: {
+    maxWidth: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    maxWidth: drawerWidth,
+  }
+}));

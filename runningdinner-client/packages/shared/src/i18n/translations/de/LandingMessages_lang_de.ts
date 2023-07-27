@@ -30,6 +30,21 @@ const LandingMessages_de: any = {
       'Versuche es bitte später erneut. <br/>' +
       'Falls der Fehler immer noch auftritt wende dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
+    registration_payment_error: 'Leider ist etwas schief gelaufen. Versuche es bitte erneut in ein paar Minuten. Falls es immer noch nicht klappt, kontaktiere bitte den Veranstalter.',
+    registration_not_possible_without_payment: 'Für dieses Event ist eine kostenpflichtige Anmeldung nötig.',
+    registration_payment_continue: "Weiter zur Bezahlung...",
+    registration_payment_info: "Mit dem Kauf meldest du dich für dieses Event an.<br />" +
+      "Im nächsten Schritt wirst du zu PayPal zur Bezahlung weitergeleitet.<br />" +
+      "Schließe bitte nicht den Browser während des Bezahlvorgangs.",
+    payment_processing: "Zahlung wird verarbeitet, bitte Browser nicht schließen",
+    payment_finalize: 'Kauf abschließen',
+    payment_check_contact_data: 'Bitte überprüfe nochmals deine Kontaktdaten',
+    payment_purchase_now: "Jetzt kaufen",
+    payment_with_paypal: "Bezahlung mit PayPal",
+    payment_teampartner_registrataion: 'Anmeldung mit Teampartner',
+    payment_total_price: "Preis {{ totalPriceFormatted }} €",
+    payment_no_paypal_contact: "Du hast kein PayPal und möchtest dennoch teilnehmen? Melde dich bitte bei <anchor href=\"mailto:{{ publicContactEmail }}\">{{ publicContactEmail }}</anchor>.",
+
     teampartner_wish_summary_not_existing: 'Du hast <italic>{{ teamPartnerWish }}</italic> als Wunschpartner angegeben. ' +
       'Er oder Sie bekommt eine Einladung via Email sobald du deine Registrierung bestätigt hast. ' +
       'Ihr werdet dann zusammen als Team kochen, wenn <italic>{{ teamPartnerWish }}</italic> sich anmeldet.',

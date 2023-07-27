@@ -38,25 +38,25 @@ public class GlobalExceptionMapper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionMapper.class);
 
-	@Autowired
-	private ValidatorService validatorService;
+  @Autowired
+  private ValidatorService validatorService;
 
   @Autowired
   private MessageSource messages;
-	
+
   @Value("${contact.mail}")
-	private String adminEmail;
+  private String adminEmail;
+
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(DinnerNotFoundException.class)
+  @ResponseBody
+  IssueList mapDinnerNotFoundException(final HttpServletRequest req, final Locale locale, final Exception ex) {
+    String message = messages.getMessage("error.page.dinner.notfound.details", null, locale);
+    LOGGER.error(ex.getMessage(), ex);
+    return new IssueList(new Issue(message, IssueType.BAD_REQUEST));
+  }
 	
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	@ExceptionHandler(DinnerNotFoundException.class)
-	@ResponseBody
-	IssueList mapDinnerNotFoundException(final HttpServletRequest req, final Locale locale, final Exception ex) {
-		String message = messages.getMessage("error.page.dinner.notfound.details", null, locale);
-		LOGGER.error(ex.getMessage(), ex);
-		return new IssueList(new Issue(message, IssueType.BAD_REQUEST));
-	}
-	
-	@ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
+  @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
   @ExceptionHandler(DinnerNotAcknowledgedException.class)
   @ResponseBody
   IssueList mapDinnerNotAcknowledgedException(final HttpServletRequest req, final Locale locale, final Exception ex) {

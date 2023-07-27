@@ -32,7 +32,7 @@ import FormFieldset from "../common/theme/FormFieldset";
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {BackToListButton} from "../common/hooks/MasterDetailViewHook";
-import { PublicDinnerEventRegistrationForm } from './PublicDinnerEventRegistrationForm';
+import {PublicDinnerEventRegistrationFormContainer} from './PublicDinnerEventRegistrationForm';
 import {useLandingNavigation} from "./LandingNavigationHook";
 import {getLocalStorageItem, setLocalStorageItem} from "../common/LocalStorageService";
 import {Alert} from '@material-ui/lab';
@@ -222,10 +222,9 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
         }
       </Box>
 
-      { isRegistrationFormOpen && <PublicDinnerEventRegistrationForm publicDinnerId={publicSettings.publicDinnerId}
-                                                                     teamPartnerWishDisabled={publicRunningDinner.teamPartnerWishDisabled}
-                                                                     onRegistrationPerformed={handleRegistrationPerformed}
-                                                                     onCancel={closeRegistrationForm} /> }
+      { isRegistrationFormOpen && <PublicDinnerEventRegistrationFormContainer publicRunningDinner={publicRunningDinner}
+                                                                              onRegistrationPerformed={handleRegistrationPerformed}
+                                                                              onCancel={closeRegistrationForm} /> }
 
     </>
   );

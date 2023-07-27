@@ -1,5 +1,6 @@
 package org.runningdinner.frontend;
 
+import org.runningdinner.frontend.rest.RegistrationPaymentSummaryTO;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishInvitationState;
 import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
@@ -13,9 +14,11 @@ public class RegistrationSummary {
   private TeamPartnerWishInvitationState teamPartnerWishState;
   
   private TeamPartnerWishRegistrationDataTO teamPartnerWishRegistrationData;
+  
+  private RegistrationPaymentSummaryTO registrationPaymentSummary;
 
   public RegistrationSummary() {
-
+    // NOP
   }
 
   public RegistrationSummary(Participant participant, 
@@ -61,4 +64,13 @@ public class RegistrationSummary {
   public void setTeamPartnerWishRegistrationData(TeamPartnerWishRegistrationDataTO teamPartnerWishRegistrationData) {
     this.teamPartnerWishRegistrationData = teamPartnerWishRegistrationData;
   }
+
+  public RegistrationPaymentSummaryTO getRegistrationPaymentSummary() {
+    return registrationPaymentSummary;
+  }
+
+  public void setRegistrationPaymentSummary(RegistrationPaymentSummaryTO registrationPaymentSummary) {
+    this.registrationPaymentSummary = registrationPaymentSummary;
+  }
+  
 }

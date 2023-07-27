@@ -24,6 +24,8 @@
 	"back_to_form": "Zurück zum Formular",
 	"base_data": "Persönliche Angaben",
 
+	"brand_name": "Name des Veranstalters",
+
 	"cancel": "Abbrechen",
 	"change": "Ändern",
 	"city": "Ort",
@@ -120,6 +122,7 @@
 	"participant_email_equals_team_partner_wish": "Du kannst dich nicht selbst als Wunschpartner angeben",
 	"participant_seats": "{{numSeats}} Plätze",
 	"participants": "Teilnehmer",
+	"price_per_registration": "Preis pro Einzel-Anmeldung",
 	"preview": "Vorschau",
 	"public_contact_email": "EMail für Rückfragen (wird in Event angezeigt)",
 	"public_contact_email_help": "Email-Adresse für Rückfragen",

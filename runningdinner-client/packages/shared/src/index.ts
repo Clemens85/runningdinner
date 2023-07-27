@@ -15,6 +15,8 @@ export * from "./masterdata";
 export * from "./wizard";
 export * from './issue';
 
+export * from './redux';
+
 export * from './GeocoderHook';
 
 // TODO Add possibility to include JSON files

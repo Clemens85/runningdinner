@@ -1,4 +1,4 @@
-import {CONSTANTS, getExampleParticipantMessage,} from "../..";
+import {CONSTANTS, getExampleParticipantMessage, PaymentOptions,} from "../..";
 import {
   ActivityList,
   BackendIssue,
@@ -94,3 +94,13 @@ export const newInitialMessageJobDetailsState: MessageJobDetailsState = {
   messageJob: INITIAL_FETCH_DATA
 };
 
+
+export interface PaymentOptionsState {
+  paymentOptions: FetchData<PaymentOptions>;
+}
+
+export function newInitialPaymentOptionsState(): PaymentOptionsState {
+  return {
+    paymentOptions: INITIAL_FETCH_DATA
+  };
+}

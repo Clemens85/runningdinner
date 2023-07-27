@@ -9,12 +9,11 @@ import {
   useBackendIssueHandler,
   validateBasicDetails
 } from "@runningdinner/shared";
-import {useWizardSelector} from "@runningdinner/shared";
+import {useWizardSelector, FetchStatus} from "@runningdinner/shared";
 import {getRegistrationTypesSelector, getRunningDinnerBasicDetailsSelector, setNextNavigationStep, setPreviousNavigationStep, updateBasicDetails} from '@runningdinner/shared';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {useDispatch} from "react-redux";
 import WizardButtons from "./WizardButtons";
-import { FetchStatus } from 'packages/shared/src/redux';
 import { BasicDinnerSettingsFormControl } from '../common/dinnersettings/BasicDinnerSettingsFormControl';
 
 export default function BasicDetailsStep() {

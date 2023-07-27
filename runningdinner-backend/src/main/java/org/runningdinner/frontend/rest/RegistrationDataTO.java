@@ -3,13 +3,19 @@ package org.runningdinner.frontend.rest;
 import javax.validation.constraints.AssertTrue;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.core.Gender;
 import org.runningdinner.participant.rest.ParticipantInputDataTO;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class RegistrationDataTO extends ParticipantInputDataTO {
 
   @AssertTrue(message = "error.invalid.dataProcessingAcknowledged")
   private boolean dataProcessingAcknowledged;
+  
+  @SafeHtml
+  private String orderId;
   
   public RegistrationDataTO() {
     super();
@@ -26,8 +32,17 @@ public class RegistrationDataTO extends ParticipantInputDataTO {
     this.dataProcessingAcknowledged = dataProcessingAcknowledged;
   }
   
+  @JsonIgnore
   public Gender getGenderNotNull() {
     return this.getGender() != null ? this.getGender() : Gender.UNDEFINED;
+  }
+  
+  public String getOrderId() {
+    return orderId;
+  }
+
+  public void setOrderId(String orderId) {
+    this.orderId = orderId;
   }
 
   @Override

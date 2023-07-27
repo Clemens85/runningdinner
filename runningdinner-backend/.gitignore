@@ -28,3 +28,4 @@
 /infrastructure/local/verdaccio/storage/*
 /infrastructure/local/.env
 /infrastructure/local/volume/
+/src/main/resources/application-paypal_sandbox.properties

@@ -5,6 +5,7 @@ import {adminSlice} from "./AdminSlice";
 import {dashboardSlice} from "./DashboardSlice";
 import {messagesSlice} from "./MessagesSlice";
 import {messageJobDetailsSlice} from "./MessageJobDetailsSlice";
+import {paymentOptionsSlice} from "./PaymentOptionsSlice";
 
 export const adminStore = configureStore({
   reducer: combineReducers({
@@ -12,6 +13,7 @@ export const adminStore = configureStore({
     dashboard: dashboardSlice,
     messages: messagesSlice,
     messageJobDetails: messageJobDetailsSlice,
+    paymentOptions: paymentOptionsSlice
   }),
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}).concat(logger)
 });

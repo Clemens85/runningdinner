@@ -10,3 +10,4 @@ export * from './DinnerRoute';
 export * from './SelfAdmin';
 export * from './Registration';
 export * from './Feedback';
+export * from './Payment';

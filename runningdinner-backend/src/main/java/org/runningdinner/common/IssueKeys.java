@@ -32,7 +32,9 @@ public interface IssueKeys {
   String INVALID_SIZE_WAITINGLIST_PARTICIPANTS_TO_GENERATE_TEAMS_TOO_FEW = "invalid_size_waitinglist_participants_to_generate_teams_too_few";
   
   String NUM_SEATS_TEAMPARTNER_REGISTRATION_INVALID = "num_seats_teampartner_registration_invalid";
-    
+  
+  String REGISTRATION_NOT_POSSIBLE_WITHOUT_PAYMENT = "registration_not_possible_without_payment";
+  
   String INVALID_TEAM_MEMBER_CANCELLATION_ROOT_TEAMPARTNER = "invalid_team_member_cancellation_root_teampartner";
   String INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH = "invalid_replacement_participants_inconsistent_teampartner_wish";
   String INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH = "invalid_waitinglist_teamgeneration_inconsistent_teampartner_wish";

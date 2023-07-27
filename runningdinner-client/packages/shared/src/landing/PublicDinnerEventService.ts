@@ -3,7 +3,7 @@ import {
   newHttpError,
   ParticipantActivationResult,
   PublicRunningDinner,
-  PublicRunningDinnerList,
+  PublicRunningDinnerList, RegistrationOrder,
   RegistrationSummary, RunningDinnerSessionData
 } from "../types";
 import axios from "axios";
@@ -33,7 +33,10 @@ export async function performRegistration(publicDinnerId: string, registrationDa
 }
 
 async function executePerformRegistrationRequest(publicDinnerId: string, registrationData: RegistrationData, validateOnly: boolean): Promise<RegistrationSummary> {
-  const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/register?validateOnly=${validateOnly}`);
+  let url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/register`);
+  if (validateOnly) {
+    url += '/validate';
+  }
   if (!isNumSeatsPositiveIntegerOrEmpty(registrationData)) { // TODO: Not very nice, but it works for now. Should be replaced by client side validation
     throw newHttpError(406, [{
       field: "numSeats",
@@ -64,4 +67,30 @@ export async function findRunningDinnerSessionDataByPublicId(publicDinnerId: str
   const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/sessiondata`);
   const response = await axios.get<RunningDinnerSessionData>(url);
   return response.data;
+}
+
+export async function createRegistrationOrder(publicDinnerId: string, registrationData: RegistrationData): Promise<RegistrationOrder> {
+  const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/order`);
+  const response = await axios.post<RegistrationOrder>(url, registrationData);
+  return response.data;
+}
+
+export async function captureRegistrationOrder(publicDinnerId: string, token: string): Promise<RegistrationData> {
+  const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/order/capture?token=${token}`);
+  const response = await axios.get<RegistrationData>(url);
+  return response.data;
+}
+
+export async function cancelRegistrationOrder(publicDinnerId: string, token: string): Promise<RegistrationData> {
+  const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/order/cancel?token=${token}`);
+  const response = await axios.get<RegistrationData>(url);
+  return response.data;
+}
+
+export async function finalizeRegistrationOrder(publicDinnerId: string, token: string, capturePayment: boolean) {
+  if (capturePayment) {
+    return captureRegistrationOrder(publicDinnerId, token);
+  } else {
+    return cancelRegistrationOrder(publicDinnerId, token);
+  }
 }

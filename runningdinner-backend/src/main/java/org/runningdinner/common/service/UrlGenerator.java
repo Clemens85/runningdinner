@@ -1,6 +1,12 @@
 
 package org.runningdinner.common.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.core.RunningDinner;
@@ -9,12 +15,6 @@ import org.runningdinner.participant.Participant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UrlGenerator {
@@ -87,6 +87,20 @@ public class UrlGenerator {
     
     return result;
   }
+  
+  public String constructPublicDinnerRegistrationOrderCallbackUrl(String publicId, String callbackUrlType) {
+    
+    String result = replacePublicDinnerIdInUrl(publicDinnerRegistrationUrlTemplate, publicId);
+    Assert.state(StringUtils.isNotBlank(callbackUrlType), "callbackUrlType must not be empty");
+    
+    if (StringUtils.contains(result, "?")) {
+      result += "&callbackUrlType=" + callbackUrlType;
+    } else {
+      result += "?callbackUrlType=" + callbackUrlType;
+    }
+    return result; 
+  }
+
   
   private String replacePublicDinnerIdInUrl(String urlTemplate, String publicId) {
     

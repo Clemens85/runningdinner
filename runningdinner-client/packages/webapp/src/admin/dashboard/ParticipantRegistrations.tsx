@@ -22,7 +22,7 @@ import {
 } from "@material-ui/core";
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
 import {useDispatch} from "react-redux";
-import {FetchStatus} from "@runningdinner/shared/src/redux";
+import {FetchStatus} from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
 import LinkAction from "../../common/theme/LinkAction";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";

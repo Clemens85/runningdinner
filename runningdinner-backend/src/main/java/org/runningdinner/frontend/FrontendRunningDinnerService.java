@@ -35,7 +35,7 @@ import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
@@ -64,29 +64,29 @@ public class FrontendRunningDinnerService {
 
   @Autowired
   private ValidatorService validatorService;
+  
+  /**
+   * Finds a public running dinner identified by the passed id
+   * 
+   * @param publicDinnerId
+   * @param now
+   * @return
+   * @throws Exception if dinner could not be found or is expired
+   */
+  public RunningDinner findRunningDinnerByPublicId(String publicDinnerId, LocalDate now) {
 
-	/**
-	 * Finds a public running dinner identified by the passed id
-	 * 
-	 * @param publicDinnerId
-	 * @param now
-	 * @return
-	 * @throws Exception if dinner could not be found or is expired
-	 */
-	public RunningDinner findRunningDinnerByPublicId(String publicDinnerId, LocalDate now) {
+    Set<RegistrationType> publicRegistationTypes = Sets.newHashSet(RegistrationType.OPEN, RegistrationType.PUBLIC);
 
-      Set<RegistrationType> publicRegistationTypes = Sets.newHashSet(RegistrationType.OPEN, RegistrationType.PUBLIC);
+    validatorService.checkPublicIdValid(publicDinnerId);
+    RunningDinner runningDinner = runningDinnerRepository
+        .findByPublicSettingsPublicIdAndRegistrationTypeInAndCancellationDateIsNull(publicDinnerId,
+            publicRegistationTypes);
 
-      validatorService.checkPublicIdValid(publicDinnerId);
-      RunningDinner runningDinner = runningDinnerRepository
-          .findByPublicSettingsPublicIdAndRegistrationTypeInAndCancellationDateIsNull(publicDinnerId,
-              publicRegistationTypes);
+    validatorService.checkRunningDinnerNotNull(runningDinner);
+    validatorService.checkRunningDinnerNotExpired(runningDinner, now);
 
-      validatorService.checkRunningDinnerNotNull(runningDinner);
-      validatorService.checkRunningDinnerNotExpired(runningDinner, now);
-
-      return urlGenerator.addPublicDinnerUrl(runningDinner);
-	}
+    return urlGenerator.addPublicDinnerUrl(runningDinner);
+  }
 
 	/**
 	 * Retrieves list with all available public running dinners starting at least at the passed date
@@ -134,9 +134,8 @@ public class FrontendRunningDinnerService {
     }
 
     Participant registeredParticipant = participantService.addParticipant(runningDinner, registrationData, true);
-
     emitNewParticipantEvent(registeredParticipant, runningDinner);
-
+    
     return createRegistrationSummary(runningDinner, registeredParticipant, registrationData);
   }
 
@@ -182,7 +181,7 @@ public class FrontendRunningDinnerService {
   }
 
   protected void emitNewParticipantEvent(final Participant newParticipant, final RunningDinner runningDinner) {
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 
       @Override
       public void afterCommit() {
