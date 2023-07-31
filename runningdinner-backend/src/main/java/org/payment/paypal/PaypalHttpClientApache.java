@@ -13,7 +13,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.payment.RegistrationOrderLink;
@@ -41,12 +43,21 @@ public class PaypalHttpClientApache {
 
   private CloseableHttpClient createHttpClient() {
     int connectionTimeout = paypalConfig.getConnectionTimeout();
-    RequestConfig config = RequestConfig.custom()
-                              .setConnectionRequestTimeout(connectionTimeout)
-                              .setConnectTimeout(connectionTimeout)
-                              .setSocketTimeout(connectionTimeout)
-                              .build();
-   return HttpClientBuilder.create().setDefaultRequestConfig(config).build(); 
+    RequestConfig requestConfig = RequestConfig.custom()
+                                    .setConnectionRequestTimeout(connectionTimeout)
+                                    .setConnectTimeout(connectionTimeout)
+                                    .setSocketTimeout(connectionTimeout)
+                                    .setRedirectsEnabled(true)
+                                    .build();
+    PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+    cm.setDefaultMaxPerRoute(10);
+    cm.setMaxTotal(15);
+    cm.setValidateAfterInactivity(500);
+    return HttpClients.custom()
+              .setRetryHandler(new DefaultHttpRequestRetryHandler(3, false))
+              .setDefaultRequestConfig(requestConfig)
+              .setConnectionManager(cm)
+              .build();
   }
 
   public AccessTokenResponseTO getAccessToken() throws IOException, InterruptedException {
