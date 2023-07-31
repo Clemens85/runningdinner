@@ -3,7 +3,6 @@ package org.runningdinner.payment;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 
 import org.payment.paypal.AccessTokenResponseTO;
@@ -15,6 +14,7 @@ import org.payment.paypal.PaypalPayerTO;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
 
 public class PaypalMock {
 
@@ -23,14 +23,17 @@ public class PaypalMock {
   private PaypalConfig paypalConfig;
   
   private ObjectMapper objectMapper = new ObjectMapper();
+
+  private WireMockServer wireMockServer;
   
-  private PaypalMock(PaypalConfig paypalConfig) {
+  private PaypalMock(PaypalConfig paypalConfig, WireMockServer wireMockServer) {
     this.paypalConfig = paypalConfig;
     this.paypalConfig.setBaseUrl("http://localhost:" + PORT);
+    this.wireMockServer = wireMockServer;
   }
 
-  public static PaypalMock newInstance(PaypalConfig paypalConfig) {
-    return new PaypalMock(paypalConfig);
+  public static PaypalMock newInstance(PaypalConfig paypalConfig, WireMockServer wireMockServer) {
+    return new PaypalMock(paypalConfig, wireMockServer);
   }
   
   
@@ -41,7 +44,7 @@ public class PaypalMock {
     accessTokenResponse.setApplicationId("AppId");
     String accessTokenResponseAsJsonStr = writeValueAsJsonString(accessTokenResponse); 
     
-    stubFor(post(urlPathMatching("/v1/oauth2/token"))
+    wireMockServer.stubFor(post(urlPathMatching("/v1/oauth2/token"))
 //        .withHeader("Accept", matching("application/json.*"))
 //        .withHeader("Accept-Language", matching("en_US"))
 //        .withHeader("Content-Type", matching("application/x-www-form-urlencoded"))
@@ -60,7 +63,7 @@ public class PaypalMock {
     orderResponse.setLinks(PaymentTestUtil.newPaypalLinkList(mockedOrderIdValue));
     String orderResponseAsJsonStr = writeValueAsJsonString(orderResponse);
     
-    stubFor(post(urlPathMatching("/v2/checkout/orders"))
+    wireMockServer.stubFor(post(urlPathMatching("/v2/checkout/orders"))
 //        .withHeader("Accept", matching("application/json"))
 //        .withHeader("Authorization", matching("Bearer secret-token"))
         .willReturn(aResponse()
@@ -81,7 +84,7 @@ public class PaypalMock {
     response.getPayer().setId("PayerId");
     String responseJsonStr = writeValueAsJsonString(response);
     
-    stubFor(post(urlPathMatching("/v2/checkout/orders/" + orderId + "/capture"))
+    wireMockServer.stubFor(post(urlPathMatching("/v2/checkout/orders/" + orderId + "/capture"))
         .willReturn(aResponse()
                       .withStatus(200)
                       .withBody(responseJsonStr)));
@@ -96,7 +99,7 @@ public class PaypalMock {
     response.setStatus(mockedPaypalStatus);
     String responseJsonStr = writeValueAsJsonString(response);
     
-    stubFor(get(urlPathMatching("/v2/checkout/orders/" + orderId))
+    wireMockServer.stubFor(get(urlPathMatching("/v2/checkout/orders/" + orderId))
         .willReturn(aResponse()
                       .withStatus(200)
                       .withBody(responseJsonStr)));

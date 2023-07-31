@@ -4,11 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.payment.paypal.PaypalConfig;
@@ -31,16 +32,13 @@ import org.runningdinner.payment.paymentoptions.PaymentOptionsService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
+import org.runningdinner.wiremock.WireMockControlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
-// TODO Fix WireMock
 @RunWith(SpringJUnit4ClassRunner.class)
 @ApplicationTest
-@Ignore
 public class FrontendRunningDinnerPaymentServiceTest {
 
   @Autowired
@@ -64,8 +62,8 @@ public class FrontendRunningDinnerPaymentServiceTest {
   @Autowired
   private MailSenderFactory mailSenderFactory;
   
-  @Rule
-  public WireMockRule wireMockRule = new WireMockRule(PaypalMock.PORT);
+  @Autowired
+  private WireMockControlService wireMockControlService;
   
   private MailSenderMockInMemory mailSenderInMemory;
   
@@ -81,17 +79,23 @@ public class FrontendRunningDinnerPaymentServiceTest {
     publicDinnerId = runningDinner.getPublicSettings().getPublicId();
     adminId = runningDinner.getAdminId();
     
+    wireMockControlService.startServer();
+    
     PaypalMock
-      .newInstance(paypalConfig)
+      .newInstance(paypalConfig, wireMockControlService.getRunningServer())
       .mockAccessTokenRequest("secret-value")
       .mockCreateOrderRequest("123456")
       .mockGetOrderRequest("123456", PaypalOrderStatus.APPROVED)
       .mockCaptureOrderRequest("123456", "participant@payer.de");
-    
 
     this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
     this.mailSenderInMemory.setUp();
     this.mailSenderInMemory.addIgnoreRecipientEmail(CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
+  }
+  
+  @After
+  public void tearDown() {
+    wireMockControlService.stopServer();
   }
   
   @Test
@@ -175,6 +179,10 @@ public class FrontendRunningDinnerPaymentServiceTest {
     assertThat(participant.getActivatedBy()).isEqualTo("max@muster.de");
     assertThat(participant.getActivationDate()).isNotNull();
     
+    Awaitility
+      .await()
+      .atMost(3, TimeUnit.SECONDS)
+      .untilAsserted(() -> assertThat(mailSenderInMemory.filterForMessageTo("max@muster.de")).isNotNull());
     SimpleMailMessage sentRegistrationMail = this.mailSenderInMemory.filterForMessageTo("max@muster.de");
     assertThat(sentRegistrationMail).isNotNull();
     assertThat(sentRegistrationMail.getSubject()).isEqualTo(PaymentTestUtil.BRAND_NAME + ": Deine Anmeldung");
@@ -205,6 +213,11 @@ public class FrontendRunningDinnerPaymentServiceTest {
     Participant participant = participantService.findParticipantById(adminId, registrationSummary.getParticipant().getId());
     assertThat(participant.getActivatedBy()).isNullOrEmpty();
     assertThat(participant.getActivationDate()).isNull();
+    
+    Awaitility
+    .await()
+    .atMost(3, TimeUnit.SECONDS)
+    .untilAsserted(() -> assertThat(mailSenderInMemory.filterForMessageTo("max@muster.de")).isNotNull());
     
     SimpleMailMessage sentRegistrationMail = this.mailSenderInMemory.filterForMessageTo("max@muster.de");
     assertThat(sentRegistrationMail).isNotNull();
