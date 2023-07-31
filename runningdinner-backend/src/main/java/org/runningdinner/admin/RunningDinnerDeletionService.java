@@ -17,6 +17,8 @@ import org.runningdinner.participant.ParticipantRepository;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamRepository;
+import org.runningdinner.payment.RegistrationOrderRepository;
+import org.runningdinner.payment.paymentoptions.PaymentOptionsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,12 @@ public class RunningDinnerDeletionService {
   private ContractService contractService;
   
   @Autowired
+  private RegistrationOrderRepository registrationOrderRepository;
+  
+  @Autowired
+  private PaymentOptionsRepository paymentOptionsRepository;
+  
+  @Autowired
   private DeletedRunningDinnerRepository deletedRunningDinnerRepository;
   
   @Transactional
@@ -65,6 +73,10 @@ public class RunningDinnerDeletionService {
     messageJobRepository.deleteByAdminId(runningDinner.getAdminId());
     
     activityRepository.deleteByAdminId(runningDinner.getAdminId());
+    
+    paymentOptionsRepository.deleteByAdminId(runningDinner.getAdminId());
+
+    registrationOrderRepository.deleteByAdminId(runningDinner.getAdminId());
     
     runningDinnerPreferencesRepository.deleteByAdminId(runningDinner.getAdminId());
      
