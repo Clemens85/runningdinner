@@ -76,7 +76,7 @@ const LandingMessages_en: any = {
     dinner_event_deadline_text: 'Registration deadline is on {{ endOfRegistrationDate }}.',
     goto_registration: 'Open Registration',
 
-    data_processing_acknowledge: 'I aggree that my data will be processed.',
+    data_processing_acknowledge: 'I agree that my data will be processed.',
     data_processing_acknowledge_hint: 'The <anchor href="{{ privacyLink }}" target="_blank">Privacy Statement (DE)</anchor> contains further information.',
 
     notification_demo_no_registration_text: 'This is just a demo event and no "real" event. A registration for testing purposes is possible, but will have no effect.',
