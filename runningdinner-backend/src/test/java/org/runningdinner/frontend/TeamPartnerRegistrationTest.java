@@ -31,7 +31,6 @@ import org.runningdinner.initialization.CreateRunningDinnerInitializationService
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.ParticipantRepository;
 import org.runningdinner.participant.ParticipantService;
@@ -41,7 +40,6 @@ import org.runningdinner.participant.TeamService;
 import org.runningdinner.participant.WaitingListService;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
-import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
@@ -102,11 +100,11 @@ public class TeamPartnerRegistrationTest {
   @Test
   public void registerTeamPartnerAndActivateBoth() {
 
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", TestUtil.newAddress(), 6);
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
     
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
-    assertThat(registrationSummary.getTeamPartnerWishRegistrationData()).isEqualTo(newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    assertThat(registrationSummary.getTeamPartnerWishRegistrationData()).isEqualTo(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
     assertThat(registrationSummary.getTeamPartnerWishState()).isNull();
     
     // Verify second participant is also registered and both can be activated by root participant
@@ -174,8 +172,8 @@ public class TeamPartnerRegistrationTest {
   @Test
   public void validationForNotEnoughNumSeats() {
     
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", newAddress(), 4);
-    registrationData.setTeamPartnerWishRegistrationData(newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", TestUtil.newAddress(), 4);
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
     
     try {
       frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
@@ -450,8 +448,8 @@ public class TeamPartnerRegistrationTest {
   private Participant registerParticipantsAsFixedTeam() {
     
     // Register (and activate) fixed team
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", TestUtil.newAddress(), 6);
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
     frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
     
     Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), "max@muster.de")
@@ -463,8 +461,8 @@ public class TeamPartnerRegistrationTest {
   private Participant registerOtherParticipantsAsFixedTeam() {
     
     // Register (and activate) fixed team
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", "foo@bar.de", newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(newTeamPartnerwithRegistrationData("Other", "Teampartner"));
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", "foo@bar.de", TestUtil.newAddress(), 6);
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Other", "Teampartner"));
     frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
     
     Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), "foo@bar.de")
@@ -472,12 +470,4 @@ public class TeamPartnerRegistrationTest {
     return participantService.updateParticipantSubscription(rootParticipant.getId(), LocalDateTime.now(), true, runningDinner);
   }
   
-  
-  private TeamPartnerWishRegistrationDataTO newTeamPartnerwithRegistrationData(String firstname, String lastname) {
-    return new TeamPartnerWishRegistrationDataTO(ParticipantName.newName().withFirstname(firstname).andLastname(lastname));
-  }
-
-  private ParticipantAddress newAddress() {
-    return ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt");
-  }
 }

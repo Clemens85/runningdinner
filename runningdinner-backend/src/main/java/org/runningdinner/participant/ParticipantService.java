@@ -458,6 +458,12 @@ public class ParticipantService {
     }
   }
   
+  public static void removeTeamPartnerWishOriginatorIds(Collection<Participant> participants) {
+    for (Participant participant : participants) {
+      participant.setTeamPartnerWishOriginatorId(null);
+    }
+  }
+  
   public static List<Participant> newParticipantsFromDemoXls() {
     
     NameColumnConfig nameColumnConfig = NameColumnConfig.createForOneColumn(0);

@@ -32,6 +32,7 @@ import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellation;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.participant.rest.TeamParticipantsAssignmentTO;
+import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.runningdinner.wizard.BasicDetailsTO;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 
@@ -192,6 +193,12 @@ public class TestUtil {
   	return result;
   }
   
-  
+  public static TeamPartnerWishRegistrationDataTO newTeamPartnerwithRegistrationData(String firstname, String lastname) {
+    return new TeamPartnerWishRegistrationDataTO(ParticipantName.newName().withFirstname(firstname).andLastname(lastname));
+  }
+
+  public static  ParticipantAddress newAddress() {
+    return ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt");
+  }
   
 }
