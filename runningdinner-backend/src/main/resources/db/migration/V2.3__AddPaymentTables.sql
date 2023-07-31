@@ -7,6 +7,7 @@ create table runningdinner.PaymentOptions (
     adminId varchar(255) not null,
    	pricePerRegistration numeric(19, 2) not null,
    	brandName varchar(127) not null,
+   	agblink text,
     runningDinnerId uuid references runningdinner.RunningDinner,
     primary key (id)
 );
