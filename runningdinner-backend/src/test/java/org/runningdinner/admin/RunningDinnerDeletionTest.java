@@ -15,12 +15,16 @@ import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.deleted.DeletedRunningDinner;
 import org.runningdinner.admin.deleted.DeletedRunningDinnerRepository;
+import org.runningdinner.admin.rest.BasicSettingsTO;
 import org.runningdinner.contract.Contract;
 import org.runningdinner.contract.ContractService;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.PublicSettings;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.frontend.FrontendRunningDinnerService;
+import org.runningdinner.frontend.RegistrationSummary;
+import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantRepository;
@@ -28,6 +32,7 @@ import org.runningdinner.participant.TeamRepository;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
+import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wizard.PublicSettingsTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -67,6 +72,9 @@ public class RunningDinnerDeletionTest {
   
   @Autowired
   private DeletedRunningDinnerRepository deletedRunningDinnerRepository;
+  
+  @Autowired
+  private FrontendRunningDinnerService frontendRunningDinnerService;
 
   private RunningDinner runningDinner;
 
@@ -129,13 +137,7 @@ public class RunningDinnerDeletionTest {
   public void publicSettingsAreCopiedToDeletedRunningDinner() {
     
     // Make dinner public:
-    runningDinner = assertExistingRunningDinnerEntities();
-    runningDinner.setRegistrationType(RegistrationType.PUBLIC);
-    String uniqueEmail = UUID.randomUUID().toString() + "@mail.de"; // Used later on for identifying this dinner
-    runningDinner.setEmail(uniqueEmail);
-    runningDinner = runningDinnerRepository.save(runningDinner);
-    PublicSettings publicSettings = new PublicSettings("publicTitle", "publicDescription", runningDinner.getDate().minusDays(1), false); 
-    runningDinnerService.updatePublicSettings(runningDinner.getAdminId(), new PublicSettingsTO(publicSettings, false));
+    runningDinner = changeClosedToPublic();
     
     LocalDateTime cancellationDate = DINNER_DATE;
     runningDinnerService.cancelRunningDinner(runningDinner.getAdminId(), cancellationDate);
@@ -146,14 +148,50 @@ public class RunningDinnerDeletionTest {
     List<DeletedRunningDinner> deletedRunningDinners = assertNoRunningDinnerEntities();
     Optional<DeletedRunningDinner> deletedRunningDinner = deletedRunningDinners
                                                             .stream()
-                                                            .filter(drd -> drd.getEmail().equals(uniqueEmail))
+                                                            .filter(drd -> drd.getEmail().equals(runningDinner.getEmail()))
                                                             .findFirst();
     assertThat(deletedRunningDinner).isPresent();
     PublicSettings archivedPublicSettings = deletedRunningDinner.get().getPublicSettings();
     
-    assertThat(archivedPublicSettings).isEqualToComparingOnlyGivenFields(publicSettings, "publicTitle", "publicDescription", "endOfRegistrationDate");
+    assertThat(archivedPublicSettings).isEqualToComparingOnlyGivenFields(runningDinner.getPublicSettings(), "publicTitle", "publicDescription", "endOfRegistrationDate");
   }
   
+  @Test
+  public void deleteWithTeamPartnerRegistration() {
+    
+    this.runningDinner = changeClosedToPublic();
+    
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", TestUtil.newAddress(), 6);
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    
+    RegistrationSummary rs = frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
+    assertThat(rs).isNotNull();
+    assertThat(rs.getParticipant()).isNotNull();
+    
+    List<Participant> participants = participantRepository.findByAdminIdOrderByParticipantNumber(runningDinner.getAdminId());
+    assertThat(participants).hasSize(20);
+    assertThat(participants.get(18).getTeamPartnerWishOriginatorId()).isNotNull();
+    assertThat(participants.get(19).getTeamPartnerWishOriginatorId()).isNotNull();
+    
+    LocalDateTime now = DINNER_DATE.plusDays(5);
+    deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);
+    
+    assertNoRunningDinnerEntities();
+  }
+  
+  private RunningDinner changeClosedToPublic() {
+    runningDinner = assertExistingRunningDinnerEntities();
+    runningDinner.setEmail(UUID.randomUUID().toString() + "@mail.de"); // Used later on for identifying this dinner
+    runningDinner = runningDinnerRepository.save(runningDinner);
+    
+    BasicSettingsTO basicSettings = TestUtil.newBasicSettings(TestUtil.newBasicDetails(runningDinner.getTitle(),
+        runningDinner.getDate(), runningDinner.getCity(), RegistrationType.PUBLIC));    
+    runningDinner = runningDinnerService.updateBasicSettings(runningDinner.getAdminId(), basicSettings);
+    
+    PublicSettings publicSettings = new PublicSettings("publicTitle", "publicDescription", runningDinner.getDate().minusDays(1), false); 
+    runningDinner = runningDinnerService.updatePublicSettings(runningDinner.getAdminId(), new PublicSettingsTO(publicSettings, false));
+    return runningDinner;
+  }
   
   private RunningDinner assertExistingRunningDinnerEntities() {
     
