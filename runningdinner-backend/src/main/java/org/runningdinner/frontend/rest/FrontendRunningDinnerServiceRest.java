@@ -85,9 +85,10 @@ public class FrontendRunningDinnerServiceRest {
 
   @GetMapping(value = "/runningdinner/{publicDinnerId}/order/capture")
   public RegistrationSummaryTO performRegistrationForRegistrationOrder(@PathVariable("publicDinnerId") String publicDinnerId,
-                                                                       @RequestParam("token") String paypalOrderId) {
+                                                                       @RequestParam("token") String paypalOrderId,
+                                                                       Locale locale) {
     
-    RegistrationSummary registrationSummary = frontendRunningDinnerPaymentService.performRegistrationForRegistrationOrder(publicDinnerId, paypalOrderId);
+    RegistrationSummary registrationSummary = frontendRunningDinnerPaymentService.performRegistrationForRegistrationOrder(publicDinnerId, paypalOrderId, locale);
     return new RegistrationSummaryTO(registrationSummary);
   }
   

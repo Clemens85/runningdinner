@@ -2,6 +2,7 @@ package org.runningdinner.frontend;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -23,6 +24,8 @@ import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.frontend.rest.RegistrationPaymentSummaryTO;
 import org.runningdinner.frontend.rest.RunningDinnerPublicListTO;
 import org.runningdinner.frontend.rest.RunningDinnerPublicTO;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.payment.PaypalPaymentService;
 import org.runningdinner.payment.RegistrationDataMapper;
 import org.runningdinner.payment.RegistrationOrder;
@@ -41,12 +44,16 @@ public class FrontendRunningDinnerPaymentService {
   
   private PaypalPaymentService paypalPaymentService;
   
+  private ParticipantService participantService;
+  
   public FrontendRunningDinnerPaymentService(PaymentOptionsService paymentOptionsService,
                                              FrontendRunningDinnerService frontendRunningDinnerService, 
-                                             PaypalPaymentService paypalPaymentService) {
+                                             PaypalPaymentService paypalPaymentService,
+                                             ParticipantService participantService) {
     this.paymentOptionsService = paymentOptionsService;
     this.frontendRunningDinnerService = frontendRunningDinnerService;
     this.paypalPaymentService = paypalPaymentService;
+    this.participantService = participantService;
   }
 
   public RunningDinnerPublicTO mapToRunningDinnerPublicTO(RunningDinner runningDinner, Locale locale, LocalDate now) {
@@ -79,9 +86,10 @@ public class FrontendRunningDinnerPaymentService {
   }
   
   @Transactional
-  public RegistrationSummary performRegistrationForRegistrationOrder(String publicDinnerId, String paypalOrderId) {
+  public RegistrationSummary performRegistrationForRegistrationOrder(String publicDinnerId, String paypalOrderId, Locale locale) {
     
-    RunningDinner runningDinner = frontendRunningDinnerService.findRunningDinnerByPublicId(publicDinnerId, LocalDate.now());
+    final LocalDateTime now = LocalDateTime.now();
+    RunningDinner runningDinner = frontendRunningDinnerService.findRunningDinnerByPublicId(publicDinnerId, now.toLocalDate());
     
     final RegistrationDataTO registrationData = findRegistrationDataForPublicDinnerIdAndPaypalOrderId(publicDinnerId, paypalOrderId);
     
@@ -91,11 +99,15 @@ public class FrontendRunningDinnerPaymentService {
     }
     
     final RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
+    addRegistrationPaymentSummary(publicDinnerId, registrationSummary, locale);
     
     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void beforeCompletion() {
-        paypalPaymentService.captureRegistrationOrder(runningDinner.getAdminId(), paypalOrderId, registrationSummary.getParticipant());
+        Participant registeredParticipant = registrationSummary.getParticipant();
+        // We don't need a double-opt-in when payment is performed with PayPal
+        participantService.updateParticipantSubscription(registeredParticipant.getId(), now, true, runningDinner);
+        paypalPaymentService.captureRegistrationOrder(runningDinner.getAdminId(), paypalOrderId, registeredParticipant);
       }
     });
     

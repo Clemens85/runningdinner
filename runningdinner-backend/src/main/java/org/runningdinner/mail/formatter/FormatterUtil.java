@@ -66,6 +66,9 @@ public class FormatterUtil {
   public static final String MEALSPECIFICS_NOTE = "\\{mealspecifics-note\\}";
 
   public static final String AFTER_PARTY_LOCATION = "\\{afterparty\\}";
+
+  public static final String PAYMENT_OPTIONS_BRAND_NAME = "\\{brandName\\}";
+  public static final String TEAM_PARTNER_IFNO = "\\{teampartnerinfo\\}";
   
   private FormatterUtil() {
     // NOP
