@@ -60,6 +60,8 @@ const LandingMessages_en: any = {
     registration_finished_text: 'You have successfully registrated. In the next minutes you will receive an email with a confirmation link and further information. ' +
       '<br/>Your registration will only be completed when you open this confirmation link. ' +
       'If you did not receive any email, then please send an email to <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
+    registration_finished_payment_text: 'You have successfully registrated. In the next minutes you will receive an email with further information. ' +
+      '<br/>If you did not receive any email, then please send an email to <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
     street_placeholder: 'Your street + nr',
     address_remarks_help: 'Optional: If you are host and your flat is not easy to find, this remarks can help other teams to find your flat.',

@@ -59,7 +59,6 @@ const LandingMessages_de: any = {
     registration_finished_headline: 'Anmeldung abgeschlossen!',
     registration_finished_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine Email mit einem Bestätigungslink und weiteren Infos erhalten. ' +
       '<br/>Um deine Anmeldung erfolgreich abzuschließen musst du diesen Link aufrufen. Solltest du keine EMail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
-
     registration_finished_payment_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine Email mit weiteren Infos erhalten. ' +
       '<br/>Solltest du keine EMail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
