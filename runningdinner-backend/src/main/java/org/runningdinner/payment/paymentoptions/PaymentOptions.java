@@ -9,6 +9,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
@@ -48,7 +49,7 @@ public class PaymentOptions extends RunningDinnerRelatedEntity {
   }
 
   public void setBrandName(String brandName) {
-    this.brandName = brandName;
+    this.brandName = StringUtils.trim(brandName);
   }
 
 }
