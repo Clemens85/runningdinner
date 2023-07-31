@@ -22,9 +22,11 @@ export function PublicDinnerEventRegistrationFinishedPage() {
 }
 
 
-export function PublicDinnerEventRegistrationFinishedView({publicRunningDinner}: BasePublicDinnerProps) {
+function PublicDinnerEventRegistrationFinishedView({publicRunningDinner}: BasePublicDinnerProps) {
 
   const {t} = useTranslation(["landing", "common"]);
+
+  const i18nKey = publicRunningDinner.paymentOptions ? "landing:registration_finished_payment_text" : "landing:registration_finished_text";
 
   return (
     <>
@@ -32,7 +34,7 @@ export function PublicDinnerEventRegistrationFinishedView({publicRunningDinner}:
       <Alert severity={"success"} variant={"outlined"}>
         <AlertTitle>{t('common:congratulation')}</AlertTitle>
         <Span>
-          <Trans i18nKey={"landing:registration_finished_text"}
+          <Trans i18nKey={i18nKey}
                  // @ts-ignore
                  components={{ anchor: <LinkExtern />  }}
                  values={{ adminEmail: publicRunningDinner.adminEmail }} />

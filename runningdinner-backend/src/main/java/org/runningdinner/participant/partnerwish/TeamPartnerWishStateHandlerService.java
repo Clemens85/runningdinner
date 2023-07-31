@@ -19,6 +19,8 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.participant.Participant;
+import org.runningdinner.payment.paymentoptions.PaymentOptions;
+import org.runningdinner.payment.paymentoptions.PaymentOptionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,9 @@ public class TeamPartnerWishStateHandlerService {
 
   @Autowired
   private LocalizationProviderService localizationProviderService;
+  
+  @Autowired
+  private PaymentOptionsService paymentOptionsService;
 
   @Autowired
   private TeamPartnerWishService teamPartnerWishService;
@@ -135,6 +140,8 @@ public class TeamPartnerWishStateHandlerService {
     
     message = message.replaceAll(FormatterUtil.TEAM_PARTNER_WISH_CONFIRMATION_LINK, teamPartnerWishConfirmationLink);
 
+    message = replaceBrandNameInMessageTemplate(message, runningDinner);
+    
     return new RunningDinnerRelatedMessage(subject, message, runningDinner);
   }
   
@@ -161,6 +168,8 @@ public class TeamPartnerWishStateHandlerService {
     message = message.replaceAll(FormatterUtil.EMAIL, subscribedParticipant.getEmail());
     message = message.replaceAll(FormatterUtil.TEAM_PARTNER_WISH_CONFIRMATION_LINK, teamPartnerWishConfirmationLink);
     
+    message = replaceBrandNameInMessageTemplate(message, runningDinner);
+    
     return new RunningDinnerRelatedMessage(subject, message, runningDinner);
   }
   
@@ -174,6 +183,7 @@ public class TeamPartnerWishStateHandlerService {
     String message = messageSource.getMessage("message.template.teampartnerwish.confirmation", null, locale);
     message = replaceCommonPlaceHoldersInMessage(message, subscribedParticipant, runningDinner);
     message = message.replaceAll(FormatterUtil.FULLNAME, invitingParticipant.getName().getFullnameFirstnameFirst());
+    message = replaceBrandNameInMessageTemplate(message, runningDinner);
     
     message = addOrRemoveMissingSubscriptionNote(message, invitingParticipant, runningDinner, locale);
     
@@ -205,6 +215,7 @@ public class TeamPartnerWishStateHandlerService {
     message = replaceCommonPlaceHoldersInMessage(message, invitingParticipant, runningDinner);
     message = message.replaceAll(FormatterUtil.EMAIL, invitingParticipant.getEmail());
     message = message.replaceAll(FormatterUtil.REGISTRATION_LINK, registrationLink);
+    message = replaceBrandNameInMessageTemplate(message, runningDinner);
     
     return new RunningDinnerRelatedMessage(subject, message, runningDinner);
   }
@@ -220,6 +231,20 @@ public class TeamPartnerWishStateHandlerService {
     result = result.replaceAll(FormatterUtil.PARTNER, partner.getName().getFullnameFirstnameFirst());
     result = result.replaceAll(FormatterUtil.DATE, date);
     return result;
+  }
+  
+  
+  private String replaceBrandNameInMessageTemplate(String messageTemplate, RunningDinner runningDinner) {
+    String brandName = getBrandName(runningDinner);
+    return messageTemplate.replaceAll(FormatterUtil.PAYMENT_OPTIONS_BRAND_NAME, brandName);
+  }
+  
+  private String getBrandName(RunningDinner runningDinner) {
+    PaymentOptions paymentOptions = paymentOptionsService.findPaymentOptionsByAdminId(runningDinner.getAdminId()).orElse(null);
+    if (paymentOptions == null) {
+      return "runyourdinner";
+    }
+    return paymentOptions.getBrandName();
   }
   
   private String replaceCommonPlaceHoldersInMessage(String messageTemplate, Participant partner, RunningDinner runningDinner) {
