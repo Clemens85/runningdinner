@@ -13,6 +13,9 @@ public final class NumberUtil {
   
   public static String getFormattedAmountValue(BigDecimal amountValue, Locale locale) {
     BigDecimal moneyAmount = amountValue.setScale(2, RoundingMode.FLOOR);
-    return NumberFormat.getNumberInstance(locale).format(moneyAmount);
+    NumberFormat numberInstance = NumberFormat.getNumberInstance(locale);
+    numberInstance.setMinimumFractionDigits(2);
+    numberInstance.setMaximumFractionDigits(2);
+    return numberInstance.format(moneyAmount);
   }
 }

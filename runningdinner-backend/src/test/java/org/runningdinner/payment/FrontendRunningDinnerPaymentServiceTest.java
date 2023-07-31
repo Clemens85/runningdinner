@@ -162,8 +162,7 @@ public class FrontendRunningDinnerPaymentServiceTest {
     
     RegistrationSummary registrationSummary = frontendRunningDinnerPaymentService.performRegistrationForRegistrationOrder(publicDinnerId, "123456", Locale.GERMAN);
     assertThat(registrationSummary.getRegistrationPaymentSummary().getPricePerRegistration()).isEqualByComparingTo(PaymentTestUtil.PRICE_PER_REGISTRATION);
-    // TODO
-//    assertThat(registrationSummary.getRegistrationPaymentSummary().getTotalPriceFormatted()).isEqualTo(PaymentTestUtil.PRICE_PER_REGISTRATION_FORMATTED);
+    assertThat(registrationSummary.getRegistrationPaymentSummary().getTotalPriceFormatted()).isEqualTo(PaymentTestUtil.PRICE_PER_REGISTRATION_FORMATTED);
     assertThat(registrationSummary.getRegistrationPaymentSummary().getBrandName()).isEqualTo(PaymentTestUtil.BRAND_NAME);
     
     registrationOrder = paypalPaymentService.findRegistrationOrder(adminId, "123456");
