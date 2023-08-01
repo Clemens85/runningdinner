@@ -53,6 +53,12 @@
         <appender-ref ref="jsonFileAppender"/>
 	</logger>
 
+	<logger name="org.apache.http" level="debug" additivity="false">
+        <appender-ref ref="dailyRollingFileAppender" />
+        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="jsonFileAppender"/>
+	</logger>
+
     <root>
         <level value="WARN" />
         <appender-ref ref="dailyRollingFileAppender" />
