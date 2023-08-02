@@ -34,6 +34,14 @@ public class PaypalConfig {
     this.baseUrl = baseUrl;
   }
 
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
+
+  public void setSecret(String secret) {
+    this.secret = secret;
+  }
+
   public int getConnectionTimeout() {
     return connectionTimeout;
   }

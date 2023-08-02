@@ -35,11 +35,15 @@ import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.payment.paymentoptions.PaymentOptions;
 import org.runningdinner.payment.paymentoptions.PaymentOptionsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PaypalPaymentService {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PaypalPaymentService.class);
+  
   public static final String CALLBACK_URL_TYPE_RETURN = "RETURN";
   public static final String CALLBACK_URL_TYPE_CANCEL = "CANCEL";
   
@@ -95,6 +99,7 @@ public class PaypalPaymentService {
     try {
       paypalOrderResponse = paypalHttpClient.createOrder(paypalOrder);
     } catch (IOException | InterruptedException e) {
+      LOGGER.error("HTTP Error upon creating order", e);
       throw new TechnicalException(new Issue(e.getMessage(), IssueType.TECHNICAL), e);
     }
 
@@ -113,6 +118,7 @@ public class PaypalPaymentService {
     try {
       return paypalHttpClient.getOrder(selfLink);
     } catch (IOException | InterruptedException e) {
+      LOGGER.error("HTTP Error upon retrieving order", e);
       throw new TechnicalException(new Issue(e.getMessage(), IssueType.TECHNICAL), e);
     }
   }
@@ -138,6 +144,7 @@ public class PaypalPaymentService {
     try {
       captureResponse = paypalHttpClient.captureOrder(paypalOrderId);
     } catch (IOException | InterruptedException e) {
+      LOGGER.error("HTTP Error upon capturing order", e);
       throw new TechnicalException(new Issue(e.getMessage(), IssueType.TECHNICAL), e);
     }
     

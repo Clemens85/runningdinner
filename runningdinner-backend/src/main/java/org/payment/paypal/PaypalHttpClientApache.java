@@ -19,6 +19,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.payment.RegistrationOrderLink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PaypalHttpClientApache {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(PaypalHttpClientApache.class);
   
   private final CloseableHttpClient httpClient;
   
@@ -69,6 +73,8 @@ public class PaypalHttpClientApache {
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
     httpPost.setEntity(new StringEntity("grant_type=client_credentials"));
     
+    LOGGER.info("Executing getAccessToken on {}", httpPost.getURI());
+    
     try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
       checkSuccessStatus(response);
       HttpEntity responseBody = response.getEntity();
@@ -86,6 +92,8 @@ public class PaypalHttpClientApache {
     httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenDto.getAccessToken());
     httpPost.setEntity(new StringEntity(payload));
     
+    LOGGER.info("Executing createOrder on {}", httpPost.getURI());
+    
     try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
       checkSuccessStatus(response);
       HttpEntity responseBody = response.getEntity();
@@ -100,6 +108,8 @@ public class PaypalHttpClientApache {
     HttpPost httpPost = new HttpPost(URI.create(PaypalEndpoints.createUrl(paypalConfig.getBaseUrl(), PaypalEndpoints.CAPTURE_ORDER, paypalOrderId)));
     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenDto.getAccessToken());
+    
+    LOGGER.info("Executing captureOrder on {}", httpPost.getURI());
     
     try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
       checkSuccessStatus(response);
@@ -118,6 +128,8 @@ public class PaypalHttpClientApache {
     httpGet.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     httpGet.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenDto.getAccessToken());
    
+    LOGGER.info("Executing getOrder on {}", httpGet.getURI());
+    
     try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
       checkSuccessStatus(response);
       HttpEntity responseBody = response.getEntity();

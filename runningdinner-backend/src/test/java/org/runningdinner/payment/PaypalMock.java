@@ -29,6 +29,8 @@ public class PaypalMock {
   private PaypalMock(PaypalConfig paypalConfig, WireMockServer wireMockServer) {
     this.paypalConfig = paypalConfig;
     this.paypalConfig.setBaseUrl("http://localhost:" + PORT);
+    this.paypalConfig.setClientId("ClientId");
+    this.paypalConfig.setSecret("Secret");
     this.wireMockServer = wireMockServer;
   }
 

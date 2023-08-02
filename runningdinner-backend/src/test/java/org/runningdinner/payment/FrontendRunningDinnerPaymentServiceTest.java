@@ -33,6 +33,8 @@ import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wiremock.WireMockControlService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,6 +43,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ApplicationTest
 public class FrontendRunningDinnerPaymentServiceTest {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(FrontendRunningDinnerPaymentServiceTest.class);
+  
   @Autowired
   private TestHelperService testHelperService;
   
@@ -123,6 +127,8 @@ public class FrontendRunningDinnerPaymentServiceTest {
   
   @Test
   public void registrationOrder_Create_Find_Cancel() {
+
+    LOGGER.info("Starting test registrationOrder_Create_Find_Cancel");
     
     addPaymentOptions();
 
@@ -189,16 +195,16 @@ public class FrontendRunningDinnerPaymentServiceTest {
     assertThat(sentRegistrationMail.getText()).doesNotContain("Link"); // No activation Lnik
   }
   
-  @Test
-  public void paypalHttpError() {
-    // TODO
-  }
-  
-  
-  @Test
-  public void captureErrorRollsbackTransaction() {
-    // TODO
-  }
+//  @Test
+//  public void paypalHttpError() {
+//    // TODO
+//  }
+//  
+//  
+//  @Test
+//  public void captureErrorRollsbackTransaction() {
+//    // TODO
+//  }
   
   @Test
   public void participantRegistrationMailWithoutPayment() {
