@@ -7,9 +7,10 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.payment.paypal.PaypalConfig;
@@ -65,9 +66,9 @@ public class FrontendRunningDinnerPaymentServiceTest {
   
   @Autowired
   private MailSenderFactory mailSenderFactory;
-  
-  @Autowired
-  private WireMockControlService wireMockControlService;
+
+  //  @Autowired
+//  private WireMockControlService wireMockControlService;
   
   private MailSenderMockInMemory mailSenderInMemory;
   
@@ -82,24 +83,31 @@ public class FrontendRunningDinnerPaymentServiceTest {
     runningDinner = testHelperService.createPublicRunningDinner(LocalDate.now().plusDays(30), 2);
     publicDinnerId = runningDinner.getPublicSettings().getPublicId();
     adminId = runningDinner.getAdminId();
-    
-    wireMockControlService.startServer();
-    
-    PaypalMock
-      .newInstance(paypalConfig, wireMockControlService.getRunningServer())
-      .mockAccessTokenRequest("secret-value")
-      .mockCreateOrderRequest("123456")
-      .mockGetOrderRequest("123456", PaypalOrderStatus.APPROVED)
-      .mockCaptureOrderRequest("123456", "participant@payer.de");
 
     this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
     this.mailSenderInMemory.setUp();
     this.mailSenderInMemory.addIgnoreRecipientEmail(CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
+    
+    
+    WireMockControlService.getRunningServer().resetToDefaultMappings();
+    
+    PaypalMock
+    .newInstance(paypalConfig, WireMockControlService.getRunningServer())
+    .mockAccessTokenRequest("secret-value")
+    .mockCreateOrderRequest("123456")
+    .mockGetOrderRequest("123456", PaypalOrderStatus.APPROVED)
+    .mockCaptureOrderRequest("123456", "participant@payer.de");
+    
   }
   
-  @After
-  public void tearDown() {
-    wireMockControlService.stopServer();
+  @BeforeClass
+  public static void beforeClass() {
+    WireMockControlService.startServer();
+  }
+  
+  @AfterClass
+  public static void afterClass() {
+    WireMockControlService.stopServer();
   }
   
   @Test

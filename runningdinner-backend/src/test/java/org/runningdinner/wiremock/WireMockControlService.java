@@ -1,17 +1,16 @@
 package org.runningdinner.wiremock;
 
 import org.runningdinner.payment.PaypalMock;
-import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 
-@Service
+//@Service
 public class WireMockControlService {
     
-  private WireMockServer wireMockServer;
+  private static WireMockServer wireMockServer;
 
-  public WireMockServer getRunningServer() {
+  public static WireMockServer getRunningServer() {
     
     String errMessage = "WireMockServer must be started before calling getRunningServer. Please use startServer() for doing so";
     Assert.notNull(wireMockServer, errMessage);
@@ -19,14 +18,14 @@ public class WireMockControlService {
     return wireMockServer;
   }
   
-  public WireMockServer startServer() {
+  public static WireMockServer startServer() {
     
     wireMockServer = new WireMockServer(PaypalMock.PORT);
     wireMockServer.start();
     return wireMockServer;
   }
   
-  public void stopServer() {
+  public static void stopServer() {
     wireMockServer.resetMappings();
     wireMockServer.resetScenarios();
     wireMockServer.resetRequests();
