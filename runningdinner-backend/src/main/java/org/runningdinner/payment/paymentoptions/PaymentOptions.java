@@ -8,9 +8,10 @@ import javax.persistence.Entity;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
 
@@ -22,9 +23,17 @@ public class PaymentOptions extends RunningDinnerRelatedEntity {
   @Min(value = 0)
   private BigDecimal pricePerRegistration;
 
-  @Length(max = 127)
+  @Size(max = 127)
   @NotEmpty
   private String brandName;
+  
+  @SafeHtml
+  @Size(max = 512)
+  private String agbLink;
+  
+  @SafeHtml
+  @Size(max = 512)
+  private String redirectAfterPurchaseLink;
   
   protected PaymentOptions() {
     // NOP
@@ -52,4 +61,19 @@ public class PaymentOptions extends RunningDinnerRelatedEntity {
     this.brandName = StringUtils.trim(brandName);
   }
 
+  public String getAgbLink() {
+    return agbLink;
+  }
+
+  public void setAgbLink(String agbLink) {
+    this.agbLink = StringUtils.trim(agbLink);
+  }
+
+  public String getRedirectAfterPurchaseLink() {
+    return redirectAfterPurchaseLink;
+  }
+
+  public void setRedirectAfterPurchaseLink(String redirectAfterPurchaseLink) {
+    this.redirectAfterPurchaseLink = StringUtils.trim(redirectAfterPurchaseLink);
+  }
 }

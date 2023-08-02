@@ -1,7 +1,7 @@
 import React from 'react';
 import {useParams} from "react-router-dom";
 import {Fetch} from "../common/Fetch";
-import {BasePublicDinnerProps, findPublicRunningDinnerByPublicId} from "@runningdinner/shared";
+import {BasePublicDinnerProps, findPublicRunningDinnerByPublicId, isStringNotEmpty} from "@runningdinner/shared";
 import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
 import {Alert, AlertTitle} from "@material-ui/lab";
@@ -27,6 +27,13 @@ function PublicDinnerEventRegistrationFinishedView({publicRunningDinner}: BasePu
   const {t} = useTranslation(["landing", "common"]);
 
   const i18nKey = publicRunningDinner.paymentOptions ? "landing:registration_finished_payment_text" : "landing:registration_finished_text";
+
+  React.useEffect(() => {
+    if (isStringNotEmpty(publicRunningDinner?.paymentOptions?.redirectAfterPurchaseLink)) {
+      // @ts-ignore
+      window.location.href = publicRunningDinner.paymentOptions.redirectAfterPurchaseLink;
+    }
+  }, [publicRunningDinner?.paymentOptions?.redirectAfterPurchaseLink]);
 
   return (
     <>

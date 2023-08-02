@@ -109,6 +109,11 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
                     { isStringNotEmpty(registrationData.mobileNumber) &&
                       <Typography component="li" variant="subtitle1" align="center"><strong>{registrationData.mobileNumber}</strong></Typography>
                     }
+                  { isStringNotEmpty(registrationPaymentSummary.agbLink) &&
+                    <Typography component="li" variant="subtitle1" align="center">
+                      <LinkExtern href={registrationPaymentSummary.agbLink} self={false}>Hier gehts zu den AGBs</LinkExtern>
+                    </Typography>
+                  }
                 </ul>
               </CardContent>
               <CardActions>

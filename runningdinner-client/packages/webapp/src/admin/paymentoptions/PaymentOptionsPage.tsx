@@ -157,11 +157,32 @@ function PaymentOptionsFormView({paymentOptions, adminId}: PaymentOptionsFormVie
                              variant="outlined"
                              required
                              name="pricePerRegistration"
+                             helperText={"admin:price_per_registration_help"}
                              label={t('common:price_per_registration')}/>
             </SpacingGrid>
           </SpacingGrid>
 
-          <SpacingGrid container justify={"flex-start"}>
+          <SpacingGrid container mt={3}>
+            <SpacingGrid item xs={12} md={4}>
+              <FormTextField fullWidth
+                             variant="outlined"
+                             name="agbLink"
+                             helperText={t("admin:agb_link_help")}
+                             label={t('admin:agb_link')}/>
+            </SpacingGrid>
+          </SpacingGrid>
+
+          <SpacingGrid container mt={3}>
+            <SpacingGrid item xs={12} md={4}>
+              <FormTextField fullWidth
+                             variant="outlined"
+                             name="redirectAfterPurchaseLink"
+                             helperText={t("admin:redirect_after_purchase_link_help")}
+                             label={t('admin:redirect_after_purchase_link')}/>
+            </SpacingGrid>
+          </SpacingGrid>
+
+          <SpacingGrid container justify={"flex-start"} mt={3}>
             <SpacingGrid item xs={12} md={4}>
               { showDeleteBtn && <SecondaryButton onClick={deletePaymentOptions}>{t('common:delete')}</SecondaryButton> }
               <PrimaryButton onClick={handleSubmit(savePaymentOptions)} disabled={formState.isSubmitting} size={"large"}

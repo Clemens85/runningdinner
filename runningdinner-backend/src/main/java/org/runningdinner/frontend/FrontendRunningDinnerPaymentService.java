@@ -132,8 +132,7 @@ public class FrontendRunningDinnerPaymentService {
     boolean isTeamPartnerRegistration = registrationSummary.getTeamPartnerWishRegistrationData() != null && StringUtils.isNotBlank(registrationSummary.getTeamPartnerWishRegistrationData().getLastname());
     BigDecimal purchaseAmount = PaypalPaymentService.calculatePurchaseAmount(paymentOptions, isTeamPartnerRegistration);
 
-    RegistrationPaymentSummaryTO paymentSummary = new RegistrationPaymentSummaryTO(paymentOptions.getBrandName(),
-                                                                                   paymentOptions.getPricePerRegistration(),
+    RegistrationPaymentSummaryTO paymentSummary = new RegistrationPaymentSummaryTO(paymentOptions,
                                                                                    NumberUtil.getFormattedAmountValue(paymentOptions.getPricePerRegistration(), locale));
     
     paymentSummary.setTotalPriceFormatted(NumberUtil.getFormattedAmountValue(purchaseAmount, locale));

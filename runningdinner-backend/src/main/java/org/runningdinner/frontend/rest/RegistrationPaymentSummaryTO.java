@@ -1,7 +1,6 @@
 package org.runningdinner.frontend.rest;
 
-import java.math.BigDecimal;
-
+import org.runningdinner.payment.paymentoptions.PaymentOptions;
 import org.runningdinner.payment.paymentoptions.rest.PaymentOptionsTO;
 
 public class RegistrationPaymentSummaryTO extends PaymentOptionsTO {
@@ -14,8 +13,8 @@ public class RegistrationPaymentSummaryTO extends PaymentOptionsTO {
     // NOP
   }
 
-  public RegistrationPaymentSummaryTO(String brandName, BigDecimal pricePerRegistration, String pricePerRegistrationFormatted) {
-    super(brandName, pricePerRegistration, pricePerRegistrationFormatted);
+  public RegistrationPaymentSummaryTO(PaymentOptions src, String pricePerRegistrationFormatted) {
+    super(src, pricePerRegistrationFormatted);
   }
 
   public boolean isTeamPartnerRegistration() {

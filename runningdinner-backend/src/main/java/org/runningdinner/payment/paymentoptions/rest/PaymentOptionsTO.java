@@ -3,6 +3,7 @@ package org.runningdinner.payment.paymentoptions.rest;
 import java.math.BigDecimal;
 
 import org.runningdinner.common.rest.BaseTO;
+import org.runningdinner.payment.paymentoptions.PaymentOptions;
 
 public class PaymentOptionsTO extends BaseTO {
 
@@ -11,15 +12,21 @@ public class PaymentOptionsTO extends BaseTO {
   private String pricePerRegistrationFormatted;
 
   private String brandName;
+  
+  private String agbLink;
+  
+  private String redirectAfterPurchaseLink;
 
   protected PaymentOptionsTO() {
     // NOP
   }
   
-  public PaymentOptionsTO(String brandName, BigDecimal pricePerRegistration, String pricePerRegistrationFormatted) {
-    this.brandName = brandName;
-    this.pricePerRegistration = pricePerRegistration;
+  public PaymentOptionsTO(PaymentOptions src, String pricePerRegistrationFormatted) {
+    this.brandName = src.getBrandName();
+    this.pricePerRegistration = src.getPricePerRegistration();
     this.pricePerRegistrationFormatted = pricePerRegistrationFormatted;
+    this.agbLink = src.getAgbLink();
+    this.redirectAfterPurchaseLink = src.getRedirectAfterPurchaseLink();
   }
   
   public BigDecimal getPricePerRegistration() {
@@ -45,4 +52,22 @@ public class PaymentOptionsTO extends BaseTO {
   public void setPricePerRegistrationFormatted(String pricePerRegistrationFormatted) {
     this.pricePerRegistrationFormatted = pricePerRegistrationFormatted;
   }
+
+  public String getAgbLink() {
+    return agbLink;
+  }
+
+  public void setAgbLink(String agbLink) {
+    this.agbLink = agbLink;
+  }
+
+  public String getRedirectAfterPurchaseLink() {
+    return redirectAfterPurchaseLink;
+  }
+
+  public void setRedirectAfterPurchaseLink(String redirectAfterPurchaseLink) {
+    this.redirectAfterPurchaseLink = redirectAfterPurchaseLink;
+  }
+  
+  
 }

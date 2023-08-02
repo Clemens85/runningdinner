@@ -64,7 +64,7 @@ public class RunningDinnerPublicTO {
   private static PaymentOptionsTO newPaymentOptionsTO(PaymentOptions incomingPaymentOptions, Locale locale) {
     
     BigDecimal pricePerRegistration = incomingPaymentOptions.getPricePerRegistration();
-    return new PaymentOptionsTO(incomingPaymentOptions.getBrandName(), pricePerRegistration, NumberUtil.getFormattedAmountValue(pricePerRegistration, locale));
+    return new PaymentOptionsTO(incomingPaymentOptions, NumberUtil.getFormattedAmountValue(pricePerRegistration, locale));
   }
 
   public PublicSettingsTO getPublicSettings() {

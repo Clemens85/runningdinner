@@ -15,12 +15,16 @@ export interface PaymentOptions {
   brandName: string;
   pricePerRegistration: number;
   pricePerRegistrationFormatted: string;
+  agbLink?: string;
+  redirectAfterPurchaseLink?: string;
 }
 
 export function newEmptyPaymentOptions(): PaymentOptions {
   return {
     brandName: "",
     pricePerRegistration: 0.0,
-    pricePerRegistrationFormatted: ""
+    pricePerRegistrationFormatted: "",
+    agbLink: "",
+    redirectAfterPurchaseLink: ""
   };
 }

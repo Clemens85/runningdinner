@@ -33,6 +33,8 @@ public class PaymentOptionsService {
     Assert.state(!findPaymentOptionsByAdminId(adminId).isPresent(), "Cannot create paymentOptions when one already exists! " + adminId);
     
     PaymentOptions paymentOptions = new PaymentOptions(incomingPaymentOptions.getPricePerRegistration(), incomingPaymentOptions.getBrandName(), runningDinner);
+    copyFields(incomingPaymentOptions, paymentOptions);
+    
     return paymentOptionsRepository.save(paymentOptions);
   }
   
@@ -42,9 +44,16 @@ public class PaymentOptionsService {
     PaymentOptions paymentOptions = paymentOptionsRepository.findByIdAndAdminId(paymentOptionsId, adminId);
     Assert.notNull(paymentOptions, "Expected paymentOptions to exist for " + paymentOptionsId + " in " + adminId);
 
-    paymentOptions.setPricePerRegistration(incomingPaymentOptions.getPricePerRegistration());
-    paymentOptions.setBrandName(incomingPaymentOptions.getBrandName());
+    copyFields(incomingPaymentOptions, paymentOptions);
     return paymentOptionsRepository.save(paymentOptions);
+  }
+  
+  private void copyFields(PaymentOptions src, PaymentOptions dest) {
+    
+    dest.setPricePerRegistration(src.getPricePerRegistration());
+    dest.setBrandName(src.getBrandName());
+    dest.setAgbLink(src.getAgbLink());
+    dest.setRedirectAfterPurchaseLink(src.getRedirectAfterPurchaseLink());
   }
   
   @Transactional
