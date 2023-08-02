@@ -52,6 +52,14 @@
         <appender-ref ref="consoleAppender" />
         <appender-ref ref="jsonFileAppender"/>
 	</logger>
+	
+	
+	<logger name="org.payment" level="INFO" additivity="false">
+        <appender-ref ref="dailyRollingFileAppender" />
+        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="jsonFileAppender"/>
+	</logger>
+	
 
 	<logger name="org.apache.http" level="debug" additivity="false">
         <appender-ref ref="dailyRollingFileAppender" />

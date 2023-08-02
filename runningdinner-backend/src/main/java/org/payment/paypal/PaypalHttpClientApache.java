@@ -54,7 +54,7 @@ public class PaypalHttpClientApache {
                                     .setRedirectsEnabled(true)
                                     .build();
     PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-    cm.setDefaultMaxPerRoute(10);
+    cm.setDefaultMaxPerRoute(5);
     cm.setMaxTotal(15);
     cm.setValidateAfterInactivity(500);
     return HttpClients.custom()
