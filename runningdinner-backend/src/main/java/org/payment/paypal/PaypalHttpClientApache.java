@@ -5,6 +5,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -135,6 +137,16 @@ public class PaypalHttpClientApache {
       HttpEntity responseBody = response.getEntity();
       String content = EntityUtils.toString(responseBody);
       return objectMapper.readValue(content, PaypalOrderResponseTO.class);  
+    }
+  }
+  
+  @PreDestroy
+  public void onShutdown() {
+    LOGGER.info("Shutting down HTTP Client");
+    try {
+      this.httpClient.close();
+    } catch (IOException e) {
+      LOGGER.error("Error when trying to shutdown HTTP Client", e);
     }
   }
   
