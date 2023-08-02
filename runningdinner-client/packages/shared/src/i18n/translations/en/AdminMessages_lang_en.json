@@ -12,6 +12,8 @@
 	"address_city_zip_invalid": "Zip must contain at least 4 digits",
 	"address_data": "Address",
 	"admin_activities_headline": "Activities",
+	"agb_link": "Link to AGBs",
+	"agb_link_help": "An optional link to AGBs / FAQ",
 	"affected_guest_teams": "Affected visiting teams",
 	"affected_hosting_teams": "Affected hosting teams",
 	"attention": "Attention!",
@@ -175,6 +177,8 @@
 	"protocols_transfer_headline_prefix": "Transfer list for ",
 
 	"recipient_email": "Recipient email address",
+	"redirect_after_purchase_link": "Link to be redirected after purchase",
+	"redirect_after_purchase_link_help": "An optioanl link to be redirected after a participant has been successfully paid and registered",
 	"registration_not_yet_confirmed": "Registration not yet confirmed",
 	"runningdinner_acknowledge_congratulation_text": "Congratulations, you have successfully confirmed your created running dinner event. Now you can use all features (also sending messages)!",
 	"runningdinner_acknowledge_congratulation_title": "Successful Confirmation",

@@ -124,6 +124,7 @@
 	"participants": "Participants",
 	"preview": "Preview",
 	"price_per_registration": "Price per single registration",
+	"price_per_registration_help": "The price must be indicated with '.' as separator for cent amounts. Not with ','!",
 	"public_contact_email": "EMail address for questions of participants (will be displayed in event)",
 	"public_contact_email_help": "EMail address for questions of participants",
 	"public_contact_mobile_number": "(Optional) Mobile number for questions of participants (will be displayed in event)",

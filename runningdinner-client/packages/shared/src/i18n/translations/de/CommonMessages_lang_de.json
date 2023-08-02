@@ -123,6 +123,7 @@
 	"participant_seats": "{{numSeats}} Plätze",
 	"participants": "Teilnehmer",
 	"price_per_registration": "Preis pro Einzel-Anmeldung",
+	"price_per_registration_help": "Der Preis muss mit '.' als Trenner für Cent-Beträge angeben werden. Nicht mit ','!",
 	"preview": "Vorschau",
 	"public_contact_email": "EMail für Rückfragen (wird in Event angezeigt)",
 	"public_contact_email_help": "Email-Adresse für Rückfragen",

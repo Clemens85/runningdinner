@@ -14,6 +14,8 @@
 	"admin_activities_headline": "Deine Aktivitäten",
 	"affected_guest_teams": "Betroffene Gäste-Teams",
 	"affected_hosting_teams": "Betroffene Gastgeber-Teams",
+	"agb_link": "Link zu AGBs",
+	"agb_link_help": "Optional ein Link zu den AGBs / FAQ o.Ä.",
 	"attention": "Achtung!",
 	"attention_mealtimes_messages_already_sent": "Denke daran, dass du eine neue Rund-Email an deine Teilnehmer schicken solltest, falls du jetzt den Zeitplan änderst.",
 
@@ -176,6 +178,8 @@
 	"protocols_transfer_headline_prefix": "Übertragungsliste für ",
 
 	"recipient_email": "Empfänger Email-Adresse",
+	"redirect_after_purchase_link": "Link zur Weiterleitung nach Kauf",
+	"redirect_after_purchase_link_help": "Optional ein Link auf den weitergeleitet werden soll wenn ein Teilnehmer sich erfolgreich registriert hat",
 	"registration_not_yet_confirmed": "Anmeldung noch nicht bestätigt",
 	"runningdinner_acknowledge_congratulation_text": "Herzlichen Glückwunsch, du hast dich soeben als Ersteller dieses Running Dinner Events bestätigt. Damit kannst du alle Features (inkl. Nachrichtenversand) nutzen!",
 	"runningdinner_acknowledge_congratulation_title": "Bestätigung erfolgreich",
