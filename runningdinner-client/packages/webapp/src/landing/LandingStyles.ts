@@ -51,7 +51,10 @@ export const usePaymentStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'baseline',
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(2)
+  },
+  headlinePricing: {
+    fontSize: '2.3rem'
   }
 }));
 

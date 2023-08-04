@@ -87,7 +87,7 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
               />
               <CardContent>
                 <div className={classes.cardPricing}>
-                  <Typography component="h2" variant="h3" color="textPrimary">
+                  <Typography component="h2" variant="h3" color="textPrimary" className={classes.headlinePricing}>
                     { totalPriceFormatted }
                   </Typography>
                 </div>
