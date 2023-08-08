@@ -1,7 +1,5 @@
 import React from 'react';
 import {Box, Dialog, DialogContent, Grid} from '@mui/material';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
 import MealTimeEditControl from "./MealTimeEditControl";
 import cloneDeep from "lodash/cloneDeep";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
@@ -95,17 +93,13 @@ class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDia
           <DialogTitleCloseable id="edit-meals-dialog-title" onClose={this.triggerCancel}>{t('time_schedule_edit')}</DialogTitleCloseable>
           <DialogContent>
             { showMessagesAlreadySentInfo &&
-              <Box my={2}>
-                <Alert severity={"info"} data-testid="edit-meal-times-warning-messages-sent">
-                  <AlertTitle>{t('attention')}</AlertTitle>
-                  {t('admin:attention_mealtimes_messages_already_sent')}
-                </Alert>
-              </Box> }
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Grid container spacing={2}>
-                {mealTimeFields}
-              </Grid>
-            </MuiPickersUtilsProvider>
+              <Alert severity={"info"} data-testid="edit-meal-times-warning-messages-sent" sx={{ my: 2 }}>
+                <AlertTitle>{t('attention')}</AlertTitle>
+                {t('admin:attention_mealtimes_messages_already_sent')}
+              </Alert> }
+            <Grid container spacing={2}>
+              {mealTimeFields}
+            </Grid>
           </DialogContent>
           <DialogActionsPanel onOk={this.triggerSave} onCancel={this.triggerCancel} okLabel={t('common:save')} cancelLabel={t('common:cancel')} />
         </Dialog>

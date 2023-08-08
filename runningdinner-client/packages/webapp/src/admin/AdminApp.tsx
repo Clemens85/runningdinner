@@ -14,17 +14,24 @@ import {
 } from "@runningdinner/shared";
 import {ProgressBar} from "../common/ProgressBar";
 import "../timeline.css";
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
 
 export default function AdminApp() {
 
+  const { locale } = useDatePickerLocale();
   const {adminId} = useParams<Record<string, string>>();
+
   if (!adminId) {
     return null; // TODO
   }
 
   return (
     <Provider store={adminStore}>
-      <AdminAppPage adminId={adminId} />
+      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={locale}>
+        <AdminAppPage adminId={adminId} />
+      </LocalizationProvider>
     </Provider>
   )
 }

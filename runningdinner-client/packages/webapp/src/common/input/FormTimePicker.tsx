@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {Controller, useFormContext} from "react-hook-form";
-import {KeyboardTimePicker, KeyboardTimePickerProps} from "@material-ui/pickers";
+import { TimePicker, TimePickerProps } from '@mui/x-date-pickers/TimePicker';
 import {FormHelperText} from "@mui/material";
 import {isStringNotEmpty} from "@runningdinner/shared";
 
-export interface FormTimePickerProps extends Partial<KeyboardTimePickerProps> {
+export interface FormTimePickerProps extends Partial<TimePickerProps<any>> {
   name: string;
   label: string;
   helperText?: string;
@@ -28,7 +28,7 @@ export default function FormTimePicker({name, label, helperText, defaultValue, .
         control={control}
         render={({ref, ...remainder}) =>
           <>
-            <KeyboardTimePicker
+            <TimePicker
               {...Object.assign({}, remainder, other)}
               ampm={false}
               error={hasErrors}

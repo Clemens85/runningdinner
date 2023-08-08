@@ -1,5 +1,5 @@
 import React from 'react'
-import {KeyboardTimePicker} from "@material-ui/pickers";
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import {CallbackHandler, Meal} from "@runningdinner/shared";
 
 export interface MealTimeEditControlProps extends Meal {
@@ -9,8 +9,7 @@ export interface MealTimeEditControlProps extends Meal {
 export default function MealTimeEditControl({id, label, time, onHandleTimeChange}: MealTimeEditControlProps) {
 
   return (
-      <KeyboardTimePicker
-          margin="normal"
+      <TimePicker
           ampm={false}
           id={id}
           label={label}

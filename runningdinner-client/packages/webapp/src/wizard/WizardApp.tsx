@@ -17,8 +17,8 @@ import {
   RunningDinnerType, SummaryNavigationStep,
   useMealsTranslated
 } from "@runningdinner/shared";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
 import MealTimesStep from "./MealTimesStep";
 import ParticipantPreviewStep from "./ParticipantPreviewStep";
@@ -37,9 +37,9 @@ export default function WizardApp() {
   return (
       <Provider store={wizardStore}>
         <BrowserTitle titleI18nKey={"wizard:wizard_create_title"} namespaces={"wizard"} />
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={locale}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={locale}>
           <WizardPage demoDinner={demoDinner}/>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </Provider>
   );
 }

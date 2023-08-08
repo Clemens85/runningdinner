@@ -38,9 +38,7 @@ import {BasicDinnerSettingsFormControl} from "../../common/dinnersettings/BasicD
 import {Fetch} from "../../common/Fetch";
 import {PageTitle, Span, Subtitle} from "../../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
-import DateFnsUtils from "@date-io/date-fns";
 import useDatePickerLocale from "../../common/date/DatePickerLocaleHook";
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
@@ -58,19 +56,14 @@ import {AfterPartyLocationFormControl} from "../../common/dinnersettings/AfterPa
 
 export function SettingsPage({runningDinner}: BaseRunningDinnerProps) {
 
-  const { locale } = useDatePickerLocale();
-
   return (
     <>
-      <MuiPickersUtilsProvider utils={DateFnsUtils} locale={locale}>
-        <Fetch asyncFunction={findRegistrationTypesAsync}
-               parameters={[]}
-               render={resultWrapper => <SettingsViewController registrationTypes={resultWrapper.result} runningDinner={runningDinner} /> }
-        />
-      </MuiPickersUtilsProvider>
+      <Fetch asyncFunction={findRegistrationTypesAsync}
+             parameters={[]}
+             render={resultWrapper => <SettingsViewController registrationTypes={resultWrapper.result} runningDinner={runningDinner} /> }
+      />
     </>
   );
-
 }
 
 export interface SettingsViewControllerProps extends BaseRunningDinnerProps {

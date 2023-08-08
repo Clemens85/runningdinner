@@ -1,12 +1,11 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
-import {KeyboardDatePicker} from "@material-ui/pickers";
+import {DatePicker, DatePickerProps} from "@mui/x-date-pickers/DatePicker";
 import {FormHelperText} from "@mui/material";
-import {KeyboardDatePickerProps} from "@material-ui/pickers/DatePicker/DatePicker";
 import {isStringNotEmpty} from "@runningdinner/shared";
 import useDatePickerLocale from "../date/DatePickerLocaleHook";
 
-export interface FormDatePickerProps extends Partial<KeyboardDatePickerProps> {
+export interface FormDatePickerProps extends Partial<DatePickerProps<Date>> {
   name: string;
   label: string;
   helperText?: string;
@@ -30,7 +29,7 @@ export default function FormDatePicker({name, label, helperText, defaultValue, .
             control={control}
             render={({ref, ...remainder}) =>
                 <>
-                  <KeyboardDatePicker
+                  <DatePicker
                       {...Object.assign({}, remainder, other)}
                       autoOk
                       disableToolbar
