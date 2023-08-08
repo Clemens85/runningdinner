@@ -22,18 +22,18 @@ const FormCheckboxInternal = ({name, label, helperText, defaultValue, useTableDi
   const helperTextToDisplay = hasErrors ? errorMessage : helperText;
 
   return (
-      <FormControl error={hasErrors}>
-        <FormControlLabel label={label} style={useTableDisplay ? {display: 'table'}: {}} control={
-          <Controller defaultValue={defaultValue} name={name} control={control} render={(props) => (
-            <div style={{display: useTableDisplay ? 'table-cell' : 'inline'}}>
-              <Checkbox color="primary" {...rest}
-                      onChange={(e) => props.onChange(e.target.checked)}
-                      checked={props.value} />
-            </div>
-          )} />
-        } />
-        { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }
-      </FormControl>
+    <FormControl variant="standard" error={hasErrors}>
+      <FormControlLabel label={label} style={useTableDisplay ? {display: 'table'}: {}} control={
+        <Controller defaultValue={defaultValue} name={name} control={control} render={(props) => (
+          <div style={{display: useTableDisplay ? 'table-cell' : 'inline'}}>
+            <Checkbox color="primary" {...rest}
+                    onChange={(e) => props.onChange(e.target.checked)}
+                    checked={props.value} />
+          </div>
+        )} />
+      } />
+      { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }
+    </FormControl>
   );
 };
 

@@ -4,7 +4,7 @@ import {FormCheckboxProps} from "./FormCheckbox";
 
 export function FormCheckboxSimple({name, label, helperText, defaultValue, useTableDisplay, checked, ...rest}: FormCheckboxProps) {
   return (
-    <FormControl>
+    <FormControl variant="standard">
       <FormControlLabel label={label} style={useTableDisplay ? {display: 'table'}: {}} control={
         <div style={{display: useTableDisplay ? 'table-cell' : 'inline'}}>
           <Checkbox color="primary"

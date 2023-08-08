@@ -89,14 +89,15 @@ const NumberTextInputEmptyValue = React.forwardRef(({onChange, emptyValue = -1, 
   // const errorText = hasError ? errors[name].message : undefined;
 
   return (
-      <TextField
-                 label={label}
-                 error={hasError}
-                 helperText={helperText}
-                 innerRef={ref}
-                 name={name}
-                 {...others}
-                 onChange={handleDisplayValueChange}
-                 value={displayValue} />
+    <TextField
+      variant="standard"
+      label={label}
+      error={hasError}
+      helperText={helperText}
+      innerRef={ref}
+      name={name}
+      {...others}
+      onChange={handleDisplayValueChange}
+      value={displayValue} />
   );
 });

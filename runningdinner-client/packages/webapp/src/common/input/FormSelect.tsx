@@ -19,27 +19,27 @@ function FormSelectInternal({name, label, children, helperText, fullWidth, varia
   const hasErrors = isStringNotEmpty(errorMessage);
   const helperTextToDisplay = hasErrors ? errorMessage : helperText;
 
-  return (
-      <>
-        <Controller
-            name={name}
-            defaultValue={defaultValue}
-            control={control}
-            render={(props) => (
-                <>
-                  <FormControl fullWidth={fullWidth} error={hasErrors} variant={variant}>
-                    <InputLabel required>{label}</InputLabel>
-                    <Select {...Object.assign({}, props, other)}
-                            inputProps={{ 'aria-label': label }}>
-                      {children}
-                    </Select>
-                  </FormControl>
-                  { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }
-                </>
-            )}
-        />
-      </>
-  );
+  return <>
+    <Controller
+        name={name}
+        defaultValue={defaultValue}
+        control={control}
+        render={(props) => (
+            <>
+              <FormControl fullWidth={fullWidth} error={hasErrors} variant={variant}>
+                <InputLabel required>{label}</InputLabel>
+                <Select
+                  variant="standard"
+                  {...Object.assign({}, props, other)}
+                  inputProps={{ 'aria-label': label }}>
+                  {children}
+                </Select>
+              </FormControl>
+              { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }
+            </>
+        )}
+    />
+  </>;
 }
 
 const FormSelect = styled(FormSelectInternal)(spacing);

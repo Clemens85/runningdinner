@@ -103,17 +103,18 @@ function PreviewSelection({recipients, selectedRecipient, onSelectionChange}: Pr
 
   const selectionLabel = t('admin:messages_preview_selection');
   return (
-      <FormControl fullWidth>
-        <InputLabel>{selectionLabel}</InputLabel>
-        <Select
-            autoWidth
-            value={selectedValue}
-            onChange={handleChange}
-            inputProps={{ 'aria-label': selectionLabel }}>
-          {selectionOptions}
-        </Select>
-      </FormControl>
-  )
+    <FormControl variant="standard" fullWidth>
+      <InputLabel>{selectionLabel}</InputLabel>
+      <Select
+        variant="standard"
+        autoWidth
+        value={selectedValue}
+        onChange={handleChange}
+        inputProps={{ 'aria-label': selectionLabel }}>
+        {selectionOptions}
+      </Select>
+    </FormControl>
+  );
 }
 
 interface PreviewIssuesProps {

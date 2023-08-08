@@ -17,13 +17,15 @@ const TextInputWatchable = ({name, label, onChange, ...other}) => {
   };
 
   return (
-      <TextField error={hasErrors}
-                 helperText={errorMessage}
-                 inputRef={register}
-                 onChange={handleChange}
-                 {...other}
-                 name={name}
-                 label={label} />
+    <TextField
+      variant="standard"
+      error={hasErrors}
+      helperText={errorMessage}
+      inputRef={register}
+      onChange={handleChange}
+      {...other}
+      name={name}
+      label={label} />
   );
 };
 export default TextInputWatchable;

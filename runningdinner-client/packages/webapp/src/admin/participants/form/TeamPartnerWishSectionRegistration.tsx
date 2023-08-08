@@ -159,7 +159,7 @@ function AddTeamPartnerOptionsDialog({onCancel, handleTeamPartnerOptionChange}: 
       <DialogTitleCloseable onClose={onCancel}>{t("common:teampartner_wish_add")}</DialogTitleCloseable>
       <DialogContent>
         <Grid item xs={12}>
-          <FormControl component="fieldset">
+          <FormControl variant="standard" component="fieldset">
             <Box mb={1}><Paragraph>{t("common:teampartner_wish_options_label")}</Paragraph></Box>
             <RadioGroup aria-label={t("common:teampartner_wish_options_label")}
                         name="teamPartnerOption"

@@ -59,22 +59,24 @@ export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHost
   }
 
   return (
-      <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true}>
-        <DialogTitleCloseable onClose={onClose}>{t('teams_host_change')}</DialogTitleCloseable>
-          <DialogContent>
-            <Subtitle i18n="admin:team" parameters={{ teamNumber }} />
-            <FormControl fullWidth>
-              <Select name="teamHost"
-                      onChange={handleTeamHostChange}
-                      value={selectedHostTeamMember.id}>
-                {hostsToSelect}
-              </Select>
-            </FormControl>
-            <Box mt={2}>
-              <Paragraph i18n="admin:teams_host" parameters={{host: selectedHostTeamMemberFullname}} html={true} />
-            </Box>
-          </DialogContent>
-          <DialogActionsPanel onOk={saveTeamHostAsync} onCancel={onClose} okLabel={t('common:save')} cancelLabel={t('common:cancel')} />
-      </Dialog>
+    <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true}>
+      <DialogTitleCloseable onClose={onClose}>{t('teams_host_change')}</DialogTitleCloseable>
+        <DialogContent>
+          <Subtitle i18n="admin:team" parameters={{ teamNumber }} />
+          <FormControl variant="standard" fullWidth>
+            <Select
+              variant="standard"
+              name="teamHost"
+              onChange={handleTeamHostChange}
+              value={selectedHostTeamMember.id}>
+              {hostsToSelect}
+            </Select>
+          </FormControl>
+          <Box mt={2}>
+            <Paragraph i18n="admin:teams_host" parameters={{host: selectedHostTeamMemberFullname}} html={true} />
+          </Box>
+        </DialogContent>
+        <DialogActionsPanel onOk={saveTeamHostAsync} onCancel={onClose} okLabel={t('common:save')} cancelLabel={t('common:cancel')} />
+    </Dialog>
   );
 };

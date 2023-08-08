@@ -76,12 +76,18 @@ export function ParticipantsListHeader({adminId, numberOfParticipants, participa
       <Box mt={1}>
         <Grid container direction={"row"} spacing={2} alignItems={"center"} justifyContent={"flex-start"}>
           <Grid item xs={12} sm={7} lg={3}>
-            <TextField onChange={handleSearchTextChange} id="searchInput" size={"small"}
-                       data-testid={"participant-list-search-input"}
-                       label="Suche nach Email, Name, Adresse" type="Search" fullWidth
-                       InputProps={{
-                         startAdornment: <InputAdornment position="start"> <SearchIcon /></InputAdornment>
-                       }}/>
+            <TextField
+              variant="standard"
+              onChange={handleSearchTextChange}
+              id="searchInput"
+              size={"small"}
+              data-testid={"participant-list-search-input"}
+              label="Suche nach Email, Name, Adresse"
+              type="Search"
+              fullWidth
+              InputProps={{
+                startAdornment: <InputAdornment position="start"> <SearchIcon /></InputAdornment>
+              }} />
           </Grid>
           <Grid item xs={12} sm={5} lg={2}>
             <Typography variant={"subtitle1"}>{numberOfParticipants}</Typography>
