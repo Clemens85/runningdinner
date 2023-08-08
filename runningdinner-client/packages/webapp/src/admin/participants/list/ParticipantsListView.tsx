@@ -1,5 +1,5 @@
 import React from 'react'
-import { TableContainer, Paper, Table, TableBody, Box }from "@material-ui/core";
+import { TableContainer, Paper, Table, TableBody, Box }from "@mui/material";
 import ParticipantRow, {ParticipantClickCallback} from "./ParticipantRow";
 import {
   getRunningDinnerMandatorySelector, isArrayNotEmpty,

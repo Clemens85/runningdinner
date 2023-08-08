@@ -1,7 +1,7 @@
-import Button, {ButtonProps} from '@material-ui/core/Button';
+import Button, {ButtonProps} from '@mui/material/Button';
 import React from 'react';
-import {Menu} from "@material-ui/core";
-import ExpandMoreOutlinedIcon from '@material-ui/icons/ExpandMoreOutlined';
+import {Menu} from "@mui/material";
+import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
 
 export const DropdownButtonContext = React.createContext<any>({});
 

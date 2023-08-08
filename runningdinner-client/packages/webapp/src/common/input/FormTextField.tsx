@@ -1,8 +1,8 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
-import TextField, {TextFieldProps} from "@material-ui/core/TextField";
-import {styled} from "@material-ui/core";
-import {spacing} from "@material-ui/system";
+import TextField, {TextFieldProps} from "@mui/material/TextField";
+import {styled} from "@mui/material";
+import {spacing} from "@mui/system";
 import get from "lodash/get";
 
 export type FormTextFieldProps = Omit<TextFieldProps, "name"> & {

@@ -2,9 +2,9 @@ import React from 'react';
 import {useDisclosure} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {FeedbackDialog} from "./FeedbackDialog";
-import {Box, Button, Grid, useMediaQuery, useTheme} from "@material-ui/core";
+import {Box, Button, Grid, useMediaQuery, useTheme} from "@mui/material";
 import Paragraph from "../theme/typography/Paragraph";
-import FeedbackIcon from '@material-ui/icons/Feedback';
+import FeedbackIcon from '@mui/icons-material/Feedback';
 import LinkAction from "../theme/LinkAction";
 
 export type FeedbackButtonProps = {
@@ -36,15 +36,15 @@ export function FeedbackButton({labelOverridden, showAsLinkWithoutIcon}: Feedbac
 export function FeedbackButtonContainerRightAligned() {
 
   const theme = useTheme();
-  const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
-    <Grid container justify={"flex-end"} alignItems={"center"}>
+    <Grid container justifyContent={"flex-end"} alignItems={"center"}>
       <Grid item>
         <Box mt={1} mr={isMobileDevice ? 1 : 2}>
           <FeedbackButton />
         </Box>
       </Grid>
     </Grid>
-  )
+  );
 }

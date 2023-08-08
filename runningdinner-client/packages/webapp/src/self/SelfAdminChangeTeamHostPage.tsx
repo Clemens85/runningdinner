@@ -19,19 +19,19 @@ import {
 } from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
 import {PageTitle} from "../common/theme/typography/Tags";
-import {Box, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme} from '@material-ui/core';
-import Grid from "@material-ui/core/Grid";
+import {Box, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme} from '@mui/material';
+import Grid from "@mui/material/Grid";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {FormProvider, useForm} from "react-hook-form";
 import FormTextField from "../common/input/FormTextField";
 
-import CheckBoxOutlinedIcon from '@material-ui/icons/CheckBoxOutlined';
-import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
 import useCommonStyles from "../common/theme/CommonStyles";
 import Paragraph from "../common/theme/typography/Paragraph";
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
-import {Alert} from "@material-ui/lab";
+import { Alert } from '@mui/material';
 
 export default function SelfAdminChangeTeamHostPage() {
 
@@ -76,7 +76,7 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
   const [currentTeam, setCurrentTeam] = useState<Team>(team);
 
   const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
   const commonStyles = useCommonStyles();
   const {showSuccess} = useCustomSnackbar();
 
@@ -171,7 +171,7 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
         </Box>
 
         <Box my={3}>
-          <Grid container justify={"flex-end"} direction={"row"}>
+          <Grid container justifyContent={"flex-end"} direction={"row"}>
             <Grid item xs={isSmallDevice ? 12 : undefined}>
               <PrimaryButton onClick={handleSubmit(updateTeamHost)}
                              className={isSmallDevice ? commonStyles.fullWidth : undefined}

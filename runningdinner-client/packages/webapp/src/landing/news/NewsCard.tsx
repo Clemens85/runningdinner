@@ -1,11 +1,12 @@
 import {LocalDate} from "@runningdinner/shared";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import React from "react";
-import {Avatar, CardHeader, makeStyles} from "@material-ui/core";
+import { Avatar, CardHeader } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import {NewsItem} from "./NewsItemsHook";
 import { useLandingStyles } from "../LandingStyles";
-import AssignmentIcon from '@material-ui/icons/Assignment';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 const useNewsStyles = makeStyles((theme) => ({
   header: {

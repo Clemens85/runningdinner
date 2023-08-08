@@ -1,6 +1,6 @@
 import React from 'react'
 import MealItem from "./MealItem";
-import {Box, Card, CardActions, CardContent, Grid, List} from "@material-ui/core";
+import {Box, Card, CardActions, CardContent, Grid, List} from "@mui/material";
 import EditMealsDialog from "./EditMealsDialog";
 import {useTranslation} from "react-i18next";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
@@ -55,34 +55,34 @@ export default function MealsList({meals, runningDinner, onRunningDinnerUpdate, 
   }
 
   return (
-      <Card>
-        <CardContent>
-          <Subtitle i18n='admin:time_schedule' />
-          <div>
-            {<List dense={true}>{mealItems}</List>}
-          </div>
-        </CardContent>
-        <CardActions>
-          <Grid container justify={"flex-end"}>
-            <Grid item>
-              <Box pr={2} mt={-2} pb={2}>
-                <PrimarySuccessButtonAsync onClick={() => setEditMealsDialogOpen(true)} size={"small"} data-testid="open-edit-meals-action">
-                  {t('common:label_edit')}
-                </PrimarySuccessButtonAsync>
-              </Box>
-            </Grid>
+    <Card>
+      <CardContent>
+        <Subtitle i18n='admin:time_schedule' />
+        <div>
+          {<List dense={true}>{mealItems}</List>}
+        </div>
+      </CardContent>
+      <CardActions>
+        <Grid container justifyContent={"flex-end"}>
+          <Grid item>
+            <Box pr={2} mt={-2} pb={2}>
+              <PrimarySuccessButtonAsync onClick={() => setEditMealsDialogOpen(true)} size={"small"} data-testid="open-edit-meals-action">
+                {t('common:label_edit')}
+              </PrimarySuccessButtonAsync>
+            </Box>
           </Grid>
-        </CardActions>
+        </Grid>
+      </CardActions>
 
-        <EditMealsDialog open={editMealsDialogOpen}
-                         dashboardAdminActivities={dashboardAdminActivities}
-                         runningDinnerDate={runningDinner.basicDetails.date}
-                         onSave={(mealsToUpdate) => updateMeals(mealsToUpdate)}
-                         meals={meals}
-                         onCancel={() => setEditMealsDialogOpen(false)}>
-       </EditMealsDialog>
+      <EditMealsDialog open={editMealsDialogOpen}
+                       dashboardAdminActivities={dashboardAdminActivities}
+                       runningDinnerDate={runningDinner.basicDetails.date}
+                       onSave={(mealsToUpdate) => updateMeals(mealsToUpdate)}
+                       meals={meals}
+                       onCancel={() => setEditMealsDialogOpen(false)}>
+     </EditMealsDialog>
 
-      </Card>
+    </Card>
   );
 
 }

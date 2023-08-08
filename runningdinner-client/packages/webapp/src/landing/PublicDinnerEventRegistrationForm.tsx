@@ -4,7 +4,7 @@ import {
   Grid,
   LinearProgress,
   Paper,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   BasePublicDinnerProps,
   CallbackHandler,
@@ -164,85 +164,83 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
     }
   }
 
-  return (
-    <>
-      <Drawer open={true}
-              anchor="right"
-              className={drawerClasses.drawer}
-              onClose={onCancel}
-              classes={{
-                paper: drawerClasses.drawerPaper,
-              }}
-              ModalProps={{keepMounted: true}}>
-        <div>
-          <Paper elevation={3}>
-            <Box p={3}>
-              <FormProvider {...formMethods}>
-                <form>
-                  <Grid container justify={"space-between"} alignItems={"baseline"}>
-                    <Grid item xs={12}>
-                      <Subtitle i18n={"landing:registration"}/>
-                    </Grid>
+  return <>
+    <Drawer open={true}
+            anchor="right"
+            className={drawerClasses.drawer}
+            onClose={onCancel}
+            classes={{
+              paper: drawerClasses.drawerPaper,
+            }}
+            ModalProps={{keepMounted: true}}>
+      <div>
+        <Paper elevation={3}>
+          <Box p={3}>
+            <FormProvider {...formMethods}>
+              <form>
+                <Grid container justifyContent={"space-between"} alignItems={"baseline"}>
+                  <Grid item xs={12}>
+                    <Subtitle i18n={"landing:registration"}/>
                   </Grid>
-                  <Box mb={3} mt={3}>
-                    <PersonalDataSection />
-                  </Box>
-                  <Box mb={3}>
-                    <AddressSection headline={t('landing:address_data')}
-                                    isNumSeatsRequired={true}
-                                    addressRemarksHelperText={t("landing:address_remarks_help")}/>
-                  </Box>
-                  <Box mb={3}>
-                    <MealSpecificsSection />
-                  </Box>
-                  <Box mb={3}>
-                    { !teamPartnerWishDisabled && <TeamPartnerWishSectionRegistration invitingParticipantEmail={invitingParticipantEmail} publicDinnerId={publicDinnerId} /> }
-                  </Box>
-                  <Box mb={3}>
-                    <MiscSection miscNotesHelperText={t('landing:misc_notes_help')} />
-                  </Box>
-                  <Box mb={3}>
-                    <FormCheckbox name="dataProcessingAcknowledged"
-                                  useTableDisplay={true}
-                                  defaultValue={false}
-                                  data-testid={"dataProcessingAcknowledged"}
-                                  label={
-                                    <>
-                                      <Trans i18nKey="landing:data_processing_acknowledge" /><br />
-                                      <Trans i18nKey="landing:data_processing_acknowledge_hint"
-                                             values={{ privacyLink: `/${IMPRESSUM_PATH}` }}
-                                        // @ts-ignore
-                                             components={{ anchor: <LinkExtern /> }} />
-                                    </>
-                                  } />
-                  </Box>
+                </Grid>
+                <Box mb={3} mt={3}>
+                  <PersonalDataSection />
+                </Box>
+                <Box mb={3}>
+                  <AddressSection headline={t('landing:address_data')}
+                                  isNumSeatsRequired={true}
+                                  addressRemarksHelperText={t("landing:address_remarks_help")}/>
+                </Box>
+                <Box mb={3}>
+                  <MealSpecificsSection />
+                </Box>
+                <Box mb={3}>
+                  { !teamPartnerWishDisabled && <TeamPartnerWishSectionRegistration invitingParticipantEmail={invitingParticipantEmail} publicDinnerId={publicDinnerId} /> }
+                </Box>
+                <Box mb={3}>
+                  <MiscSection miscNotesHelperText={t('landing:misc_notes_help')} />
+                </Box>
+                <Box mb={3}>
+                  <FormCheckbox name="dataProcessingAcknowledged"
+                                useTableDisplay={true}
+                                defaultValue={false}
+                                data-testid={"dataProcessingAcknowledged"}
+                                label={
+                                  <>
+                                    <Trans i18nKey="landing:data_processing_acknowledge" /><br />
+                                    <Trans i18nKey="landing:data_processing_acknowledge_hint"
+                                           values={{ privacyLink: `/${IMPRESSUM_PATH}` }}
+                                      // @ts-ignore
+                                           components={{ anchor: <LinkExtern /> }} />
+                                  </>
+                                } />
+                </Box>
 
-                  {isSubmitting && <LinearProgress/>}
+                {isSubmitting && <LinearProgress/>}
 
-                  <Grid container justify={"flex-end"}>
-                    <Grid item>
-                      <SecondaryButton onClick={onCancel}>{t('common:cancel')}</SecondaryButton>
-                      <PrimaryButton onClick={handleSubmit(submitRegistrationData)}
-                                     disabled={isSubmitting}
-                                     data-testid={"registration-form-next-action"}
-                                     size={"large"}
-                                     className={classes.buttonSpacingLeft}>
-                        {t('common:next')}
-                      </PrimaryButton>
-                    </Grid>
+                <Grid container justifyContent={"flex-end"}>
+                  <Grid item>
+                    <SecondaryButton onClick={onCancel}>{t('common:cancel')}</SecondaryButton>
+                    <PrimaryButton onClick={handleSubmit(submitRegistrationData)}
+                                   disabled={isSubmitting}
+                                   data-testid={"registration-form-next-action"}
+                                   size={"large"}
+                                   className={classes.buttonSpacingLeft}>
+                      {t('common:next')}
+                    </PrimaryButton>
                   </Grid>
+                </Grid>
 
-                </form>
-              </FormProvider>
+              </form>
+            </FormProvider>
 
-            </Box>
-          </Paper>
-        </div>
-      </Drawer>
-      { isRegistrationSummaryOpen && <RegistrationSummaryDialog registrationDataCollection={getRegistrationDataCollection()}
-                                                                publicRunningDinner={publicRunningDinner}
-                                                                onCancel={closeRegistrationSummary}
-                                                                onPerformRegistration={handlePerformRegistration} /> }
-    </>
-  );
+          </Box>
+        </Paper>
+      </div>
+    </Drawer>
+    { isRegistrationSummaryOpen && <RegistrationSummaryDialog registrationDataCollection={getRegistrationDataCollection()}
+                                                              publicRunningDinner={publicRunningDinner}
+                                                              onCancel={closeRegistrationSummary}
+                                                              onPerformRegistration={handlePerformRegistration} /> }
+  </>;
 }

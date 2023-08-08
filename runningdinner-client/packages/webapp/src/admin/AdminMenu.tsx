@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   useMediaQuery
-} from "@material-ui/core";
+} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 import AdminNotificationBar from './common/AdminNotificationBar';

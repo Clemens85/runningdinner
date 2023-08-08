@@ -1,15 +1,15 @@
 import React, {useState} from "react";
-import {Box, Button, useMediaQuery, useTheme} from "@material-ui/core";
+import {Box, Button, useMediaQuery, useTheme} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {CallbackHandler} from "@runningdinner/shared";
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 export function useMasterDetailView() {
 
   const [showDetailsView, setShowDetailsView] = useState(false);
 
   const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
 
   const showListView = !isSmallDevice || !showDetailsView;
   const showBackToListViewButton = !showListView;

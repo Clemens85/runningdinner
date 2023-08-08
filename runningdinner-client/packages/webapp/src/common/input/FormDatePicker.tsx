@@ -1,7 +1,7 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
 import {KeyboardDatePicker} from "@material-ui/pickers";
-import {FormHelperText} from "@material-ui/core";
+import {FormHelperText} from "@mui/material";
 import {KeyboardDatePickerProps} from "@material-ui/pickers/DatePicker/DatePicker";
 import {isStringNotEmpty} from "@runningdinner/shared";
 import useDatePickerLocale from "../date/DatePickerLocaleHook";

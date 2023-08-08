@@ -1,5 +1,5 @@
 import React from 'react'
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import {useTranslation} from "react-i18next";
 import TextInputWatchable from "../../common/input/TextInputWatchable";
 

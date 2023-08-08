@@ -1,4 +1,4 @@
-import {Box, Grid, Paper, useMediaQuery, useTheme} from "@material-ui/core";
+import {Box, Grid, Paper, useMediaQuery, useTheme} from "@mui/material";
 import {PageTitle} from "../../common/theme/typography/Tags";
 import {FormProvider, useForm} from "react-hook-form";
 import React, {useEffect} from "react";
@@ -209,113 +209,111 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
   const handleDinnerRouteSelfPartTemplateChange = (changedValue: string) => updateDinnerRouteSelfPartTemplatePreviewAsync(changedValue);
 
   // @ts-ignore
-  return (
-      <>
-        <Grid container>
-          <Grid item xs={12}><PageTitle>{t(headline)}</PageTitle></Grid>
-        </Grid>
+  return <>
+    <Grid container>
+      <Grid item xs={12}><PageTitle>{t(headline)}</PageTitle></Grid>
+    </Grid>
 
-        <FormProvider {...formMethods}>
-          <form>
+    <FormProvider {...formMethods}>
+      <form>
 
-            <Grid container spacing={3}>
+        <Grid container spacing={3}>
 
-              <Grid item xs={12} lg={7}>
+          <Grid item xs={12} lg={7}>
+            <Paper elevation={3}>
+              <Box p={2}>
+                <Grid container>
+                  <Grid item xs={12}><MessageHeadline /></Grid>
+                  <Grid item xs={12}>
+                    <RecipientSelection messageType={messageType} adminId={adminId} />
+                    <MessageSubject onMessageSubjectChange={handleMessageSubjectChange}/>
+                    <MessageContent templates={templates}
+                                    onMessageContentChange={handleMessageContentChange}
+                                    rows={15}
+                                    showTemplatesHelpIcon={true}
+                                    name="message"
+                                    label={t('common:content')}/>
+                  </Grid>
+                  { messageType === MessageType.MESSAGE_TYPE_TEAMS &&
+                    <Grid container spacing={1}>
+                      <Grid item xs={12} md={6}>
+                        <MessageContent templates={[]}
+                                        onMessageContentChange={handleHostMessagePartTemplateChange}
+                                        rows={5}
+                                        showTemplatesHelpIcon={true}
+                                        name="hostMessagePartTemplate"
+                                        helperText={t('admin:mails_template_replacement_host')}
+                                        label={t('admin:mails_sendteams_host')}/>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <MessageContent templates={[]}
+                                        onMessageContentChange={handleNonHostMessagePartTemplateChange}
+                                        rows={5}
+                                        showTemplatesHelpIcon={true}
+                                        name="nonHostMessagePartTemplate"
+                                        helperText={t('admin:mails_template_replacement_nonhost')}
+                                        label={t('admin:mails_sendteams_nonhost')}/>
+                      </Grid>
+                    </Grid> }
+
+                    { messageType === MessageType.MESSAGE_TYPE_DINNERROUTE &&
+                    <Grid container spacing={1}>
+                      <Grid item xs={12} lg={6}>
+                        <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{mealspecifics}']}
+                                        onMessageContentChange={handleDinnerRouteSelfPartTemplateChange}
+                                        rows={7}
+                                        showTemplatesHelpIcon={isMdDeviceOrUp}
+                                        name="selfTemplate"
+                                        helperText={t('admin:mails_template_replacement_route_host')}
+                                        label={t('admin:mails_senddinnerroute_self')}/>
+                      </Grid>
+                      <Grid item xs={12} lg={6}>
+                        <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{hostaddress}', '{mobilenumber}']}
+                                        onMessageContentChange={handleDinnerRouteHostsPartTemplateChange}
+                                        rows={7}
+                                        showTemplatesHelpIcon={isMdDeviceOrUp}
+                                        name="hostsTemplate"
+                                        helperText={t('admin:mails_template_replacement_route_guest')}
+                                        label={t('admin:mails_senddinnerroute_hosts')}/>
+                      </Grid>
+                    </Grid> }
+
+
+                  <Grid container justifyContent="flex-end">
+                    <Grid item>
+                      <Box mt={3}>
+                        {/* @ts-ignore */}
+                        <PrimaryButton onClick={handleSubmit(handleSendMessages)}
+                                       disabled={isSubmitting}
+                                       size="large">
+                          {t('messages_send_general')}
+                        </PrimaryButton>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} lg={5}>
+            <Grid item xs={12}>
+              <MessageJobsOverview adminId={adminId} messageType={messageType} />
+            </Grid>
+            <Grid item xs={12}>
+              <Box mt={3}>
                 <Paper elevation={3}>
                   <Box p={2}>
-                    <Grid container>
-                      <Grid item xs={12}><MessageHeadline /></Grid>
-                      <Grid item xs={12}>
-                        <RecipientSelection messageType={messageType} adminId={adminId} />
-                        <MessageSubject onMessageSubjectChange={handleMessageSubjectChange}/>
-                        <MessageContent templates={templates}
-                                        onMessageContentChange={handleMessageContentChange}
-                                        rows={15}
-                                        showTemplatesHelpIcon={true}
-                                        name="message"
-                                        label={t('common:content')}/>
-                      </Grid>
-                      { messageType === MessageType.MESSAGE_TYPE_TEAMS &&
-                        <Grid container spacing={1}>
-                          <Grid item xs={12} md={6}>
-                            <MessageContent templates={[]}
-                                            onMessageContentChange={handleHostMessagePartTemplateChange}
-                                            rows={5}
-                                            showTemplatesHelpIcon={true}
-                                            name="hostMessagePartTemplate"
-                                            helperText={t('admin:mails_template_replacement_host')}
-                                            label={t('admin:mails_sendteams_host')}/>
-                          </Grid>
-                          <Grid item xs={12} md={6}>
-                            <MessageContent templates={[]}
-                                            onMessageContentChange={handleNonHostMessagePartTemplateChange}
-                                            rows={5}
-                                            showTemplatesHelpIcon={true}
-                                            name="nonHostMessagePartTemplate"
-                                            helperText={t('admin:mails_template_replacement_nonhost')}
-                                            label={t('admin:mails_sendteams_nonhost')}/>
-                          </Grid>
-                        </Grid> }
-
-                        { messageType === MessageType.MESSAGE_TYPE_DINNERROUTE &&
-                        <Grid container spacing={1}>
-                          <Grid item xs={12} lg={6}>
-                            <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{mealspecifics}']}
-                                            onMessageContentChange={handleDinnerRouteSelfPartTemplateChange}
-                                            rows={7}
-                                            showTemplatesHelpIcon={isMdDeviceOrUp}
-                                            name="selfTemplate"
-                                            helperText={t('admin:mails_template_replacement_route_host')}
-                                            label={t('admin:mails_senddinnerroute_self')}/>
-                          </Grid>
-                          <Grid item xs={12} lg={6}>
-                            <MessageContent templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{hostaddress}', '{mobilenumber}']}
-                                            onMessageContentChange={handleDinnerRouteHostsPartTemplateChange}
-                                            rows={7}
-                                            showTemplatesHelpIcon={isMdDeviceOrUp}
-                                            name="hostsTemplate"
-                                            helperText={t('admin:mails_template_replacement_route_guest')}
-                                            label={t('admin:mails_senddinnerroute_hosts')}/>
-                          </Grid>
-                        </Grid> }
-
-
-                      <Grid container justify="flex-end">
-                        <Grid item>
-                          <Box mt={3}>
-                            {/* @ts-ignore */}
-                            <PrimaryButton onClick={handleSubmit(handleSendMessages)}
-                                           disabled={isSubmitting}
-                                           size="large">
-                              {t('messages_send_general')}
-                            </PrimaryButton>
-                          </Box>
-                        </Grid>
-                      </Grid>
-                    </Grid>
+                    <MessagePreview adminId={adminId} messageType={messageType} />
                   </Box>
                 </Paper>
-              </Grid>
-
-              <Grid item xs={12} lg={5}>
-                <Grid item xs={12}>
-                  <MessageJobsOverview adminId={adminId} messageType={messageType} />
-                </Grid>
-                <Grid item xs={12}>
-                  <Box mt={3}>
-                    <Paper elevation={3}>
-                      <Box p={2}>
-                        <MessagePreview adminId={adminId} messageType={messageType} />
-                      </Box>
-                    </Paper>
-                  </Box>
-                </Grid>
-              </Grid>
-
+              </Box>
             </Grid>
+          </Grid>
 
-          </form>
-        </FormProvider>
-      </>
-  );
+        </Grid>
+
+      </form>
+    </FormProvider>
+  </>;
 }

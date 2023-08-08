@@ -1,7 +1,7 @@
-import {createMuiTheme} from "@material-ui/core";
-import { grey } from '@material-ui/core/colors';
+import { createTheme, adaptV4Theme } from "@mui/material";
+import { grey } from '@mui/material/colors';
 
-export const runningDinnerTheme = createMuiTheme({
+export const runningDinnerTheme = createTheme(adaptV4Theme({
   palette: {
     primary: {
       main: '#6db33f'
@@ -22,4 +22,4 @@ export const runningDinnerTheme = createMuiTheme({
       }
     }
   }
-});
+}));

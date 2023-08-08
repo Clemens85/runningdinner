@@ -1,6 +1,7 @@
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import { Typography, IconButton, withStyles } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import MuiDialogTitle from "@mui/material/DialogTitle";
+import { Typography, IconButton } from "@mui/material";
+import withStyles from '@mui/styles/withStyles';
+import CloseIcon from "@mui/icons-material/Close";
 import React from "react";
 
 const styles = (theme) => ({
@@ -19,13 +20,17 @@ const styles = (theme) => ({
 export const DialogTitleCloseable = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
-      <MuiDialogTitle disableTypography className={classes.root} {...other}>
-        <Typography variant="h6">{children}</Typography>
-        {onClose ? (
-            <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-              <CloseIcon />
-            </IconButton>
-        ) : null}
-      </MuiDialogTitle>
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+          <IconButton
+            aria-label="close"
+            className={classes.closeButton}
+            onClick={onClose}
+            size="large">
+            <CloseIcon />
+          </IconButton>
+      ) : null}
+    </MuiDialogTitle>
   );
 });

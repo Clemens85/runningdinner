@@ -1,4 +1,6 @@
-import { withStyles, Paper } from '@material-ui/core';
+import { Paper } from '@mui/material';
+
+import withStyles from '@mui/styles/withStyles';
 
 // The `withStyles()` higher-order component is injecting a `classes`
 // prop that is used by the `Button` component.

@@ -8,16 +8,16 @@ import {
   isArrayNotEmpty, LocalDate,
   PublicRunningDinner
 } from "@runningdinner/shared";
-import {Box, CardActions, Grid} from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
+import {Box, CardActions, Grid} from "@mui/material";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import Paragraph from "../common/theme/typography/Paragraph";
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import {useLandingStyles} from "./LandingStyles";
 import {isLocalDevEnv} from "../common/EnvService";
-import {Alert, AlertTitle} from "@material-ui/lab";
+import { Alert, AlertTitle } from '@mui/material';
 import LinkIntern from "../common/theme/LinkIntern";
 import {LANDING_CREATE_RUNNING_DINNER_PATH} from "../common/mainnavigation/NavigationPaths";
 import { TextViewHtml } from '../common/TextViewHtml';

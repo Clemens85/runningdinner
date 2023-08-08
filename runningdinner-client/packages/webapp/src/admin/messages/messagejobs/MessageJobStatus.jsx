@@ -1,11 +1,11 @@
 import {Span} from "../../../common/theme/typography/Tags";
 import React from "react";
 import {CONSTANTS, getStatusResult} from "@runningdinner/shared";
-import DoneIcon from '@material-ui/icons/Done';
-import ErrorIcon from '@material-ui/icons/Error';
-import {Hidden} from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import DoneIcon from '@mui/icons-material/Done';
+import ErrorIcon from '@mui/icons-material/Error';
+import {Hidden} from "@mui/material";
+import Grid from "@mui/material/Grid";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function MessageJobStatus({messageJobOrTask}) {
 
@@ -28,14 +28,14 @@ function MessageJobStatus({messageJobOrTask}) {
 
 function MessageJobStatusGrid({icon, label}) {
   return (
-      <Grid container alignItems="center">
-        <Grid item>{icon}</Grid>
-        <Grid item>
-          <Hidden mdDown>
-            {label}
-          </Hidden>
-        </Grid>
+    <Grid container alignItems="center">
+      <Grid item>{icon}</Grid>
+      <Grid item>
+        <Hidden lgDown>
+          {label}
+        </Hidden>
       </Grid>
+    </Grid>
   );
 }
 

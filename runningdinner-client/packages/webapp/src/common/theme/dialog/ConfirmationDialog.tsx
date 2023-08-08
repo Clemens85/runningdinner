@@ -1,18 +1,18 @@
 import React from "react";
 import {
   Box,
-  createStyles,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogProps,
   Button,
-  makeStyles,
   useMediaQuery,
   Grid,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { SpacingButton } from "../SpacingButton";
 import { DialogTitleCloseable } from "../DialogTitleCloseable";
 import { PrimaryButton } from "../PrimaryButton";
@@ -85,7 +85,7 @@ export function ConfirmationDialog({dialogTitle, dialogContent, buttonConfirmTex
   };
 
   const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
   const buttonFlexDirection = isSmallDevice ? "column" : "row";
   const dialogClasses = useConfirmationDialogStyles();
 
@@ -106,7 +106,7 @@ export function ConfirmationDialog({dialogTitle, dialogContent, buttonConfirmTex
       </DialogContent>
       <DialogActions className={isSmallDevice ? dialogClasses.dialogActions : ""}>
         <Box px={2} pt={1} pb={2}>
-          <Grid container justify="flex-end" direction={buttonFlexDirection} alignContent="center">
+          <Grid container justifyContent="flex-end" direction={buttonFlexDirection} alignContent="center">
             <Grid item style={{ alignSelf: "center" }}>
               {buttonCancelText && (
                 <Button onClick={() => handleCloseInternal(false)}>{buttonCancelText}</Button>

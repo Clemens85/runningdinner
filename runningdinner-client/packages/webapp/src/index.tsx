@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from "./App";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import CssBaseline from "@mui/material/CssBaseline";
 import {SnackbarProvider} from "notistack";
 import {configureAxiosHttpInterceptors, BackendConfig, setupI18n} from "@runningdinner/shared";
 import { LanguageChangeHandler } from './common/i18n/LanguageChangeHandler';

@@ -2,7 +2,7 @@ import React from "react";
 import DashboardTitle from "./DashboardTitle"
 import MealsList from "./MealsList"
 import Overview from "./Overview";
-import {Box, Grid, Hidden} from "@material-ui/core";
+import {Box, Grid, Hidden} from "@mui/material";
 import Checklist from "./Checklist";
 import {
   BaseRunningDinnerProps,
@@ -50,69 +50,69 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
   }
 
   return (
+    <div>
       <div>
-        <div>
-          <DashboardTitle basicDetails={basicDetails} />
-        </div>
-        { !isClosedDinner(runningDinner) &&
-            <>
-              <Hidden xsDown>
-                <Grid container alignItems={"center"} spacing={1}>
-                  <Grid item>
-                    <SmallTitle>{t("common:hidden_link_text")}&nbsp;<PublicRunningDinnerLink {... runningDinner} /></SmallTitle>
-                  </Grid>
-                  <Grid item>
-                    <HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} />
-                  </Grid>
-                </Grid>
-              </Hidden>
-              <Hidden smUp>
-                <Grid container alignItems={"center"}>
-                  <Grid item>
-                    <Box pr={1}><SmallTitle i18n={"common:hidden_link_text"}/></Box>
-                  </Grid>
-                  <Grid item><HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} /></Grid>
-                  <Grid item xs={12}><PublicRunningDinnerLink {... runningDinner} /></Grid>
-                </Grid>
-              </Hidden>
-            </>
-        }
-        <Grid container justify={"center"} alignItems={"stretch"}>
-          <Grid item xs={12} md={4}>
-            <Box {...padding}>
-              <Overview runningDinner={runningDinner} />
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Box {...padding}>
-              { dashboardAdminActivities && <MealsList meals={meals}
-                                                       runningDinner={runningDinner}
-                                                       onRunningDinnerUpdate={handleRunningDinnerUpdate}
-                                                       dashboardAdminActivities={dashboardAdminActivities} /> }
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Box {...padding} pr={0}>
-              { dashboardAdminActivities && <Checklist runningDinner={runningDinner} dashboardAdminActivities={dashboardAdminActivities} /> }
-            </Box>
-          </Grid>
-        </Grid>
-        <Grid container>
-          <Grid item xs={12} md={8}>
-            <Box {...padding}>
-              { dashboardAdminActivities && <AdminActivitiesTimeline dashboardAdminActivities={dashboardAdminActivities} /> }
-            </Box>
-          </Grid>
-          { !isClosedDinner(runningDinner) &&
-               <Grid item xs={12} md={4}>
-                 <Box {...padding} pr={0}>
-                    <ParticipantRegistrations runningDinner={runningDinner} />
-                 </Box>
-              </Grid> }
-        </Grid>
-        <Helmet>
-          <title>Dashboard - Running Dinner Administration</title>
-        </Helmet>
+        <DashboardTitle basicDetails={basicDetails} />
       </div>
+      { !isClosedDinner(runningDinner) &&
+          <>
+            <Hidden smDown>
+              <Grid container alignItems={"center"} spacing={1}>
+                <Grid item>
+                  <SmallTitle>{t("common:hidden_link_text")}&nbsp;<PublicRunningDinnerLink {... runningDinner} /></SmallTitle>
+                </Grid>
+                <Grid item>
+                  <HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} />
+                </Grid>
+              </Grid>
+            </Hidden>
+            <Hidden smUp>
+              <Grid container alignItems={"center"}>
+                <Grid item>
+                  <Box pr={1}><SmallTitle i18n={"common:hidden_link_text"}/></Box>
+                </Grid>
+                <Grid item><HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} /></Grid>
+                <Grid item xs={12}><PublicRunningDinnerLink {... runningDinner} /></Grid>
+              </Grid>
+            </Hidden>
+          </>
+      }
+      <Grid container justifyContent={"center"} alignItems={"stretch"}>
+        <Grid item xs={12} md={4}>
+          <Box {...padding}>
+            <Overview runningDinner={runningDinner} />
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Box {...padding}>
+            { dashboardAdminActivities && <MealsList meals={meals}
+                                                     runningDinner={runningDinner}
+                                                     onRunningDinnerUpdate={handleRunningDinnerUpdate}
+                                                     dashboardAdminActivities={dashboardAdminActivities} /> }
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Box {...padding} pr={0}>
+            { dashboardAdminActivities && <Checklist runningDinner={runningDinner} dashboardAdminActivities={dashboardAdminActivities} /> }
+          </Box>
+        </Grid>
+      </Grid>
+      <Grid container>
+        <Grid item xs={12} md={8}>
+          <Box {...padding}>
+            { dashboardAdminActivities && <AdminActivitiesTimeline dashboardAdminActivities={dashboardAdminActivities} /> }
+          </Box>
+        </Grid>
+        { !isClosedDinner(runningDinner) &&
+             <Grid item xs={12} md={4}>
+               <Box {...padding} pr={0}>
+                  <ParticipantRegistrations runningDinner={runningDinner} />
+               </Box>
+            </Grid> }
+      </Grid>
+      <Helmet>
+        <title>Dashboard - Running Dinner Administration</title>
+      </Helmet>
+    </div>
   );
 }

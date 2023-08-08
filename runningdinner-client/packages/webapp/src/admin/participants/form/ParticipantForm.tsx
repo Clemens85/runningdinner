@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { Grid, Paper, Box, LinearProgress } from "@material-ui/core";
+import { Grid, Paper, Box, LinearProgress } from "@mui/material";
 import ParticipantFormHeadline from "./ParticipantFormHeadline";
 import {PersonalDataSection} from "./PersonalDataSection";
 import AddressSection from "./AddressSection";
@@ -102,68 +102,68 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
   const teamPartnerWishChild = isTeamPartnerWishChild(participant);
 
   return (
-      <Paper elevation={3}>
-        <Box p={2}>
-          <FormProvider {...formMethods}>
-            <form>
+    <Paper elevation={3}>
+      <Box p={2}>
+        <FormProvider {...formMethods}>
+          <form>
 
-              <Grid container justify={"space-between"} alignItems={"baseline"}>
-                <Grid item xs={12} md={8}>
-                  <ParticipantFormHeadline />
-                </Grid>
-                {!teamPartnerWishChild &&
-                  <Grid item xs={12} md={4}>
-                    <div className={classes.textAlignRight}>
-                      <FillWithExampleDataLink/>
-                    </div>
-                  </Grid>
-                }
+            <Grid container justifyContent={"space-between"} alignItems={"baseline"}>
+              <Grid item xs={12} md={8}>
+                <ParticipantFormHeadline />
               </Grid>
-
-              <Box mb={3} mt={3}>
-                <PersonalDataSection showOnlyNameFields={teamPartnerWishChild} />
-              </Box>
-              { !teamPartnerWishChild &&
-                <>
-                  <Box mb={3}>
-                    <AddressSection />
-                  </Box>
-                  <Box mb={3}>
-                    <MealSpecificsSection />
-                  </Box>
-                </>
-              }
-              <Box mb={3}>
-                { !teamPartnerWishDisabled && <TeamPartnerWishSectionAdmin {...participant} adminId={adminId} /> }
-              </Box>
               {!teamPartnerWishChild &&
-                <Box mb={3}>
-                  <MiscSection/>
-                </Box>
-              }
-
-              {isSubmitting && <LinearProgress />}
-
-              <Grid container justify={"flex-end"}>
-                <Grid item>
-                  { showDeleteBtn && <SecondaryButton onClick={() => setOpenDeleteDialog(true)} data-testid={"delete-participant-dialog-action"}>{t('delete')}</SecondaryButton> }
-                  <PrimaryButton onClick={handleSubmit(updateParticipant)} disabled={isSubmitting} size={"large"}
-                                 className={classes.buttonSpacingLeft}>
-                    {t('save')}
-                  </PrimaryButton>
+                <Grid item xs={12} md={4}>
+                  <div className={classes.textAlignRight}>
+                    <FillWithExampleDataLink/>
+                  </div>
                 </Grid>
+              }
+            </Grid>
+
+            <Box mb={3} mt={3}>
+              <PersonalDataSection showOnlyNameFields={teamPartnerWishChild} />
+            </Box>
+            { !teamPartnerWishChild &&
+              <>
+                <Box mb={3}>
+                  <AddressSection />
+                </Box>
+                <Box mb={3}>
+                  <MealSpecificsSection />
+                </Box>
+              </>
+            }
+            <Box mb={3}>
+              { !teamPartnerWishDisabled && <TeamPartnerWishSectionAdmin {...participant} adminId={adminId} /> }
+            </Box>
+            {!teamPartnerWishChild &&
+              <Box mb={3}>
+                <MiscSection/>
+              </Box>
+            }
+
+            {isSubmitting && <LinearProgress />}
+
+            <Grid container justifyContent={"flex-end"}>
+              <Grid item>
+                { showDeleteBtn && <SecondaryButton onClick={() => setOpenDeleteDialog(true)} data-testid={"delete-participant-dialog-action"}>{t('delete')}</SecondaryButton> }
+                <PrimaryButton onClick={handleSubmit(updateParticipant)} disabled={isSubmitting} size={"large"}
+                               className={classes.buttonSpacingLeft}>
+                  {t('save')}
+                </PrimaryButton>
               </Grid>
+            </Grid>
 
-            </form>
-          </FormProvider>
+          </form>
+        </FormProvider>
 
-        </Box>
+      </Box>
 
-        { showDeleteBtn && <DeleteParticipantDialog open={openDeleteDialog}
-                                                    adminId={adminId}
-                                                    participant={participant}
-                                                    onClose={onDeleteDialogClosed} /> }
+      { showDeleteBtn && <DeleteParticipantDialog open={openDeleteDialog}
+                                                  adminId={adminId}
+                                                  participant={participant}
+                                                  onClose={onDeleteDialogClosed} /> }
 
-      </Paper>
+    </Paper>
   );
 }

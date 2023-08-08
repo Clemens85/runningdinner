@@ -1,9 +1,9 @@
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Paper, Box, LinearProgress} from "@material-ui/core";
+import {Paper, Box, LinearProgress} from "@mui/material";
 import HtmlTranslate from "../../common/i18n/HtmlTranslate";
-import Alert from "@material-ui/lab/Alert";
-import {AlertTitle} from "@material-ui/lab";
+import Alert from '@mui/material/Alert';
+import { AlertTitle } from '@mui/material';
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
 import {formatLocalDate, isClosedDinner, useTeamsNotExisting} from "@runningdinner/shared";

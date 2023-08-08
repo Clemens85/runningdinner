@@ -1,6 +1,6 @@
 import React from 'react'
 import OverviewItem from "./OverviewItem";
-import { Card, CardContent }  from "@material-ui/core";
+import { Card, CardContent }  from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import {getTruncatedText, isClosedDinner, LocalDate, ValueTranslate} from "@runningdinner/shared";

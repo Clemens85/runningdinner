@@ -1,8 +1,8 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
-import {Checkbox, FormControl, FormControlLabel, FormHelperText, styled} from "@material-ui/core";
-import {spacing} from "@material-ui/system";
-import {CheckboxProps} from "@material-ui/core/Checkbox/Checkbox";
+import {Checkbox, FormControl, FormControlLabel, FormHelperText, styled} from "@mui/material";
+import {spacing} from "@mui/system";
+import {CheckboxProps} from "@mui/material/Checkbox/Checkbox";
 import {isStringNotEmpty} from "@runningdinner/shared";
 
 export interface FormCheckboxProps extends Omit<CheckboxProps, "defaultValue"> {

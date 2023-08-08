@@ -1,6 +1,6 @@
 import React from 'react'
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import {
   Box,
@@ -11,17 +11,17 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Typography
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   BaseRunningDinnerProps, DashboardAdminActivities,
   getDaysFromTodayTillEndOfRegistration,
   isClosedDinner,
 } from "@runningdinner/shared";
-import DoneIcon from '@material-ui/icons/Done';
-import SaveIcon from '@material-ui/icons/Save';
-import MailIcon from '@material-ui/icons/Mail';
-import GroupIcon from '@material-ui/icons/Group';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import DoneIcon from '@mui/icons-material/Done';
+import SaveIcon from '@mui/icons-material/Save';
+import MailIcon from '@mui/icons-material/Mail';
+import GroupIcon from '@mui/icons-material/Group';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import {useTranslation} from "react-i18next";
 
 export interface ChecklistProps extends BaseRunningDinnerProps {
@@ -84,7 +84,7 @@ function ChecklistItem({icon, label, checked, secondaryLabel}: ChecklistItemProp
       <ListItemText primary={<Typography variant={"subtitle2"} color={getColor(checked)}>{label}</Typography>} secondary={secondaryLabel} />
       { checked &&
           <ListItemSecondaryAction>
-            <IconButton edge="end" aria-label="checked" color={"primary"}>
+            <IconButton edge="end" aria-label="checked" color={"primary"} size="large">
               <DoneIcon />
             </IconButton>
           </ListItemSecondaryAction> }

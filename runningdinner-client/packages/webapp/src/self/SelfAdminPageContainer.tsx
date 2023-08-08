@@ -8,8 +8,8 @@ import {
   useSelfAdminSelector
 } from "@runningdinner/shared";
 import React from "react";
-import Grid from "@material-ui/core/Grid";
-import {Box} from "@material-ui/core";
+import Grid from "@mui/material/Grid";
+import {Box} from "@mui/material";
 import {LanguageSwitch} from "../common/i18n/LanguageSwitch";
 import useCommonStyles from "../common/theme/CommonStyles";
 import {Helmet} from "react-helmet-async";
@@ -43,23 +43,21 @@ export function SelfAdminPageContainer({children, htmlPageTitleI18n}: SelfAdminP
     }
   }, [dinnerLanguage, i18n]);
 
-  return (
-    <>
-      <Grid container justify={"center"}>
-        <Grid item xs={12} md={8} lg={8} className={commonStyles.textAlignRight}>
-          <Box mt={2} mb={-3}>
-            <LanguageSwitch />
-          </Box>
-        </Grid>
+  return <>
+    <Grid container justifyContent={"center"}>
+      <Grid item xs={12} md={8} lg={8} className={commonStyles.textAlignRight}>
+        <Box mt={2} mb={-3}>
+          <LanguageSwitch />
+        </Box>
       </Grid>
-      <Grid container justify={"center"}>
-        <Grid item xs={12} md={8} lg={8}>
-          {children}
-        </Grid>
+    </Grid>
+    <Grid container justifyContent={"center"}>
+      <Grid item xs={12} md={8} lg={8}>
+        {children}
       </Grid>
-      <Helmet>
-        <title>{t(htmlPageTitleI18n)}</title>
-      </Helmet>
-    </>
-  );
+    </Grid>
+    <Helmet>
+      <title>{t(htmlPageTitleI18n)}</title>
+    </Helmet>
+  </>;
 }

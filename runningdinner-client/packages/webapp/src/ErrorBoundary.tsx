@@ -1,5 +1,5 @@
-import { Box, Container } from "@material-ui/core";
-import { Alert, AlertTitle } from "@material-ui/lab";
+import { Box, Container } from "@mui/material";
+import { Alert, AlertTitle } from '@mui/material';
 import { CallbackHandler, CONSTANTS } from "@runningdinner/shared";
 import React from "react";
 import { Trans } from "react-i18next";

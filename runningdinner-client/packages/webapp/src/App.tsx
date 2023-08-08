@@ -1,11 +1,18 @@
 import React, { Suspense } from 'react';
 import {HelmetProvider} from "react-helmet-async";
 import {Route, BrowserRouter as Router, Routes} from "react-router-dom";
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
 import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
 import {WIZARD_ROOT_PATH} from "./common/mainnavigation/NavigationPaths";
 import {ProgressBar} from "./common/ProgressBar";
 import { ErrorBoundary } from './ErrorBoundary';
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 const SelfAdminApp = React.lazy(() => import('./self/SelfAdminApp'));
 const WizardApp = React.lazy(() => import('./wizard/WizardApp'));
@@ -19,7 +26,8 @@ function App() {
   }
 
   return (
-      <HelmetProvider>
+    <HelmetProvider>
+      <StyledEngineProvider injectFirst>
         <ThemeProvider theme={runningDinnerTheme}>
           <ErrorBoundary>
             <Router>
@@ -48,7 +56,8 @@ function App() {
             </Router>
           </ErrorBoundary>
         </ThemeProvider>
-      </HelmetProvider>
+      </StyledEngineProvider>
+    </HelmetProvider>
   );
 }
 

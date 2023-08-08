@@ -1,5 +1,6 @@
 import React from "react";
-import {Box, Button, Grid, makeStyles, Paper, Popover} from "@material-ui/core";
+import { Box, Button, Grid, Paper, Popover } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import orderBy from 'lodash/orderBy';
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {SmallTitle, Span, Title} from "../../common/theme/typography/Tags";
@@ -10,7 +11,7 @@ import {bindPopover, bindTrigger, usePopupState,} from 'material-ui-popup-state/
 import LinkIntern from "../../common/theme/LinkIntern";
 import LinkExtern from "../../common/theme/LinkExtern";
 import {PrimaryDangerButtonAsync} from "../../common/theme/PrimaryDangerButtonAsync";
-import Hidden from "@material-ui/core/Hidden";
+import Hidden from "@mui/material/Hidden";
 import {
   Fullname,
   isSameEntity,
@@ -101,7 +102,7 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
 
   const renderScheduleRowHeading = () => {
     return (
-      <Grid container spacing={spacing} justify={"center"} alignItems={"center"}>
+      <Grid container spacing={spacing} justifyContent={"center"} alignItems={"center"}>
         <Grid item xs={xs} md={md} className={classes.scheduleRowHostTeam}><Title i18n='common:host' /></Grid>
         <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams}><Title i18n='common:meal' /></Grid>
         <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams}><Title i18n='common:guests' /></Grid>
@@ -116,25 +117,25 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
       return null;
     }
     return (
-        <Grid container spacing={spacing} justify={"center"} alignItems={"center"}>
-          <Hidden xsDown>
-            <Grid item xs={xs} md={md} className={classes.scheduleRowHostTeam} />
-          </Hidden>
-          <Grid item xs={12} md={md} className={classes.scheduleRowGuestTeams}>
-            <Box mt={1}>
-              <LinkExtern href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} title={t('teams_show_dinnerroute')}/>
-            </Box>
-          </Grid>
-          <Hidden xsDown>
-            <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams} />
-          </Hidden>
+      <Grid container spacing={spacing} justifyContent={"center"} alignItems={"center"}>
+        <Hidden smDown>
+          <Grid item xs={xs} md={md} className={classes.scheduleRowHostTeam} />
+        </Hidden>
+        <Grid item xs={12} md={md} className={classes.scheduleRowGuestTeams}>
+          <Box mt={1}>
+            <LinkExtern href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} title={t('teams_show_dinnerroute')}/>
+          </Box>
         </Grid>
+        <Hidden smDown>
+          <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams} />
+        </Hidden>
+      </Grid>
     );
   };
 
   const renderScheduledMealRow = (scheduledMeal) => {
     return (
-      <Grid container spacing={spacing} justify={"center"} alignItems={"center"} key={scheduledMeal.meal.id}>
+      <Grid container spacing={spacing} justifyContent={"center"} alignItems={"center"} key={scheduledMeal.meal.id}>
         <ScheduledMeal {...scheduledMeal} currentTeam={activeTeam} xs={xs} md={md} adminId={adminId} />
       </Grid>
     );
@@ -142,9 +143,9 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
 
   const renderTimelineRow = (index) => {
     return (
-        <Grid container spacing={spacing} justify={"center"} alignItems={"center"} key={index}>
-          <ScheduledMealTimeline xs={xs} md={md} />
-        </Grid>
+      <Grid container spacing={spacing} justifyContent={"center"} alignItems={"center"} key={index}>
+        <ScheduledMealTimeline xs={xs} md={md} />
+      </Grid>
     );
   };
 

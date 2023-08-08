@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Dialog, DialogContent } from '@material-ui/core';
+import {Box, Dialog, DialogContent } from '@mui/material';
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import {Trans, useTranslation} from "react-i18next";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
@@ -19,7 +19,7 @@ import {
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
-import { Alert } from '@material-ui/lab';
+import { Alert } from '@mui/material';
 
 type DeleteParticipantDialogProps = {
   participant: ParticipantListable;

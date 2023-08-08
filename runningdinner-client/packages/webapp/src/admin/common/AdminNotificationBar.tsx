@@ -12,7 +12,7 @@ import {
   HttpError, newReSendRunningdinnerCreatedMessageModel
 } from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
-import {Box, Dialog, DialogContent, Grid} from "@material-ui/core";
+import {Box, Dialog, DialogContent, Grid} from "@mui/material";
 import AlertCentered from "../../common/theme/AlertCentered";
 import {FetchData} from "@runningdinner/shared/src/redux";
 import LinkAction from '../../common/theme/LinkAction';
@@ -24,7 +24,7 @@ import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import { Span } from '../../common/theme/typography/Tags';
 import FormTextField from '../../common/input/FormTextField';
 import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
-import {Color} from "@material-ui/lab/Alert/Alert";
+import {Color} from "@mui/lab/Alert/Alert";
 
 export default function AdminNotificationBar() {
 
@@ -83,22 +83,20 @@ function ReSendRunningDinnerCreatedMessageContainer({runningDinner}: BaseRunning
 
   const {isOpen, close, open} = useDisclosure();
 
-  return (
-    <>
-      <Grid container spacing={1} alignContent={"center"} justify={"center"}>
-        <Grid item>
-          <Span>{t("notification_dinner_acknowledge_required")}</Span>
-        </Grid>
-        <Grid item>
-          <Span>{t("admin:acknowledge_link_no_mail_received")}</Span>
-        </Grid>
-        <Grid item>
-          <LinkAction onClick={open}><Span>{t("admin:acknowledge_link_no_mail_received_action")}</Span></LinkAction>
-        </Grid>
+  return <>
+    <Grid container spacing={1} alignContent={"center"} justifyContent={"center"}>
+      <Grid item>
+        <Span>{t("notification_dinner_acknowledge_required")}</Span>
       </Grid>
-      { isOpen && <ReSendRunningDinnerCreatedMessageDialog onClose={close} runningDinner={runningDinner} /> }
-    </>
-  )
+      <Grid item>
+        <Span>{t("admin:acknowledge_link_no_mail_received")}</Span>
+      </Grid>
+      <Grid item>
+        <LinkAction onClick={open}><Span>{t("admin:acknowledge_link_no_mail_received_action")}</Span></LinkAction>
+      </Grid>
+    </Grid>
+    { isOpen && <ReSendRunningDinnerCreatedMessageDialog onClose={close} runningDinner={runningDinner} /> }
+  </>;
 }
 
 

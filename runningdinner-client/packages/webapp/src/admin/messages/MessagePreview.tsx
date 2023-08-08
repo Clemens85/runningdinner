@@ -1,6 +1,6 @@
 import React from "react";
 import {PaperGrey} from "../../common/theme/PaperGrey";
-import {Box, FormControl, InputLabel, LinearProgress, MenuItem, Select, Typography} from "@material-ui/core";
+import {Box, FormControl, InputLabel, LinearProgress, MenuItem, Select, Typography} from "@mui/material";
 import SendToMeButton from "./SendToMeButton";
 import {Span, Subtitle, Title} from "../../common/theme/typography/Tags";
 import {

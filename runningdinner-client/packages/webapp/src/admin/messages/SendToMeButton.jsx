@@ -1,5 +1,5 @@
 import React from 'react'
-import {Grid, Box} from "@material-ui/core";
+import {Grid, Box} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {SecondaryButtonAsync} from "../../common/theme/SecondaryButtonAsync";
 import {getMailMessageForSelectedRecipient, sendMessagesAsync, useBackendIssueHandler} from "@runningdinner/shared";
@@ -26,13 +26,13 @@ export default function SendToMeButton({adminId, messageObj, messageType, select
   };
 
   return (
-      <Grid container justify={"flex-end"}>
-        <Grid item>
-          <Box mt={1}>
-            <SecondaryButtonAsync onClick={handleSendToMe} color="primary">{t('message_send_to_me')}</SecondaryButtonAsync>
-          </Box>
-        </Grid>
+    <Grid container justifyContent={"flex-end"}>
+      <Grid item>
+        <Box mt={1}>
+          <SecondaryButtonAsync onClick={handleSendToMe} color="primary">{t('message_send_to_me')}</SecondaryButtonAsync>
+        </Box>
       </Grid>
+    </Grid>
   );
 
 }

@@ -1,4 +1,4 @@
-import {Box, DialogActions, useMediaQuery, useTheme} from "@material-ui/core";
+import {Box, DialogActions, useMediaQuery, useTheme} from "@mui/material";
 import {PrimarySuccessButtonAsync} from "./PrimarySuccessButtonAsync";
 import React from "react";
 import SecondaryButton from "./SecondaryButton";
@@ -20,7 +20,7 @@ const DialogActionsPanel = ({onOk, okLabel, danger = false, onCancel, cancelLabe
   const commonStyles = useCommonStyles()
 
   const theme = useTheme();
-  const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
       <DialogActions>

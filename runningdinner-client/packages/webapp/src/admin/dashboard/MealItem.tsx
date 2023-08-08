@@ -1,5 +1,5 @@
 import React from 'react'
-import { ListItem, ListItemText, ListItemSecondaryAction } from "@material-ui/core";
+import { ListItem, ListItemText, ListItemSecondaryAction } from "@mui/material";
 import {Meal, Time} from "@runningdinner/shared";
 
 export interface MealItemProps extends Meal {

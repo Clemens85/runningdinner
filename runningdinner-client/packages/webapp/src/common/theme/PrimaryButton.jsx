@@ -1,7 +1,8 @@
-import {withStyles, Button} from '@material-ui/core';
+import { Button } from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
 import React from "react";
-import {styled} from "@material-ui/core/styles";
-import {spacing} from "@material-ui/system";
+import {styled} from "@mui/material/styles";
+import {spacing} from "@mui/system";
 import {Link as RouterLink} from "react-router-dom";
 
 // The `withStyles()` higher-order component is injecting a `classes`

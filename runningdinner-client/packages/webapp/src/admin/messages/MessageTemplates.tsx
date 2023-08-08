@@ -1,5 +1,6 @@
 import React from "react";
-import {makeStyles, Box, Grid, Chip, Hidden} from "@material-ui/core";
+import { Box, Grid, Chip, Hidden } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
@@ -32,19 +33,19 @@ function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: M
       </Grid>
   );
   return (
-      <Grid container alignItems={"center"} justify={"flex-start"}>
-        <Hidden xsDown>
-          <Grid item>
-            <Box component={"span"} pr={1}>{t('mails_template_help')}: </Box>
-          </Grid>
-        </Hidden>
-        {messageTemplateNodes}
-        {showTemplatesHelpIcon &&
-          <Grid item>
-            <HelpIconTooltip title={<Paragraph i18n='admin:mails_template_help_description'/>} placement='right'/>
-          </Grid>
-        }
-      </Grid>
+    <Grid container alignItems={"center"} justifyContent={"flex-start"}>
+      <Hidden smDown>
+        <Grid item>
+          <Box component={"span"} pr={1}>{t('mails_template_help')}: </Box>
+        </Grid>
+      </Hidden>
+      {messageTemplateNodes}
+      {showTemplatesHelpIcon &&
+        <Grid item>
+          <HelpIconTooltip title={<Paragraph i18n='admin:mails_template_help_description'/>} placement='right'/>
+        </Grid>
+      }
+    </Grid>
   );
 }
 

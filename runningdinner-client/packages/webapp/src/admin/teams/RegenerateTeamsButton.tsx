@@ -1,5 +1,5 @@
-import { Box, Button } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { Box, Button } from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
 import {
   BaseAdminIdProps,
   HttpError,

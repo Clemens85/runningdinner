@@ -3,7 +3,7 @@ import {PageTitle, Span} from "../common/theme/typography/Tags";
 import Paragraph from "../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import {useParams} from "react-router-dom";
-import TextField from "@material-ui/core/TextField";
+import TextField from "@mui/material/TextField";
 import {
   getSelfAdminSessionDataFetchSelector,
   updateSelfTeamPartnerWish,
@@ -11,11 +11,11 @@ import {
   useSelfAdminSelector
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
-import {Box, Grid, useMediaQuery, useTheme} from '@material-ui/core';
+import {Box, Grid, useMediaQuery, useTheme} from '@mui/material';
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import useCommonStyles from "../common/theme/CommonStyles";
 import {useQuery} from "../common/hooks/QueryHook";
-import {Alert, AlertTitle} from "@material-ui/lab";
+import { Alert, AlertTitle } from '@mui/material';
 import { getDecodedQueryParam } from '../common/QueryParamDecoder';
 
 export default function SelfAdminManageTeamPartnerWishPage() {
@@ -54,7 +54,7 @@ function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdm
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
   const commonStyles = useCommonStyles();
 
   async function handleSubmit() {
@@ -97,7 +97,7 @@ function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdm
         </Grid>
       </Box>
       <Box my={3}>
-        <Grid container justify={"flex-end"} direction={"row"}>
+        <Grid container justifyContent={"flex-end"} direction={"row"}>
           <Grid item xs={isSmallDevice ? 12 : undefined}>
             <PrimaryButton onClick={handleSubmit}
                            className={isSmallDevice ? commonStyles.fullWidth : undefined}

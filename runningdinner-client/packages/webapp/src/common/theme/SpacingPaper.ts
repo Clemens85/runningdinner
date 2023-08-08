@@ -1,5 +1,5 @@
-import {Paper} from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
-import { spacing } from "@material-ui/system";
+import {Paper} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { spacing } from "@mui/system";
 
 export const SpacingPaper = styled(Paper)(spacing);

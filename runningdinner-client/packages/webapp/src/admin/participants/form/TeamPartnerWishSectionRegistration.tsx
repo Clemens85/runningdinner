@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   Box, Button, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, Grid, Radio,
   RadioGroup
-} from "@material-ui/core";
+} from "@mui/material";
 import FormTextField from "../../../common/input/FormTextField";
 import FormFieldset from "../../../common/theme/FormFieldset";
 import {Trans, useTranslation} from "react-i18next";
@@ -21,7 +21,7 @@ import Paragraph from "../../../common/theme/typography/Paragraph";
 import {SpacingGrid} from "../../../common/theme/SpacingGrid";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
 import {TeamPartnerWishFormInput} from "./TeamPartnerWishFormInput";
-import {Alert} from "@material-ui/lab";
+import { Alert } from '@mui/material';
 import {Fetch} from "../../../common/Fetch";
 import {useFormContext} from "react-hook-form";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";

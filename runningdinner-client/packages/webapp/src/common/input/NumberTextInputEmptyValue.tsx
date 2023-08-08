@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react'
-import TextField from "@material-ui/core/TextField";
+import TextField from "@mui/material/TextField";
 import {CallbackHandler, isStringEmpty} from "@runningdinner/shared";
 import {Controller, useFormContext} from "react-hook-form";
-import { BaseTextFieldProps } from '@material-ui/core';
+import { BaseTextFieldProps } from '@mui/material';
 
 
 export interface NumberFormTextFieldEmptyValueAllowedProps extends BaseTextFieldProps {

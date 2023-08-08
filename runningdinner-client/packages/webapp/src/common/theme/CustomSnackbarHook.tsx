@@ -1,7 +1,7 @@
 import { OptionsObject, useSnackbar, VariantType } from "notistack";
 import React, { ReactNode } from "react";
-import IconButton from "@material-ui/core/IconButton";
-import { CloseRounded } from "@material-ui/icons";
+import IconButton from "@mui/material/IconButton";
+import { CloseRounded } from "@mui/icons-material";
 import omit from 'lodash/omit';
 export interface CustomSnackbarOptions extends OptionsObject {
   showCloseButton?: boolean;
@@ -86,11 +86,9 @@ function newSnackbarOptions(variant?: VariantType, incomingOptions?: CustomSnack
 
 function CloseAction(key: string) {
   const { closeSnackbar } = useSnackbar();
-  return (
-      <>
-        <IconButton aria-label="close" onClick={() => closeSnackbar(key)}>
-          <CloseRounded style={{ color: 'white' }} />
-        </IconButton>
-      </>
-  );
+  return <>
+    <IconButton aria-label="close" onClick={() => closeSnackbar(key)} size="large">
+      <CloseRounded style={{ color: 'white' }} />
+    </IconButton>
+  </>;
 }

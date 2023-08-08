@@ -41,7 +41,7 @@ import {Trans, useTranslation} from "react-i18next";
 import DateFnsUtils from "@date-io/date-fns";
 import useDatePickerLocale from "../../common/date/DatePickerLocaleHook";
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { BasicSettingsChangeDialog, BasicSettingsChangeDialogData } from './BasicSettingsChangeDialog';
@@ -50,7 +50,7 @@ import { PublicDinnerSettingsFormControl } from '../../common/dinnersettings/Pub
 import useCommonStyles from '../../common/theme/CommonStyles';
 import SecondaryButton from '../../common/theme/SecondaryButton';
 import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { Alert, AlertTitle } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import FormCheckbox from '../../common/input/FormCheckbox';
 import {AfterPartyLocationToggleButton} from "../../common/dinnersettings/AfterPartyLocationToggleButton";
@@ -81,7 +81,7 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
 
   const {t} = useTranslation(['common', 'admin']);
   const theme = useTheme();
-  const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
   const commonStyles = useCommonStyles();
 
   const dispatch = useDispatch();

@@ -1,5 +1,5 @@
 import React from 'react';
-import {useMediaQuery} from "@material-ui/core";
+import {useMediaQuery} from "@mui/material";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 import {LandingRoute} from "./LangingRoute";
 import {useTranslation} from "react-i18next";

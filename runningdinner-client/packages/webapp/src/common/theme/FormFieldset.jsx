@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Divider, Box } from "@material-ui/core";
+import { Typography, Divider, Box } from "@mui/material";
 
 export default function FormFieldset(props) {
   return (

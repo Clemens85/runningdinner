@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Grid, DialogContent, Dialog } from '@material-ui/core';
+import { Grid, DialogContent, Dialog } from '@mui/material';
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import {findEntityById} from "@runningdinner/shared";
 import cloneDeep from 'lodash/cloneDeep';
@@ -7,7 +7,7 @@ import filter from 'lodash/filter';
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {useTranslation} from "react-i18next";
 import SelectableEntity from "../common/SelectableEntity";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 
 export const SingleSelectionDialog = ({selectableEntities, customSelectedEntities, open, onClose}) => {
 

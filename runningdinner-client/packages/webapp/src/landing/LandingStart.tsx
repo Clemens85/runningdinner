@@ -1,11 +1,11 @@
 import React from 'react';
 import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
-import {Box, Container, Typography, useMediaQuery, useTheme} from "@material-ui/core";
+import {Box, Container, Typography, useMediaQuery, useTheme} from "@mui/material";
 import { TeaserCard } from './TeaserCard';
 import {PrimaryRouterButton} from "../common/theme/PrimaryButton";
 import {Link as RouterLink} from "react-router-dom";
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import {useLandingStyles} from "./LandingStyles";
 import {
   IMPRESSUM_PATH,
@@ -26,18 +26,18 @@ import selfServiceImg from "./images/selfservice-team-host.png";
 import registrationImg from "./images/registration.png";
 import dashboardImg from "./images/dashboard.png";
 import useElementSize from '../common/hooks/ElementSizeHook';
-import LocalBarIcon from '@material-ui/icons/LocalBar';
-import FastfoodIcon from '@material-ui/icons/Fastfood';
-import EventSeatIcon from '@material-ui/icons/EventSeat';
-import GroupIcon from '@material-ui/icons/Group';
-import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
+import FastfoodIcon from '@mui/icons-material/Fastfood';
+import EventSeatIcon from '@mui/icons-material/EventSeat';
+import GroupIcon from '@mui/icons-material/Group';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 
 export function LandingStart() {
 
   const {t} = useTranslation(["landing", "common"]);
 
   const theme = useTheme();
-  const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
   const landingStyles = useLandingStyles();
 
   const [imageWidth, setImageWidth] = React.useState(250);

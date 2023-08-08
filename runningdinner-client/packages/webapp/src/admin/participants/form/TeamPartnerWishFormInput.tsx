@@ -1,5 +1,5 @@
 import {useTranslation} from "react-i18next";
-import {Grid} from "@material-ui/core";
+import {Grid} from "@mui/material";
 import FormTextField from "../../../common/input/FormTextField";
 import React from "react";
 

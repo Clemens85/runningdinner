@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { ParticipantsListHeader }  from "./list/ParticipantsListHeader";
 import {useParams} from "react-router-dom";
 import ParticipantForm from "./form/ParticipantForm";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import {StickyActionButton} from "../../common/theme/StickyActionButton";
 import NumberOfParticipants from "./list/NumberOfParticipants";
 import ParticipantsListInfo from "./list/ParticipantsListInfo";

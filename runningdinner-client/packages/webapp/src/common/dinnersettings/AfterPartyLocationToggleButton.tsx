@@ -2,7 +2,7 @@ import React from 'react';
 import {SpacingGrid} from "../theme/SpacingGrid";
 import SecondaryButton from "../theme/SecondaryButton";
 import {useTranslation} from "react-i18next";
-import {SpacingProps} from "@material-ui/system";
+import {SpacingProps} from "@mui/system";
 
 type AfterPartyLocationToggleButtonProps = {
   afterPartyLocationEnabled: boolean;

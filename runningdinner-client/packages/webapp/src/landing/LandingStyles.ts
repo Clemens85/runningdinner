@@ -1,4 +1,4 @@
-import {makeStyles} from "@material-ui/core";
+import makeStyles from '@mui/styles/makeStyles';
 import bannerImg from "./images/banner-pan.jpg";
 
 export const useLandingStyles = makeStyles((theme) => ({
@@ -45,7 +45,7 @@ export const usePaymentStyles = makeStyles((theme) => ({
   },
   cardHeader: {
     backgroundColor:
-      theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
+      theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
   },
   cardPricing: {
     display: 'flex',

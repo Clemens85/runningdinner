@@ -11,7 +11,7 @@ import {
   PublicRunningDinner, useBackendIssueHandler
 } from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
-import {Alert, AlertTitle} from "@material-ui/lab";
+import { Alert, AlertTitle } from '@mui/material';
 import LinkExtern from "../common/theme/LinkExtern";
 
 export function ParticipantActivationPage() {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from "react-router-dom";
-import { Container } from "@material-ui/core";
+import { Container } from "@mui/material";
 import AdminMenu from "./AdminMenu";
 import AdminRoute from "./AdminRoute";
 import {Provider, useDispatch} from 'react-redux';

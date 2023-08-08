@@ -1,6 +1,6 @@
 import React from "react";
-import {IconButton, Menu, MenuItem} from "@material-ui/core";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import {IconButton, Menu, MenuItem} from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {CallbackHandler, isStringNotEmpty} from "@runningdinner/shared";
 
 export interface ContextMenuIconProps {
@@ -30,28 +30,27 @@ export default function ContextMenuIcon({entries, dataTestId}: ContextMenuIconPr
     entry.onClick();
   };
 
-  return (
-    <>
-      <IconButton
-          aria-label="more"
-          aria-controls="menu"
-          aria-haspopup="true"
-          onClick={handleOpenMenu}
-          data-testid={isStringNotEmpty(dataTestId) ? dataTestId : ""}>
-        <MoreVertIcon />
-      </IconButton>
-      <Menu
-          id="menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={open}
-          onClose={handleCloseMenu}>
-        {entries.map((entry) => (
-            <MenuItem key={entry.label} onClick={() => handleEntryClicked(entry)} data-testid={`context-menu-entry-${entry.label}`}>
-              {entry.label}
-            </MenuItem>
-        ))}
-      </Menu>
-    </>
-  );
+  return <>
+    <IconButton
+      aria-label="more"
+      aria-controls="menu"
+      aria-haspopup="true"
+      onClick={handleOpenMenu}
+      data-testid={isStringNotEmpty(dataTestId) ? dataTestId : ""}
+      size="large">
+      <MoreVertIcon />
+    </IconButton>
+    <Menu
+        id="menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={open}
+        onClose={handleCloseMenu}>
+      {entries.map((entry) => (
+          <MenuItem key={entry.label} onClick={() => handleEntryClicked(entry)} data-testid={`context-menu-entry-${entry.label}`}>
+            {entry.label}
+          </MenuItem>
+      ))}
+    </Menu>
+  </>;
 }

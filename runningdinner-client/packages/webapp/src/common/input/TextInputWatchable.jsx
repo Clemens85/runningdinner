@@ -1,6 +1,6 @@
 import React from 'react';
 import {useFormContext} from "react-hook-form";
-import TextField from "@material-ui/core/TextField";
+import TextField from "@mui/material/TextField";
 
 const TextInputWatchable = ({name, label, onChange, ...other}) => {
 

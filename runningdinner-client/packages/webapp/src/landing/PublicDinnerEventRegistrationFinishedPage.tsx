@@ -4,7 +4,7 @@ import {Fetch} from "../common/Fetch";
 import {BasePublicDinnerProps, findPublicRunningDinnerByPublicId, isStringNotEmpty} from "@runningdinner/shared";
 import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
-import {Alert, AlertTitle} from "@material-ui/lab";
+import { Alert, AlertTitle } from '@mui/material';
 import LinkExtern from "../common/theme/LinkExtern";
 
 

@@ -1,6 +1,17 @@
 import React from 'react';
 import WizardMenuNotificationBar from "./WizardMenuNotificationBar";
-import {AppBar, Hidden, LinearProgress, List, ListItem, ListItemIcon, ListItemText, makeStyles, Toolbar, Typography} from "@material-ui/core";
+import {
+  AppBar,
+  Hidden,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import {useWizardSelector} from "@runningdinner/shared/";
 import {
   getAdministrationUrlSelector,
@@ -18,12 +29,12 @@ import {
   ParticipantPreviewNavigationStep,
   PublicRegistrationNavigationStep, SummaryNavigationStep, useBackendIssueHandler
 } from "@runningdinner/shared";
-import EditIcon from '@material-ui/icons/Edit';
-import SettingsIcon from '@material-ui/icons/Settings';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import ListIcon from '@material-ui/icons/List';
-import DoneIcon from '@material-ui/icons/Done';
-import PeopleIcon from '@material-ui/icons/People';
+import EditIcon from '@mui/icons-material/Edit';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import ListIcon from '@mui/icons-material/List';
+import DoneIcon from '@mui/icons-material/Done';
+import PeopleIcon from '@mui/icons-material/People';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import useWizardNavigation from "./WizardNavigationHook";
 import {FeedbackButtonContainerRightAligned} from "../common/feedback/FeedbackButton";
@@ -44,7 +55,7 @@ const useMenuStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       minWidth: "36px",
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       minWidth: "24px",
     },
     color: 'white'
@@ -140,14 +151,14 @@ function NavigationLinkList() {
             <ListItemIcon className={menuClasses.navIcon}>
               {navigationStepIconMap[value]}
             </ListItemIcon>
-            <Hidden smDown>
+            <Hidden mdDown>
               { value === currentNavigationStep.value && <ListItemText primary={t(label)} classes={{ primary: listItemTextClasses.primary}} /> }
               { value !== currentNavigationStep.value && <ListItemText primary={t(label)} /> }
             </Hidden>
           </ListItem>
       ))}
     </List>
-  )
+  );
 }
 
 function WizardProgressBar() {

@@ -22,7 +22,8 @@ import {
   useGeocoder,
   useTeamName
 } from "@runningdinner/shared";
-import {Box, LinearProgress, makeStyles, Typography} from '@material-ui/core';
+import { Box, LinearProgress, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {SpacingGrid} from '../theme/SpacingGrid';
 import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
@@ -31,8 +32,8 @@ import clsx from "clsx";
 import {GoogleMap, InfoWindow, Marker, Polyline} from '@react-google-maps/api';
 import {LoadScript} from "@react-google-maps/api";
 import { cloneDeep } from 'lodash';
-import Alert from "@material-ui/lab/Alert";
-import {AlertTitle} from "@material-ui/lab";
+import Alert from '@mui/material/Alert';
+import { AlertTitle } from '@mui/material';
 import {useGeoPosition} from "../hooks/GeoPositionHook";
 import {useDynamicFullscreenHeight} from "../hooks/DynamicFullscreenHeightHook";
 import {Helmet} from "react-helmet-async";

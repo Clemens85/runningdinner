@@ -1,7 +1,7 @@
 import React from 'react'
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { Alert, AlertTitle } from '@mui/material';
 import {isStringNotEmpty, useDisclosure, useParticipantsListInfo} from "@runningdinner/shared";
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 export default function ParticipantsListInfo(props) {
 

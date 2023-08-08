@@ -9,7 +9,7 @@ import {
   CardContent,
   Typography,
   CardActions
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   BasePublicDinnerProps,
   CallbackHandler,

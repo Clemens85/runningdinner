@@ -1,9 +1,6 @@
 import {useTranslation} from "react-i18next";
-import {
-  Dialog,
-  DialogContent,
-  Box, DialogActions, useTheme, useMediaQuery, makeStyles,
-} from "@material-ui/core";
+import { Dialog, DialogContent, Box, DialogActions, useTheme, useMediaQuery } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React from "react";
 import {Span} from "../../../common/theme/typography/Tags";
@@ -17,7 +14,7 @@ import {
   updateMatchingParticipantTeamPartnerWishAction
 } from "./TeamPartnerWishAction";
 import {SecondaryButtonAsync} from "../../../common/theme/SecondaryButtonAsync";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import useCommonStyles from "../../../common/theme/CommonStyles";
 import {getFullname, isClosedDinner, CONSTANTS} from "@runningdinner/shared";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
@@ -154,14 +151,14 @@ function DialogButtons({sendInvitationButton, createNewParticipantButton, update
   const renderButtonsMobile = () => {
     return (
       <Box p={1}>
-        <Grid container diretion="column" justify="space-evenly" alignItems="center" spacing={1}>
+        <Grid container diretion="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
           { createNewParticipantButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ createNewParticipantButton }</Grid> }
           { sendInvitationButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ sendInvitationButton }</Grid> }
           { updateTeamPartnerWishButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ updateTeamPartnerWishButton }</Grid> }
           <Grid item xs={12} className={commonStyles.textAlignCenter}>{ cancelButton }</Grid>
         </Grid>
       </Box>
-    )
+    );
   };
 
   if (isDesktopView) {

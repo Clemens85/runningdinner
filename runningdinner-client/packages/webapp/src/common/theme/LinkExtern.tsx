@@ -1,4 +1,4 @@
-import {Link, Typography} from "@material-ui/core";
+import {Link, Typography} from "@mui/material";
 import React from "react";
 import {isStringNotEmpty, Parent} from "@runningdinner/shared";
 

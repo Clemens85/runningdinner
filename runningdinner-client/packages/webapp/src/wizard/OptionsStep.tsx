@@ -26,9 +26,9 @@ import {useDispatch} from "react-redux";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import FormCheckbox from "../common/input/FormCheckbox";
 import FormSelect from "../common/input/FormSelect";
-import {Button, IconButton, MenuItem } from '@material-ui/core';
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from '@material-ui/icons/Delete';
+import {Button, IconButton, MenuItem } from '@mui/material';
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function OptionsStep() {
   const {t} = useTranslation(['wizard', 'common']);
@@ -158,33 +158,37 @@ function MealSettings({runningDinnerDate}: MealSettingsProps) {
   }
 
   return (
-      <SpacingGrid container>
-        <SpacingGrid item xs={12}>
-          <Subtitle i18n={"common:meals"}/>
-          <Span i18n={"wizard:meals_help"}/>
-        </SpacingGrid>
-        <SpacingGrid item xs={12}>
-          {fields.map((field, index) => (
-              <SpacingGrid container mt={3} key={field.key}>
-                <SpacingGrid item xs={11}>
-                  <FormTextField name={`meals[${index}].label`}
-                                 variant="outlined"
-                                 fullWidth
-                                 label=""
-                                 defaultValue={field.label}/>
-                </SpacingGrid>
-                { index + 1 >= fields.length && <SpacingGrid item xs={1}>
-                                                  <IconButton aria-label="delete" color="secondary" onClick={() => handleRemoveMeal(index)}>
-                                                    <DeleteIcon fontSize={"large"} />
-                                                  </IconButton>
-                                                </SpacingGrid> }
-            </SpacingGrid>
-          ))}
-        </SpacingGrid>
-        <SpacingGrid container item xs={12} mt={2}>
-          <Button color={"primary"} startIcon={<AddIcon/>} onClick={handleAddMeal} style={{ paddingLeft: '0'}}>{t('add')}</Button>
-        </SpacingGrid>
-
+    <SpacingGrid container>
+      <SpacingGrid item xs={12}>
+        <Subtitle i18n={"common:meals"}/>
+        <Span i18n={"wizard:meals_help"}/>
       </SpacingGrid>
-  )
+      <SpacingGrid item xs={12}>
+        {fields.map((field, index) => (
+            <SpacingGrid container mt={3} key={field.key}>
+              <SpacingGrid item xs={11}>
+                <FormTextField name={`meals[${index}].label`}
+                               variant="outlined"
+                               fullWidth
+                               label=""
+                               defaultValue={field.label}/>
+              </SpacingGrid>
+              { index + 1 >= fields.length && <SpacingGrid item xs={1}>
+                                                <IconButton
+                                                  aria-label="delete"
+                                                  color="secondary"
+                                                  onClick={() => handleRemoveMeal(index)}
+                                                  size="large">
+                                                  <DeleteIcon fontSize={"large"} />
+                                                </IconButton>
+                                              </SpacingGrid> }
+          </SpacingGrid>
+        ))}
+      </SpacingGrid>
+      <SpacingGrid container item xs={12} mt={2}>
+        <Button color={"primary"} startIcon={<AddIcon/>} onClick={handleAddMeal} style={{ paddingLeft: '0'}}>{t('add')}</Button>
+      </SpacingGrid>
+
+    </SpacingGrid>
+  );
 }

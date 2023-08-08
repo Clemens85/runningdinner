@@ -1,5 +1,6 @@
-import {makeStyles} from "@material-ui/core";
-import {Alert, AlertProps} from "@material-ui/lab";
+import makeStyles from '@mui/styles/makeStyles';
+import { Alert } from '@mui/material';
+import { AlertProps } from '@mui/lab';
 import React from "react";
 
 const useAlertStyles = makeStyles(() => ({

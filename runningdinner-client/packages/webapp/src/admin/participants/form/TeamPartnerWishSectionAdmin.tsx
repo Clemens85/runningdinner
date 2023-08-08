@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Grid} from "@material-ui/core";
+import {Box, Grid} from "@mui/material";
 import FormFieldset from "../../../common/theme/FormFieldset";
 import {TeamPartnerWishFormInput} from "./TeamPartnerWishFormInput";
 import {Trans, useTranslation} from "react-i18next";

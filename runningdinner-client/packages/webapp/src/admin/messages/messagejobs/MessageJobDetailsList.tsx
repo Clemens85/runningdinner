@@ -41,7 +41,7 @@ import {
   TableContainer,
   TableHead,
   TableRow
-} from "@material-ui/core";
+} from "@mui/material";
 import {BackToListButton, useMasterDetailView} from "../../../common/hooks/MasterDetailViewHook";
 import {useTranslation} from "react-i18next";
 import toLower from "lodash/toLower";
@@ -180,7 +180,7 @@ function MessageTasksTable({messageTasks, onSelectMessageTask, selectedMessageTa
       <TableRow key={messageTask.id} hover className={classes.cursorPointer}
                 onClick={() => onSelectMessageTask(messageTask)}
                 selected={isSameEntity(messageTask, selectedMessageTask)}>
-        <Hidden xsDown>
+        <Hidden smDown>
           <TableCell><MessageJobStatus messageJobOrTask={messageTask} /></TableCell>
           <TableCell>{messageTask.recipientEmail}</TableCell>
         </Hidden>
@@ -193,10 +193,10 @@ function MessageTasksTable({messageTasks, onSelectMessageTask, selectedMessageTa
           </TableCell>
         </Hidden>
         <TableCell>{formatLocalDateWithSeconds(messageTask.sendingStartTime)}</TableCell>
-        <Hidden xsDown>
+        <Hidden smDown>
           <TableCell>{formatLocalDateWithSeconds(messageTask.sendingEndTime)}</TableCell>
         </Hidden>
-        <Hidden xsDown>
+        <Hidden smDown>
           <TableCell><MessageContentView messageTask={messageTask} truncateMessageContentToNumChars={48} /></TableCell>
         </Hidden>
       </TableRow>
@@ -207,7 +207,7 @@ function MessageTasksTable({messageTasks, onSelectMessageTask, selectedMessageTa
       <Table size={"small"}>
         <TableHead>
           <TableRow>
-            <Hidden xsDown>
+            <Hidden smDown>
               <TableCell>Status</TableCell>
               <TableCell>{t('common:recipient')}</TableCell>
             </Hidden>
@@ -215,10 +215,10 @@ function MessageTasksTable({messageTasks, onSelectMessageTask, selectedMessageTa
               <TableCell>&nbsp;</TableCell>
             </Hidden>
             <TableCell>{t('admin:sending_started_at_text')}</TableCell>
-            <Hidden xsDown>
+            <Hidden smDown>
               <TableCell>{t('admin:sending_finished_at_text')}</TableCell>
             </Hidden>
-            <Hidden xsDown>
+            <Hidden smDown>
               <TableCell>{t('common:content')}</TableCell>
             </Hidden>
           </TableRow>
@@ -282,7 +282,7 @@ function MessageTaskDetailsView({messageTask, onReSendMessageTask}: MessageTaskD
           </Grid>
         </Box>
         <Box mt={2}>
-          <Grid container justify={"flex-end"}>
+          <Grid container justifyContent={"flex-end"}>
             <Grid item>
               <SecondaryButtonAsync onClick={onReSendMessageTask} color="primary" variant={"outlined"} size={"small"}>
                 {t('admin:send_again')}...
@@ -298,7 +298,7 @@ function MessageTaskDetailsView({messageTask, onReSendMessageTask}: MessageTaskD
 
 function MessageTaskDetailsRow({label, value}: LabelValue) {
   return (
-    <Grid container justify={"space-between"}>
+    <Grid container justifyContent={"space-between"}>
       <Grid item>
         <span>{label}</span>
       </Grid>

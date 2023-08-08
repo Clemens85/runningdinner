@@ -1,7 +1,8 @@
 import React from "react";
-import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
-import {withStyles, Tooltip, styled, TooltipProps} from "@material-ui/core";
-import { spacing } from "@material-ui/system";
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import { Tooltip, styled, TooltipProps } from "@mui/material";
+import withStyles from '@mui/styles/withStyles';
+import { spacing } from "@mui/system";
 
 const HtmlTooltip = withStyles((theme) => ({
   tooltip: {

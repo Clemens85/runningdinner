@@ -1,7 +1,7 @@
 import {useTranslation} from "react-i18next";
 import {getTeamPartnerOptionOfTeam, hasAllTeamMembersSameTeamPartnerWish, Team} from "@runningdinner/shared";
-import {Tooltip} from "@material-ui/core";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import {Tooltip} from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import React from "react";
 import { SpacingGrid } from "../../common/theme/SpacingGrid";
 

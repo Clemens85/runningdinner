@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Button, Grid, Hidden, Paper} from "@material-ui/core";
+import {Box, Button, Grid, Hidden, Paper} from "@mui/material";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import FormFieldset from "../../common/theme/FormFieldset";
@@ -9,7 +9,7 @@ import LinkAction from "../../common/theme/LinkAction";
 import {TeamMemberCancelDialog, TeamMemberCancelDialogResult} from "./cancellation/TeamMemberCancelDialog";
 import ContextMenuIcon from "../../common/contextmenu/ContextMenuIcon";
 import {CancelledTeamMember} from "./CancelledTeamMember";
-import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import {TeamCancelDialog} from "./cancellation/TeamCancelDialog";
 import {
   BaseAdminIdProps,
@@ -219,25 +219,25 @@ function TeamMember({teamMember, adminId, team, passedTeamMemberToCancel, onUpda
   const numSeatsDisplay = numSeats > -1 ? t('participant_seats', { numSeats }) : t('no_information');
 
   return (
-      <Grid container alignItems="center">
-        <Grid item xs={6} sm={4}><Fullname {...teamMember}/></Grid>
-        <Grid item xs={2} sm={2}>{numSeatsDisplay}</Grid>
-        <Hidden xsDown>
-          <Grid item xs={3} sm={2}>
-            <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{'undefined': 'unknown'}}/>
-          </Grid>
-        </Hidden>
-        <Grid item xs={4} sm={4}>
-          <Box justifyContent="flex-end">
-            <Button color="secondary" onClick={() => openTeamMemberCancelDialog()}>{t('admin:participant_cancel')}</Button>
-          </Box>
+    <Grid container alignItems="center">
+      <Grid item xs={6} sm={4}><Fullname {...teamMember}/></Grid>
+      <Grid item xs={2} sm={2}>{numSeatsDisplay}</Grid>
+      <Hidden smDown>
+        <Grid item xs={3} sm={2}>
+          <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{'undefined': 'unknown'}}/>
         </Grid>
-        { isTeamMemberCancelDialogOpen && <TeamMemberCancelDialog isOpen={isTeamMemberCancelDialogOpen}
-                                                                  onClose={handleCloseTeamMemberCancelDialog}
-                                                                  team={team}
-                                                                  adminId={adminId}
-                                                                  teamMemberToCancel={teamMember} /> }
+      </Hidden>
+      <Grid item xs={4} sm={4}>
+        <Box justifyContent="flex-end">
+          <Button color="secondary" onClick={() => openTeamMemberCancelDialog()}>{t('admin:participant_cancel')}</Button>
+        </Box>
       </Grid>
+      { isTeamMemberCancelDialogOpen && <TeamMemberCancelDialog isOpen={isTeamMemberCancelDialogOpen}
+                                                                onClose={handleCloseTeamMemberCancelDialog}
+                                                                team={team}
+                                                                adminId={adminId}
+                                                                teamMemberToCancel={teamMember} /> }
+    </Grid>
   );
 }
 

@@ -27,7 +27,7 @@ import MealTimeEditControl from "../admin/dashboard/MealTimeEditControl";
 import { cloneDeep } from 'lodash';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {FormProvider, useForm} from "react-hook-form";
-import {useMediaQuery, useTheme} from "@material-ui/core";
+import {useMediaQuery, useTheme} from "@mui/material";
 import { AfterPartyLocationToggleButton } from '../common/dinnersettings/AfterPartyLocationToggleButton';
 import {AfterPartyLocationFormControl} from "../common/dinnersettings/AfterPartyLocationFormControl";
 
@@ -41,7 +41,7 @@ export default function MealTimesStep() {
   const isClosedDinner = useWizardSelector(isClosedDinnerSelector);
 
   const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
   const {meals} = options;
 

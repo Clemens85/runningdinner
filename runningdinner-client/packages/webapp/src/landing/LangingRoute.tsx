@@ -15,7 +15,7 @@ import { PublicDinnerEventRegistrationFinishedPage } from "./PublicDinnerEventRe
 import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 import {NewsPage} from "./news/NewsPage";
 import {ParticipantActivationPage} from "./ParticipantActivationPage";
-import {Container} from "@material-ui/core";
+import {Container} from "@mui/material";
 import { LandingBanner } from "./LandingBanner";
 
 export function LandingRoute() {

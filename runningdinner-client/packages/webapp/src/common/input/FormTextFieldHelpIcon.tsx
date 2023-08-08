@@ -1,6 +1,6 @@
 import React from 'react';
-import {Box, styled} from '@material-ui/core';
-import {spacing} from "@material-ui/system";
+import {Box, styled} from '@mui/material';
+import {spacing} from "@mui/system";
 
 export interface FormTextFieldHelpIconProps {
   formTextField: React.ReactNode;

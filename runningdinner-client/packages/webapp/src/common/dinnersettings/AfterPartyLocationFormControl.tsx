@@ -1,6 +1,6 @@
 import {useTranslation} from "react-i18next";
 import {SpacingGrid} from "../theme/SpacingGrid";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import {Span} from "../theme/typography/Tags";
 import FormTextField from "../input/FormTextField";
 import FormTimePicker from "../input/FormTimePicker";

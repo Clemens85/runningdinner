@@ -22,10 +22,10 @@ import {SpacingGrid} from "../common/theme/SpacingGrid";
 import FormTextField from "../common/input/FormTextField";
 import WizardButtons from "./WizardButtons";
 import Paragraph from "../common/theme/typography/Paragraph";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import FormCheckbox from "../common/input/FormCheckbox";
 import LinkExtern from "../common/theme/LinkExtern";
-import {Box} from "@material-ui/core";
+import {Box} from "@mui/material";
 
 export default function FinishStep() {
 

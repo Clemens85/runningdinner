@@ -1,5 +1,5 @@
 import React from 'react'
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 
 export default class OverviewItem extends React.Component {
 

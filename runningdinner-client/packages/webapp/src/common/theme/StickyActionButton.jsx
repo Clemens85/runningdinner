@@ -1,6 +1,8 @@
-import AddIcon from "@material-ui/icons/Add";
+import AddIcon from "@mui/icons-material/Add";
 import React from "react";
-import {makeStyles, Fab} from "@material-ui/core";
+import { Fab } from "@mui/material";
+
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
   createParticipantButton: {

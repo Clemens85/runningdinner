@@ -2,7 +2,7 @@ import React from 'react';
 import {Trans, useTranslation} from "react-i18next";
 import {DialogTitleCloseable} from "../theme/DialogTitleCloseable";
 import {Span} from "../theme/typography/Tags";
-import {Box, Dialog, DialogContent} from "@material-ui/core";
+import {Box, Dialog, DialogContent} from "@mui/material";
 import {
   CallbackHandler,
   Feedback,
@@ -13,7 +13,7 @@ import {
 import DialogActionsPanel from "../theme/DialogActionsPanel";
 import {useNotificationHttpError} from "../NotificationHttpErrorHook";
 import {FormProvider, useForm} from "react-hook-form";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import FormTextField from "../input/FormTextField";
 import LinkExtern from "../theme/LinkExtern";
 import {IMPRESSUM_PATH} from "../mainnavigation/NavigationPaths";

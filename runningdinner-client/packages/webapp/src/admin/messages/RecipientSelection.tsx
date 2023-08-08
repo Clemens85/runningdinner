@@ -1,6 +1,6 @@
 import React from "react";
-import {Box, IconButton, LinearProgress, MenuItem, Typography} from "@material-ui/core";
-import EditIcon from '@material-ui/icons/Edit';
+import {Box, IconButton, LinearProgress, MenuItem, Typography} from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
 import FormSelect from "../../common/input/FormSelect";
 import {SingleSelectionDialog} from "./SingleSelectionDialog";
 import {
@@ -118,14 +118,15 @@ function SelectionHelperText({messageType, currentSelection, customSelectedEntit
         <SmallTitle key={entity.id}>{getRecipientName(entity)}</SmallTitle>
     );
     const label = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? t('admin:participant_selection_single_selection_text') : t('admin:team_selection_single_selection_text');
-    return (
-        <>
-          <Typography variant={"subtitle2"}>
-            {label} <IconButton onClick={onEditCustomSelectedEntities} aria-label={t("common:change")}><EditIcon /></IconButton>
-          </Typography>
-          {customSelectEntitiesList}
-        </>
-    );
+    return <>
+      <Typography variant={"subtitle2"}>
+        {label} <IconButton
+        onClick={onEditCustomSelectedEntities}
+        aria-label={t("common:change")}
+        size="large"><EditIcon /></IconButton>
+      </Typography>
+      {customSelectEntitiesList}
+    </>;
   }
 
   if (messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS) {

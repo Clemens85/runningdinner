@@ -1,5 +1,6 @@
 import React from "react";
-import { ButtonGroup, Button, makeStyles } from "@material-ui/core";
+import { ButtonGroup, Button } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import {useTranslation} from "react-i18next";
 import clsx from "clsx";
 

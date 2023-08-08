@@ -3,7 +3,7 @@ import {
   Dialog,
   DialogContent,
   Box,
-} from "@material-ui/core";
+} from "@mui/material";
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React from "react";
 import {

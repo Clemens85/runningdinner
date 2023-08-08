@@ -3,7 +3,7 @@ import {PageTitle} from "../../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {useNewsItems} from "./NewsItemsHook";
 import {NewsCard} from "./NewsCard";
-import {Grid} from '@material-ui/core';
+import {Grid} from '@mui/material';
 
 export function NewsPage() {
 

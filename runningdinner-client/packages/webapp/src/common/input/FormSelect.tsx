@@ -1,8 +1,8 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
-import {FormControl, InputLabel, FormHelperText, Select, SelectProps, styled} from "@material-ui/core";
+import {FormControl, InputLabel, FormHelperText, Select, SelectProps, styled} from "@mui/material";
 import {isStringNotEmpty} from "@runningdinner/shared";
-import {spacing} from "@material-ui/system";
+import {spacing} from "@mui/system";
 
 export interface SelectWatchableProps extends SelectProps {
   name: string;

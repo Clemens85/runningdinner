@@ -1,6 +1,6 @@
 import React from 'react';
 import WizardMenu from './WizardMenu';
-import {Container, Grid} from "@material-ui/core";
+import {Container, Grid} from "@mui/material";
 import {Route, Routes} from "react-router-dom";
 import BasicDetailsStep from "./BasicDetailsStep";
 import OptionsStep from "./OptionsStep";

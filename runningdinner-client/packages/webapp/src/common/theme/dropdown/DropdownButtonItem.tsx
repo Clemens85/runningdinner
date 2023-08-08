@@ -1,5 +1,5 @@
 import React from 'react';
-import {MenuItem, MenuItemProps} from "@material-ui/core";
+import {MenuItem, MenuItemProps} from "@mui/material";
 import { DropdownButtonContext } from './DropdownButton';
 
 // export interface DropdownButtonItemProps extends MenuItemProps {

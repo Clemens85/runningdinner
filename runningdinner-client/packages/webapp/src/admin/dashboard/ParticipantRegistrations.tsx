@@ -19,7 +19,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Typography
-} from "@material-ui/core";
+} from "@mui/material";
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
 import {useDispatch} from "react-redux";
 import {FetchStatus} from "@runningdinner/shared";
@@ -28,7 +28,7 @@ import LinkAction from "../../common/theme/LinkAction";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
-import DoneIcon from "@material-ui/icons/Done";
+import DoneIcon from "@mui/icons-material/Done";
 import {useAdminNavigation} from "../AdminNavigationHook";
 import useCommonStyles from "../../common/theme/CommonStyles";
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
@@ -126,7 +126,7 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
                     secondary={renderParticipantActivityDetails()} />
       { relatedParticipantNotActivated ?
         <ListItemSecondaryAction>
-          <Hidden smDown>{renderShowConfirmSubscriptionActivationDialogButton()}</Hidden>
+          <Hidden mdDown>{renderShowConfirmSubscriptionActivationDialogButton()}</Hidden>
         </ListItemSecondaryAction> :
         <DoneIcon color={"primary"} />
       }

@@ -6,7 +6,7 @@ import {
   MenuItem,
   Box,
   Select,
-} from "@material-ui/core";
+} from "@mui/material";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import React, {useState} from "react";
 import Paragraph from "../../common/theme/typography/Paragraph";
@@ -14,7 +14,7 @@ import {findEntityById, getFullname, isTeamPartnerWishRegistration, updateTeamHo
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
-import Alert from "@material-ui/lab/Alert";
+import Alert from '@mui/material/Alert';
 
 
 export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHostChanged}) => {

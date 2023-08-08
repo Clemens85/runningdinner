@@ -1,5 +1,5 @@
 import {RefObject} from "react";
-import {useMediaQuery, useTheme} from "@material-ui/core";
+import {useMediaQuery, useTheme} from "@mui/material";
 import { useElementPosition } from "./ElementPositionHook";
 import { useWindowSize } from "./WindowSizeHook";
 
@@ -10,7 +10,7 @@ export function useDynamicFullscreenHeight(containerRef: RefObject<HTMLElement>,
   const {innerHeight} = useWindowSize();
   const { top } = useElementPosition(containerRef);
   const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
   let resultHeight = innerHeight && top && !isSmallDevice ? innerHeight - top - browserOffset : minHeight;
   if (resultHeight < minHeight) {

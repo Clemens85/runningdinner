@@ -1,7 +1,7 @@
 import React from 'react';
 import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
-import {Box, Grid} from "@material-ui/core";
+import {Box, Grid} from "@mui/material";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {DEMO_WIZARD_ROOT_PATH, WIZARD_ROOT_PATH} from "../common/mainnavigation/NavigationPaths";
 import { TeaserCard } from './TeaserCard';

@@ -6,7 +6,7 @@ import {
   RegistrationDataCollection
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
-import {Dialog, DialogContent} from "@material-ui/core";
+import {Dialog, DialogContent} from "@mui/material";
 import {DialogTitleCloseable} from "../common/theme/DialogTitleCloseable";
 import DialogActionsPanel from "../common/theme/DialogActionsPanel";
 import React from "react";

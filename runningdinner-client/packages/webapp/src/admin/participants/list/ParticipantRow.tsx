@@ -1,10 +1,10 @@
 import React from 'react'
-import {Hidden, TableCell, TableRow, Tooltip, useMediaQuery, useTheme} from "@material-ui/core";
+import {Hidden, TableCell, TableRow, Tooltip, useMediaQuery, useTheme} from "@mui/material";
 import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
 import NumSeats from "./NumSeats";
 import useCommonStyles from "../../../common/theme/CommonStyles";
-import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import {
   AddressLocation,
   Fullname, getFullname,
@@ -34,7 +34,7 @@ export default function ParticipantRow({participant, selected, onClick, showMisc
   const classes = useCommonStyles();
 
   const theme = useTheme();
-  const isSmallDevice = useMediaQuery(theme.breakpoints.down('xs'));
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('sm'));
 
   const {listNumber} = participant;
 
@@ -74,7 +74,7 @@ function ParticipantDetailCells({participant, runningDinnerSessionData, showMisc
   const tableCellClass = showMiscNotesForParticipant ? classes.bottomBorderNone : "";
 
   return (
-    <Hidden xsDown>
+    <Hidden smDown>
       { teamPartnerWishChild &&
         <>
           <TableCell colSpan={4} className={tableCellClass}>

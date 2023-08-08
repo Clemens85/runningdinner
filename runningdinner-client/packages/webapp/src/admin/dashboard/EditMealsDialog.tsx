@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Dialog, DialogContent, Grid} from '@material-ui/core';
+import {Box, Dialog, DialogContent, Grid} from '@mui/material';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import MealTimeEditControl from "./MealTimeEditControl";
@@ -14,8 +14,8 @@ import {
   isSameEntity, isValidDate,
   Meal, setHoursAndMinutesFromSrcToDest
 } from "@runningdinner/shared";
-import Alert from "@material-ui/lab/Alert";
-import {AlertTitle} from "@material-ui/lab";
+import Alert from '@mui/material/Alert';
+import { AlertTitle } from '@mui/material';
 
 
 type EditMealsDialogState = {

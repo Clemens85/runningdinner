@@ -2,7 +2,7 @@ import React from 'react';
 
 import {Controller, useFormContext} from "react-hook-form";
 import {KeyboardTimePicker, KeyboardTimePickerProps} from "@material-ui/pickers";
-import {FormHelperText} from "@material-ui/core";
+import {FormHelperText} from "@mui/material";
 import {isStringNotEmpty} from "@runningdinner/shared";
 
 export interface FormTimePickerProps extends Partial<KeyboardTimePickerProps> {

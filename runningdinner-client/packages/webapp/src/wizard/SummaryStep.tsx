@@ -6,7 +6,7 @@ import Paragraph from "../common/theme/typography/Paragraph";
 import {useWizardSelector} from "@runningdinner/shared";
 import {getAdministrationUrlSelector, setNextNavigationStep, setPreviousNavigationStep} from "@runningdinner/shared";
 import LinkExtern from "../common/theme/LinkExtern";
-import {Box, Typography} from "@material-ui/core";
+import {Box, Typography} from "@mui/material";
 import {FinishNavigationStep} from "@runningdinner/shared";
 import {useDispatch} from "react-redux";
 

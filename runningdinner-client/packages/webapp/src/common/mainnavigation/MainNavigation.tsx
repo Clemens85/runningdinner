@@ -1,12 +1,25 @@
 import React from 'react';
-import {AppBar, Drawer, Grid, Hidden, IconButton, Link, List, ListItem, ListItemText, makeStyles, Toolbar, Typography} from "@material-ui/core";
+import {
+  AppBar,
+  Drawer,
+  Grid,
+  Hidden,
+  IconButton,
+  Link,
+  List,
+  ListItem,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import {LanguageSwitch} from "../i18n/LanguageSwitch";
 import {Link as RouterLink, useLocation} from "react-router-dom";
-import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
 import clsx from "clsx";
 import {FeedbackButtonContainerRightAligned} from "../feedback/FeedbackButton";
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "./NavigationPaths";
-import {Breakpoint} from "@material-ui/core/styles/createBreakpoints";
+import { Breakpoint } from '@mui/material/styles';
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -73,47 +86,45 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
                  className={classes.menuLink}>{navigationItem.title}</Link>;
   }
 
-  return (
-    <>
-      { topNotificationBar && topNotificationBar }
-      <AppBar position="static" className={classes.appBarColors}>
-        <Toolbar>
-          <Grid container justify={"space-between"} alignItems={"center"}>
-            <Grid item>
-              <Grid container alignItems={"center"}>
-                <Hidden only={hiddenForDesktopView}>
-                  <Grid item>
-                    <MobileNavigation navigationItems={navigationItems} />
-                  </Grid>
-                </Hidden>
-                <Hidden only={hiddenForMobileView}>
-                  <Grid item>
-                    <Grid container alignItems={"center"}>
-                      <Grid item>
-                        <Link to={`${navigationItems[0].routePath}`}
-                              component={RouterLink}
-                              className={classes.homeLink}
-                              color="inherit">
-                          <Typography variant="h6" className={classes.title}>{mainTitle}</Typography>
-                        </Link>
-                      </Grid>
-                      <Grid item>
-                        { navigationItems.map(navigationItem => createLink(navigationItem)) }
-                      </Grid>
+  return <>
+    { topNotificationBar && topNotificationBar }
+    <AppBar position="static" className={classes.appBarColors}>
+      <Toolbar>
+        <Grid container justifyContent={"space-between"} alignItems={"center"}>
+          <Grid item>
+            <Grid container alignItems={"center"}>
+              <Hidden only={hiddenForDesktopView}>
+                <Grid item>
+                  <MobileNavigation navigationItems={navigationItems} />
+                </Grid>
+              </Hidden>
+              <Hidden only={hiddenForMobileView}>
+                <Grid item>
+                  <Grid container alignItems={"center"}>
+                    <Grid item>
+                      <Link to={`${navigationItems[0].routePath}`}
+                            component={RouterLink}
+                            className={classes.homeLink}
+                            color="inherit">
+                        <Typography variant="h6" className={classes.title}>{mainTitle}</Typography>
+                      </Link>
+                    </Grid>
+                    <Grid item>
+                      { navigationItems.map(navigationItem => createLink(navigationItem)) }
                     </Grid>
                   </Grid>
-                </Hidden>
-              </Grid>
-            </Grid>
-            <Grid item>
-              <LanguageSwitch />
+                </Grid>
+              </Hidden>
             </Grid>
           </Grid>
-        </Toolbar>
-      </AppBar>
-      { showFeedback && <FeedbackButtonContainerRightAligned /> }
-    </>
-  );
+          <Grid item>
+            <LanguageSwitch />
+          </Grid>
+        </Grid>
+      </Toolbar>
+    </AppBar>
+    { showFeedback && <FeedbackButtonContainerRightAligned /> }
+  </>;
 };
 
 function isShowFeedbackButton() {
@@ -160,22 +171,26 @@ function MobileNavigation({navigationItems}: MainNavigationProps) {
     );
   }
 
-  return (
-    <>
-      <IconButton edge="start" color="inherit" aria-label="menu" className={classes.menuButton} onClick={toggleMobileDrawerNavigation}>
-        <MenuIcon/>
-      </IconButton>
-      <Drawer open={mobileDrawerNavigationOpen}
-              anchor="left"
-              onClose={toggleMobileDrawerNavigation}
-              classes={{ paper: classes.paper }}
-              ModalProps={{keepMounted: true}}>
-        <div className={clsx(classes.mobileNavList, classes.appBarColors)}>
-          <List>
-            { navigationItems.map(navigationItem => createLink(navigationItem)) }
-          </List>
-        </div>
-      </Drawer>
-    </>
-  );
+  return <>
+    <IconButton
+      edge="start"
+      color="inherit"
+      aria-label="menu"
+      className={classes.menuButton}
+      onClick={toggleMobileDrawerNavigation}
+      size="large">
+      <MenuIcon/>
+    </IconButton>
+    <Drawer open={mobileDrawerNavigationOpen}
+            anchor="left"
+            onClose={toggleMobileDrawerNavigation}
+            classes={{ paper: classes.paper }}
+            ModalProps={{keepMounted: true}}>
+      <div className={clsx(classes.mobileNavList, classes.appBarColors)}>
+        <List>
+          { navigationItems.map(navigationItem => createLink(navigationItem)) }
+        </List>
+      </div>
+    </Drawer>
+  </>;
 }

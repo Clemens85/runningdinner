@@ -1,6 +1,6 @@
 import React from 'react';
 import {SpacingGrid} from "../common/theme/SpacingGrid";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {useFormContext} from "react-hook-form";
 import {useTranslation} from "react-i18next";

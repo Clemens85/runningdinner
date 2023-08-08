@@ -3,12 +3,12 @@ import {
   Dialog,
   DialogContent,
   Box, Grid,
-} from "@material-ui/core";
+} from "@mui/material";
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React, {useState} from "react";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {SmallTitle, Span} from "../../../common/theme/typography/Tags";
-import {Alert, AlertTitle} from "@material-ui/lab";
+import { Alert, AlertTitle } from '@mui/material';
 import { Fetch } from "../../../common/Fetch";
 import {
   Fullname,
@@ -33,9 +33,9 @@ import {
 import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from "lodash/cloneDeep";
 import take from "lodash/take";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";

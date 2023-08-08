@@ -1,4 +1,4 @@
-import { Button, Container, Typography } from '@material-ui/core';
+import { Button, Container, Typography } from '@mui/material';
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import LinkExtern from '../common/theme/LinkExtern';

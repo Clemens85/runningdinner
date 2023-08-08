@@ -7,14 +7,15 @@ import {
   getShortFormattedMonth, MessageJobOverview,
   Time
 } from "@runningdinner/shared";
-import {Card, CardContent, Grid, makeStyles, Typography} from "@material-ui/core";
+import { Card, CardContent, Grid, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import GroupIcon from '@material-ui/icons/Group';
-import SaveIcon from '@material-ui/icons/Save';
-import MailIcon from '@material-ui/icons/Mail';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import GroupIcon from '@mui/icons-material/Group';
+import SaveIcon from '@mui/icons-material/Save';
+import MailIcon from '@mui/icons-material/Mail';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {useAdminNavigation} from "../AdminNavigationHook";
 import LinkIntern from "../../common/theme/LinkIntern";
 import {useTranslation} from "react-i18next";

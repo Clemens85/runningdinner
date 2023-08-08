@@ -4,7 +4,7 @@ import {
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "./NotificationHttpErrorHook";
 import React from "react";
-import {LinearProgress} from "@material-ui/core";
+import {LinearProgress} from "@mui/material";
 
 
 export interface ProgressBarProps {

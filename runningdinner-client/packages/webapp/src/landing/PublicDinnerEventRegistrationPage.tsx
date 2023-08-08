@@ -15,27 +15,19 @@ import {
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
-import {
-  Box, Grid,
-  Link,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Typography
-} from '@material-ui/core';
-import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
+import { Box, Grid, Link, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Paragraph from "../common/theme/typography/Paragraph";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FormFieldset from "../common/theme/FormFieldset";
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {BackToListButton} from "../common/hooks/MasterDetailViewHook";
 import {PublicDinnerEventRegistrationFormContainer} from './PublicDinnerEventRegistrationForm';
 import {useLandingNavigation} from "./LandingNavigationHook";
 import {getLocalStorageItem, setLocalStorageItem} from "../common/LocalStorageService";
-import {Alert} from '@material-ui/lab';
+import { Alert } from '@mui/material';
 import LinkExtern from "../common/theme/LinkExtern";
 import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
 import { TextViewHtml } from '../common/TextViewHtml';

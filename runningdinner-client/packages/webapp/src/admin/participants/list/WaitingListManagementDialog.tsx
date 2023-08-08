@@ -1,15 +1,6 @@
-import {
-  AppBar,
-  createStyles,
-  Dialog,
-  Grid,
-  IconButton,
-  makeStyles,
-  Slide,
-  Theme,
-  Toolbar,
-  Typography
-} from '@material-ui/core';
+import { AppBar, Dialog, Grid, IconButton, Slide, Theme, Toolbar, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   addSelectedParticipantToTeam,
   assignParticipantsToExistingTeamsAsync,
@@ -44,23 +35,23 @@ import React, {useEffect, useState} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
 import {Subtitle} from "../../../common/theme/typography/Tags";
 import Paragraph from "../../../common/theme/typography/Paragraph";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from 'lodash/cloneDeep';
 import {SpacingPaper} from '../../../common/theme/SpacingPaper';
 import {CancelledTeamMember} from "../../teams/CancelledTeamMember";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
-import {TransitionProps} from '@material-ui/core/transitions';
-import CloseIcon from '@material-ui/icons/Close';
+import {TransitionProps} from '@mui/material/transitions';
+import CloseIcon from '@mui/icons-material/Close';
 import useCommonStyles from "../../../common/theme/CommonStyles";
 import {SpacingGrid} from "../../../common/theme/SpacingGrid";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {PrimarySuccessButtonAsync} from "../../../common/theme/PrimarySuccessButtonAsync";
-import {Breakpoint} from "@material-ui/core/styles/createBreakpoints";
-import {GridSize} from "@material-ui/core/Grid/Grid";
+import { Breakpoint } from '@mui/material/styles';
+import {GridSize} from "@mui/material/Grid/Grid";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import {SpacingButton} from "../../../common/theme/SpacingButton";
-import {Alert, AlertTitle} from "@material-ui/lab";
+import { Alert, AlertTitle } from '@mui/material';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
@@ -119,7 +110,13 @@ export function WaitingListManagementDialog(props: BaseRunningDinnerProps & Clos
           <Typography variant="h6" className={dialogClasses.title}>
             {t('admin:waitinglist_management')}
           </Typography>
-          <IconButton edge="end" color="inherit" onClick={onClose} aria-label="close" data-testid={"close-waitinglist-view-action"}>
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={onClose}
+            aria-label="close"
+            data-testid={"close-waitinglist-view-action"}
+            size="large">
             <CloseIcon />
           </IconButton>
         </Toolbar>
@@ -523,7 +520,7 @@ function NoSimpleActionView({numMissingParticipantsForFullTeamArrangement, remai
   const numRemainingParticipants = remainingParticipants.length;
 
   return (
-    <Grid container justify={"center"} data-testid={"waitinglist-distribute-to-teams-view"}>
+    <Grid container justifyContent={"center"} data-testid={"waitinglist-distribute-to-teams-view"}>
       <Grid item {... GRID_SIZES}>
         <Box m={DIALOG_SPACING_X}>
           <Paragraph>
@@ -538,7 +535,7 @@ function NoSimpleActionView({numMissingParticipantsForFullTeamArrangement, remai
         </Box>
       </Grid>
     </Grid>
-  )
+  );
 }
 
 function TeamsNotGeneratedView() {
@@ -546,7 +543,7 @@ function TeamsNotGeneratedView() {
   const {t} = useTranslation(["admin", "common"]);
 
   return (
-    <Grid container justify={"center"} data-testid={"waitinglist-teams-not-generated-view"}>
+    <Grid container justifyContent={"center"} data-testid={"waitinglist-teams-not-generated-view"}>
       <Grid item {... GRID_SIZES}>
         <Box m={DIALOG_SPACING_X}>
           <Paragraph>
