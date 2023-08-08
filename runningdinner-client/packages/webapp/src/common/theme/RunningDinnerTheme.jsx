@@ -5,6 +5,9 @@ export const runningDinnerTheme = createTheme(adaptV4Theme({
   palette: {
     primary: {
       main: '#6db33f'
+    },
+    secondary: {
+      main: '#f50057'
     }
   },
   overrides: {
