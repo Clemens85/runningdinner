@@ -7,10 +7,12 @@ export default function LinkAction(props) {
   const commonStyles = useCommonStyles();
   const { onClick, ...remainder } = props;
   return (
-    <Link component="button"
-          onClick={onClick}
-          className={commonStyles.textTransformUppercase}
-          {...remainder}>
+    <Link
+      component="button"
+      onClick={onClick}
+      className={commonStyles.textTransformUppercase}
+      {...remainder}
+      underline="hover">
       {props.children}
     </Link>
   );

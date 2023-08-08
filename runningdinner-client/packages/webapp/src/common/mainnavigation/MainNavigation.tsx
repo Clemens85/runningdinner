@@ -79,11 +79,15 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
   const hiddenForDesktopView = getMobileBreakpointsUp(mobileBreakpoint);
 
   function createLink(navigationItem: NavigationItem) {
-    return <Link to={`${navigationItem.routePath}`}
-                 component={RouterLink}
-                 color="inherit"
-                 key={navigationItem.title}
-                 className={classes.menuLink}>{navigationItem.title}</Link>;
+    return (
+      <Link
+        to={`${navigationItem.routePath}`}
+        component={RouterLink}
+        color="inherit"
+        key={navigationItem.title}
+        className={classes.menuLink}
+        underline="hover">{navigationItem.title}</Link>
+    );
   }
 
   return <>
@@ -102,10 +106,12 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
                 <Grid item>
                   <Grid container alignItems={"center"}>
                     <Grid item>
-                      <Link to={`${navigationItems[0].routePath}`}
-                            component={RouterLink}
-                            className={classes.homeLink}
-                            color="inherit">
+                      <Link
+                        to={`${navigationItems[0].routePath}`}
+                        component={RouterLink}
+                        className={classes.homeLink}
+                        color="inherit"
+                        underline="hover">
                         <Typography variant="h6" className={classes.title}>{mainTitle}</Typography>
                       </Link>
                     </Grid>
@@ -159,11 +165,13 @@ function MobileNavigation({navigationItems}: MainNavigationProps) {
 
   function createLink(navigationItem: NavigationItem) {
 
-    const link = <Link to={`${navigationItem.routePath}`}
-                       component={RouterLink}
-                       color="inherit"
-                       onClick={toggleMobileDrawerNavigation}
-                       className={classes.menuLink}>{navigationItem.title}</Link>;
+    const link = <Link
+      to={`${navigationItem.routePath}`}
+      component={RouterLink}
+      color="inherit"
+      onClick={toggleMobileDrawerNavigation}
+      className={classes.menuLink}
+      underline="hover">{navigationItem.title}</Link>;
     return (
       <ListItem button key={navigationItem.title} divider>
         <ListItemText primary={link} />

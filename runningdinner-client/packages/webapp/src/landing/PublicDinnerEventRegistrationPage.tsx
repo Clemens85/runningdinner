@@ -130,97 +130,95 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
     );
   }
 
-  return (
-    <>
-      <PublicDemoDinnerEventNotification publicRunningDinner={publicRunningDinner} />
-      <BackToListButton onBackToList={navigateToRunningDinnerEventList} mb={-2} mt={2} />
-      <PageTitle>{publicSettings.title}</PageTitle>
-      <Box>
-        <div style={{ display: 'flex', marginTop: "-15px" }}>
-          <LocationOnIcon color={"primary"} />
-          <Paragraph><AddressLocation cityName={publicRunningDinner.city} zip={publicRunningDinner.zip} /></Paragraph>
-        </div>
-        <div style={{ display: 'flex', marginTop: "15px" }}>
-          <CalendarTodayIcon color={"primary"} />
-          <Paragraph><LocalDate date={publicRunningDinner.date} /></Paragraph>
-        </div>
-      </Box>
+  return <>
+    <PublicDemoDinnerEventNotification publicRunningDinner={publicRunningDinner} />
+    <BackToListButton onBackToList={navigateToRunningDinnerEventList} mb={-2} mt={2} />
+    <PageTitle>{publicSettings.title}</PageTitle>
+    <Box>
+      <div style={{ display: 'flex', marginTop: "-15px" }}>
+        <LocationOnIcon color={"primary"} />
+        <Paragraph><AddressLocation cityName={publicRunningDinner.city} zip={publicRunningDinner.zip} /></Paragraph>
+      </div>
+      <div style={{ display: 'flex', marginTop: "15px" }}>
+        <CalendarTodayIcon color={"primary"} />
+        <Paragraph><LocalDate date={publicRunningDinner.date} /></Paragraph>
+      </div>
+    </Box>
 
+    <Box mt={2}>
+      <FormFieldset>{t("common:schedule")}</FormFieldset>
+      <List dense={true} disablePadding>
+        { publicRunningDinner.meals.map(meal => renderMealListItem(meal)) }
+      </List>
+    </Box>
+
+    <Box mt={2}>
+      <FormFieldset>{t("common:description")}</FormFieldset>
+      <Paragraph><TextViewHtml text={publicSettings.description}/></Paragraph>
+    </Box>
+
+    { hasAfterPartyLocation &&
       <Box mt={2}>
-        <FormFieldset>{t("common:schedule")}</FormFieldset>
-        <List dense={true} disablePadding>
-          { publicRunningDinner.meals.map(meal => renderMealListItem(meal)) }
-        </List>
+        <FormFieldset><AfterPartyLocationHeadline {...afterPartyLocation!} /></FormFieldset>
+        { isStringNotEmpty(afterPartyLocation!.addressName) && <Paragraph>{afterPartyLocation!.addressName}</Paragraph> }
+        <Paragraph>{afterPartyLocation!.street} {afterPartyLocation!.streetNr}</Paragraph>
+        <Paragraph>{afterPartyLocation!.zip} {afterPartyLocation!.cityName}</Paragraph>
+        { isStringNotEmpty(afterPartyLocation!.addressRemarks) && <Paragraph>{afterPartyLocation!.addressRemarks}</Paragraph> }
       </Box>
+    }
 
+    { isPublicContactInfoAvailable &&
       <Box mt={2}>
-        <FormFieldset>{t("common:description")}</FormFieldset>
-        <Paragraph><TextViewHtml text={publicSettings.description}/></Paragraph>
-      </Box>
+        <FormFieldset>{t("common:contact")}</FormFieldset>
+        {isStringNotEmpty(publicSettings.publicContactName) && <Paragraph>{t("common:organizer")}: {publicSettings.publicContactName}</Paragraph>}
+        {isStringNotEmpty(publicSettings.publicContactEmail) && <Paragraph>{t("common:email")}: &nbsp;
+            <Link href={`mailto:${publicSettings.publicContactEmail}`} underline="hover">{publicSettings.publicContactEmail}</Link>
+          </Paragraph>}
+        {isStringNotEmpty(publicSettings.publicContactMobileNumber) && <Paragraph>{t("common:mobile")}: {publicSettings.publicContactMobileNumber}</Paragraph>}
+      </Box> }
 
-      { hasAfterPartyLocation &&
-        <Box mt={2}>
-          <FormFieldset><AfterPartyLocationHeadline {...afterPartyLocation!} /></FormFieldset>
-          { isStringNotEmpty(afterPartyLocation!.addressName) && <Paragraph>{afterPartyLocation!.addressName}</Paragraph> }
-          <Paragraph>{afterPartyLocation!.street} {afterPartyLocation!.streetNr}</Paragraph>
-          <Paragraph>{afterPartyLocation!.zip} {afterPartyLocation!.cityName}</Paragraph>
-          { isStringNotEmpty(afterPartyLocation!.addressRemarks) && <Paragraph>{afterPartyLocation!.addressRemarks}</Paragraph> }
-        </Box>
+    <Box mt={2}>
+      <FormFieldset>{t("common:registration")}</FormFieldset>
+      <Paragraph i18n={"landing:dinner_event_deadline_text"} parameters={{ endOfRegistrationDate: endOfRegistrationDateStr}} />
+      <PaymentInfo {...publicRunningDinner} />
+    </Box>
+
+    <Box my={2}>
+      { renderRegistrationNotPossibleText() }
+      { !registrationButtonHidden &&
+          <PrimaryButton size={"large"} onClick={openRegistrationForm} data-testid="registration-form-open-action">
+            {t('landing:goto_registration')}
+          </PrimaryButton>
       }
-
-      { isPublicContactInfoAvailable &&
-        <Box mt={2}>
-          <FormFieldset>{t("common:contact")}</FormFieldset>
-          {isStringNotEmpty(publicSettings.publicContactName) && <Paragraph>{t("common:organizer")}: {publicSettings.publicContactName}</Paragraph>}
-          {isStringNotEmpty(publicSettings.publicContactEmail) && <Paragraph>{t("common:email")}: &nbsp;
-              <Link href={`mailto:${publicSettings.publicContactEmail}`}>{publicSettings.publicContactEmail}</Link>
-            </Paragraph>}
-          {isStringNotEmpty(publicSettings.publicContactMobileNumber) && <Paragraph>{t("common:mobile")}: {publicSettings.publicContactMobileNumber}</Paragraph>}
-        </Box> }
-
-      <Box mt={2}>
-        <FormFieldset>{t("common:registration")}</FormFieldset>
-        <Paragraph i18n={"landing:dinner_event_deadline_text"} parameters={{ endOfRegistrationDate: endOfRegistrationDateStr}} />
-        <PaymentInfo {...publicRunningDinner} />
-      </Box>
-
-      <Box my={2}>
-        { renderRegistrationNotPossibleText() }
-        { !registrationButtonHidden &&
-            <PrimaryButton size={"large"} onClick={openRegistrationForm} data-testid="registration-form-open-action">
-              {t('landing:goto_registration')}
-            </PrimaryButton>
-        }
-        { registrationButtonHidden && isCurrentUserSubscribedToEvent() &&
-          <Grid container>
-            <Grid item>
-              <Alert severity={"success"} variant={"outlined"}>
-                <Box mb={1}>
-                  <Trans i18nKey={"landing:currentuser_already_registered_info"}
-                         components={{ italic: <em /> }}
-                         values={{ email: getCurrentUserSubscribedToEvent()?.email }}/>
-                </Box>
-                <Box mb={1}>
-                  <Trans i18nKey={"landing:currentuser_already_registered_cancel"}
-                         // @ts-ignore
-                         components={{ anchor: <LinkExtern /> }}
-                         values={{ email: publicSettings.publicContactEmail }} />
-                </Box>
-                <Box>
-                  {t('landing:currentuser_already_registered_new_register')} &nbsp; <PrimaryButton onClick={openRegistrationForm} size={"small"}>{t('landing:goto_registration')}</PrimaryButton>
-                </Box>
-              </Alert>
-            </Grid>
+      { registrationButtonHidden && isCurrentUserSubscribedToEvent() &&
+        <Grid container>
+          <Grid item>
+            <Alert severity={"success"} variant={"outlined"}>
+              <Box mb={1}>
+                <Trans i18nKey={"landing:currentuser_already_registered_info"}
+                       components={{ italic: <em /> }}
+                       values={{ email: getCurrentUserSubscribedToEvent()?.email }}/>
+              </Box>
+              <Box mb={1}>
+                <Trans i18nKey={"landing:currentuser_already_registered_cancel"}
+                       // @ts-ignore
+                       components={{ anchor: <LinkExtern /> }}
+                       values={{ email: publicSettings.publicContactEmail }} />
+              </Box>
+              <Box>
+                {t('landing:currentuser_already_registered_new_register')} &nbsp; <PrimaryButton onClick={openRegistrationForm} size={"small"}>{t('landing:goto_registration')}</PrimaryButton>
+              </Box>
+            </Alert>
           </Grid>
-        }
-      </Box>
+        </Grid>
+      }
+    </Box>
 
-      { isRegistrationFormOpen && <PublicDinnerEventRegistrationFormContainer publicRunningDinner={publicRunningDinner}
-                                                                              onRegistrationPerformed={handleRegistrationPerformed}
-                                                                              onCancel={closeRegistrationForm} /> }
+    { isRegistrationFormOpen && <PublicDinnerEventRegistrationFormContainer publicRunningDinner={publicRunningDinner}
+                                                                            onRegistrationPerformed={handleRegistrationPerformed}
+                                                                            onCancel={closeRegistrationForm} /> }
 
-    </>
-  );
+  </>;
 }
 
 function PaymentInfo(publicRunningDinner: PublicRunningDinner) {

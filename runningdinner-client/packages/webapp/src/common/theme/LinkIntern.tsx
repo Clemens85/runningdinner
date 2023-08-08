@@ -14,9 +14,14 @@ export default function LinkIntern({pathname, color, href, children}: LinkIntern
   const colorToSet = isStringEmpty(color) ? "primary" : color;
 
   return (
-      // @ts-ignore
-      <Link to={{ pathname: pathname}} component={RouterLink} color={colorToSet} href={href}>
-        {children}
-      </Link>
+    // @ts-ignore
+    <Link
+      to={{ pathname: pathname}}
+      component={RouterLink}
+      color={colorToSet}
+      href={href}
+      underline="hover">
+      {children}
+    </Link>
   );
 }
