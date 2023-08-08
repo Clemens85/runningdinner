@@ -76,7 +76,7 @@ function WizardPage({demoDinner}: WizardAppProps) {
   return (
       <>
         <WizardMenu />
-        <Container maxWidth="xl">
+        <Container id={"wizardContainer"} maxWidth={false}>
           <Grid container>
             <Grid item xs={12} md={8}>
               <Routes>

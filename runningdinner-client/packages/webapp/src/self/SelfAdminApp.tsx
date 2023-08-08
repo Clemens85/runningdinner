@@ -27,7 +27,7 @@ function SelfAdminAppPage() {
   return (
     <div>
       <ProgressBar fetchError={fetchError} showLoadingProgress={showLoadingProgress} />
-      <Container maxWidth="xl">
+      <Container maxWidth={false}>
         <SelfAdminRoute />
       </Container>
     </div>

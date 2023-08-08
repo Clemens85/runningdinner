@@ -44,7 +44,7 @@ function AdminAppPage({adminId}: BaseAdminIdProps) {
       <div>
         <AdminMenu />
         <ProgressBar showLoadingProgress={showLoadingProgress} fetchError={fetchError} />
-        <Container maxWidth="xl">
+        <Container maxWidth={false}>
           <AdminRoute />
         </Container>
       </div>

@@ -59,7 +59,7 @@ export function LandingStart() {
   return (
     <div>
 
-      <Container maxWidth="xl">
+      <Container maxWidth={false}>
         <SpacingGrid container mb={4} mt={6}>
           <SpacingGrid item xs={12}>
             <Typography variant={"h4"} component="h4" color="textPrimary">{t("landing:teaser_how_does_it_work")}</Typography>
@@ -113,7 +113,7 @@ export function LandingStart() {
         </SpacingGrid>
       </div>
 
-      <Container maxWidth="xl">
+      <Container maxWidth={false}>
         <SpacingGrid container spacing={6} mt={2}>
         
           <SpacingGrid item xs={12} md={6} ref={columnRef}>

@@ -20,7 +20,7 @@ export function LandingBanner() {
 
   return (
     <div className={landingStyles.banner}>
-      <Container maxWidth={"xl"}>
+      <Container maxWidth={false}>
 
         <SpacingGrid container>
           <SpacingGrid item xs={12} pt={6} className={commonStyles.textAlignCenter}>
