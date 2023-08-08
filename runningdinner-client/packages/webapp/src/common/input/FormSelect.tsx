@@ -29,8 +29,8 @@ function FormSelectInternal({name, label, children, helperText, fullWidth, varia
               <FormControl fullWidth={fullWidth} error={hasErrors} variant={variant}>
                 <InputLabel required>{label}</InputLabel>
                 <Select
-                  variant="standard"
                   {...Object.assign({}, props, other)}
+                  variant={variant}
                   inputProps={{ 'aria-label': label }}>
                   {children}
                 </Select>
