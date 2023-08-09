@@ -30,7 +30,6 @@ import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../Admin
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 import DropdownButton from "../../common/theme/dropdown/DropdownButton";
 import DropdownButtonItem from "../../common/theme/dropdown/DropdownButtonItem";
-import useCommonStyles from "../../common/theme/CommonStyles";
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 import { RegenerateTeamsButton } from "./RegenerateTeamsButton";
 import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
@@ -82,8 +81,6 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   const {showSuccess} = useCustomSnackbar();
-
-  const commonClasses = useCommonStyles();
 
   const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
 
@@ -189,10 +186,10 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
           <Grid container spacing={2}>
             { showListView &&
                 <>
-                  <Grid item xs={12} md={7} className={commonClasses.textAlignRight}>
+                  <Grid item xs={12} md={7} sx={{ textAlign: 'right' }}>
                     <SendTeamMessagsDropdown adminId={adminId} />
                   </Grid>
-                  <Grid item xs={12} md={5} className={commonClasses.textAlignRight}>
+                  <Grid item xs={12} md={5} sx={{ textAlign: 'right' }}>
                     <RegenerateTeamsButton adminId={adminId} onTeamsRegenerated={handleTeamsRegenerated}/>
                   </Grid>
                   <Grid item xs={12} md={7}>
