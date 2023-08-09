@@ -92,14 +92,16 @@ class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDia
         <Dialog open={open} onClose={this.triggerCancel} aria-labelledby="form-dialog-title" data-testid="edit-meals-dialog">
           <DialogTitleCloseable id="edit-meals-dialog-title" onClose={this.triggerCancel}>{t('time_schedule_edit')}</DialogTitleCloseable>
           <DialogContent>
-            { showMessagesAlreadySentInfo &&
-              <Alert severity={"info"} data-testid="edit-meal-times-warning-messages-sent" sx={{ my: 2 }}>
-                <AlertTitle>{t('attention')}</AlertTitle>
-                {t('admin:attention_mealtimes_messages_already_sent')}
-              </Alert> }
-            <Grid container spacing={2}>
-              {mealTimeFields}
-            </Grid>
+            <Box pt={2}>
+              { showMessagesAlreadySentInfo &&
+                <Alert severity={"info"} data-testid="edit-meal-times-warning-messages-sent" sx={{ my: 2 }}>
+                  <AlertTitle>{t('attention')}</AlertTitle>
+                  {t('admin:attention_mealtimes_messages_already_sent')}
+                </Alert> }
+              <Grid container spacing={2}>
+                {mealTimeFields}
+              </Grid>
+            </Box>
           </DialogContent>
           <DialogActionsPanel onOk={this.triggerSave} onCancel={this.triggerCancel} okLabel={t('common:save')} cancelLabel={t('common:cancel')} />
         </Dialog>
