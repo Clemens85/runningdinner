@@ -38,7 +38,6 @@ import {BasicDinnerSettingsFormControl} from "../../common/dinnersettings/BasicD
 import {Fetch} from "../../common/Fetch";
 import {PageTitle, Span, Subtitle} from "../../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
-import useDatePickerLocale from "../../common/date/DatePickerLocaleHook";
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
