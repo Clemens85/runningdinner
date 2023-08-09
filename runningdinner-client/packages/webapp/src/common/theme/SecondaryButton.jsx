@@ -5,5 +5,5 @@ export default function SecondaryButton(props) {
 
   const {onClick, children, ...rest} = props;
 
-  return <Button onClick={onClick} {...rest}>{props.children}</Button>;
+  return <Button color={"inherit"} onClick={onClick} {...rest}>{props.children}</Button>;
 }
