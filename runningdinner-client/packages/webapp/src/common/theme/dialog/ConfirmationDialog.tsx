@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { SpacingButton } from "../SpacingButton";
 import { DialogTitleCloseable } from "../DialogTitleCloseable";
 import { PrimaryButton } from "../PrimaryButton";
 import SecondaryButton from "../SecondaryButton";

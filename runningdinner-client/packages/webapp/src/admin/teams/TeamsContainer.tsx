@@ -236,7 +236,7 @@ function TeamsTitle({hasTeams}: TeamsTitleProps) {
       <>
         <Helmet><title>{t('headline_teams')}</title></Helmet>
         <PageTitle>{t('headline_teams')}</PageTitle>
-        { hasTeams && <p style={{ fontWeight: 300 }}>{t("admin:teams_drag_drop_hint")}</p> }
+        { hasTeams && <p style={{ fontWeight: 100 }}>{t("admin:teams_drag_drop_hint")}</p> }
       </>
   );
 }
