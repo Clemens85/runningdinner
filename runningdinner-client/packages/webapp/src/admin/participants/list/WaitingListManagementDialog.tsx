@@ -1,4 +1,4 @@
-import { AppBar, Dialog, Grid, IconButton, Slide, Theme, Toolbar, Typography } from '@mui/material';
+import {AppBar, Button, Dialog, Grid, IconButton, Slide, Theme, Toolbar, Typography} from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -345,11 +345,13 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
                                      data-testid={"waitinglist_notification_teams_open_messages_action"}>
             {t('admin:waitinglist_notification_teams_sendmessages')}
           </PrimarySuccessButtonAsync>
-          <SpacingButton onClick={() => handleSendNotifications(false)} mt={DIALOG_SPACING_X}
-                         color={"primary"} variant={"outlined"} className={commonClasses.fullWidth}
-                         data-testid={"waitinglist_notification_teams_continue_without_messages_action"}>
+          <Button onClick={() => handleSendNotifications(false)}
+                   sx={{ mt: DIALOG_SPACING_X, width: "100%" }}
+                   color={"primary"}
+                   variant={"outlined"}
+                   data-testid={"waitinglist_notification_teams_continue_without_messages_action"}>
             {t('admin:waitinglist_notification_teams_continue_without_messages')}
-          </SpacingButton>
+          </Button>
         </Grid>
       </SpacingGrid>
     </>

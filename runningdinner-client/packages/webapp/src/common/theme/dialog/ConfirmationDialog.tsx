@@ -16,6 +16,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { SpacingButton } from "../SpacingButton";
 import { DialogTitleCloseable } from "../DialogTitleCloseable";
 import { PrimaryButton } from "../PrimaryButton";
+import SecondaryButton from "../SecondaryButton";
 
 export interface ConfirmationDialogProps extends Partial<DialogProps> {
   /**
@@ -109,18 +110,18 @@ export function ConfirmationDialog({dialogTitle, dialogContent, buttonConfirmTex
           <Grid container justifyContent="flex-end" direction={buttonFlexDirection} alignContent="center">
             <Grid item style={{ alignSelf: "center" }}>
               {buttonCancelText && (
-                <Button onClick={() => handleCloseInternal(false)}>{buttonCancelText}</Button>
+                <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>
               )}
             </Grid>
             <Grid item style={{ alignSelf: "center" }}>
               {
-                danger ? <SpacingButton ml={isSmallDevice ? 0 : 1}
-                                        color="secondary"
-                                        variant="contained"
-                                        onClick={() => handleCloseInternal(true)}
-                                        autoFocus>
+                danger ? <Button sx={{ ml: isSmallDevice ? 0 : 1 }}
+                                 color="secondary"
+                                 variant="contained"
+                                 onClick={() => handleCloseInternal(true)}
+                                 autoFocus>
                                 {buttonConfirmText}
-                          </SpacingButton>
+                          </Button>
                 : <PrimaryButton ml={isSmallDevice ? 0 : 1}
                                  variant="contained"
                                  onClick={() => handleCloseInternal(true)}
