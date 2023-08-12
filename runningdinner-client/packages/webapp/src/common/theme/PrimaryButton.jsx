@@ -17,20 +17,20 @@ import {Link as RouterLink} from "react-router-dom";
 // })(Button);
 
 
-const PrimaryButtonStyled = withStyles(theme => ({
-  root: {
-    color: 'white',
-    // backgroundColor: theme.palette.primary.main
-  }
-}))(Button);
+// const PrimaryButtonStyled = withStyles(theme => ({
+//   root: {
+//     color: 'white',
+//     // backgroundColor: theme.palette.primary.main
+//   }
+// }))(Button);
 
 const PrimaryButtonInternal = (props) => {
-  return <PrimaryButtonStyled color="primary" variant="contained" {...props}>{props.children}</PrimaryButtonStyled>
+  return <Button color="success" variant="contained" {...props}>{props.children}</Button>
 };
 
 const PrimaryRouterButtonInternal = (props) => {
   const {to, ...rest} = props;
-  return <PrimaryButtonStyled color="primary" variant="contained" to={to} component={RouterLink} {...rest}>{props.children}</PrimaryButtonStyled>
+  return <Button color="success" variant="contained" to={to} component={RouterLink} {...rest}>{props.children}</Button>
 }
 
 export const PrimaryButton = styled(PrimaryButtonInternal)(spacing);

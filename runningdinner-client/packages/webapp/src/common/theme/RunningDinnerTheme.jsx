@@ -4,7 +4,8 @@ import { grey } from '@mui/material/colors';
 export const runningDinnerTheme = createTheme(adaptV4Theme({
   palette: {
     primary: {
-      main: '#6db33f'
+      // main: '#6db33f'
+      main: '#2e7d32'
     },
     secondary: {
       main: '#f50057'
