@@ -3,7 +3,7 @@ import {PageTitle} from "../../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
 import {useNewsItems} from "./NewsItemsHook";
 import {NewsCard} from "./NewsCard";
-import {Grid} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 
 export function NewsPage() {
 
@@ -12,7 +12,7 @@ export function NewsPage() {
   const newsItems = useNewsItems();
 
   return (
-    <>
+    <Box sx={{ mb: 3 }}>
       <PageTitle mt={4}>{t('common:news')}</PageTitle>
       <Grid container direction={"column"} spacing={3}>
         {
@@ -25,6 +25,6 @@ export function NewsPage() {
           )
         }
       </Grid>
-    </>
+    </Box>
   );
 }

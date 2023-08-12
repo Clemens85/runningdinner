@@ -9,13 +9,12 @@ import {
   PublicRunningDinner
 } from "@runningdinner/shared";
 import {Box, CardActions, Grid} from "@mui/material";
-import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import Paragraph from "../common/theme/typography/Paragraph";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import {useLandingStyles} from "./LandingStyles";
+import {CardFlexibleHeight} from "./LandingStyles";
 import {isLocalDevEnv} from "../common/EnvService";
 import { Alert, AlertTitle } from '@mui/material';
 import LinkIntern from "../common/theme/LinkIntern";
@@ -29,11 +28,11 @@ export function PublicDinnerEventsPage() {
   return <Fetch asyncFunction={findPublicRunningDinnersAsync}
                 parameters={[]}
                 render={publicRunningDinners =>
-                    <div>
+                    <Box>
                       <PageTitle>{t('landing:public_dinner_events_headline')}</PageTitle>
                       { isArrayNotEmpty(publicRunningDinners.result) ? <PublicDinnerEventsListPage publicRunningDinners={publicRunningDinners.result} />
                                                                      : <NoPublicDinnerEventsPage /> }
-                    </div>
+                    </Box>
                 } />;
 }
 
@@ -44,7 +43,6 @@ export interface PublicDinnerEventsListProps {
 function PublicDinnerEventsListPage({publicRunningDinners}: PublicDinnerEventsListProps) {
 
   const {t} = useTranslation("common");
-  const landingStyles = useLandingStyles();
 
   function renderPublicDinnerEventCard(publicRunningDinner: PublicRunningDinner) {
 
@@ -58,8 +56,8 @@ function PublicDinnerEventsListPage({publicRunningDinners}: PublicDinnerEventsLi
     }
 
     return (
-      <Grid item xs={12} md={4} key={publicRunningDinner.publicSettings.publicDinnerId}>
-        <Card className={landingStyles.teaserCard}>
+      <Grid item xs={12} md={4} key={publicRunningDinner.publicSettings.publicDinnerId} sx={{ pb: 3 }}>
+        <CardFlexibleHeight>
           <CardContent>
             <Subtitle>{title}</Subtitle>
             <Box>
@@ -83,14 +81,14 @@ function PublicDinnerEventsListPage({publicRunningDinners}: PublicDinnerEventsLi
               </div>
             </div>
           </CardActions>
-        </Card>
+        </CardFlexibleHeight>
       </Grid>
     );
   }
 
   return (
     <div>
-      <Grid container spacing={6} className={landingStyles.teaserCardRow}>
+      <Grid container spacing={6}>
         { publicRunningDinners.map(publicRunningDinner => renderPublicDinnerEventCard(publicRunningDinner)) }
       </Grid>
     </div>

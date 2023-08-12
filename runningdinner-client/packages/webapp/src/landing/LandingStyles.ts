@@ -1,20 +1,23 @@
 import makeStyles from '@mui/styles/makeStyles';
 import bannerImg from "./images/banner-pan.jpg";
 import {styled} from "@mui/material/styles";
+import {Card} from "@mui/material";
 
 export const TeaserCardRow = styled('div')(({theme}) => ({
   marginBottom: theme.spacing(3)
 }));
 
+export const CardFlexibleHeight = styled(Card)(({theme}) => ({
+  [theme.breakpoints.up('md')]: {
+    height: "100%"
+  }
+}));
+
+
 export const useLandingStyles = makeStyles((theme) => ({
   teaserCardRow: {
     [theme.breakpoints.up('md')]: {
       maxHeight: "350px"
-    }
-  },
-  teaserCard: {
-    [theme.breakpoints.up('md')]: {
-      height: "100%"
     }
   },
   banner: {
