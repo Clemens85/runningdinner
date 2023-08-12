@@ -1,6 +1,4 @@
-import {AppBar, Button, Dialog, Grid, IconButton, Slide, Theme, Toolbar, Typography} from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import {AppBar, Button, Dialog, Grid, IconButton, Paper, Slide, Toolbar, Typography} from '@mui/material';
 import {
   addSelectedParticipantToTeam,
   assignParticipantsToExistingTeamsAsync,
@@ -38,13 +36,11 @@ import Paragraph from "../../../common/theme/typography/Paragraph";
 import Box from "@mui/material/Box";
 import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from 'lodash/cloneDeep';
-import {SpacingPaper} from '../../../common/theme/SpacingPaper';
 import {CancelledTeamMember} from "../../teams/CancelledTeamMember";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 import {TransitionProps} from '@mui/material/transitions';
 import CloseIcon from '@mui/icons-material/Close';
 import useCommonStyles from "../../../common/theme/CommonStyles";
-import {SpacingGrid} from "../../../common/theme/SpacingGrid";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {PrimarySuccessButtonAsync} from "../../../common/theme/PrimarySuccessButtonAsync";
 import { Breakpoint } from '@mui/material/styles';
@@ -58,19 +54,6 @@ const Transition = React.forwardRef(function Transition(
 ) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
-const useDialogStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    appBar: {
-      position: 'relative',
-      color: 'white',
-    },
-    title: {
-      marginLeft: theme.spacing(2),
-      flex: 1,
-    },
-  }),
-);
 
 type CloseCallback = {
   onClose: CallbackHandler;
@@ -98,17 +81,13 @@ export function WaitingListManagementDialog(props: BaseRunningDinnerProps & Clos
   
   const {t} = useTranslation(["admin", "common"]);
 
-  const dialogClasses = useDialogStyles();
-
   const {runningDinner, onClose} = props;
 
   return (
     <Dialog onClose={onClose} open={true} fullScreen TransitionComponent={Transition}>
-      <AppBar className={dialogClasses.appBar}>
+      <AppBar sx={{ position: 'relative', color: '#fff', backgroundColor: 'primary.main' }}>
         <Toolbar>
-          <Typography variant="h6" className={dialogClasses.title}>
-            {t('admin:waitinglist_management')}
-          </Typography>
+          <Typography variant="h6" sx={{ ml: 2, flex: 1 }}>{t('admin:waitinglist_management')}</Typography>
           <IconButton
             edge="end"
             color="inherit"
@@ -195,7 +174,6 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
   const {teamsWithCancelStatusOrCancelledMembers, totalNumberOfMissingTeamMembers, allParticipantsOnWaitingList, runningDinner, onSave} = props;
 
   const {t} = useTranslation(['admin', 'common']);
-  const commonClasses = useCommonStyles();
   const {showWarning, showSuccess} = useCustomSnackbar();
 
   const {teamSize} = runningDinner.options;
@@ -254,7 +232,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
 
   return (
     <div data-testid={"waitinglist-teams-participants-assignment-view"}>
-      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} mx={DIALOG_SPACING_X}>
+      <Grid container justify={"center"} sx={{ mt: DIALOG_SPACING_X, mx: DIALOG_SPACING_X, justifyContent: "center" }}>
         <Grid item {... GRID_SIZES}>
           <Subtitle>{t('admin:waitinglist_assign_participants_teams')}</Subtitle>
           <Paragraph>
@@ -263,8 +241,8 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
             <Trans i18nKey={"admin:waitinglist_num_missing_teammembers"} values={{ totalNumberOfMissingTeamMembers }} />
           </Paragraph>
         </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"}>
+      </Grid>
+      <Grid container justify={"center"} sx={{ mt: DIALOG_SPACING_X, justifyContent: "center" }}>
         <>
         {
           teamParticipantAssignments.map(tpa => {
@@ -282,17 +260,20 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
           })
         }
         </>
-      </SpacingGrid>
+      </Grid>
 
-      <SpacingGrid container justify={"center"}>
+      <Grid container justify={"center"} sx={{ justifyContent: "center" }}>
         <Grid item {... GRID_SIZES}>
           <Box mx={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
-            <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams} size={"large"} className={commonClasses.fullWidth} data-testid={"waitinglist-assign-participants-teams-action"}>
+            <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams}
+                                       size={"large"}
+                                       sx={{ width: "100%" }}
+                                       data-testid={"waitinglist-assign-participants-teams-action"}>
               {t('admin:waitinglist_assign_participants_teams')}!
             </PrimarySuccessButtonAsync>
           </Box>
         </Grid>
-      </SpacingGrid>
+      </Grid>
     </div>
   );
 }
@@ -316,7 +297,7 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
 
   return (
     <>
-      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
+      <Grid container justify={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
         <Grid item {... GRID_SIZES}>
           <Subtitle>{t('admin:team_notify_cancellation')}</Subtitle>
           <Paragraph>{t("admin:waitinglist_notification_teams_info")}</Paragraph>
@@ -324,23 +305,24 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
             { affectedTeams.map(team => <li key={team.id} data-testid={"waitinglist_notification_team"}>{getTeamNameMembers(team)}</li>) }
           </ul>
         </Grid>
-      </SpacingGrid>
+      </Grid>
 
       { dinnerRouteMessagesAlreadySent &&
-        <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
+        <Grid container justify={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
           <Grid item {... GRID_SIZES}>
             <Alert severity={"warning"} data-testid={"waitinglist_notification_dinnerroute_hint"}>
               <AlertTitle>{t('common:attention')}</AlertTitle>
               <Trans i18nKey='admin:waitinglist_notification_dinnerroutes_sent' />
             </Alert>
           </Grid>
-        </SpacingGrid>
+        </Grid>
       }
 
-      <SpacingGrid container justify={"center"} px={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
+      <Grid container justify={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
         <Grid item {... GRID_SIZES}>
           <PrimarySuccessButtonAsync onClick={() => handleSendNotifications(true)}
-                                     size={"large"} className={commonClasses.fullWidth}
+                                     size={"large"}
+                                     sx={{ width: "100%" }}
                                      data-testid={"waitinglist_notification_teams_open_messages_action"}>
             {t('admin:waitinglist_notification_teams_sendmessages')}
           </PrimarySuccessButtonAsync>
@@ -352,7 +334,7 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
             {t('admin:waitinglist_notification_teams_continue_without_messages')}
           </Button>
         </Grid>
-      </SpacingGrid>
+      </Grid>
     </>
   );
 }
@@ -392,10 +374,10 @@ function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssig
 
   return (
     <div data-testid={"waitinglist-team-for-assignment"}>
-      <SpacingPaper elevation={3} p={DIALOG_SPACING_X}>
+      <Paper elevation={3} sx={{ p: DIALOG_SPACING_X }}>
         <Subtitle><TeamNr {...team} /></Subtitle>
         { renderTeamMembers() }
-      </SpacingPaper>
+      </Paper>
       <Box my={2}>
         <small>{t("admin:waitinglist_assign_participants_teams_select_hint")}</small>
       </Box>
@@ -409,7 +391,6 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
 
   const {numMissingParticipantsForFullTeamArrangement, participtantsForTeamArrangement, remainingParticipants, runningDinner, onSave } = props;
 
-  const commonClasses = useCommonStyles();
   const {showWarning, showSuccess} = useCustomSnackbar();
   const {t} = useTranslation(['admin', 'common']);
 
@@ -480,8 +461,8 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
 
   return (
     <div data-testid={"waitinglist-teams-generation-view"}>
-      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"} px={DIALOG_SPACING_X}>
-        <SpacingGrid item {... GRID_SIZES} px={DIALOG_SPACING_X}>
+      <Grid container justify={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center" }}>
+        <Grid item {... GRID_SIZES} sx={{ px: DIALOG_SPACING_X }}>
           <Subtitle><Trans i18nKey={"admin:waitinglist_generate_teams_num_participants"} values={{ numParticipants: numParticipantsAssignable }}/></Subtitle>
           { numRemainingParticipants > 0 &&
             <Paragraph data-testid={"waitinglist-teams-generation-view-remaining-participants-hint"}>
@@ -489,27 +470,30 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
               <Trans i18nKey={"admin:waitinglist_generate_teams_num_participants_missing"} values={{ numMissingParticipantsForFullTeamArrangement }} />
             </Paragraph>
           }
-        </SpacingGrid>
-      </SpacingGrid>
+        </Grid>
+      </Grid>
 
-      <SpacingGrid container mt={DIALOG_SPACING_X} justify={"center"}>
-        <SpacingGrid item {... GRID_SIZES} px={DIALOG_SPACING_X} mb={DIALOG_SPACING_X}>
-          <SpacingPaper elevation={3} p={DIALOG_SPACING_X}>
+      <Grid container justify={"center"} sx={{ mt: DIALOG_SPACING_X, justifyContent: "center" }}>
+        <Grid item {... GRID_SIZES} sx={{ px: DIALOG_SPACING_X, mb: DIALOG_SPACING_X }}>
+          <Paper elevation={3} sx={{ p: DIALOG_SPACING_X }}>
             { participantsAssignableControls }
-          </SpacingPaper>
+          </Paper>
           <Box my={2}>
             <small>{t("admin:waitinglist_generate_teams_select_hint")}</small>
           </Box>
-        </SpacingGrid>
-      </SpacingGrid>
+        </Grid>
+      </Grid>
 
-      <SpacingGrid container justify={"center"}>
-        <SpacingGrid item {... GRID_SIZES} px={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
-          <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams} size={"large"} className={commonClasses.fullWidth} data-testid={"waitinglist-teams-generation-action"}>
+      <Grid container justify={"center"} sx={{ justifyContent: "center" }}>
+        <Grid item {... GRID_SIZES} sx={{ mt: DIALOG_SPACING_X, px: DIALOG_SPACING_X }}>
+          <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams}
+                                     size={"large"}
+                                     sx={{ width: "100%" }}
+                                     data-testid={"waitinglist-teams-generation-action"}>
             {t('admin:waitinglist_generate_teams')}
           </PrimarySuccessButtonAsync>
-        </SpacingGrid>
-      </SpacingGrid>
+        </Grid>
+      </Grid>
     </div>
   );
 }

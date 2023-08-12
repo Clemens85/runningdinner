@@ -30,7 +30,6 @@ export function WaitingListManagementAlert(props: WaitingListManagementAlertProp
   return (
     <>
       <Alert severity={"success"} variant="outlined">
-        {/*<AlertTitle>{t('participants_remaining_not_assignable_headline')}</AlertTitle>*/}
         {t(participantsWaitingListAlertMessage)}
         <Box mt={2}>
           <PrimaryButton onClick={open} data-testid={"open-waitinglist-view-action"}>{t('admin:waitinglist_management')}</PrimaryButton>
