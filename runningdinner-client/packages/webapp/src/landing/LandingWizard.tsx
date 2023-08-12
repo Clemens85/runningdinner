@@ -5,7 +5,7 @@ import {Box, Grid} from "@mui/material";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {DEMO_WIZARD_ROOT_PATH, WIZARD_ROOT_PATH} from "../common/mainnavigation/NavigationPaths";
 import { TeaserCard } from './TeaserCard';
-import {useLandingStyles} from "./LandingStyles";
+import {useLandingStyles, TeaserCardRow} from "./LandingStyles";
 
 export function LandingWizard() {
 
@@ -41,7 +41,7 @@ export function LandingWizard() {
       <Box pt={2}>
         <PageTitle>{t("common:features")}</PageTitle>
       </Box>
-      <div>
+      <TeaserCardRow>
         <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4}>
             <TeaserCard titleI18nKey={"common:visibilities"}>
@@ -72,9 +72,9 @@ export function LandingWizard() {
             </TeaserCard>
           </Grid>
         </Grid>
-      </div>
+      </TeaserCardRow>
 
-      <div>
+      <TeaserCardRow>
         <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4} >
             <TeaserCard titleI18nKey={"landing:mail_sending_personalized"}>
@@ -105,9 +105,9 @@ export function LandingWizard() {
             </TeaserCard>
           </Grid>
         </Grid>
-      </div>
+      </TeaserCardRow>
 
-      <div>
+      <TeaserCardRow>
         <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
           <Grid item xs={12} md={4} >
             <TeaserCard titleI18nKey={"common:Dashboard"}>
@@ -127,7 +127,7 @@ export function LandingWizard() {
             </TeaserCard>
           </Grid>
         </Grid>
-      </div>
+      </TeaserCardRow>
 
 
     </Box>

@@ -1,5 +1,10 @@
 import makeStyles from '@mui/styles/makeStyles';
 import bannerImg from "./images/banner-pan.jpg";
+import {styled} from "@mui/material/styles";
+
+export const TeaserCardRow = styled('div')(({theme}) => ({
+  marginBottom: theme.spacing(3)
+}));
 
 export const useLandingStyles = makeStyles((theme) => ({
   teaserCardRow: {
