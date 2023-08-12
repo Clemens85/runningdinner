@@ -33,18 +33,16 @@ import {
   deleteAfterPartyLocationAsync
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
-import { SpacingGrid } from '../../common/theme/SpacingGrid';
 import {BasicDinnerSettingsFormControl} from "../../common/dinnersettings/BasicDinnerSettingsFormControl";
 import {Fetch} from "../../common/Fetch";
 import {PageTitle, Span, Subtitle} from "../../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
-import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
+import {Box, Button, Grid, useMediaQuery, useTheme} from '@mui/material';
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { BasicSettingsChangeDialog, BasicSettingsChangeDialogData } from './BasicSettingsChangeDialog';
 import { useAdminNavigation } from '../AdminNavigationHook';
 import { PublicDinnerSettingsFormControl } from '../../common/dinnersettings/PublicDinnerSettingsFormControl';
-import useCommonStyles from '../../common/theme/CommonStyles';
 import SecondaryButton from '../../common/theme/SecondaryButton';
 import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
 import { Alert, AlertTitle } from '@mui/material';
@@ -74,7 +72,6 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
   const {t} = useTranslation(['common', 'admin']);
   const theme = useTheme();
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
-  const commonStyles = useCommonStyles();
 
   const dispatch = useDispatch();
 
@@ -126,25 +123,25 @@ function SettingsViewController({runningDinner, registrationTypes}: SettingsView
     <>
       <PageTitle>{t('common:settings')}</PageTitle>
       { !currentRunningDinner.cancellationDate && 
-        <SpacingGrid container>
-          <SpacingGrid item xs={12} className={commonStyles.textAlignRight} mt={-2} pb={1}>
+        <Grid container>
+          <Grid item xs={12} sx={{ mt: -2, pb: 1, textAlign: "right" }}>
             <Button onClick={openCancelEventDialog} color="secondary">{t('admin:settings_cancel_event')}</Button>
-          </SpacingGrid>
-        </SpacingGrid> 
+          </Grid>
+        </Grid>
       }
-      <SpacingGrid container>
-        <SpacingGrid item xs={12} md={7} pr={paddingRightOfLeftCol}>
+      <Grid container>
+        <Grid item xs={12} md={7} sx={{ pr: paddingRightOfLeftCol }}>
           <BasicDinnerSettingsView registrationTypes={registrationTypes} 
                                    runningDinner={currentRunningDinner} 
                                    onSettingsSaved={handleRunningDinnerUpdated} />
           <AfterPartyLocationSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
-        </SpacingGrid>
+        </Grid>
         { !isClosedDinner(currentRunningDinner) &&
-          <SpacingGrid item xs={12} md={5}>
+          <Grid item xs={12} md={5}>
             <PublicDinnerSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
-          </SpacingGrid>
+          </Grid>
         }
-      </SpacingGrid>
+      </Grid>
       { isCancelEventDialogOpen && <ConfirmationDialog onClose={handleCancelEventDialogClose} 
                                                        dialogContent={renderCancelEventDialogContent()}
                                                        dialogTitle={t('admin:event_cancel_headline')}
@@ -257,28 +254,28 @@ function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSa
     <>
       <FormProvider {...formMethods}>
         <form>
-          <SpacingGrid container>
-            <SpacingGrid item>
+          <Grid container>
+            <Grid item>
               <Box pb={2}>
                 <Subtitle i18n="admin:settings_basics"/>
               </Box>
               <BasicDinnerSettingsFormControl registrationTypes={registrationTypes} />
-            </SpacingGrid>
-          </SpacingGrid>
-          <SpacingGrid container>
-            <SpacingGrid item xs={12} mt={2}>
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={12} sx={{ mt: 2 }}>
               <FormCheckbox name="teamPartnerWishDisabled" 
                             label={<Trans i18nKey="team_partner_wish_disabled" ns="common" />} 
                             helperText={t("common:team_partner_wish_disabled_help")} />
-            </SpacingGrid>
-          </SpacingGrid>
-          <SpacingGrid container justify={"flex-end"}>
-            <SpacingGrid item pt={3} pb={6}>
+            </Grid>
+          </Grid>
+          <Grid container justify={"flex-end"} sx={{ justifyContent: "flex-end" }}>
+            <Grid item sx={{ pt: 3, pb: 6 }}>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitBasicDetailsAsync)}>
                 { t('common:save') }
               </PrimaryButton>
-            </SpacingGrid>
-          </SpacingGrid>
+            </Grid>
+          </Grid>
         </form>
       </FormProvider>
       { isBasicSettngsChangeDialogOpen && <BasicSettingsChangeDialog onCancel={closeBasicSettingsChangeDialog} 
@@ -295,8 +292,6 @@ function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: BaseRunningD
   const {publicSettings, adminId} = runningDinner;
   
   const {showSuccess} = useCustomSnackbar();
-
-  const commonStyles = useCommonStyles();
 
   const {open: openUpdateRegistrationStateDialog, isOpen: isUpdateRegistrationStateDialogOpen, close: closeUpdateRegistrationStateDialog} = useDisclosure();
 
@@ -361,23 +356,22 @@ function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: BaseRunningD
     <>
       <FormProvider {...formMethods}>
         <form>
-          <SpacingGrid container>
-            <SpacingGrid item xs={12}>
+          <Grid container>
+            <Grid item xs={12}>
               <Box pb={2}>
                 <Subtitle i18n="admin:settings_public_registration"/>
               </Box>
               <PublicDinnerSettingsFormControl mediumDeviceHalfSize={false} />
-            </SpacingGrid>
-          </SpacingGrid>
-          <SpacingGrid container justify={"flex-end"}>
-            <SpacingGrid item pt={3} pb={6}>
+            </Grid>
+          </Grid>
+          <Grid container justify={"flex-end"} sx={{ justifyContent: "flex-end" }}>
+            <Grid item sx={{ pt: 3, pb: 6 }}>
               <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}...</SecondaryButton>
-              <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} 
-                             className={commonStyles.buttonSpacingLeft}>
+              <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} sx={{ ml: 2}}>
                 { t('common:save') }
               </PrimaryButton>
-            </SpacingGrid>
-          </SpacingGrid>
+            </Grid>
+          </Grid>
         </form>
         { isUpdateRegistrationStateDialogOpen && <ConfirmationDialog onClose={handleUpdateRegistrationDialogSubmit} 
                                                                      dialogContent={getUpdateRegistrationStateDialogContentl()}
@@ -448,7 +442,6 @@ function AfterPartyLocationFormView({adminId, afterPartyLocation, onSettingsSave
 
   const {t} = useTranslation(['admin', 'common']);
 
-  const commonStyles = useCommonStyles();
   const {showSuccess} = useCustomSnackbar();
 
   const formMethods = useForm({
@@ -488,14 +481,13 @@ function AfterPartyLocationFormView({adminId, afterPartyLocation, onSettingsSave
       <FormProvider {...formMethods}>
         <form>
           <AfterPartyLocationFormControl />
-          <SpacingGrid container justify={"flex-end"}>
-            <SpacingGrid item pt={3} pb={6}>
-              <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitAfterPartyLocation)}
-                             className={commonStyles.buttonSpacingLeft}>
+          <Grid container justify={"flex-end"} sx={{ justifyContent: "flex-end" }}>
+            <Grid item sx={{ pt: 3, pb: 6, justifyContent: "flex-end" }}>
+              <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitAfterPartyLocation)} sx={{ ml: 2}}>
                 { t('common:save') }
               </PrimaryButton>
-            </SpacingGrid>
-          </SpacingGrid>
+            </Grid>
+          </Grid>
         </form>
       </FormProvider>
     </>
