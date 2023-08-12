@@ -36,23 +36,6 @@ export const SearchPublicEventsTeaserButton = styled(Button)({
   borderColor: 'rgba(255, 255, 255, 0.87)'
 });
 
-
-export const useLandingStyles = makeStyles((theme) => ({
-  teaserCardRow: {
-    [theme.breakpoints.up('md')]: {
-      maxHeight: "350px"
-    }
-  },
-  teaserSearchPublicEventsButton: {
-    borderWidth: "2px ! important",
-    color: 'rgba(255, 255, 255, 0.87)',
-    borderColor: 'rgba(255, 255, 255, 0.87)'
-  },
-  bannerTypographyWhite: {
-    color: 'rgba(255, 255, 255, 0.87)'
-  }
-}));
-
 export const usePaymentStyles = makeStyles((theme) => ({
   cardList: {
     margin: 0,

@@ -5,12 +5,11 @@ import {Box, Grid} from "@mui/material";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {DEMO_WIZARD_ROOT_PATH, WIZARD_ROOT_PATH} from "../common/mainnavigation/NavigationPaths";
 import { TeaserCard } from './TeaserCard';
-import {useLandingStyles, TeaserCardRow} from "./LandingStyles";
+import {TeaserCardRow} from "./LandingStyles";
 
 export function LandingWizard() {
 
   const {t} = useTranslation("landing");
-  const landingStyles = useLandingStyles();
 
   const gridSpacing = 6;
 
@@ -18,7 +17,7 @@ export function LandingWizard() {
     <Box pl={3} pr={3}>
       <PageTitle>{t("create_your_own_event_hedline")}</PageTitle>
       <div>
-        <Grid container spacing={gridSpacing} alignItems="stretch" className={landingStyles.teaserCardRow}>
+        <Grid container spacing={gridSpacing} alignItems="stretch">
           <Grid item xs={12} md={6}>
             <TeaserCard titleI18nKey={"quickstart"}>
               <Span i18n={"landing:quickstart_description"} />
@@ -42,7 +41,7 @@ export function LandingWizard() {
         <PageTitle>{t("common:features")}</PageTitle>
       </Box>
       <TeaserCardRow>
-        <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
+        <Grid container spacing={gridSpacing} alignItems={"stretch"}>
           <Grid item xs={12} md={4}>
             <TeaserCard titleI18nKey={"common:visibilities"}>
               <Span i18n={"landing:visibilities_text"} />
@@ -75,7 +74,7 @@ export function LandingWizard() {
       </TeaserCardRow>
 
       <TeaserCardRow>
-        <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
+        <Grid container spacing={gridSpacing} alignItems={"stretch"}>
           <Grid item xs={12} md={4} >
             <TeaserCard titleI18nKey={"landing:mail_sending_personalized"}>
               <Span i18n={"landing:mail_sending_personalized_description"} />
@@ -108,7 +107,7 @@ export function LandingWizard() {
       </TeaserCardRow>
 
       <TeaserCardRow>
-        <Grid container spacing={gridSpacing} alignItems={"stretch"} className={landingStyles.teaserCardRow}>
+        <Grid container spacing={gridSpacing} alignItems={"stretch"}>
           <Grid item xs={12} md={4} >
             <TeaserCard titleI18nKey={"common:Dashboard"}>
               <ul>
