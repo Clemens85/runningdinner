@@ -94,7 +94,7 @@ class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDia
           <DialogContent>
             <Box pt={2}>
               { showMessagesAlreadySentInfo &&
-                <Alert severity={"info"} data-testid="edit-meal-times-warning-messages-sent" sx={{ my: 2 }}>
+                <Alert severity={"info"} data-testid="edit-meal-times-warning-messages-sent" sx={{ mb: 5 }}>
                   <AlertTitle>{t('attention')}</AlertTitle>
                   {t('admin:attention_mealtimes_messages_already_sent')}
                 </Alert> }
