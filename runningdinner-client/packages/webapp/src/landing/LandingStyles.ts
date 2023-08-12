@@ -1,7 +1,7 @@
 import makeStyles from '@mui/styles/makeStyles';
 import bannerImg from "./images/banner-pan.jpg";
 import {styled} from "@mui/material/styles";
-import {Card} from "@mui/material";
+import {Button, Card, Typography} from "@mui/material";
 
 export const TeaserCardRow = styled('div')(({theme}) => ({
   marginBottom: theme.spacing(3)
@@ -13,6 +13,29 @@ export const CardFlexibleHeight = styled(Card)(({theme}) => ({
   }
 }));
 
+export const ExplanationBox = styled('div')(({theme}) => ({
+  backgroundColor: '#e6e6e6',
+  padding: theme.spacing(4)
+}));
+
+export const TypographyTransparentWhite = styled(Typography)(({theme}) => ({
+  color: 'rgba(255, 255, 255, 0.87)'
+}));
+
+export const Banner = styled('div')(({theme}) => ({
+  backgroundImage: `url(${bannerImg})`,
+  width: '100%',
+  backgroundSize: 'cover',
+  color: 'white',
+  marginBottom: theme.spacing(4)
+}));
+
+export const SearchPublicEventsTeaserButton = styled(Button)({
+  borderWidth: "2px ! important",
+  color: 'rgba(255, 255, 255, 0.87)',
+  borderColor: 'rgba(255, 255, 255, 0.87)'
+});
+
 
 export const useLandingStyles = makeStyles((theme) => ({
   teaserCardRow: {
@@ -20,28 +43,13 @@ export const useLandingStyles = makeStyles((theme) => ({
       maxHeight: "350px"
     }
   },
-  banner: {
-    // backgroundImage: `linear-gradient(to bottom, rgba(153, 153, 153, 0.8), rgba(250, 250, 250, 1)), url(${bannerImg})`,
-    backgroundImage: `url(${bannerImg})`,
-    width: '100%',
-    backgroundSize: 'cover',
-    color: 'white',
-    marginBottom: theme.spacing(4)
-  },
   teaserSearchPublicEventsButton: {
     borderWidth: "2px ! important",
     color: 'rgba(255, 255, 255, 0.87)',
     borderColor: 'rgba(255, 255, 255, 0.87)'
   },
-  teaserExplanationBox: {
-    backgroundColor: '#e6e6e6',
-    padding: theme.spacing(4)
-  },
   bannerTypographyWhite: {
     color: 'rgba(255, 255, 255, 0.87)'
-  },
-  teaserExplanationIconPadding: {
-    marginRight: theme.spacing(2)
   }
 }));
 

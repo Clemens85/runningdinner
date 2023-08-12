@@ -6,7 +6,7 @@ import { TeaserCard } from './TeaserCard';
 import {PrimaryRouterButton} from "../common/theme/PrimaryButton";
 import {Link as RouterLink} from "react-router-dom";
 import { Button } from '@mui/material';
-import {useLandingStyles} from "./LandingStyles";
+import {ExplanationBox} from "./LandingStyles";
 import {
   IMPRESSUM_PATH,
   LANDING_CREATE_RUNNING_DINNER_PATH,
@@ -38,7 +38,6 @@ export function LandingStart() {
 
   const theme = useTheme();
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
-  const landingStyles = useLandingStyles();
 
   const [imageWidth, setImageWidth] = React.useState(250);
 
@@ -67,31 +66,31 @@ export function LandingStart() {
         </SpacingGrid>
       </Container>
 
-      <div className={landingStyles.teaserExplanationBox}>
+      <ExplanationBox>
         <SpacingGrid container mb={4} mt={2} justify='center' spacing={4}>
           <SpacingGrid item xs={12} md={6}>
             <Box my={2} display="flex" alignItems={"center"}>
-              <GroupIcon color="primary" className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
+              <GroupIcon color="primary" sx={{ mr: 2 }} fontSize='large'/>
               <Paragraph i18n="landing:teaser_workflow_team_generation" />
             </Box>
             <Box my={2} display="flex" alignItems={"center"}>
-              <FastfoodIcon color="primary" className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
+              <FastfoodIcon color="primary" sx={{ mr: 2 }} fontSize='large'/>
               <Paragraph i18n="landing:teaser_workflow_team_meals" />
             </Box>
             <Box my={2} display="flex" alignItems={"center"}>
-              <EventSeatIcon fontSize='large' color='primary' className={landingStyles.teaserExplanationIconPadding}/>
+              <EventSeatIcon fontSize='large' color='primary' sx={{ mr: 2 }} />
               <Paragraph i18n="landing:teaser_workflow_team_host" />
             </Box>
             <Box my={2} display="flex" alignItems={"center"}>
-              <EventSeatIcon fontSize='large' color='primary' className={landingStyles.teaserExplanationIconPadding}/>
+              <EventSeatIcon fontSize='large' color='primary' sx={{ mr: 2 }} />
               <Paragraph i18n="landing:teaser_workflow_team_guest" />
             </Box>
             <Box my={2} display={"flex"} alignItems={"center"}>
-              <DirectionsRunIcon color='primary' className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
+              <DirectionsRunIcon color='primary' sx={{ mr: 2 }} fontSize='large'/>
               <Paragraph i18n="landing:teaser_workflow_dinner_route" />
             </Box>
             <Box mt={2} display={"flex"} alignItems={"center"}>
-              <LocalBarIcon color="primary" className={landingStyles.teaserExplanationIconPadding} fontSize='large'/>
+              <LocalBarIcon color="primary" sx={{ mr: 2 }} fontSize='large'/>
               <Paragraph i18n="landing:teaser_workflow_dinner_route_finish" />
             </Box>
           </SpacingGrid>
@@ -111,7 +110,7 @@ export function LandingStart() {
             </Box>
           </SpacingGrid>
         </SpacingGrid>
-      </div>
+      </ExplanationBox>
 
       <Container maxWidth={false}>
         <SpacingGrid container spacing={6} mt={2}>
