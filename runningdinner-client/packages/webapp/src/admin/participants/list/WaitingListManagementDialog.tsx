@@ -40,7 +40,6 @@ import {CancelledTeamMember} from "../../teams/CancelledTeamMember";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 import {TransitionProps} from '@mui/material/transitions';
 import CloseIcon from '@mui/icons-material/Close';
-import useCommonStyles from "../../../common/theme/CommonStyles";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {PrimarySuccessButtonAsync} from "../../../common/theme/PrimarySuccessButtonAsync";
 import { Breakpoint } from '@mui/material/styles';
@@ -281,7 +280,6 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
 function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteMessagesAlreadySent, onSave}: TeamNotificationModel & SaveCallback & BaseRunningDinnerProps) {
 
   const {t} = useTranslation(["admin", "common"]);
-  const commonClasses = useCommonStyles();
   const {generateTeamMessagesPath} = useAdminNavigation();
   const {getTeamNameMembers} = useTeamNameMembers();
 
