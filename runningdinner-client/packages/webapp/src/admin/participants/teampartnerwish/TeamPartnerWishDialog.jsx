@@ -15,7 +15,6 @@ import {
 } from "./TeamPartnerWishAction";
 import {SecondaryButtonAsync} from "../../../common/theme/SecondaryButtonAsync";
 import Grid from "@mui/material/Grid";
-import useCommonStyles from "../../../common/theme/CommonStyles";
 import {getFullname, isClosedDinner, CONSTANTS} from "@runningdinner/shared";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 
@@ -132,7 +131,6 @@ const useDialogButtonStyles = makeStyles((theme) => ({
 function DialogButtons({sendInvitationButton, createNewParticipantButton, updateTeamPartnerWishButton, cancelButton}) {
 
   const dialogButtonStyles = useDialogButtonStyles();
-  const commonStyles = useCommonStyles();
 
   const theme = useTheme();
   const isDesktopView = useMediaQuery(theme.breakpoints.up('md'));
@@ -155,7 +153,7 @@ function DialogButtons({sendInvitationButton, createNewParticipantButton, update
           { createNewParticipantButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ createNewParticipantButton }</Grid> }
           { sendInvitationButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ sendInvitationButton }</Grid> }
           { updateTeamPartnerWishButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ updateTeamPartnerWishButton }</Grid> }
-          <Grid item xs={12} className={commonStyles.textAlignCenter}>{ cancelButton }</Grid>
+          <Grid item xs={12} sx={{ textAlign: "center" }}>{ cancelButton }</Grid>
         </Grid>
       </Box>
     );

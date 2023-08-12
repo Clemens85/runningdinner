@@ -1,9 +1,6 @@
 import makeStyles from '@mui/styles/makeStyles';
 
 const useCommonStyles = makeStyles((theme) => ({
-  textAlignCenter: {
-    textAlign: 'center'
-  },
   textAlignRight: {
     textAlign: 'right'
   },
