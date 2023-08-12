@@ -32,8 +32,8 @@ export const Banner = styled('div')(({theme}) => ({
 
 export const SearchPublicEventsTeaserButton = styled(Button)({
   borderWidth: "2px ! important",
-  color: 'rgba(255, 255, 255, 0.87)',
-  borderColor: 'rgba(255, 255, 255, 0.87)'
+  color: 'rgba(255, 255, 255, 0.9)',
+  borderColor: 'rgba(255, 255, 255, 0.9)'
 });
 
 export const usePaymentStyles = makeStyles((theme) => ({
