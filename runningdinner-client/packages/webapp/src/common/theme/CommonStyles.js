@@ -1,6 +1,6 @@
 import makeStyles from '@mui/styles/makeStyles';
 import {styled} from "@mui/material/styles";
-import {TableCell, TableRow} from "@mui/material";
+import {Paper, TableCell, TableRow} from "@mui/material";
 
 export const TableRowWithCursor = styled(TableRow)({
   cursor: "pointer"
@@ -14,6 +14,9 @@ export const TableCellBorderBottomNullable = styled(TableCell, {
   })
 }));
 
+export const PaperGrey = styled(Paper)({
+  backgroundColor: '#eee',
+});
 
 const useCommonStyles = makeStyles((theme) => ({
   textAlignRight: {

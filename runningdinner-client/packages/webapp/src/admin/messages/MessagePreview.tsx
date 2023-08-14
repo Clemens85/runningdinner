@@ -1,5 +1,4 @@
 import React from "react";
-import {PaperGrey} from "../../common/theme/PaperGrey";
 import {Box, FormControl, InputLabel, LinearProgress, MenuItem, Select, Typography} from "@mui/material";
 import SendToMeButton from "./SendToMeButton";
 import {Span, Subtitle, Title} from "../../common/theme/typography/Tags";
@@ -19,6 +18,7 @@ import {
 import {FetchStatus} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {TextViewHtml} from "../../common/TextViewHtml";
+import {PaperGrey} from "../../common/theme/CommonStyles";
 
 export function MessagePreview({adminId, messageType}: MessageTypeAdminIdPayload) {
 
