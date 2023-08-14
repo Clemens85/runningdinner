@@ -22,12 +22,10 @@ import {
   useGeocoder,
   useTeamName
 } from "@runningdinner/shared";
-import { Box, LinearProgress, Typography } from '@mui/material';
+import {Box, Grid, LinearProgress, Paper, Typography} from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import {SpacingGrid} from '../theme/SpacingGrid';
 import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
-import { SpacingPaper } from '../theme/SpacingPaper';
 import clsx from "clsx";
 import {GoogleMap, InfoWindow, Marker, Polyline} from '@react-google-maps/api';
 import {LoadScript} from "@react-google-maps/api";
@@ -50,35 +48,35 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
   const {mealSpecificsOfGuestTeams, teams, afterPartyLocation} = dinnerRoute;
 
   const teamCardNodes = teams.map((team, index) =>
-    <SpacingGrid item xs={12} md={4} key={team.teamNumber}>
+    <Grid item xs={12} md={4} key={team.teamNumber}>
       <TeamCard dinnerRouteTeam={team}
                 isCurrentTeam={team.teamNumber === dinnerRoute.currentTeam.teamNumber}
                 positionInRoute={index + 1}/>
-    </SpacingGrid>
+    </Grid>
   );
 
   return (
       <>
-        <SpacingGrid container>
+        <Grid container>
           { isStringNotEmpty(mealSpecificsOfGuestTeams) &&
-            <SpacingGrid item xs={12} mb={2}>
+            <Grid item xs={12} sx={{ mb: 2 }}>
               <Subtitle><TextViewHtml text={mealSpecificsOfGuestTeams} /></Subtitle>
-            </SpacingGrid>
+            </Grid>
           }
-          <SpacingGrid container mb={2} spacing={4}>
+          <Grid container spacing={4} sx={{ mb: 4 }}>
             {teamCardNodes}
-          </SpacingGrid>
+          </Grid>
           { afterPartyLocation && isAfterPartyLocationDefined(afterPartyLocation) &&
-            <SpacingGrid container mb={1} spacing={4}>
-              <SpacingGrid item xs={12}>
+            <Grid container spacing={4}  sx={{ mb: 1 }}>
+              <Grid item xs={12}>
                 <AfterPartyLocationCard {...afterPartyLocation} />
-              </SpacingGrid>
-            </SpacingGrid>
+              </Grid>
+            </Grid>
           }
-          <SpacingGrid item xs={12} mb={2}>
+          <Grid item xs={12} sx={{ mb: 2 }}>
             <MapContainer dinnerRoute={dinnerRoute} />
-          </SpacingGrid>
-        </SpacingGrid>
+          </Grid>
+        </Grid>
         <Helmet>
           <title>Run Your Dinner - Dinner Route</title>
         </Helmet>
@@ -125,10 +123,10 @@ function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardPro
                               <Typography variant={"body2"} component={"span"}>{t('common:with_you')}</Typography>
                            </Box> }
       </PageTitle>
-      <SpacingPaper elevation={3} p={2}>
+      <Paper elevation={3} sx={{ p:2 }}>
         {isCancelled && <Subtitle i18n={"cancelled"} color="error" />}
         {!isCancelled && <TeamCardDetails {...dinnerRouteTeam} isCurrentTeam={isCurrentTeam} /> }
-      </SpacingPaper>
+      </Paper>
     </>
   );
 }
