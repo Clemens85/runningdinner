@@ -76,6 +76,7 @@ function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
         <FormSelect name={name}
                     onChange={handleRecipientSelectionChange}
                     label={label}
+                    variant={"outlined"}
                     displayEmpty
                     fullWidth>
           { recipientSelectionOptions.map((selectionOption) =>
@@ -120,10 +121,12 @@ function SelectionHelperText({messageType, currentSelection, customSelectedEntit
     const label = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? t('admin:participant_selection_single_selection_text') : t('admin:team_selection_single_selection_text');
     return <>
       <Typography variant={"subtitle2"}>
-        {label} <IconButton
-        onClick={onEditCustomSelectedEntities}
-        aria-label={t("common:change")}
-        size="large"><EditIcon /></IconButton>
+        {label}
+        <IconButton onClick={onEditCustomSelectedEntities}
+                    aria-label={t("common:change")}
+                    size="large">
+          <EditIcon />
+        </IconButton>
       </Typography>
       {customSelectEntitiesList}
     </>;
@@ -131,14 +134,14 @@ function SelectionHelperText({messageType, currentSelection, customSelectedEntit
 
   if (messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS) {
     if (currentSelection === CONSTANTS.PARTICIPANT_SELECTION.ASSIGNED_TO_TEAM) {
-      return <Span html={true} i18n="admin:participant_selection_assigned_to_teams_text" parameters={{numberOfSelectedParticipants: numberOfSelectedRecipients}}/>;
+      return <Box sx={{ mt: 1}}><Span html={true} i18n="admin:participant_selection_assigned_to_teams_text" parameters={{numberOfSelectedParticipants: numberOfSelectedRecipients}}/></Box>;
     } else if (currentSelection === CONSTANTS.PARTICIPANT_SELECTION.NOT_ASSIGNED_TO_TEAM) {
-      return <Span html={true} i18n="admin:participant_selection_not_assigned_to_teams_text" parameters={{numberOfSelectedParticipants: numberOfSelectedRecipients}}/>;
+      return <Box sx={{ mt: 1}}><Span html={true} i18n="admin:participant_selection_not_assigned_to_teams_text" parameters={{numberOfSelectedParticipants: numberOfSelectedRecipients}}/></Box>;
     } else {
-      return <Span html={true} i18n="admin:participant_selection_all_text" parameters={{numberOfSelectedParticipants: numberOfSelectedRecipients}}/>;
+      return <Box sx={{ mt: 1}}><Span html={true} i18n="admin:participant_selection_all_text" parameters={{numberOfSelectedParticipants: numberOfSelectedRecipients}}/></Box>;
     }
   } else {
-    return <Span html={true} i18n="admin:team_selection_all_text" parameters={{numTeams: numberOfSelectedRecipients}}/>;
+    return <Box sx={{ mt: 1}}><Span html={true} i18n="admin:team_selection_all_text" parameters={{numTeams: numberOfSelectedRecipients}}/></Box>;
   }
 }
 

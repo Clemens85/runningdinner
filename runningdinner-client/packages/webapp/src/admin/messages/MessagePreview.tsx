@@ -103,10 +103,11 @@ function PreviewSelection({recipients, selectedRecipient, onSelectionChange}: Pr
 
   const selectionLabel = t('admin:messages_preview_selection');
   return (
-    <FormControl variant="standard" fullWidth>
+    <FormControl variant="outlined" fullWidth>
       <InputLabel>{selectionLabel}</InputLabel>
       <Select
-        variant="standard"
+        variant="outlined"
+        label={selectionLabel}
         autoWidth
         value={selectedValue}
         onChange={handleChange}

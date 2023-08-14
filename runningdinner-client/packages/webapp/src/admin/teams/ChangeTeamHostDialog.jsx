@@ -65,7 +65,7 @@ export const ChangeTeamHostDialog = ({adminId, team, isOpen, onClose, onTeamHost
           <Subtitle i18n="admin:team" parameters={{ teamNumber }} />
           <FormControl variant="standard" fullWidth>
             <Select
-              variant="standard"
+              variant="outlined"
               name="teamHost"
               onChange={handleTeamHostChange}
               value={selectedHostTeamMember.id}>

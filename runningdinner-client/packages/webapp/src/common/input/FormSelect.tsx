@@ -30,6 +30,7 @@ function FormSelectInternal({name, label, children, helperText, fullWidth, varia
                 <InputLabel required>{label}</InputLabel>
                 <Select
                   {...Object.assign({}, props, other)}
+                  label={label}
                   variant={variant}
                   inputProps={{ 'aria-label': label }}>
                   {children}

@@ -26,7 +26,7 @@ export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerS
       <SpacingGrid container>
         <SpacingGrid item xs={12} md={6}>
           <FormSelect name="registrationType"
-                      variant={"standard"}
+                      variant={"outlined"}
                       label={t('common:registration_type')}
                       helperText={getByValue(selectedRegistrationTypeValue, registrationTypes)?.description}
                       fullWidth>

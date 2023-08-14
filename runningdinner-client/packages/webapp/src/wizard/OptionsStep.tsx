@@ -124,7 +124,7 @@ function TeamSettings() {
         <FormCheckbox name="forceEqualDistributedCapacityTeams" label={t("team_distribution_force_equl_hosting")} helperText={t("team_distribution_help")}/>
       </SpacingGrid>
       <SpacingGrid item xs={12} mt={3}>
-        <FormSelect variant={"standard"} name="genderAspects" label={t("gender_aspects")} fullWidth>
+        <FormSelect name="genderAspects" label={t("gender_aspects")} variant={"outlined"} fullWidth>
           { genderAspects.map(genderAspect => <MenuItem key={genderAspect.value} value={genderAspect.value}>{genderAspect.label}</MenuItem>) }
         </FormSelect>
       </SpacingGrid>
