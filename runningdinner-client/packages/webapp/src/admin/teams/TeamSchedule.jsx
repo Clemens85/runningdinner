@@ -285,7 +285,7 @@ function ScheduledMealTimeline({xs, md}) {
   return (
     <>
       <Grid item xs={xs} md={md} />
-      <Grid item xs={xs} md={md} className={classes.scheduleRowTimeLine} style={{ paddingTop: '0px', paddingBottom: '0px'}}>
+      <Grid item xs={xs} md={md} className={classes.scheduleRowTimeLine}>
         <Box borderRight={2} className={classes.scheduleRowTimeLineBox} />
       </Grid>
       <Grid item xs={xs} md={md} />
