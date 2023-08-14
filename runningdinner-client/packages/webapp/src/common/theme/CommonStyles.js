@@ -1,11 +1,15 @@
 import makeStyles from '@mui/styles/makeStyles';
+import {styled} from "@mui/material/styles";
+import {TableRow} from "@mui/material";
+
+export const TableRowWithCursor = styled(TableRow)({
+  cursor: "pointer"
+});
+
 
 const useCommonStyles = makeStyles((theme) => ({
   textAlignRight: {
     textAlign: 'right'
-  },
-  cursorPointer: {
-    cursor: "pointer"
   },
   fullWidth: {
     width: "100%"
@@ -16,17 +20,11 @@ const useCommonStyles = makeStyles((theme) => ({
   buttonSpacingLeft: {
     marginLeft: theme.spacing(2)
   },
-  textTransformUppercase: {
-    textTransform: 'uppercase',
-  },
   colorSecondary: {
     color: theme.palette.secondary.main
   },
   bottomBorderNone: {
     borderBottom: "none"
-  },
-  paddingTopNone: {
-    paddingTop: 0
   }
 }));
 

@@ -1,4 +1,4 @@
-import {TableRow, TableCell, Hidden, Button} from "@mui/material";
+import {TableCell, Hidden, Button} from "@mui/material";
 import React from "react";
 import NumSeats from "../participants/list/NumSeats";
 import ParticipantGenderTooltip from "../../common/gender/ParticipantGenderTooltip";
@@ -7,7 +7,7 @@ import {useDrag, useDrop} from "react-dnd";
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import makeStyles from '@mui/styles/makeStyles';
 import {CancelledTeamMember} from "./CancelledTeamMember";
-import useCommonStyles from "../../common/theme/CommonStyles";
+import {TableRowWithCursor} from "../../common/theme/CommonStyles";
 import {
   generateCancelledTeamMembersAsNumberArray,
   CONSTANTS,
@@ -25,7 +25,6 @@ const useParticipantStyles = makeStyles(() => ({
 
 export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTeamHostDialog, selected, runningDinnerSessionData, teamSize}) {
 
-  const classes = useCommonStyles();
   const participantClasses = useParticipantStyles();
 
   const {teamNumber, teamMembers, meal, hostTeamMember } = team;
@@ -59,7 +58,7 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
   const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
 
   return (
-    <TableRow hover className={classes.cursorPointer} onClick={() => onClick(team)} selected={selected} data-testid="team-row">
+    <TableRowWithCursor hover onClick={() => onClick(team)} selected={selected} data-testid="team-row">
       <TableCell>{teamNumber}</TableCell>
       <TableCell>{isCancelled ? <CancelledTeamMember /> : teamMemberNames }</TableCell>
       <Hidden smDown>
@@ -73,7 +72,7 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
         </TableCell>
         <TableCell><TeamPartnerWishIcon team={team} showLabelAsTooltip={true} /></TableCell>
       </Hidden>
-    </TableRow>
+    </TableRowWithCursor>
   );
 }
 

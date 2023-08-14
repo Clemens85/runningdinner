@@ -1,9 +1,9 @@
 import React from 'react'
-import {Hidden, TableCell, TableRow, Tooltip, useMediaQuery, useTheme} from "@mui/material";
+import {Hidden, TableCell, Tooltip, useMediaQuery, useTheme} from "@mui/material";
 import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
 import NumSeats from "./NumSeats";
-import useCommonStyles from "../../../common/theme/CommonStyles";
+import useCommonStyles, {TableRowWithCursor} from "../../../common/theme/CommonStyles";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import {
   AddressLocation,
@@ -44,15 +44,15 @@ export default function ParticipantRow({participant, selected, onClick, showMisc
 
   return (
       <>
-        <TableRow hover className={classes.cursorPointer} onClick={() => onClick(participant)} selected={selected} data-testid="participant-row">
+        <TableRowWithCursor hover onClick={() => onClick(participant)} selected={selected} data-testid="participant-row">
             <TableCell className={tableCellClass} data-testid={"participant-number"}>{listNumber}</TableCell>
             <TableCell className={tableCellClass}><Fullname {...participant} /></TableCell>
             <ParticipantDetailCells participant={participant} selected={selected} runningDinnerSessionData={runningDinnerSessionData} showMiscNotes={showMiscNotes} />
-        </TableRow>
+        </TableRowWithCursor>
         { showMiscNotesForParticipant &&
-          <TableRow hover className={classes.cursorPointer} onClick={() => onClick(participant)} selected={selected}>
-            <TableCell colSpan={cellsToShow} className={classes.paddingTopNone}><cite><Span>{participant.notes}</Span></cite></TableCell>
-          </TableRow>
+          <TableRowWithCursor hover onClick={() => onClick(participant)} selected={selected}>
+            <TableCell colSpan={cellsToShow} sx={{ pt: 0 }}><cite><Span>{participant.notes}</Span></cite></TableCell>
+          </TableRowWithCursor>
         }
       </>
   );

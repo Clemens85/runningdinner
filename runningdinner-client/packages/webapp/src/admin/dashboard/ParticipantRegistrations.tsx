@@ -30,7 +30,6 @@ import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 import DoneIcon from "@mui/icons-material/Done";
 import {useAdminNavigation} from "../AdminNavigationHook";
-import useCommonStyles from "../../common/theme/CommonStyles";
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
 
 export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps) {
@@ -93,7 +92,6 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
   const {t} = useTranslation(["admin", "common"]);
   const {activityDate, originator, relatedEntityId: participantId, relatedParticipantNotActivated} = participantActivity;
   const {navigateToParticipant} = useAdminNavigation();
-  const commonStyles = useCommonStyles();
 
   function renderParticipantActivityDetails() {
     return (
@@ -121,7 +119,7 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
   }
 
   return (
-    <ListItem divider={true} onClick={handleClick} className={`${relatedParticipantNotActivated ? '' : commonStyles.cursorPointer}`}>
+    <ListItem divider={true} onClick={handleClick} sx={{ cursor: relatedParticipantNotActivated ? 'auto' : "pointer" }}>
       <ListItemText primary={<Typography variant={"subtitle2"}>{originator}</Typography>}
                     secondary={renderParticipantActivityDetails()} />
       { relatedParticipantNotActivated ?

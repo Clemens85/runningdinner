@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, LinearProgress, Paper, TableCell, TableRow} from "@mui/material";
+import {Box, LinearProgress, Paper, TableCell} from "@mui/material";
 import {Span, Subtitle} from "../../../common/theme/typography/Tags";
 import {
   formatLocalDateWithSeconds,
@@ -18,7 +18,7 @@ import {
 import Grid from "@mui/material/Grid";
 import {MessageJobStatus} from "./MessageJobStatus";
 import Paragraph from "../../../common/theme/typography/Paragraph";
-import useCommonStyles from "../../../common/theme/CommonStyles";
+import {TableRowWithCursor} from "../../../common/theme/CommonStyles";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -39,7 +39,6 @@ export function MessageJobsOverview({adminId}: MessageTypeAdminIdPayload) {
   }, [messageJobs, lastPollDate, messageJobsFetchStatus, dispatch]);
 
   const lastPollDateFormatted = formatLocalDateWithSeconds(lastPollDate);
-  const classes = useCommonStyles();
 
   if (!messageJobs) {
     return <LinearProgress color="secondary" />;
@@ -62,7 +61,7 @@ export function MessageJobsOverview({adminId}: MessageTypeAdminIdPayload) {
                   <Grid item><HelpIconTooltip title={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' /></Grid>
                 </Grid>
               </Grid> }
-            <Grid item className={classes.textAlignRight}>
+            <Grid item sx={{ textAlign: "right" }}>
               <i><Span i18n="admin:protocols_last_update_text" parameters={{ lastPollDate: lastPollDateFormatted }} /></i>
             </Grid>
           </Grid>
@@ -98,7 +97,6 @@ interface MessageJobRowProps {
 }
 function MessageJobRow({adminId, messageJob}: MessageJobRowProps) {
 
-  const classes = useCommonStyles();
   const {generateMessageJobDetailsPath} = useAdminNavigation();
 
   const handleMessageJobClick = () => {
@@ -106,16 +104,16 @@ function MessageJobRow({adminId, messageJob}: MessageJobRowProps) {
   };
 
   return (
-      <TableRow hover onClick={handleMessageJobClick} className={classes.cursorPointer}>
+      <TableRowWithCursor hover onClick={handleMessageJobClick}>
         <TableCell>
           <MessageJobStatus messageJobOrTask={messageJob} />
         </TableCell>
         <TableCell>
           <Span i18n="admin:protocols_messages_size_text" parameters={{ numberOfMessageTasks: messageJob.numberOfMessageTasks }} />
         </TableCell>
-        <TableCell className={classes.textAlignRight}>
+        <TableCell sx={{ textAlign: "right" }}>
           <LocalDate date={messageJob.createdAt} /> <Time date={messageJob.createdAt} />
         </TableCell>
-      </TableRow>
+      </TableRowWithCursor>
   );
 }

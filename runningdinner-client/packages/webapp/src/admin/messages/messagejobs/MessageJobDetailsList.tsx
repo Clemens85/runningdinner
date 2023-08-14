@@ -48,7 +48,7 @@ import toLower from "lodash/toLower";
 import cloneDeep from "lodash/cloneDeep";
 import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
 import Paragraph from "../../../common/theme/typography/Paragraph";
-import useCommonStyles from "../../../common/theme/CommonStyles";
+import {TableRowWithCursor} from "../../../common/theme/CommonStyles";
 import {MessageJobStatus} from "./MessageJobStatus";
 import {EmptyDetails} from "../../common/EmptyDetails";
 import FormFieldset from "../../../common/theme/FormFieldset";
@@ -173,13 +173,11 @@ function MessageTasksTable({messageTasks, onSelectMessageTask, selectedMessageTa
 
   const {t} = useTranslation(['admin', 'common']);
 
-  const classes = useCommonStyles();
-
   function messageTaskTableRow(messageTask: MessageTask) {
     return (
-      <TableRow key={messageTask.id} hover className={classes.cursorPointer}
-                onClick={() => onSelectMessageTask(messageTask)}
-                selected={isSameEntity(messageTask, selectedMessageTask)}>
+      <TableRowWithCursor key={messageTask.id} hover
+                          onClick={() => onSelectMessageTask(messageTask)}
+                          selected={isSameEntity(messageTask, selectedMessageTask)}>
         <Hidden smDown>
           <TableCell><MessageJobStatus messageJobOrTask={messageTask} /></TableCell>
           <TableCell>{messageTask.recipientEmail}</TableCell>
@@ -199,7 +197,7 @@ function MessageTasksTable({messageTasks, onSelectMessageTask, selectedMessageTa
         <Hidden smDown>
           <TableCell><MessageContentView messageTask={messageTask} truncateMessageContentToNumChars={48} /></TableCell>
         </Hidden>
-      </TableRow>
+      </TableRowWithCursor>
     );
   }
   return (
