@@ -1,10 +1,18 @@
 import makeStyles from '@mui/styles/makeStyles';
 import {styled} from "@mui/material/styles";
-import {TableRow} from "@mui/material";
+import {TableCell, TableRow} from "@mui/material";
 
 export const TableRowWithCursor = styled(TableRow)({
   cursor: "pointer"
 });
+
+export const TableCellBorderBottomNullable = styled(TableCell, {
+  shouldForwardProp: (prop) => prop !== 'borderBottomNone',
+})(({ borderBottomNone, theme }) => ({
+  ...(borderBottomNone && {
+    borderBottom: "none"
+  })
+}));
 
 
 const useCommonStyles = makeStyles((theme) => ({
@@ -22,9 +30,6 @@ const useCommonStyles = makeStyles((theme) => ({
   },
   colorSecondary: {
     color: theme.palette.secondary.main
-  },
-  bottomBorderNone: {
-    borderBottom: "none"
   }
 }));
 

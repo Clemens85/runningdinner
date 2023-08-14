@@ -3,7 +3,7 @@ import {Hidden, TableCell, Tooltip, useMediaQuery, useTheme} from "@mui/material
 import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
 import NumSeats from "./NumSeats";
-import useCommonStyles, {TableRowWithCursor} from "../../../common/theme/CommonStyles";
+import {TableCellBorderBottomNullable, TableRowWithCursor} from "../../../common/theme/CommonStyles";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import {
   AddressLocation,
@@ -31,22 +31,19 @@ type ParticipantRowProps = {
 
 export default function ParticipantRow({participant, selected, onClick, showMiscNotes, runningDinnerSessionData}: ParticipantRowProps & ParticipantClickCallback) {
 
-  const classes = useCommonStyles();
-
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('sm'));
 
   const {listNumber} = participant;
 
   const showMiscNotesForParticipant = showMiscNotes && isStringNotEmpty(participant.notes);
-  const tableCellClass = showMiscNotesForParticipant ? classes.bottomBorderNone : "";
   const cellsToShow = isSmallDevice ? 2 : 7;
 
   return (
       <>
         <TableRowWithCursor hover onClick={() => onClick(participant)} selected={selected} data-testid="participant-row">
-            <TableCell className={tableCellClass} data-testid={"participant-number"}>{listNumber}</TableCell>
-            <TableCell className={tableCellClass}><Fullname {...participant} /></TableCell>
+            <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} data-testid={"participant-number"}>{listNumber}</TableCellBorderBottomNullable>
+            <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><Fullname {...participant} /></TableCellBorderBottomNullable>
             <ParticipantDetailCells participant={participant} selected={selected} runningDinnerSessionData={runningDinnerSessionData} showMiscNotes={showMiscNotes} />
         </TableRowWithCursor>
         { showMiscNotesForParticipant &&
@@ -68,33 +65,30 @@ function ParticipantDetailCells({participant, runningDinnerSessionData, showMisc
   const {gender} = participant;
   const {email} = participant;
 
-  const classes = useCommonStyles();
-
   const showMiscNotesForParticipant = showMiscNotes && isStringNotEmpty(participant.notes);
-  const tableCellClass = showMiscNotesForParticipant ? classes.bottomBorderNone : "";
 
   return (
     <Hidden smDown>
       { teamPartnerWishChild &&
         <>
-          <TableCell colSpan={4} className={tableCellClass}>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} colSpan={4}>
             {t("admin:team_partner_wish_registration_child_participant_root_info_1", { fullname: getFullname(participant.rootTeamPartnerWish!) })}
-          </TableCell>
-          <TableCell className={tableCellClass}><ParticipantTeamPartnerWishIcon {...participant} /></TableCell>
+          </TableCellBorderBottomNullable>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><ParticipantTeamPartnerWishIcon {...participant} /></TableCellBorderBottomNullable>
         </>
       }
       { !teamPartnerWishChild &&
         <>
-          <TableCell className={tableCellClass}>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}>
             <ParticipantGenderTooltip gender={gender}>
               <ParticipantGenderIcon gender={gender} />
             </ParticipantGenderTooltip>
-          </TableCell>
-          <TableCell className={tableCellClass}>{email}</TableCell>
-          <TableCell className={tableCellClass}><AddressLocation {...participant} /></TableCell>
-          <TableCell className={tableCellClass} ><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} /></TableCell>
-          { showTeamPartnerInfo && <TableCell className={tableCellClass}><ParticipantTeamPartnerWishIcon {...participant} /></TableCell> }
-          { !showTeamPartnerInfo && <TableCell className={tableCellClass}></TableCell> }
+          </TableCellBorderBottomNullable>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}>{email}</TableCellBorderBottomNullable>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><AddressLocation {...participant} /></TableCellBorderBottomNullable>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} /></TableCellBorderBottomNullable>
+          { showTeamPartnerInfo && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><ParticipantTeamPartnerWishIcon {...participant} /></TableCellBorderBottomNullable> }
+          { !showTeamPartnerInfo && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}></TableCellBorderBottomNullable> }
         </>
       }
     </Hidden>
