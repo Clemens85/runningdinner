@@ -12,7 +12,7 @@ export default function MessageSubject({onMessageSubjectChange}) {
         <TextInputWatchable onChange={onMessageSubjectChange}
                             fullWidth
                             required
-                            variant="filled"
+                            variant="outlined"
                             name="subject"
                             label={t("mails_subject")} />
       </Box>

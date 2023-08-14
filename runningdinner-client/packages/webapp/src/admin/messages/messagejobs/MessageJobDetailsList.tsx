@@ -364,10 +364,10 @@ function ReSendMessageTaskDialog({messageTask, onClose}: ReSendMessageTaskDialog
           </DialogTitleCloseable>
           <DialogContent>
             <Span i18n={"admin:send_again_help_text"} />
-            <Box mt={2}>
+            <Box mt={3}>
               <Grid container>
                 <Grid item xs={12}>
-                  <FormTextField name="recipientEmail" label={t('admin:recipient_email')} variant={"filled"} fullWidth mb={2} />
+                  <FormTextField name="recipientEmail" label={t('admin:recipient_email')} variant={"outlined"} fullWidth mb={2} />
                 </Grid>
                 <Grid item xs={12}>
                   <MessageSubject onMessageSubjectChange={NoopFunction} />

@@ -92,7 +92,7 @@ export default function MessageContent({templates, onMessageContentChange, name,
           fullWidth
           onChange={handleMessageContentChange}
           required
-          variant="filled"
+          variant="outlined"
           helperText={helperTextToDisplay}
           error={hasErrors}
           multiline
