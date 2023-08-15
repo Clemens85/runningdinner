@@ -12,7 +12,7 @@ import {
   HttpError, newReSendRunningdinnerCreatedMessageModel
 } from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
-import {Box, Dialog, DialogContent, Grid} from "@mui/material";
+import {AlertColor, Box, Dialog, DialogContent, Grid} from "@mui/material";
 import AlertCentered from "../../common/theme/AlertCentered";
 import {FetchData} from "@runningdinner/shared/src/redux";
 import LinkAction from '../../common/theme/LinkAction';
@@ -24,7 +24,6 @@ import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import { Span } from '../../common/theme/typography/Tags';
 import FormTextField from '../../common/input/FormTextField';
 import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
-import {Color} from "@mui/lab/Alert/Alert";
 
 export default function AdminNotificationBar() {
 
@@ -65,7 +64,7 @@ export default function AdminNotificationBar() {
     }
   }
 
-  let severity:Color = acknowledgeRequired ? "warning" : "info";
+  let severity:AlertColor = acknowledgeRequired ? "warning" : "info";
   severity = cancellationDate ? "error" : severity;
  
   return (
