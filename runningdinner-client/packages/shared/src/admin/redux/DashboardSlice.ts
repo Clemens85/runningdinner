@@ -31,7 +31,7 @@ export function fetchAdminActivities(adminId: string) : AdminThunk {
       dispatch(fetchAdminActivitiesSucceeded(result));
       dispatch(fetchAdminActivitiesDetails(adminId, result)); // Trigger loading of details of some single activities which will be enhanced
     } catch (err) {
-      dispatch(fetchAdminActivitiesRejected(err));
+      dispatch(fetchAdminActivitiesRejected(err as HttpError));
     }
   };
 }
@@ -43,7 +43,7 @@ function fetchAdminActivitiesDetails(adminId: string, dashboardAdminActivities: 
       const result = await enhanceAdminActivitiesByDetailsAsync(adminId, dashboardAdminActivities);
       dispatch(fetchAdminActivitiesSucceeded(result));
     } catch (err) {
-      dispatch(fetchAdminActivitiesRejected(err));
+      dispatch(fetchAdminActivitiesRejected(err as HttpError));
     }
   };
 }

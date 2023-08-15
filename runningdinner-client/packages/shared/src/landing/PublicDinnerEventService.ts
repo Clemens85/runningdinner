@@ -1,4 +1,5 @@
 import {
+  HttpError,
   isNumSeatsPositiveIntegerOrEmpty,
   newHttpError,
   ParticipantActivationResult,
@@ -56,7 +57,7 @@ export async function activateSubscribedParticipant(publicDinnerId: string, part
     const response = await axios.put<ParticipantActivationResult>(url, {});
     return response.data;
   } catch (e) {
-    const backendValidationIssues = getBackendIssuesFromErrorResponse(e, true);
+    const backendValidationIssues = getBackendIssuesFromErrorResponse(e as HttpError, true);
     return {
       validationIssue: isArrayNotEmpty(backendValidationIssues) ? backendValidationIssues[0] : undefined
     };

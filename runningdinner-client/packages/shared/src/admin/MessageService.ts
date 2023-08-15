@@ -110,8 +110,10 @@ export function getStatusResult(messageJobOrTask: MessageJob | MessageTask): str
   if (!sendingFailed) {
     sendingFailed = get(messageJobOrTask, 'sendingResult.delieveryFailed', null);
     if (sendingFailed === true) {
+      // @ts-ignore
       sendingFailed = "TRUE";
     } else {
+      // @ts-ignore
       sendingFailed = "FALSE";
     }
   }

@@ -134,7 +134,7 @@ export function recalculatePreviewMessages() : AdminThunk {
       const response = await getMessagePreviewAsync(adminId, messageObject, selectedRecipientForPreview!, messageType);
       dispatch(recalculatePreviewMessagesSucceeded(response.previewMessageList));
     } catch (err) {
-      dispatch(recalculatePreviewMessagesRejected(err));
+      dispatch(recalculatePreviewMessagesRejected(err as HttpError));
     }
   };
 }
