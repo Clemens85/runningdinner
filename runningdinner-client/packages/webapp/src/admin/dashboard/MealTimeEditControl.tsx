@@ -11,14 +11,10 @@ export default function MealTimeEditControl({id, label, time, onHandleTimeChange
   return (
       <TimePicker
           ampm={false}
-          id={id}
           label={label}
           value={time}
           data-testid={`meal-time-${label}`}
-          onChange={onHandleTimeChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
-          }}/>
+          onChange={onHandleTimeChange} />
   );
 
 }

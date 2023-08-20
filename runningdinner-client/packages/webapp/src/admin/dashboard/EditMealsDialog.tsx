@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Box, Dialog, DialogContent, Grid} from '@mui/material';
 import MealTimeEditControl from "./MealTimeEditControl";
 import cloneDeep from "lodash/cloneDeep";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
-import { withTranslation, WithTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import {
   CallbackHandler,
@@ -16,98 +16,69 @@ import Alert from '@mui/material/Alert';
 import { AlertTitle } from '@mui/material';
 
 
-type EditMealsDialogState = {
-  meals: Meal[]
-}
-
-export interface EditMealsDialogProps extends WithTranslation {
-  meals: Meal[];
+export interface EditMealsDialogProps {
   runningDinnerDate: Date;
   onCancel: CallbackHandler;
   onSave: CallbackHandler;
   open: boolean;
   dashboardAdminActivities: DashboardAdminActivities;
+  incomingMeals: Meal[];
 }
 
-class EditMealsDialog extends React.Component<EditMealsDialogProps, EditMealsDialogState> {
+export function EditMealsDialog({ open, dashboardAdminActivities, incomingMeals, runningDinnerDate, onCancel, onSave }: EditMealsDialogProps) {
 
-  constructor(props: EditMealsDialogProps) {
-    super(props);
-    this.state = {
-      meals: cloneDeep(this.props.meals)
-    };
-    // This binding is necessary to make `this` work in the callback
-    this.triggerCancel = this.triggerCancel.bind(this);
-    this.triggerSave = this.triggerSave.bind(this);
-    this.handleTimeChange = this.handleTimeChange.bind(this);
-    this._resetState = this._resetState.bind(this);
-  }
+  const {t} = useTranslation();
 
-  handleTimeChange(meal: Meal, newTime: Date) {
-    const meals = cloneDeep(this.state.meals);
-    for (let i = 0; i < meals.length; i++) {
-      if (isSameEntity(meals[i], meal)) {
-        meals[i].time = isValidDate(newTime) ? setHoursAndMinutesFromSrcToDest(newTime, this.props.runningDinnerDate) : newTime;
-          // newTime;
+  const [meals, setMeals] = useState(cloneDeep(incomingMeals));
+
+  function handleTimeChange(meal: Meal, newTime: Date) {
+    const updatedMeals = cloneDeep(meals);
+    for (let i = 0; i < updatedMeals.length; i++) {
+      if (isSameEntity(updatedMeals[i], meal)) {
+        updatedMeals[i].time = isValidDate(newTime) ? setHoursAndMinutesFromSrcToDest(newTime, runningDinnerDate) : newTime;
       }
     }
-    this.setState({
-      meals: meals
-    });
+    setMeals(updatedMeals);
   }
 
-  triggerSave() {
-    const {meals} = this.state;
-    this.props.onSave(meals);
+  function triggerSave() {
+    onSave(meals);
   }
 
-  triggerCancel() {
-    this.props.onCancel();
-    this._resetState();
+  function triggerCancel() {
+    resetState();
+    onCancel();
   }
 
-  _resetState() {
-    this.setState({
-      meals: cloneDeep(this.props.meals)
-    });
+  function resetState() {
+    setMeals(cloneDeep(incomingMeals));
   }
 
+  const mealTimeFields = meals.map((meal) =>
+    <Grid item xs key={meal.id}>
+      <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
+    </Grid>
+  );
 
-  render() {
+  const showMessagesAlreadySentInfo = isMessageActivityContained(dashboardAdminActivities.activities);
 
-    const { open, dashboardAdminActivities } = this.props;
-
-    const meals = this.state.meals;
-    const {t} = this.props;
-
-    const showMessagesAlreadySentInfo = isMessageActivityContained(dashboardAdminActivities.activities);
-
-    const mealTimeFields = meals.map((meal) =>
-        <Grid item xs key={meal.id}>
-          <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => this.handleTimeChange(meal, newValue)} />
-        </Grid>
-    );
-
-    return (
-        <Dialog open={open} onClose={this.triggerCancel} aria-labelledby="form-dialog-title" data-testid="edit-meals-dialog">
-          <DialogTitleCloseable id="edit-meals-dialog-title" onClose={this.triggerCancel}>{t('time_schedule_edit')}</DialogTitleCloseable>
-          <DialogContent>
-            <Box pt={2}>
-              { showMessagesAlreadySentInfo &&
-                <Alert severity={"info"} data-testid="edit-meal-times-warning-messages-sent" sx={{ mb: 5 }}>
-                  <AlertTitle>{t('attention')}</AlertTitle>
-                  {t('admin:attention_mealtimes_messages_already_sent')}
-                </Alert> }
-              <Grid container spacing={2}>
-                {mealTimeFields}
-              </Grid>
-            </Box>
-          </DialogContent>
-          <DialogActionsPanel onOk={this.triggerSave} onCancel={this.triggerCancel} okLabel={t('common:save')} cancelLabel={t('common:cancel')} />
-        </Dialog>
-    );
-  }
+  return (
+    <Dialog open={open} onClose={onCancel} aria-labelledby="form-dialog-title" data-testid="edit-meals-dialog">
+      <DialogTitleCloseable id="edit-meals-dialog-title" onClose={onCancel}>{t('time_schedule_edit')}</DialogTitleCloseable>
+      <DialogContent>
+        <Box pt={2}>
+          { showMessagesAlreadySentInfo &&
+            <Alert severity={"info"} data-testid="edit-meal-times-warning-messages-sent" sx={{ mb: 5 }}>
+              <AlertTitle>{t('attention')}</AlertTitle>
+              {t('admin:attention_mealtimes_messages_already_sent')}
+            </Alert> }
+          <Grid container spacing={2}>
+            {mealTimeFields}
+          </Grid>
+        </Box>
+      </DialogContent>
+      <DialogActionsPanel onOk={triggerSave} onCancel={triggerCancel} okLabel={t('common:save')} cancelLabel={t('common:cancel')} />
+    </Dialog>
+  );
 
 }
-
-export default withTranslation(['admin', 'common'])(EditMealsDialog);

@@ -1,7 +1,7 @@
 import React from 'react'
 import MealItem from "./MealItem";
 import {Box, Card, CardActions, CardContent, Grid, List} from "@mui/material";
-import EditMealsDialog from "./EditMealsDialog";
+import {EditMealsDialog} from "./EditMealsDialog";
 import {useTranslation} from "react-i18next";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
 import {Subtitle} from "../../common/theme/typography/Tags";
@@ -78,9 +78,8 @@ export default function MealsList({meals, runningDinner, onRunningDinnerUpdate, 
                        dashboardAdminActivities={dashboardAdminActivities}
                        runningDinnerDate={runningDinner.basicDetails.date}
                        onSave={(mealsToUpdate) => updateMeals(mealsToUpdate)}
-                       meals={meals}
-                       onCancel={() => setEditMealsDialogOpen(false)}>
-     </EditMealsDialog>
+                       incomingMeals={meals}
+                       onCancel={() => setEditMealsDialogOpen(false)} />
 
     </Card>
   );
