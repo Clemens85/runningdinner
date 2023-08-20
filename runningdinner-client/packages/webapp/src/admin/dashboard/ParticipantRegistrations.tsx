@@ -13,12 +13,12 @@ import {
 import {
   Box,
   Button, Card, CardContent,
-  Dialog, DialogContent, Hidden,
+  Dialog, DialogContent,
   LinearProgress,
   List, ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  Typography
+  Typography, useMediaQuery
 } from "@mui/material";
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
 import {useDispatch} from "react-redux";
@@ -31,6 +31,7 @@ import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 import DoneIcon from "@mui/icons-material/Done";
 import {useAdminNavigation} from "../AdminNavigationHook";
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import {Theme} from "@mui/material/styles";
 
 export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps) {
 
@@ -93,6 +94,8 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
   const {activityDate, originator, relatedEntityId: participantId, relatedParticipantNotActivated} = participantActivity;
   const {navigateToParticipant} = useAdminNavigation();
 
+  const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
+
   function renderParticipantActivityDetails() {
     return (
       <>
@@ -101,7 +104,7 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
           <>
             <br/>
             <Typography variant="caption"><i>{t("admin:registration_not_yet_confirmed")}</i></Typography>
-            <Hidden smUp>{renderShowConfirmSubscriptionActivationDialogButton()}</Hidden>
+            { !smUpDevice && renderShowConfirmSubscriptionActivationDialogButton() }
           </> }
       </>
     );
@@ -124,7 +127,7 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
                     secondary={renderParticipantActivityDetails()} />
       { relatedParticipantNotActivated ?
         <ListItemSecondaryAction>
-          <Hidden mdDown>{renderShowConfirmSubscriptionActivationDialogButton()}</Hidden>
+          { smUpDevice && renderShowConfirmSubscriptionActivationDialogButton() }
         </ListItemSecondaryAction> :
         <DoneIcon color={"primary"} />
       }
