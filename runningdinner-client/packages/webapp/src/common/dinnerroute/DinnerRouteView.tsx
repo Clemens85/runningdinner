@@ -34,10 +34,10 @@ import Alert from '@mui/material/Alert';
 import { AlertTitle } from '@mui/material';
 import {useGeoPosition} from "../hooks/GeoPositionHook";
 import {useDynamicFullscreenHeight} from "../hooks/DynamicFullscreenHeightHook";
-import {Helmet} from "react-helmet-async";
 import LinkExtern from '../theme/LinkExtern';
 import {TextViewHtml} from "../TextViewHtml";
 import AfterPartyLocationHeadline from "@runningdinner/shared/src/afterpartylocation/AfterPartyLocationHeadline";
+import {SuperSEO} from "react-super-seo";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -77,9 +77,7 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
             <MapContainer dinnerRoute={dinnerRoute} />
           </Grid>
         </Grid>
-        <Helmet>
-          <title>Run Your Dinner - Dinner Route</title>
-        </Helmet>
+        <SuperSEO title={"Run Your Dinner - Dinner Route"} />
       </>
   );
 }

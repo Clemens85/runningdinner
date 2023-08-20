@@ -3,7 +3,6 @@ import {Box, Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import TeamsNotExisting from "./TeamsNotExisting";
-import {Helmet} from "react-helmet-async";
 import TeamsList from "./TeamsList";
 import {EmptyDetails} from "../common/EmptyDetails";
 import TeamDetails from "./TeamDetails";
@@ -33,6 +32,7 @@ import DropdownButtonItem from "../../common/theme/dropdown/DropdownButtonItem";
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 import { RegenerateTeamsButton } from "./RegenerateTeamsButton";
 import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
+import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 
 const TeamsContainer = () => {
 
@@ -231,7 +231,7 @@ function TeamsTitle({hasTeams}: TeamsTitleProps) {
   const {t} = useTranslation(['admin']);
   return (
       <>
-        <Helmet><title>{t('headline_teams')}</title></Helmet>
+        <BrowserTitle titleI18nKey={"headline_teams"} namespaces={"admin"}/>
         <PageTitle>{t('headline_teams')}</PageTitle>
         { hasTeams && <p style={{ fontWeight: 100 }}>{t("admin:teams_drag_drop_hint")}</p> }
       </>

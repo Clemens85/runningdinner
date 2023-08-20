@@ -1,6 +1,6 @@
 import {useTranslation} from "react-i18next";
-import {Helmet} from "react-helmet-async";
 import React from "react";
+import {SuperSEO} from "react-super-seo";
 
 export interface BrowserTitleProps {
   titleI18nKey: string;
@@ -10,10 +10,5 @@ export interface BrowserTitleProps {
 export function BrowserTitle({titleI18nKey, namespaces}: BrowserTitleProps) {
 
   const {t} = useTranslation(namespaces);
-
-  return (
-    <Helmet>
-      <title>{t(titleI18nKey)}</title>
-    </Helmet>
-  );
+  return <SuperSEO title={t(titleI18nKey)} />;
 }

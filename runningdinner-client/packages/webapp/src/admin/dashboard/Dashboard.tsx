@@ -2,7 +2,7 @@ import React from "react";
 import DashboardTitle from "./DashboardTitle"
 import MealsList from "./MealsList"
 import Overview from "./Overview";
-import {Box, Grid, Hidden} from "@mui/material";
+import {Box, Grid, useMediaQuery} from "@mui/material";
 import Checklist from "./Checklist";
 import {
   BaseRunningDinnerProps,
@@ -13,7 +13,7 @@ import {
   setUpdatedRunningDinner,
   useAdminSelector,
 } from "@runningdinner/shared";
-import {Helmet} from "react-helmet-async";
+import { SuperSEO } from "react-super-seo";
 import {useDispatch} from "react-redux";
 import {AdminActivitiesTimeline} from "./AdminActivitiesTimeline";
 import {ParticipantRegistrations} from "./ParticipantRegistrations";
@@ -22,6 +22,7 @@ import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import {PublicRunningDinnerLink} from "./PublicRunningDinnerLink";
+import {Theme} from "@mui/material/styles";
 
 export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
 
@@ -49,6 +50,8 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
     pb: 2
   }
 
+  const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
+
   return (
     <div>
       <div>
@@ -56,25 +59,27 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
       </div>
       { !isClosedDinner(runningDinner) &&
           <>
-            <Hidden smDown>
+            {smUpDevice &&
               <Grid container alignItems={"center"} spacing={1}>
                 <Grid item>
-                  <SmallTitle>{t("common:hidden_link_text")}&nbsp;<PublicRunningDinnerLink {... runningDinner} /></SmallTitle>
+                  <SmallTitle>{t("common:hidden_link_text")}&nbsp;
+                    <PublicRunningDinnerLink {...runningDinner} /></SmallTitle>
                 </Grid>
                 <Grid item>
-                  <HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} />
+                  <HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"}/>}/>
                 </Grid>
               </Grid>
-            </Hidden>
-            <Hidden smUp>
+            }
+            {!smUpDevice &&
               <Grid container alignItems={"center"}>
                 <Grid item>
                   <Box pr={1}><SmallTitle i18n={"common:hidden_link_text"}/></Box>
                 </Grid>
-                <Grid item><HelpIconTooltip title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"} />} /></Grid>
-                <Grid item xs={12}><PublicRunningDinnerLink {... runningDinner} /></Grid>
+                <Grid item><HelpIconTooltip
+                  title={<Paragraph i18n={"admin:open_dinner_link_help"} fontSize={"small"}/>}/></Grid>
+                <Grid item xs={12}><PublicRunningDinnerLink {...runningDinner} /></Grid>
               </Grid>
-            </Hidden>
+            }
           </>
       }
       <Grid container justifyContent={"center"} alignItems={"stretch"}>
@@ -110,9 +115,7 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
                </Box>
             </Grid> }
       </Grid>
-      <Helmet>
-        <title>Dashboard - Running Dinner Administration</title>
-      </Helmet>
+      <SuperSEO title={"Dashboard - Running Dinner Administration"} />
     </div>
   );
 }

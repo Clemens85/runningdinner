@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import {HelmetProvider} from "react-helmet-async";
 import {Route, BrowserRouter as Router, Routes} from "react-router-dom";
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
 import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
@@ -26,38 +25,36 @@ function App() {
   }
 
   return (
-    <HelmetProvider>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={runningDinnerTheme}>
-          <ErrorBoundary>
-            <Router>
-              <Routes>
-                <Route path="/*" element={
-                  <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
-                    <LandingApp />
-                  </Suspense>
-                } />
-                <Route path="/admin/:adminId/*" element={
-                  <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
-                    <AdminApp />
-                  </Suspense>
-                } />
-                <Route path={`${WIZARD_ROOT_PATH}/*`} element={
-                  <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
-                    <WizardApp />
-                  </Suspense>
-                } />
-                <Route path="/self/*" element={
-                  <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
-                    <SelfAdminApp />
-                  </Suspense>
-                } />
-              </Routes>
-            </Router>
-          </ErrorBoundary>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </HelmetProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={runningDinnerTheme}>
+        <ErrorBoundary>
+          <Router>
+            <Routes>
+              <Route path="/*" element={
+                <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
+                  <LandingApp />
+                </Suspense>
+              } />
+              <Route path="/admin/:adminId/*" element={
+                <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
+                  <AdminApp />
+                </Suspense>
+              } />
+              <Route path={`${WIZARD_ROOT_PATH}/*`} element={
+                <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
+                  <WizardApp />
+                </Suspense>
+              } />
+              <Route path="/self/*" element={
+                <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
+                  <SelfAdminApp />
+                </Suspense>
+              } />
+            </Routes>
+          </Router>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }
 

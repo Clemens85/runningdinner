@@ -12,7 +12,7 @@ import Grid from "@mui/material/Grid";
 import {Box} from "@mui/material";
 import {LanguageSwitch} from "../common/i18n/LanguageSwitch";
 import useCommonStyles from "../common/theme/CommonStyles";
-import {Helmet} from "react-helmet-async";
+import {SuperSEO} from "react-super-seo";
 
 export interface SelfAdminPageContainerProps extends Parent {
   htmlPageTitleI18n: string;
@@ -56,8 +56,6 @@ export function SelfAdminPageContainer({children, htmlPageTitleI18n}: SelfAdminP
         {children}
       </Grid>
     </Grid>
-    <Helmet>
-      <title>{t(htmlPageTitleI18n)}</title>
-    </Helmet>
+    <SuperSEO title={t(htmlPageTitleI18n)} />
   </>;
 }

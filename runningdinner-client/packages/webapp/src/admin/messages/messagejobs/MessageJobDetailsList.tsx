@@ -28,7 +28,6 @@ import {
   getMessageJobDetailsSelector,
   getMessageTasksSelector
 } from "@runningdinner/shared/src/admin/redux/MessageJobDetailsSlice";
-import {Helmet} from "react-helmet-async";
 import {PageTitle, Span, Subtitle} from "../../../common/theme/typography/Tags";
 import {
   Box, Dialog, DialogContent,
@@ -63,6 +62,7 @@ import {useForm, FormProvider} from "react-hook-form";
 import MessageSubject from "../MessageSubject";
 import MessageContent from "../MessageContent";
 import FormTextField from "../../../common/input/FormTextField";
+import {BrowserTitle} from "../../../common/mainnavigation/BrowserTitle";
 
 export function MessageJobDetailsList({runningDinner}: BaseRunningDinnerProps) {
 
@@ -157,9 +157,7 @@ function MessageJobDetailsListView({messageTasks, messageJob, triggerReload}: Me
       </Grid>
       { isReSendMessageTaskDialogOpen && selectedMessageTask && <ReSendMessageTaskDialog messageTask={selectedMessageTask}
                                                                                          onClose={handleReSendMessageTaskDialogClosed} /> }
-      <Helmet>
-        <title>{t('admin:mail_protocols')}</title>
-      </Helmet>
+      <BrowserTitle titleI18nKey={"admin:mail_protocols"} namespaces={"admin"} />
     </div>
   );
 }
