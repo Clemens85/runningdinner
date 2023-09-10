@@ -1,15 +1,14 @@
 import React from "react";
-import { Box, Grid, Chip, Hidden } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Grid, Chip, useMediaQuery} from "@mui/material";
 import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import {isArrayEmpty} from "@runningdinner/shared";
+import {styled, Theme} from "@mui/material/styles";
 
-const useStyles = makeStyles((theme) => ({
-  chip: {
-    margin: theme.spacing(0.5),
-  }
+
+const MessageTemplateChip = styled(Chip)(({theme}) => ({
+  margin: theme.spacing(0.5)
 }));
 
 export interface MessageTemplatesProps {
@@ -21,6 +20,8 @@ export interface MessageTemplatesProps {
 function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: MessageTemplatesProps) {
 
   const {t} = useTranslation('admin');
+
+  const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
 
   if (isArrayEmpty(templates)) {
     return null;
@@ -34,11 +35,10 @@ function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: M
   );
   return (
     <Grid container alignItems={"center"} justifyContent={"flex-start"}>
-      <Hidden smDown>
+      { smUpDevice &&
         <Grid item>
           <Box component={"span"} pr={1}>{t('mails_template_help')}: </Box>
-        </Grid>
-      </Hidden>
+        </Grid> }
       {messageTemplateNodes}
       {showTemplatesHelpIcon &&
         <Grid item>
@@ -55,9 +55,8 @@ interface MessageTemplateProps {
   onClick: (template: string) => unknown;
 }
 function MessageTemplate({template, onClick}: MessageTemplateProps) {
-  const classes = useStyles();
   return (
-    <Chip onClick={() => onClick(template)} label={template} className={classes.chip} />
+    <MessageTemplateChip onClick={() => onClick(template)} label={template} />
   );
 }
 
