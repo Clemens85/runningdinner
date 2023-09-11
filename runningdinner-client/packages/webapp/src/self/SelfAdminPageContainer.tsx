@@ -11,8 +11,8 @@ import React from "react";
 import Grid from "@mui/material/Grid";
 import {Box} from "@mui/material";
 import {LanguageSwitch} from "../common/i18n/LanguageSwitch";
-import useCommonStyles from "../common/theme/CommonStyles";
 import {SuperSEO} from "react-super-seo";
+import {commonStyles} from "../common/theme/CommonStylesSx";
 
 export interface SelfAdminPageContainerProps extends Parent {
   htmlPageTitleI18n: string;
@@ -27,8 +27,6 @@ export function SelfAdminPageContainer({children, htmlPageTitleI18n}: SelfAdminP
   const { i18n, t } = useTranslation('selfadmin');
 
   const dispatch = useSelfAdminDispatch();
-
-  const commonStyles = useCommonStyles();
 
   const dinnerLanguage = useSelfAdminSelector(getLanguageOfDinnerSelfAdmin);
 
@@ -45,7 +43,7 @@ export function SelfAdminPageContainer({children, htmlPageTitleI18n}: SelfAdminP
 
   return <>
     <Grid container justifyContent={"center"}>
-      <Grid item xs={12} md={8} lg={8} className={commonStyles.textAlignRight}>
+      <Grid item xs={12} md={8} lg={8} sx={commonStyles.textAlignRight}>
         <Box mt={2} mb={-3}>
           <LanguageSwitch />
         </Box>

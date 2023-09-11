@@ -19,9 +19,6 @@ export const PaperGrey = styled(Paper)({
 });
 
 const useCommonStyles = makeStyles((theme) => ({
-  textAlignRight: {
-    textAlign: 'right'
-  },
   fullWidth: {
     width: "100%"
   },

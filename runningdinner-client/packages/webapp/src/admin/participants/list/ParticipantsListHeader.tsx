@@ -17,8 +17,8 @@ import {Link as RouterLink} from "react-router-dom";
 import {PageTitle} from "../../../common/theme/typography/Tags";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import Button from "@mui/material/Button";
-import useCommonStyles from "../../../common/theme/CommonStyles";
 import {FormCheckboxSimple} from "../../../common/input/FormCheckboxSimple";
+import {commonStyles} from "../../../common/theme/CommonStylesSx";
 
 export type ParticipantSearchResult = {
   filteredParticipants: ParticipantListable[],
@@ -47,7 +47,6 @@ export function ParticipantsListHeader({adminId, numberOfParticipants, participa
   const debouncedSearchText = useDebounce(search.searchText, 400);
 
   const {t} = useTranslation(['admin', 'common']);
-  const classes = useCommonStyles();
   const {generateParticipantMessagesPath} = useAdminNavigation();
 
   React.useEffect(() => {
@@ -92,7 +91,7 @@ export function ParticipantsListHeader({adminId, numberOfParticipants, participa
           <Grid item xs={12} sm={5} lg={2}>
             <Typography variant={"subtitle1"}>{numberOfParticipants}</Typography>
           </Grid>
-          <Grid item xs={12} sm={12} lg={2} className={classes.textAlignRight}>
+          <Grid item xs={12} sm={12} lg={2} sx={commonStyles.textAlignRight}>
             <Button color={"primary"} variant={"outlined"}
                     to={generateParticipantMessagesPath(adminId)}
                     component={RouterLink}>{t('messages_send_participants')}</Button>
@@ -100,7 +99,7 @@ export function ParticipantsListHeader({adminId, numberOfParticipants, participa
 
 
           { isArrayNotEmpty(searchableParticipants) &&
-            <Grid item xs={12} lg={5} className={classes.textAlignRight}>
+            <Grid item xs={12} lg={5} sx={commonStyles.textAlignRight}>
               <Button href={getParticipantsExportUrl(adminId)} rel='noopener noreferrer' color="primary" target="_blank">{t('admin:export')}</Button>
             </Grid> 
           }

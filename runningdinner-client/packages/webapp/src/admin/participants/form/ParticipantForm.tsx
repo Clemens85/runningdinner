@@ -22,8 +22,8 @@ import {useTranslation} from "react-i18next";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
-import useCommonStyles from "../../../common/theme/CommonStyles";
 import {TeamPartnerWishSectionAdmin} from "./TeamPartnerWishSectionAdmin";
+import {commonStyles} from "../../../common/theme/CommonStylesSx";
 
 export interface ParticipantFormProps {
   participant: ParticipantListable;
@@ -41,7 +41,6 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const classes = useCommonStyles();
   const {showSuccess} = useCustomSnackbar();
 
   const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
@@ -113,9 +112,9 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
               </Grid>
               {!teamPartnerWishChild &&
                 <Grid item xs={12} md={4}>
-                  <div className={classes.textAlignRight}>
+                  <Box sx={ commonStyles.textAlignRight }>
                     <FillWithExampleDataLink/>
-                  </div>
+                  </Box>
                 </Grid>
               }
             </Grid>
@@ -147,8 +146,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
             <Grid container justifyContent={"flex-end"}>
               <Grid item>
                 { showDeleteBtn && <SecondaryButton onClick={() => setOpenDeleteDialog(true)} data-testid={"delete-participant-dialog-action"}>{t('delete')}</SecondaryButton> }
-                <PrimaryButton onClick={handleSubmit(updateParticipant)} disabled={isSubmitting} size={"large"}
-                               className={classes.buttonSpacingLeft}>
+                <PrimaryButton onClick={handleSubmit(updateParticipant)} disabled={isSubmitting} size={"large"} sx={commonStyles.buttonSpacingLeft}>
                   {t('save')}
                 </PrimaryButton>
               </Grid>

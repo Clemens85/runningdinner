@@ -1,5 +1,4 @@
 import React from 'react';
-import {SpacingGrid} from "../common/theme/SpacingGrid";
 import Grid from "@mui/material/Grid";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {useFormContext} from "react-hook-form";
@@ -8,8 +7,8 @@ import {useWizardSelector} from "@runningdinner/shared";
 import SecondaryButton from "../common/theme/SecondaryButton";
 import {getNavigationStepSelector} from "@runningdinner/shared";
 import useWizardNavigation from "./WizardNavigationHook";
-import useCommonStyles from '../common/theme/CommonStyles';
 import {SummaryNavigationStep} from "@runningdinner/shared";
+import {commonStyles} from "../common/theme/CommonStylesSx";
 
 export interface WizardButtonsProps {
   onSubmitData:  (data: any) => Promise<boolean>;
@@ -17,7 +16,6 @@ export interface WizardButtonsProps {
 
 export default function WizardButtons({onSubmitData}: WizardButtonsProps) {
 
-  const classes = useCommonStyles();
   const {t} = useTranslation(['common', 'wizard']);
   const {handleSubmit, formState} = useFormContext();
 
@@ -42,13 +40,13 @@ export default function WizardButtons({onSubmitData}: WizardButtonsProps) {
   const lastStepBeforeSummary = nextNavigationStep && nextNavigationStep.value === SummaryNavigationStep.value;
 
   return (
-      <SpacingGrid container justify="flex-end" my={3} className={classes.textAlignRight}>
+      <Grid container justifyContent="flex-end" sx={{...commonStyles.textAlignRight, my: 3}}>
         <Grid item xs={12}>
           { previousNavigationStep && <SecondaryButton onClick={handleSubmit(handlePrevious)} data-testid={"wizard-previous-action"}>{t('common:back')}</SecondaryButton> }
           { nextNavigationStep && <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleNext)} ml={1} data-testid={"wizard-next-action"}>
                                       { lastStepBeforeSummary ? t('wizard:finish') : t('common:next') }
                                   </PrimaryButton> }
         </Grid>
-      </SpacingGrid>
+      </Grid>
   );
 }
