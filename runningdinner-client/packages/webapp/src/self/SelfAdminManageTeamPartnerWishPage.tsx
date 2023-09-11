@@ -13,10 +13,10 @@ import {
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {Box, Grid, useMediaQuery, useTheme} from '@mui/material';
 import {PrimaryButton} from "../common/theme/PrimaryButton";
-import useCommonStyles from "../common/theme/CommonStyles";
 import {useQuery} from "../common/hooks/QueryHook";
 import { Alert, AlertTitle } from '@mui/material';
 import { getDecodedQueryParam } from '../common/QueryParamDecoder';
+import {commonStyles} from "../common/theme/CommonStylesSx";
 
 export default function SelfAdminManageTeamPartnerWishPage() {
 
@@ -55,7 +55,7 @@ function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdm
 
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
-  const commonStyles = useCommonStyles();
+  const fullWidthProps = isSmallDevice ? commonStyles.fullWidth : {};
 
   async function handleSubmit() {
     try {
@@ -100,7 +100,7 @@ function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdm
         <Grid container justifyContent={"flex-end"} direction={"row"}>
           <Grid item xs={isSmallDevice ? 12 : undefined}>
             <PrimaryButton onClick={handleSubmit}
-                           className={isSmallDevice ? commonStyles.fullWidth : undefined}
+                           sx={fullWidthProps}
                            disabled={false}
                            size={"large"}>
               {t('common:save')}

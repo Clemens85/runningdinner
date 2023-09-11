@@ -4,7 +4,7 @@ import React from "react";
 import SecondaryButton from "./SecondaryButton";
 import {PrimaryDangerButtonAsync} from "./PrimaryDangerButtonAsync";
 import {CallbackHandler} from "@runningdinner/shared";
-import useCommonStyles from "./CommonStyles";
+import {commonStyles} from "./CommonStylesSx";
 
 export interface DialogActionsPanelProps {
   onOk: CallbackHandler;
@@ -17,19 +17,18 @@ export interface DialogActionsPanelProps {
 
 const DialogActionsPanel = ({onOk, okLabel, danger = false, onCancel, cancelLabel, padding = 2}: DialogActionsPanelProps) => {
 
-  const commonStyles = useCommonStyles()
-
   const theme = useTheme();
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
 
+  const fullWidthProps = isMobileDevice ? commonStyles.fullWidth : {};
   return (
       <DialogActions>
-        <Box p={padding} className={isMobileDevice ? commonStyles.fullWidth: ""}>
-          <SecondaryButton onClick={onCancel} className={isMobileDevice ? commonStyles.fullWidth: ""} data-testid="dialog-cancel">{cancelLabel}</SecondaryButton>
-          { danger ? <PrimaryDangerButtonAsync onClick={onOk} size={"medium"} className={isMobileDevice ? commonStyles.fullWidth: ""} data-testid="dialog-submit">
+        <Box sx={{ ...fullWidthProps, p: padding }}>
+          <SecondaryButton onClick={onCancel} sx={fullWidthProps} data-testid="dialog-cancel">{cancelLabel}</SecondaryButton>
+          { danger ? <PrimaryDangerButtonAsync onClick={onOk} size={"medium"} sx={fullWidthProps} data-testid="dialog-submit">
                         {okLabel}
                       </PrimaryDangerButtonAsync>
-                    : <PrimarySuccessButtonAsync onClick={onOk} size={"medium"} className={isMobileDevice ? commonStyles.fullWidth: ""} data-testid="dialog-submit">
+                    : <PrimarySuccessButtonAsync onClick={onOk} size={"medium"} sx={fullWidthProps} data-testid="dialog-submit">
                         {okLabel}
                       </PrimarySuccessButtonAsync> }
         </Box>

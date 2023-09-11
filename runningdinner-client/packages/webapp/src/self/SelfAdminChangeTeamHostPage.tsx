@@ -27,11 +27,17 @@ import FormTextField from "../common/input/FormTextField";
 
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
-import useCommonStyles from "../common/theme/CommonStyles";
 import Paragraph from "../common/theme/typography/Paragraph";
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import { Alert } from '@mui/material';
+import {commonStyles} from "../common/theme/CommonStylesSx";
+import {styled} from "@mui/material/styles";
+
+
+const NewSelectedHostText = styled('strong')(({theme}) => ({
+  color: theme.palette.secondary.main
+}));
 
 export default function SelfAdminChangeTeamHostPage() {
 
@@ -77,11 +83,12 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
 
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
-  const commonStyles = useCommonStyles();
   const {showSuccess} = useCustomSnackbar();
 
   const {getIssuesTranslated} = useBackendIssueHandler();
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+
+  const fullWidthProps = isSmallDevice ? commonStyles.fullWidth : {};
 
   const formMethods = useForm<SelfAdminChangeTeamHostViewModel>({
     defaultValues: { comment: "" },
@@ -146,7 +153,7 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
                     <ListItemText primary={
                       <>
                         <span><Fullname {...teamMember} /></span>
-                        { isNewSelectedTeamHost(teamMember) && <strong className={commonStyles.colorSecondary}>&nbsp;&nbsp;* </strong> }
+                        { isNewSelectedTeamHost(teamMember) && <NewSelectedHostText>&nbsp;&nbsp;* </NewSelectedHostText> }
                       </>
                     } />
                   </ListItem>
@@ -174,7 +181,7 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
           <Grid container justifyContent={"flex-end"} direction={"row"}>
             <Grid item xs={isSmallDevice ? 12 : undefined}>
               <PrimaryButton onClick={handleSubmit(updateTeamHost)}
-                             className={isSmallDevice ? commonStyles.fullWidth : undefined}
+                             sx={fullWidthProps}
                              disabled={isSubmitting || !isTeamHostChanged()}
                              size={"large"}>
                 {t('common:save')}
