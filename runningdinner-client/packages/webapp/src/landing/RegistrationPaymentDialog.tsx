@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {DialogTitleCloseable} from "../common/theme/DialogTitleCloseable";
-import {SpacingGrid} from "../common/theme/SpacingGrid";
 import {
   DialogContent,
   Dialog,
@@ -8,7 +7,7 @@ import {
   CardHeader,
   CardContent,
   Typography,
-  CardActions
+  CardActions, Grid
 } from "@mui/material";
 import {
   BasePublicDinnerProps,
@@ -75,8 +74,8 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
 
         <Paragraph><Trans i18nKey={"landing:registration_payment_info"} /></Paragraph>
 
-        <SpacingGrid container my={3}>
-          <SpacingGrid item xs={12}>
+        <Grid container sx={{my: 3}}>
+          <Grid item xs={12}>
             <Card>
               <CardHeader
                 title={publicRunningDinner.publicSettings.title}
@@ -120,9 +119,9 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
                 <PrimaryButton disabled={orderProcessing} size={"large"} fullWidth onClick={handleCreateOrder}>{t("landing:payment_purchase_now")}</PrimaryButton>
               </CardActions>
             </Card>
-          </SpacingGrid>
+          </Grid>
 
-          <SpacingGrid item pt={2}>
+          <Grid item sx={{pt: 2}}>
             <Typography variant={"caption"}>
               <cite>
                 <Trans i18nKey={"landing:payment_no_paypal_contact"}
@@ -131,9 +130,9 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
                         values={{ publicContactEmail: publicRunningDinner.publicSettings.publicContactEmail }} />
               </cite>
             </Typography>
-          </SpacingGrid>
+          </Grid>
 
-        </SpacingGrid>
+        </Grid>
 
 
       </DialogContent>

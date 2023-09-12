@@ -1,7 +1,6 @@
 import React from 'react';
 import {PageTitle, Span, Subtitle} from "../common/theme/typography/Tags";
 import {FormProvider, useFieldArray, useForm} from "react-hook-form";
-import {SpacingGrid} from "../common/theme/SpacingGrid";
 import {
   mapExistingMealTimesToNewMeals,
   BasicDetailsNavigationStep,
@@ -26,7 +25,7 @@ import {useDispatch} from "react-redux";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import FormCheckbox from "../common/input/FormCheckbox";
 import FormSelect from "../common/input/FormSelect";
-import {Button, IconButton, MenuItem } from '@mui/material';
+import {Button, Grid, IconButton, MenuItem } from '@mui/material';
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -85,14 +84,14 @@ export default function OptionsStep() {
         <PageTitle>{t('common:details')}</PageTitle>
         <FormProvider {...formMethods}>
           <form>
-            <SpacingGrid container spacing={4}>
-              <SpacingGrid item xs={12} md={6}>
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6}>
                 <TeamSettings />
-              </SpacingGrid>
-              <SpacingGrid item xs={12} md={6}>
+              </Grid>
+              <Grid item xs={12} md={6}>
                 <MealSettings runningDinnerDate={date} />
-              </SpacingGrid>
-            </SpacingGrid>
+              </Grid>
+            </Grid>
 
             <WizardButtons onSubmitData={submitOptionsAsync} />
 
@@ -113,25 +112,25 @@ function TeamSettings() {
   }
 
   return (
-    <SpacingGrid container>
-      <SpacingGrid item xs={12}>
+    <Grid container>
+      <Grid item xs={12}>
         <FormTextField name="teamSize"
                        disabled={true}
                        label={t('wizard:team_size' )}
                        variant="outlined" />
-      </SpacingGrid>
-      <SpacingGrid item xs={12} mt={3}>
+      </Grid>
+      <Grid item xs={12} sx={{mt: 3}}>
         <FormCheckbox name="forceEqualDistributedCapacityTeams" label={t("team_distribution_force_equl_hosting")} helperText={t("team_distribution_help")}/>
-      </SpacingGrid>
-      <SpacingGrid item xs={12} mt={3}>
+      </Grid>
+      <Grid item xs={12} sx={{mt: 3}}>
         <FormSelect name="genderAspects" label={t("gender_aspects")} variant={"outlined"} fullWidth>
           { genderAspects.map(genderAspect => <MenuItem key={genderAspect.value} value={genderAspect.value}>{genderAspect.label}</MenuItem>) }
         </FormSelect>
-      </SpacingGrid>
-      <SpacingGrid item xs={12} mt={3}>
+      </Grid>
+      <Grid item xs={12} sx={{mt: 3}}>
         <FormCheckbox name="teamPartnerWishDisabled" label={<Trans i18nKey="team_partner_wish_disabled" ns="common" />} helperText={t("common:team_partner_wish_disabled_help")} />
-      </SpacingGrid>
-    </SpacingGrid>
+      </Grid>
+    </Grid>
   )
 }
 
@@ -158,22 +157,22 @@ function MealSettings({runningDinnerDate}: MealSettingsProps) {
   }
 
   return (
-    <SpacingGrid container>
-      <SpacingGrid item xs={12}>
+    <Grid container>
+      <Grid item xs={12}>
         <Subtitle i18n={"common:meals"}/>
         <Span i18n={"wizard:meals_help"}/>
-      </SpacingGrid>
-      <SpacingGrid item xs={12}>
+      </Grid>
+      <Grid item xs={12}>
         {fields.map((field, index) => (
-            <SpacingGrid container mt={3} key={field.key}>
-              <SpacingGrid item xs={11}>
+            <Grid container sx={{mt: 3}} key={field.key}>
+              <Grid item xs={11}>
                 <FormTextField name={`meals[${index}].label`}
                                variant="outlined"
                                fullWidth
                                label=""
                                defaultValue={field.label}/>
-              </SpacingGrid>
-              { index + 1 >= fields.length && <SpacingGrid item xs={1}>
+              </Grid>
+              { index + 1 >= fields.length && <Grid item xs={1}>
                                                 <IconButton
                                                   aria-label="delete"
                                                   color="secondary"
@@ -181,14 +180,14 @@ function MealSettings({runningDinnerDate}: MealSettingsProps) {
                                                   size="large">
                                                   <DeleteIcon fontSize={"large"} />
                                                 </IconButton>
-                                              </SpacingGrid> }
-          </SpacingGrid>
+                                              </Grid> }
+          </Grid>
         ))}
-      </SpacingGrid>
-      <SpacingGrid container item xs={12} mt={2}>
+      </Grid>
+      <Grid container item xs={12} sx={{mt: 2}}>
         <Button color={"primary"} startIcon={<AddIcon/>} onClick={handleAddMeal} style={{ paddingLeft: '0'}}>{t('add')}</Button>
-      </SpacingGrid>
+      </Grid>
 
-    </SpacingGrid>
+    </Grid>
   );
 }

@@ -3,25 +3,19 @@ import CustomSwitch from "../../../common/input/CustomSwitch";
 import {isStringEmpty} from "@runningdinner/shared";
 import FormFieldset from "../../../common/theme/FormFieldset";
 import {useFormContext} from "react-hook-form";
-import { Grid } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import {Grid} from "@mui/material";
 import FormTextField from "../../../common/input/FormTextField";
 import FormCheckbox from "../../../common/input/FormCheckbox";
 import {useTranslation} from "react-i18next";
-import { SpacingGrid } from 'packages/webapp/src/common/theme/SpacingGrid';
+import {styled} from "@mui/material/styles";
 
-
-const useMealSpecificsNoteStyles = makeStyles(() => ({
-  mealSpecificsNoteCol: {
-    flexGrow: 1
-  },
-}));
+const GridFlexGrow1 = styled(Grid)({
+  flexGrow: 1
+});
 
 export default function MealSpecificsSection() {
 
   const {t} = useTranslation('common');
-
-  const mealSpecificsNoteStyles = useMealSpecificsNoteStyles();
 
   const {getValues} = useFormContext();
   const currentMealSpecificsNote = getValues('mealSpecificsNote');
@@ -54,18 +48,18 @@ export default function MealSpecificsSection() {
             <FormCheckbox label={t('vegan')} name="vegan"/>
           </Grid>
         </Grid>
-        <SpacingGrid container alignItems={"center"} mt={1}>
-          <SpacingGrid item ml={-1} mr={1}>
+        <Grid container alignItems={"center"} sx={{mt: 1}}>
+          <Grid item sx={{ml: -1, mr: 1}}>
             <CustomSwitch checked={mealSpecificsNoteActivated} onChange={(checked) => activateMealSpecificsNote(checked)} />
-          </SpacingGrid>
-          <SpacingGrid item className={mealSpecificsNoteStyles.mealSpecificsNoteCol}>
+          </Grid>
+          <GridFlexGrow1 item>
             <FormTextField fullWidth
                            variant={"filled"}
                            disabled={!mealSpecificsNoteActivated}
                            name="mealSpecificsNote"
                            label={t('mealnotes')} />
-          </SpacingGrid>
-        </SpacingGrid>
+          </GridFlexGrow1>
+        </Grid>
       </>
   );
 }

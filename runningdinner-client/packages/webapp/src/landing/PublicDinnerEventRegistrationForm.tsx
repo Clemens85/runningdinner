@@ -19,7 +19,6 @@ import {
   useDisclosure,
 } from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
-import useCommonStyles from "../common/theme/CommonStyles";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {FormProvider, useForm} from "react-hook-form";
 import {Subtitle} from "../common/theme/typography/Tags";
@@ -41,6 +40,7 @@ import {useAsync} from "react-async-hook";
 import {useDrawerStyles} from "./LandingStyles";
 import {RegistrationPaymentProgressBackdrop} from "./RegistrationPaymentProgressBackdrop";
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
+import {commonStyles} from "../common/theme/CommonStylesSx";
 
 type BaseRegistrationFormProps = {
   onCancel: CallbackHandler;
@@ -104,7 +104,6 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
 
   const {t} = useTranslation(['landing', 'common']);
 
-  const classes = useCommonStyles();
   const drawerClasses = useDrawerStyles();
   const query = useQuery();
 
@@ -225,7 +224,7 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
                                    disabled={isSubmitting}
                                    data-testid={"registration-form-next-action"}
                                    size={"large"}
-                                   className={classes.buttonSpacingLeft}>
+                                   sx={commonStyles.buttonSpacingLeft}>
                       {t('common:next')}
                     </PrimaryButton>
                   </Grid>

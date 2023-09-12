@@ -1,9 +1,8 @@
 import {useTranslation} from "react-i18next";
 import {getTeamPartnerOptionOfTeam, hasAllTeamMembersSameTeamPartnerWish, Team} from "@runningdinner/shared";
-import {Tooltip} from "@mui/material";
+import {Grid, Tooltip} from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import React from "react";
-import { SpacingGrid } from "../../common/theme/SpacingGrid";
 
 export type TeamPartnerWishIconProps = {
   team: Team;
@@ -32,10 +31,10 @@ export function TeamPartnerWishIcon({team, showLabelAsTooltip, mt}: TeamPartnerW
   } else {
     return (
       <>
-        <SpacingGrid container alignItems={"center"} mt={mt}>
-          <SpacingGrid item><FavoriteBorderIcon color={"primary"} /></SpacingGrid>
-          <SpacingGrid item pl={1}>{label}</SpacingGrid>
-        </SpacingGrid>
+        <Grid container alignItems={"center"} sx={{mt: mt}}>
+          <Grid item><FavoriteBorderIcon color={"primary"} /></Grid>
+          <Grid item sx={{pl: 1}}>{label}</Grid>
+        </Grid>
       </>
     );
   }

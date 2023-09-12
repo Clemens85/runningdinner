@@ -1,12 +1,11 @@
 import React from 'react';
 import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
-import {SpacingGrid} from "../common/theme/SpacingGrid";
 import Paragraph from "../common/theme/typography/Paragraph";
 import {useWizardSelector} from "@runningdinner/shared";
 import {getAdministrationUrlSelector, setNextNavigationStep, setPreviousNavigationStep} from "@runningdinner/shared";
 import LinkExtern from "../common/theme/LinkExtern";
-import {Box, Typography} from "@mui/material";
+import {Box, Grid, Typography} from "@mui/material";
 import {FinishNavigationStep} from "@runningdinner/shared";
 import {useDispatch} from "react-redux";
 
@@ -25,23 +24,23 @@ export default function SummaryStep() {
   return (
       <div>
         <PageTitle>{t('done')}</PageTitle>
-        <SpacingGrid container>
-          <SpacingGrid item xs={12}>
+        <Grid container>
+          <Grid item xs={12}>
             <Span i18n="wizard:administration_link" />
             <Paragraph><strong>{administrationUrl}</strong></Paragraph>
             <Box my={1}>
               <Span i18n="wizard:administration_link_help" />
             </Box>
-          </SpacingGrid>
-        </SpacingGrid>
+          </Grid>
+        </Grid>
 
-        <SpacingGrid container>
-          <SpacingGrid item xs={12} md={6}>
+        <Grid container>
+          <Grid item xs={12} md={6}>
             <LinkExtern href={administrationUrl} self={true}>
               <Typography variant={"body1"} component={"span"}>{t('wizard:administration_link_open')}</Typography>
             </LinkExtern>
-          </SpacingGrid>
-        </SpacingGrid>
+          </Grid>
+        </Grid>
       </div>
   );
 }

@@ -1,8 +1,8 @@
 import React from 'react';
 import {useTranslation} from "react-i18next";
-import { SpacingGrid } from '../theme/SpacingGrid';
 import FormTextField from "../input/FormTextField";
 import FormDatePicker from "../input/FormDatePicker";
+import { Grid } from '@mui/material';
 
 export interface PublicDinnerSettingsFormControlProps {
   mediumDeviceHalfSize: boolean;
@@ -16,26 +16,25 @@ export function PublicDinnerSettingsFormControl({mediumDeviceHalfSize}: PublicDi
 
   return (
     <>
-      <SpacingGrid container>
-        <SpacingGrid item xs={12} md={md}>
+      <Grid container>
+        <Grid item xs={12} md={md}>
           <FormTextField name="title"
             label={t('common:public_title')}
             required
             helperText={t("common:public_title_help")}
             variant="outlined"
             fullWidth />
-        </SpacingGrid>
-      </SpacingGrid>
-      <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12} md={md}>
+        </Grid>
+      </Grid>
+      <Grid container sx={{mt: 3}}>
+        <Grid item xs={12} md={md}>
           <FormDatePicker name={"endOfRegistrationDate"}
             label={t('common:public_end_of_registration_date')}
-            inputVariant={"outlined"}
             helperText={t("common:endOfRegistrationDate_help")} />
-        </SpacingGrid>
-      </SpacingGrid>
-      <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12}>
+        </Grid>
+      </Grid>
+      <Grid container sx={{mt: 3}}>
+        <Grid item xs={12}>
           <FormTextField name="description"
             label={t('common:public_description')}
             multiline
@@ -43,11 +42,11 @@ export function PublicDinnerSettingsFormControl({mediumDeviceHalfSize}: PublicDi
             required
             variant="outlined"
             fullWidth />
-        </SpacingGrid>
-      </SpacingGrid>
+        </Grid>
+      </Grid>
 
-      <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12} md={md}>
+      <Grid container sx={{mt: 3}}>
+        <Grid item xs={12} md={md}>
           <FormTextField name="publicContactName"
             label={t('common:public_contact_name')}
             required
@@ -55,10 +54,10 @@ export function PublicDinnerSettingsFormControl({mediumDeviceHalfSize}: PublicDi
             variant="outlined"
             defaultValue={""}
             fullWidth />
-        </SpacingGrid>
-      </SpacingGrid>
-      <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12} md={md}>
+        </Grid>
+      </Grid>
+      <Grid container sx={{mt: 3}}>
+        <Grid item xs={12} md={md}>
           <FormTextField name="publicContactEmail"
             label={t('common:public_contact_email')}
             required
@@ -66,18 +65,18 @@ export function PublicDinnerSettingsFormControl({mediumDeviceHalfSize}: PublicDi
             variant="outlined"
             defaultValue={""}
             fullWidth />
-        </SpacingGrid>
-      </SpacingGrid>
-      <SpacingGrid container mt={3}>
-        <SpacingGrid item xs={12} md={md}>
+        </Grid>
+      </Grid>
+      <Grid container sx={{mt: 3}}>
+        <Grid item xs={12} md={md}>
           <FormTextField name="publicContactMobileNumber"
             label={t('common:public_contact_mobile_number')}
             helperText={t("common:public_contact_mobile_number_help")}
             variant="outlined"
             defaultValue={""}
             fullWidth />
-        </SpacingGrid>
-      </SpacingGrid>
+        </Grid>
+      </Grid>
 
     </>
   );

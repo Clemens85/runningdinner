@@ -1,5 +1,5 @@
 import React from 'react'
-import { TableContainer, Paper, Table, TableBody, Box }from "@mui/material";
+import {TableContainer, Paper, Table, TableBody, Box, Grid} from "@mui/material";
 import ParticipantRow, {ParticipantClickCallback} from "./ParticipantRow";
 import {
   getRunningDinnerMandatorySelector, isArrayNotEmpty,
@@ -9,7 +9,6 @@ import {
   useAdminSelector,
 } from "@runningdinner/shared";
 import {ReFetchParticipantsCallback, WaitingListManagementAlert} from './WaitingListManagementAlert';
-import {SpacingGrid} from "../../../common/theme/SpacingGrid";
 import {ParticipantSearchResult} from "./ParticipantsListHeader";
 
 export type ParticipantsListProps = {
@@ -49,8 +48,8 @@ export default function ParticipantsListView({participantList, selectedParticipa
   const showParticipantsOnWaitingListInOwnSection = !hasSearchText && isArrayNotEmpty(participantsWaitinglistRows);
 
   return (
-      <SpacingGrid container>
-        <SpacingGrid item xs={12} mb={2}>
+      <Grid container>
+        <Grid item xs={12} sx={{mb: 2}}>
 
           {participantsListInfo}
 
@@ -73,8 +72,8 @@ export default function ParticipantsListView({participantList, selectedParticipa
             </Box>
           }
 
-        </SpacingGrid>
-      </SpacingGrid>
+        </Grid>
+      </Grid>
   );
 
 }

@@ -15,7 +15,6 @@ import {
   updateMeals, validateRunningDinnerAfterPartyLocation,
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
-import {SpacingGrid} from "../common/theme/SpacingGrid";
 import WizardButtons from "./WizardButtons";
 import {useTranslation} from "react-i18next";
 import {useDispatch} from "react-redux";
@@ -27,7 +26,7 @@ import MealTimeEditControl from "../admin/dashboard/MealTimeEditControl";
 import { cloneDeep } from 'lodash';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {FormProvider, useForm} from "react-hook-form";
-import {useMediaQuery, useTheme} from "@mui/material";
+import {Grid, useMediaQuery, useTheme} from "@mui/material";
 import { AfterPartyLocationToggleButton } from '../common/dinnersettings/AfterPartyLocationToggleButton';
 import {AfterPartyLocationFormControl} from "../common/dinnersettings/AfterPartyLocationFormControl";
 
@@ -124,9 +123,9 @@ export default function MealTimesStep() {
   }
 
   const mealTimeFields = mealsFormState.map((meal) =>
-      <SpacingGrid item key={meal.label} pr={6}>
+      <Grid item key={meal.label} sx={{pr: 6}}>
         <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
-      </SpacingGrid>
+      </Grid>
   );
   const mealTimeFieldsDirection = isSmallDevice ? "column" : "row";
 
@@ -134,9 +133,9 @@ export default function MealTimesStep() {
       <div>
         <PageTitle>{t('time_setup')}</PageTitle>
         <FormProvider {...formMethods}>
-          <SpacingGrid container direction={mealTimeFieldsDirection}>
+          <Grid container direction={mealTimeFieldsDirection}>
             {mealTimeFields}
-          </SpacingGrid>
+          </Grid>
 
           <AfterPartyLocationToggleButton afterPartyLocationEnabled={!!afterPartyLocation}
                                           onToggleAfterPartyLocation={enable => dispatch(enableAfterPartyLocation(enable)) }

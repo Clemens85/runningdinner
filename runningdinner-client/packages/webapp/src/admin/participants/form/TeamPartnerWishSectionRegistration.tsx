@@ -18,7 +18,6 @@ import {
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import Paragraph from "../../../common/theme/typography/Paragraph";
-import {SpacingGrid} from "../../../common/theme/SpacingGrid";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
 import {TeamPartnerWishFormInput} from "./TeamPartnerWishFormInput";
 import { Alert } from '@mui/material';
@@ -122,8 +121,8 @@ function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinner
 
   return (
     <>
-      <SpacingGrid container justify={"flex-start"}>
-        <SpacingGrid item>
+      <Grid container justifyContent={"flex-start"}>
+        <Grid item>
           {currentTeamPartnerOption === TeamPartnerOption.NONE &&
             <SecondaryButton color={"primary"} variant={"outlined"} onClick={() => openDialog()}>{t("common:teampartner_wish_add")}...</SecondaryButton>
           }
@@ -132,8 +131,8 @@ function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinner
               <Button variant={"outlined"} onClick={() => handleToggleTeamPartnerOptionDialogClose(TeamPartnerOption.NONE)}>{t("common:teampartner_wish_option_remove")}</Button>
             </Box>
           }
-        </SpacingGrid>
-      </SpacingGrid>
+        </Grid>
+      </Grid>
       { isDialogOpen && <AddTeamPartnerOptionsDialog onCancel={closeDialog}
                                                      handleTeamPartnerOptionChange={handleToggleTeamPartnerOptionDialogClose} /> }
     </>
@@ -212,11 +211,11 @@ function TeamPartnerRegistrationFormInput() {
                          name="teamPartnerWishRegistrationData.lastname"
                          label={t("common:teampartner_registration_lastname")}/>
         </Grid>
-        <SpacingGrid item xs={12} py={2}>
+        <Grid item xs={12} sx={{py: 2}}>
           <Span><Trans i18nKey={"common:teampartner_registration_info_address"} /></Span>
           <Span><Trans i18nKey={"common:teampartner_registration_info_no_duplicate"} /></Span>
           <Span><Trans i18nKey={"common:teampartner_registration_info_mealspecifics"} /></Span>
-        </SpacingGrid>
+        </Grid>
       </Grid>
     </>
   )

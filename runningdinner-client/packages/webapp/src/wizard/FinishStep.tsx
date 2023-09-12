@@ -18,7 +18,6 @@ import {
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {PageTitle, Subtitle} from "../common/theme/typography/Tags";
-import {SpacingGrid} from "../common/theme/SpacingGrid";
 import FormTextField from "../common/input/FormTextField";
 import WizardButtons from "./WizardButtons";
 import Paragraph from "../common/theme/typography/Paragraph";
@@ -84,8 +83,8 @@ export default function FinishStep() {
       <PageTitle>{t('almost_there')}</PageTitle>
       <FormProvider {...formMethods}>
         <form>
-          <SpacingGrid container>
-            <SpacingGrid item xs={12} md={6}>
+          <Grid container>
+            <Grid item xs={12} md={6}>
               <FormTextField name="email"
                              label={t('administration_email_label' )}
                              required
@@ -94,8 +93,8 @@ export default function FinishStep() {
                              }
                              variant="outlined"
                              fullWidth />
-            </SpacingGrid>
-          </SpacingGrid>
+            </Grid>
+          </Grid>
 
           { !isDemoDinner && <ContractSettings contract={runningDinner.contract} /> }
 
@@ -116,7 +115,7 @@ function ContractSettings({contract}: ContractProps) {
 
   return (
     <>
-      <SpacingGrid container mt={3}>
+      <Grid container sx={{mt: 3}}>
         <Grid item xs={12}>
           <Subtitle i18n="wizard:adv_headline" />
           <Paragraph><Trans i18nKey="wizard:adv_text_question" /></Paragraph>
@@ -134,9 +133,9 @@ function ContractSettings({contract}: ContractProps) {
             <Paragraph mt={1}><Trans i18nKey="wizard:adv_text_address_help" /></Paragraph>
           </Box>
         </Grid>
-      </SpacingGrid>
+      </Grid>
 
-      <SpacingGrid container mt={3} spacing={3}>
+      <Grid container sx={{mt: 3}} spacing={3}>
         <Grid item xs={12} md={6}>
           <FormTextField name="fullname"
                          label={t('common:fullname' )}
@@ -153,9 +152,9 @@ function ContractSettings({contract}: ContractProps) {
                          defaultValue={contract.streetWithNr}
                          fullWidth/>
         </Grid>
-      </SpacingGrid>
+      </Grid>
 
-      <SpacingGrid container mt={3} spacing={3}>
+      <Grid container sx={{mt: 3}} spacing={3}>
         <Grid item xs={4}>
           <FormTextField name="zip"
                          label={t('common:zip' )}
@@ -171,9 +170,9 @@ function ContractSettings({contract}: ContractProps) {
                          defaultValue={contract.city}
                          fullWidth/>
         </Grid>
-      </SpacingGrid>
+      </Grid>
 
-      <SpacingGrid container mt={3}>
+      <Grid container sx={{mt: 3}}>
         <Grid item xs={12}>
           <FormCheckbox name="newsletterEnabled"
                         useTableDisplay={true}
@@ -182,7 +181,7 @@ function ContractSettings({contract}: ContractProps) {
                           <Trans i18nKey="common:newsletter_label" values={{globalAdminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL}} />
                         } />
         </Grid>
-      </SpacingGrid>
+      </Grid>
     </>
   );
 }

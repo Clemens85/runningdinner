@@ -1,5 +1,4 @@
 import {useTranslation} from "react-i18next";
-import {SpacingGrid} from "../theme/SpacingGrid";
 import Grid from "@mui/material/Grid";
 import {Span} from "../theme/typography/Tags";
 import FormTextField from "../input/FormTextField";
@@ -14,13 +13,13 @@ export function AfterPartyLocationFormControl() {
 
   return (
     <>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
+      <Grid container  sx={{mt: afterPartyLocationMt}} spacing={3}>
         <Grid item xs={12} md={9}>
           <Span i18n={"common:after_event_party_help_1"}/>
           <Span i18n={"common:after_event_party_help_2"}/>
         </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
+      </Grid>
+      <Grid container sx={{mt: afterPartyLocationMt}} spacing={3}>
         <Grid item xs={12} md={9}>
           <FormTextField name="addressName"
                          label={t('common:after_party_location_name')}
@@ -30,13 +29,12 @@ export function AfterPartyLocationFormControl() {
         </Grid>
         <Grid item xs={12} md={3}>
           <FormTimePicker
-            id={"time"}
             label={t("common:time")}
             name={"time"}
             data-testid={`after-event-party-time`}/>
         </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
+      </Grid>
+      <Grid container sx={{mt: afterPartyLocationMt}} spacing={3}>
         <Grid item xs={12} md={9}>
           <FormTextField fullWidth
                          variant="outlined"
@@ -51,8 +49,8 @@ export function AfterPartyLocationFormControl() {
                          name="streetNr"
                          label={t('common:street_nr')}/>
         </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
+      </Grid>
+      <Grid container sx={{mt: afterPartyLocationMt}} spacing={3}>
         <Grid item xs={12} md={3}>
           <FormTextField name="zip"
                          label={t('common:zip')}
@@ -67,15 +65,15 @@ export function AfterPartyLocationFormControl() {
                          variant="outlined"
                          fullWidth/>
         </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={afterPartyLocationMt} spacing={3}>
+      </Grid>
+      <Grid container sx={{mt: afterPartyLocationMt}} spacing={3}>
         <Grid item xs={12} md={9}>
           <FormTextField fullWidth
                          variant="outlined"
                          name="addressRemarks"
                          label={t("common:after_party_location_remarks")}/>
         </Grid>
-      </SpacingGrid>
+      </Grid>
     </>
   );
 }

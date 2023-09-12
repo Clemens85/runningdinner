@@ -1,5 +1,4 @@
 import React from 'react';
-import {SpacingGrid} from "../theme/SpacingGrid";
 import FormSelect from "../input/FormSelect";
 import {getByValue, LabelValue} from "@runningdinner/shared";
 import {Box, FormHelperText, FormLabel, MenuItem} from "@mui/material";
@@ -23,8 +22,8 @@ export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerS
 
   return (
     <>
-      <SpacingGrid container>
-        <SpacingGrid item xs={12} md={6}>
+      <Grid container>
+        <Grid item xs={12} md={6}>
           <FormSelect name="registrationType"
                       variant={"outlined"}
                       label={t('common:registration_type')}
@@ -35,9 +34,9 @@ export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerS
                 .map(registrationType => <MenuItem value={registrationType.value} key={registrationType.value}>{registrationType.label}</MenuItem>)
             }
           </FormSelect>
-        </SpacingGrid>
-      </SpacingGrid>
-      <SpacingGrid container mt={3}>
+        </Grid>
+      </Grid>
+      <Grid container sx={{mt: 3}}>
         <Grid item xs={12} md={6}>
           <FormTextField name="title"
                          label={t('common:title' )}
@@ -46,8 +45,8 @@ export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerS
                          variant="outlined"
                          fullWidth />
         </Grid>
-      </SpacingGrid>
-      <SpacingGrid container mt={3} spacing={3}>
+      </Grid>
+      <Grid container sx={{mt: 3}} spacing={3}>
         <Grid item xs={12} md={3}>
           <FormTextField name="zip"
                          label={t('common:zip' )}
@@ -64,11 +63,11 @@ export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerS
                          fullWidth/>
         </Grid>
         <Grid item xs={12} md={3}>
-          <FormDatePicker name={"date"} label={t('common:date' )} inputVariant={"outlined"} />
+          <FormDatePicker name={"date"} label={t('common:date' )} />
         </Grid>
-      </SpacingGrid>
+      </Grid>
 
-      <SpacingGrid container mt={3}>
+      <Grid container sx={{mt: 3}}>
         <Grid item xs={12}>
           <FormLabel>{t('common:event_language_label')}</FormLabel>
           <Box my={1}>
@@ -83,7 +82,7 @@ export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerS
           </Box>
           <FormHelperText>{t('common:event_language_help')}</FormHelperText>
         </Grid>
-      </SpacingGrid>
+      </Grid>
     </>
   );
 }
