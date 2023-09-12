@@ -8,7 +8,7 @@ import SecondaryButton from "../common/theme/SecondaryButton";
 import {getNavigationStepSelector} from "@runningdinner/shared";
 import useWizardNavigation from "./WizardNavigationHook";
 import {SummaryNavigationStep} from "@runningdinner/shared";
-import {commonStyles} from "../common/theme/CommonStylesSx";
+import {commonStyles} from "../common/theme/CommonStyles";
 
 export interface WizardButtonsProps {
   onSubmitData:  (data: any) => Promise<boolean>;

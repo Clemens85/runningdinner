@@ -23,7 +23,7 @@ import SecondaryButton from "../../../common/theme/SecondaryButton";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 import {TeamPartnerWishSectionAdmin} from "./TeamPartnerWishSectionAdmin";
-import {commonStyles} from "../../../common/theme/CommonStylesSx";
+import {commonStyles} from "../../../common/theme/CommonStyles";
 
 export interface ParticipantFormProps {
   participant: ParticipantListable;

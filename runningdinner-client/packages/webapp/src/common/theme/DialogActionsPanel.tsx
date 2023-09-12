@@ -4,7 +4,7 @@ import React from "react";
 import SecondaryButton from "./SecondaryButton";
 import {PrimaryDangerButtonAsync} from "./PrimaryDangerButtonAsync";
 import {CallbackHandler} from "@runningdinner/shared";
-import {commonStyles} from "./CommonStylesSx";
+import {commonStyles} from "./CommonStyles";
 
 export interface DialogActionsPanelProps {
   onOk: CallbackHandler;

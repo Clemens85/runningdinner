@@ -24,7 +24,7 @@ import SecondaryButton from "../../common/theme/SecondaryButton";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 import FormTextField from "../../common/input/FormTextField";
 import Paragraph from "../../common/theme/typography/Paragraph";
-import {commonStyles} from "../../common/theme/CommonStylesSx";
+import {commonStyles} from "../../common/theme/CommonStyles";
 
 export function PaymentOptionsPage({runningDinner}: BaseRunningDinnerProps) {
 

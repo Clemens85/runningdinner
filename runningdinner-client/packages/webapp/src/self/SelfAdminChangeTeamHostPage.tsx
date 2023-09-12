@@ -31,7 +31,7 @@ import Paragraph from "../common/theme/typography/Paragraph";
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import { Alert } from '@mui/material';
-import {commonStyles} from "../common/theme/CommonStylesSx";
+import {commonStyles} from "../common/theme/CommonStyles";
 import {styled} from "@mui/material/styles";
 
 

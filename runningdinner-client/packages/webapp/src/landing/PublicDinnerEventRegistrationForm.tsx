@@ -40,7 +40,7 @@ import {useAsync} from "react-async-hook";
 import {useDrawerStyles} from "./LandingStyles";
 import {RegistrationPaymentProgressBackdrop} from "./RegistrationPaymentProgressBackdrop";
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
-import {commonStyles} from "../common/theme/CommonStylesSx";
+import {commonStyles} from "../common/theme/CommonStyles";
 
 type BaseRegistrationFormProps = {
   onCancel: CallbackHandler;

@@ -12,7 +12,7 @@ import Grid from "@mui/material/Grid";
 import {Box} from "@mui/material";
 import {LanguageSwitch} from "../common/i18n/LanguageSwitch";
 import {SuperSEO} from "react-super-seo";
-import {commonStyles} from "../common/theme/CommonStylesSx";
+import {commonStyles} from "../common/theme/CommonStyles";
 
 export interface SelfAdminPageContainerProps extends Parent {
   htmlPageTitleI18n: string;

@@ -18,7 +18,7 @@ import {PageTitle} from "../../../common/theme/typography/Tags";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import Button from "@mui/material/Button";
 import {FormCheckboxSimple} from "../../../common/input/FormCheckboxSimple";
-import {commonStyles} from "../../../common/theme/CommonStylesSx";
+import {commonStyles} from "../../../common/theme/CommonStyles";
 
 export type ParticipantSearchResult = {
   filteredParticipants: ParticipantListable[],

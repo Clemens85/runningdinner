@@ -16,7 +16,7 @@ import {PrimaryButton} from "../common/theme/PrimaryButton";
 import {useQuery} from "../common/hooks/QueryHook";
 import { Alert, AlertTitle } from '@mui/material';
 import { getDecodedQueryParam } from '../common/QueryParamDecoder';
-import {commonStyles} from "../common/theme/CommonStylesSx";
+import {commonStyles} from "../common/theme/CommonStyles";
 
 export default function SelfAdminManageTeamPartnerWishPage() {
 
