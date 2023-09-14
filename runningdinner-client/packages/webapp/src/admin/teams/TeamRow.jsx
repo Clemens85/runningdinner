@@ -5,7 +5,6 @@ import ParticipantGenderTooltip from "../../common/gender/ParticipantGenderToolt
 import ParticipantGenderIcon from "../../common/gender/ParticipantGenderIcon";
 import {useDrag, useDrop} from "react-dnd";
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import makeStyles from '@mui/styles/makeStyles';
 import {CancelledTeamMember} from "./CancelledTeamMember";
 import {TableRowWithCursor} from "../../common/theme/CommonStyles";
 import {
@@ -15,17 +14,20 @@ import {
   isTeamPartnerWishChild,
 } from "@runningdinner/shared";
 import {TeamPartnerWishIcon} from "./TeamPartnerWishIcon";
+import {styled} from "@mui/material/styles";
 
-const useParticipantStyles = makeStyles(() => ({
-  cellPadding: {
-    paddingTop: '1px',
-    paddingBottom: '1px'
-  }
-}));
+const TableCellContentWithYPadding = styled('div')( {
+  paddingTop: '1px',
+  paddingBottom: '1px'
+});
+
+const ParticipantGenderIconWithYPadding = styled(ParticipantGenderIcon)( {
+  backgroundColor: 'transparent',
+  paddingTop: '1px',
+  paddingBottom: '1px'
+});
 
 export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTeamHostDialog, selected, runningDinnerSessionData, teamSize}) {
-
-  const participantClasses = useParticipantStyles();
 
   const {teamNumber, teamMembers, meal, hostTeamMember } = team;
 
@@ -35,16 +37,16 @@ export default function TeamRow({team, onClick, onTeamMemberSwap, onOpenChangeTe
       cancelledTeamMembers.map(cancelledTeamMember => <TeamMember key={cancelledTeamMember} participant={null} />)
   );
 
-  const teamMemberSeats = teamMembers.map(participant => <div key={participant.id} className={participantClasses.cellPadding}>
+  const teamMemberSeats = teamMembers.map(participant => <TableCellContentWithYPadding key={participant.id}>
                                                             {!isTeamPartnerWishChild(participant) &&
                                                               <NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData}/>
                                                             }
-                                                          </div>);
+                                                          </TableCellContentWithYPadding>);
   const teamMemberGenders = teamMembers.map(participant => <div key={participant.id}>
                                                               {!isTeamPartnerWishChild(participant) &&
                                                                 <ParticipantGenderTooltip gender={participant.gender}>
-                                                                  <ParticipantGenderIcon gender={participant.gender} disableRipple={true} disableTouchRipple={true}
-                                                                                         disableFocusRipple={true} style={{ backgroundColor: 'transparent', paddingTop: '1px', paddingBottom: '1px' }} />
+                                                                  <ParticipantGenderIconWithYPadding gender={participant.gender}
+                                                                                                     disableRipple={true} disableTouchRipple={true} disableFocusRipple={true} />
                                                                 </ParticipantGenderTooltip>
                                                               }
                                                             </div>);
@@ -99,8 +101,6 @@ function TeamMember({participant}) {
 
 function DragAnDroppableTeamMember({participant, onTeamMemberSwap}) {
 
-  const participantClasses = useParticipantStyles();
-
   const [{isDragging}, drag] = useDrag({
     item: { type: 'TEAM_MEMBER', id: participant.id, teamId: participant.teamId },
     collect: monitor => ({
@@ -122,11 +122,9 @@ function DragAnDroppableTeamMember({participant, onTeamMemberSwap}) {
 
   return (
       <div ref={drop}>
-        <div ref={drag}
-             className={participantClasses.cellPadding}
-              style={{ border: isDragging ? '1px solid black' : 'none' }}>
+        <TableCellContentWithYPadding ref={drag} style={{ border: isDragging ? '1px solid black' : 'none' }}>
           <TeamMember participant={participant} />
-        </div>
+        </TableCellContentWithYPadding>
       </div>
   );
 }

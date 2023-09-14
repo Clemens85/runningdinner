@@ -15,8 +15,7 @@ import {
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
-import { Box, Grid, Link, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { Box, Grid, Link, List, ListItem, ListItemIcon, ListItemText, styled, Typography } from '@mui/material';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Paragraph from "../common/theme/typography/Paragraph";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -52,19 +51,15 @@ export function PublicDinnerEventRegistrationPage({showRegistrationForm}: Regist
                 } />;
 }
 
-const useMealListStyles = makeStyles(() => ({
-  root: {
-    minWidth: "36px"
-  }
-}));
+const MealListItemIcon = styled(ListItemIcon)({
+  minWidth: "36px"
+});
 
 export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrationForm}: BasePublicDinnerProps & RegistrationFormSettingsType) {
 
   const {t, i18n} = useTranslation(["landing", "common"]);
 
   const {navigateToRegistrationFinished, navigateToRunningDinnerEventList} = useLandingNavigation();
-
-  const mealListClasses = useMealListStyles();
 
   const { isOpen: isRegistrationFormOpen, open: openRegistrationForm, close: closeRegistrationForm } = useDisclosure(showRegistrationForm);
 
@@ -89,9 +84,9 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
   function renderMealListItem(meal: Meal) {
     return (
       <ListItem key={meal.id} disableGutters>
-        <ListItemIcon classes={{ root:  mealListClasses.root }}>
+        <MealListItemIcon>
           <ScheduleIcon color={"primary"} />
-        </ListItemIcon>
+        </MealListItemIcon>
         <ListItemText primary={
           <>
             <Time date={meal.time} />: &nbsp;

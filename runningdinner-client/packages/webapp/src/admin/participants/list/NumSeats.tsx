@@ -1,14 +1,11 @@
 import React from 'react'
 import {Chip, Tooltip} from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
 import {canHost, isNumSeatsUnknown, Participant, RunningDinnerSessionData} from "@runningdinner/shared";
+import {styled} from "@mui/material/styles";
 
-
-const useChipStyles = makeStyles(() => ({
-  root: {
-    color: 'white'
-  }
-}));
+const ChipWhiteText = styled(Chip)( {
+  color: 'white'
+});
 
 export interface NumSeatsProps {
   participant: Participant,
@@ -16,8 +13,6 @@ export interface NumSeatsProps {
 }
 
 export default function NumSeats({participant, runningDinnerSessionData}: NumSeatsProps) {
-
-  const classes = useChipStyles();
 
   const {numSeatsNeededForHost} = runningDinnerSessionData;
 
@@ -37,7 +32,7 @@ export default function NumSeats({participant, runningDinnerSessionData}: NumSea
 
   return (
       <Tooltip title={tooltipLabel} aria-label={tooltipLabel} placement="top-end">
-        <Chip label={numSeats} color={color} size={"small"} className={classes.root} />
+        <ChipWhiteText label={numSeats} color={color} size={"small"} />
       </Tooltip>
   );
 
