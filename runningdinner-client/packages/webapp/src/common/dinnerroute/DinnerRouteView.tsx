@@ -23,10 +23,8 @@ import {
   useTeamName
 } from "@runningdinner/shared";
 import {Box, Grid, LinearProgress, Paper, Typography} from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
-import clsx from "clsx";
 import {GoogleMap, InfoWindow, Marker, Polyline} from '@react-google-maps/api';
 import {LoadScript} from "@react-google-maps/api";
 import { cloneDeep } from 'lodash';
@@ -38,6 +36,7 @@ import LinkExtern from '../theme/LinkExtern';
 import {TextViewHtml} from "../TextViewHtml";
 import AfterPartyLocationHeadline from "@runningdinner/shared/src/afterpartylocation/AfterPartyLocationHeadline";
 import {SuperSEO} from "react-super-seo";
+import {styled} from "@mui/material/styles";
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute
@@ -88,19 +87,15 @@ interface TeamCardProps {
   isCurrentTeam: boolean;
 }
 
-
-const useTeamCardStyles = makeStyles((theme) => ({
-  teamCardLine: {
-    display: 'flex',
-    alignItems: 'baseline',
-  },
-  marginBottom: {
-    marginBottom: theme.spacing(1)
-  },
-  hidden: {
-    visibility: "hidden"
-  }
-}));
+const TeamCardDetailRow = styled('div')( {
+  display: 'flex',
+  alignItems: 'baseline'
+});
+const TeamCardDetailRowMarginBottom = styled('div')( {
+  display: 'flex',
+  alignItems: 'baseline',
+  mb: 1
+});
 
 
 function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardProps) {
@@ -147,8 +142,6 @@ interface TeamCardDetailsProps extends DinnerRouteTeam {
 
 function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTeam}: TeamCardDetailsProps) {
 
-  const teamCardClasses = useTeamCardStyles();
-
   function renderContactInfo() {
     if (isArrayEmpty(contactInfo)) {
       return <Span>-</Span>;
@@ -165,25 +158,25 @@ function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTeam}: Tea
 
   return (
     <>
-      <div className={clsx(teamCardClasses.teamCardLine, teamCardClasses.marginBottom)}>
+      <TeamCardDetailRowMarginBottom>
         <SmallTitle i18n="host"/>:&nbsp; <Span><Fullname {...hostTeamMember} /></Span>
-      </div>
+      </TeamCardDetailRowMarginBottom>
       <SmallTitle i18n="address" gutterBottom={false}/>
-      <div className={teamCardClasses.teamCardLine}>
+      <TeamCardDetailRow>
         <Span gutterBottom={false}>{hostTeamMember.street}</Span>&nbsp;<Span gutterBottom={false}>{hostTeamMember.streetNr}</Span>
-      </div>
-      <div className={clsx(teamCardClasses.teamCardLine, teamCardClasses.marginBottom)}>
+      </TeamCardDetailRow>
+      <TeamCardDetailRowMarginBottom>
         <Span>{hostTeamMember.zip}</Span>&nbsp;<Span>{hostTeamMember.cityName}</Span>
-      </div>
+      </TeamCardDetailRowMarginBottom>
       { isStringNotEmpty(hostTeamMember.addressRemarks) && <em>{hostTeamMember.addressRemarks}</em> }
 
-      <div className={teamCardClasses.teamCardLine}>
+      <TeamCardDetailRow>
         <SmallTitle i18n="time"/>:&nbsp; <Span><Time date={meal.time }/></Span>
-      </div>
+      </TeamCardDetailRow>
 
-      <div className={clsx( teamCardClasses.teamCardLine, {[teamCardClasses.hidden]: isCurrentTeam} )}>
+      <TeamCardDetailRowMarginBottom style={{ visibility: isCurrentTeam ? "hidden" : "visible" }}>
         <SmallTitle i18n="contact"/>:&nbsp; { renderContactInfo() }
-      </div>
+      </TeamCardDetailRowMarginBottom>
     </>
   )
 }
