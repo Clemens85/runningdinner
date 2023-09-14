@@ -11,8 +11,6 @@ import {
   Grid,
   useTheme,
 } from "@mui/material";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import { DialogTitleCloseable } from "../DialogTitleCloseable";
 import { PrimaryButton } from "../PrimaryButton";
 import SecondaryButton from "../SecondaryButton";
@@ -50,20 +48,6 @@ export interface ConfirmationDialogProps extends Partial<DialogProps> {
   onClose: (confirmed: boolean) => unknown;
 }
 
-const useConfirmationDialogStyles = makeStyles((theme) =>
-  createStyles({
-    dialogActions: {
-      justifyContent: "center",
-    },
-    closeButton: {
-      position: "absolute",
-      right: theme.spacing(2),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500],
-    },
-  })
-);
-
 /**
  * Convenience component for showing simple dialogs which can be confirmed and/or rejected.
  * The passed component and title can be as complex as you want, if you want however incorporate your own logic into a dialog it might be more
@@ -87,7 +71,8 @@ export function ConfirmationDialog({dialogTitle, dialogContent, buttonConfirmTex
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
   const buttonFlexDirection = isSmallDevice ? "column" : "row";
-  const dialogClasses = useConfirmationDialogStyles();
+
+  const dialogActionsCenteredStyle = isSmallDevice ? { "justifyContent": "center" } : {};
 
   return (
     <Dialog
@@ -104,7 +89,7 @@ export function ConfirmationDialog({dialogTitle, dialogContent, buttonConfirmTex
           <DialogContentText id="alert-dialog-description" component={"div"}>{dialogContent}</DialogContentText>
         )}
       </DialogContent>
-      <DialogActions className={isSmallDevice ? dialogClasses.dialogActions : ""}>
+      <DialogActions sx={dialogActionsCenteredStyle}>
         <Box px={2} pt={1} pb={2}>
           <Grid container justifyContent="flex-end" direction={buttonFlexDirection} alignContent="center">
             <Grid item style={{ alignSelf: "center" }}>
