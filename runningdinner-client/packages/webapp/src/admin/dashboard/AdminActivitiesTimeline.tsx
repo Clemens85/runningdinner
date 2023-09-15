@@ -7,8 +7,7 @@ import {
   getShortFormattedMonth, MessageJobOverview,
   Time
 } from "@runningdinner/shared";
-import { Card, CardContent, Grid, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import {Card, CardContent, Grid, Typography} from "@mui/material";
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import GroupIcon from '@mui/icons-material/Group';
@@ -22,6 +21,7 @@ import {useTranslation} from "react-i18next";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
 import {TextViewHtml} from "../../common/TextViewHtml";
+import {styled} from "@mui/material/styles";
 
 export interface AdminActivitiesTimelineProps {
   dashboardAdminActivities: DashboardAdminActivities;
@@ -58,10 +58,16 @@ function TimelineDot({date, colorCssClass}: TimelineDotProps) {
     </div>
   )
 }
+const TimelineHeadlineIconContainer = styled('div')(({theme}) => ({
+  paddingRight: theme.spacing(1)
+}));
+const TimelineBodyContainer = styled('div')(({theme}) => ({
+  marginTop: theme.spacing(1)
+}));
+
 
 function TimelineContentPanel({activityDate, activityType, activityHeadline, activityMessage, relatedMessageJobOverview}: Activity) {
 
-  const activityStyles = useActivityStyles();
   const {generateMessageJobDetailsPath} = useAdminNavigation();
   const {t} = useTranslation("admin");
 
@@ -83,15 +89,15 @@ function TimelineContentPanel({activityDate, activityType, activityHeadline, act
       <div className="timeline-heading">
         <Grid container alignItems="center">
           <Grid item>
-            <div className={activityStyles.timelineHeadlineIcon} >
+            <TimelineHeadlineIconContainer>
               { renderHeadlineIcon() }
-            </div>
+            </TimelineHeadlineIconContainer>
           </Grid>
           <Grid item><Typography variant="subtitle2">{activityHeadline}</Typography></Grid>
         </Grid>
         <Typography variant={"caption"}><Time date={activityDate} /></Typography>
       </div>
-      <div className={activityStyles.timelineBody}>
+      <TimelineBodyContainer>
         <Span><TextViewHtml text={activityMessage} /></Span>
         { relatedMessageJobOverview && <div>
           <LinkIntern pathname={ generateMessageJobDetailsPath(relatedMessageJobOverview.adminId, relatedMessageJobOverview.messageJobId) } color="primary">
@@ -102,25 +108,16 @@ function TimelineContentPanel({activityDate, activityType, activityHeadline, act
           </LinkIntern><br/>
           { isShowMessageJobSendingFinishedInfo(relatedMessageJobOverview) &&
               <Grid container alignItems="center">
-                <Grid item><div className={activityStyles.timelineHeadlineIcon}><Typography variant={"caption"}>{t("messages_sending_finished")}</Typography></div></Grid>
+                <Grid item><TimelineHeadlineIconContainer><Typography variant={"caption"}>{t("messages_sending_finished")}</Typography></TimelineHeadlineIconContainer></Grid>
                 <Grid item><HelpIconTooltip title={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' fontSize={"small"}/></Grid>
               </Grid>
           }
           { isShowMessageJobSendingPendingInfo(relatedMessageJobOverview) && <Typography variant={"caption"}>{t("messages_sending_pending")}</Typography> }
         </div> }
-      </div>
+      </TimelineBodyContainer>
     </div>
   );
 }
-
-const useActivityStyles = makeStyles((theme) => ({
-  timelineHeadlineIcon: {
-    paddingRight: theme.spacing(1)
-  },
-  timelineBody: {
-    marginTop: theme.spacing(1)
-  }
-}));
 
 const ActivityTypeMapping: Record<string, any> = {
   [ActivityType.DINNER_CREATED]: {
