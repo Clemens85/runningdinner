@@ -2,54 +2,52 @@ import React from 'react';
 import {
   AppBar,
   Drawer,
-  Grid,
-  Hidden,
+  Grid, Hidden,
   IconButton,
   Link,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Toolbar,
-  Typography,
+  Typography
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
 import {LanguageSwitch} from "../i18n/LanguageSwitch";
 import {Link as RouterLink, useLocation} from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
-import clsx from "clsx";
 import {FeedbackButtonContainerRightAligned} from "../feedback/FeedbackButton";
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "./NavigationPaths";
-import { Breakpoint } from '@mui/material/styles';
+import {Breakpoint, styled} from '@mui/material/styles';
 
-const useStyles = makeStyles((theme) => ({
-  menuButton: {
-    marginRight: theme.spacing(2)
-  },
-  title: {
-    marginRight: theme.spacing(4)
-  },
-  menuLink: {
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2)
-  },
-  appBarColors: {
-    color: 'white',
-    backgroundColor: '#333333'
-  },
-  mobileNavList: {
-    minWidth: 200,
-  },
-  paper: {
-    background: "#333333"
-  },
-  homeLink: {
-    textDecoration: "none",
-    "&:focus, &:hover, &:visited, &:link, &:active": {
-      textDecoration: "none"
-    }
-  }
-
+const HomeTitle = styled(Typography)(({theme}) => ({
+  marginRight: theme.spacing(4)
 }));
+const HomeLink = styled(Link)({
+  textDecoration: "none",
+  "&:focus, &:hover, &:visited, &:link, &:active": {
+    textDecoration: "none"
+  }
+});
+const MenuLink = styled(Link)(({theme}) => ({
+  marginRight: theme.spacing(2),
+  marginLeft: theme.spacing(2)
+}));
+const ToggleMenuBurgerButton = styled(IconButton)(({theme}) => ({
+  marginRight: theme.spacing(2)
+}));
+const AppBarBlackWhite = styled(AppBar)({
+  color: 'white',
+  backgroundColor: '#333333'
+});
+const MobileNavItemsContainer = styled('div')({
+  color: 'white',
+  backgroundColor: '#333333',
+  minWidth: 200
+});
+const DrawerBlack = styled(Drawer)( {
+  '& .MuiDrawer-paper': {
+    background: "#333333"
+  }
+});
 
 export interface MainNavigationProps {
   navigationItems: NavigationItem[];
@@ -67,7 +65,6 @@ const breakpoints: Array<Breakpoint> = ["xs", "sm", "md", "lg", "xl"];
 
 export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, mobileBreakpoint = "sm"}: MainNavigationProps) => {
 
-  const classes = useStyles();
   const [showFeedback, setShowFeedback] = React.useState(isShowFeedbackButton());
 
   const location = useLocation();
@@ -80,43 +77,41 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
 
   function createLink(navigationItem: NavigationItem) {
     return (
-      <Link
+      <MenuLink
         to={`${navigationItem.routePath}`}
         component={RouterLink}
         color="inherit"
         key={navigationItem.title}
-        className={classes.menuLink}
-        underline="hover">{navigationItem.title}</Link>
+        underline="hover">{navigationItem.title}</MenuLink>
     );
   }
 
   return <>
     { topNotificationBar && topNotificationBar }
-    <AppBar position="static" className={classes.appBarColors}>
+    <AppBarBlackWhite position="static">
       <Toolbar>
         <Grid container justifyContent={"space-between"} alignItems={"center"}>
           <Grid item>
             <Grid container alignItems={"center"}>
               <Hidden only={hiddenForDesktopView}>
                 <Grid item>
-                  <MobileNavigation navigationItems={navigationItems} />
+                  <MobileNavigation navigationItems={navigationItems}/>
                 </Grid>
               </Hidden>
               <Hidden only={hiddenForMobileView}>
                 <Grid item>
                   <Grid container alignItems={"center"}>
                     <Grid item>
-                      <Link
+                      <HomeLink
                         to={`${navigationItems[0].routePath}`}
                         component={RouterLink}
-                        className={classes.homeLink}
                         color="inherit"
                         underline="hover">
-                        <Typography variant="h6" className={classes.title}>{mainTitle}</Typography>
-                      </Link>
+                        <HomeTitle variant="h6">{mainTitle}</HomeTitle>
+                      </HomeLink>
                     </Grid>
                     <Grid item>
-                      { navigationItems.map(navigationItem => createLink(navigationItem)) }
+                      {navigationItems.map(navigationItem => createLink(navigationItem))}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -128,7 +123,7 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
           </Grid>
         </Grid>
       </Toolbar>
-    </AppBar>
+    </AppBarBlackWhite>
     { showFeedback && <FeedbackButtonContainerRightAligned /> }
   </>;
 };
@@ -155,8 +150,6 @@ function getMobileBreakpointsUp(breakpoint: Breakpoint): Breakpoint[] {
 
 function MobileNavigation({navigationItems}: MainNavigationProps) {
 
-  const classes = useStyles();
-
   const [mobileDrawerNavigationOpen, setMobileDrawerNavigationOpen] = React.useState(false);
 
   const toggleMobileDrawerNavigation = () => {
@@ -165,40 +158,37 @@ function MobileNavigation({navigationItems}: MainNavigationProps) {
 
   function createLink(navigationItem: NavigationItem) {
 
-    const link = <Link
+    const link = <MenuLink
       to={`${navigationItem.routePath}`}
       component={RouterLink}
       color="inherit"
       onClick={toggleMobileDrawerNavigation}
-      className={classes.menuLink}
-      underline="hover">{navigationItem.title}</Link>;
+      underline="hover">{navigationItem.title}</MenuLink>;
     return (
-      <ListItem button key={navigationItem.title} divider>
+      <ListItemButton key={navigationItem.title} divider>
         <ListItemText primary={link} />
-      </ListItem>
+      </ListItemButton>
     );
   }
 
   return <>
-    <IconButton
+    <ToggleMenuBurgerButton
       edge="start"
       color="inherit"
       aria-label="menu"
-      className={classes.menuButton}
       onClick={toggleMobileDrawerNavigation}
       size="large">
       <MenuIcon/>
-    </IconButton>
-    <Drawer open={mobileDrawerNavigationOpen}
+    </ToggleMenuBurgerButton>
+    <DrawerBlack open={mobileDrawerNavigationOpen}
             anchor="left"
             onClose={toggleMobileDrawerNavigation}
-            classes={{ paper: classes.paper }}
             ModalProps={{keepMounted: true}}>
-      <div className={clsx(classes.mobileNavList, classes.appBarColors)}>
+      <MobileNavItemsContainer>
         <List>
           { navigationItems.map(navigationItem => createLink(navigationItem)) }
         </List>
-      </div>
-    </Drawer>
+      </MobileNavItemsContainer>
+    </DrawerBlack>
   </>;
 }
