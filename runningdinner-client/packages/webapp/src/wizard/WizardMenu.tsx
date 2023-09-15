@@ -2,16 +2,14 @@ import React from 'react';
 import WizardMenuNotificationBar from "./WizardMenuNotificationBar";
 import {
   AppBar,
-  Hidden,
   LinearProgress,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
+  Typography, useMediaQuery, useTheme,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
 import {useWizardSelector} from "@runningdinner/shared/";
 import {
   getAdministrationUrlSelector,
@@ -38,43 +36,43 @@ import PeopleIcon from '@mui/icons-material/People';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import useWizardNavigation from "./WizardNavigationHook";
 import {FeedbackButtonContainerRightAligned} from "../common/feedback/FeedbackButton";
+import {styled} from "@mui/material/styles";
 
-const useMenuStyles = makeStyles((theme) => ({
-  navList: {
-    display: `flex`,
-    justifyContent: `space-evenly`,
-    width: "100%"
+const NavList = styled(List)(({theme}) => ({
+  display: `flex`,
+  justifyContent: `space-evenly`,
+  width: "100%"
+}));
+const NavListItem = styled(ListItem)({
+  textDecoration: `none`,
+  textTransform: `uppercase`,
+  color: `white`,
+  width: 'auto'
+});
+const NavListItemIcon = styled(ListItemIcon)(({theme}) => ({
+  [theme.breakpoints.up('md')]: {
+    minWidth: "36px",
   },
-  navItem: {
-    textDecoration: `none`,
-    textTransform: `uppercase`,
-    color: `white`,
-    width: 'auto'
+  [theme.breakpoints.down('lg')]: {
+    minWidth: "24px",
   },
-  navIcon: {
-    [theme.breakpoints.up('md')]: {
-      minWidth: "36px",
-    },
-    [theme.breakpoints.down('lg')]: {
-      minWidth: "24px",
-    },
-    color: 'white'
-  },
-  appBar: {
-    color: 'white',
-    backgroundColor: '#333333'
-  },
-  toolBar: {
-    minHeight: '48px',
-    maxHeight: '48px',
-  }
+  color: 'white'
 }));
 
-const useListItemTextStyles = makeStyles(() => ({
-  primary: {
+const WizardAppBar = styled(AppBar)({
+  color: 'white',
+  backgroundColor: '#333333'
+});
+const WizardToolbar = styled(Toolbar)({
+  minHeight: '48px',
+  maxHeight: '48px'
+});
+
+const ListItemTextBold = styled(ListItemText)({
+  '& .MuiListItemText-primary': {
     fontWeight: 'bold'
   }
-}));
+});
 
 const navigationStepIconMap: Record<string, any> = {
   [BasicDetailsNavigationStep.value]: <EditIcon />,
@@ -90,7 +88,6 @@ export default function WizardMenu() {
   const administrationUrl = useWizardSelector(getAdministrationUrlSelector);
   const { currentNavigationStep } = useWizardSelector(getCurrentNavigationStepSelector);
   const {navigateToWizardStep} = useWizardNavigation();
-  const classes = useMenuStyles();
 
   React.useEffect(() => { // Disable back button after dinner is created in wizard
     console.log(`currentStep is ${currentNavigationStep.value}`);
@@ -104,20 +101,20 @@ export default function WizardMenu() {
       <div>
         <div>
           <WizardMenuNotificationBar />
-          <Toolbar className={classes.toolBar}>
+          <WizardToolbar>
             <Typography
               component="h2"
               variant="h5"
               color="inherit"
               align="center"
               noWrap>Run Your Dinner Wizard</Typography>
-          </Toolbar>
-          <AppBar position="static" className={classes.appBar}>
-            <Toolbar component={"nav"} className={classes.toolBar}>
+          </WizardToolbar>
+          <WizardAppBar position="static">
+            <WizardToolbar component={"nav"}>
               { isStringEmpty(administrationUrl) && <NavigationLinkList /> }
-            </Toolbar>
+            </WizardToolbar>
             <WizardProgressBar />
-          </AppBar>
+          </WizardAppBar>
         </div>
         <div>
           <FeedbackButtonContainerRightAligned />
@@ -132,10 +129,11 @@ function NavigationLinkList() {
   const navigationSteps = useWizardSelector(getAllNavigationStepsSelector);
   const { redirectToBeginOfWizard, currentNavigationStep } = useWizardSelector(getCurrentNavigationStepSelector);
   const {navigateToWizardStep} = useWizardNavigation();
-  const menuClasses = useMenuStyles();
-  const listItemTextClasses = useListItemTextStyles();
 
   const {t} = useTranslation('wizard');
+
+  const theme = useTheme();
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
   React.useEffect(() => { // Ensure that jumping to a step is only possible if all previous steps are run through:
     if (redirectToBeginOfWizard) {
@@ -145,19 +143,21 @@ function NavigationLinkList() {
   }, [redirectToBeginOfWizard]);
 
   return (
-    <List component="nav" aria-labelledby="main navigation" className={menuClasses.navList}>
+    <NavList component="nav" aria-labelledby="main navigation">
       {navigationSteps.map(({ label, value }) => (
-          <ListItem key={value} className={menuClasses.navItem}>
-            <ListItemIcon className={menuClasses.navIcon}>
+          <NavListItem key={value}>
+            <NavListItemIcon>
               {navigationStepIconMap[value]}
-            </ListItemIcon>
-            <Hidden mdDown>
-              { value === currentNavigationStep.value && <ListItemText primary={t(label)} classes={{ primary: listItemTextClasses.primary}} /> }
-              { value !== currentNavigationStep.value && <ListItemText primary={t(label)} /> }
-            </Hidden>
-          </ListItem>
+            </NavListItemIcon>
+            {!isSmallDevice &&
+              <>
+                {value === currentNavigationStep.value && <ListItemTextBold primary={t(label)} />}
+                {value !== currentNavigationStep.value && <ListItemText primary={t(label)}/>}
+              </>
+            }
+          </NavListItem>
       ))}
-    </List>
+    </NavList>
   );
 }
 
