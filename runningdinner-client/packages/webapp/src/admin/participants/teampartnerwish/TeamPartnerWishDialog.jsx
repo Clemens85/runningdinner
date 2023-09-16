@@ -1,6 +1,5 @@
 import {useTranslation} from "react-i18next";
-import { Dialog, DialogContent, Box, DialogActions, useTheme, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import {Dialog, DialogContent, Box, DialogActions, useTheme, useMediaQuery} from "@mui/material";
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React from "react";
 import {Span} from "../../../common/theme/typography/Tags";
@@ -17,6 +16,7 @@ import {SecondaryButtonAsync} from "../../../common/theme/SecondaryButtonAsync";
 import Grid from "@mui/material/Grid";
 import {getFullname, isClosedDinner, CONSTANTS} from "@runningdinner/shared";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
+import {styled} from "@mui/material/styles";
 
 export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpen, onClose}) => {
 
@@ -101,7 +101,7 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
         </DialogContent>
         <DialogActions>
           <DialogButtons cancelButton={ <SecondaryButton onClick={onCancel}>{t('common:no_thanks')}</SecondaryButton> }
-                         sendInvitationButton={ showSendTeamPartnerWishInvitationButton && <SecondaryButtonAsync onClick={handleSendInvitationEMail} variant="contained">
+                         sendInvitationButton={ showSendTeamPartnerWishInvitationButton && <SecondaryButtonAsync onClick={handleSendInvitationEMail} variant="contained" color={"inherit"}>
                                                                                               {t('admin:team_partner_wish_send_invitation_email')}
                                                                                             </SecondaryButtonAsync> }
                          createNewParticipantButton={ showCreateNewParticipantButton && <PrimarySuccessButtonAsync onClick={handleNewParticipant}>
@@ -115,22 +115,17 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
   );
 };
 
-
-const useDialogButtonStyles = makeStyles((theme) => ({
-  sendInvitationButtonMargins: {
-    marginRight: theme.spacing(2),
-    marginLeft: theme.spacing(1),
-  },
-  fullWidthButtonContainerMobile: {
-    '& button': {
-      width: "100%"
-    }
+const GridWithCenteredFullwidthButton = styled(Grid)({
+  '& button': {
+    width: "100%"
   }
+});
+const SendInvitationButtonSpan = styled('span')(({theme}) => ({
+  marginRight: theme.spacing(2),
+  marginLeft: theme.spacing(1),
 }));
 
 function DialogButtons({sendInvitationButton, createNewParticipantButton, updateTeamPartnerWishButton, cancelButton}) {
-
-  const dialogButtonStyles = useDialogButtonStyles();
 
   const theme = useTheme();
   const isDesktopView = useMediaQuery(theme.breakpoints.up('md'));
@@ -139,7 +134,7 @@ function DialogButtons({sendInvitationButton, createNewParticipantButton, update
     return (
       <Box p={2}>
         { cancelButton }
-        { sendInvitationButton && <span className={dialogButtonStyles.sendInvitationButtonMargins}>{ sendInvitationButton }</span> }
+        { sendInvitationButton && <SendInvitationButtonSpan>{ sendInvitationButton }</SendInvitationButtonSpan> }
         { createNewParticipantButton }
         { updateTeamPartnerWishButton }
       </Box>
@@ -150,9 +145,9 @@ function DialogButtons({sendInvitationButton, createNewParticipantButton, update
     return (
       <Box p={1}>
         <Grid container diretion="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
-          { createNewParticipantButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ createNewParticipantButton }</Grid> }
-          { sendInvitationButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ sendInvitationButton }</Grid> }
-          { updateTeamPartnerWishButton && <Grid item xs={12} className={dialogButtonStyles.fullWidthButtonContainerMobile}>{ updateTeamPartnerWishButton }</Grid> }
+          { createNewParticipantButton && <GridWithCenteredFullwidthButton item xs={12}>{ createNewParticipantButton }</GridWithCenteredFullwidthButton> }
+          { sendInvitationButton && <GridWithCenteredFullwidthButton item xs={12}>{ sendInvitationButton }</GridWithCenteredFullwidthButton> }
+          { updateTeamPartnerWishButton && <GridWithCenteredFullwidthButton item xs={12}>{ updateTeamPartnerWishButton }</GridWithCenteredFullwidthButton> }
           <Grid item xs={12} sx={{ textAlign: "center" }}>{ cancelButton }</Grid>
         </Grid>
       </Box>
