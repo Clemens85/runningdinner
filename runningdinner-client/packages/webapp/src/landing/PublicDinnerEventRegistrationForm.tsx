@@ -1,6 +1,5 @@
 import {
   Box,
-  Drawer,
   Grid,
   LinearProgress,
   Paper,
@@ -37,7 +36,7 @@ import { getDecodedQueryParam } from "../common/QueryParamDecoder";
 import {TeamPartnerWishSectionRegistration} from "../admin/participants/form/TeamPartnerWishSectionRegistration";
 import {RegistrationSummaryDialog} from "./RegistrationSummaryDialog";
 import {useAsync} from "react-async-hook";
-import {useDrawerStyles} from "./LandingStyles";
+import {RegistrationFormDrawer} from "./LandingStyles";
 import {RegistrationPaymentProgressBackdrop} from "./RegistrationPaymentProgressBackdrop";
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
 import {commonStyles} from "../common/theme/CommonStyles";
@@ -104,7 +103,6 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
 
   const {t} = useTranslation(['landing', 'common']);
 
-  const drawerClasses = useDrawerStyles();
   const query = useQuery();
 
   const { isOpen: isRegistrationSummaryOpen,
@@ -164,14 +162,10 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
   }
 
   return <>
-    <Drawer open={true}
-            anchor="right"
-            className={drawerClasses.drawer}
-            onClose={onCancel}
-            classes={{
-              paper: drawerClasses.drawerPaper,
-            }}
-            ModalProps={{keepMounted: true}}>
+    <RegistrationFormDrawer open={true}
+                            anchor="right"
+                            onClose={onCancel}
+                            ModalProps={{keepMounted: true}}>
       <div>
         <Paper elevation={3}>
           <Box p={3}>
@@ -236,7 +230,7 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
           </Box>
         </Paper>
       </div>
-    </Drawer>
+    </RegistrationFormDrawer>
     { isRegistrationSummaryOpen && <RegistrationSummaryDialog registrationDataCollection={getRegistrationDataCollection()}
                                                               publicRunningDinner={publicRunningDinner}
                                                               onCancel={closeRegistrationSummary}

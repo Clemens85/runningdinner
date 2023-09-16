@@ -4,7 +4,6 @@ import {
   DialogContent,
   Dialog,
   Card,
-  CardHeader,
   CardContent,
   Typography,
   CardActions, Grid
@@ -17,7 +16,12 @@ import {
 } from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
 import Paragraph from "../common/theme/typography/Paragraph";
-import {usePaymentStyles} from "./LandingStyles";
+import {
+  PaymentCardHeader,
+  PaymentCardHeadlinePricing,
+  PaymentCardList,
+  PaymentCardPricing,
+} from "./LandingStyles";
 import paypalLogo from "./images/paypal-logo.png";
 import LinkExtern from "../common/theme/LinkExtern";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
@@ -33,7 +37,6 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
 
   const {t} = useTranslation(["landing", "common"]);
   const {showError} = useCustomSnackbar();
-  const classes = usePaymentStyles();
 
   const [orderProcessing, setOrderProcessing] = useState<boolean>(false);
 
@@ -77,20 +80,16 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
         <Grid container sx={{my: 3}}>
           <Grid item xs={12}>
             <Card>
-              <CardHeader
+              <PaymentCardHeader
                 title={publicRunningDinner.publicSettings.title}
                 subheader={renderSubHeader()}
                 subheaderTypographyProps={{ align: 'center' }}
-                titleTypographyProps={{ align: 'center' }}
-                className={classes.cardHeader}
-              />
+                titleTypographyProps={{ align: 'center' }} />
               <CardContent>
-                <div className={classes.cardPricing}>
-                  <Typography component="h2" variant="h3" color="textPrimary" className={classes.headlinePricing}>
-                    { totalPriceFormatted }
-                  </Typography>
-                </div>
-                <ul className={classes.cardList}>
+                <PaymentCardPricing>
+                  <PaymentCardHeadlinePricing component="h2" variant="h3" color="textPrimary">{ totalPriceFormatted }</PaymentCardHeadlinePricing>
+                </PaymentCardPricing>
+                <PaymentCardList>
                   <Typography component="li" variant="subtitle1" align="center">{t("common:organizer")}: {registrationPaymentSummary.brandName}</Typography>
                   <Typography component="li" variant="subtitle1" align="center">
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -113,7 +112,7 @@ export function RegistrationPaymentDialog({onCancel, registrationDataCollection,
                       <LinkExtern href={registrationPaymentSummary.agbLink} self={false}>Hier gehts zu den AGBs</LinkExtern>
                     </Typography>
                   }
-                </ul>
+                </PaymentCardList>
               </CardContent>
               <CardActions>
                 <PrimaryButton disabled={orderProcessing} size={"large"} fullWidth onClick={handleCreateOrder}>{t("landing:payment_purchase_now")}</PrimaryButton>
