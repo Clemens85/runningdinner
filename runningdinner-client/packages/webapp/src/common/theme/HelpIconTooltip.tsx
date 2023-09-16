@@ -1,11 +1,12 @@
 import React from "react";
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import { Tooltip, styled, TooltipProps } from "@mui/material";
-import withStyles from '@mui/styles/withStyles';
-import { spacing } from "@mui/system";
+import {styled} from "@mui/material";
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 
-const HtmlTooltip = withStyles((theme) => ({
-  tooltip: {
+const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: theme.palette.background.default,
     color: theme.palette.common.black,
     maxWidth: 220,
@@ -13,20 +14,16 @@ const HtmlTooltip = withStyles((theme) => ({
     borderWidth: '1px',
     borderColor: theme.palette.common.black
   },
-}))(Tooltip);
+}));
 
 export interface HelpIconTooltipProps extends Omit<TooltipProps, "children"> {
   fontSize?: 'inherit' | 'default' | 'small' | 'large';
 }
 
-function HelpHtmlTooltip({fontSize, ...remainder}: HelpIconTooltipProps) {
-
+export function HelpIconTooltip({fontSize, ...remainder}: HelpIconTooltipProps) {
   return (
     <HtmlTooltip {...remainder} arrow>
       <HelpOutlineOutlinedIcon fontSize={fontSize} />
     </HtmlTooltip>
   );
 }
-
-export const HelpIconTooltip = styled(HelpHtmlTooltip)(spacing);
-
