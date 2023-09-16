@@ -27,5 +27,8 @@ export const commonStyles: Record<string, SxProps<Theme> | undefined> = {
   },
   buttonSpacingLeft: {
     marginLeft: (theme) => theme.spacing(2)
+  },
+  defaultCursor: {
+    cursor: 'default'
   }
 }

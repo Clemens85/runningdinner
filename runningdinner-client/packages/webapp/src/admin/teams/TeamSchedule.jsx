@@ -1,17 +1,14 @@
 import React from "react";
-import { Box, Button, Grid, Paper, Popover } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Button, Grid, Paper, Popover, useMediaQuery, useTheme} from "@mui/material";
 import orderBy from 'lodash/orderBy';
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {SmallTitle, Span, Title} from "../../common/theme/typography/Tags";
-import clsx from "clsx";
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import {useTranslation} from "react-i18next";
 import {bindPopover, bindTrigger, usePopupState,} from 'material-ui-popup-state/hooks';
 import LinkIntern from "../../common/theme/LinkIntern";
 import LinkExtern from "../../common/theme/LinkExtern";
 import {PrimaryDangerButtonAsync} from "../../common/theme/PrimaryDangerButtonAsync";
-import Hidden from "@mui/material/Hidden";
 import {
   Fullname,
   isSameEntity,
@@ -23,48 +20,40 @@ import {
 import {useAdminNavigation} from "../AdminNavigationHook";
 import {GENERIC_HTTP_ERROR} from "@runningdinner/shared/src/redux";
 import {ProgressBar} from "../../common/ProgressBar";
+import {styled} from "@mui/material/styles";
+import {commonStyles} from "../../common/theme/CommonStyles";
 
-const useStyles = makeStyles((theme) => ({
-  schedulePaper: {
-    [theme.breakpoints.up('sm')]: {
-      padding: theme.spacing(1),
-    },
-    textAlign: 'center',
-    borderColor: theme.palette.primary.main,
-    borderWidth: '1px',
-    borderStyle: 'solid'
-  },
-  schedulePaperActive: {
-    backgroundColor: theme.palette.primary.main,
-    color: 'white'
-  },
-  schedulePaperActiveDanger: {
-    backgroundColor: theme.palette.secondary.main,
-    color: 'white',
-    borderColor: theme.palette.secondary.main,
-  },
-  scheduleRowHostTeam: {
-    textAlign: 'right'
-  },
-  scheduleRowGuestTeams: {
-    textAlign: 'center'
-  },
-  scheduleRowTimeLine: {
-    // paddingTop: '0px', // Is unfortunately overridden by Grid (thus I use inline styling...)
-    // paddingBottom: '0px',
-    textAlign: 'center'
-  },
-  scheduleRowTimeLineBox: {
-    height: '48px',
-    width: '1px',
-    margin: '0 auto',
-    borderColor: theme.palette.primary.main
-  },
-  currentTeamButton: {
-    cursor: 'default'
-  }
+const GridContentRight = styled(Grid)({
+  textAlign: 'right'
+});
+const GridContentCenter = styled(Grid)({
+  textAlign: 'center'
+});
+const ScheduleRowTimeLineBox = styled(Box)(({theme}) => ({
+  height: '48px',
+  width: '1px',
+  margin: '0 auto',
+  borderRight: '2px solid',
+  borderRightColor: theme.palette.primary.main,
 }));
-
+const SchedulePaper = styled(Paper)(({theme}) => ({
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(1),
+  },
+  textAlign: 'center',
+  borderColor: theme.palette.primary.main,
+  borderWidth: '1px',
+  borderStyle: 'solid'
+}));
+const hostTeamMemberCancelledPaperStyles = {
+  backgroundColor: (theme) => theme.palette.secondary.main,
+  color: 'white',
+  borderColor: (theme) => theme.palette.secondary.main
+};
+const highlightedMealPaperStyles = {
+  backgroundColor: (theme) => theme.palette.primary.main,
+  color: 'white'
+};
 
 const buildScheduledMealsWithTeams = (teamMeetingPlan) => {
 
@@ -72,9 +61,7 @@ const buildScheduledMealsWithTeams = (teamMeetingPlan) => {
 
   let result = teamMeetingPlan.hostTeams
                                 .map((hostTeam) => { return {meal: hostTeam.meal, hostTeam: hostTeam, current: false, guestTeams: hostTeam.meetedTeams.concat(activeTeam)} });
-  result.push(
-      { meal: teamMeetingPlan.team.meal, hostTeam: teamMeetingPlan.team, current: true, guestTeams: teamMeetingPlan.guestTeams}
-  );
+  result.push({ meal: teamMeetingPlan.team.meal, hostTeam: teamMeetingPlan.team, current: true, guestTeams: teamMeetingPlan.guestTeams});
   result = orderBy(result, 'meal.time');
   return result;
 };
@@ -88,12 +75,13 @@ export default function TeamSchedule({adminId, isTeamMeetingPlanLoading, teamMee
   }
 }
 
-
 function TeamScheduleView({teamMeetingPlan, adminId}) {
 
-  const classes = useStyles();
   const {t} = useTranslation('admin');
   const {generateTeamDinnerRoutePath} = useAdminNavigation();
+
+  const theme = useTheme();
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
 
   const scheduleItems = buildScheduledMealsWithTeams(teamMeetingPlan);
   const activeTeam = teamMeetingPlan.team;
@@ -103,9 +91,9 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
   const renderScheduleRowHeading = () => {
     return (
       <Grid container spacing={spacing} justifyContent={"center"} alignItems={"center"}>
-        <Grid item xs={xs} md={md} className={classes.scheduleRowHostTeam}><Title i18n='common:host' /></Grid>
-        <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams}><Title i18n='common:meal' /></Grid>
-        <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams}><Title i18n='common:guests' /></Grid>
+        <GridContentRight item xs={xs} md={md}><Title i18n='common:host' /></GridContentRight>
+        <GridContentCenter item xs={xs} md={md}><Title i18n='common:meal' /></GridContentCenter>
+        <GridContentCenter item xs={xs} md={md}><Title i18n='common:guests' /></GridContentCenter>
       </Grid>
     );
   };
@@ -118,17 +106,13 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
     }
     return (
       <Grid container spacing={spacing} justifyContent={"center"} alignItems={"center"}>
-        <Hidden smDown>
-          <Grid item xs={xs} md={md} className={classes.scheduleRowHostTeam} />
-        </Hidden>
-        <Grid item xs={12} md={md} className={classes.scheduleRowGuestTeams}>
+        {!isMobileDevice && <GridContentRight item xs={xs} md={md} />}
+        <GridContentCenter item xs={12} md={md}>
           <Box mt={1}>
             <LinkExtern href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} title={t('teams_show_dinnerroute')}/>
           </Box>
-        </Grid>
-        <Hidden smDown>
-          <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams} />
-        </Hidden>
+        </GridContentCenter>
+        {!isMobileDevice && <GridContentCenter item xs={xs} md={md} />}
       </Grid>
     );
   };
@@ -189,22 +173,29 @@ function ScheduledMeal({hostTeam, meal, guestTeams, currentTeam, xs, md, adminId
     return guestTeamNodes;
   };
 
-  const classes = useStyles();
+  function getSchedulePaperStyles(highlightMeal, hostTeamIsCancelled) {
+    if (highlightMeal && !hostTeamIsCancelled) {
+      return highlightedMealPaperStyles;
+    } else if (hostTeamIsCancelled) {
+      return hostTeamMemberCancelledPaperStyles;
+    }
+    return undefined;
+  }
+
   return (
     <>
-      <Grid item xs={xs} md={md} className={classes.scheduleRowHostTeam}>
+      <GridContentRight item xs={xs} md={md}>
         { highlightHostTeam ? <CurrentTeamButton team={hostTeam}/> : <MeetedTeamButton team={hostTeam} adminId={adminId} /> }
-      </Grid>
+      </GridContentRight>
       <Grid item xs={xs} md={md}>
-        <Paper elevation={3}
-               className={clsx(classes.schedulePaper, (highlightMeal && !hostTeamIsCancelled) && classes.schedulePaperActive, hostTeamIsCancelled && classes.schedulePaperActiveDanger)}>
+        <SchedulePaper elevation={3} sx={getSchedulePaperStyles(highlightMeal, hostTeamIsCancelled)}>
           <SmallTitle>{meal.label}</SmallTitle>
           <Paragraph><Time date={meal.time} /></Paragraph>
-        </Paper>
+        </SchedulePaper>
       </Grid>
-      <Grid item xs={xs} md={md} className={classes.scheduleRowGuestTeams}>
+      <GridContentCenter item xs={xs} md={md}>
         { renderGuestTems() }
-      </Grid>
+      </GridContentCenter>
     </>
   );
 }
@@ -257,14 +248,13 @@ function MeetedTeamButton({team, adminId}) {
 function CurrentTeamButton({team}) {
 
   const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
-  const classes = useStyles();
   return (
       <>
         { isCancelled
-            ? <PrimaryDangerButtonAsync size="medium" variant="contained" className={classes.currentTeamButton} disableRipple={true} disableElevation={true}>
+            ? <PrimaryDangerButtonAsync size="medium" variant="contained" sx={commonStyles.defaultCursor} disableRipple={true} disableElevation={true}>
                 <TeamNr {...team} />
               </PrimaryDangerButtonAsync>
-            : <PrimaryButton variant="contained" className={classes.currentTeamButton} disableRipple={true} disableElevation={true}>
+            : <PrimaryButton variant="contained" sx={commonStyles.defaultCursor} disableRipple={true} disableElevation={true}>
                 <TeamNr {...team} />
               </PrimaryButton>
         }
@@ -281,13 +271,12 @@ function CurrentTeamButton({team}) {
  */
 function ScheduledMealTimeline({xs, md}) {
 
-  const classes = useStyles();
   return (
     <>
       <Grid item xs={xs} md={md} />
-      <Grid item xs={xs} md={md} className={classes.scheduleRowTimeLine}>
-        <Box borderRight={2} className={classes.scheduleRowTimeLineBox} />
-      </Grid>
+      <GridContentCenter item xs={xs} md={md}>
+        <ScheduleRowTimeLineBox />
+      </GridContentCenter>
       <Grid item xs={xs} md={md} />
     </>
   );
