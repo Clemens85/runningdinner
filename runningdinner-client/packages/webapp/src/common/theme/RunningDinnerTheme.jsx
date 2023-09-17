@@ -1,7 +1,7 @@
-import { createTheme, adaptV4Theme } from "@mui/material";
+import { createTheme } from "@mui/material";
 import { grey } from '@mui/material/colors';
 
-export const runningDinnerTheme = createTheme(adaptV4Theme({
+export const runningDinnerTheme = createTheme({
   palette: {
     primary: {
       // main: '#6db33f'
@@ -11,19 +11,23 @@ export const runningDinnerTheme = createTheme(adaptV4Theme({
       main: '#f50057'
     }
   },
-  overrides: {
+  components: {
     MuiAppBar: {
-      root: {
-        color: 'white',
-        backgroundColor: 'black'
+      styleOverrides: {
+        root: {
+          color: 'white',
+          backgroundColor: 'black'
+        }
       }
     },
     MuiTableRow: {
-      root: {
-        "&.Mui-selected, &.Mui-selected:hover": {
-          "backgroundColor": grey["100"]
+      styleOverrides: {
+        root: {
+          "&.Mui-selected, &.Mui-selected:hover": {
+            "backgroundColor": grey["100"]
+          }
         }
       }
     }
   }
-}));
+});
