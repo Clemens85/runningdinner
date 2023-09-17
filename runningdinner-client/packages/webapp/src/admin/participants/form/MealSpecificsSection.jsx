@@ -1,8 +1,5 @@
 import React from 'react'
-import CustomSwitch from "../../../common/input/CustomSwitch";
-import {isStringEmpty} from "@runningdinner/shared";
 import FormFieldset from "../../../common/theme/FormFieldset";
-import {useFormContext} from "react-hook-form";
 import {Grid} from "@mui/material";
 import FormTextField from "../../../common/input/FormTextField";
 import FormCheckbox from "../../../common/input/FormCheckbox";
@@ -17,19 +14,19 @@ export default function MealSpecificsSection() {
 
   const {t} = useTranslation('common');
 
-  const {getValues} = useFormContext();
-  const currentMealSpecificsNote = getValues('mealSpecificsNote');
-  const hasMealSpecifics = !isStringEmpty(currentMealSpecificsNote);
+  // const {getValues} = useFormContext();
+  // const currentMealSpecificsNote = getValues('mealSpecificsNote');
+  // const hasMealSpecifics = !isStringEmpty(currentMealSpecificsNote);
 
-  const [mealSpecificsNoteActivated, setMealSpecificsNoteActivated] = React.useState(hasMealSpecifics);
+  // const [mealSpecificsNoteActivated, setMealSpecificsNoteActivated] = React.useState(hasMealSpecifics);
 
-  React.useEffect(() => {
-    activateMealSpecificsNote(hasMealSpecifics);
-  }, [hasMealSpecifics]);
+  // React.useEffect(() => {
+  //   activateMealSpecificsNote(hasMealSpecifics);
+  // }, [hasMealSpecifics]);
 
-  function activateMealSpecificsNote(checked) {
-    setMealSpecificsNoteActivated(checked);
-  }
+  // function activateMealSpecificsNote(checked) {
+  //   setMealSpecificsNoteActivated(checked);
+  // }
 
   return (
       <>
@@ -49,13 +46,13 @@ export default function MealSpecificsSection() {
           </Grid>
         </Grid>
         <Grid container alignItems={"center"} sx={{mt: 1}}>
-          <Grid item sx={{ml: -1, mr: 1}}>
-            <CustomSwitch checked={mealSpecificsNoteActivated} onChange={(checked) => activateMealSpecificsNote(checked)} />
-          </Grid>
+          {/*<Grid item sx={{ml: -1, mr: 1}}>*/}
+          {/*  <CustomSwitch checked={mealSpecificsNoteActivated} onChange={(checked) => activateMealSpecificsNote(checked)} />*/}
+          {/*</Grid>*/}
           <GridFlexGrow1 item>
             <FormTextField fullWidth
                            variant={"filled"}
-                           disabled={!mealSpecificsNoteActivated}
+                           disabled={/*!mealSpecificsNoteActivated*/false}
                            name="mealSpecificsNote"
                            label={t('mealnotes')} />
           </GridFlexGrow1>
