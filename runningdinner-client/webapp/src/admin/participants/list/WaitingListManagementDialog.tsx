@@ -231,7 +231,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
 
   return (
     <div data-testid={"waitinglist-teams-participants-assignment-view"}>
-      <Grid container justify={"center"} sx={{ mt: DIALOG_SPACING_X, mx: DIALOG_SPACING_X, justifyContent: "center" }}>
+      <Grid container justifyContent={"center"} sx={{ mt: DIALOG_SPACING_X, mx: DIALOG_SPACING_X, justifyContent: "center" }}>
         <Grid item {... GRID_SIZES}>
           <Subtitle>{t('admin:waitinglist_assign_participants_teams')}</Subtitle>
           <Paragraph>
@@ -241,7 +241,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
           </Paragraph>
         </Grid>
       </Grid>
-      <Grid container justify={"center"} sx={{ mt: DIALOG_SPACING_X, justifyContent: "center" }}>
+      <Grid container justifyContent={"center"} sx={{ mt: DIALOG_SPACING_X, justifyContent: "center" }}>
         <>
         {
           teamParticipantAssignments.map(tpa => {
@@ -261,7 +261,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
         </>
       </Grid>
 
-      <Grid container justify={"center"} sx={{ justifyContent: "center" }}>
+      <Grid container justifyContent={"center"} sx={{ justifyContent: "center" }}>
         <Grid item {... GRID_SIZES}>
           <Box mx={DIALOG_SPACING_X} mt={DIALOG_SPACING_X}>
             <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams}
@@ -295,7 +295,7 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
 
   return (
     <>
-      <Grid container justify={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
+      <Grid container justifyContent={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
         <Grid item {... GRID_SIZES}>
           <Subtitle>{t('admin:team_notify_cancellation')}</Subtitle>
           <Paragraph>{t("admin:waitinglist_notification_teams_info")}</Paragraph>
@@ -306,7 +306,7 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
       </Grid>
 
       { dinnerRouteMessagesAlreadySent &&
-        <Grid container justify={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
+        <Grid container justifyContent={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
           <Grid item {... GRID_SIZES}>
             <Alert severity={"warning"} data-testid={"waitinglist_notification_dinnerroute_hint"}>
               <AlertTitle>{t('common:attention')}</AlertTitle>
@@ -316,7 +316,7 @@ function NotifyTeamsAboutChangesView({runningDinner, affectedTeams, dinnerRouteM
         </Grid>
       }
 
-      <Grid container justify={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
+      <Grid container justifyContent={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center"}}>
         <Grid item {... GRID_SIZES}>
           <PrimarySuccessButtonAsync onClick={() => handleSendNotifications(true)}
                                      size={"large"}
@@ -459,7 +459,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
 
   return (
     <div data-testid={"waitinglist-teams-generation-view"}>
-      <Grid container justify={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center" }}>
+      <Grid container justifyContent={"center"} sx={{ px: DIALOG_SPACING_X, mt: DIALOG_SPACING_X, justifyContent: "center" }}>
         <Grid item {... GRID_SIZES} sx={{ px: DIALOG_SPACING_X }}>
           <Subtitle><Trans i18nKey={"admin:waitinglist_generate_teams_num_participants"} values={{ numParticipants: numParticipantsAssignable }}/></Subtitle>
           { numRemainingParticipants > 0 &&
@@ -471,7 +471,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
         </Grid>
       </Grid>
 
-      <Grid container justify={"center"} sx={{ mt: DIALOG_SPACING_X, justifyContent: "center" }}>
+      <Grid container justifyContent={"center"} sx={{ mt: DIALOG_SPACING_X, justifyContent: "center" }}>
         <Grid item {... GRID_SIZES} sx={{ px: DIALOG_SPACING_X, mb: DIALOG_SPACING_X }}>
           <Paper elevation={3} sx={{ p: DIALOG_SPACING_X }}>
             { participantsAssignableControls }
@@ -482,7 +482,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
         </Grid>
       </Grid>
 
-      <Grid container justify={"center"} sx={{ justifyContent: "center" }}>
+      <Grid container justifyContent={"center"} sx={{ justifyContent: "center" }}>
         <Grid item {... GRID_SIZES} sx={{ mt: DIALOG_SPACING_X, px: DIALOG_SPACING_X }}>
           <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams}
                                      size={"large"}

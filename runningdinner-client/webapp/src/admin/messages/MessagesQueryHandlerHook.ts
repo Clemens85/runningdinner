@@ -29,7 +29,7 @@ export function useMessagesQueryHandler(messageType: MessageType) {
 
   function getSelectedTeamIds() {
     const selectedTeamIds = query.get(SELECTED_TEAM_IDS_QUERY_PARAM);
-    let result = isStringNotEmpty(selectedTeamIds) ? selectedTeamIds.split(",") : [];
+    const result = isStringNotEmpty(selectedTeamIds) ? selectedTeamIds.split(",") : [];
     if (messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS || isArrayEmpty(result)) {
       return [];
     }
@@ -38,7 +38,7 @@ export function useMessagesQueryHandler(messageType: MessageType) {
 
   function isPreselectAllRecipients() {
     const messageSubType = query.get(MESSAGE_SUBTYPE_QUERY_PARAM);
-    return MessageSubType.RECIPIENTS_ALL === messageSubType;
+    return MessageSubType.RECIPIENTS_ALL === messageSubType || MessageSubType.DEFAULT === messageSubType;
   }
 
   const headline = getHeadline();

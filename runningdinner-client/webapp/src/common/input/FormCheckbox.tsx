@@ -15,20 +15,25 @@ export interface FormCheckboxProps extends Omit<CheckboxProps, "defaultValue"> {
 
 const FormCheckboxInternal = ({name, label, helperText, defaultValue, useTableDisplay, ...rest}: FormCheckboxProps) => {
 
-  const {control, errors} = useFormContext();
+  const {control, formState: {errors}} = useFormContext();
 
   const hasErrors = !!errors[name];
+  // @ts-ignore
   const errorMessage = hasErrors ? errors[name].message : undefined;
-  const helperTextToDisplay = hasErrors ? errorMessage : helperText;
+  const helperTextToDisplay = (hasErrors ? errorMessage : helperText) as string;
 
   return (
     <FormControl variant="standard" error={hasErrors}>
       <FormControlLabel label={label} style={useTableDisplay ? {display: 'table'}: {}} control={
-        <Controller defaultValue={defaultValue} name={name} control={control} render={(props) => (
+        <Controller defaultValue={defaultValue} 
+                    name={name} 
+                    control={control} 
+                    render={({field}) => (
           <div style={{display: useTableDisplay ? 'table-cell' : 'inline'}}>
-            <Checkbox color="primary" {...rest}
-                    onChange={(e) => props.onChange(e.target.checked)}
-                    checked={props.value} />
+            <Checkbox color="primary" 
+                      {...rest}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      checked={field.value} />
           </div>
         )} />
       } />

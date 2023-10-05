@@ -19,7 +19,7 @@ export const paymentOptionsSlice = createReducer(newInitialPaymentOptionsState()
     handleFetchSucceeded(state.paymentOptions, action.payload);
   }).addCase(fetchPaymentOptions.rejected, (state, action) => {
     handleFetchRejected(state.paymentOptions, action.payload);
-  }).addCase(fetchPaymentOptions.pending, (state, action) => {
+  }).addCase(fetchPaymentOptions.pending, (state) => {
     handleFetchLoading(state.paymentOptions);
   }).addCase(updatePaymentOptions, (state, action) => {
     // Set as if it were loaded from backend

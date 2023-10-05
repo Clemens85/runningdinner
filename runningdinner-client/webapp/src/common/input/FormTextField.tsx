@@ -13,7 +13,7 @@ export type FormTextFieldProps = Omit<TextFieldProps, "name"> & {
 
 const FormTextFieldInternal = ({name, label, defaultValue, ...other}: FormTextFieldProps) => {
 
-  const {control, errors} = useFormContext();
+  const {control, formState: {errors}} = useFormContext();
 
   let helperText = other.helperText;
   let hasErrors = false;
@@ -25,15 +25,17 @@ const FormTextFieldInternal = ({name, label, defaultValue, ...other}: FormTextFi
   }
 
   return (
-      // @ts-ignore
-      <Controller as={TextField}
-                  defaultValue={defaultValue}
-                  control={control}
-                  {... other}
-                  name={name}
-                  error={hasErrors}
-                  helperText={helperText}
-                  label={label} />
+    <Controller control={control}
+                defaultValue={defaultValue}
+                name={name}
+                render={({field}) => (
+                  <TextField {...field}
+                             {... other} 
+                             helperText={helperText} 
+                             label={label} 
+                             error={hasErrors} />
+                )}
+    />
   );
 };
 

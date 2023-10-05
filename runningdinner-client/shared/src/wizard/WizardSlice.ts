@@ -30,6 +30,7 @@ import {isStringEmpty, isStringNotEmpty} from "../Utils";
 import {findGenderAspectsAsync, findRegistrationTypesAsync} from "../masterdata";
 import {getMinimumParticipantsNeeded, isClosedDinner} from "../admin";
 import {FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../redux";
+import { CONSTANTS } from "../Constants";
 
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
@@ -135,11 +136,14 @@ export const wizardSlice = createReducer(newInitialWizardState(), builder => {
 });
 
 // **** Selectors *** //
-export const getAllNavigationStepsSelector = (state: WizardRootState) => {
-  return isClosedDinnerSelector(state) ? ALL_NAVIGATION_STEPS_CLOSED_DINNER : ALL_NAVIGATION_STEPS;
-};
+const currentRegistrationType = (state: WizardRootState) => state.runningDinner.basicDetails.registrationType;
+
+export const getAllNavigationStepsSelector = createSelector(currentRegistrationType, (registrationType) => {
+  return registrationType === CONSTANTS.REGISTRATION_TYPE.CLOSED ? ALL_NAVIGATION_STEPS_CLOSED_DINNER : ALL_NAVIGATION_STEPS;
+});
+
 export const getCurrentNavigationStepSelector = createSelector(
-    (state: WizardRootState) => getAllNavigationStepsSelector(state),
+    getAllNavigationStepsSelector,
     (state: WizardRootState) => state.administrationUrl,
     (state: WizardRootState) => state.nextNavigationStep,
     (state: WizardRootState) => state.completedNavigationSteps,
@@ -193,12 +197,24 @@ export const isClosedDinnerSelector = (state: WizardRootState) => isClosedDinner
 export const getAdministrationUrlSelector = (state: WizardRootState) => state.administrationUrl!;
 export const getMinimumParticipantsNeededSelector = (state: WizardRootState) => getMinimumParticipantsNeeded(state.runningDinner.options);
 export const getRunningDinnerSelector = (state: WizardRootState) => state.runningDinner;
-export const getNavigationStepSelector = (state: WizardRootState) => {
-  return {
-    nextNavigationStep: state.nextNavigationStep,
-    previousNavigationStep: state.previousNavigationStep
-  };
-}
+
+export const getNavigationStepSelector = createSelector(
+  (state: WizardRootState) => state.nextNavigationStep, 
+  (state: WizardRootState) => state.previousNavigationStep,
+  (nextNavigationStep, previousNavigationStep) => {
+    return {
+      nextNavigationStep,
+      previousNavigationStep
+    };
+  }
+);
+// export const getNavigationStepSelector = (state: WizardRootState) => {
+//   return {
+//     nextNavigationStep: state.nextNavigationStep,
+//     previousNavigationStep: state.previousNavigationStep
+//   };
+// }
+
 export const isLoadingDataSelector = (state: WizardRootState) => {
   const loadingItems = getFetchDataItems(state)
       .filter(item => item.fetchStatus === FetchStatus.LOADING);
@@ -214,16 +230,25 @@ const getFetchDataItems = (state: WizardRootState): FetchData<any>[] => {
   return [state.registrationTypes, state.genderAspects];
 };
 
-export const getRegistrationTypesSelector = (state: WizardRootState) => {
-  return {
-    status: state.registrationTypes.fetchStatus,
-    registrationTypes: state.registrationTypes.data
-  };
-};
 
-export const getGenderAspectsSelector = (state: WizardRootState) => {
-  return {
-    status: state.genderAspects.fetchStatus,
-    genderAspects: state.genderAspects.data
+export const getRegistrationTypesSelector = createSelector(
+  (state: WizardRootState) => state.registrationTypes.fetchStatus, 
+  (state: WizardRootState) => state.registrationTypes.data,
+  (status, registrationTypes) => {
+    return {
+      status,
+      registrationTypes
+    };
   }
-};
+);
+
+export const getGenderAspectsSelector = createSelector(
+  (state: WizardRootState) => state.genderAspects.fetchStatus, 
+  (state: WizardRootState) => state.genderAspects.data,
+  (status, genderAspects) => {
+    return {
+      status,
+      genderAspects
+    };
+  }
+);

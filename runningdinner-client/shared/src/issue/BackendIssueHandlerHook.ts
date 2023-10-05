@@ -136,7 +136,7 @@ export function useBackendIssueHandler(props?: BackendIssueHandlerProps): Backen
     return performTranslationOfRawIssues(issuesWrapper);
   }
 
-  function getIssuesArrayTranslated(backendIssues: BackendIssue[], filterValidationErrorResponseOnly: boolean = true): Issues {
+  function getIssuesArrayTranslated(backendIssues: BackendIssue[]): Issues {
     const issuesWrapper = mapBackendIssuesToIssues(backendIssues);
     return performTranslationOfRawIssues(issuesWrapper);
   }
@@ -170,7 +170,7 @@ export function useBackendIssueHandler(props?: BackendIssueHandlerProps): Backen
                                                                                       : [defaultTranslationResolutionStrategy.namespaces];
 
     const fallbackTranslation = defaultTranslationResolutionStrategy.fallbackTranslation;
-    let nameResolutionStrategyOrder = defaultTranslationResolutionStrategy.nameResolutionStrategyOrder || DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
+    const nameResolutionStrategyOrder = defaultTranslationResolutionStrategy.nameResolutionStrategyOrder || DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
 
     for (let i = 0; i < namespaces.length; i++) {
       const namespace = namespaces[i];

@@ -9,6 +9,7 @@ import FillWithExampleDataLink from "./FillWithExampleDataLink";
 import {
   CallbackHandler,
   getFullname,
+  HttpError,
   isNewEntity,
   isTeamPartnerWishChild,
   mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant, ParticipantListable,
@@ -58,12 +59,12 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
   const { handleSubmit, clearErrors, setError, formState, reset } = formMethods;
   const { isSubmitting } = formState;
 
-  const initValues = React.useCallback(participant => {
+  const initValues = React.useCallback((participant: Participant) => {
     let participantToEdit = participant;
     if (!participantToEdit) {
       participantToEdit = newEmptyParticipantInstance();
     } else {
-      participantToEdit = mapNullFieldsToEmptyStrings(participantToEdit);
+      participantToEdit = mapNullFieldsToEmptyStrings(participantToEdit, "teamPartnerWishRegistrationData", "teamPartnerWishOriginatorId");
     }
     reset(participantToEdit);
     clearErrors();
@@ -86,8 +87,8 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
       showSuccess(getFullname(savedParticipant) + " erfolgreich gespeichert");
       onParticipantSaved(savedParticipant);
     } catch(e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   };
 
@@ -125,7 +126,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
             { !teamPartnerWishChild &&
               <>
                 <Box mb={3}>
-                  <AddressSection />
+                  <AddressSection isNumSeatsRequired={true} />
                 </Box>
                 <Box mb={3}>
                   <MealSpecificsSection />

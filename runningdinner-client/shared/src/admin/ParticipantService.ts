@@ -15,7 +15,6 @@ import {
   TeamPartnerWishInfo,
   ParticipantList,
   ParticipantListable,
-  TeamPartnerWishState,
   ParticipantName
 } from "../types";
 import {CONSTANTS} from "../Constants";
@@ -76,7 +75,7 @@ export async function deleteParticipantAsync(adminId: string, participant: Parti
 }
 
 export async function findTeamPartnerWishInfoAsync(adminId: string, participant: Participant): Promise<TeamPartnerWishInfo> {
-  var statesToIncludeQueryParam = `?relevantState=${CONSTANTS.TEAM_PARTNER_WISH_STATE.NOT_EXISTING}&relevantState=${CONSTANTS.TEAM_PARTNER_WISH_STATE.EXISTS_EMPTY_TEAM_PARTNER_WISH}`;
+  const statesToIncludeQueryParam = `?relevantState=${CONSTANTS.TEAM_PARTNER_WISH_STATE.NOT_EXISTING}&relevantState=${CONSTANTS.TEAM_PARTNER_WISH_STATE.EXISTS_EMPTY_TEAM_PARTNER_WISH}`;
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participant/${participant.id}/team-partner-wish${statesToIncludeQueryParam}`);
   const response = await axios.get(url);
   return response.data;

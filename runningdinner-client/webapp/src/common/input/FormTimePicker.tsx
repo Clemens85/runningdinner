@@ -14,9 +14,9 @@ export interface FormTimePickerProps extends Partial<TimePickerProps<any>> {
 
 export default function FormTimePicker({name, label, helperText, defaultValue, ...other}: FormTimePickerProps) {
 
-  const {errors, control} = useFormContext();
+  const {formState: {errors}, control} = useFormContext();
 
-  const errorMessage = isStringNotEmpty(name) ? errors[name]?.message : "";
+  const errorMessage = (isStringNotEmpty(name) ? errors[name]?.message : "") as string;
   const hasErrors = isStringNotEmpty(errorMessage);
   const helperTextToDisplay = hasErrors ? errorMessage : helperText;
 
@@ -26,24 +26,18 @@ export default function FormTimePicker({name, label, helperText, defaultValue, .
         name={name}
         defaultValue={defaultValue}
         control={control}
-        render={({ref, ...remainder}) =>
+        render={({field}) => (
           <>
             <TimePicker
-              {...Object.assign({}, remainder, other)}
+              {...field}
+              {...other}
               ampm={false}
-              error={hasErrors}
-              autoOk={false}
-              id={name}
               label={label}
-              onChange={(newDate) => remainder.onChange(newDate)}
-              invalidDateMessage={"Ungültige Zeit"}
-              KeyboardButtonProps={{
-                'aria-label': label,
-              }}
+              slotProps={{textField: { error: hasErrors, variant: 'outlined', id: name } }}
             />
             { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }
           </>
-        }
+        )}
       />
     </>
   );

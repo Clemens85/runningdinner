@@ -57,14 +57,14 @@ export function setHoursAndMinutesFromSrcToDest(src: Date, dest: Date) {
   return withHourAndMinute(dest, hours, minutes);
 }
 
-export function formatLocalDate(date: Date | undefined, locale?: string): (string | undefined) {
+export function formatLocalDate(date: Date | undefined): (string | undefined) {
   if (!date) {
     return undefined;
   }
   return format(date, 'dd.MM.yyyy');
 }
 
-export function formatLocalDateWithSeconds(date: Date | undefined, locale?: string) : (string | undefined) {
+export function formatLocalDateWithSeconds(date: Date | undefined) : (string | undefined) {
   if (!date) {
     return undefined;
   }

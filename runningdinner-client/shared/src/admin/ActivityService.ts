@@ -6,7 +6,6 @@ import {Activity, ActivityList, ActivityType, DashboardAdminActivities, MessageJ
 import { findMessageJobOverviewByAdminIdAndMessageJobId } from "./MessageService";
 import cloneDeep from "lodash/cloneDeep";
 import { isStringNotEmpty, findEntityById } from "../Utils";
-import { isArrayEmpty } from "..";
 
 const messageActivities = [
   CONSTANTS.ACTIVITY.DINNERROUTE_MAIL_SENT,

@@ -74,10 +74,10 @@ export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerS
             <Controller
               name="languageCode"
               control={control}
-              render={props =>
-                <LanguageSwitchButtons selectedLanguage={props.value}
-                                       onClick={(languageCode: string) => props.onChange(languageCode)} />
-              } // props contains: onChange, onBlur and value
+              render={({field}) => (
+                <LanguageSwitchButtons selectedLanguage={field.value}
+                                       onClick={(languageCode: string) => field.onChange(languageCode)} />
+              )} // props contains: onChange, onBlur and value
             />
           </Box>
           <FormHelperText>{t('common:event_language_help')}</FormHelperText>

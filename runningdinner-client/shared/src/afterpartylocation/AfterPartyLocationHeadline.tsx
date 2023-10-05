@@ -1,4 +1,3 @@
-import React from 'react';
 import {useTranslation} from "react-i18next";
 import { Time } from '../date';
 import { AfterPartyLocation } from '../types';

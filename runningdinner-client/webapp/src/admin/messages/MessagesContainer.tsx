@@ -35,7 +35,7 @@ import {
   useAdminSelector,
   useBackendIssueHandler,
   CONSTANTS,
-  setupInitialMessageType, BaseRunningDinnerProps, isAfterPartyLocationDefined, RunningDinner
+  setupInitialMessageType, BaseRunningDinnerProps, isAfterPartyLocationDefined, RunningDinner, HttpError
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
@@ -192,8 +192,8 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
       await sendMessagesPromise;
       showSuccess(t("admin:mails_sending_submitted"));
     } catch(e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   };
 

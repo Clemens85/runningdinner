@@ -58,7 +58,7 @@ function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
     }
   }
 
-  let recipientSelectionOptions = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? participantSelectionOptions : teamSelectionOptions;
+  const recipientSelectionOptions = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? participantSelectionOptions : teamSelectionOptions;
 
   const handleStartEditCustomSelectedRecipients = () => dispatch(startEditCustomSelectedRecipients());
   const handleFinishEditCustomSelectedRecipients = (customSelectedEntities: Recipient[]) => {

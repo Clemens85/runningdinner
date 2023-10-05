@@ -10,6 +10,7 @@ import {Span} from '../../../common/theme/typography/Tags';
 import {
   CallbackHandler,
   findRunningDinnerSessionDataByPublicId,
+  isStringEmpty,
   isStringNotEmpty,
   RunningDinnerSessionData,
   TeamPartnerOption,
@@ -75,6 +76,7 @@ function TeamPartnerWishSectionRegistrationView({invitingParticipantEmail, runni
           { !hasEmailInvitation &&
               <ToggleTeamPartnerOptionsButton currentTeamPartnerOption={teamPartnerOption}
                                               runningDinnerSessionData={runningDinnerSessionData}
+                                              invitingParticipantEmail={invitingParticipantEmail}
                                               handleTeamPartnerOptionChange={newTeamPartnerOption => setTeamPartnerOption(newTeamPartnerOption)} />
           }
         </Grid>
@@ -91,9 +93,10 @@ type TeamPartnerOptionChangeCallback = {
 type ToggleTeamPartnerOptionsButtonProps = {
   currentTeamPartnerOption: TeamPartnerOption;
   runningDinnerSessionData: RunningDinnerSessionData;
+  invitingParticipantEmail?: string;
 } & TeamPartnerOptionChangeCallback;
 
-function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinnerSessionData, handleTeamPartnerOptionChange}: ToggleTeamPartnerOptionsButtonProps) {
+function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinnerSessionData, handleTeamPartnerOptionChange, invitingParticipantEmail}: ToggleTeamPartnerOptionsButtonProps) {
 
   const {t} = useTranslation('common');
 
@@ -101,10 +104,11 @@ function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinner
 
   const {showError} = useCustomSnackbar();
 
-  const {watch} = useFormContext();
+  const {watch, setValue} = useFormContext();
   const numSeatsCurrentValue = watch("numSeats");
 
   function handleToggleTeamPartnerOptionDialogClose(selectedTeamPartnerOption: TeamPartnerOption) {
+    resetTeamPartnerWish(selectedTeamPartnerOption);
     if (!selectedTeamPartnerOption) {
       return;
     }
@@ -117,6 +121,27 @@ function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinner
 
     closeDialog();
     handleTeamPartnerOptionChange(selectedTeamPartnerOption);
+  }
+
+  function resetTeamPartnerWish(selectedTeamPartnerOption: TeamPartnerOption) {
+    if (selectedTeamPartnerOption === TeamPartnerOption.REGISTRATION) {
+      resetTeamPartnerWishEmail();
+    } else if (selectedTeamPartnerOption === TeamPartnerOption.INVITATION) {
+      resetTeamPartnerWishRegistrationData();
+      resetTeamPartnerWishEmail(invitingParticipantEmail);
+    } else {
+      resetTeamPartnerWishEmail();
+      resetTeamPartnerWishRegistrationData();
+    }
+  }
+
+  function resetTeamPartnerWishEmail(mailToReset?: string) {
+    const value = isStringEmpty(mailToReset) ? "" : mailToReset;
+    setValue("teamPartnerWishEmail", value);
+  }
+
+  function resetTeamPartnerWishRegistrationData() {
+    setValue("teamPartnerWishRegistrationData", undefined);
   }
 
   return (

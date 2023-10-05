@@ -66,7 +66,7 @@ export default function AddressSection(props: AddressSectionProps) {
           <Grid item xs={12} md={4}>
             <NumberFormTextFieldEmptyValueAllowed name="numSeats"
                                                   label={numberSeats}
-                                                  emptyValue={0}
+                                                  emptyValue={-1}
                                                   helperText={numberSeatsHelp}
                                                   required={isNumSeatsRequired}
                                                   fullWidth />

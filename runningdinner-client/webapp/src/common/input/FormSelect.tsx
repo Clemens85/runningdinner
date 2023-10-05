@@ -13,23 +13,23 @@ export interface SelectWatchableProps extends SelectProps {
 
 function FormSelectInternal({name, label, children, helperText, fullWidth, variant, defaultValue, ...other}: SelectWatchableProps) {
 
-  const {errors, control} = useFormContext();
+  const {formState: { errors }, control} = useFormContext();
 
   const errorMessage = isStringNotEmpty(name) ? errors[name]?.message : "";
-  const hasErrors = isStringNotEmpty(errorMessage);
-  const helperTextToDisplay = hasErrors ? errorMessage : helperText;
+  const hasErrors = isStringNotEmpty(errorMessage as string);
+  const helperTextToDisplay = (hasErrors ? errorMessage : helperText) as string;
 
   return <>
     <Controller
         name={name}
         defaultValue={defaultValue}
         control={control}
-        render={(props) => (
+        render={({field}) => (
             <>
               <FormControl fullWidth={fullWidth} error={hasErrors} variant={variant}>
                 <InputLabel required>{label}</InputLabel>
                 <Select
-                  {...Object.assign({}, props, other)}
+                  {...Object.assign({}, field, other)}
                   label={label}
                   variant={variant}
                   inputProps={{ 'aria-label': label }}>

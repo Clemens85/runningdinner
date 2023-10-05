@@ -8,6 +8,7 @@ import {
   BasePublicDinnerProps,
   CallbackHandler,
   finalizeRegistrationOrder,
+  HttpError,
   isStringEmpty,
   newEmptyRegistrationDataInstance,
   performRegistration,
@@ -141,8 +142,8 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
       const registrationSummary = await performRegistrationValidation(publicDinnerId, registrationData);
       openRegistrationSummary({registrationSummary, registrationData});
     } catch (e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   };
 

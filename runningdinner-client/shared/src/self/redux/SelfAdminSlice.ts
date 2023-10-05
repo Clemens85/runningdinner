@@ -1,4 +1,4 @@
-import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
+import {createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../../redux";
 import {SelfAdminStateType} from "./SelfAdminStore";
 import { newInitialSelfAdminState } from "./SelfAdminState";
@@ -6,8 +6,6 @@ import {findSelfAdminDinnerRoute, findSelfAdminSessionDataAsync, findSelfAdminTe
 import {HttpError, SelfAdminBaseParams, SelfAdminTeamParams} from "../../types";
 
 // *** Actions *** //
-const a = createAction('a');
-
 export const fetchSelfAdminSessionData = createAsyncThunk(
   'fetchSelfAdminSessionData',
   async (selfAdminRequestParams: SelfAdminBaseParams) => {

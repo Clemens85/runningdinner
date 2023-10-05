@@ -3,7 +3,7 @@ import filter from "lodash/filter";
 import cloneDeep from "lodash/cloneDeep";
 import remove from "lodash/remove";
 import isArray from "lodash/isArray";
-import {BaseEntity, KeyValue} from "./types";
+import {BaseEntity} from "./types"
 import truncate from "lodash/truncate";
 import mergeWith from 'lodash/mergeWith';
 import isString from 'lodash/isString';
@@ -53,7 +53,7 @@ export function mapNullFieldsToEmptyStrings(obj: any, ...fieldsToIgnore: string[
   const resultObj = cloneDeep(obj);
   const fieldNames = Object.keys(resultObj);
   for (let i = 0; i < fieldNames.length; i++) {
-    let fieldName = fieldNames[i];
+    const fieldName = fieldNames[i];
     if (fieldsToIgnore.indexOf(fieldName) > -1) {
       continue;
     }
@@ -156,6 +156,9 @@ export function isStringNotEmpty(s?: string | null): s is string {
   return !isStringEmpty(s);
 }
 
+export function sayHello() {
+  return "Hello World";
+}
 
 export function isArrayNotEmpty<T>(arr?: Array<T>): arr is Array<T> {
   return arr !== undefined && arr !== null && Array.isArray(arr) && arr.length > 0;
@@ -185,4 +188,8 @@ export function newObjectWithDefaultValuesIfNotSet<T>(incomingObj: T, defaultVal
     {}, defaultValues, incomingObj,
     (a, b) => b === null ? a : undefined
   );
+}
+
+export function isInteger(s: string) {
+  return /^[0-9]*$/.test(s);
 }

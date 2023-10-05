@@ -1,9 +1,8 @@
-import React from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils";
 import {Fullname} from "./Fullname";
 
-let container = null;
+let container: any = null;
 beforeEach(() => {
   // setup a DOM element as a render target
   container = document.createElement("div");

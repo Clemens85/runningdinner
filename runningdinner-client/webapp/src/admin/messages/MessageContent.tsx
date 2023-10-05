@@ -1,7 +1,7 @@
 import React, {useRef} from 'react'
 import Box from "@mui/material/Box";
 import MessageTemplates from "./MessageTemplates";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 
 export interface MessageContentProps {
@@ -16,7 +16,7 @@ export interface MessageContentProps {
 
 export default function MessageContent({templates, onMessageContentChange, name, label, rows, helperText, showTemplatesHelpIcon}: MessageContentProps) {
 
-  const { setValue, register, errors } = useFormContext();
+  const { setValue, control, formState: {errors} } = useFormContext();
 
   const contentRef = useRef();
 
@@ -37,8 +37,8 @@ export default function MessageContent({templates, onMessageContentChange, name,
       updatedValue = currentMessageContent + template;
       newCursorPosition = updatedValue.length;
     } else {
-      let textBeforeCursorPosition = currentMessageContent.substring(0, cursorPosition);
-      let textAfterCursorPosition = currentMessageContent.substring(cursorPosition, currentMessageContent.length);
+      const textBeforeCursorPosition = currentMessageContent.substring(0, cursorPosition);
+      const textAfterCursorPosition = currentMessageContent.substring(cursorPosition, currentMessageContent.length);
       updatedValue = textBeforeCursorPosition + template + textAfterCursorPosition;
       newCursorPosition = template.length + cursorPosition;
     }
@@ -50,7 +50,7 @@ export default function MessageContent({templates, onMessageContentChange, name,
     inputField.selectionEnd = newCursorPosition; // Add one space, so that user can straight continue typing
   }
 
-  const handleMessageContentChange = (changeEvt: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMessageContentChange = (changeEvt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const changedValue = changeEvt.target.value;
     onMessageContentChange && onMessageContentChange(changedValue);
   };
@@ -76,7 +76,7 @@ export default function MessageContent({templates, onMessageContentChange, name,
 
 
   const hasErrors = !!errors[name];
-  const helperTextToDisplay = hasErrors ? errors[name].message : helperText;
+  const helperTextToDisplay = (hasErrors ? errors[name]?.message : helperText) as string;
 
   return (
       <Box mt={3}>
@@ -85,20 +85,25 @@ export default function MessageContent({templates, onMessageContentChange, name,
                           onTemplateClick={handleTemplateClick}
                           showTemplatesHelpIcon={showTemplatesHelpIcon} />
 
-        <TextField inputRef={(ref) => {
-                                register(ref);
-                                contentRef.current = ref;
-                            }}
-          fullWidth
-          onChange={handleMessageContentChange}
-          required
-          variant="outlined"
-          helperText={helperTextToDisplay}
-          error={hasErrors}
-          multiline
-          rows={rows}
-          name={name}
-          label={label} />
+        <Controller control={control}
+                    name={name}
+                    render={({field: {onChange, value}}) => (
+                      <TextField inputRef={(ref) => { contentRef.current = ref; }}
+                                 fullWidth
+                                 onChange={changeEvt => { 
+                                    onChange(changeEvt);
+                                    handleMessageContentChange(changeEvt);
+                                 }}
+                                 value={value}
+                                 required
+                                 variant="outlined"
+                                 helperText={helperTextToDisplay}
+                                 error={hasErrors}
+                                 multiline
+                                 rows={rows}
+                                 name={name}
+                                 label={label} />
+                      )} />
       </Box>
   );
 

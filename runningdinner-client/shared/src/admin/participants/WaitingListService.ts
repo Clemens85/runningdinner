@@ -2,7 +2,7 @@ import cloneDeep from "lodash/cloneDeep";
 import find from "lodash/find";
 import uniqBy from "lodash/uniqBy";
 import orderBy from "lodash/orderBy";
-import {Participant, SelectableParticipant, Team, TeamArrangementList} from "../../types";
+import {Participant, SelectableParticipant, Team} from "../../types";
 import {isArrayEmpty, isArrayNotEmpty, isSameEntity, removeEntityFromList} from "../../Utils";
 import {generateCancelledTeamMembersAsNumberArray} from "../TeamService";
 import {BackendConfig} from "../../BackendConfig";

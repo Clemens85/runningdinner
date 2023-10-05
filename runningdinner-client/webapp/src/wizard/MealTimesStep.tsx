@@ -122,7 +122,7 @@ export default function MealTimesStep() {
     setMealsFormState(meals);
   }
 
-  const mealTimeFields = mealsFormState.map((meal) =>
+  const mealTimeFields = mealsFormState.map((meal: Meal) =>
       <Grid item key={meal.label} sx={{pr: 6}}>
         <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
       </Grid>

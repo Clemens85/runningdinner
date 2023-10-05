@@ -9,15 +9,15 @@ export interface FormDatePickerProps extends Partial<DatePickerProps<Date>> {
   name: string;
   label: string;
   helperText?: string;
-  defaultValue?: unknown;
+  defaultValue?: Date | null;
 }
 
 export default function FormDatePicker({name, label, helperText, defaultValue, ...other}: FormDatePickerProps) {
 
-  const {errors, control} = useFormContext();
+  const {formState: {errors}, control} = useFormContext();
   const { dateFormat } = useDatePickerLocale();
 
-  const errorMessage = isStringNotEmpty(name) ? errors[name]?.message : "";
+  const errorMessage = (isStringNotEmpty(name) ? errors[name]?.message : "") as string;
   const hasErrors = isStringNotEmpty(errorMessage);
   const helperTextToDisplay = hasErrors ? errorMessage : helperText;
 
@@ -27,22 +27,18 @@ export default function FormDatePicker({name, label, helperText, defaultValue, .
             name={name}
             defaultValue={defaultValue}
             control={control}
-            render={({ref, ...remainder}) =>
+            render={({field}) =>
                 <>
                   <DatePicker
-                      {...Object.assign({}, remainder, other)}
-                      autoOk
-                      disableToolbar
-                      error={hasErrors}
-                      variant="inline"
+                      // {...Object.assign({}, remainder, other)}
+                      {...field}
+                      {...other}
+                      // error={hasErrors}
+                      // variant="inline"
                       format={dateFormat}
-                      id={name}
                       label={label}
-                      onChange={(newDate) => remainder.onChange(newDate)}
-                      invalidDateMessage={"Ungültiges Datum"}
-                      KeyboardButtonProps={{
-                        'aria-label': label,
-                      }}
+                      // invalidDateMessage={"Ungültiges Datum"}
+                      slotProps={{textField: { error: hasErrors, variant: 'outlined', id: name } }}
                   />
                   { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }
                 </>

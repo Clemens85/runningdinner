@@ -1,5 +1,5 @@
 import {handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../../redux";
-import {AnyAction, createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
+import {AnyAction, createAction, createAsyncThunk, createReducer, createSelector} from "@reduxjs/toolkit";
 import {ThunkDispatch} from "redux-thunk";
 import debounce from "lodash/debounce";
 import cloneDeep from "lodash/cloneDeep";
@@ -106,6 +106,7 @@ export function fetchInitialMessageData(adminId: string, messageType: MessageTyp
 }
 
 export function queryNotFinishedMessageJobs(messageJobs: MessageJob[]) : AdminThunk {
+  // @ts-ignore
   return async (dispatch, getState) => {
     const {adminId, messageType} = getState().messages;
     executeFindMessageJobsDebounced(adminId, messageType, messageJobs);
@@ -243,32 +244,48 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
 // *** Selectors *** //
 export const getMessageJobsSelector = (state: AdminStateType) => state.messages.messageJobs;
 export const getMessageJobsLastPollDate = (state: AdminStateType) => state.messages.lastPollDate;
-export const getRecipientsSelector = (state: AdminStateType) => {
-  const {recipients, previousRecipientSelection, customSelectedRecipients, showCustomSelectionDialog} = state.messages;
-  return {
-    recipients,
-    previousRecipientSelection,
-    customSelectedRecipients,
-    showCustomSelectionDialog
+export const getRecipientsSelector = createSelector(
+  (state: AdminStateType) => state.messages.recipients, 
+  (state: AdminStateType) => state.messages.previousRecipientSelection, 
+  (state: AdminStateType) => state.messages.customSelectedRecipients, 
+  (state: AdminStateType) => state.messages.showCustomSelectionDialog, 
+  (recipients, previousRecipientSelection, customSelectedRecipients, showCustomSelectionDialog) => {
+    return {
+      recipients,
+      previousRecipientSelection,
+      customSelectedRecipients,
+      showCustomSelectionDialog
+    };
   }
-};
-export const getMessagePreviewSelector = (state: AdminStateType) => {
-  const {previewMessages, isMailMessageValid, previewLoading, previewIssues} = state.messages;
-  return {
-    previewMessages,
-    isMailMessageValid,
-    previewLoading,
-    previewIssues
+)
+export const getMessagePreviewSelector = createSelector(
+  (state: AdminStateType) => state.messages.previewMessages, 
+  (state: AdminStateType) => state.messages.isMailMessageValid, 
+  (state: AdminStateType) => state.messages.previewLoading, 
+  (state: AdminStateType) => state.messages.previewIssues, 
+  (previewMessages, isMailMessageValid, previewLoading, previewIssues) => {
+    return {
+      previewMessages,
+      isMailMessageValid,
+      previewLoading,
+      previewIssues
+    };
   }
-};
+);
+
+
 export const getMessageObjectSelector = (state: AdminStateType) => state.messages.messageObject;
-export const getRecipientsPreviewSelector = (state: AdminStateType) => {
-  const {recipients, selectedRecipientForPreview} = state.messages;
-  return {
-    recipients,
-    selectedRecipientForPreview,
+
+export const getRecipientsPreviewSelector = createSelector(
+  (state: AdminStateType) => state.messages.recipients, 
+  (state: AdminStateType) => state.messages.selectedRecipientForPreview, 
+  (recipients, selectedRecipientForPreview) => {
+    return {
+      recipients,
+      selectedRecipientForPreview,
+    };
   }
-};
+);
 
 // *** Helpers *** //
 export const updateMessageContentPreviewAsync = debounce((value ) => {
