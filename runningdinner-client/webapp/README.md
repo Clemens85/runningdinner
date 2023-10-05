@@ -25,3 +25,10 @@ If you are developing a production application, we recommend updating the config
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+# TODO:
+https://ansonlowzf.com/how-to-build-a-material-ui-navbar bzw.:
+
+https://codesandbox.io/s/add-hide-on-scroll-and-back-to-top-features-to-material-ui-navbar-pmn11?fontsize=14&hidenavigation=1&theme=dark&file=/src/components/SideDrawer.jsx
+
+https://medium.com/@tsubasakondo_36683/create-responsive-drawer-menu-with-react-material-ui-617a42764b69
