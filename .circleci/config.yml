@@ -117,7 +117,7 @@ jobs:
           name: Build webclient
           command: |
             export GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
-            cd runningdinner-client
+            cd runningdinner-client/webapp
             CI=false pnpm build
       - save_cache:
           name: Save pnpm Package Cache
