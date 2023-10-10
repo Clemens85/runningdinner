@@ -38,7 +38,7 @@ export default function FormDatePicker({name, label, helperText, defaultValue, .
                       format={dateFormat}
                       label={label}
                       // invalidDateMessage={"Ungültiges Datum"}
-                      slotProps={{textField: { error: hasErrors, variant: 'outlined', id: name } }}
+                      slotProps={{textField: { error: hasErrors, variant: 'outlined', id: name, name: name } }}
                   />
                   { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }
                 </>

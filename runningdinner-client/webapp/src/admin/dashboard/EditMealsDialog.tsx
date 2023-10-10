@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {Box, Dialog, DialogContent, Grid} from '@mui/material';
 import MealTimeEditControl from "./MealTimeEditControl";
 import cloneDeep from "lodash/cloneDeep";
@@ -27,7 +27,7 @@ export interface EditMealsDialogProps {
 
 export function EditMealsDialog({ open, dashboardAdminActivities, incomingMeals, runningDinnerDate, onCancel, onSave }: EditMealsDialogProps) {
 
-  const {t} = useTranslation();
+  const {t} = useTranslation(['common', 'admin']);
 
   const [meals, setMeals] = useState(cloneDeep(incomingMeals));
 
@@ -54,7 +54,7 @@ export function EditMealsDialog({ open, dashboardAdminActivities, incomingMeals,
     setMeals(cloneDeep(incomingMeals));
   }
 
-  const mealTimeFields = meals.map((meal) =>
+  const mealTimeFields = meals.map((meal: Meal) =>
     <Grid item xs key={meal.id}>
       <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
     </Grid>
@@ -64,7 +64,7 @@ export function EditMealsDialog({ open, dashboardAdminActivities, incomingMeals,
 
   return (
     <Dialog open={open} onClose={onCancel} aria-labelledby="form-dialog-title" data-testid="edit-meals-dialog">
-      <DialogTitleCloseable id="edit-meals-dialog-title" onClose={onCancel}>{t('time_schedule_edit')}</DialogTitleCloseable>
+      <DialogTitleCloseable id="edit-meals-dialog-title" onClose={onCancel}>{t('admin:time_schedule_edit')}</DialogTitleCloseable>
       <DialogContent>
         <Box pt={2}>
           { showMessagesAlreadySentInfo &&

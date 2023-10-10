@@ -33,6 +33,10 @@ export function getByTestId(dataTestId, optionalQuerySuffix) {
   return cy.get(`[data-testid="${dataTestId}"]${querySuffix}`);
 }
 
+export function getByDomId(domId) {
+  return cy.get(`#${domId}`);
+}
+
 export function getSelectedLanguageButton(lang) {
   return getByTestId(`language-switch-${lang}-selected`);
 }
@@ -41,14 +45,8 @@ export function getUnselectedLanguageButton(lang) {
   return getByTestId(`language-switch-${lang}`);
 }
 
-export function getMealTimeControlByMealLabel(mealLabel) {
-  return getByTestId(`meal-time-${mealLabel}`);
-}
-
 export function getMealTimeControlInputByMealLabel(mealLabel) {
-  return getMealTimeControlByMealLabel(mealLabel)
-    .find("input")
-    .first();
+  return getByDomId(`meal-time-${mealLabel}`);
 }
 
 export function submitStandardDialog() {
