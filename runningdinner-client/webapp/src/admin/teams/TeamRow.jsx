@@ -101,27 +101,37 @@ function TeamMember({participant}) {
 
 function DragAnDroppableTeamMember({participant, onTeamMemberSwap}) {
 
-  const [{isDragging}, drag] = useDrag({
-    item: { type: 'TEAM_MEMBER', id: participant.id, teamId: participant.teamId },
+  const [{isDragging}, drag] = useDrag(() => ({
+    type: 'TEAM_MEMBER',
+    item: {
+      id: participant.id,
+      teamId: participant.teamId
+    },
     collect: monitor => ({
       isDragging: !!monitor.isDragging()
     }),
-  });
+  }), []);
 
-  const [{ isOver, canDrop },drop] = useDrop({
+  const [{ isOver }, drop] = useDrop(() => ({
     accept: 'TEAM_MEMBER',
     drop: (item) => handleDrop(item),
     collect: (monitor) => ({
       isOver: !!monitor.isOver()
     })
-  });
+  }), []);
 
   function handleDrop(srcItem) {
+    if (srcItem.id === participant.id) {
+      return
+    }
+    if (srcItem.teamId === participant.teamId) {
+      return
+    }
     onTeamMemberSwap(srcItem.id, participant.id);
   }
 
   return (
-      <div ref={drop}>
+      <div ref={drop} style={{ border: isOver ? '1px dotted black' : 'none' }}>
         <TableCellContentWithYPadding ref={drag} style={{ border: isDragging ? '1px solid black' : 'none' }}>
           <TeamMember participant={participant} />
         </TableCellContentWithYPadding>

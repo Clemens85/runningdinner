@@ -120,7 +120,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
     }
   };
 
-  const handleTeamsRegenerated = async(regeneratedTeamArrangementList: TeamArrangementList) => {
+  const handleTeamsRegenerated = async(_regeneratedTeamArrangementList: TeamArrangementList) => {
     setNoSelectedTeam();
     window.open(generateTeamPath(adminId), '_self');
     showSuccess(t("admin:teams_reset_success_text"));
@@ -151,8 +151,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
       }
     }
 
-    const allParticipants = teamArrangementListResult.teams
-                                  .flatMap(t => t.teamMembers);
+    const allParticipants = teamArrangementListResult.teams.flatMap((t: Team) => t.teamMembers);
     const srcTeamMember = findEntityById(allParticipants, srcParticipantId);
     const destTeamMember = findEntityById(allParticipants, destParticipantId);
     const successNotfication = t('team_swap_success_text', { fullnameSrc: getFullname(srcTeamMember), fullnameDest: getFullname(destTeamMember) });
