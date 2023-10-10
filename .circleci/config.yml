@@ -3,7 +3,8 @@ version: 2.1
 parameters:
   dev-stage-branch:
     type: string
-    default: "develop"
+    default: "muiv5_vitejs_pnpm"
+    # develop
   main-stage-branch:
     type: string
     default: "main"
