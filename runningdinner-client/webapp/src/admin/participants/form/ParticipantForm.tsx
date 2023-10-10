@@ -84,7 +84,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
     clearErrors();
     try {
       const savedParticipant = await saveParticipantAsync(adminId, participantToSave);
-      showSuccess(getFullname(savedParticipant) + " erfolgreich gespeichert");
+      showSuccess(t("admin:participant_save_success", { fullname: getFullname(savedParticipant) }));
       onParticipantSaved(savedParticipant);
     } catch(e) {
       applyValidationIssuesToForm(e as HttpError, setError);
