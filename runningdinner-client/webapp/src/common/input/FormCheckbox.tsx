@@ -1,7 +1,6 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
-import {Checkbox, FormControl, FormControlLabel, FormHelperText, styled} from "@mui/material";
-import {spacing} from "@mui/system";
+import {Checkbox, FormControl, FormControlLabel, FormHelperText} from "@mui/material";
 import {CheckboxProps} from "@mui/material/Checkbox/Checkbox";
 import {isStringNotEmpty} from "@runningdinner/shared";
 
@@ -13,7 +12,7 @@ export interface FormCheckboxProps extends Omit<CheckboxProps, "defaultValue"> {
   useTableDisplay?: boolean;
 }
 
-const FormCheckboxInternal = ({name, label, helperText, defaultValue, useTableDisplay, ...rest}: FormCheckboxProps) => {
+export default function FormCheckbox({name, label, helperText, defaultValue, useTableDisplay, ...rest}: FormCheckboxProps) {
 
   const {control, formState: {errors}} = useFormContext();
 
@@ -24,24 +23,21 @@ const FormCheckboxInternal = ({name, label, helperText, defaultValue, useTableDi
 
   return (
     <FormControl variant="standard" error={hasErrors}>
-      <FormControlLabel label={label} style={useTableDisplay ? {display: 'table'}: {}} control={
-        <Controller defaultValue={defaultValue} 
-                    name={name} 
-                    control={control} 
-                    render={({field}) => (
-          <div style={{display: useTableDisplay ? 'table-cell' : 'inline'}}>
-            <Checkbox color="primary" 
-                      {...rest}
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      checked={field.value} />
-          </div>
-        )} />
-      } />
+      <Controller defaultValue={defaultValue} 
+                  name={name} 
+                  control={control} 
+                  render={({field}) => (
+                    <FormControlLabel label={label} style={useTableDisplay ? {display: 'table'}: {}} control={
+                      <div style={{display: useTableDisplay ? 'table-cell' : 'inline'}}>
+                        <Checkbox color="primary"
+                                  {...rest} 
+                                  onChange={(evt: React.ChangeEvent<HTMLInputElement>) => field.onChange(evt.target.checked)}
+                                  checked={field.value}
+                        />
+                      </div>
+                    } />
+                  )} />
       { isStringNotEmpty(helperTextToDisplay) && <FormHelperText error={hasErrors}>{helperTextToDisplay}</FormHelperText> }
     </FormControl>
   );
-};
-
-
-const FormCheckbox = styled(FormCheckboxInternal)(spacing);
-export default FormCheckbox;
+}
