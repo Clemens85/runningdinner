@@ -113,12 +113,12 @@ jobs:
             corepack prepare pnpm@latest-8 --activate
 
       - run: cd runningdinner-client && pnpm install
-      - run: # TODO CI=false should be removed again!
+      - run:
           name: Build webclient
           command: |
             export GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
             cd runningdinner-client/webapp
-            CI=false pnpm build
+            pnpm build
       - save_cache:
           name: Save pnpm Package Cache
           key: pnpm-packages-{{ checksum "runningdinner-client/pnpm-lock.yaml" }}
