@@ -11,7 +11,8 @@ import {
   Meal, PublicRunningDinner,
   RegistrationData,
   Time,
-  useDisclosure
+  useDisclosure,
+  AfterPartyLocationHeadline
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
@@ -30,7 +31,6 @@ import { Alert } from '@mui/material';
 import LinkExtern from "../common/theme/LinkExtern";
 import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
 import { TextViewHtml } from '../common/TextViewHtml';
-import AfterPartyLocationHeadline from "@runningdinner/shared/src/afterpartylocation/AfterPartyLocationHeadline";
 
 
 type RegistrationFormSettingsType = {

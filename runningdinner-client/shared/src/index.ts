@@ -26,5 +26,6 @@ export * from "./admin/redux";
 export * from "./self";
 export * from "./landing";
 
+export * from './afterpartylocation';
 
 

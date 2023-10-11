@@ -20,7 +20,8 @@ import {
   TeamStatus,
   Time,
   useGeocoder,
-  useTeamName
+  useTeamName,
+  AfterPartyLocationHeadline
 } from "@runningdinner/shared";
 import {Box, Grid, LinearProgress, Paper, Typography} from '@mui/material';
 import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
@@ -34,7 +35,6 @@ import {useGeoPosition} from "../hooks/GeoPositionHook";
 import {useDynamicFullscreenHeight} from "../hooks/DynamicFullscreenHeightHook";
 import LinkExtern from '../theme/LinkExtern';
 import {TextViewHtml} from "../TextViewHtml";
-import AfterPartyLocationHeadline from "@runningdinner/shared/src/afterpartylocation/AfterPartyLocationHeadline";
 import {SuperSEO} from "react-super-seo";
 import {styled} from "@mui/material/styles";
 
@@ -184,7 +184,7 @@ function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTeam}: Tea
 // See https://github.com/JustFly1984/react-google-maps-api/tree/master/packages/react-google-maps-api
 function MapContainer({dinnerRoute}: DinnerRouteProps) {
 
-  const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_KEY_JS || "";
+  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY_JS || "";
   const { i18n } = useTranslation();
   const {getGeocodePositionsOfTeamHosts, getGeocodePositionOfAfterPartyLocation} = useGeocoder(googleMapsApiKey, i18n.language);
 
