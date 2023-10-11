@@ -83,7 +83,7 @@ public class RunningDinnerDeletionService {
     List<Participant> participants = participantRepository.findByAdminIdOrderByParticipantNumber(runningDinner.getAdminId());
     ParticipantService.removeTeamReferences(participants);
     ParticipantService.removeTeamPartnerWishOriginatorIds(participants);
-    participantRepository.saveAll(participants);
+    participantRepository.saveAllAndFlush(participants);
     
     List<Team> teams = teamRepository.findByAdminId(runningDinner.getAdminId());
     Set<UUID> teamIds = teams

@@ -36,7 +36,9 @@ import org.runningdinner.participant.ParticipantRepository;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellation;
+import org.runningdinner.participant.TeamCancellationResult;
 import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.TeamStatus;
 import org.runningdinner.participant.WaitingListService;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
@@ -327,6 +329,26 @@ public class TeamPartnerRegistrationTest {
     } catch (ValidationException e) {
       
     }
+  }
+  
+  @Test
+  public void cancelTeamWithFixedTeamPartnersPossible() {
+    
+    UUID rootParticipantId = registerParticipantsAsFixedTeam().getId();
+    
+    List<Participant> otherParticipants = ParticipantGenerator.generateParticipants(16, 2);
+    createRunningDinnerWizardService.saveAndActivateParticipantsToDinner(runningDinner, otherParticipants);
+    
+    teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+    
+    Participant rootParticipant = participantService.findParticipantById(runningDinner.getAdminId(), rootParticipantId);
+    Team fixedTeam = teamService.findTeamByIdWithTeamMembers(runningDinner.getAdminId(), rootParticipant.getTeamId());
+   
+    TeamCancellationResult cancellationResult = teamService.cancelTeam(runningDinner.getAdminId(), TestUtil.newCancellationWithoutReplacement(fixedTeam));
+    assertThat(cancellationResult.getRemovedParticipants()).hasSize(2);
+    
+    fixedTeam = teamService.findTeamById(runningDinner.getAdminId(), fixedTeam.getId());
+    assertThat(fixedTeam.getStatus()).isEqualTo(TeamStatus.CANCELLED);
   }
   
   @Test

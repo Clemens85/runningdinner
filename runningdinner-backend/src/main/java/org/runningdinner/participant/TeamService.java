@@ -600,7 +600,12 @@ public class TeamService {
       return result;
     }
     
-    Set<Participant> removedParticipants = result.getRemovedParticipants();
+    Collection<Participant> removedParticipants = result.getRemovedParticipants();
+    // Important: First remove possible team partner wish originatorids in order to prevent FK violations..
+    ParticipantService.removeTeamPartnerWishOriginatorIds(removedParticipants);
+//    removedParticipants = participantRepository.saveAll(removedParticipants);
+    removedParticipants = participantRepository.saveAllAndFlush(removedParticipants);
+    // ... then delete:
     participantRepository.deleteAll(removedParticipants);
 
     team = teamRepository.save(team);
