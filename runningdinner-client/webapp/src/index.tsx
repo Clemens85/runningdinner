@@ -11,7 +11,8 @@ BackendConfig.setBaseUrl(process.env.REACT_APP_BACKEND_BASE_URL);
 setupI18n();
 
 createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <>
     <CssBaseline />
     <LanguageChangeHandler />
     <SnackbarProvider maxSnack={3}
@@ -20,7 +21,8 @@ createRoot(document.getElementById('root')!).render(
                       hideIconVariant={true}>
       <App />
     </SnackbarProvider>
-  </React.StrictMode>,
+  </>
+  // </React.StrictMode>,
 );
 
 
