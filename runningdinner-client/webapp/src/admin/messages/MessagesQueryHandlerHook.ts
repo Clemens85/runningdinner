@@ -38,7 +38,7 @@ export function useMessagesQueryHandler(messageType: MessageType) {
 
   function isPreselectAllRecipients() {
     const messageSubType = query.get(MESSAGE_SUBTYPE_QUERY_PARAM);
-    return MessageSubType.RECIPIENTS_ALL === messageSubType || MessageSubType.DEFAULT === messageSubType;
+    return !messageSubType || MessageSubType.RECIPIENTS_ALL === messageSubType || MessageSubType.DEFAULT === messageSubType;
   }
 
   const headline = getHeadline();
