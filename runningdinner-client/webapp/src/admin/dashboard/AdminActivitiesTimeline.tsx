@@ -109,7 +109,7 @@ function TimelineContentPanel({activityDate, activityType, activityHeadline, act
           { isShowMessageJobSendingFinishedInfo(relatedMessageJobOverview) &&
               <Grid container alignItems="center">
                 <Grid item><TimelineHeadlineIconContainer><Typography variant={"caption"}>{t("messages_sending_finished")}</Typography></TimelineHeadlineIconContainer></Grid>
-                <Grid item><HelpIconTooltip title={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' fontSize={"small"}/></Grid>
+                <Grid item><HelpIconTooltip sx={{ verticalAlign: 'middle'}} title={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' fontSize={"small"}/></Grid>
               </Grid>
           }
           { isShowMessageJobSendingPendingInfo(relatedMessageJobOverview) && <Typography variant={"caption"}>{t("messages_sending_pending")}</Typography> }
