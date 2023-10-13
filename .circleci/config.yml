@@ -3,7 +3,8 @@ version: 2.1
 parameters:
   dev-stage-branch:
     type: string
-    default: "develop"
+    default: "muiv5_vitejs_pnpm"
+    # develop
   main-stage-branch:
     type: string
     default: "main"
@@ -100,28 +101,34 @@ jobs:
 
   build_webclient:
     docker:
-      - image: cimg/node:16.13.2
+      - image: node:18
     steps:
       - checkout
       - restore_cache:
           keys:
-            - npm-deps-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
-            - npm-deps-
-      - run: cd runningdinner-client && yarn install
-      - run: # TODO CI=false should be removed again!
+            - pnpm-packages-{{ checksum "runningdinner-client/pnpm-lock.yaml" }}
+      - run:
+          name: Install pnpm package manager
+          command: |
+            corepack enable
+            corepack prepare pnpm@latest-8 --activate
+
+      - run: cd runningdinner-client && pnpm install
+      - run:
           name: Build webclient
           command: |
-            export REACT_APP_GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
-            cd runningdinner-client
-            CI=false yarn run build
+            export VITE_GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
+            cd runningdinner-client/webapp
+            pnpm build
       - save_cache:
+          name: Save pnpm Package Cache
+          key: pnpm-packages-{{ checksum "runningdinner-client/pnpm-lock.yaml" }}
           paths:
-            - ~/usr/local/lib/node_modules
-          key: dependencies-{{ checksum "runningdinner-client/package.json" }}-{{ checksum "runningdinner-client/packages/webapp/package.json" }}
+            - node_modules
       - persist_to_workspace:
-          root: runningdinner-client/packages/webapp
+          root: runningdinner-client/webapp
           paths:
-            - build
+            - dist
 
   deploy_webclient_s3:
     executor: aws-cli/default
@@ -136,7 +143,7 @@ jobs:
       - run:
           name: Execute aws s3 sync
           command: |
-            CONTENT_BUILD_DIR="webapp-build/build"
+            CONTENT_BUILD_DIR="webapp-build/dist"
             if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then
               echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
               exit 1

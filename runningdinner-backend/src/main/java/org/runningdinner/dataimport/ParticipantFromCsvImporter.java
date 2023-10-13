@@ -120,4 +120,8 @@ public final class ParticipantFromCsvImporter {
     }
   }
   
+//  public static void main(String[] args) {
+//    ParticipantFromCsvImporter.newInstance("https://dev.runyourdinner.eu", "__ADMINID__", __OFFSET__)
+//      .addRandomParticipantsToDinnerFromCsv("/home/stichc/Projects/runningdinner/__FILE__");
+//  }
 }

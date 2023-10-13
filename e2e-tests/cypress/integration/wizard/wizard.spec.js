@@ -43,7 +43,8 @@ describe('participants list', () => {
     getMealInputByIndex(0).should("have.value", "Vorspeise");
     getMealInputByIndex(1).should("have.value", "Hauptgericht");
     getMealInputByIndex(2 ).should("have.value", "Dessert");
-    getMealInputByIndex(2).clear().type("Nachspeise");
+    cy.wait(100);
+    getMealInputByIndex(2).focus().clear().type("Nachspeise");
 
     getWizardNextButton().click();
 

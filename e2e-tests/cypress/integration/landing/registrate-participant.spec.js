@@ -64,7 +64,7 @@ describe('participant registration', () => {
     assertRegistrationFinishedPage();
   });
 
-  it('non-numeric input of numSeats lead to validation issue', () => {
+  it('non-numeric input of numSeats lead only last numer being used', () => {
 
     fillPersonalFieldsInRegistrationForm("Max", "Mustermann", "Max@Mustermann.de");
     fillAddressFieldsInRegistrationForm("Musterstraße", "1", "79100", "Freiburg");
@@ -72,10 +72,10 @@ describe('participant registration', () => {
 
     getTextInputByName("numSeats").type("2-4");
 
+    getTextInputByName("numSeats").should("have.value", "4");
+
     getByTestId("registration-form-next-action").click({force: true});
-    getByTestId("registration-summary-dialog").should("not.exist");
-    assertFormValidationToastIsShown();
-    assertRegistrationSummaryDialogNotShown();
+    getByTestId("registration-summary-dialog").should("exist");
   });
 
   it("numSeats is required for registration and 0 is valid", () => {

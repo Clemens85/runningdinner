@@ -199,11 +199,11 @@ public class RegistrationSummaryTO implements Serializable {
     this.ageSpecified = ageSpecified;
   }
 
-  public String getTeamPartnerWish() {
+  public String getTeamPartnerWishEmail() {
     return teamPartnerWishEmail;
   }
 
-  public void setTeamPartnerWish(String teamPartnerWish) {
+  public void setTeamPartnerWishEmail(String teamPartnerWish) {
     this.teamPartnerWishEmail = teamPartnerWish;
   }
 

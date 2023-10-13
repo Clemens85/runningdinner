@@ -24,17 +24,17 @@ export function assertMuiCheckboxSelected(checkboxElement, selected) {
 }
 
 export function selectHourInTimePicker(hourToSelect) {
-  cy.get(".MuiPickersModal-dialogRoot")
-    .find(".MuiPickersClockNumber-clockNumber")
+  cy.get(".MuiMultiSectionDigitalClock-root")
+    .find(".MuiMenuItem-root")
     .filter(`:contains("${hourToSelect}")`)
     // .trigger("mousedown", { button: 0, force: true });
-    .click({force: true})
-    .click({ force: true});
+    .click({force: true});
+    // .click({ force: true});
 }
 
 export function applyTimePickerSelection() {
-  return cy.get(".MuiPickersModal-dialogRoot")
-           .find(".MuiButton-label")
+  return cy.get(".MuiPickersLayout-actionBar")
+           .find("button")
            .filter(`:contains("OK")`)
            .click({force: true});
 }
