@@ -1,5 +1,9 @@
 const NewsMessages_en: any = {
 
+  news_title_20231013: 'Technical Updates',
+  news_content_20231013: 'Today some basic technological updates were applied. Of course, everything was thoroughly tested, ' +
+                         'but if an error should come up at any point, please bear with us and contact us directly via feedback!',
+
   news_title_20230619: 'Registration as fixed cooking team',
   news_content_20230619: 'Since the beginning it was possible to invite a desired team partner by Email to a dinner event, but this partner still had to register with himself / herself with all data. ' +
     'This has now been simplified, so that it is possible as an alternative to specify just the name of a desired cooking partner during the registration process and both are to be set up as one team.',

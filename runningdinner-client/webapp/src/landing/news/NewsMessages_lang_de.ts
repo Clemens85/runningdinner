@@ -1,5 +1,9 @@
 const NewsMessages_de: any = {
 
+  news_title_20231013: 'Technische Aktualisierungen',
+  news_content_20231013: 'Heute wurden einige grundlegende technologische Updates eingespielt. Natürlich wurde alles gründlichst getestet, ' + 
+                        'falls aber doch an einer Stelle ein Fehler hochkommen sollte, habt bitte Nachsicht und meldet euch direkt via Feedback!',
+  
   news_title_20230619: 'Direkt-Anmeldung als Kochteam möglich',
   news_content_20230619: 'Es ist schon länger möglich über einen Einladungsprozess per Email einen festen Wunschpartner quasi mit anzugeben, welche/r sich aber dann dennoch mit sämtlichen Daten selbst anmelden musste. ' +
                          'Das wurde nun vereinfacht, so dass bei der Anmeldung alternativ direkt der Name eins Wunschpartners angegeben werden kann, und man dadurch bereits als fixes Kochteam angemeldet ist.',
