@@ -34,7 +34,7 @@ function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: M
       </Grid>
   );
   return (
-    <Grid container alignItems={"center"} justifyContent={"flex-start"}>
+    <Grid container alignItems={"center"} justifyContent={"flex-start"} sx={{ mb: 2 }}>
       { smUpDevice &&
         <Grid item>
           <Box component={"span"} pr={1}>{t('mails_template_help')}: </Box>
@@ -42,7 +42,9 @@ function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: M
       {messageTemplateNodes}
       {showTemplatesHelpIcon &&
         <Grid item>
-          <HelpIconTooltip title={<Paragraph i18n='admin:mails_template_help_description'/>} placement='right'/>
+          <HelpIconTooltip title={<Paragraph i18n='admin:mails_template_help_description'/>} 
+                           sx={{ verticalAlign: "middle" }}
+                           placement='right'/>
         </Grid>
       }
     </Grid>

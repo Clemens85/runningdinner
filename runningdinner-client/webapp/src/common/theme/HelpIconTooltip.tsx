@@ -1,4 +1,3 @@
-import React from "react";
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import {styled} from "@mui/material";
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
@@ -17,13 +16,13 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
 }));
 
 export interface HelpIconTooltipProps extends Omit<TooltipProps, "children"> {
-  fontSize?: 'inherit' | 'default' | 'small' | 'large';
+  fontSize?: 'inherit' | 'medium' | 'small' | 'large';
 }
 
-export function HelpIconTooltip({fontSize, ...remainder}: HelpIconTooltipProps) {
+export function HelpIconTooltip({fontSize, sx,...remainder}: HelpIconTooltipProps) {
   return (
     <HtmlTooltip {...remainder} arrow>
-      <HelpOutlineOutlinedIcon fontSize={fontSize} />
+      <HelpOutlineOutlinedIcon fontSize={fontSize} sx={sx}/>
     </HtmlTooltip>
   );
 }
