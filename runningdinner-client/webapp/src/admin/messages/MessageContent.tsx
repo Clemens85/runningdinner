@@ -30,7 +30,7 @@ export default function MessageContent({templates, onMessageContentChange, name,
     const currentMessageContent = inputField.value;
     const cursorPosition = getCurrentCursorPosition();
 
-    let newCursorPosition;
+    let newCursorPosition: number;
 
     let updatedValue;
     if (cursorPosition < 0) {
@@ -46,8 +46,10 @@ export default function MessageContent({templates, onMessageContentChange, name,
     setValue(name, updatedValue);
     onMessageContentChange && onMessageContentChange(updatedValue);
 
+    setTimeout(() => {
+      inputField.selectionEnd = newCursorPosition; // Add at end of current cursor pos, so that user can straight continue typing
+    }, 75); // We need to set this a little bit delayed since React 18, because otherwise it might happen, that our cursor is always at end of TextArea due to focus
     inputField.focus();
-    inputField.selectionEnd = newCursorPosition; // Add one space, so that user can straight continue typing
   }
 
   const handleMessageContentChange = (changeEvt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
