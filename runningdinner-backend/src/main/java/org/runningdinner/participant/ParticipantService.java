@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
@@ -50,6 +51,9 @@ import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
+import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInfo;
+import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInfoList;
+import org.runningdinner.participant.registrationinfo.ParticipantRegistrationProjection;
 import org.runningdinner.participant.rest.MissingParticipantsInfo;
 import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.participant.rest.ParticipantListActive;
@@ -59,6 +63,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -104,11 +112,6 @@ public class ParticipantService {
     return participantRepository.findByIdInAndAdminIdOrderByParticipantNumber(participantIds, adminId);
   }
   
-  public List<Participant> findNotActivatedParticipantsByIds(@ValidateAdminId String adminId, Set<UUID> participantIds) {
-
-    return participantRepository.findByIdInAndActivationDateIsNullAndAdminIdOrderByParticipantNumber(participantIds, adminId);
-  }
-
   public List<Participant> findParticipants(@ValidateAdminId String adminId, boolean onlyActiveParticipants) { 
 
     if (onlyActiveParticipants) {
@@ -443,6 +446,38 @@ public class ParticipantService {
     return participantRepository.save(participant);
   }
   
+  
+  public ParticipantRegistrationInfoList findParticipantRegistrations(@ValidateAdminId String dinnerAdminId, LocalDateTime now, int page) {
+
+    ParticipantRegistrationInfoList result;
+    
+    Sort orderBy = Sort.by(new Sort.Order(Direction.DESC, "activationDate").nullsFirst(),
+                           new Sort.Order(Direction.DESC, "createdAt")); // The second order is only relevant in edge cases when we have several not activated participants
+    Slice<ParticipantRegistrationProjection> resultSlice = participantRepository.findRegistrationInfoSliceByAdminId(dinnerAdminId, PageRequest.of(page, ActivityService.PARTICIPANT_ACTIVITES_PAGE_SIZE, orderBy));
+    
+    if (!resultSlice.hasContent()) {
+      return new ParticipantRegistrationInfoList(Collections.emptyList(), 0, false);
+    }
+    
+    List<ParticipantRegistrationInfo> registrations = resultSlice.getContent()
+                                                        .stream()
+                                                        .map(projection -> new ParticipantRegistrationInfo(projection))
+                                                        .collect(Collectors.toList());
+    
+    result = new ParticipantRegistrationInfoList(registrations, resultSlice.getNumber(), resultSlice.hasNext());
+    
+    LocalDateTime twoDaysBeforeNow = now.minusDays(2);
+    
+    var notActivatedRegistrationsOlderThan2Days = registrations
+                                                    .stream()
+                                                    .filter(p -> p.getActivationDate() == null)
+                                                    .filter(p -> p.getCreatedAt().isBefore(twoDaysBeforeNow))
+                                                    .collect(Collectors.toList());
+  
+    result.setNotActivatedRegistrationsTooOld(notActivatedRegistrationsOlderThan2Days);
+    return result;
+  }
+
   public Participant findChildParticipantOfTeamPartnerRegistration(@ValidateAdminId String adminId, Participant participant) {
     
     Assert.state(participant.isTeamPartnerWishRegistratonRoot(), 
@@ -610,6 +645,4 @@ public class ParticipantService {
     participantRepository.save(teamPartnerWish);
     return participantRepository.save(participant);
   }
-
-
 }

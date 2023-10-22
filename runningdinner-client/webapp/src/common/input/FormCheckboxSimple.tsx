@@ -1,4 +1,3 @@
-import React from 'react';
 import {Checkbox, FormControl, FormControlLabel, FormHelperText} from "@mui/material";
 import {FormCheckboxProps} from "./FormCheckbox";
 

@@ -3,6 +3,7 @@ package org.runningdinner.admin.activity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.Test;
@@ -13,11 +14,12 @@ import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.ParticipantAddress;
+import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInfoList;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Slice;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @ApplicationTest
@@ -35,6 +37,9 @@ public class ActivityServiceTest {
 
 	@Autowired
 	private TestHelperService testHelperService;
+	
+	@Autowired
+	private ParticipantService participantService;
 
 	@Test
 	public void testActivityCreationForNewClosedRunningDinner() {
@@ -91,18 +96,8 @@ public class ActivityServiceTest {
 		assertThat(adminActivites).hasSize(1);
 		assertThat(adminActivites.get(0).getActivityType()).isEqualTo(ActivityType.DINNER_CREATED);
 	
-		Slice<Activity> participantActivitiesSlice = activityService.findParticipantActionsActivityStream(runningDinner, 0);
-		List<Activity> participantActivities = participantActivitiesSlice.getContent();
-		
-		assertThat(participantActivities).hasSize(2);
-		
-		assertThat(participantActivities)
-		  .extracting("activityType", ActivityType.class)
-		  .containsExactlyInAnyOrder(ActivityType.PARTICIPANT_SUBSCRIBED, ActivityType.PARTICIPANT_SUBSCRIBED);
-		
-		assertThat(participantActivities)
-		  .extracting("originator", String.class)
-		  .containsExactlyInAnyOrder("foo@bar.de", "max@muster.de");
-
+		ParticipantRegistrationInfoList participantRegistrationInfoList = participantService.findParticipantRegistrations(runningDinner.getAdminId(), LocalDateTime.now(), 0);
+		var registrations = participantRegistrationInfoList.getRegistrations();
+		assertThat(registrations).hasSize(2);
 	}
 }

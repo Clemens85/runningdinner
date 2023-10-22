@@ -15,7 +15,8 @@ import {
   TeamPartnerWishInfo,
   ParticipantList,
   ParticipantListable,
-  ParticipantName
+  ParticipantName,
+  ParticipantRegistrationInfoList
 } from "../types";
 import {CONSTANTS} from "../Constants";
 
@@ -43,16 +44,6 @@ export async function saveParticipantAsync(adminId: string, participant: Partici
     data: participantWithTrimmedStringFields
   });
   return response.data;
-}
-
-export async function findNotActivatedParticipantsByAdminIdAndIdsAsync(adminId: string, participantIds: string[]): Promise<Participant[]> {
-  const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/not-active`);
-  const response = await axios.put(url, {
-    entityIds: participantIds,
-    adminId
-  });
-  const { participants } = response.data;
-  return participants;
 }
 
 export async function updateParticipantSubscriptionByAdminIdAndIdAsync(adminId: string, participantId: string): Promise<Participant> {
@@ -93,6 +84,13 @@ export async function findTeamPartnerWishInfoForListAsync(adminId: string, parti
   });
   return response.data;
 }
+
+export async function findParticipantRegistrationsByAdminIdAsync(adminId: string, page: number) : Promise<ParticipantRegistrationInfoList>  {
+  const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/registrations?page=${page}`);
+  const response = await axios.get<ParticipantRegistrationInfoList>(url);
+  return response.data;
+}
+
 
 export function getFullname(participant: ParticipantName): string {
   if (!participant || (!participant.firstnamePart && !participant.lastname)) {

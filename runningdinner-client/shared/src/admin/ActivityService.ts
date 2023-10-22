@@ -47,12 +47,6 @@ export function isMessageActivityContained(activities: Activity[]) {
   }
   return false;
 }
-export async function findParticipantActivitiesByAdminIdAsync(adminId: string, page: number) : Promise<ActivityList>  {
-  const url = BackendConfig.buildUrl(`/activityservice/v1/runningdinner/${adminId}/participant?page=${page}`);
-  const response = await axios.get<ActivityList>(url);
-  return response.data;
-}
-
 export async function enhanceAdminActivitiesByDetailsAsync(adminId: string, dashboardAdminActivities: DashboardAdminActivities): Promise<DashboardAdminActivities> {
   const asyncFetchDetailsJobs: Record<string, Promise<MessageJobOverview>> = {};
   dashboardAdminActivities.activities.map(activity => {
@@ -62,7 +56,7 @@ export async function enhanceAdminActivitiesByDetailsAsync(adminId: string, dash
   });
 
   const result = cloneDeep(dashboardAdminActivities);
-  for (let id in asyncFetchDetailsJobs) {
+  for (const id in asyncFetchDetailsJobs) {
     const messageJobOverview = await asyncFetchDetailsJobs[id];
     const activity = findEntityById(result.activities, id);
     activity.relatedMessageJobOverview = messageJobOverview;

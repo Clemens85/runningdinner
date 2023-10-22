@@ -23,9 +23,6 @@ import org.runningdinner.participant.rest.TeamTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -410,15 +407,6 @@ public class ActivityService {
     return activityRepository.findAllByActivityTypeInAndAdminIdOrderByActivityDateDesc(ADMIN_ACTIVITY_TYPES, runningDinner.getAdminId());
   }
 
-  public Slice<Activity> findParticipantActionsActivityStream(RunningDinner runningDinner, int page) {
-
-    Sort orderBy = Sort.by("activityDate").descending();
-
-    Slice<Activity> result = activityRepository.findSliceByActivityTypeInAndAdminId(
-      PARTICIPANT_ACTIVITY_TYPES, runningDinner.getAdminId(), PageRequest.of(page, PARTICIPANT_ACTIVITES_PAGE_SIZE, orderBy));
-    return result;
-  }
-  
   public static boolean containsActivityType(List<Activity> activities, ActivityType activityType) {
   	
   	return activities

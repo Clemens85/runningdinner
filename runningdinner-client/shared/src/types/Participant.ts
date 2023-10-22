@@ -32,6 +32,7 @@ export interface Participant extends BaseEntity, HasGeocoding, MealSpecifics, Pa
   teamId?: string;
   teamPartnerWishEmail?: string;
   teamPartnerWishOriginatorId?: string;
+  activationDate?: Date;
 }
 
 export interface ParticipantFormModel extends Participant {
@@ -126,6 +127,22 @@ const EXAMPLE_PARTICIPANT: Participant = {
   age: 25,
   numSeats: 6
 };
+
+
+
+export interface ParticipantRegistrationInfo extends Omit<BaseEntity, "modifiedAt">, ParticipantName {
+  email: string;
+  activationDate?: Date;
+  activatedBy: string;
+  mobileNumber?: string;
+}
+
+export interface ParticipantRegistrationInfoList {
+  registrations: ParticipantRegistrationInfo[];
+  notActivatedRegistrationsTooOld: ParticipantRegistrationInfo[];
+  hasMore: boolean;
+  page: number;
+}
 
 export function newEmptyParticipantInstance(): Participant {
   return clone(EMPTY_PARTICIPANT);

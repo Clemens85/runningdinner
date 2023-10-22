@@ -1,12 +1,12 @@
-import React, {useEffect} from 'react';
+import {useEffect} from 'react';
 import {
-  Activity, BaseAdminIdProps,
+  BaseAdminIdProps,
   BaseRunningDinnerProps, CallbackHandler,
-  fetchNextParticipantActivities,
-  getParticipantRegistrationActivitiesFetchSelector,
+  fetchNextParticipantRegistrations,
+  getParticipantRegistrationsFetchSelector,
   HttpError,
   isArrayNotEmpty,
-  isParticipantRegistrationActivitiesEmpty, LocalDate, Time, updateParticipantSubscription,
+  isParticipantRegistrationsEmpty, isStringEmpty, LocalDate, ParticipantRegistrationInfo, Time, updateParticipantSubscription,
   useAdminDispatch,
   useAdminSelector, useBackendIssueHandler, useDisclosure
 } from "@runningdinner/shared";
@@ -32,23 +32,29 @@ import DoneIcon from "@mui/icons-material/Done";
 import {useAdminNavigation} from "../AdminNavigationHook";
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
 import {Theme} from "@mui/material/styles";
+import { MissingParticipantActivationDialog } from './MissingParticipantActivationDialog';
+import { useMissingParticipantActivation } from './MissingParticipantActivationHook';
 
 export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps) {
 
   const dispatch = useDispatch();
   const {adminId} = runningDinner;
 
-  const {data: participantActivityList, fetchStatus} = useAdminSelector(getParticipantRegistrationActivitiesFetchSelector);
-  const hasNoRegistrations = useAdminSelector(isParticipantRegistrationActivitiesEmpty);
+  const {data: participantRegistrationInfoList, fetchStatus} = useAdminSelector(getParticipantRegistrationsFetchSelector);
+  const hasNoRegistrations = useAdminSelector(isParticipantRegistrationsEmpty);
   const {t} = useTranslation(["admin", "common"]);
 
-  const {isOpen, close, open, getIsOpenData} = useDisclosure<Activity>();
+  const {isOpen, close, open, getIsOpenData} = useDisclosure<ParticipantRegistrationInfo>();
 
-  const showMoreLink = participantActivityList?.hasMore;
+  const { closeMissingParticipantActivationNotification, showMissingParticipantActivationNotification } = useMissingParticipantActivation({ 
+            adminId, 
+            missingParticipantActivations: participantRegistrationInfoList?.notActivatedRegistrationsTooOld });
+
+  const showMoreLink = participantRegistrationInfoList?.hasMore;
 
   useEffect(() => {
-    // dispatch(resetParticipantActivities());
-    dispatch(fetchNextParticipantActivities({adminId, initialFetch: true}));
+    // @ts-ignore
+    dispatch(fetchNextParticipantRegistrations({adminId, initialFetch: true}));
   }, [adminId, dispatch]);
 
   return (
@@ -58,49 +64,57 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
           <Subtitle i18n={"admin:latest_registrations"} />
           { fetchStatus === FetchStatus.LOADING && <LinearProgress variant={"indeterminate"} /> }
           { hasNoRegistrations && <NoRegistrations /> }
-          { isArrayNotEmpty(participantActivityList?.activities) &&
+          { isArrayNotEmpty(participantRegistrationInfoList?.registrations) &&
             <List>
-              { participantActivityList!.activities.map((activity: Activity, index: number) => <ParticipantRegistrationRow key={index}
-                                                                                                                           adminId={adminId}
-                                                                                                                           participantActivity={activity}
-                                                                                                                           onShowConfirmSubscriptionActivationDialog={() => open(activity)} />) }
+              { participantRegistrationInfoList!.registrations.map((registration: ParticipantRegistrationInfo, index: number) => <ParticipantRegistrationRow key={index}
+                                                                                                                                                             adminId={adminId}
+                                                                                                                                                             participantRegistration={registration}
+                                                                                                                                                             onShowConfirmSubscriptionActivationDialog={() => open(registration)} />) }
             </List>
           }
           { showMoreLink &&
             <Box pb={2}>
-              <Button onClick={() => dispatch(fetchNextParticipantActivities({adminId}))}
+              {/* @ts-ignore */}
+              <Button onClick={() => dispatch(fetchNextParticipantRegistrations({adminId}))}
                       variant={"outlined"}
                       fullWidth
                       color={"primary"}>{t("common:show_more")}</Button>
             </Box>
            }
 
-          { isOpen && <ConfirmParticipantActivationDialog participantActivity={getIsOpenData()}
+          { isOpen && <ConfirmParticipantActivationDialog participantRegistration={getIsOpenData()}
                                                           adminId={adminId}
                                                           onClose={close} /> }
         </CardContent>
       </Card>
+      { showMissingParticipantActivationNotification && <MissingParticipantActivationDialog open={showMissingParticipantActivationNotification} 
+                                                                                            onClose={closeMissingParticipantActivationNotification} 
+                                                                                            missingParticipantActivations={participantRegistrationInfoList.notActivatedRegistrationsTooOld} /> 
+      }
     </>
   );
 }
 
 interface ParticipantRegistrationRowProps extends BaseAdminIdProps {
-  participantActivity: Activity;
+  participantRegistration: ParticipantRegistrationInfo;
   onShowConfirmSubscriptionActivationDialog: CallbackHandler;
 }
-function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscriptionActivationDialog, adminId}: ParticipantRegistrationRowProps) {
+function ParticipantRegistrationRow({participantRegistration, onShowConfirmSubscriptionActivationDialog, adminId}: ParticipantRegistrationRowProps) {
 
   const {t} = useTranslation(["admin", "common"]);
-  const {activityDate, originator, relatedEntityId: participantId, relatedParticipantNotActivated} = participantActivity;
+  const {activationDate, createdAt, email, id} = participantRegistration;
   const {navigateToParticipant} = useAdminNavigation();
 
   const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
 
-  function renderParticipantActivityDetails() {
+  const participantActivated = !!activationDate;
+
+  function renderRegistrationDetails() {
+    const dateToUse = activationDate ? activationDate : createdAt;
     return (
       <>
-        <LocalDate date={activityDate} /> {t("common:at_time")} <Time date={activityDate} />
-        { relatedParticipantNotActivated &&
+        <LocalDate date={dateToUse} /> {t("common:at_time")} <Time date={dateToUse} />
+        { !participantActivated &&
           <>
             <br/>
             <Typography variant="caption"><i>{t("admin:registration_not_yet_confirmed")}</i></Typography>
@@ -115,17 +129,17 @@ function ParticipantRegistrationRow({participantActivity, onShowConfirmSubscript
   }
 
   function handleClick() {
-    if (relatedParticipantNotActivated) {
+    if (!participantActivated) {
       return;
     }
-    navigateToParticipant(adminId, participantId);
+    navigateToParticipant(adminId, id!);
   }
 
   return (
-    <ListItem divider={true} onClick={handleClick} sx={{ cursor: relatedParticipantNotActivated ? 'auto' : "pointer" }}>
-      <ListItemText primary={<Typography variant={"subtitle2"}>{originator}</Typography>}
-                    secondary={renderParticipantActivityDetails()} />
-      { relatedParticipantNotActivated ?
+    <ListItem divider={true} onClick={handleClick} sx={{ cursor: participantActivated ? 'pointer' : "auto" }}>
+      <ListItemText primary={<Typography variant={"subtitle2"}>{email}</Typography>}
+                    secondary={renderRegistrationDetails()} />
+      { !participantActivated ?
         <ListItemSecondaryAction>
           { smUpDevice && renderShowConfirmSubscriptionActivationDialogButton() }
         </ListItemSecondaryAction> :
@@ -144,11 +158,11 @@ function NoRegistrations() {
 }
 
 interface ConfirmParticipantActivationDialogProps extends BaseAdminIdProps {
-  participantActivity: Activity;
+  participantRegistration: ParticipantRegistrationInfo;
   onClose: CallbackHandler;
 }
 
-function ConfirmParticipantActivationDialog({participantActivity, adminId, onClose}: ConfirmParticipantActivationDialogProps) {
+function ConfirmParticipantActivationDialog({participantRegistration, adminId, onClose}: ConfirmParticipantActivationDialogProps) {
 
   const {t} = useTranslation(["admin", "common"]);
   const dispatch = useAdminDispatch();
@@ -161,12 +175,16 @@ function ConfirmParticipantActivationDialog({participantActivity, adminId, onClo
 
   const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
-  const {originator, relatedEntityId: participantId} = participantActivity;
+  const {email, id} = participantRegistration;
 
   async function handleActivateSubscriptionManual() {
+
+    if (isStringEmpty(id) || id === undefined) {
+      throw new Error("participantId must be set");
+    }
     try {
-      await dispatch(updateParticipantSubscription({adminId, participantId})).unwrap();
-      showSuccess(t("admin:participant_manual_activation_success", {participantEmail: originator}));
+      await dispatch(updateParticipantSubscription({adminId, participantId: id})).unwrap();
+      showSuccess(t("admin:participant_manual_activation_success", {participantEmail: email}));
       onClose();
     } catch (e) {
       showHttpErrorDefaultNotification(e as HttpError);
@@ -176,7 +194,7 @@ function ConfirmParticipantActivationDialog({participantActivity, adminId, onClo
   return (
     <Dialog open={true} onClose={onClose} aria-labelledby="Confirm Participant Activation">
       <DialogTitleCloseable onClose={onClose}>
-        {t('confirmation_activate_subscription_title', {participantEmail: originator })}
+        {t('confirmation_activate_subscription_title', {participantEmail: email })}
       </DialogTitleCloseable>
       <DialogContent>
         <Span><Trans i18nKey="confirmation_activate_subscription_text"

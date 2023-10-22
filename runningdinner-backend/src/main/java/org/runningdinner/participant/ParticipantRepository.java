@@ -6,6 +6,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.runningdinner.core.RunningDinnerRelatedRepository;
+import org.runningdinner.participant.registrationinfo.ParticipantRegistrationProjection;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,8 +29,6 @@ public interface ParticipantRepository extends RunningDinnerRelatedRepository<Pa
 
   List<Participant> findByIdInAndAdminIdOrderByParticipantNumber(Set<UUID> participantIds, String adminId);
 	
-  List<Participant> findByIdInAndActivationDateIsNullAndAdminIdOrderByParticipantNumber(Set<UUID> participantIds, String adminId);
-
   // Get "all" participants queries:
   List<Participant> findByAdminIdOrderByParticipantNumber(String adminId);
 	
@@ -38,5 +39,8 @@ public interface ParticipantRepository extends RunningDinnerRelatedRepository<Pa
   List<Participant> findByAdminIdAndTeamIdIsNotNullAndActivationDateIsNotNullOrderByParticipantNumber(String adminId);
 
   Participant findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(UUID teamPartnerWishOriginatorId, UUID participantId, String adminId);
+  
+  Slice<ParticipantRegistrationProjection> findRegistrationInfoSliceByAdminId(String adminId, Pageable pageable);
+  
 
 }

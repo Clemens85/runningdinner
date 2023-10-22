@@ -41,15 +41,6 @@ public class ActivityServiceRest {
     return result;
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/participant", method = RequestMethod.GET)
-  public ActivityListTO getParticipantActivities(@PathVariable("adminId") String adminId,
-                                                 @RequestParam(name = "page", defaultValue = "0") int page) {
-
-    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-    Slice<Activity> result = activityService.findParticipantActionsActivityStream(runningDinner, page);
-    return mapToList(result);
-  }
-
   @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.GET)
   public ActivityListTO findActivitiesByType(@PathVariable("adminId") String adminId, 
                                              @RequestParam(name = "type") List<ActivityType> activityTypeParams) {

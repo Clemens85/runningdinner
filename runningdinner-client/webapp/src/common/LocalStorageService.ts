@@ -9,3 +9,15 @@ export function setLocalStorageItem(key: string, value: unknown) {
   }
   localStorage.setItem(key, JSON.stringify(value));
 }
+
+export function getLocalStorageInAdminId<T>(key: string, adminId: string): T | undefined {
+  return getLocalStorageItem(calculateKeyForAdminId(key, adminId));
+}
+
+export function setLocalStorageInAdminId<T>(key: string, value: unknown, adminId: string) {
+  setLocalStorageItem(calculateKeyForAdminId(key, adminId), value);
+}
+
+function calculateKeyForAdminId(key: string, adminId: string) {
+  return `${key}_${adminId}`;
+}

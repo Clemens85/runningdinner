@@ -1,6 +1,5 @@
-import {CONSTANTS, getExampleParticipantMessage, PaymentOptions,} from "../..";
+import {CONSTANTS, getExampleParticipantMessage, ParticipantRegistrationInfoList, PaymentOptions,} from "../..";
 import {
-  ActivityList,
   BackendIssue,
   BaseMessage,
   DashboardAdminActivities,
@@ -20,7 +19,7 @@ export interface AdminState {
 
 export interface DashboardState {
   adminActivities: FetchData<DashboardAdminActivities>,
-  participantActivities: FetchData<ActivityList>
+  participantRegistrations: FetchData<ParticipantRegistrationInfoList>
 }
 
 export interface ParticipantsState {
@@ -64,7 +63,7 @@ export function newInitialAdminState(): AdminState {
 export function newInitialDashboardState(): DashboardState {
   return {
     adminActivities: INITIAL_FETCH_DATA,
-    participantActivities: INITIAL_FETCH_DATA
+    participantRegistrations: INITIAL_FETCH_DATA
   }
 }
 
