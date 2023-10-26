@@ -47,11 +47,10 @@ export function MissingParticipantActivationDialog({open, onClose, missingPartic
       <DialogContent>
         <Box pt={2}>
           <Paragraph>
-            Folgende Anmeldungen liegen länger zurück, wurden aber noch nicht bestätigt.<br/><br/>
-            Es kann leider vorkommen, dass die Mails mit den Bestätigungslinks nicht ankommen 
-            (insbesondere T-Online blockiert gerne... es kann aber auch sein, dass eine Email-Adresse falsch eingetragen wurde oder ein Teilnehmer schlicht noch nicht reagiert hat).<br/><br/>
-            Es wird empfohlen Kontakt aufzunehmen, da unbestätigte Anmeldungen nicht bei der Team-Einteilung berücksichtigt werden.<br/>
-            Du kannst diese Anmeldungen jederzeit manuell bestätigen.
+            {t("admin:registrations_not_yet_confirmed_old_info_1")}<br/><br/>
+            {t("admin:registrations_not_yet_confirmed_old_info_2")}<br/><br/>
+            {t("admin:registrations_not_yet_confirmed_old_info_3")}<br/>
+            {t("admin:registrations_not_yet_confirmed_old_info_4")}
           </Paragraph>
         </Box>
 
