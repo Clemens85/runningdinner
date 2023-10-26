@@ -181,6 +181,7 @@
 	"redirect_after_purchase_link": "Link zur Weiterleitung nach Kauf",
 	"redirect_after_purchase_link_help": "Optional ein Link auf den weitergeleitet werden soll wenn ein Teilnehmer sich erfolgreich registriert hat",
 	"registration_not_yet_confirmed": "Anmeldung noch nicht bestätigt",
+	"registrations_not_yet_confirmed_old": "Unbestätigte Anmeldungen",
 	"runningdinner_acknowledge_congratulation_text": "Herzlichen Glückwunsch, du hast dich soeben als Ersteller dieses Running Dinner Events bestätigt. Damit kannst du alle Features (inkl. Nachrichtenversand) nutzen!",
 	"runningdinner_acknowledge_congratulation_title": "Bestätigung erfolgreich",
 	"runningdinner_acknowledge_error_text": "Leider ist ein Fehler beim Versuch der Bestätigung deines Dinner Events aufgetreten. Versuche es bitte später erneut. <br/>Falls der Fehler immer noch auftritt wende dich bitte an <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />.",

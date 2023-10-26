@@ -3,7 +3,7 @@ import { Fullname, LocalDate, ParticipantRegistrationInfo, Time, isStringNotEmpt
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import { DialogTitleCloseable } from "../../common/theme/DialogTitleCloseable";
 import { useTranslation } from "react-i18next";
-import { SmallTitle, Subtitle } from "../../common/theme/typography/Tags";
+import { SmallTitle } from "../../common/theme/typography/Tags";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import LinkExtern from "../../common/theme/LinkExtern";
 import { FormCheckboxSimple } from "../../common/input/FormCheckboxSimple";
@@ -43,20 +43,16 @@ export function MissingParticipantActivationDialog({open, onClose, missingPartic
 
   return (
     <Dialog open={open} onClose={() => onClose()} aria-labelledby="form-dialog-title" data-testid="missing-participant-activation-dialog">
-      <DialogTitleCloseable onClose={onClose}>{t('admin:missing-participant-activation')}</DialogTitleCloseable>
+      <DialogTitleCloseable onClose={onClose}>{t('admin:registrations_not_yet_confirmed_old')}</DialogTitleCloseable>
       <DialogContent>
         <Box pt={2}>
           <Paragraph>
-            Teilnehmende die sich anmelden, bekommen eine EMail mit einem Bestätigungslink.<br/>
-            Es kann leider immer mal wieder vorkommen (insbesondere bei t-online), dass die Emails nicht bei den Teilnehmern ankommen.<br/>
-            Es kann aber auch einfach sein, dass die Email-Adressen falsch sind, oder die Teilnehmenden schlicht noch nicht reagiert haben.
+            Folgende Anmeldungen liegen länger zurück, wurden aber noch nicht bestätigt.<br/><br/>
+            Es kann leider vorkommen, dass die Mails mit den Bestätigungslinks nicht ankommen 
+            (insbesondere T-Online blockiert gerne... es kann aber auch sein, dass eine Email-Adresse falsch eingetragen wurde oder ein Teilnehmer schlicht noch nicht reagiert hat).<br/><br/>
+            Es wird empfohlen Kontakt aufzunehmen, da unbestätigte Anmeldungen nicht bei der Team-Einteilung berücksichtigt werden.<br/>
+            Du kannst diese Anmeldungen jederzeit manuell bestätigen.
           </Paragraph>
-          <Box mt={2}>
-            <Paragraph>
-              Folgende Anmeldungen liegen nun schon länger zurück, wurden aber noch nicht bestätigt.<br/>
-              Es wird empfohlen Kontakt aufzunehmen, da unbestätigte Anmeldungen nicht bei der Team-Einteilung berücksichtigt werden, und diese Anmeldungen dann ggfalls. manuell zu bestätigen.
-            </Paragraph>
-          </Box>
         </Box>
 
         { missingParticipantActivations.map(mpa => 

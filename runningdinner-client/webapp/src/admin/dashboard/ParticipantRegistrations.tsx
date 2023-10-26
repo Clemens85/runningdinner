@@ -3,10 +3,11 @@ import {
   BaseAdminIdProps,
   BaseRunningDinnerProps, CallbackHandler,
   fetchNextParticipantRegistrations,
+  Fullname,
   getParticipantRegistrationsFetchSelector,
   HttpError,
   isArrayNotEmpty,
-  isParticipantRegistrationsEmpty, isStringEmpty, LocalDate, ParticipantRegistrationInfo, Time, updateParticipantSubscription,
+  isParticipantRegistrationsEmpty, isStringEmpty, isStringNotEmpty, LocalDate, ParticipantRegistrationInfo, Time, updateParticipantSubscription,
   useAdminDispatch,
   useAdminSelector, useBackendIssueHandler, useDisclosure
 } from "@runningdinner/shared";
@@ -34,6 +35,7 @@ import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook
 import {Theme} from "@mui/material/styles";
 import { MissingParticipantActivationDialog } from './MissingParticipantActivationDialog';
 import { useMissingParticipantActivation } from './MissingParticipantActivationHook';
+import LinkExtern from '../../common/theme/LinkExtern';
 
 export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps) {
 
@@ -102,12 +104,21 @@ interface ParticipantRegistrationRowProps extends BaseAdminIdProps {
 function ParticipantRegistrationRow({participantRegistration, onShowConfirmSubscriptionActivationDialog, adminId}: ParticipantRegistrationRowProps) {
 
   const {t} = useTranslation(["admin", "common"]);
-  const {activationDate, createdAt, email, id} = participantRegistration;
+  const {activationDate, createdAt, email, mobileNumber, firstnamePart, lastname, id} = participantRegistration;
   const {navigateToParticipant} = useAdminNavigation();
 
   const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
 
   const participantActivated = !!activationDate;
+
+  function renderAdditionalContactDetails() {
+    return (
+      <>
+      <div><Fullname firstnamePart={firstnamePart} lastname={lastname}/></div>
+      { isStringNotEmpty(mobileNumber) && <div>{t("common:mobile")}: <LinkExtern href={`tel:${mobileNumber}`} title={mobileNumber} /></div> }
+      </>
+    );
+  }
 
   function renderRegistrationDetails() {
     const dateToUse = activationDate ? activationDate : createdAt;
@@ -116,6 +127,7 @@ function ParticipantRegistrationRow({participantRegistration, onShowConfirmSubsc
         <LocalDate date={dateToUse} /> {t("common:at_time")} <Time date={dateToUse} />
         { !participantActivated &&
           <>
+            { renderAdditionalContactDetails() }
             <br/>
             <Typography variant="caption"><i>{t("admin:registration_not_yet_confirmed")}</i></Typography>
             { !smUpDevice && renderShowConfirmSubscriptionActivationDialogButton() }
