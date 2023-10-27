@@ -1,6 +1,6 @@
 import {useParams} from "react-router-dom";
 import {Box, Grid} from "@mui/material";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import TeamsNotExisting from "./TeamsNotExisting";
 import TeamsList from "./TeamsList";
