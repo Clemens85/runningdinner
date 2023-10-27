@@ -33,9 +33,9 @@ import DoneIcon from "@mui/icons-material/Done";
 import {useAdminNavigation} from "../AdminNavigationHook";
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
 import {Theme} from "@mui/material/styles";
-import { MissingParticipantActivationDialog } from './MissingParticipantActivationDialog';
-import { useMissingParticipantActivation } from './MissingParticipantActivationHook';
 import LinkExtern from '../../common/theme/LinkExtern';
+import { MissingParticipantActivationDialog } from '../common/MissingParticipantActivationDialog';
+import { useMissingParticipantActivation } from '../common/MissingParticipantActivationHook';
 
 export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps) {
 
@@ -48,9 +48,9 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
 
   const {isOpen, close, open, getIsOpenData} = useDisclosure<ParticipantRegistrationInfo>();
 
-  const { closeMissingParticipantActivationNotification, showMissingParticipantActivationNotification } = useMissingParticipantActivation({ 
-            adminId, 
-            missingParticipantActivations: participantRegistrationInfoList?.notActivatedRegistrationsTooOld });
+  const { closeMissingParticipantActivationNotification, 
+          enableMissingParticipantAcivationNotification,
+          showMissingParticipantActivationNotification } = useMissingParticipantActivation({ adminId });
 
   const showMoreLink = participantRegistrationInfoList?.hasMore;
 
@@ -58,6 +58,12 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
     // @ts-ignore
     dispatch(fetchNextParticipantRegistrations({adminId, initialFetch: true}));
   }, [adminId, dispatch]);
+
+  useEffect(() => {
+    if (fetchStatus === FetchStatus.SUCCEEDED) {
+      enableMissingParticipantAcivationNotification(participantRegistrationInfoList?.notActivatedRegistrationsTooOld);
+    }
+  }, [fetchStatus])
 
   return (
     <>
@@ -114,8 +120,8 @@ function ParticipantRegistrationRow({participantRegistration, onShowConfirmSubsc
   function renderAdditionalContactDetails() {
     return (
       <>
-      <div><Fullname firstnamePart={firstnamePart} lastname={lastname}/></div>
-      { isStringNotEmpty(mobileNumber) && <div>{t("common:mobile")}: <LinkExtern href={`tel:${mobileNumber}`} title={mobileNumber} /></div> }
+      <br/><Fullname firstnamePart={firstnamePart} lastname={lastname}/>
+      { isStringNotEmpty(mobileNumber) && <><br/>{t("common:mobile")}: <LinkExtern href={`tel:${mobileNumber}`} title={mobileNumber} /></> }
       </>
     );
   }

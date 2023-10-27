@@ -1,13 +1,13 @@
 import { Box, Card, CardContent, Dialog, DialogContent } from "@mui/material";
 import { Fullname, LocalDate, ParticipantRegistrationInfo, Time, isStringNotEmpty } from "@runningdinner/shared";
-import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
-import { DialogTitleCloseable } from "../../common/theme/DialogTitleCloseable";
 import { useTranslation } from "react-i18next";
-import { SmallTitle } from "../../common/theme/typography/Tags";
-import Paragraph from "../../common/theme/typography/Paragraph";
+import { useState } from "react";
 import LinkExtern from "../../common/theme/LinkExtern";
 import { FormCheckboxSimple } from "../../common/input/FormCheckboxSimple";
-import { useState } from "react";
+import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
+import { DialogTitleCloseable } from "../../common/theme/DialogTitleCloseable";
+import Paragraph from "../../common/theme/typography/Paragraph";
+import { SmallTitle } from "../../common/theme/typography/Tags";
 
 type MissingParticipantActivationDialogProps = {
   open: boolean;
@@ -15,7 +15,7 @@ type MissingParticipantActivationDialogProps = {
   missingParticipantActivations: ParticipantRegistrationInfo[]
 };
 
-function MissingParticipantActivationItem({email, firstnamePart, lastname, createdAt, mobileNumber}: ParticipantRegistrationInfo) {
+export function MissingParticipantActivationItem({email, firstnamePart, lastname, createdAt, mobileNumber}: ParticipantRegistrationInfo) {
 
   const {t} = useTranslation(['common', 'admin']);
 
@@ -41,9 +41,13 @@ export function MissingParticipantActivationDialog({open, onClose, missingPartic
 
   const [disableNotification, setDisableNotification] = useState(false);
 
+  function handleCancel() {
+    onClose();
+  }
+
   return (
-    <Dialog open={open} onClose={() => onClose()} aria-labelledby="form-dialog-title" data-testid="missing-participant-activation-dialog">
-      <DialogTitleCloseable onClose={onClose}>{t('admin:registrations_not_yet_confirmed_old')}</DialogTitleCloseable>
+    <Dialog open={open} onClose={handleCancel} aria-labelledby="form-dialog-title" data-testid="missing-participant-activation-dialog">
+      <DialogTitleCloseable onClose={handleCancel}>{t('admin:registrations_not_yet_confirmed_old')}</DialogTitleCloseable>
       <DialogContent>
         <Box pt={2}>
           <Paragraph>
@@ -67,7 +71,8 @@ export function MissingParticipantActivationDialog({open, onClose, missingPartic
                               onChange={evt => setDisableNotification(evt.target.checked)} />
         </Box>
       </DialogContent>
-      <DialogActionsPanel onOk={() => onClose()} onCancel={onClose} okLabel={t('common:ok')} cancelLabel={t('common:cancel')} />
+      <DialogActionsPanel onOk={() => onClose(disableNotification)} okLabel={t('common:ok')}
+                          onCancel={handleCancel} cancelLabel={t('common:cancel')} />
     </Dialog>
   );
 }

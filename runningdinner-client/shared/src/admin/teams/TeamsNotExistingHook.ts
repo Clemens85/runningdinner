@@ -1,8 +1,8 @@
 import {useAsync} from "react-async-hook";
 import { isAfterInDays } from "../../date";
-import { findParticipantsAsync } from "../ParticipantService";
+import { findParticipantRegistrationsByAdminIdAsync, findParticipantsAsync } from "../ParticipantService";
 import { isClosedDinner } from "../RunningDinnerService";
-import {ParticipantList, RunningDinner} from "../../types";
+import {ParticipantList, ParticipantRegistrationInfo, RunningDinner} from "../../types";
 
 export interface TeamsNotExistingInfo {
   numParticipants: number,
@@ -13,15 +13,28 @@ export interface TeamsNotExistingInfo {
   endOfRegistrationDate?: Date,
   warnTeamsCanBeCreatedButRegistrationStillRunning?: boolean;
   infoTeamCreationNotPossibleAndRegistrationStillRunning?: boolean;
+  notActivatedParticipants?: ParticipantRegistrationInfo[];
 }
+
+async function findParticipantsAndRegistrationsAsync(adminId: string) {
+  const findParticipantsResponse = findParticipantsAsync(adminId);
+  const findParticipantRegistrationsResponse = findParticipantRegistrationsByAdminIdAsync(adminId, 0);
+  const participantList = await findParticipantsResponse;
+  const participantRegistrationInfoList = await findParticipantRegistrationsResponse;
+  const notActivatedParticipants = participantRegistrationInfoList.registrations.filter(r => !r.activationDate);
+  return {
+    activatedParticipantList: participantList,
+    notActivatedParticipants
+  };
+} 
 
 export function useTeamsNotExisting(runningDinner: RunningDinner) {
 
   const { adminId } = runningDinner;
 
-  const asyncResult = useAsync(findParticipantsAsync, [adminId]);
+  const asyncResult = useAsync(findParticipantsAndRegistrationsAsync, [adminId]);
 
-  const  { loading, error : errorObj } = asyncResult;
+  const  { loading, error: errorObj } = asyncResult;
   let error = null;
   if (errorObj) {
     error = errorObj.message;
@@ -30,10 +43,10 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
   let teamsNotExistingInfo = null;
   if (!loading && !error) {
     // @ts-ignore
-    teamsNotExistingInfo = calculateTeamsNotExistingInfo(asyncResult.result);
+    teamsNotExistingInfo = calculateTeamsNotExistingInfo(asyncResult.result?.activatedParticipantList, asyncResult.result?.notActivatedParticipants);
   }
 
-  function calculateTeamsNotExistingInfo(participantList: ParticipantList): TeamsNotExistingInfo {
+  function calculateTeamsNotExistingInfo(participantList: ParticipantList, notActivatedParticipants: ParticipantRegistrationInfo[]): TeamsNotExistingInfo {
 
     let numAssignableParticipants;
     let numNotAssignableParticipants;
@@ -67,6 +80,7 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
           result.infoTeamCreationNotPossibleAndRegistrationStillRunning = true;
         }
       }
+      result.notActivatedParticipants = notActivatedParticipants;
     }
 
     return result;
