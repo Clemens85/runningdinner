@@ -4,7 +4,7 @@ export function getLocalStorageItem<T>(key: string): T | undefined {
 }
 
 export function setLocalStorageItem(key: string, value: unknown) {
-  if (!value) {
+  if (value === null || value === undefined) {
     return;
   }
   localStorage.setItem(key, JSON.stringify(value));
@@ -14,7 +14,7 @@ export function getLocalStorageInAdminId<T>(key: string, adminId: string): T | u
   return getLocalStorageItem(calculateKeyForAdminId(key, adminId));
 }
 
-export function setLocalStorageInAdminId<T>(key: string, value: unknown, adminId: string) {
+export function setLocalStorageInAdminId(key: string, value: unknown, adminId: string) {
   setLocalStorageItem(calculateKeyForAdminId(key, adminId), value);
 }
 
