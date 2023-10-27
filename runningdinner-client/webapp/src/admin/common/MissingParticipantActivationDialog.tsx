@@ -65,7 +65,7 @@ export function MissingParticipantActivationDialog({open, onClose, missingPartic
         )}
 
         <Box mt={3}>
-          <FormCheckboxSimple label="Diese Meldung nicht mehr zeigen" 
+          <FormCheckboxSimple label={t("common:show_message_not_any_longer")} 
                               name="disableMissingParticipantActivationDialog" 
                               value={disableNotification}
                               onChange={evt => setDisableNotification(evt.target.checked)} />

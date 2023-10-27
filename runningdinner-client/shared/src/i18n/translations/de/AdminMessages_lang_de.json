@@ -186,6 +186,8 @@
 	"registrations_not_yet_confirmed_old_info_2": "Es kann leider vorkommen, dass die Mails mit den Bestätigungslinks nicht ankommen (insbesondere T-Online blockiert gerne... es kann aber auch sein, dass eine Email-Adresse falsch eingetragen wurde oder ein Teilnehmer schlicht noch nicht reagiert hat).",
 	"registrations_not_yet_confirmed_old_info_3": "Es wird empfohlen Kontakt aufzunehmen, da unbestätigte Anmeldungen nicht bei der Team-Einteilung berücksichtigt werden.",
 	"registrations_not_yet_confirmed_old_info_4": "Du kannst diese Anmeldungen jederzeit manuell bestätigen.",
+	"registrations_not_yet_confirmed_teams_not_existing_info_1": "Es gibt noch nicht bestätigte Anmeldungen. Wenn du jetzt die Teameinteilung vornimmst, werden diese nicht berücksichtigt werden!",
+	"registrations_not_yet_confirmed_teams_not_existing_info_2": "Die hier gezeigte Liste siehst du auch im <anchor>Dashboard</anchor> und kannst diese Anmeldungen dort manuell bestätigen (es ist aber ratsam im Zweifel vorher Kontakt aufzunehmen).",
 	"runningdinner_acknowledge_congratulation_text": "Herzlichen Glückwunsch, du hast dich soeben als Ersteller dieses Running Dinner Events bestätigt. Damit kannst du alle Features (inkl. Nachrichtenversand) nutzen!",
 	"runningdinner_acknowledge_congratulation_title": "Bestätigung erfolgreich",
 	"runningdinner_acknowledge_error_text": "Leider ist ein Fehler beim Versuch der Bestätigung deines Dinner Events aufgetreten. Versuche es bitte später erneut. <br/>Falls der Fehler immer noch auftritt wende dich bitte an <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />.",

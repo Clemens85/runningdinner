@@ -1,5 +1,5 @@
 import React from "react";
-import {useTranslation} from "react-i18next";
+import {useTranslation, Trans} from "react-i18next";
 import {Paper, Box, LinearProgress, Grid} from "@mui/material";
 import HtmlTranslate from "../../common/i18n/HtmlTranslate";
 import Alert from '@mui/material/Alert';
@@ -48,13 +48,15 @@ function NotActivatedParticipantsAlert({teamsNotExistingInfo, adminId}) {
     return null;
   }
 
+  // TODO 
   return (
     <Box mt={3}>
       <Alert severity={"warning"}>
         <AlertTitle>{t('attention')}</AlertTitle>
-        Es gibt noch nicht bestätigte Anmeldungen. 
-        Wenn du jetzt die Teameinteilung vornimmst, werden diese nicht berücksichtigt werden!<br/>
-        Die hier gezeigte Liste siehst du auch im <LinkIntern pathname={generateDashboardPath(adminId)}>Dashboard</LinkIntern> und kannst diese Anmeldungen dort auch manuell bestätigen (es ist aber ratsam im Zweifel vorher Kontakt aufzunehmen).
+        {t("admin:registrations_not_yet_confirmed_teams_not_existing_info_1")}<br/>
+        <Trans i18nKey={"admin:registrations_not_yet_confirmed_teams_not_existing_info_2"}
+                   // @ts-ignore
+                   components={{ anchor: <LinkIntern pathname={generateDashboardPath(adminId)} /> }} />
       </Alert>
 
       <Grid container>
