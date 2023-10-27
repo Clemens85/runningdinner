@@ -29,8 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ActivityService {
   
-  public static final int PARTICIPANT_ACTIVITES_PAGE_SIZE = 18;
-  
   public static final String TEAM_MEMBERS_SWAPPED_HEADLINE = "Team Mitglieder getauscht";
   public static final String TEAM_HOST_CHANGED_BY_ADMIN_HEADLINE = "Gastgeber geändert";
   

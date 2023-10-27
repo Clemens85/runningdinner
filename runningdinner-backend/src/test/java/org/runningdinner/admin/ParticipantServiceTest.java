@@ -18,7 +18,6 @@ import org.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
@@ -173,12 +172,12 @@ public class ParticipantServiceTest {
     
     ParticipantRegistrationInfoList latestRegistrations = participantService.findParticipantRegistrations(runningDinner.getAdminId(), LocalDateTime.now(), 0);
     
-    assertThat(latestRegistrations.getRegistrations()).hasSize(ActivityService.PARTICIPANT_ACTIVITES_PAGE_SIZE);
+    assertThat(latestRegistrations.getRegistrations()).hasSize(ParticipantService.PARTICIPANT_PAGE_SIZE);
     assertThat(latestRegistrations.isHasMore()).isTrue();
     assertThat(latestRegistrations.getNotActivatedRegistrationsTooOld()).isEmpty();
     
     List<ParticipantRegistrationInfo> registrations = latestRegistrations.getRegistrations();
-    for (int i = 0; i < ActivityService.PARTICIPANT_ACTIVITES_PAGE_SIZE;  i++) {
+    for (int i = 0; i < ParticipantService.PARTICIPANT_PAGE_SIZE;  i++) {
       assertThat(registrations.get(i).getParticipantNumber()).isEqualTo(22 - i); // 22, 21, 20, ... (because we get latest registrations)
     }
   }
@@ -195,7 +194,7 @@ public class ParticipantServiceTest {
     
     ParticipantRegistrationInfoList latestRegistrations = participantService.findParticipantRegistrations(runningDinner.getAdminId(), LocalDateTime.now(), 0);
     
-    assertThat(latestRegistrations.getRegistrations()).hasSize(ActivityService.PARTICIPANT_ACTIVITES_PAGE_SIZE);
+    assertThat(latestRegistrations.getRegistrations()).hasSize(ParticipantService.PARTICIPANT_PAGE_SIZE);
     assertThat(latestRegistrations.isHasMore()).isTrue();
     
     List<ParticipantRegistrationInfo> registrations = latestRegistrations.getRegistrations();
@@ -235,7 +234,7 @@ public class ParticipantServiceTest {
     LocalDateTime now = LocalDateTime.now().plusDays(3);
     
     ParticipantRegistrationInfoList latestRegistrations = participantService.findParticipantRegistrations(runningDinner.getAdminId(), now, 0);
-    assertThat(latestRegistrations.getRegistrations()).hasSize(ActivityService.PARTICIPANT_ACTIVITES_PAGE_SIZE);
+    assertThat(latestRegistrations.getRegistrations()).hasSize(ParticipantService.PARTICIPANT_PAGE_SIZE);
     assertThat(latestRegistrations.isHasMore()).isTrue();
     
     List<ParticipantRegistrationInfo> registrations = latestRegistrations.getRegistrations();

@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
-import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
@@ -77,6 +76,8 @@ import org.springframework.util.Assert;
 @Service
 public class ParticipantService {
 
+  public static final int PARTICIPANT_PAGE_SIZE = 18;
+  
   private static Logger LOGGER = LoggerFactory.getLogger(ParticipantService.class);
 
   @Autowired
@@ -453,7 +454,7 @@ public class ParticipantService {
     
     Sort orderBy = Sort.by(new Sort.Order(Direction.DESC, "activationDate").nullsFirst(),
                            new Sort.Order(Direction.DESC, "createdAt")); // The second order is only relevant in edge cases when we have several not activated participants
-    Slice<ParticipantRegistrationProjection> resultSlice = participantRepository.findRegistrationInfoSliceByAdminId(dinnerAdminId, PageRequest.of(page, ActivityService.PARTICIPANT_ACTIVITES_PAGE_SIZE, orderBy));
+    Slice<ParticipantRegistrationProjection> resultSlice = participantRepository.findRegistrationInfoSliceByAdminId(dinnerAdminId, PageRequest.of(page, PARTICIPANT_PAGE_SIZE, orderBy));
     
     if (!resultSlice.hasContent()) {
       return new ParticipantRegistrationInfoList(Collections.emptyList(), 0, false);
