@@ -30,14 +30,15 @@ public class ParticipantGenerator {
 		return generateParticipants(numParticipants, 0);
 	}
 	
-	public static Participant generateParticipant(int participantNr) {
-	  
-    Participant participant = new Participant(participantNr);
-    participant.setName(ParticipantName.newName().withFirstname("first" + participantNr).andLastname("last" + participantNr));
-    participant.setEmail("participant_" + participantNr + "@mail.de");
-    participant.setAddress(ParticipantAddress.parseFromString("MyStreet 1\n12345 MyCity"));
-    return participant;
-	}
+    public static Participant generateParticipant(int participantNr) {
+
+      Participant participant = new Participant(participantNr);
+      participant.setName(
+          ParticipantName.newName().withFirstname("first" + participantNr).andLastname("last" + participantNr));
+      participant.setEmail("participant_" + participantNr + "@mail.de");
+      participant.setAddress(ParticipantAddress.parseFromString("MyStreet 1\n12345 MyCity"));
+      return participant;
+    }
 
 	/**
 	 * Sets the number of seats randomly for each participant in the passed list. After method call half of all participants have enough

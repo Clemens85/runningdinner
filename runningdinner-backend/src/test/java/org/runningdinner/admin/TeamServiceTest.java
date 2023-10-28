@@ -4,10 +4,12 @@ package org.runningdinner.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,6 +41,8 @@ import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -50,6 +54,8 @@ import com.google.common.collect.ImmutableMap;
 public class TeamServiceTest {
 
   private static final LocalDate DINNER_DATE = LocalDate.now().plusDays(7); 
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(TeamServiceTest.class);
 
   @Autowired
   private TestHelperService testHelperService;
@@ -421,6 +427,35 @@ public class TeamServiceTest {
 			.containsExactly(firstTeam, lastTeam);
   }
   
+  @Test
+  public void cancelTeamMemberAndEnsureTeamHasAlwaysHost() {
+    
+    // Distribute numSeats randomly:
+    List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), false);
+    ParticipantGenerator.distributeSeatsEqualBalanced(participants, 6);
+    participants.forEach(p -> testHelperService.updateParticipant(p));
+    
+    List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), true);
+    for (Team team : teams) {
+      
+      teamService.cancelTeamDryRun(runningDinner.getAdminId(), TestUtil.newCancellationWithoutReplacement(team));
+      
+      Participant teamMemberToCancel = pickRandomTeamMember(team);
+      teamService.cancelTeamMember(runningDinner.getAdminId(), team.getId(), teamMemberToCancel.getId());
+      Team teamReloaded = teamService.findTeamByIdWithTeamMembers(runningDinner.getAdminId(), team.getId());
+      assertThat(teamReloaded.getHostTeamMember()).isNotNull();
+      assertThat(teamReloaded.getTeamMembers()).hasSize(1);
+    }
+  }
+  
+  private Participant pickRandomTeamMember(Team team) {
+    int randomIndex = new Random().nextInt(2); // Generates 0 or 1
+    List<Participant> teamMembers = new ArrayList<>(team.getTeamMembers());
+    Participant result = teamMembers.get(randomIndex);
+    LOGGER.info("Picked team-member {} with hosting = {} to be cancelled in team {}", randomIndex, result.isHost(), team);
+    return result;
+  }
+
   private Team findFirstTeam() {
 
     List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
