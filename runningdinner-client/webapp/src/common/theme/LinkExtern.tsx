@@ -1,5 +1,4 @@
 import {Link, Typography} from "@mui/material";
-import React from "react";
 import {isStringNotEmpty, Parent} from "@runningdinner/shared";
 
 export interface LinkExternProps extends Parent {
