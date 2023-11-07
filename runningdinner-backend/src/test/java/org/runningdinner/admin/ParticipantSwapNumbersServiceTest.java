@@ -107,20 +107,24 @@ public class ParticipantSwapNumbersServiceTest {
   public void swapRootParticipantOfTeamPartnerWishWithSingleParticipant() {
   
     setUpDefaultDinner(17);
-    var allParticipants = participantService.findParticipants(runningDinner.getAdminId(), true);
+    final String adminId = runningDinner.getAdminId();
+    var allParticipants = participantService.findParticipants(adminId, true);
     var firstParticipant = allParticipants.get(0);
     
     Participant rootParticipant = registerParticipantsAsFixedTeam("Max Muster", "max@muster.de", "Maria Muster");
-    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
+    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(adminId, rootParticipant);
     assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
     assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
     
     // We have now 19 participants in total
     
-    participantSwapNumbersService.swapParticipantNumbers(runningDinner.getAdminId(), rootParticipant.getId(), firstParticipant.getId());
+    participantSwapNumbersService.swapParticipantNumbers(adminId, rootParticipant.getId(), firstParticipant.getId());
+    
+    rootParticipant = participantService.findParticipantById(adminId, rootParticipant.getId());
+    childParticipant = participantService.findParticipantById(adminId, childParticipant.getId());
     
     // Assert both root and child participant are swapped proprly
-    allParticipants = participantService.findParticipants(runningDinner.getAdminId(), true);
+    allParticipants = participantService.findParticipants(adminId, true);
     assertThat(allParticipants.get(0)).isEqualTo(rootParticipant);
     assertThat(allParticipants.get(0).getParticipantNumber()).isEqualTo(1);
     assertThat(allParticipants.get(1)).isEqualTo(childParticipant);
@@ -132,7 +136,7 @@ public class ParticipantSwapNumbersServiceTest {
     }
     
     // Ensure first participant is now at end of list
-    firstParticipant = participantService.findParticipantById(runningDinner.getAdminId(), firstParticipant.getId());
+    firstParticipant = participantService.findParticipantById(adminId, firstParticipant.getId());
     assertThat(allParticipants.get(18)).isEqualTo(firstParticipant);
     assertThat(allParticipants.get(18).getParticipantNumber()).isEqualTo(19);
   }
@@ -186,20 +190,26 @@ public class ParticipantSwapNumbersServiceTest {
   public void swapChildParticipantFromWaitingListWithSingleParticipant() {
     
     setUpDefaultDinner(17);
-    var allParticipants = participantService.findParticipants(runningDinner.getAdminId(), true);
+    final String adminId = runningDinner.getAdminId();
+    
+    var allParticipants = participantService.findParticipants(adminId, true);
     var participant14th = allParticipants.get(13);
     
     Participant rootParticipant = registerParticipantsAsFixedTeam("Max Muster", "max@muster.de", "Maria Muster");
-    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
+    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(adminId, rootParticipant);
     assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
     assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
     
     // We have now 19 participants in total
     
-    participantSwapNumbersService.swapParticipantNumbers(runningDinner.getAdminId(), participant14th.getId(), childParticipant.getId());
+    participantSwapNumbersService.swapParticipantNumbers(adminId, participant14th.getId(), childParticipant.getId());
     
-    allParticipants = participantService.findParticipants(runningDinner.getAdminId(), true);
+    allParticipants = participantService.findParticipants(adminId, true);
     assertThat(allParticipants.get(12).getParticipantNumber()).isEqualTo(13); // The 13th participant should not be modified (participant before the swapped one)
+    
+    rootParticipant = participantService.findParticipantById(adminId, rootParticipant.getId());
+    childParticipant = participantService.findParticipantById(adminId, childParticipant.getId());
+    participant14th = participantService.findParticipantById(adminId, participant14th.getId());
     
     // Fixed team partner wish should be placed where the single participant (14) has been:
     assertThat(allParticipants.get(13).getParticipantNumber()).isEqualTo(14);
@@ -219,11 +229,13 @@ public class ParticipantSwapNumbersServiceTest {
   public void swapChildParticipantFromMiddleOfWaitingListWithSingleParticipant() {
     
     setUpDefaultDinner(17);
-    var allParticipants = participantService.findParticipants(runningDinner.getAdminId(), true);
+    final String adminId = runningDinner.getAdminId();
+    
+    var allParticipants = participantService.findParticipants(adminId, true);
     var participant14th = allParticipants.get(13);
     
     Participant rootParticipant = registerParticipantsAsFixedTeam("Max Muster", "max@muster.de", "Maria Muster");
-    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
+    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(adminId, rootParticipant);
     assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
     assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
     
@@ -232,9 +244,13 @@ public class ParticipantSwapNumbersServiceTest {
     
     // We have now 20 participants in total
     
-    participantSwapNumbersService.swapParticipantNumbers(runningDinner.getAdminId(), participant14th.getId(), childParticipant.getId());
+    participantSwapNumbersService.swapParticipantNumbers(adminId, participant14th.getId(), childParticipant.getId());
 
-    allParticipants = participantService.findParticipants(runningDinner.getAdminId(), true);
+    rootParticipant = participantService.findParticipantById(adminId, rootParticipant.getId());
+    childParticipant = participantService.findParticipantById(adminId, childParticipant.getId());
+    participant14th = participantService.findParticipantById(adminId, participant14th.getId());
+    
+    allParticipants = participantService.findParticipants(adminId, true);
     assertThat(allParticipants.get(12).getParticipantNumber()).isEqualTo(13); // The 13th participant should not be modified (participant before the swapped one)
     
     // Fixed team partner wish should be placed where the single participant (14) has been:

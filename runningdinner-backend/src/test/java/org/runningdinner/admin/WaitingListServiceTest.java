@@ -106,7 +106,7 @@ public class WaitingListServiceTest {
 		assertActivityTypeContained(ActivityType.WAITINGLIST_PARTICIPANTS_ASSIGNED);
   }
 
-	@Test
+  @Test
   public void generateNewTeams() {
   	
   	setupRunningDinnerWithParticipants(18);
@@ -121,28 +121,28 @@ public class WaitingListServiceTest {
     
   	List<Team> teamsBeforeGeneration = teamService.findTeamArrangements(adminId, true);
   	
-  	WaitingListActionResult result = waitingListService.generateNewTeams(adminId, participantsForNewTeams);
-  	
-  	List<Team> allTeams = teamService.findTeamArrangements(adminId, true);
-  	for (int i = 0; i < allTeams.size(); i++) {
-  		
-			Team team = allTeams.get(i);
-			Set<Participant> teamMembers = team.getTeamMembers();
-			Set<UUID> teamMemberIds = IdentifierUtil.getIds(teamMembers);
-  		
-  		if (i < 9) { // The first 9 teams were already existing and should NOT be changed:
-  			assertThat(teamMemberIds)
-					.as("Team " + team + " should not be changed and thus not contain any of the participants from waitinglist")
-  				.doesNotContainAnyElementsOf(participantIdsForNewTeams);
-  		} else {
-  			assertThat(teamMemberIds)
-					.as("Team " + team + " is a new team and should hence contain only the participants from waitinglist")
-  				.isSubsetOf(participantIdsForNewTeams); 			
-  		}
-  		
-  		assertThat(teamMemberIds).hasSize(2);
-  	}
-  	
+    WaitingListActionResult result = waitingListService.generateNewTeams(adminId, participantsForNewTeams);
+
+    List<Team> allTeams = teamService.findTeamArrangements(adminId, true);
+    for (int i = 0; i < allTeams.size(); i++) {
+
+      Team team = allTeams.get(i);
+      Set<Participant> teamMembers = team.getTeamMembers();
+      Set<UUID> teamMemberIds = IdentifierUtil.getIds(teamMembers);
+
+      if (i < 9) { // The first 9 teams were already existing and should NOT be changed:
+        assertThat(teamMemberIds)
+            .as("Team " + team + " should not be changed and thus not contain any of the participants from waitinglist")
+            .doesNotContainAnyElementsOf(participantIdsForNewTeams);
+      } else {
+        assertThat(teamMemberIds)
+            .as("Team " + team + " is a new team and should hence contain only the participants from waitinglist")
+            .isSubsetOf(participantIdsForNewTeams);
+      }
+
+      assertThat(teamMemberIds).hasSize(2);
+    }
+
   	List<TeamTO> newGeneratedTeams = result.getAffectedTeams();
   	assertThat(newGeneratedTeams).hasSize(3);
   	assertThat(newGeneratedTeams)
@@ -152,21 +152,23 @@ public class WaitingListServiceTest {
    	assertThat(result.isDinnerRouteMessagesAlreadySent()).isFalse();
    	assertThat(result.isTeamMessagesAlreadySent()).isTrue();
    	
-   	for (int i = 0; i < 9; i++) {
-   		checkTeamsAtIndexAreSame(allTeams, teamsBeforeGeneration, i);
-   	}
-   	
-		assertActivityTypeContained(ActivityType.WAITINGLIST_TEAMS_GENERATED);
+    for (int i = 0; i < 9; i++) {
+      checkTeamsAtIndexAreSame(allTeams, teamsBeforeGeneration, i);
+    }
+
+    assertActivityTypeContained(ActivityType.WAITINGLIST_TEAMS_GENERATED);
   }
-	
-	private static void checkTeamsAtIndexAreSame(List<Team> teamsAfterGeneration, List<Team> teamsBeforeGeneration, int index) {
-		
-   	assertThat(teamsAfterGeneration.get(index).getTeamMembersOrdered())
- 		.containsExactlyElementsOf(teamsBeforeGeneration.get(index).getTeamMembersOrdered());
-   	
-   	assertThat(teamsAfterGeneration.get(index).getMealClass())
-   		.isEqualTo(teamsBeforeGeneration.get(index).getMealClass());
-	}
+
+  private static void checkTeamsAtIndexAreSame(List<Team> teamsAfterGeneration, 
+                                               List<Team> teamsBeforeGeneration,
+                                               int index) {
+
+    assertThat(teamsAfterGeneration.get(index).getTeamMembersOrdered())
+        .containsExactlyElementsOf(teamsBeforeGeneration.get(index).getTeamMembersOrdered());
+
+    assertThat(teamsAfterGeneration.get(index).getMealClass())
+        .isEqualTo(teamsBeforeGeneration.get(index).getMealClass());
+  }
   
   @Test
   public void emptyWaitingList() {

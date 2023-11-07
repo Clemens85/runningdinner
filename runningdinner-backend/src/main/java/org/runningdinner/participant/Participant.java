@@ -24,7 +24,6 @@ import org.runningdinner.core.Gender;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
-import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.geocoder.GeocodingResult;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -371,9 +370,6 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
   
   @Override
   public int hashCode() {
-    if (getId() != null) {
-      return super.hashCode();
-    }
     return new HashCodeBuilder(17, 7).append(getParticipantNumber()).toHashCode();
   }
 
@@ -390,18 +386,9 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
       return false;
     }
     Participant other = (Participant) obj;
-    if (CoreUtil.allNotNull(getId(), other.getId())) {
-      return super.equals(other);
-    }
     return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
   }
 
-//  public boolean hasEqualNumber(Participant other) {
-//    if (other == null) {
-//      return false;
-//    }
-//    return getParticipantNumber() == other.getParticipantNumber();
-//  }
   
   @Override
   public int compareTo(Participant o) {
