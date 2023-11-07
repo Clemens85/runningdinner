@@ -19,6 +19,7 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.ParticipantSwapNumbersService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWish;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishInvitationState;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
@@ -43,50 +44,53 @@ public class ParticipantServiceRest {
   private ParticipantService participantService;
 
   @Autowired
+  private ParticipantSwapNumbersService participantSwapNumbersService;
+  
+  @Autowired
   private RunningDinnerService runningDinnerService;
 
   @Autowired
   private TeamPartnerWishService teamPartnerWishService;
-	
-	@RequestMapping(value = "/runningdinner/{adminId}/participants", method = RequestMethod.GET)
-	public ParticipantListActive findActiveParticipantsList(@PathVariable("adminId") final String adminId) {
 
-		ParticipantListActive result = participantService.findActiveParticipantList(adminId);
-		return result;
-	}
+  @GetMapping(value = "/runningdinner/{adminId}/participants")
+  public ParticipantListActive findActiveParticipantsList(@PathVariable("adminId") final String adminId) {
 
-	@GetMapping(value = "/runningdinner/{adminId}/participants/export", produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
-	public void exportParticipants(@PathVariable("adminId") final String adminId, HttpServletResponse response) {
+    ParticipantListActive result = participantService.findActiveParticipantList(adminId);
+    return result;
+  }
 
-		String fileName = "participants-export.xlsx";
+  @GetMapping(value = "/runningdinner/{adminId}/participants/export", produces = {
+      MediaType.APPLICATION_OCTET_STREAM_VALUE })
+  public void exportParticipants(@PathVariable("adminId") final String adminId, HttpServletResponse response) {
 
-		response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+    String fileName = "participants-export.xlsx";
 
-		try {
-			participantService.exportParticipantsAsExcel(adminId, response.getOutputStream());
-		} catch (IOException e) {
-			throw new TechnicalException(e);
-		}
-	}
+    response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+    response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
 
-
-	@RequestMapping(value = "/runningdinner/{adminId}/participants/{participantId}", method = RequestMethod.GET)
-	public ParticipantTO findParticipant(@PathVariable("adminId") final String adminId,
-																			 @PathVariable("participantId") final UUID participantId) {
-
-		Participant participant = participantService.findParticipantById(adminId, participantId);
-		return new ParticipantTO(participant);
-	}
-
-	@RequestMapping(value = "/runningdinner/{adminId}/participants/{participantId}/geocode", method = RequestMethod.PUT)
-    public ParticipantTO updateParticipantGeocode(@PathVariable("adminId") final String adminId,
-        @PathVariable("participantId") final UUID participantId,
-        @RequestBody GeocodingResult geocodingResult) {
-
-      Participant participant = participantService.updateParticipantGeocode(adminId, participantId, geocodingResult);
-      return new ParticipantTO(participant);
+    try {
+      participantService.exportParticipantsAsExcel(adminId, response.getOutputStream());
+    } catch (IOException e) {
+      throw new TechnicalException(e);
     }
+  }
+
+  @RequestMapping(value = "/runningdinner/{adminId}/participants/{participantId}", method = RequestMethod.GET)
+  public ParticipantTO findParticipant(@PathVariable("adminId") final String adminId,
+      @PathVariable("participantId") final UUID participantId) {
+
+    Participant participant = participantService.findParticipantById(adminId, participantId);
+    return new ParticipantTO(participant);
+  }
+
+  @RequestMapping(value = "/runningdinner/{adminId}/participants/{participantId}/geocode", method = RequestMethod.PUT)
+  public ParticipantTO updateParticipantGeocode(@PathVariable("adminId") final String adminId,
+      @PathVariable("participantId") final UUID participantId,
+      @RequestBody GeocodingResult geocodingResult) {
+
+    Participant participant = participantService.updateParticipantGeocode(adminId, participantId, geocodingResult);
+    return new ParticipantTO(participant);
+  }
   
   @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}/activate", method = RequestMethod.PUT)
   public ParticipantTO activateParticipantSubscription(@PathVariable("adminId") final String adminId,
@@ -116,49 +120,58 @@ public class ParticipantServiceRest {
     return new ParticipantTO(createdParticipant);
   }
 
-	@RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}", method = RequestMethod.DELETE)
-	public void deleteParticipant(@PathVariable("adminId") String dinnerAdminId,
-			                          @PathVariable("participantId") UUID participantId) {
+  @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}", method = RequestMethod.DELETE)
+  public void deleteParticipant(@PathVariable("adminId") String dinnerAdminId,
+      @PathVariable("participantId") UUID participantId) {
 
-		participantService.deleteParticipant(dinnerAdminId, participantId);
-	}
-	
-	@RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}/team-partner-wish", method = RequestMethod.GET)
-	public TeamPartnerWishTO getTeamPartnerWishInfo(@PathVariable("adminId") String dinnerAdminId,
-	                                                @PathVariable("participantId") UUID participantId,
-	                                                @RequestParam(name = "relevantState", required = false) List<TeamPartnerWishInvitationState> relevantStates) {
-	  
-      Participant participant = participantService.findParticipantById(dinnerAdminId, participantId);
-      return calculateTeamPartnerWishInfo(dinnerAdminId, participant, relevantStates);
-    }
-	
-	@PutMapping("/runningdinner/{adminId}/participants/team-partner-wish")
-    public List<TeamPartnerWishTO> getTeamPartnerWishInfoList(@PathVariable("adminId") String dinnerAdminId,
-                                                              @Valid @RequestBody RunningDinnerRelatedIdListTO participantIdList,    
-                                                              @RequestParam(name = "relevantState", required = false) List<TeamPartnerWishInvitationState> relevantStates) {
+    participantService.deleteParticipant(dinnerAdminId, participantId);
+  }
 
-      List<TeamPartnerWishTO> result = new ArrayList<>();
-      List<Participant> participants = participantService.findParticipantsByIds(dinnerAdminId, new HashSet<>(participantIdList.getEntityIds()));
-      for (Participant participant : participants) {
-        result.add(calculateTeamPartnerWishInfo(dinnerAdminId, participant, relevantStates));
-      }
-      return result;
-    }
-	
-	@GetMapping("/runningdinner/{adminId}/participants/registrations")
-	public ParticipantRegistrationInfoList getParticipantRegistrations(@PathVariable("adminId") String dinnerAdminId, 
-	                                                                   @RequestParam(name = "page", defaultValue = "0") int page) {
-	  
-	  return participantService.findParticipantRegistrations(dinnerAdminId, LocalDateTime.now(), page);
-	}
+  @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}/team-partner-wish", method = RequestMethod.GET)
+  public TeamPartnerWishTO getTeamPartnerWishInfo(@PathVariable("adminId") String dinnerAdminId,
+      @PathVariable("participantId") UUID participantId,
+      @RequestParam(name = "relevantState", required = false) List<TeamPartnerWishInvitationState> relevantStates) {
 
-    private TeamPartnerWishTO calculateTeamPartnerWishInfo(String dinnerAdminId, Participant participant,
-        List<TeamPartnerWishInvitationState> relevantStates) {
-      Optional<TeamPartnerWish> result = teamPartnerWishService.calculateTeamPartnerWishInfo(participant,
-          dinnerAdminId);
-      if (result.isPresent()) {
-        return TeamPartnerWishTO.newFromTeamPartnerWish(result.get(), relevantStates);
-      }
-      return TeamPartnerWishTO.newEmptyObject();
+    Participant participant = participantService.findParticipantById(dinnerAdminId, participantId);
+    return calculateTeamPartnerWishInfo(dinnerAdminId, participant, relevantStates);
+  }
+
+  @PutMapping("/runningdinner/{adminId}/participants/team-partner-wish")
+  public List<TeamPartnerWishTO> getTeamPartnerWishInfoList(@PathVariable("adminId") String dinnerAdminId,
+      @Valid @RequestBody RunningDinnerRelatedIdListTO participantIdList,
+      @RequestParam(name = "relevantState", required = false) List<TeamPartnerWishInvitationState> relevantStates) {
+
+    List<TeamPartnerWishTO> result = new ArrayList<>();
+    List<Participant> participants = participantService.findParticipantsByIds(dinnerAdminId,
+        new HashSet<>(participantIdList.getEntityIds()));
+    for (Participant participant : participants) {
+      result.add(calculateTeamPartnerWishInfo(dinnerAdminId, participant, relevantStates));
     }
+    return result;
+  }
+
+  @GetMapping("/runningdinner/{adminId}/participants/registrations")
+  public ParticipantRegistrationInfoList getParticipantRegistrations(@PathVariable("adminId") String dinnerAdminId,
+      @RequestParam(name = "page", defaultValue = "0") int page) {
+
+    return participantService.findParticipantRegistrations(dinnerAdminId, LocalDateTime.now(), page);
+  }
+
+  @PutMapping("/runningdinner/{adminId}/participants/swap/{firstParticipantId}/{secondParticipantId}")
+  public void swapParticipantNumbers(@PathVariable("adminId") String dinnerAdminId, 
+                                     @PathVariable("firstParticipantId") UUID firstParticipantId, 
+                                     @PathVariable("secondParticipantId") UUID secondParticipantId) {
+
+    participantSwapNumbersService.swapParticipantNumbers(dinnerAdminId, firstParticipantId, secondParticipantId);
+  }
+  
+  private TeamPartnerWishTO calculateTeamPartnerWishInfo(String dinnerAdminId, Participant participant,
+      List<TeamPartnerWishInvitationState> relevantStates) {
+    Optional<TeamPartnerWish> result = teamPartnerWishService.calculateTeamPartnerWishInfo(participant,
+        dinnerAdminId);
+    if (result.isPresent()) {
+      return TeamPartnerWishTO.newFromTeamPartnerWish(result.get(), relevantStates);
+    }
+    return TeamPartnerWishTO.newEmptyObject();
+  }
 }

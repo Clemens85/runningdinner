@@ -30,7 +30,7 @@ import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 import DropdownButton from "../../common/theme/dropdown/DropdownButton";
 import DropdownButtonItem from "../../common/theme/dropdown/DropdownButtonItem";
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
-import { RegenerateTeamsButton } from "./RegenerateTeamsButton";
+import { TeamArrangementActionsButton } from "./TeamArrangementActionsButton";
 import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 
@@ -120,10 +120,10 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
     }
   };
 
-  const handleTeamsRegenerated = async(_regeneratedTeamArrangementList: TeamArrangementList) => {
+  const handleTeamsRegenerated = async(_regeneratedTeamArrangementList: TeamArrangementList, successMessage: string) => {
     setNoSelectedTeam();
     window.open(generateTeamPath(adminId), '_self');
-    showSuccess(t("admin:teams_reset_success_text"));
+    showSuccess(t(successMessage));
   }
 
   const handleTeamMemberSwap = async(srcParticipantId: string, destParticipantId: string) => {
@@ -189,7 +189,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
                     <SendTeamMessagsDropdown adminId={adminId} />
                   </Grid>
                   <Grid item xs={12} md={5} sx={{ textAlign: 'right' }}>
-                    <RegenerateTeamsButton adminId={adminId} onTeamsRegenerated={handleTeamsRegenerated}/>
+                    <TeamArrangementActionsButton adminId={adminId} onTeamsRegenerated={handleTeamsRegenerated}/>
                   </Grid>
                   <Grid item xs={12} md={7}>
                     <TeamsList teams={teams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}

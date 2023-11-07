@@ -39,4 +39,5 @@ public interface IssueKeys {
   String INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH = "invalid_replacement_participants_inconsistent_teampartner_wish";
   String INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH = "invalid_waitinglist_teamgeneration_inconsistent_teampartner_wish";
   
+  String PARTICIPANT_SWAP_NUMBER_VIOLATES_TEAM_PARTNER_WISH = "participant_swap_number_violates_team_partner_wish";
 }

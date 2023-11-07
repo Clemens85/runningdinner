@@ -57,7 +57,7 @@ public class ParticipantServiceTest {
   
   @Autowired
   private QueueProviderFactoryService queueProviderFactoryService;
-
+  
   private RunningDinner runningDinner;
 
   private QueueProviderMockInMemory queueProvider;
@@ -256,6 +256,7 @@ public class ParticipantServiceTest {
     assertThat(oldRegisteredParticipantInfo.getMobileNumber()).isEqualTo(oldRegisteredParticipant.getMobileNumber());
     assertThat(oldRegisteredParticipantInfo.getParticipantNumber()).isEqualTo(2);
   }
+  
   
   private Participant removeActivation(Participant participant) {
     participant.setActivationDate(null);

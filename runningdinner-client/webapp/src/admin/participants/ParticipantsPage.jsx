@@ -140,6 +140,7 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
           <Grid item xs={12} md={5}>
             { showDetailsView
                 ? <ParticipantForm participant={selectedParticipant}
+                                   participantList={participantList}
                                    adminId={adminId}
                                    teamPartnerWishDisabled={runningDinner.options.teamPartnerWishDisabled}
                                    onParticipantSaved={onParticipantSaved}

@@ -1,10 +1,5 @@
-import React from 'react';
 import {MenuItem, MenuItemProps} from "@mui/material";
 import { DropdownButtonContext } from './DropdownButton';
-
-// export interface DropdownButtonItemProps extends MenuItemProps {
-//
-// }
 
 export default function DropdownButtonItem({onClick, ...remainder}: MenuItemProps) {
 

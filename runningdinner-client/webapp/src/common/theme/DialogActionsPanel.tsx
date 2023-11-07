@@ -5,12 +5,11 @@ import SecondaryButton from "./SecondaryButton";
 import {PrimaryDangerButtonAsync} from "./PrimaryDangerButtonAsync";
 import {CallbackHandler} from "@runningdinner/shared";
 import {commonStyles} from "./CommonStyles";
+import { DefaultDialogCancelButtonProps } from "./dialog/DialogActionsButtons";
 
-export interface DialogActionsPanelProps {
+export interface DialogActionsPanelProps extends DefaultDialogCancelButtonProps {
   onOk: CallbackHandler;
-  onCancel: CallbackHandler;
   okLabel: React.ReactNode;
-  cancelLabel: React.ReactNode;
   danger?: boolean;
   padding?: number;
 }
@@ -19,8 +18,8 @@ const DialogActionsPanel = ({onOk, okLabel, danger = false, onCancel, cancelLabe
 
   const theme = useTheme();
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
-
   const fullWidthProps = isMobileDevice ? commonStyles.fullWidth : {};
+  
   return (
       <DialogActions>
         <Box sx={{ ...fullWidthProps, p: padding }}>

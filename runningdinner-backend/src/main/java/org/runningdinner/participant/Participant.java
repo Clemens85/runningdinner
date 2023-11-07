@@ -18,8 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
@@ -363,29 +361,36 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     return Objects.equals(other.getTeamPartnerWishOriginatorId(), this.getId()) ||
            Objects.equals(this.getTeamPartnerWishOriginatorId(), other.getId());
   }
+
+//  @Override
+//  public int hashCode() {
+//
+//    return new HashCodeBuilder(17, 7).append(getParticipantNumber()).toHashCode();
+//  }
+//
+//  @Override
+//  public boolean equals(Object obj) {
+//
+//    if (obj == null) {
+//      return false;
+//    }
+//    if (obj == this) {
+//      return true;
+//    }
+//    if (obj.getClass() != getClass()) {
+//      return false;
+//    }
+//    Participant other = (Participant) obj;
+//    return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
+//  }
+
+  public boolean hasEqualNumber(Participant other) {
+    if (other == null) {
+      return false;
+    }
+    return getParticipantNumber() == other.getParticipantNumber();
+  }
   
-  @Override
-  public int hashCode() {
-
-    return new HashCodeBuilder(17, 7).append(getParticipantNumber()).toHashCode();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-
-    if (obj == null) {
-      return false;
-    }
-    if (obj == this) {
-      return true;
-    }
-    if (obj.getClass() != getClass()) {
-      return false;
-    }
-    Participant other = (Participant) obj;
-    return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
-  }
-
   @Override
   public int compareTo(Participant o) {
 

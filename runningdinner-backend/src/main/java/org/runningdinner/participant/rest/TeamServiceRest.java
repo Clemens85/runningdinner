@@ -22,7 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -66,47 +69,56 @@ public class TeamServiceRest {
     return result;
 	} 
   
-  @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.POST)
+  @PostMapping(value = "/runningdinner/{adminId}")
   public TeamArrangementListTO generateTeamArrangements(@PathVariable("adminId") final String adminId) {
     
     TeamArrangementListTO result = teamService.createTeamAndVisitationPlans(adminId);
     return result;
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.PUT)
+  @PutMapping(value = "/runningdinner/{adminId}")
   public TeamArrangementListTO reGenerateTeamArrangements(@PathVariable("adminId") final String adminId) {
     
     TeamArrangementListTO result = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, Collections.emptyList());
     return result;
   }
+  
+  @DeleteMapping(value = "/runningdinner/{adminId}")
+  public TeamArrangementListTO dropTeamArrangements(@PathVariable("adminId") final String adminId) {
+    
+    List<TeamTO> teams = teamService.dropTeamAndAndVisitationPlans(adminId, false, true);
+    return new TeamArrangementListTO(teams, adminId);
+  }
 
-	@RequestMapping(value = "/runningdinner/{adminId}/teamhosts", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public TeamArrangementListTO updateTeamHosts(@PathVariable("adminId") String adminId, @RequestBody TeamArrangementListTO teamHostList) {
+  @RequestMapping(value = "/runningdinner/{adminId}/teamhosts", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+  public TeamArrangementListTO updateTeamHosts(@PathVariable("adminId") String adminId,
+      @RequestBody TeamArrangementListTO teamHostList) {
 
-		List<TeamTO> teams = teamHostList.getTeams();
-		List<Team> updatedTeams = teamService.updateTeamHostersByAdmin(adminId, convertToTeamHostMap(teams));
-		
-  	LOGGER.info("Updated teams after team host change: {}", Team.toStringDetailed(updatedTeams));
-		
-		return new TeamArrangementListTO(TeamTO.convertTeamList(updatedTeams), adminId);
-	}
+    List<TeamTO> teams = teamHostList.getTeams();
+    List<Team> updatedTeams = teamService.updateTeamHostersByAdmin(adminId, convertToTeamHostMap(teams));
 
-	@RequestMapping(value = "/runningdinner/{adminId}/teammembers/swap/{firstParticipantId}/{secondParticipantId}", method = RequestMethod.PUT)
-	public TeamArrangementListTO swapTeamMembers(@PathVariable("adminId") String adminId,
-			@PathVariable("firstParticipantId") UUID firstParticipantId, @PathVariable("secondParticipantId") UUID secondParticipantId) {
+    LOGGER.info("Updated teams after team host change: {}", Team.toStringDetailed(updatedTeams));
 
-		List<Team> updatedTeams = teamService.swapTeamMembers(adminId, firstParticipantId, secondParticipantId);
-		
-		List<TeamTO> result = new ArrayList<>();
-		for (Team updatedTeam : updatedTeams) {
-			TeamTO resultingTeam = new TeamTO(updatedTeam);
-			result.add(resultingTeam);
-		}
-		
-  	LOGGER.info("Updated teams after swap: {}", Team.toStringDetailed(updatedTeams));
-		
-		return new TeamArrangementListTO(result, adminId);
-	}
+    return new TeamArrangementListTO(TeamTO.convertTeamList(updatedTeams), adminId);
+  }
+
+  @RequestMapping(value = "/runningdinner/{adminId}/teammembers/swap/{firstParticipantId}/{secondParticipantId}", method = RequestMethod.PUT)
+  public TeamArrangementListTO swapTeamMembers(@PathVariable("adminId") String adminId,
+      @PathVariable("firstParticipantId") UUID firstParticipantId,
+      @PathVariable("secondParticipantId") UUID secondParticipantId) {
+
+    List<Team> updatedTeams = teamService.swapTeamMembers(adminId, firstParticipantId, secondParticipantId);
+
+    List<TeamTO> result = new ArrayList<>();
+    for (Team updatedTeam : updatedTeams) {
+      TeamTO resultingTeam = new TeamTO(updatedTeam);
+      result.add(resultingTeam);
+    }
+
+    LOGGER.info("Updated teams after swap: {}", Team.toStringDetailed(updatedTeams));
+
+    return new TeamArrangementListTO(result, adminId);
+  }
 
   @RequestMapping(value = "/runningdinner/{adminId}/team/{teamId}/cancel", method = RequestMethod.PUT)
   public TeamCancellationResultTO cancelTeam(@PathVariable("adminId") String adminId, @PathVariable("teamId") UUID teamId,

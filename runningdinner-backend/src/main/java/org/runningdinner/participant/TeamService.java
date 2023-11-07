@@ -214,20 +214,12 @@ public class TeamService {
   public TeamArrangementListTO dropAndReCreateTeamAndVisitationPlans(@ValidateAdminId String adminId, List<Participant> participantsForAdditionalGeneration) {
 
     final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-    LOGGER.info("Drop existing teams and re-create teams and visitation-plans for dinner {}. Use additional participants from waitinglist", 
-    					  adminId, participantsForAdditionalGeneration);
 
-    List<TeamTO> existingTeamInfosToRestore = Collections.emptyList();
-    
     boolean generateAdditionalTeamsFromWaitingList = CollectionUtils.isNotEmpty(participantsForAdditionalGeneration);
     
-    if (generateAdditionalTeamsFromWaitingList) {
-	    List<Team> existingTeams = findTeamArrangements(adminId, true);
-	    existingTeamInfosToRestore = TeamTO.convertTeamList(existingTeams);
-    }
+    List<TeamTO> existingTeamInfosToRestore = dropTeamAndAndVisitationPlans(adminId, generateAdditionalTeamsFromWaitingList, false);
     
-    participantRepository.updateTeamReferenceAndHostToNull(adminId);
-    teamRepository.deleteByAdminId(adminId);
+    LOGGER.info("Re-create teams and visitation-plans for dinner {}. Use additional participants from waitinglist {}", adminId, participantsForAdditionalGeneration);
 
     List<Team> teams = createTeamsAndVisitationPlan(runningDinner, existingTeamInfosToRestore, participantsForAdditionalGeneration);
 
@@ -238,6 +230,28 @@ public class TeamService {
     }
     
     return newTeamArrangementList(teams, adminId);
+  }
+  
+  @Transactional
+  public List<TeamTO> dropTeamAndAndVisitationPlans(@ValidateAdminId String adminId, boolean gatherTeamRestoreInformation, boolean emitEvent) {
+    
+    LOGGER.info("Drop existing teams and visitation-plans for dinner {}", adminId);
+
+    List<TeamTO> existingTeamInfosToRestore = Collections.emptyList();
+    
+    if (gatherTeamRestoreInformation) {
+        List<Team> existingTeams = findTeamArrangements(adminId, true);
+        existingTeamInfosToRestore = TeamTO.convertTeamList(existingTeams);
+    }
+    
+    participantRepository.updateTeamReferenceAndHostToNull(adminId);
+    teamRepository.deleteByAdminId(adminId);
+    
+    if (emitEvent) {
+      // TOOD
+    }
+    
+    return existingTeamInfosToRestore;
   }
   
   private List<Team> createTeamsAndVisitationPlan(RunningDinner runningDinner, 
