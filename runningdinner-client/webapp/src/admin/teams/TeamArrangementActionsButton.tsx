@@ -19,6 +19,9 @@ import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog
 import Paragraph from '../../common/theme/typography/Paragraph';
 import DropdownButton from '../../common/theme/dropdown/DropdownButton';
 import DropdownButtonItem from '../../common/theme/dropdown/DropdownButtonItem';
+import { useQuery } from '../../common/hooks/QueryHook';
+import { OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM } from '../AdminNavigationHook';
+import { useEffect } from 'react';
 
 
 export interface TeamArrangementActionsButtonProps extends BaseAdminIdProps {
@@ -40,6 +43,9 @@ export function TeamArrangementActionsButton({adminId, onTeamsRegenerated}: Team
 
   const {t} = useTranslation(["admin", "common"]);
 
+  const query = useQuery();
+  const initiallyShowDropTeamsDialog = query.get(OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM);
+
   const {isOpen: showRegenerateTeamsConfirmation, 
          open: openRegenerateTeamsConfirmation, 
          getIsOpenData: getRegenerateTeamsConfirmationData, 
@@ -49,14 +55,6 @@ export function TeamArrangementActionsButton({adminId, onTeamsRegenerated}: Team
          open: openDropTeamsConfirmation, 
          getIsOpenData: getDropTeamsConfirmationData, 
          close: closeDropTeamsConfirmation } = useDisclosure<TeamArrangementActionConfirmationData>();
-
-
-  const {getIssuesTranslated} = useBackendIssueHandler({
-    defaultTranslationResolutionSettings: {
-      namespaces: ['admin', 'common']
-    }
-  });
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   async function handleOpenTeamArrangementActionConfirmationDialog(action: TEAM_ARRANGEMENT_ACTION) {
     const activityList = await findAdminActivitiesByAdminIdAndTypesAsync(adminId, [ActivityType.TEAMARRANGEMENT_MAIL_SENT, ActivityType.DINNERROUTE_MAIL_SENT]);
@@ -74,6 +72,20 @@ export function TeamArrangementActionsButton({adminId, onTeamsRegenerated}: Team
       openDropTeamsConfirmation(teamArrangementActionConfirmationData);
     }
   }
+
+  useEffect(() => {
+    if (initiallyShowDropTeamsDialog === 'true') {
+      handleOpenTeamArrangementActionConfirmationDialog(TEAM_ARRANGEMENT_ACTION.DROP);
+    }
+  }, [initiallyShowDropTeamsDialog]);
+
+
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: ['admin', 'common']
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
   async function handleRegenerateTeamsConfirmationDialogClosed(confirmed: boolean) {
     if (!confirmed) {

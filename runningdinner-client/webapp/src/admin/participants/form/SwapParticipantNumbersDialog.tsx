@@ -28,12 +28,12 @@ interface SwitchParticipantNumbersDialogProps extends Omit<SelectParticiantToSwi
 
 function ExistingTeamInfoMessage({adminId}: BaseAdminIdProps) {
 
-  const {generateTeamPath} = useAdminNavigation();
+  const {generateDropTeamsPath} = useAdminNavigation();
 
   return (
     <Trans i18nKey="admin:participants_swap_number_teams_existing_info"
            // @ts-ignore
-           components={{ anchor: <LinkIntern pathname={generateTeamPath(adminId)} target="_blank" /> }} /> 
+           components={{ anchor: <LinkIntern pathname={generateDropTeamsPath(adminId)} target="_blank" /> }} /> 
   )
 }
 

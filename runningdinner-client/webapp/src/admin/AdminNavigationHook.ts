@@ -2,11 +2,16 @@ import {isArrayNotEmpty, isStringNotEmpty, MessageSubType, Participant, Team} fr
 import {useNavigate} from "react-router-dom";
 
 export const TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM = "teamMemberIdToCancel";
+export const OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM = "showDropTeamsDialog";
 export const SELECTED_TEAM_IDS_QUERY_PARAM = "selectedTeamIds";
 export const MESSAGE_SUBTYPE_QUERY_PARAM = "messageSubType";
 
 function generateTeamPath(adminId: string, teamId?: string) {
   return `/admin/${adminId}/teams/${isStringNotEmpty(teamId) ? teamId : ''}`;
+}
+
+function generateDropTeamsPath(adminId: string) {
+  return `/admin/${adminId}/teams/?${OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM}=true`;
 }
 
 function generateParticipantPath(adminId: string, participantId: string) {
@@ -88,6 +93,7 @@ export function useAdminNavigation() {
 
   return {
     generateTeamPath,
+    generateDropTeamsPath,
     navigateToTeam,
     generateParticipantMessagesPath,
     generateTeamMessagesPath,
