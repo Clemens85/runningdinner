@@ -215,7 +215,7 @@ public class TeamDistributorGender {
 
     Participant otherTeamMember = team.getTeamMembers()
                                         .stream()
-                                        .filter(teamMember -> !teamMember.hasEqualNumber(teamMemberWithGenderToToggle))
+                                        .filter(teamMember -> !teamMember.equals(teamMemberWithGenderToToggle))
                                         .findAny()
                                         .get();
     

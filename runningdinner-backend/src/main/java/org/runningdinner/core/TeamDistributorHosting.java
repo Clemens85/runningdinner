@@ -122,7 +122,7 @@ public class TeamDistributorHosting {
     SetView<Participant> availableMatchingParticipants = Sets.difference(allMatchingParticipants, alreadyDistributedParticipants);
     
     for (Participant availableMatchingParticipant : availableMatchingParticipants) {
-      if (alreadySelectedParticipant == null || !alreadySelectedParticipant.hasEqualNumber(availableMatchingParticipant)) {
+      if (alreadySelectedParticipant == null || !alreadySelectedParticipant.equals(availableMatchingParticipant)) {
         return availableMatchingParticipant;
       }
     }

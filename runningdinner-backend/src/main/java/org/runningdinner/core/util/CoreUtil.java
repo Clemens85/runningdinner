@@ -301,4 +301,13 @@ public class CoreUtil {
     return newCollection;
   }
 
+  public static boolean allNotNull(Object... objects) {
+    for (Object obj : objects) {
+      if (obj == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 }

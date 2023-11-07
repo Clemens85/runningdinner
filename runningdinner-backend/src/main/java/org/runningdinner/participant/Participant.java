@@ -18,10 +18,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
+import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.geocoder.GeocodingResult;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -362,34 +365,43 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
            Objects.equals(this.getTeamPartnerWishOriginatorId(), other.getId());
   }
 
-//  @Override
-//  public int hashCode() {
-//
-//    return new HashCodeBuilder(17, 7).append(getParticipantNumber()).toHashCode();
-//  }
-//
-//  @Override
-//  public boolean equals(Object obj) {
-//
-//    if (obj == null) {
-//      return false;
-//    }
-//    if (obj == this) {
-//      return true;
-//    }
-//    if (obj.getClass() != getClass()) {
-//      return false;
-//    }
-//    Participant other = (Participant) obj;
-//    return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
-//  }
+  // equals and hashcode implementations are actually wrong... but unfortunately we relied on a implementation based upon participantNumber...
+  // which now proved to be not good enough as we can swap participant numbers... 
+  // Switching back to the objectId would break some other code... so for now we have this unstable implementation which should however fit our practical needs...
+  
+  @Override
+  public int hashCode() {
+    if (getId() != null) {
+      return super.hashCode();
+    }
+    return new HashCodeBuilder(17, 7).append(getParticipantNumber()).toHashCode();
+  }
 
-  public boolean hasEqualNumber(Participant other) {
-    if (other == null) {
+  @Override
+  public boolean equals(Object obj) {
+
+    if (obj == null) {
       return false;
     }
-    return getParticipantNumber() == other.getParticipantNumber();
+    if (obj == this) {
+      return true;
+    }
+    if (obj.getClass() != getClass()) {
+      return false;
+    }
+    Participant other = (Participant) obj;
+    if (CoreUtil.allNotNull(getId(), other.getId())) {
+      return super.equals(other);
+    }
+    return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
   }
+
+//  public boolean hasEqualNumber(Participant other) {
+//    if (other == null) {
+//      return false;
+//    }
+//    return getParticipantNumber() == other.getParticipantNumber();
+//  }
   
   @Override
   public int compareTo(Participant o) {
