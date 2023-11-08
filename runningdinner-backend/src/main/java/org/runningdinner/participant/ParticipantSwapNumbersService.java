@@ -6,17 +6,22 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
+import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.CoreUtil;
+import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.participant.rest.ParticipantListActive;
 import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
 @Service
@@ -26,10 +31,19 @@ public class ParticipantSwapNumbersService {
 
   private ParticipantService participantService;
   
+  private EventPublisher eventPublisher;
+
+  private RunningDinnerService runningDinnerService;
+  
   public ParticipantSwapNumbersService(ParticipantRepository participantRepository,
-      ParticipantService participantService) {
+      ParticipantService participantService,
+      RunningDinnerService runningDinnerService,
+      EventPublisher eventPublisher) {
+    
     this.participantRepository = participantRepository;
     this.participantService = participantService;
+    this.runningDinnerService = runningDinnerService;
+    this.eventPublisher = eventPublisher;
   }
 
   @Transactional
@@ -45,6 +59,8 @@ public class ParticipantSwapNumbersService {
     
     Assert.isNull(participantA.getTeamId(), "Cannot swap participants when teams already exist");
     Assert.isNull(participantB.getTeamId(), "Cannot swap participants when teams already exist");
+    
+    var runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     
     Participant firstParticipant = participantA;
     Participant secondParticipant = participantB;
@@ -65,12 +81,16 @@ public class ParticipantSwapNumbersService {
     if (!secondParticipant.isTeamPartnerWishRegistratonRoot() && secondParticipant.getTeamPartnerWishOriginatorId() != null) { 
       // Child shall be moved up (main use case when child is separated from root e.g. by waitinglist)
       Participant rootOfSecondParticipant = participantService.findParticipantById(adminId, secondParticipant.getTeamPartnerWishOriginatorId());
-      Assert.isNull(firstParticipant.getTeamPartnerWishOriginatorId(), "Can only swap team partner wish child with a participant without team partner wish");
+      if (firstParticipant.getTeamPartnerWishOriginatorId() != null) {
+        throw new ValidationException(new IssueList(new Issue(IssueKeys.PARTICIPANT_SWAP_NUMBER_CHILD_ONLY_POSSIBLE_WITH_SINGLE_PARTICIPANT, IssueType.VALIDATION)));
+      }
       // This is actually the same case as above, but we pick the root for moving up, so that our child will automatically also be moved up (which is what we actually desire)
       moveSecondParticipantUpTheListDefaultCase(rootOfSecondParticipant, firstParticipant, allParticipants, firstNumber, adminId);
     }
     
     moveFirstParticipantDownTheList(firstParticipant, secondParticipant, allParticipants, secondNumber, adminId);
+    
+    emitParticipantNumbersSwappedEvent(runningDinner, firstParticipant, secondParticipant);
   }
   
   private void moveSecondParticipantUpTheListDefaultCase(Participant secondParticipant, 
@@ -156,6 +176,15 @@ public class ParticipantSwapNumbersService {
     return result;
   }
 
+  private void emitParticipantNumbersSwappedEvent(final RunningDinner runningDinner, Participant firstParticipant, Participant secondParticipant) {
+
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+      @Override
+      public void afterCommit() {
+        eventPublisher.notifyParticipantNumbersSwappedEvent(firstParticipant, secondParticipant, runningDinner);
+      }
+    });
+  }
   
   static List<ParticipantWithListNumberTO> mapToRawList(ParticipantListActive participantList) {
     List<ParticipantWithListNumberTO> participants = participantList.getParticipants();

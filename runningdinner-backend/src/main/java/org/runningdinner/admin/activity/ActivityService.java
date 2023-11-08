@@ -30,7 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ActivityService {
   
   public static final String TEAM_MEMBERS_SWAPPED_HEADLINE = "Team Mitglieder getauscht";
+  public static final String PARTICIPANT_NUMBERS_SWAPPED_HEADLINE = "Teilnehmer Reihenfolge geändert";
   public static final String TEAM_HOST_CHANGED_BY_ADMIN_HEADLINE = "Gastgeber geändert";
+  
+  public static final String TEAM_ARRANGEMENTS_DROPPED_HEADLINE = "Team-Einteilungen augehoben";
+  public static final String TEAM_ARRANGEMENTS_RECREATED_HEADLINE = "Teams neu generiert";
   
   static final Collection<ActivityType> ADMIN_ACTIVITY_TYPES =
           Arrays.asList(
@@ -63,9 +67,12 @@ public class ActivityService {
 
   private static final String TEAM_ARRANGEMENT_CREATED_DINNER_MESSAGE_TEMPLATE = "Du hast die Team-Einteilungen für <strong>{numTeams}</strong> Teams vorgenommen.";
   
-  private static final String TEAMS_RECREATED_DINNER_MESSAGE_TEMPLATE = "Du hast die alten Team-Einteilungen gelöscht und neue Team-Einteilungen vorgenommen, mit nun <strong>{numTeams}</strong> Teams."; 
+  private static final String TEAM_ARRANGEMENTS_DROPPED_MESSAGE_TEMPLATE = "Du hast die alten Team-Einteilungen aufgehoben."; 
+  private static final String TEAM_ARRANGEMENTS_RECREATED_MESSAGE_TEMPLATE = "Du hast die alten Team-Einteilungen gelöscht und neue Team-Einteilungen vorgenommen, mit nun <strong>{numTeams}</strong> Teams."; 
   
   private static final String TEAM_MEMBERS_SWAPPED_MESSAGE_TEMPLATE = "Du hast zwischen Team {teamNumber1} und Team {teamNumber2} folgende Teilnehmer getauscht: {participantName1} und {participantName2}.";
+
+  private static final String PARTICIPANT_NUMBERS_SWAPPED_MESSAGE_TEMPLATE = "Du hast die Reihenfolge folgender Teilnehmer verändert: {participantName1} und {participantName2}.";
   
   private static final String TEAMS_HOST_CHANGED_DINNER_MESSAGE_TEMPLATE = "Du hast für Team {teamNumber} den Gastgeber auf {participantName} geändert.";
   
@@ -155,7 +162,7 @@ public class ActivityService {
   }
   
   @Transactional
-  public Activity createActivityForTeamsReCreated(List<Team> teams, RunningDinner runningDinner) {
+  public Activity createActivityForTeamArrangementsDropped(List<Team> teams, RunningDinner runningDinner, boolean teamsRecreated) {
     
     LocalDateTime activityDate = LocalDateTime.now();
     int numTeams = 0;
@@ -166,8 +173,13 @@ public class ActivityService {
       activityDate = lastCreatedTeam.getModifiedAt();
     }
     Activity result = new Activity(activityDate, ActivityType.TEAMS_RECREATED, runningDinner.getEmail(), runningDinner);
-    result.setActivityMessage(TEAMS_RECREATED_DINNER_MESSAGE_TEMPLATE.replaceAll("\\{numTeams\\}", String.valueOf(numTeams)));
-    result.setActivityHeadline("Teams neu generiert");
+    
+    if (teamsRecreated) {
+      result.setActivityMessage(TEAM_ARRANGEMENTS_RECREATED_MESSAGE_TEMPLATE.replaceAll("\\{numTeams\\}", String.valueOf(numTeams)));
+    } else {
+      result.setActivityMessage(TEAM_ARRANGEMENTS_DROPPED_MESSAGE_TEMPLATE);
+    }
+    result.setActivityHeadline(teamsRecreated ? TEAM_ARRANGEMENTS_RECREATED_HEADLINE : TEAM_ARRANGEMENTS_DROPPED_HEADLINE);
     result = activityRepository.save(result);
     return result;
   }
@@ -212,6 +224,23 @@ public class ActivityService {
     result = activityRepository.save(result);
     return result;
   }
+  
+  
+  @Transactional
+  public Activity createActivityForParticipantNumbersSwapped(Participant firstParticipant, Participant secondParticipant, RunningDinner runningDinner) {
+  
+    Activity result = new Activity(LocalDateTime.now(), ActivityType.CUSTOM_ADMIN_CHANGE, runningDinner.getEmail(), runningDinner);
+    
+    String activityMessage = PARTICIPANT_NUMBERS_SWAPPED_MESSAGE_TEMPLATE.replaceAll("\\{participantName1\\}",  firstParticipant.getName().getFullnameFirstnameFirst());
+    activityMessage = activityMessage.replaceAll("\\{participantName2\\}",  secondParticipant.getName().getFullnameFirstnameFirst());
+    result.setActivityMessage(activityMessage);
+    
+    result.setActivityHeadline(PARTICIPANT_NUMBERS_SWAPPED_HEADLINE);
+    
+    result = activityRepository.save(result);
+    return result;
+  }
+  
   
   @Transactional
   public Activity createActivityForTeamCancellation(TeamCancellationResult teamCancellationResult, RunningDinner runningDinner) {

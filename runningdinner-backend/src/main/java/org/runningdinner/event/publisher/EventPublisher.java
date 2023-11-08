@@ -7,13 +7,14 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.event.MealTimesUpdatedEvent;
 import org.runningdinner.event.NewParticipantSubscribedEvent;
 import org.runningdinner.event.NewRunningDinnerEvent;
+import org.runningdinner.event.ParticipantNumbersSwappedEvent;
 import org.runningdinner.event.RunningDinnerCancelledEvent;
 import org.runningdinner.event.RunningDinnerSettingsUpdatedEvent;
+import org.runningdinner.event.TeamArrangementsDroppedEvent;
 import org.runningdinner.event.TeamCancelledEvent;
 import org.runningdinner.event.TeamMembersSwappedEvent;
 import org.runningdinner.event.TeamsArrangedEvent;
 import org.runningdinner.event.TeamsHostChangedEvent;
-import org.runningdinner.event.TeamsReCreatedEvent;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellationResult;
@@ -53,16 +54,22 @@ public class EventPublisher implements ApplicationEventPublisherAware {
     applicationEventPublisher.publishEvent(new TeamsArrangedEvent(this, teams, runningDinner));
   }
 
-  public void notifyTeamsReCreated(List<Team> teams, RunningDinner runningDinner) {
+  public void notifyTeamArrangementsDropped(List<Team> teams, RunningDinner runningDinner, boolean teamsRecreated) {
 
-    applicationEventPublisher.publishEvent(new TeamsReCreatedEvent(this, teams, runningDinner));
+    applicationEventPublisher.publishEvent(new TeamArrangementsDroppedEvent(this, teams, runningDinner, teamsRecreated));
   }
   
-  public void notifySendTeamMembersSwappedEvent(Participant firstParticipant, Participant secondParticipant,
-    List<Team> affectedParentTeams, RunningDinner runningDinner) {
+  public void notifyTeamMembersSwappedEvent(Participant firstParticipant, Participant secondParticipant,
+      List<Team> affectedParentTeams, RunningDinner runningDinner) {
 
-    applicationEventPublisher.publishEvent(new TeamMembersSwappedEvent(this, firstParticipant, secondParticipant, affectedParentTeams,
-      runningDinner));
+    applicationEventPublisher
+        .publishEvent(new TeamMembersSwappedEvent(this, firstParticipant, secondParticipant, affectedParentTeams,
+            runningDinner));
+  }
+  
+  public void notifyParticipantNumbersSwappedEvent(Participant firstParticipant, Participant secondParticipant, RunningDinner runningDinner) {
+
+    applicationEventPublisher.publishEvent(new ParticipantNumbersSwappedEvent(this, firstParticipant, secondParticipant, runningDinner));
   }
 
   public void notifyTeamsHostChangedByAdminEvent(List<Team> teams, RunningDinner runningDinner) {

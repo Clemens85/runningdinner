@@ -226,7 +226,7 @@ public class TeamService {
     if (!generateAdditionalTeamsFromWaitingList) {
     	// Default case for only re-generate teams. 
     	// If teams are added from waitinglist (generateAdditionalTeamsFromWaitingList == true) ,then the waitinglist fires its own event instead.
-    	emitTeamsReCreatedEvent(runningDinner, teams); 
+        emitTeamArrangementsDroppedEvent(runningDinner, teams, true); 
     }
     
     return newTeamArrangementList(teams, adminId);
@@ -248,7 +248,8 @@ public class TeamService {
     teamRepository.deleteByAdminId(adminId);
     
     if (emitEvent) {
-      // TOOD
+      RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+      emitTeamArrangementsDroppedEvent(runningDinner, Collections.emptyList(), false); 
     }
     
     return existingTeamInfosToRestore;
@@ -339,14 +340,14 @@ public class TeamService {
     });
   }
   
-  protected void emitTeamsReCreatedEvent(final RunningDinner dinner, final List<Team> teams) {
+  protected void emitTeamArrangementsDroppedEvent(final RunningDinner dinner, final List<Team> teams, boolean teamsRecreated) {
 
     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 
       @Override
       public void afterCommit() {
 
-        eventPublisher.notifyTeamsReCreated(teams, dinner);
+        eventPublisher.notifyTeamArrangementsDropped(teams, dinner, teamsRecreated);
       }
     });
   }
@@ -440,7 +441,7 @@ public class TeamService {
       @Override
       public void afterCommit() {
 
-        eventPublisher.notifySendTeamMembersSwappedEvent(firstParticipant, secondParticipant, parentTeams, runningDinner);
+        eventPublisher.notifyTeamMembersSwappedEvent(firstParticipant, secondParticipant, parentTeams, runningDinner);
       }
     });
   }

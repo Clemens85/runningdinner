@@ -162,6 +162,7 @@
 	"participants_remaining_not_assignable_text": "The following participants cannot currently be arranged into teams and are therefore on the waitinglist.",
 	"participants_remaining_not_assignable_teams_generated_text": "The following participants are currently on the waitinglist.",
 	"participants_selection": "Participant selection",
+	"participant_swap_number_child_only_possible_with_single_participant": "Participants who have been automatically registered by another participant can only be exchanged with individual participants, but not with participants with a fixed team partner wish.",
 	"participant_swap_number_violates_team_partner_wish": "Participants who have been automatically registered by someone else cannot be moved down the list.",
 	"participants_swap_number": "Swap order",
 	"participants_swap_number_from": "Swap order of {{ fullname }}",
