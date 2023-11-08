@@ -18,6 +18,7 @@ import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.team.TeamMessage;
 import org.runningdinner.admin.message.team.TeamSelection;
 import org.runningdinner.core.IdentifierUtil;
+import org.runningdinner.core.MealClass;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.participant.Participant;
@@ -106,8 +107,15 @@ public class WaitingListServiceTest {
 		assertActivityTypeContained(ActivityType.WAITINGLIST_PARTICIPANTS_ASSIGNED);
   }
 
+  //  Workaround till we have RepeatedTest in JUnit 5 (not very nice, but good enough for now)
   @Test
   public void generateNewTeams() {
+    for (int i = 0; i < 5; i++) {
+      generateNewTeamsSingleExecution();
+    }
+  }
+  
+  protected void generateNewTeamsSingleExecution() {
   	
   	setupRunningDinnerWithParticipants(18);
   	
@@ -163,11 +171,13 @@ public class WaitingListServiceTest {
                                                List<Team> teamsBeforeGeneration,
                                                int index) {
 
-    assertThat(teamsAfterGeneration.get(index).getTeamMembersOrdered())
-        .containsExactlyElementsOf(teamsBeforeGeneration.get(index).getTeamMembersOrdered());
+    List<Participant> currentTeamMembers = teamsAfterGeneration.get(index).getTeamMembersOrdered();
+    List<Participant> originalTeamMembers = teamsBeforeGeneration.get(index).getTeamMembersOrdered();
+    assertThat(currentTeamMembers).as("Team " + (index + 1) + " has following errors: ").containsExactlyElementsOf(originalTeamMembers);
 
-    assertThat(teamsAfterGeneration.get(index).getMealClass())
-        .isEqualTo(teamsBeforeGeneration.get(index).getMealClass());
+    MealClass currentMealClasses = teamsAfterGeneration.get(index).getMealClass();
+    MealClass originalMealClasses = teamsBeforeGeneration.get(index).getMealClass();
+    assertThat(currentMealClasses).as("Team " + (index + 1) + " has following errors: ").isEqualTo(originalMealClasses);
   }
   
   @Test
