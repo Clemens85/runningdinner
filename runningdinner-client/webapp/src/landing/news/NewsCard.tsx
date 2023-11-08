@@ -1,12 +1,15 @@
 import {LocalDate} from "@runningdinner/shared";
 import CardContent from "@mui/material/CardContent";
-import React from "react";
 import { Avatar, CardHeader } from "@mui/material";
 import {NewsItem} from "./NewsItemsHook";
 import {CardFlexibleHeight} from "../LandingStyles";
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
-export function NewsCard({title, content, date}: NewsItem) {
+interface NewsCardItem extends Omit<NewsItem, "content"> {
+  content: React.ReactNode;
+}
+
+export function NewsCard({title, content, date}: NewsCardItem) {
 
   return (
     <CardFlexibleHeight>

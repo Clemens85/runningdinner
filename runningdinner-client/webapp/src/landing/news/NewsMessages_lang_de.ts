@@ -1,5 +1,11 @@
 const NewsMessages_de: any = {
 
+  news_title_20231108: 'Reihenfolge von Teilnehmern tauschen + kleiner Bugfix',
+  news_content_20231108: 'Ab und zu kann es vorkommen, dass man Teilnehmer von bzw. auf die Warteliste schieben will. ' +
+                         'Jetzt kann man Teilnehmer beliebig in der Liste rauf und runter schieben und damit deren Reihenfolge (und damit auch die Warteliste) ändern. ' + 
+                         'Einfach auf die "..." neben einem ausgewählten Teilnehmer klicken und dort "Reihenfolge tauschen" wählen. ' +
+                         '<br/>Außerdem wurde ein Fehler in der Warteliste behoben, wenn zusätzliche Teams generiert werden: Bestehende Teams sollten nun immer beibehalten werden.',
+
   news_title_20231013: 'Technische Aktualisierungen',
   news_content_20231013: 'Heute wurden einige grundlegende technologische Updates eingespielt. Natürlich wurde alles gründlichst getestet, ' + 
                         'falls aber doch an einer Stelle ein Fehler hochkommen sollte, habt bitte Nachsicht und meldet euch direkt via Feedback!',
