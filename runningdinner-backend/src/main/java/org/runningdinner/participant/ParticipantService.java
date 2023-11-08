@@ -629,7 +629,7 @@ public class ParticipantService {
     String firstnamePart = teamPartnerWishRegistrationData.getFirstnamePart();
     String lastname = teamPartnerWishRegistrationData.getLastname();
     
-    Participant teamPartnerWish = participant.createDetachedClone();
+    Participant teamPartnerWish = participant.createDetachedClone(false);
     teamPartnerWish.setHost(false); // Not needed, but just to be sure
     
     teamPartnerWish.setName(ParticipantName.newName().withFirstname(firstnamePart).andLastname(lastname));
