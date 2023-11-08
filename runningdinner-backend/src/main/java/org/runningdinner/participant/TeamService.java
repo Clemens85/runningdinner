@@ -352,8 +352,8 @@ public class TeamService {
   }
 
   protected GeneratedTeamsResult generateTeamPlan(final RunningDinnerConfig runningDinnerConfig, 
-  																							  final List<TeamTO> existingTeamsToKeep, 
-  																							  final List<Participant> participants) throws NoPossibleRunningDinnerException {
+  												  final List<TeamTO> existingTeamsToKeep, 
+  												  final List<Participant> participants) throws NoPossibleRunningDinnerException {
 
     GeneratedTeamsResult generatedTeams = runningDinnerCalculator.generateTeams(runningDinnerConfig, participants, existingTeamsToKeep, Collections::shuffle);
     runningDinnerCalculator.assignRandomMealClasses(generatedTeams, runningDinnerConfig.getMealClasses(), existingTeamsToKeep);
