@@ -36,7 +36,6 @@ import org.runningdinner.participant.rest.TeamParticipantsAssignmentTO;
 import org.runningdinner.participant.rest.TeamTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +66,6 @@ public class WaitingListService {
 
     private ParticipantRepository participantRepository;
 
-    @Autowired
     public WaitingListService(TeamService teamService,
                               TeamRepository teamRepository,
                               ParticipantRepository participantRepository,
