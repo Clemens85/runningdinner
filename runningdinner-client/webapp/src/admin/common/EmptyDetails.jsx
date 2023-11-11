@@ -13,10 +13,10 @@ export const EmptyDetails = ({labelI18n}) => {
   return (
     <div ref={paperRef}>
       <Hidden mdDown>
-          <Paper style={{height: paperHeight }} elevation={3}>
+          <Paper style={{height: paperHeight, display: 'flex' }} elevation={3}>
             <Grid container justifyContent={"center"} alignItems={"center"}>
               <Grid item>
-                <Typography variant="subtitle2" style={{marginTop: '50%'}}>{t(labelI18n)}</Typography>
+                <Typography variant="subtitle2" sx={{ px: 2 }}>{t(labelI18n)}</Typography>
               </Grid>
             </Grid>
           </Paper>
