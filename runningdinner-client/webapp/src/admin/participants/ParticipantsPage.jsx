@@ -68,6 +68,7 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
   function editParticipant(participant) {
     setSelectedParticipant(participant);
     setShowDetailsView(true);
+    window.scrollTo(0, 0);
   }
 
   function onNewParticipant() {

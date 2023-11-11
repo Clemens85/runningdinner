@@ -104,6 +104,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   function openTeamDetails(team: Team) {
     setSelectedTeam(team);
     setShowDetailsView(true);
+    window.scrollTo(0, 0);
   }
 
   function setNoSelectedTeam() {
