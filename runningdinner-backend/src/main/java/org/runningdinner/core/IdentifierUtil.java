@@ -47,6 +47,15 @@ public final class IdentifierUtil {
     return filterListForId(entityList, entityId)
             .orElseThrow(() -> new IllegalStateException("Expected " + entityList + " to contain requested " + entityId));
   }
-	
+
+  public static <T extends Identifiable> Set<T> filterListForIds(Collection<T> entities, Collection<UUID> entityIds) {
+    
+    Set<T> result = new HashSet<>();
+    for (UUID entityId : entityIds) {
+      filterListForId(entities, entityId)
+        .ifPresent(result::add);
+    }
+    return result;
+  }
 	
 }

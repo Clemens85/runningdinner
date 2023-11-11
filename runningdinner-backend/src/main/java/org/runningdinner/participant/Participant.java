@@ -18,8 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
@@ -363,29 +361,34 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     return Objects.equals(other.getTeamPartnerWishOriginatorId(), this.getId()) ||
            Objects.equals(this.getTeamPartnerWishOriginatorId(), other.getId());
   }
+
+  // equals and hashcode implementations were actually wrong... but unfortunately we relied on a implementation based upon participantNumber...
+  // which now proved to be not good enough as we can swap participant numbers... 
+  // Switching back to the objectId should hopefully not break some other code
   
   @Override
   public int hashCode() {
-
-    return new HashCodeBuilder(17, 7).append(getParticipantNumber()).toHashCode();
+    return super.hashCode();
+//        new HashCodeBuilder(17, 7).append(getParticipantNumber()).toHashCode();
   }
 
   @Override
   public boolean equals(Object obj) {
-
-    if (obj == null) {
-      return false;
-    }
-    if (obj == this) {
-      return true;
-    }
-    if (obj.getClass() != getClass()) {
-      return false;
-    }
-    Participant other = (Participant) obj;
-    return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
+    return super.equals(obj);
+//    if (obj == null) {
+//      return false;
+//    }
+//    if (obj == this) {
+//      return true;
+//    }
+//    if (obj.getClass() != getClass()) {
+//      return false;
+//    }
+//    Participant other = (Participant) obj;
+//    return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
   }
 
+  
   @Override
   public int compareTo(Participant o) {
 
@@ -408,7 +411,7 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
             .toString();
   }
 
-  public Participant createDetachedClone() {
+  public Participant createDetachedClone(boolean keepObjectId) {
 
     Participant result = new Participant(getParticipantNumber());
     result.setAddress(getAddress().createDetachedClone());
@@ -426,6 +429,9 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     result.setActivationDate(getActivationDate());
     result.setGeocodingResult(new GeocodingResult(getGeocodingResult()));
     result.setTeamPartnerWishOriginatorId(getTeamPartnerWishOriginatorId());
+    if (keepObjectId) {
+      result.setObjectId(getObjectId());
+    }
     return result;
   }
 

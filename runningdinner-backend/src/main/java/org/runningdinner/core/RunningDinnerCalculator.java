@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,9 +15,10 @@ import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
-import org.runningdinner.participant.TeamNumberAccessor;
+import org.runningdinner.participant.TeamAccessor;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamTO;
+import org.springframework.util.Assert;
 
 /**
  * Stateless object for calculating running dinner scenarios.<br>
@@ -29,15 +31,15 @@ import org.runningdinner.participant.rest.TeamTO;
  */
 public class RunningDinnerCalculator {
 
-	private DinnerPlanGenerator dinnerPlanGenerator;
+  private DinnerPlanGenerator dinnerPlanGenerator;
 
-	public RunningDinnerCalculator() {
-		this(new StaticTemplateDinnerPlanGenerator());
-	}
+  public RunningDinnerCalculator() {
+    this(new StaticTemplateDinnerPlanGenerator());
+  }
 
-	public RunningDinnerCalculator(DinnerPlanGenerator dinnerPlanGenerator) {
-		this.dinnerPlanGenerator = dinnerPlanGenerator;
-	}
+  public RunningDinnerCalculator(DinnerPlanGenerator dinnerPlanGenerator) {
+    this.dinnerPlanGenerator = dinnerPlanGenerator;
+  }
 
 	/**
 	 * Main entry point for calculation of a running dinner.<br>
@@ -92,7 +94,7 @@ public class RunningDinnerCalculator {
         List<Team> newTeams = buildRegularTeams(runningDinnerConfig, new ArrayList<>(newParticipantsFromWaitingList),
             participantListRandomizer);
         for (Team newTeam : newTeams) {
-          TeamNumberAccessor
+          TeamAccessor
               .newAccessor(newTeam)
               .setTeamNumber(teamNumberOffset++);
           regularTeams.add(newTeam);
@@ -109,39 +111,14 @@ public class RunningDinnerCalculator {
 		Set<Participant> allParticipantsAsSet = new HashSet<>(allParticipantsToUse);
 		
 		Set<Participant> result = existingTeamInfosToRestore
-																.stream()
-																.map(existingTeam -> findTeamMembersInGivenParticipants(existingTeam, allParticipantsAsSet))
-																.flatMap(Set::stream)
-																.collect(Collectors.toSet());
+									.stream()
+									.map(existingTeam -> findTeamMembersInGivenParticipants(existingTeam, allParticipantsAsSet))
+									.flatMap(Set::stream)
+									.collect(Collectors.toSet());
 
 		return new ArrayList<>(result);
 	}
 	
-//  private List<Team> restoreExistingTeams(List<Team> incomingTeams, List<TeamTO> existingTeamInfosToRestore) {
-//    
-//  	if (CollectionUtils.isEmpty(existingTeamInfosToRestore)) {
-//  		return incomingTeams;
-//  	}
-//
-//  	Set<Participant> allParticipantsToUse = incomingTeams
-//																							.stream()
-//																							.map(Team::getTeamMembers)
-//                                              .flatMap(Set::stream)
-//                                              .collect(Collectors.toSet());
-//  	
-//  	List<Team> result = new ArrayList<Team>(incomingTeams.size());
-//  	for (TeamTO existingTeam : existingTeamInfosToRestore) {
-//  		
-//  		// This whole logic works only if we have ensured that there exist no team with cancelled team member(s), which is currently the case (-> WaitingListService)
-//  		Team team = findTeamWithTeamNumber(incomingTeams, existingTeam.getTeamNumber());
-//  		Set<Participant> teamMembersToSet = findTeamMembersInGivenParticipants(existingTeam, allParticipantsToUse);
-//  		team.setTeamMembers(teamMembersToSet);
-//  		allParticipantsToUse = CoreUtil.excludeFromSet(teamMembersToSet, allParticipantsToUse);
-//  	}
-//  	
-//  	
-//	}
-
 	private static Set<Participant> findTeamMembersInGivenParticipants(TeamTO existingTeam, Set<Participant> givenParticipants) {
 		
 		Set<Participant> result = new HashSet<>();
@@ -271,69 +248,102 @@ public class RunningDinnerCalculator {
 	 * @throws NoPossibleRunningDinnerException Thrown if number of meals and number of teams are incompatible
 	 */
 	public void assignRandomMealClasses(final GeneratedTeamsResult generatedTeams, 
-																			final Collection<MealClass> mealClasses,
-																			final List<TeamTO> existingTeamsToKeep) throws NoPossibleRunningDinnerException {
+										final Collection<MealClass> mealClasses,
+										final List<TeamTO> existingTeamsToKeep) throws NoPossibleRunningDinnerException {
 
-		if (CollectionUtils.isEmpty(existingTeamsToKeep)) {
-			assignRandomMealClasses(generatedTeams.getRegularTeams(), mealClasses);
-			return;
-		}
-		
-		// => Else: Keep meals for existing meals, but also assign random meals to new generated teams:
-		
-		// Copy the list of teams...
-		List<Team> regularTeamsListCopy = new ArrayList<>(generatedTeams.getRegularTeams());
-		
-		// ... And change the participants inside of this list
-		// Note: all these changes are still reflected in the original list (generatedTeams.regularTeams())!
-		
-		for (TeamTO existingTeam : existingTeamsToKeep) {
-			// This whole logic works only if we have ensured that there exist no team with cancelled team member(s), which is currently the case (-> WaitingListService)
-			Team team = findTeamWithTeamNumber(regularTeamsListCopy, existingTeam.getTeamNumber());
-			MealClass mealClassToAssign = IdentifierUtil.filterListForIdMandatory(mealClasses, existingTeam.getMeal().getId());
-			team.setMealClass(mealClassToAssign);
-			regularTeamsListCopy.remove(team); // This removes the participant only from our copied list, but not from the original list!
-		}
-		
-		// regularTeamsListCopy should now contain only the new teams that did not exis before:
-		assignRandomMealClasses(regularTeamsListCopy, mealClasses);
+      if (CollectionUtils.isEmpty(existingTeamsToKeep)) {
+        assignRandomMealClasses(generatedTeams.getRegularTeams(), mealClasses);
+        return;
+      }
+
+      // => Else: Keep meals for existing meals, but also assign random meals to new
+      // generated teams:
+
+      // Copy the list of teams...
+      List<Team> regularTeamsListCopy = new ArrayList<>(generatedTeams.getRegularTeams());
+
+      // ... And change the participants inside of this list
+      // Note: all these changes are still reflected in the original list
+      // (generatedTeams.regularTeams())!
+      
+      Set<Participant> allParticipantsOfGeneratedTeams = generatedTeams.getRegularTeams()
+                                                                          .stream()
+                                                                          .map(t -> t.getTeamMembers())
+                                                                          .flatMap(Set::stream)
+                                                                          .collect(Collectors.toSet());
+
+      for (TeamTO existingTeam : existingTeamsToKeep) {
+        // This whole logic works only if we have ensured that there exist no team with
+        // cancelled team member(s), which is currently the case (-> WaitingListService)
+        Team team = findTeamWithTeamNumber(regularTeamsListCopy, existingTeam.getTeamNumber());
+        MealClass mealClassToAssign = IdentifierUtil.filterListForIdMandatory(mealClasses, existingTeam.getMeal().getId());
+        team.setMealClass(mealClassToAssign);
+        
+        ensureSameTeamMembers(team, existingTeam, allParticipantsOfGeneratedTeams);
+        
+        regularTeamsListCopy.remove(team); // This removes the team only from our copied list, but not from the original list!
+      }
+
+      // regularTeamsListCopy should now contain only the new teams that did not exist before:
+      assignRandomMealClasses(regularTeamsListCopy, mealClasses);
 	}
 
-	private void assignRandomMealClasses(final List<Team> regularTeams, final Collection<MealClass> mealClasses) throws NoPossibleRunningDinnerException {
+    private void ensureSameTeamMembers(Team currentTeam, TeamTO originalTeam, Set<Participant> allParticipantsOfGeneratedTeams) {
+      
+      Set<UUID> originalTeamMemberIds = IdentifierUtil.getIds(originalTeam.getTeamMembers());
+      Set<UUID> currentTeamMemberIds = IdentifierUtil.getIds(currentTeam.getTeamMembers());
+      if (CoreUtil.setsAreEqual(originalTeamMemberIds, currentTeamMemberIds)) {
+        return;
+      }
 
-		int numTeams = regularTeams.size();
-		int numMealClasses = mealClasses.size();
+      Set<Participant> originalTeamMembers = IdentifierUtil.filterListForIds(allParticipantsOfGeneratedTeams, originalTeamMemberIds);
+      TeamAccessor.newAccessor(currentTeam).removeAllTeamMembers();
+      currentTeam.setTeamMembers(originalTeamMembers);
+      
+      Assert.state(currentTeam.getTeamMembersOrdered().size() == originalTeamMemberIds.size(), "Expected curren team " + currentTeam + " to contain team members " + originalTeamMemberIds + 
+                                                                                               " but contained " + currentTeam.getTeamMembersOrdered());
+    }
+    
+    private void assignRandomMealClasses(final List<Team> regularTeams, final Collection<MealClass> mealClasses)
+        throws NoPossibleRunningDinnerException {
 
-		if (numTeams % numMealClasses != 0) {
-			throw new NoPossibleRunningDinnerException("Size of passed teams (" + numTeams + ") doesn't match expected size (" + numMealClasses + " x N)");
-		}
+      int numTeams = regularTeams.size();
+      int numMealClasses = mealClasses.size();
 
-		if (numMealClasses == 0) {
-			throw new NoPossibleRunningDinnerException("Need at least one mealClass for assigning mealClasses to teams");
-		}
+      if (numTeams % numMealClasses != 0) {
+        throw new NoPossibleRunningDinnerException(
+            "Size of passed teams (" + numTeams + ") doesn't match expected size (" + numMealClasses + " x N)");
+      }
 
-		int segmentionSize = numTeams / numMealClasses;
+      if (numMealClasses == 0) {
+        throw new NoPossibleRunningDinnerException("Need at least one mealClass for assigning mealClasses to teams");
+      }
 
-		Collections.shuffle(regularTeams); // Randomize List
+      int segmentionSize = numTeams / numMealClasses;
 
-		// Now, with the randomized list, we iterate this list, and assign one mealClass to the current iterating list-segment 
-		// (e.g.: // [0..8] => APPETIZER, [9..17] => MAINCOURSE, [18..26] => DESSERT) for 18 teams and a segmentionSize of 3:
-		int startIndex = 0;
-		int endIndex = segmentionSize;
-		for (MealClass mealClassToAssign : mealClasses) {
-			for (int teamIndex = startIndex; teamIndex < endIndex; teamIndex++) {
-				Team team = regularTeams.get(teamIndex);
-				team.setMealClass(mealClassToAssign);
-			}
+      Collections.shuffle(regularTeams); // Randomize List
 
-			startIndex = endIndex;
-			endIndex = endIndex + segmentionSize;
-		}
+      // Now, with the randomized list, we iterate this list, and assign one mealClass
+      // to the current iterating list-segment
+      // (e.g.: // [0..8] => APPETIZER, [9..17] => MAINCOURSE, [18..26] => DESSERT)
+      // for 18 teams and a segmentionSize of 3:
+      int startIndex = 0;
+      int endIndex = segmentionSize;
+      for (MealClass mealClassToAssign : mealClasses) {
+        for (int teamIndex = startIndex; teamIndex < endIndex; teamIndex++) {
+          Team team = regularTeams.get(teamIndex);
+          team.setMealClass(mealClassToAssign);
+        }
 
-		// Sort list by teamNumber as the list is currently passed in already sorted by teamNumber
-		Collections.sort(regularTeams);
-	}
-	
+        startIndex = endIndex;
+        endIndex = endIndex + segmentionSize;
+      }
+
+      // Sort list by teamNumber as the list is currently passed in already sorted by
+      // teamNumber
+      Collections.sort(regularTeams);
+    }
+
     protected List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig,
                                            final List<Participant> participantsToAssign,
                                            final ParticipantListRandomizer participantListRandomizer) {

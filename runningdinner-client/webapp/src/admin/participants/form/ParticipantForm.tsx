@@ -5,14 +5,13 @@ import {PersonalDataSection} from "./PersonalDataSection";
 import AddressSection from "./AddressSection";
 import MealSpecificsSection from "./MealSpecificsSection";
 import MiscSection from "./MiscSection";
-import FillWithExampleDataLink from "./FillWithExampleDataLink";
 import {
   CallbackHandler,
   getFullname,
   HttpError,
   isNewEntity,
   isTeamPartnerWishChild,
-  mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant, ParticipantListable,
+  mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant, ParticipantList, ParticipantListable,
   saveParticipantAsync,
   useBackendIssueHandler
 } from "@runningdinner/shared";
@@ -25,9 +24,11 @@ import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHoo
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 import {TeamPartnerWishSectionAdmin} from "./TeamPartnerWishSectionAdmin";
 import {commonStyles} from "../../../common/theme/CommonStyles";
+import { ParticipantFormContextMenu } from './ParticipantFormContextMenu';
 
 export interface ParticipantFormProps {
   participant: ParticipantListable;
+  participantList: ParticipantList
   adminId: string;
   onParticipantSaved: CallbackHandler;
   onParticipantDeleted: CallbackHandler;
@@ -36,7 +37,7 @@ export interface ParticipantFormProps {
 
 // Validation, see: https://www.reactnativeschool.com/build-and-validate-forms-with-formik-and-yup/handling-server-errors
 // and: https://github.com/jaredpalmer/formik/issues/150 and https://github.com/jaredpalmer/formik/issues/33
-export default function ParticipantForm({participant, adminId, onParticipantSaved, onParticipantDeleted, teamPartnerWishDisabled}: ParticipantFormProps) {
+export default function ParticipantForm({participant, participantList, adminId, onParticipantSaved, onParticipantDeleted, teamPartnerWishDisabled}: ParticipantFormProps) {
 
   const {t} = useTranslation('common');
 
@@ -111,13 +112,13 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
               <Grid item xs={12} md={8}>
                 <ParticipantFormHeadline />
               </Grid>
-              {!teamPartnerWishChild &&
-                <Grid item xs={12} md={4}>
-                  <Box sx={ commonStyles.textAlignRight }>
-                    <FillWithExampleDataLink/>
-                  </Box>
-                </Grid>
-              }
+              <Grid item xs={12} md={4} sx={ commonStyles.textAlignRight }>
+                <ParticipantFormContextMenu participant={participant} 
+                                            participantList={participantList}
+                                            teamPartnerWishChild={teamPartnerWishChild}
+                                            onParticipantsSwapped={() => onParticipantSaved(participant)} 
+                                            adminId={adminId} />
+              </Grid>
             </Grid>
 
             <Box mb={3} mt={3}>

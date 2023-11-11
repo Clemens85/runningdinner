@@ -495,7 +495,7 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
     result.setTeamMembers(
         teamMembers
           .stream()
-          .map(Participant::createDetachedClone)
+          .map(p -> p.createDetachedClone(true))
           .collect(Collectors.toSet())
     );
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import {Hidden, TableCell, Tooltip, useMediaQuery, useTheme} from "@mui/material";
 import ParticipantGenderIcon from "../../../common/gender/ParticipantGenderIcon";
 import ParticipantGenderTooltip from "../../../common/gender/ParticipantGenderTooltip";
@@ -16,6 +15,8 @@ import {
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {Span} from "../../../common/theme/typography/Tags";
+import { EllipsisResponsive } from '../../../common/theme/EllipsisResponsive';
+import { useCustomMediaQuery } from "../../../common/theme/CustomMediaQueryHook";
 
 
 export type ParticipantClickCallback = {
@@ -59,6 +60,9 @@ function ParticipantDetailCells({participant, runningDinnerSessionData, showMisc
 
   const {t} = useTranslation("admin");
 
+  const {isDeviceBiggerAs} = useCustomMediaQuery();
+  const isBigDevice = isDeviceBiggerAs(1250);
+
   const teamPartnerWishChild = isTeamPartnerWishChild(participant);
   const showTeamPartnerInfo = isStringNotEmpty(participant.teamPartnerWishEmail) || isStringNotEmpty(participant.teamPartnerWishOriginatorId);
 
@@ -74,7 +78,7 @@ function ParticipantDetailCells({participant, runningDinnerSessionData, showMisc
           <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} colSpan={4}>
             {t("admin:team_partner_wish_registration_child_participant_root_info_1", { fullname: getFullname(participant.rootTeamPartnerWish!) })}
           </TableCellBorderBottomNullable>
-          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><ParticipantTeamPartnerWishIcon {...participant} /></TableCellBorderBottomNullable>
+          { isBigDevice && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><ParticipantTeamPartnerWishIcon {...participant} /></TableCellBorderBottomNullable> }
         </>
       }
       { !teamPartnerWishChild &&
@@ -84,11 +88,17 @@ function ParticipantDetailCells({participant, runningDinnerSessionData, showMisc
               <ParticipantGenderIcon gender={gender} />
             </ParticipantGenderTooltip>
           </TableCellBorderBottomNullable>
-          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}>{email}</TableCellBorderBottomNullable>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={{ textOverflow: 'ellipsis' }}>
+            <EllipsisResponsive text={email} numCharsBeforeTruncaction={17}/>
+          </TableCellBorderBottomNullable>
           <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><AddressLocation {...participant} /></TableCellBorderBottomNullable>
           <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} /></TableCellBorderBottomNullable>
-          { showTeamPartnerInfo && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><ParticipantTeamPartnerWishIcon {...participant} /></TableCellBorderBottomNullable> }
-          { !showTeamPartnerInfo && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}></TableCellBorderBottomNullable> }
+          {isBigDevice &&
+            <>
+              {showTeamPartnerInfo && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}><ParticipantTeamPartnerWishIcon {...participant} /></TableCellBorderBottomNullable>}
+              {!showTeamPartnerInfo && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}></TableCellBorderBottomNullable>}
+            </>
+          }
         </>
       }
     </Hidden>

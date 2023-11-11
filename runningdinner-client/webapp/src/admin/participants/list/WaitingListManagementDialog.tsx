@@ -465,7 +465,8 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
           { numRemainingParticipants > 0 &&
             <Paragraph data-testid={"waitinglist-teams-generation-view-remaining-participants-hint"}>
               <Trans i18nKey={"admin:waitinglist_generate_teams_num_participants_remaining"} values={{ numRemainingParticipants }} />
-              <Trans i18nKey={"admin:waitinglist_generate_teams_num_participants_missing"} values={{ numMissingParticipantsForFullTeamArrangement }} />
+              <Trans i18nKey={"admin:waitinglist_generate_teams_num_participants_missing"}
+                     values={{ numMissingParticipantsForFullTeamArrangement }} />
             </Paragraph>
           }
         </Grid>
@@ -512,7 +513,7 @@ function NoSimpleActionView({numMissingParticipantsForFullTeamArrangement, remai
           <Paragraph i18n={"admin:waitinglist_no_simple_action_distribution_options"} />
           <ul>
             <li><Trans i18nKey={"admin:waitinglist_no_simple_action_distribution_option_1"} /></li>
-            <li><Trans i18nKey={"admin:waitinglist_no_simple_action_distribution_option_2"} /></li>
+            <li><Trans i18nKey={"admin:waitinglist_no_simple_action_distribution_option_2"} values={{ numMissingParticipantsForFullTeamArrangement }} /></li>
           </ul>
           <Paragraph><strong>{t('common:note')}</strong>: <Trans i18nKey={"admin:waitinglist_no_simple_action_distribution_info"} /></Paragraph>
         </Box>

@@ -301,4 +301,20 @@ public class CoreUtil {
     return newCollection;
   }
 
+  public static boolean allNotNull(Object... objects) {
+    for (Object obj : objects) {
+      if (obj == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  public static <T> boolean setsAreEqual(Set<T> set1, Set<T> set2) {
+    if (set1.size() != set2.size()) {
+        return false; // If the sizes are different, they can't be equal.
+    }
+    return set1.containsAll(set2) && set2.containsAll(set1);
+}
+
 }

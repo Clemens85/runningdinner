@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {Box, Button, useMediaQuery, useTheme} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {CallbackHandler} from "@runningdinner/shared";
@@ -9,6 +9,7 @@ export function useMasterDetailView() {
   const [showDetailsView, setShowDetailsView] = useState(false);
 
   const theme = useTheme();
+
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
 
   const showListView = !isSmallDevice || !showDetailsView;

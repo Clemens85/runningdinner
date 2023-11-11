@@ -157,9 +157,9 @@ public class ParticipantService {
       missingParticipantsInfo = MissingParticipantsInfo.newWithExistingTeams(minimumParticipantsNeeded);
     } else {
       int numParticipantsMissing = minimumParticipantsNeeded - numParticipantsTotal;
-  		missingParticipantsInfo = MissingParticipantsInfo.newMissingParticipantsInfo(minimumParticipantsNeeded, Math.max(numParticipantsMissing, 0));
-  		
-  		int nextParticipantsOffsetSize = assignableParticipantSizes.getNextParticipantsOffsetSize();
+      missingParticipantsInfo = MissingParticipantsInfo.newMissingParticipantsInfo(minimumParticipantsNeeded,
+          Math.max(numParticipantsMissing, 0));
+      int nextParticipantsOffsetSize = assignableParticipantSizes.getNextParticipantsOffsetSize();
       if (allParticipants.size() >= minimumParticipantsNeeded && numParticipantsTotal % nextParticipantsOffsetSize != 0) {
       	int numNotAssignableParticipants = numParticipantsTotal % nextParticipantsOffsetSize;
       	participantsWaitingList = allParticipants.subList(numParticipantsTotal - numNotAssignableParticipants, numParticipantsTotal);
@@ -629,7 +629,7 @@ public class ParticipantService {
     String firstnamePart = teamPartnerWishRegistrationData.getFirstnamePart();
     String lastname = teamPartnerWishRegistrationData.getLastname();
     
-    Participant teamPartnerWish = participant.createDetachedClone();
+    Participant teamPartnerWish = participant.createDetachedClone(false);
     teamPartnerWish.setHost(false); // Not needed, but just to be sure
     
     teamPartnerWish.setName(ParticipantName.newName().withFirstname(firstnamePart).andLastname(lastname));

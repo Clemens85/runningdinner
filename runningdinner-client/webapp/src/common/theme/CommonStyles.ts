@@ -1,5 +1,5 @@
 import {styled} from "@mui/material/styles";
-import {Paper, SxProps, TableCell, TableRow, Theme} from "@mui/material";
+import {Grid, Paper, SxProps, TableCell, TableRow, Theme} from "@mui/material";
 
 export const TableRowWithCursor = styled(TableRow)({
   cursor: "pointer"
@@ -16,6 +16,12 @@ export const TableCellBorderBottomNullable = styled(TableCell, {
 
 export const PaperGrey = styled(Paper)({
   backgroundColor: '#eee',
+});
+
+export const GridWithCenteredFullwidthButton = styled(Grid)({
+  '& button': {
+    width: "100%"
+  }
 });
 
 export const commonStyles: Record<string, SxProps<Theme> | undefined> = {

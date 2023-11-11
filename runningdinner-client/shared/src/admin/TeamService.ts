@@ -29,6 +29,12 @@ export async function reCreateTeamArrangementsAsync(adminId: string): Promise<Te
   return response.data;
 }
 
+export async function dropTeamArrangementsAsync(adminId: string): Promise<TeamArrangementList> {
+  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}`);
+  const response = await axios.delete(url);
+  return response.data;
+}
+
 export async function swapTeamMembersAsync(adminId: string, firstParticipantId: string, secondParticipantId: string): Promise<TeamArrangementList> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/teammembers/swap/${firstParticipantId}/${secondParticipantId}`);
   const response = await axios.put(url);

@@ -1,5 +1,11 @@
 const NewsMessages_en: any = {
 
+  news_title_20231108: 'Swap Order of Participants + Minor Bugfix',
+  news_content_20231108: 'From time to time it may happen that you want to move participants from or to the waiting list. ' +
+                         'Now you can move participants up and down the list as you wish and thus change their order (and thus also the waiting list). ' + 
+                         'Simply click on the "..." next to a selected participant and select "Swap order". <br/>' +
+                         'In addition, an error in the waiting list has been fixed when additional teams are generated: Existing teams should now always be retained.',
+
   news_title_20231013: 'Technical Updates',
   news_content_20231013: 'Today some basic technological updates were applied. Of course, everything was thoroughly tested, ' +
                          'but if an error should come up at any point, please bear with us and contact us directly via feedback!',

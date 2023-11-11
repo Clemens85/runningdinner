@@ -194,3 +194,9 @@ async function enhanceParticipantsWithTeamPartnerRegistrationData(adminId: strin
     }
   }
 }
+
+
+export async function swapParticipantNumbersAsync(adminId: string, firstParticipantId: string, secondParticipantId: string): Promise<void> {
+  const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/swap/${firstParticipantId}/${secondParticipantId}`);
+  await axios.put(url);
+}

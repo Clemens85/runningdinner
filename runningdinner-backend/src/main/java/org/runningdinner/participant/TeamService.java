@@ -214,30 +214,45 @@ public class TeamService {
   public TeamArrangementListTO dropAndReCreateTeamAndVisitationPlans(@ValidateAdminId String adminId, List<Participant> participantsForAdditionalGeneration) {
 
     final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-    LOGGER.info("Drop existing teams and re-create teams and visitation-plans for dinner {}. Use additional participants from waitinglist", 
-    					  adminId, participantsForAdditionalGeneration);
 
-    List<TeamTO> existingTeamInfosToRestore = Collections.emptyList();
-    
     boolean generateAdditionalTeamsFromWaitingList = CollectionUtils.isNotEmpty(participantsForAdditionalGeneration);
     
-    if (generateAdditionalTeamsFromWaitingList) {
-	    List<Team> existingTeams = findTeamArrangements(adminId, true);
-	    existingTeamInfosToRestore = TeamTO.convertTeamList(existingTeams);
-    }
+    List<TeamTO> existingTeamInfosToRestore = dropTeamAndAndVisitationPlans(adminId, generateAdditionalTeamsFromWaitingList, false);
     
-    participantRepository.updateTeamReferenceAndHostToNull(adminId);
-    teamRepository.deleteByAdminId(adminId);
+    LOGGER.info("Re-create teams and visitation-plans for dinner {}. Use additional participants from waitinglist {}", adminId, participantsForAdditionalGeneration);
 
     List<Team> teams = createTeamsAndVisitationPlan(runningDinner, existingTeamInfosToRestore, participantsForAdditionalGeneration);
 
     if (!generateAdditionalTeamsFromWaitingList) {
     	// Default case for only re-generate teams. 
     	// If teams are added from waitinglist (generateAdditionalTeamsFromWaitingList == true) ,then the waitinglist fires its own event instead.
-    	emitTeamsReCreatedEvent(runningDinner, teams); 
+        emitTeamArrangementsDroppedEvent(runningDinner, teams, true); 
     }
     
     return newTeamArrangementList(teams, adminId);
+  }
+  
+  @Transactional
+  public List<TeamTO> dropTeamAndAndVisitationPlans(@ValidateAdminId String adminId, boolean gatherTeamRestoreInformation, boolean emitEvent) {
+    
+    LOGGER.info("Drop existing teams and visitation-plans for dinner {}", adminId);
+
+    List<TeamTO> existingTeamInfosToRestore = Collections.emptyList();
+    
+    if (gatherTeamRestoreInformation) {
+        List<Team> existingTeams = findTeamArrangements(adminId, true);
+        existingTeamInfosToRestore = TeamTO.convertTeamList(existingTeams);
+    }
+    
+    participantRepository.updateTeamReferenceAndHostToNull(adminId);
+    teamRepository.deleteByAdminId(adminId);
+    
+    if (emitEvent) {
+      RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+      emitTeamArrangementsDroppedEvent(runningDinner, Collections.emptyList(), false); 
+    }
+    
+    return existingTeamInfosToRestore;
   }
   
   private List<Team> createTeamsAndVisitationPlan(RunningDinner runningDinner, 
@@ -325,21 +340,21 @@ public class TeamService {
     });
   }
   
-  protected void emitTeamsReCreatedEvent(final RunningDinner dinner, final List<Team> teams) {
+  protected void emitTeamArrangementsDroppedEvent(final RunningDinner dinner, final List<Team> teams, boolean teamsRecreated) {
 
     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 
       @Override
       public void afterCommit() {
 
-        eventPublisher.notifyTeamsReCreated(teams, dinner);
+        eventPublisher.notifyTeamArrangementsDropped(teams, dinner, teamsRecreated);
       }
     });
   }
 
   protected GeneratedTeamsResult generateTeamPlan(final RunningDinnerConfig runningDinnerConfig, 
-  																							  final List<TeamTO> existingTeamsToKeep, 
-  																							  final List<Participant> participants) throws NoPossibleRunningDinnerException {
+  												  final List<TeamTO> existingTeamsToKeep, 
+  												  final List<Participant> participants) throws NoPossibleRunningDinnerException {
 
     GeneratedTeamsResult generatedTeams = runningDinnerCalculator.generateTeams(runningDinnerConfig, participants, existingTeamsToKeep, Collections::shuffle);
     runningDinnerCalculator.assignRandomMealClasses(generatedTeams, runningDinnerConfig.getMealClasses(), existingTeamsToKeep);
@@ -426,7 +441,7 @@ public class TeamService {
       @Override
       public void afterCommit() {
 
-        eventPublisher.notifySendTeamMembersSwappedEvent(firstParticipant, secondParticipant, parentTeams, runningDinner);
+        eventPublisher.notifyTeamMembersSwappedEvent(firstParticipant, secondParticipant, parentTeams, runningDinner);
       }
     });
   }

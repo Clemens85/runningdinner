@@ -1,15 +1,15 @@
 import {Link} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
-import React from "react";
 import {isStringEmpty, Parent} from "@runningdinner/shared";
 
 export interface LinkInternProps extends Parent {
   pathname: string;
   color?: string;
   href?: string;
+  target?: string;
 }
 
-export default function LinkIntern({pathname, color, href, children}: LinkInternProps) {
+export default function LinkIntern({pathname, color, href, target, children}: LinkInternProps) {
 
   const colorToSet = isStringEmpty(color) ? "primary" : color;
 
@@ -20,6 +20,7 @@ export default function LinkIntern({pathname, color, href, children}: LinkIntern
       component={RouterLink}
       color={colorToSet}
       href={href}
+      target={target}
       underline="hover">
       {children}
     </Link>
