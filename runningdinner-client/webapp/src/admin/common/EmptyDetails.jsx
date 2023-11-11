@@ -1,7 +1,8 @@
 import {useTranslation} from "react-i18next";
-import {Grid, Hidden, Paper, Typography} from "@mui/material";
+import {Grid, Paper, Typography} from "@mui/material";
 import React, {useRef} from "react";
 import {useDynamicFullscreenHeight} from "../../common/hooks/DynamicFullscreenHeightHook";
+import {useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 
 export const EmptyDetails = ({labelI18n}) => {
 
@@ -10,9 +11,11 @@ export const EmptyDetails = ({labelI18n}) => {
   const paperRef = useRef(null);
   const paperHeight = useDynamicFullscreenHeight(paperRef, 300);
 
+  const {showDetailsView} = useMasterDetailView();
+
   return (
     <div ref={paperRef}>
-      <Hidden mdDown>
+      { showDetailsView && 
           <Paper style={{height: paperHeight, display: 'flex' }} elevation={3}>
             <Grid container justifyContent={"center"} alignItems={"center"}>
               <Grid item>
@@ -20,7 +23,7 @@ export const EmptyDetails = ({labelI18n}) => {
               </Grid>
             </Grid>
           </Paper>
-      </Hidden>
+      }
     </div>
   );
 };

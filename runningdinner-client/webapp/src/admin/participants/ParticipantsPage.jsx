@@ -22,6 +22,7 @@ import {
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 import ParticipantsListView from "./list/ParticipantsListView";
+import { useCustomMediaQuery } from '../../common/theme/CustomMediaQueryHook';
 
 export default function ParticipantsPage({runningDinner}) {
 
@@ -52,6 +53,8 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
           getIsOpenData: getTeamPartnerWishInfo } = useDisclosure(false);
 
   const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
+  const {isBigTabletDevice} = useCustomMediaQuery();
+  const isBigTablet = isBigTabletDevice();
 
   useEffect(() => {
     const allParticipants = concatParticipantList(participantList);
@@ -128,7 +131,7 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
         }
         <Grid container spacing={2}>
           { showListView &&
-            <Grid item xs={12} md={7}>
+            <Grid item xs={12} md={isBigTablet ? 12 : 7}>
               <ParticipantsListView participantsListInfo={participantsListInfo}
                                     participantList={participantList}
                                     selectedParticipant={selectedParticipant}
@@ -138,7 +141,7 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
                                     onClick={editParticipant} />
             </Grid>
           }
-          <Grid item xs={12} md={5}>
+          <Grid item xs={12} md={isBigTablet ? 12 : 5}>
             { showDetailsView
                 ? <ParticipantForm participant={selectedParticipant}
                                    participantList={participantList}

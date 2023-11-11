@@ -9,6 +9,7 @@ export function useMasterDetailView() {
   const [showDetailsView, setShowDetailsView] = useState(false);
 
   const theme = useTheme();
+
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
 
   const showListView = !isSmallDevice || !showDetailsView;

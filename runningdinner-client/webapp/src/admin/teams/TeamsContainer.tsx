@@ -33,6 +33,7 @@ import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDe
 import { TeamArrangementActionsButton } from "./TeamArrangementActionsButton";
 import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
+import { useCustomMediaQuery } from "../../common/theme/CustomMediaQueryHook";
 
 const TeamsContainer = () => {
 
@@ -83,6 +84,9 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   const {showSuccess} = useCustomSnackbar();
 
   const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
+
+  const {isBigTabletDevice} = useCustomMediaQuery();
+  const isBigTablet = isBigTabletDevice();
 
   useEffect(() => {
     if (teamId) {
@@ -186,19 +190,19 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
           <Grid container spacing={2}>
             { showListView &&
                 <>
-                  <Grid item xs={12} md={7} sx={{ textAlign: 'right' }}>
+                  <Grid item xs={12} md={isBigTablet ? 12 : 7} sx={{ textAlign: 'right' }}>
                     <SendTeamMessagsDropdown adminId={adminId} />
                   </Grid>
-                  <Grid item xs={12} md={5} sx={{ textAlign: 'right' }}>
+                  <Grid item xs={12} md={isBigTablet ? 12 :5 } sx={{ textAlign: 'right' }}>
                     <TeamArrangementActionsButton adminId={adminId} onTeamsRegenerated={handleTeamsRegenerated}/>
                   </Grid>
-                  <Grid item xs={12} md={7}>
+                  <Grid item xs={12} md={isBigTablet ? 12 : 7}>
                     <TeamsList teams={teams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}
                                onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} selectedTeam={selectedTeam} />
                   </Grid>
                 </>
             }
-            <Grid item xs={12} md={5}>
+            <Grid item xs={12} md={isBigTablet ? 12 : 5}>
               { showDetailsView && selectedTeam
                   ? <>
                       { showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}

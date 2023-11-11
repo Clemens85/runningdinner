@@ -1,5 +1,5 @@
 import { getTruncatedText } from "@runningdinner/shared";
-import {useIsDeviceBig} from "./IsDeviceBigHook";
+import {useCustomMediaQuery} from "./CustomMediaQueryHook";
 import { Tooltip } from "@mui/material";
 
 type EllipsisResponsiveProps = {
@@ -9,9 +9,9 @@ type EllipsisResponsiveProps = {
 
 export function EllipsisResponsive({text, numCharsBeforeTruncaction}: EllipsisResponsiveProps) {
 
-  const isBigDevice = useIsDeviceBig(1450);
+  const {isDeviceBiggerAs} = useCustomMediaQuery();
 
-  if (isBigDevice || text.length <= numCharsBeforeTruncaction) {
+  if (isDeviceBiggerAs(1450) || text.length <= numCharsBeforeTruncaction) {
     return <span>{text}</span>
   }
 
