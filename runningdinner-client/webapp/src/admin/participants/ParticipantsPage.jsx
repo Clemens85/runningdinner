@@ -22,7 +22,7 @@ import {
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 import ParticipantsListView from "./list/ParticipantsListView";
-import { useCustomMediaQuery } from '../../common/theme/CustomMediaQueryHook';
+import { useIsBigTabletDevice } from '../../common/theme/CustomMediaQueryHook';
 
 export default function ParticipantsPage({runningDinner}) {
 
@@ -53,8 +53,7 @@ const ParticipantsView = ({runningDinner, participantList, selectedParticipantId
           getIsOpenData: getTeamPartnerWishInfo } = useDisclosure(false);
 
   const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
-  const {isBigTabletDevice} = useCustomMediaQuery();
-  const isBigTablet = isBigTabletDevice();
+  const isBigTablet = useIsBigTabletDevice();
 
   useEffect(() => {
     const allParticipants = concatParticipantList(participantList);

@@ -33,7 +33,7 @@ import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDe
 import { TeamArrangementActionsButton } from "./TeamArrangementActionsButton";
 import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
-import { useCustomMediaQuery } from "../../common/theme/CustomMediaQueryHook";
+import { useIsBigTabletDevice } from "../../common/theme/CustomMediaQueryHook";
 
 const TeamsContainer = () => {
 
@@ -85,8 +85,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
 
   const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
 
-  const {isBigTabletDevice} = useCustomMediaQuery();
-  const isBigTablet = isBigTabletDevice();
+  const isBigTablet = useIsBigTabletDevice();
 
   useEffect(() => {
     if (teamId) {

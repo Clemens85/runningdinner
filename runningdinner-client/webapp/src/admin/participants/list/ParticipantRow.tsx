@@ -16,7 +16,7 @@ import {
 import {useTranslation} from "react-i18next";
 import {Span} from "../../../common/theme/typography/Tags";
 import { EllipsisResponsive } from '../../../common/theme/EllipsisResponsive';
-import { useCustomMediaQuery } from "../../../common/theme/CustomMediaQueryHook";
+import { useIsDeviceMinWidth } from "../../../common/theme/CustomMediaQueryHook";
 
 
 export type ParticipantClickCallback = {
@@ -60,8 +60,7 @@ function ParticipantDetailCells({participant, runningDinnerSessionData, showMisc
 
   const {t} = useTranslation("admin");
 
-  const {isDeviceBiggerAs} = useCustomMediaQuery();
-  const isBigDevice = isDeviceBiggerAs(1250);
+  const isBigDevice = useIsDeviceMinWidth(1250);
 
   const teamPartnerWishChild = isTeamPartnerWishChild(participant);
   const showTeamPartnerInfo = isStringNotEmpty(participant.teamPartnerWishEmail) || isStringNotEmpty(participant.teamPartnerWishOriginatorId);
