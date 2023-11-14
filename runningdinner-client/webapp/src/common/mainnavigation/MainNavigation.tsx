@@ -17,6 +17,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import {FeedbackButtonContainerRightAligned} from "../feedback/FeedbackButton";
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "./NavigationPaths";
 import {Breakpoint, styled} from '@mui/material/styles';
+import { DonateButton } from '../donate/DonateButton';
 
 const HomeTitle = styled(Typography)(({theme}) => ({
   marginRight: theme.spacing(4)
@@ -119,7 +120,16 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
             </Grid>
           </Grid>
           <Grid item>
-            <LanguageSwitch />
+            <Grid container>
+              <Hidden only={hiddenForMobileView}>
+                <Grid item sx={{ pr: 12 }}>
+                  <DonateButton />
+                </Grid>
+              </Hidden>
+              <Grid item>
+                <LanguageSwitch />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Toolbar>

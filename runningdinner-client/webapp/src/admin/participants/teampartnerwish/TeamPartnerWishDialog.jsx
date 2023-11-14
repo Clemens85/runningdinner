@@ -4,6 +4,7 @@ import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import React from "react";
 import {Span} from "../../../common/theme/typography/Tags";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
+import {GridWithCenteredFullwidthButton} from "../../../common/theme/CommonStyles"
 import {PrimarySuccessButtonAsync} from "../../../common/theme/PrimarySuccessButtonAsync";
 import {
   handleTeamPartnerWishAction,
@@ -16,7 +17,7 @@ import {SecondaryButtonAsync} from "../../../common/theme/SecondaryButtonAsync";
 import Grid from "@mui/material/Grid";
 import {getFullname, isClosedDinner, CONSTANTS} from "@runningdinner/shared";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
-import {styled} from "@mui/material/styles";
+import {styled} from "@mui/material";
 
 export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpen, onClose}) => {
 
@@ -115,11 +116,6 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
   );
 };
 
-const GridWithCenteredFullwidthButton = styled(Grid)({
-  '& button': {
-    width: "100%"
-  }
-});
 const SendInvitationButtonSpan = styled('span')(({theme}) => ({
   marginRight: theme.spacing(2),
   marginLeft: theme.spacing(1),
@@ -144,7 +140,7 @@ function DialogButtons({sendInvitationButton, createNewParticipantButton, update
   const renderButtonsMobile = () => {
     return (
       <Box p={1}>
-        <Grid container diretion="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
+        <Grid container direction="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
           { createNewParticipantButton && <GridWithCenteredFullwidthButton item xs={12}>{ createNewParticipantButton }</GridWithCenteredFullwidthButton> }
           { sendInvitationButton && <GridWithCenteredFullwidthButton item xs={12}>{ sendInvitationButton }</GridWithCenteredFullwidthButton> }
           { updateTeamPartnerWishButton && <GridWithCenteredFullwidthButton item xs={12}>{ updateTeamPartnerWishButton }</GridWithCenteredFullwidthButton> }

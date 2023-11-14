@@ -42,6 +42,8 @@ import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 import {useMessagesQueryHandler} from "./MessagesQueryHandlerHook";
 import {FetchStatus} from "@runningdinner/shared";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
+import { useDonatePopup } from "../common/useDonatePopup";
+import { DonateDialog, DonateDialogType } from "../../common/donate/DonateButton";
 
 export function TeamMessages({runningDinner}: BaseRunningDinnerProps) {
 
@@ -147,6 +149,8 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
 
   const {headline, selectedTeamIds, preselectAllRecipients} = useMessagesQueryHandler(messageType);
 
+  const {setDonatePopupOpenIfSuitable, showDonatePopup, closeDonatePopup} = useDonatePopup({adminId});
+
   const formMethods = useForm({
     // @ts-ignore
     defaultValues: exampleMessage,
@@ -172,10 +176,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
       // @ts-ignore When running in this case, we have always teamSelection
       setValue("teamSelection", CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION);
       dispatch(setCustomSelectedRecipients(preSelectedTeams));
-    } 
-    // else if (recipients.fetchStatus === FetchStatus.SUCCEEDED && isArrayEmpty(selectedTeamIds)) {
-    //   dispatch(setCustomSelectedRecipients([]));
-    // } 
+    }
     else if (preselectAllRecipients && recipients.fetchStatus === FetchStatus.SUCCEEDED) {
       // @ts-ignore We get the correct field name...:
       setValue(getRecipientFormFieldName(messageType), CONSTANTS.RECIPIENT_SELECTION_COMMON.ALL);
@@ -191,6 +192,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
       window.scrollTo(0, 0);
       await sendMessagesPromise;
       showSuccess(t("admin:mails_sending_submitted"));
+      setDonatePopupOpenIfSuitable(messageType);
     } catch(e) {
       applyValidationIssuesToForm(e as HttpError, setError);
       showHttpErrorDefaultNotification(e as HttpError);
@@ -315,5 +317,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
 
       </form>
     </FormProvider>
+    { showDonatePopup && <DonateDialog onClose={remindMe => closeDonatePopup(messageType, remindMe) } 
+                          donateDialogType={messageType === MessageType.MESSAGE_TYPE_DINNERROUTE ? DonateDialogType.DINNER_ROUTE_MESSAGES : DonateDialogType.TEAM_MESSAGES} /> }
   </>;
 }

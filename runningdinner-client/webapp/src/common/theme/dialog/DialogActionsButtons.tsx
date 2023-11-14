@@ -40,7 +40,7 @@ export function DialogActionsButtons({okButton, cancelButton}: DialogActionsButt
 
   const renderButtonsMobile = () => {
     return (
-      <Box p={1}>
+      <Box sx={{width: "100%", p: 1 }}>
         <Grid container direction="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
           { okButton && <GridWithCenteredFullwidthButton item xs={12}>{ okButton }</GridWithCenteredFullwidthButton> }
           <Grid item xs={12} sx={{ textAlign: "center" }}>{ cancelButton }</Grid>

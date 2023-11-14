@@ -51,6 +51,11 @@
 	"details": "Details",
 	"dinner_route": "Dinner-Route",
 	"dinner_route_geocoding_warning": "The route cannot be rendered completely, due to there is at least one position which could not be resolved.",
+	"donate": "Donate",
+	"donate_continue": "Continue to donation",
+	"donate_no_paypal_contact": "You don't have PayPal and still want to donate? Please contact <anchor href='mailto:{{email}}' title='{{email}}' />",
+	"donate_thanks_support": "Thank you very much for your support!",
+
 
 	"email": "Email",
 	"endOfRegistrationDate_help": "Typically the deadline should be some days before the event.",
@@ -107,6 +112,7 @@
 	"no_information": "No information",
 	"no_thanks": "No, thanks",
 	"note": "Note",
+	"not_now": "Not now",
 	"number_seats": "Number of seats",
 	"number_seats_help": "Total number (including cooking team)",
 	"num_seats_invalid": "Please enter a number (zero allowed)",
@@ -153,6 +159,7 @@
 	"registrationtype_open_description": "The event is not public visible, but participants can registrate themself by using a secret link that you distribute to all your friends.",
 	"registrationtype_public": "Public",
 	"registrationtype_public_description": "The event is public visible and everybody can register to the event.",
+	"remind_me": "Remind me again later",
 	"reset": "Reset",
 
 	"save": "Save",
