@@ -38,10 +38,10 @@ public interface MessageTaskRepository extends RunningDinnerRelatedRepository<Me
                                          @Param("failureMessage") String failureMessage);
 
   
-  MessageTask findByMessageReplyToAndRecipientEmailAndParentJobMessageTypeAndAdminId(String senderEmail, 
-                                                                                     String recipientEmail, 
-                                                                                     MessageType messageType, 
-                                                                                     String adminId);  
+  List<MessageTask> findByMessageReplyToAndRecipientEmailAndParentJobMessageTypeAndAdminId(String senderEmail, 
+                                                                                           String recipientEmail, 
+                                                                                           MessageType messageType, 
+                                                                                           String adminId);  
   
   long countByAdminIdAndSendingResultDelieveryFailed(String adminId, boolean delieveryFailed);
   

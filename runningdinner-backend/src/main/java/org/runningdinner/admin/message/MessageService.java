@@ -391,13 +391,12 @@ public class MessageService {
     return messageJobRepository.findByAdminIdAndId(adminId, messageJobId);
   }
 
-  public Optional<MessageTask> findMessageTaskBySenderAndRecipient(@ValidateAdminId String adminId, 
-                                                                   String senderEmail, 
-                                                                   String recipientEmail, 
-                                                                   MessageType messageType) {
+  public List<MessageTask> findMessageTasksBySenderAndRecipient(@ValidateAdminId String adminId, 
+                                                                String senderEmail, 
+                                                                String recipientEmail, 
+                                                                MessageType messageType) {
 
-    MessageTask result = messageTaskRepository.findByMessageReplyToAndRecipientEmailAndParentJobMessageTypeAndAdminId(senderEmail, recipientEmail, messageType, adminId);
-    return Optional.ofNullable(result);
+    return messageTaskRepository.findByMessageReplyToAndRecipientEmailAndParentJobMessageTypeAndAdminId(senderEmail, recipientEmail, messageType, adminId);
   }
   
   public List<MessageTask> findNonFailedEndUserMessageTasksByRecipientsStartingFrom(Collection<String> recipientEmails, LocalDateTime fromTime) {

@@ -37,7 +37,8 @@ public class TeamPartnerWishService {
     if (StringUtils.isNotEmpty(participant.getTeamPartnerWishEmail())) {
       List<Participant> foundTeamPartnerWish = participantService.findParticipantByEmail(adminId, participant.getTeamPartnerWishEmail());
       if (CollectionUtils.isEmpty(foundTeamPartnerWish)) {
-        if (messageService.findMessageTaskBySenderAndRecipient(adminId, participant.getEmail(), participant.getTeamPartnerWishEmail(), MessageType.TEAM_PARTNER_WISH).isPresent()) {
+        var messageTasksForSenderAndRecipient = messageService.findMessageTasksBySenderAndRecipient(adminId, participant.getEmail(), participant.getTeamPartnerWishEmail(), MessageType.TEAM_PARTNER_WISH);
+        if (CollectionUtils.isNotEmpty(messageTasksForSenderAndRecipient)) {
           return Optional.empty(); // This shall prevent duplicated invitation emails!
         }
         return Optional.of(TeamPartnerWish.notExisting(participant));
