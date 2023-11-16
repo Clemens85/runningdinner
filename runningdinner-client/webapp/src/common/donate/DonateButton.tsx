@@ -59,7 +59,7 @@ export function DonateDialog({onClose, donateDialogType}: DonateDialogProps) {
     onClose(remindMe);
   }
 
-  const title = donateDialogType === DonateDialogType.STANDARD ? "Liebe Nutzerinnen und Nutzer" : "Bist du zufrieden mit runyourdinner?";
+  const title = donateDialogType === DonateDialogType.STANDARD ? t("common:dear_users") : t("donate_headline_messages");
 
   return (
     <Dialog onClose={handleClose} open={true} maxWidth={"md"}>
@@ -71,7 +71,7 @@ export function DonateDialog({onClose, donateDialogType}: DonateDialogProps) {
         { donateDialogType === DonateDialogType.DINNER_ROUTE_MESSAGES && <DinnerRouteMessagesDonateContent /> }                                                                                      
       </DialogContent>
       <DialogActions>
-        <DialogActionsButtons okButton={<PrimarySuccessButtonAsync onClick={() => onClose(false)} 
+        <DialogActionsButtons okButton={<PrimarySuccessButtonAsync onClick={handleClose} 
                                                                    href={donationLink} 
                                                                    target="_blank"
                                                                    rel="noopener noreferrer"
@@ -99,23 +99,15 @@ function TeamMessagesDonateContent({remindMe, onRemindMeChanged}: RemindMeProps)
 
   return (
     <>
+      <Paragraph>{t("common:donate_team_messages_intro")}</Paragraph><br/>
       <Paragraph>
-        Wahrscheinlich kommt das jetzt ungelegen, aber dennoch, bitte nicht einfach wegklicken!
+        {t("common:donate_team_messages_prompt")}<br/>
+        {t("common:donate_team_messages_amount")}
       </Paragraph><br/>
-      <Paragraph>
-        Wenn dir runyourdinner dein Leben als Event Organisator/in leichter gemacht oder dich vielleicht sogar begeistert hat, 
-        so überlege doch bitte hierfür etwas zu spenden.<br/>
-        Denn jeder Beitrag, egal ob klein oder groß, hilft weiter, auch künftig eigene Events ohne Werbung & Co veranstalten zu können.
-      </Paragraph><br/>
-      <Paragraph>
-        Die meisten Event-Veranstalter/innen erheben oft eine kleine Teilnahmegebühr. Oft gibt es auch eine After-Event-Party an welcher Geld gesammelt wird.<br/>
-        Wenn du von jedem Teilnehmer einen kleinen Teil der Gebühr einsammelst und als Summe spendest wäre sehr geholfen und niemand hat viel Geld ausgegeben.
-      </Paragraph><br/>
-
+      <Paragraph><Trans i18nKey={"common:donate_team_messages_hint"} /></Paragraph><br/>
       <ThanksForSupport/>
-
       <Box my={2}>
-        <i>Selbstverständlich sind weiterhin alle Funktionen ohne Spende zugänglich, es gibt keine Zwei-Klassen-Behandlung.</i>
+        <i>{t("common:donate_team_messages_all_functions")}</i>
       </Box>
 
       <Box mt={2}>
@@ -131,18 +123,9 @@ function TeamMessagesDonateContent({remindMe, onRemindMeChanged}: RemindMeProps)
 function DinnerRouteMessagesDonateContent() {
   return (
     <>
-      <Paragraph>
-        Du bist nun beim finalen Schritt, nämlich dem Versand der Dinner-Routen angelangt, und wolltest eine Erinnerung zur Spende.
-      </Paragraph><br/>
-
-      <Paragraph>
-        Es wurde bereits alles gesagt, wir würden uns sehr über eine Spende freuen, insbesondere wenn dir runyourdinner bei der Organisation deines Events geholfen hat.
-      </Paragraph><br/>
-      
-      <Paragraph>
-        Du kannst jederzeit - natürlich auch nach Stattfinden deines Events - durch den Spenden-Button in der Navigation eine Spende hinterlegen.
-      </Paragraph><br/>
-
+      <Paragraph><Trans i18nKey={"common:donate_dinner_route_messages_intro"} /></Paragraph><br/>
+      <Paragraph><Trans i18nKey={"common:donate_dinner_route_messages_prompt"} /></Paragraph><br/>
+      <Paragraph><Trans i18nKey={"common:donate_dinner_route_messages_amount"} /></Paragraph><br/>
       <ThanksForSupport/>
     </>
   );
@@ -151,17 +134,9 @@ function DinnerRouteMessagesDonateContent() {
 function StandardDonateContent() {
   return (
     <>
-    <Paragraph>
-      Mit <i>runyourdinner</i> bieten wir eine kostenlose und werbefreie Plattform zur Durchführung von Running Dinner Events an, welche so in dieser Form einmalig ist.
-    </Paragraph><br/>
-    <Paragraph>
-      Die Plattform wird ohne kommerziellen Anspruch entwickelt und betrieben, und die Kosten für Server, Wartung und Entwicklung werden aus eigener Tasche gedeckt. 
-      Deine Spende hilft diese Kosten zu tragen und die Plattform aufrechtzuerhalten.<br/>
-    </Paragraph><br/>
-    <Paragraph>
-    Jeder Beitrag, ob klein oder groß, ist willkommen und und sorgt dafür, dass es auch weiterhin kostenlos und werbefrei bleiben kann 
-    und das auch künftig neue tolle Features hinzukommen.
-    </Paragraph><br/>
+    <Paragraph><Trans i18nKey={"common:donate_standard_intro"} /></Paragraph><br/>
+    <Paragraph><Trans i18nKey="common:donate_standard_prompt" /></Paragraph><br/>
+    <Paragraph><Trans i18nKey={"common:donate_standard_amount"} /></Paragraph><br/>
     <ThanksForSupport/>
     </>
   );
