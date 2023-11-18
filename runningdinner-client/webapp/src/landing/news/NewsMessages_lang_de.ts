@@ -1,5 +1,8 @@
 const NewsMessages_de: any = {
 
+  news_title_20231118: 'Speisen zwischen Teams tauschen',
+  news_content_20231118: 'Es ist jetzt möglich die Speisen zwischen einzelnen Teams zu tauschen. Einfach auf die "..." neben dem ausgewählten Team klicken und dort "Speise tauschen" wählen.',
+
   news_title_20231108: 'Reihenfolge von Teilnehmern tauschen + kleiner Bugfix',
   news_content_20231108: 'Ab und zu kann es vorkommen, dass man Teilnehmer von bzw. auf die Warteliste schieben will. ' +
                          'Jetzt kann man Teilnehmer beliebig in der Liste rauf und runter schieben und damit deren Reihenfolge (und damit auch die Warteliste) ändern. ' + 

@@ -1,5 +1,8 @@
 const NewsMessages_en: any = {
 
+  news_title_20231118: 'Swap meals between teams',
+  news_content_20231118: 'It is now possible to swap meals between individual teams. Simply click on the "..." next to the selected team and select "Swap meal".',
+
   news_title_20231108: 'Swap Order of Participants + Minor Bugfix',
   news_content_20231108: 'From time to time it may happen that you want to move participants from or to the waiting list. ' +
                          'Now you can move participants up and down the list as you wish and thus change their order (and thus also the waiting list). ' + 
