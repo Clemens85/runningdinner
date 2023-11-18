@@ -48,7 +48,6 @@ function NotActivatedParticipantsAlert({teamsNotExistingInfo, adminId}) {
     return null;
   }
 
-  // TODO 
   return (
     <Box mt={3}>
       <Alert severity={"warning"}>
