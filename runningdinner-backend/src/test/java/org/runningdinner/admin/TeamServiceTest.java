@@ -4,18 +4,12 @@ package org.runningdinner.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +22,7 @@ import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
@@ -446,6 +441,42 @@ public class TeamServiceTest {
       assertThat(teamReloaded.getHostTeamMember()).isNotNull();
       assertThat(teamReloaded.getTeamMembers()).hasSize(1);
     }
+  }
+
+  @Test
+  public void swapMeals() {
+
+    Team originalTeamWithVorspeise = findTeamWithMeal("Vorspeise", null);
+    Team originalTeamWithHauptspeise = findTeamWithMeal("Hauptspeise", originalTeamWithVorspeise);
+    int originalTeamNumberVorspeise = originalTeamWithVorspeise.getTeamNumber();
+    int originalTeamNumberHauptspeise = originalTeamWithHauptspeise.getTeamNumber();
+    var originalVorspeiseTeamMembers = originalTeamWithVorspeise.getTeamMembers();
+    var originalHauptspeiseTeamMembers = originalTeamWithHauptspeise.getTeamMembers();
+
+    var swappedTeams = teamService.swapMeals(runningDinner.getAdminId(), originalTeamWithHauptspeise.getId(), originalTeamWithVorspeise.getId());
+    assertThat(swappedTeams).hasSize(2);
+
+    List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), true);
+
+    var updatedTeam = CoreUtil.findById(teams, originalTeamWithVorspeise.getId());
+    assertThat(updatedTeam.getTeamNumber()).isEqualTo(originalTeamNumberVorspeise);
+    assertThat(updatedTeam.getMealClass().getLabel()).isEqualTo("Vorspeise");
+    assertThat(updatedTeam.getTeamMembers()).containsExactlyElementsOf(originalHauptspeiseTeamMembers);
+
+    updatedTeam = CoreUtil.findById(teams, originalTeamWithHauptspeise.getId());
+    assertThat(updatedTeam.getTeamNumber()).isEqualTo(originalTeamNumberHauptspeise);
+    assertThat(updatedTeam.getMealClass().getLabel()).isEqualTo("Hauptspeise");
+    assertThat(updatedTeam.getTeamMembers()).isEqualTo(originalVorspeiseTeamMembers);
+  }
+
+  private Team findTeamWithMeal(String mealLabel, Team teamToExclude) {
+    List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), true);
+    return teams
+      .stream()
+      .filter(t -> StringUtils.equals(t.getMealClass().getLabel(), mealLabel))
+      .filter(t -> !Objects.equals(t, teamToExclude))
+      .findFirst()
+      .orElseThrow();
   }
   
   private Participant pickRandomTeamMember(Team team) {

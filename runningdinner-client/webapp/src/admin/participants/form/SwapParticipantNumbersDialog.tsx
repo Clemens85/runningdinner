@@ -76,7 +76,6 @@ function SelectParticiantToSwitch({adminId, participantList, srcParticipant, sel
       </Box>
 
       <Autocomplete
-        id="combo-box-demo"
         options={participantOptions}
         value={selectedParticipant}
         onChange={(_evt, newValue) => { onSelectedParticipantChange(newValue) }}
@@ -119,7 +118,7 @@ export function SwapParticipantNumbersDialog({onCancel, onParticipantsSwapped, s
     }
     try {
       await swapParticipantNumbersAsync(adminId, srcParticipant.id!, selectedParticipantForSwap.id);
-      showSuccess("Teilnehmer erfolgreich getauscht"); // TODO i18n
+      showSuccess(t("admin:participants_swap_success"));
       onParticipantsSwapped();
     } catch (e) {
       showHttpErrorDefaultNotification(e as HttpError);

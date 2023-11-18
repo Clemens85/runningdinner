@@ -1,4 +1,3 @@
-import React from "react";
 import {Box, Button, Grid, Hidden, Paper} from "@mui/material";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
@@ -27,7 +26,7 @@ import {
   NoopFunction,
   Participant,
   RunningDinnerSessionData,
-  Team, TeamMeetingPlan,
+  Team, TeamArrangementList, TeamMeetingPlan,
   TeamNr,
   Time,
   useAdminSelector,
@@ -38,15 +37,23 @@ import {useAdminNavigation} from "../AdminNavigationHook";
 import concat from "lodash/concat";
 import {useAsync} from "react-async-hook";
 import {TeamPartnerWishIcon} from "./TeamPartnerWishIcon";
+import { SwapMealsDialog } from "./SwapMealsDialog";
 
 export interface TeamDetailsProps {
   team: Team;
+  allTeams: Team[];
   teamMemberIdToCancel: string | null;
   onOpenChangeTeamHostDialog: (team: Team) => unknown;
   onUpdateTeamState: (team: Team) => unknown;
+  onMealsSwapped: (teams: TeamArrangementList) => unknown;
 }
 
-export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTeamHostDialog, onUpdateTeamState}: TeamDetailsProps) {
+export default function TeamDetails({team, 
+                                     teamMemberIdToCancel, 
+                                     onOpenChangeTeamHostDialog, 
+                                     onUpdateTeamState,
+                                     onMealsSwapped,
+                                     allTeams}: TeamDetailsProps) {
 
   const {t} = useTranslation('common');
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
@@ -63,6 +70,10 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
   const {isOpen: isTeamCancelDialogOpen,
          close: closeTeamCancelDialog,
          open: openTeamCancelDialog} = useDisclosure(false);
+
+  const {isOpen: isSwapMealsDialogOpen,
+         close: closeSwapMealsDialog,
+         open: openSwapMealsDialog} = useDisclosure(false);
 
 
   const findTeamMeetingPlanAsyncResult = useAsync<TeamMeetingPlan>(findTeamMeetingPlanAsync, [adminId, id]);
@@ -96,6 +107,17 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
     }
   }
 
+  function handleOpenSwapMealsDialog() {
+    openSwapMealsDialog();
+  }
+
+  function handleCloseSwapMealsDialog(updatedTeams?: TeamArrangementList) {
+    closeSwapMealsDialog();
+    if (updatedTeams) {
+      onMealsSwapped(updatedTeams);
+    }
+  }
+
   function handleNotifyAffectedTeamsCancellation() {
     if (!teamMeetingPlanResult) {
       console.log("Could not navigate to team cancel messages, due to it seems like that the TeamMeetingPlan for calculating affected teams was not loaded yet");
@@ -108,6 +130,7 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
 
   let actionMenuItems = [
     { label: t("admin:team_message"), onClick: handleOpenSingleTeamMessage },
+    { label: `${t("admin:meals_swap")}...`, onClick: handleOpenSwapMealsDialog},
     { label: t("admin:team_cancel"), onClick: openTeamCancelDialog }
   ];
   if (isCancelled) {
@@ -170,6 +193,11 @@ export default function TeamDetails({team, teamMemberIdToCancel, onOpenChangeTea
                                                       onClose={handleCloseTeamCancelDialog}
                                                       teamToCancel={team}
                                                       runningDinner={runningDinner} /> }
+
+        { isSwapMealsDialogOpen && <SwapMealsDialog onClose={handleCloseSwapMealsDialog}
+                                                    srcTeam={team}
+                                                    allTeams={allTeams}
+                                                    adminId={runningDinner.adminId} /> }
 
       </Paper>
   );

@@ -1,14 +1,6 @@
 package org.runningdinner.participant;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -423,6 +415,27 @@ public class TeamService {
     emitTeamMembersSwappedEvent(firstParticipant, secondParticipant, parentTeams, runningDinner);
 
     return parentTeams;
+  }
+  @Transactional
+  public List<Team> swapMeals(@ValidateAdminId String adminId, UUID firstTeamId, UUID secondTeamId) {
+
+    Assert.state(!Objects.equals(firstTeamId, secondTeamId), "Cannot swap meals between one and the same team-id: " + firstTeamId);
+    Team firstTeam = findTeamByIdWithTeamMembers(adminId, firstTeamId);
+    Team secondTeam = findTeamByIdWithTeamMembers(adminId, secondTeamId);
+    Assert.state(firstTeam.getStatus() != TeamStatus.CANCELLED, "Can only use teams for swapping meals that are not cancelled, but " + firstTeam + " is cancelled");
+    Assert.state(secondTeam.getStatus() != TeamStatus.CANCELLED, "Can only use teams for swapping meals that are not cancelled, but " + secondTeam + " is cancelled");
+
+    Set<Participant> teamMembersFirst = firstTeam.getTeamMembers();
+    Set<Participant> teamMembersSecond = secondTeam.getTeamMembers();
+
+    firstTeam.removeAllTeamMembers();
+    secondTeam.removeAllTeamMembers();
+
+    firstTeam.setTeamMembers(teamMembersSecond);
+    secondTeam.setTeamMembers(teamMembersFirst);
+
+    // TODO Emit event for swap meals
+    return new ArrayList<>(teamRepository.saveAll(List.of(firstTeam, secondTeam)));
   }
 
   private void checkTeamSwapDoesNotViolateTeamPartnerWish(Team team, RunningDinner runningDinner) {

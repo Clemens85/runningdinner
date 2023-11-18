@@ -206,9 +206,11 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
                   ? <>
                       { showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}
                       <TeamDetails team={selectedTeam}
-                                 onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
-                                 teamMemberIdToCancel={teamMemberIdToCancel}
-                                 onUpdateTeamState={updateTeamStateInList} />
+                                   allTeams={teams}
+                                   onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
+                                   teamMemberIdToCancel={teamMemberIdToCancel}
+                                   onMealsSwapped={(teamArrangementList: TeamArrangementList) => handleTeamsRegenerated(teamArrangementList, "admin:meals_swap_success")}
+                                   onUpdateTeamState={updateTeamStateInList} />
                     </>
                   : <EmptyDetails labelI18n='teams_no_selection' />
               }

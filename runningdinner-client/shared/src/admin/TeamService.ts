@@ -41,6 +41,12 @@ export async function swapTeamMembersAsync(adminId: string, firstParticipantId: 
   return response.data;
 }
 
+export async function swapMealsAsync(adminId: string, firstTeamId: string, secondTeamId: string): Promise<TeamArrangementList>  {
+  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/meals/swap/${firstTeamId}/${secondTeamId}`);
+  const response = await axios.put(url);
+  return response.data;
+}
+
 export async function updateTeamHostAsync(adminId: string, team: Team, newHostingTeamMember: Participant): Promise<Team> {
   const teamToUpdate = cloneDeep(team);
   teamToUpdate.hostTeamMember = newHostingTeamMember;

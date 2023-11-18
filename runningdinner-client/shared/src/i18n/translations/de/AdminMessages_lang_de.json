@@ -115,6 +115,13 @@
 	"message_task_resend_success": "Nachricht erneut versandt!",
 	"message_tasks_no_selection": "Bitte wähle eine Nachricht aus um dessen Details zu sehen!",
 
+	"meals_swap": "Speise tauschen",
+	"meals_swap_success": "Speisen erfolgreich getauscht",
+	"meals_swap_team": "Speise tauschen von {{team}}",
+	"meals_swap_team_team_choose": "Wähle Team zum Tauschen der Speise",
+	"meals_swap_team_description": "{{team}} kocht aktuell folgende Speise: <strong>{{meal}}</strong>",
+	"meals_swap_team_after_swap_src": "Team mit {{team}} wird zu Team {{newTeamNumber}} mit folgender Speise: <strong>{{meal}}</strong>.",
+	"meals_swap_team_after_swap_selected": "Team mit {{team}} wird zu Team {{newTeamNumber}} mit folgender Speise: <strong>{{meal}}</strong>.",
 	"mealtimes_save_success": "Zeitplan erfolgreich gespeichert!",
 
 	"no_registrations": "Keine Anmeldungen",
@@ -172,6 +179,7 @@
 	"participants_swap_number_note_waitinglist": "<strong>Hinweis:</strong> Diese Funktion ist vor allem sinnvoll um Teilenhmer von der Warteliste zu entfernen bzw. hinzuzufügen.",
 	"participants_swap_number_teams_existing_info": "Bereits in Teams eingeteilte Teilnehmer können nicht getauscht werden. Hierfür musst du zunächst alle Teams auflösen und später erneut generieren (-> <anchor>Teameinteilungen aufheben</anchor>).",
 	"participants_swap_number_teams_existing_error": "Bereits in Teams eingeteilte Teilnehmer können nicht getauscht werden. Hierfür musst du zunächst alle Teams auflösen und später erneut generieren.",
+	"participants_swap_success": "Teilnehmer erfolgreich getauscht",
 	"participants_too_few_text": "Leider gibt es noch nicht genügend Teilnehmer, damit ein Running Dinner statt finden kann. Es werden mindestens {{ minSizeNeeded }} Teilnehmer benötigt. Dir fehlen also noch mindestens {{ missingParticipants }} Teilnehmer.",
 	"participant_manual_activation_success": "{{ participantEmail }} erfolgreich manuell bestätigt",
 	"payment_options": "Bezahloptionen",

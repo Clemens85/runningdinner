@@ -1,12 +1,7 @@
 package org.runningdinner.participant.rest;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -108,15 +103,21 @@ public class TeamServiceRest {
       @PathVariable("secondParticipantId") UUID secondParticipantId) {
 
     List<Team> updatedTeams = teamService.swapTeamMembers(adminId, firstParticipantId, secondParticipantId);
+    return newSwapResponse(updatedTeams, adminId);
+  }
 
-    List<TeamTO> result = new ArrayList<>();
-    for (Team updatedTeam : updatedTeams) {
-      TeamTO resultingTeam = new TeamTO(updatedTeam);
-      result.add(resultingTeam);
-    }
+  @PutMapping(value = "/runningdinner/{adminId}/meals/swap/{firstTeamId}/{secondTeamId}")
+  public TeamArrangementListTO swapMeals(@PathVariable("adminId") String adminId,
+                                         @PathVariable("firstTeamId") UUID firstTeamId,
+                                         @PathVariable("secondTeamId") UUID secondTeamId) {
 
+    List<Team> updatedTeams = teamService.swapMeals(adminId, firstTeamId, secondTeamId);
+    return newSwapResponse(updatedTeams, adminId);
+  }
+
+  private TeamArrangementListTO newSwapResponse(Collection<Team> updatedTeams, String adminId) {
+    List<TeamTO> result = updatedTeams.stream().map(ut -> new TeamTO(ut)).collect(Collectors.toList());
     LOGGER.info("Updated teams after swap: {}", Team.toStringDetailed(updatedTeams));
-
     return new TeamArrangementListTO(result, adminId);
   }
 

@@ -113,7 +113,13 @@
 	"messages_sending_pending": "Sending still running",
 	"message_task_resend_success": "Message sent successfully!",
 	"message_tasks_no_selection": "Please select a message for viewing it's details!",
-
+	"meals_swap": "Swap meals",
+	"meals_swap_success": "Meals successfully swapped",
+	"meals_swap_team": "Swap meal of {{team}}",
+	"meals_swap_team_team_choose": "Choose team for swapping meal",
+	"meals_swap_team_description": "{{team}} is currently cooking the following meal: <strong>{{meal}}</strong>",
+	"meals_swap_team_after_swap_src": "Team with {{team}} will be the new team {{newTeamNumber}} with following meal assigned: <strong>{{meal}}</strong>.",
+	"meals_swap_team_after_swap_selected": "Team with {{team}} will be the new team {{newTeamNumber}} with following meal assigned: <strong>{{meal}}</strong>.",
 	"mealtimes_save_success": "Meal schedule saved successfully!",
 
 	"no_registrations": "No registrations",
@@ -171,6 +177,7 @@
 	"participants_swap_number_teams_existing_info": "Participants already arranged into teams cannot be swapped. To do this, you must first drop team arrangements and generate them again later (-> <anchor>Drop team arrangements</anchor>).",
 	"participants_swap_number_teams_existing_error": "Participants already arranged into teams cannot be swapped. To do this, you must first drop team arrangements and generate them again later.",
 	"participants_show_misc_notes": "Show other remarks",
+	"participants_swap_success": "Participants successfully swapped",
 	"participants_too_few_text": "Unfortunately you have too few participants for a Running Dinner event. You need at least a total of {{ minSizeNeeded }} participants, hence you need still at least {{ missingParticipants }} more participants.",
 	"participant_manual_activation_success": "Manual activation of subscription for {{ participantEmail }} succeeded",
 	"payment_options": "Payment Options",
