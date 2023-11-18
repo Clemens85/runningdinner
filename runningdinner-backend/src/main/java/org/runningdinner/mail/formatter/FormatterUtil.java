@@ -3,6 +3,7 @@ package org.runningdinner.mail.formatter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Set;
 
 import org.apache.commons.lang3.RegExUtils;
@@ -81,20 +82,21 @@ public class FormatterUtil {
    * @return
    */
   public static String generateParticipantNamesWithCommas(Team team) {
-
     return generateParticipantNames(team, ", ");
   }
 
   private static String generateParticipantNames(Team team, String delimiter) {
+    return generateParticipantNames(team.getTeamMembers(), delimiter);
+  }
 
+  public static String generateParticipantNames(Collection<Participant> participants, String delimiter) {
     StringBuilder result = new StringBuilder();
     int cnt = 0;
-    for (Participant teamMember : team.getTeamMembers()) {
+    for (var participant : participants) {
       if (cnt++ > 0) {
         result.append(delimiter);
       }
-      String fullname = teamMember.getName().getFullnameFirstnameFirst();
-      result.append(fullname);
+      result.append(participant.getName().getFullnameFirstnameFirst());
     }
     return result.toString();
   }

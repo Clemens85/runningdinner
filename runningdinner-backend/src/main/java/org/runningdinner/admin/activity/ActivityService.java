@@ -14,7 +14,9 @@ import org.runningdinner.admin.message.job.MessageType;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.CoreUtil;
+import org.runningdinner.event.MealsSwappedEvent;
 import org.runningdinner.event.RunningDinnerSettingsUpdatedEvent;
+import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellationResult;
@@ -31,6 +33,8 @@ public class ActivityService {
   
   public static final String TEAM_MEMBERS_SWAPPED_HEADLINE = "Team Mitglieder getauscht";
   public static final String PARTICIPANT_NUMBERS_SWAPPED_HEADLINE = "Teilnehmer Reihenfolge geändert";
+
+  public static final String MEALS_SWAPPED_HEADLINE = "Speisen getauscht";
   public static final String TEAM_HOST_CHANGED_BY_ADMIN_HEADLINE = "Gastgeber geändert";
   
   public static final String TEAM_ARRANGEMENTS_DROPPED_HEADLINE = "Team-Einteilungen augehoben";
@@ -73,7 +77,9 @@ public class ActivityService {
   private static final String TEAM_MEMBERS_SWAPPED_MESSAGE_TEMPLATE = "Du hast zwischen Team {teamNumber1} und Team {teamNumber2} folgende Teilnehmer getauscht: {participantName1} und {participantName2}.";
 
   private static final String PARTICIPANT_NUMBERS_SWAPPED_MESSAGE_TEMPLATE = "Du hast die Reihenfolge folgender Teilnehmer verändert: {participantName1} und {participantName2}.";
-  
+
+  private static final String MEALS_SWAPPED_MESSAGE_TEMPLATE = "Du hast die Speisen zwischen {teamMembers1} (neu: {newMeal1}) und {teamMembers2} (neu: {newMeal2}) getauscht.";
+
   private static final String TEAMS_HOST_CHANGED_DINNER_MESSAGE_TEMPLATE = "Du hast für Team {teamNumber} den Gastgeber auf {participantName} geändert.";
   
   private static final String TEAMS_HOST_CHANGED_BY_PARTICIPANT_DINNER_MESSAGE_TEMPLATE = "<strong>{originator}</strong> hat für Team {teamNumber} den Gastgeber auf {participantName} geändert.";
@@ -230,7 +236,7 @@ public class ActivityService {
   public Activity createActivityForParticipantNumbersSwapped(Participant firstParticipant, Participant secondParticipant, RunningDinner runningDinner) {
   
     Activity result = new Activity(LocalDateTime.now(), ActivityType.CUSTOM_ADMIN_CHANGE, runningDinner.getEmail(), runningDinner);
-    
+
     String activityMessage = PARTICIPANT_NUMBERS_SWAPPED_MESSAGE_TEMPLATE.replaceAll("\\{participantName1\\}",  firstParticipant.getName().getFullnameFirstnameFirst());
     activityMessage = activityMessage.replaceAll("\\{participantName2\\}",  secondParticipant.getName().getFullnameFirstnameFirst());
     result.setActivityMessage(activityMessage);
@@ -240,8 +246,30 @@ public class ActivityService {
     result = activityRepository.save(result);
     return result;
   }
-  
-  
+
+  @Transactional
+  public Activity createActivityForMealsSwapped(MealsSwappedEvent event) {
+
+    RunningDinner runningDinner = event.getRunningDinner();
+    Activity result = new Activity(LocalDateTime.now(), ActivityType.CUSTOM_ADMIN_CHANGE, runningDinner.getEmail(), runningDinner);
+
+    var teamMembers1 = FormatterUtil.generateParticipantNames(event.getFirstTeamMembers(), " + ");
+    var newMeal1 = event.getNewMealForFirstTeamMembers();
+
+    var teamMembers2 = FormatterUtil.generateParticipantNames(event.getSecondTeamMembers(), " + ");
+    var newMeal2 = event.getNewMealForSecondTeamMembers();
+
+    String activityMessage = MEALS_SWAPPED_MESSAGE_TEMPLATE.replaceAll("\\{teamMembers1\\}", teamMembers1);
+    activityMessage = activityMessage.replaceAll("\\{newMeal1\\}", newMeal1.getLabel());
+    activityMessage = activityMessage.replaceAll("\\{teamMembers2\\}", teamMembers2);
+    activityMessage = activityMessage.replaceAll("\\{newMeal2\\}", newMeal2.getLabel());
+    result.setActivityMessage(activityMessage);
+
+    result.setActivityHeadline(MEALS_SWAPPED_HEADLINE);
+    return activityRepository.save(result);
+  }
+
+
   @Transactional
   public Activity createActivityForTeamCancellation(TeamCancellationResult teamCancellationResult, RunningDinner runningDinner) {
   
@@ -529,7 +557,7 @@ public class ActivityService {
     	return template.replaceAll("\\{numTeams\\}", numTeams + " neue Teams");
   	}
   }
-  
+
   static final class AffectedTeamsInfo {
   	
   	private int numTeams = 0;

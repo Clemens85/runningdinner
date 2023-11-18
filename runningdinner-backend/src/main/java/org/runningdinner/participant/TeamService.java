@@ -28,6 +28,7 @@ import org.runningdinner.core.RunningDinnerCalculator;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.util.CoreUtil;
+import org.runningdinner.event.MealsSwappedEvent;
 import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
@@ -49,7 +51,7 @@ import org.springframework.util.Assert;
 @Service
 public class TeamService {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(TeamService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TeamService.class);
 
   @Autowired
   private TeamRepository teamRepository;
@@ -153,9 +155,7 @@ public class TeamService {
     String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(dinnerRouteTeam,
         runningDinner);
     
-    DinnerRouteTO result = DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams, runningDinner.getAfterPartyLocation());
-    
-    return result;
+    return DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams, runningDinner.getAfterPartyLocation());
   }
 
   public Team findTeamById(@ValidateAdminId String adminId, UUID teamId) {
@@ -419,6 +419,8 @@ public class TeamService {
   @Transactional
   public List<Team> swapMeals(@ValidateAdminId String adminId, UUID firstTeamId, UUID secondTeamId) {
 
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+
     Assert.state(!Objects.equals(firstTeamId, secondTeamId), "Cannot swap meals between one and the same team-id: " + firstTeamId);
     Team firstTeam = findTeamByIdWithTeamMembers(adminId, firstTeamId);
     Team secondTeam = findTeamByIdWithTeamMembers(adminId, secondTeamId);
@@ -434,8 +436,11 @@ public class TeamService {
     firstTeam.setTeamMembers(teamMembersSecond);
     secondTeam.setTeamMembers(teamMembersFirst);
 
-    // TODO Emit event for swap meals
-    return new ArrayList<>(teamRepository.saveAll(List.of(firstTeam, secondTeam)));
+    ArrayList<Team> result = new ArrayList<>(teamRepository.saveAll(List.of(firstTeam, secondTeam)));
+
+    emitMealsSwappedEvent(teamMembersFirst, secondTeam.getMealClass(), teamMembersSecond, firstTeam.getMealClass(), runningDinner);
+
+    return result;
   }
 
   private void checkTeamSwapDoesNotViolateTeamPartnerWish(Team team, RunningDinner runningDinner) {
@@ -458,6 +463,22 @@ public class TeamService {
       }
     });
   }
+
+  private void emitMealsSwappedEvent(Set<Participant> firstTeamMembers,
+                                     MealClass newMealForFirstTeamMembers,
+                                     Set<Participant> secondTeamMembers,
+                                     MealClass newMealForSecondTeamMembers,
+                                     RunningDinner runningDinner) {
+
+    final TeamService teamServiceReference = this;
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+      @Override
+      public void afterCommit() {
+        eventPublisher.notifyMealsSwappedEvent(new MealsSwappedEvent(teamServiceReference, firstTeamMembers, newMealForFirstTeamMembers, secondTeamMembers, newMealForSecondTeamMembers, runningDinner));
+      }
+    });
+  }
+
 
   /**
    * This method performs some intelligent tasks for assigning a (potential new) optimal hosting participant of the parent-team of a
