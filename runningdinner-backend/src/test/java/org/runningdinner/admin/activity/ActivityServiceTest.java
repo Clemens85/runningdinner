@@ -1,11 +1,5 @@
 package org.runningdinner.admin.activity;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.runningdinner.admin.RunningDinnerService;
@@ -14,13 +8,19 @@ import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.ParticipantAddress;
-import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.ParticipantRegistrationsAggregationService;
 import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInfoList;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ApplicationTest
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,7 +39,7 @@ public class ActivityServiceTest {
 	private TestHelperService testHelperService;
 	
 	@Autowired
-	private ParticipantService participantService;
+	private ParticipantRegistrationsAggregationService participantRegistrationsAggregationService;
 
 	@Test
 	public void testActivityCreationForNewClosedRunningDinner() {
@@ -96,7 +96,7 @@ public class ActivityServiceTest {
 		assertThat(adminActivites).hasSize(1);
 		assertThat(adminActivites.get(0).getActivityType()).isEqualTo(ActivityType.DINNER_CREATED);
 	
-		ParticipantRegistrationInfoList participantRegistrationInfoList = participantService.findParticipantRegistrations(runningDinner.getAdminId(), LocalDateTime.now(), 0);
+		ParticipantRegistrationInfoList participantRegistrationInfoList = participantRegistrationsAggregationService.findParticipantRegistrations(runningDinner.getAdminId(), LocalDateTime.now(), 0);
 		var registrations = participantRegistrationInfoList.getRegistrations();
 		assertThat(registrations).hasSize(2);
 	}

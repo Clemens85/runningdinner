@@ -1,17 +1,5 @@
 package org.runningdinner.frontend;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,16 +18,7 @@ import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantName;
-import org.runningdinner.participant.ParticipantRepository;
-import org.runningdinner.participant.ParticipantService;
-import org.runningdinner.participant.Team;
-import org.runningdinner.participant.TeamCancellation;
-import org.runningdinner.participant.TeamCancellationResult;
-import org.runningdinner.participant.TeamService;
-import org.runningdinner.participant.TeamStatus;
-import org.runningdinner.participant.WaitingListService;
+import org.runningdinner.participant.*;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
 import org.runningdinner.test.util.ApplicationTest;
@@ -49,6 +28,13 @@ import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -468,28 +454,12 @@ public class TeamPartnerRegistrationTest {
   
   
   private Participant registerParticipantsAsFixedTeam() {
-    
-    // Register (and activate) fixed team
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", TestUtil.newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
-    frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
-    
-    Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), "max@muster.de")
-        .get(0);
-    return participantService.updateParticipantSubscription(rootParticipant.getId(), LocalDateTime.now(), true, runningDinner);
+    return testHelperService.registerParticipantsAsFixedTeam(runningDinner, "Max Mustermann", "max@muster.de", "Maria Musterfrau");
   }
   
   
   private Participant registerOtherParticipantsAsFixedTeam() {
-    
-    // Register (and activate) fixed team
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Foo Bar", "foo@bar.de", TestUtil.newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Other", "Teampartner"));
-    frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
-    
-    Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), "foo@bar.de")
-        .get(0);
-    return participantService.updateParticipantSubscription(rootParticipant.getId(), LocalDateTime.now(), true, runningDinner);
+    return testHelperService.registerParticipantsAsFixedTeam(runningDinner, "Foo Bar", "foo@bar.de", "Other Teampartner");
   }
   
 }

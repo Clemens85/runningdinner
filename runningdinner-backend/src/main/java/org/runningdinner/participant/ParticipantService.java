@@ -1,30 +1,11 @@
 
 package org.runningdinner.participant;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
-import org.runningdinner.common.Issue;
-import org.runningdinner.common.IssueKeys;
-import org.runningdinner.common.IssueList;
-import org.runningdinner.common.IssueType;
-import org.runningdinner.common.ResourceLoader;
+import org.runningdinner.common.*;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.LocalizationProviderService;
@@ -39,33 +20,17 @@ import org.runningdinner.core.converter.ConverterFactory;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
 import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
-import org.runningdinner.core.converter.config.AddressColumnConfig;
-import org.runningdinner.core.converter.config.EmailColumnConfig;
-import org.runningdinner.core.converter.config.GenderColumnConfig;
-import org.runningdinner.core.converter.config.NameColumnConfig;
-import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
-import org.runningdinner.core.converter.config.ParsingConfiguration;
+import org.runningdinner.core.converter.config.*;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
-import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInfo;
-import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInfoList;
-import org.runningdinner.participant.registrationinfo.ParticipantRegistrationProjection;
-import org.runningdinner.participant.rest.MissingParticipantsInfo;
-import org.runningdinner.participant.rest.ParticipantInputDataTO;
-import org.runningdinner.participant.rest.ParticipantListActive;
-import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
-import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
+import org.runningdinner.participant.rest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -73,12 +38,17 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 public class ParticipantService {
 
-  public static final int PARTICIPANT_PAGE_SIZE = 18;
-  
-  private static Logger LOGGER = LoggerFactory.getLogger(ParticipantService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantService.class);
 
   @Autowired
   private ParticipantRepository participantRepository;
@@ -447,38 +417,6 @@ public class ParticipantService {
     return participantRepository.save(participant);
   }
   
-  
-  public ParticipantRegistrationInfoList findParticipantRegistrations(@ValidateAdminId String dinnerAdminId, LocalDateTime now, int page) {
-
-    ParticipantRegistrationInfoList result;
-    
-    Sort orderBy = Sort.by(new Sort.Order(Direction.DESC, "activationDate").nullsFirst(),
-                           new Sort.Order(Direction.DESC, "createdAt")); // The second order is only relevant in edge cases when we have several not activated participants
-    Slice<ParticipantRegistrationProjection> resultSlice = participantRepository.findRegistrationInfoSliceByAdminId(dinnerAdminId, PageRequest.of(page, PARTICIPANT_PAGE_SIZE, orderBy));
-    
-    if (!resultSlice.hasContent()) {
-      return new ParticipantRegistrationInfoList(Collections.emptyList(), 0, false);
-    }
-    
-    List<ParticipantRegistrationInfo> registrations = resultSlice.getContent()
-                                                        .stream()
-                                                        .map(projection -> new ParticipantRegistrationInfo(projection))
-                                                        .collect(Collectors.toList());
-    
-    result = new ParticipantRegistrationInfoList(registrations, resultSlice.getNumber(), resultSlice.hasNext());
-    
-    LocalDateTime twoDaysBeforeNow = now.minusDays(2);
-    
-    var notActivatedRegistrationsOlderThan2Days = registrations
-                                                    .stream()
-                                                    .filter(p -> p.getActivationDate() == null)
-                                                    .filter(p -> p.getCreatedAt().isBefore(twoDaysBeforeNow))
-                                                    .collect(Collectors.toList());
-  
-    result.setNotActivatedRegistrationsTooOld(notActivatedRegistrationsOlderThan2Days);
-    return result;
-  }
-
   public Participant findChildParticipantOfTeamPartnerRegistration(@ValidateAdminId String adminId, Participant participant) {
     
     Assert.state(participant.isTeamPartnerWishRegistratonRoot(), 

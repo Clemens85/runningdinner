@@ -1,22 +1,8 @@
 
 package org.runningdinner.participant;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.UUID;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.MealSpecifics;
@@ -24,8 +10,9 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
 import org.runningdinner.geocoder.GeocodingResult;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Represents a participant of a running dinner.<br>
@@ -38,7 +25,7 @@ import com.google.common.base.MoreObjects;
  */
 @Entity
 @Access(AccessType.FIELD)
-public class Participant extends RunningDinnerRelatedEntity implements Comparable<Participant> {
+public class Participant extends RunningDinnerRelatedEntity implements Comparable<Participant>, HasTeamPartnerWishOriginator {
 
   private static final long serialVersionUID = -8062709434676386371L;
 
@@ -345,21 +332,13 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     this.geocodingResult = geocodingResult;
   }
 
+  @Override
   public UUID getTeamPartnerWishOriginatorId() {
     return teamPartnerWishOriginatorId;
   }
 
   public void setTeamPartnerWishOriginatorId(UUID teamPartnerWishOriginatorId) {
     this.teamPartnerWishOriginatorId = teamPartnerWishOriginatorId;
-  }
-
-  public boolean isTeamPartnerWishRegistratonRoot() {
-    return teamPartnerWishOriginatorId != null && getId() != null && Objects.equals(getTeamPartnerWishOriginatorId(), getId());
-  }
-  
-  public boolean isTeamPartnerWishRegistrationChildOf(Participant other) {
-    return Objects.equals(other.getTeamPartnerWishOriginatorId(), this.getId()) ||
-           Objects.equals(this.getTeamPartnerWishOriginatorId(), other.getId());
   }
 
   // equals and hashcode implementations were actually wrong... but unfortunately we relied on a implementation based upon participantNumber...

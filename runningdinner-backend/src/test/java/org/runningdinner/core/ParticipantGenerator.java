@@ -1,13 +1,13 @@
 package org.runningdinner.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.runningdinner.core.util.RandomNumberGenerator;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ParticipantGenerator {
 
@@ -19,6 +19,9 @@ public class ParticipantGenerator {
 	 */
 	public static List<Participant> generateParticipants(int numParticipants, int participantNrOffset) {
 		List<Participant> result = new ArrayList<Participant>(numParticipants);
+		if (numParticipants == 0) {
+			return result;
+		}
 		for (int i = 1; i <= numParticipants; i++) {
 			int participantNr = i + participantNrOffset;
 			result.add(generateParticipant(participantNr));

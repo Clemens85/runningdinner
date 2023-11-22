@@ -1,11 +1,13 @@
 package org.runningdinner.participant.registrationinfo;
 
+import org.runningdinner.participant.HasTeamPartnerWishOriginator;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 
-public class ParticipantRegistrationInfo {
+public class ParticipantRegistrationInfo implements HasTeamPartnerWishOriginator {
   
   private UUID id;
   
@@ -24,6 +26,10 @@ public class ParticipantRegistrationInfo {
   private LocalDateTime activationDate;
   
   private String activatedBy;
+
+  private UUID teamPartnerWishOriginatorId;
+
+  private String teamPartnerWishChildInfo;
   
   public ParticipantRegistrationInfo(ParticipantRegistrationProjection src) {
     this.id = src.getId();
@@ -35,6 +41,7 @@ public class ParticipantRegistrationInfo {
     this.activationDate = src.getActivationDate();
     this.activatedBy = src.getActivatedBy();
     this.participantNumber = src.getParticipantNumber();
+    this.teamPartnerWishOriginatorId = src.getTeamPartnerWishOriginatorId();
   }
 
   public UUID getId() {
@@ -109,6 +116,23 @@ public class ParticipantRegistrationInfo {
 
   public void setActivatedBy(String activatedBy) {
     this.activatedBy = activatedBy;
+  }
+
+  @Override
+  public UUID getTeamPartnerWishOriginatorId() {
+    return teamPartnerWishOriginatorId;
+  }
+
+  public void setTeamPartnerWishOriginatorId(UUID teamPartnerWishOriginatorId) {
+    this.teamPartnerWishOriginatorId = teamPartnerWishOriginatorId;
+  }
+
+  public String getTeamPartnerWishChildInfo() {
+    return teamPartnerWishChildInfo;
+  }
+
+  public void setTeamPartnerWishChildInfo(String teamPartnerWishChildInfo) {
+    this.teamPartnerWishChildInfo = teamPartnerWishChildInfo;
   }
 
   @Override

@@ -29,4 +29,7 @@ public interface ParticipantRegistrationProjection {
   
   @Value("#{target.name.lastname}")
   String getLastname();
+
+  UUID getTeamPartnerWishOriginatorId();
+
 }

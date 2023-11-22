@@ -1,30 +1,19 @@
 
 package org.runningdinner.test.util;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-
 import org.awaitility.Awaitility;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.SendingStatus;
 import org.runningdinner.contract.Contract;
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.ParticipantGenerator;
-import org.runningdinner.core.PublicSettings;
-import org.runningdinner.core.RegistrationType;
-import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.*;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
-import org.runningdinner.core.RunningDinnerConfig;
-import org.runningdinner.core.RunningDinnerInfo;
+import org.runningdinner.frontend.FrontendRunningDinnerService;
+import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.ParticipantRepository;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.rest.ParticipantInputDataTO;
@@ -33,6 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class TestHelperService {
@@ -53,6 +50,9 @@ public class TestHelperService {
 
   @Autowired
   private ParticipantService participantService;
+
+  @Autowired
+  private FrontendRunningDinnerService frontendRunningDinnerService;
 
   public RunningDinner createClosedRunningDinner(LocalDate date, String email) {
 
@@ -127,6 +127,30 @@ public class TestHelperService {
     
     return participantRepository.saveAll(participants);
   }
+
+  public Participant registerParticipantsAsFixedTeam(RunningDinner runningDinner, String rootFullname, String rootEmail, String childFullname) {
+
+    ParticipantName childName = ParticipantName.newName().withCompleteNameString(childFullname);
+
+    // Register (and activate) fixed team
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData(rootFullname, rootEmail, TestUtil.newAddress(), 6);
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData(childName.getFirstnamePart(), childName.getLastname()));
+    frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
+
+    Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), rootEmail)
+      .get(0);
+    return participantService.updateParticipantSubscription(rootParticipant.getId(), LocalDateTime.now(), true, runningDinner);
+  }
+
+  public Participant registerSingleParticipant(RunningDinner runningDinner, String fullname, String email) {
+
+    RegistrationDataTO registrationData = TestUtil.createRegistrationData(fullname, email, TestUtil.newAddress(), 6);
+    frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
+
+    Participant participant = participantService.findParticipantByEmail(runningDinner.getAdminId(), email).get(0);
+    return participantService.updateParticipantSubscription(participant.getId(), LocalDateTime.now(), true, runningDinner);
+  }
+
 
   private RunningDinnerConfig getDefaultRunningDinnerConfig(LocalDate date) {
 

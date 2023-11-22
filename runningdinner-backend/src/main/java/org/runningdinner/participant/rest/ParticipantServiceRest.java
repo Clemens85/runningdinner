@@ -1,23 +1,12 @@
 package org.runningdinner.participant.rest;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.rest.RunningDinnerRelatedIdListTO;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantRegistrationsAggregationService;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.ParticipantSwapNumbersService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWish;
@@ -27,14 +16,13 @@ import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInf
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/rest/participantservice/v1")
@@ -51,6 +39,9 @@ public class ParticipantServiceRest {
 
   @Autowired
   private TeamPartnerWishService teamPartnerWishService;
+
+  @Autowired
+  private ParticipantRegistrationsAggregationService participantRegistrationsAggregationService;
 
   @GetMapping(value = "/runningdinner/{adminId}/participants")
   public ParticipantListActive findActiveParticipantsList(@PathVariable("adminId") final String adminId) {
@@ -154,7 +145,7 @@ public class ParticipantServiceRest {
   public ParticipantRegistrationInfoList getParticipantRegistrations(@PathVariable("adminId") String dinnerAdminId,
       @RequestParam(name = "page", defaultValue = "0") int page) {
 
-    return participantService.findParticipantRegistrations(dinnerAdminId, LocalDateTime.now(), page);
+    return participantRegistrationsAggregationService.findParticipantRegistrations(dinnerAdminId, LocalDateTime.now(), page);
   }
 
   @PutMapping("/runningdinner/{adminId}/participants/swap/{firstParticipantId}/{secondParticipantId}")

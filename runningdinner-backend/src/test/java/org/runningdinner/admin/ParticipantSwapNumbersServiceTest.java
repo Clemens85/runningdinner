@@ -1,28 +1,23 @@
 package org.runningdinner.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.frontend.FrontendRunningDinnerService;
-import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.ParticipantSwapNumbersService;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
-import org.runningdinner.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ApplicationTest
@@ -30,9 +25,6 @@ public class ParticipantSwapNumbersServiceTest {
 
   @Autowired
   private ParticipantSwapNumbersService participantSwapNumbersService;
-  
-  @Autowired
-  private FrontendRunningDinnerService frontendRunningDinnerService;
   
   @Autowired
   private ParticipantService participantService;
@@ -111,7 +103,7 @@ public class ParticipantSwapNumbersServiceTest {
     var allParticipants = participantService.findParticipants(adminId, true);
     var firstParticipant = allParticipants.get(0);
     
-    Participant rootParticipant = registerParticipantsAsFixedTeam("Max Muster", "max@muster.de", "Maria Muster");
+    Participant rootParticipant = testHelperService.registerParticipantsAsFixedTeam(runningDinner,"Max Muster", "max@muster.de", "Maria Muster");
     Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(adminId, rootParticipant);
     assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
     assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
@@ -147,15 +139,15 @@ public class ParticipantSwapNumbersServiceTest {
   
     setUpDefaultDinner(16);
     
-    Participant rootParticipant1 = registerParticipantsAsFixedTeam("Max Muster", "max@muster.de", "Maria Muster");
+    Participant rootParticipant1 = testHelperService.registerParticipantsAsFixedTeam(runningDinner,"Max Muster", "max@muster.de", "Maria Muster");
     Participant childParticipant1 = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant1);
     assertThat(rootParticipant1.getParticipantNumber()).isEqualTo(17);
     assertThat(childParticipant1.getParticipantNumber()).isEqualTo(18);
     
-    Participant singleParticipant = registerSingleParticipant("Sandra Single", "sandra@single.de");
+    Participant singleParticipant = testHelperService.registerSingleParticipant(runningDinner,"Sandra Single", "sandra@single.de");
     assertThat(singleParticipant.getParticipantNumber()).isEqualTo(19);
     
-    Participant rootParticipant2 = registerParticipantsAsFixedTeam("Foo Bar", "foo@bar.de", "Peter Lustig");
+    Participant rootParticipant2 = testHelperService.registerParticipantsAsFixedTeam(runningDinner,"Foo Bar", "foo@bar.de", "Peter Lustig");
     Participant childParticipant2 = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant2);
     assertThat(rootParticipant2.getParticipantNumber()).isEqualTo(20);
     assertThat(childParticipant2.getParticipantNumber()).isEqualTo(21);
@@ -195,7 +187,7 @@ public class ParticipantSwapNumbersServiceTest {
     var allParticipants = participantService.findParticipants(adminId, true);
     var participant14th = allParticipants.get(13);
     
-    Participant rootParticipant = registerParticipantsAsFixedTeam("Max Muster", "max@muster.de", "Maria Muster");
+    Participant rootParticipant = testHelperService.registerParticipantsAsFixedTeam(runningDinner,"Max Muster", "max@muster.de", "Maria Muster");
     Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(adminId, rootParticipant);
     assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
     assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
@@ -234,12 +226,12 @@ public class ParticipantSwapNumbersServiceTest {
     var allParticipants = participantService.findParticipants(adminId, true);
     var participant14th = allParticipants.get(13);
     
-    Participant rootParticipant = registerParticipantsAsFixedTeam("Max Muster", "max@muster.de", "Maria Muster");
+    Participant rootParticipant = testHelperService.registerParticipantsAsFixedTeam(runningDinner,"Max Muster", "max@muster.de", "Maria Muster");
     Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(adminId, rootParticipant);
     assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
     assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
     
-    Participant singleParticipant = registerSingleParticipant("Sandra Single", "sandra@single.de");
+    Participant singleParticipant = testHelperService.registerSingleParticipant(runningDinner, "Sandra Single", "sandra@single.de");
     assertThat(singleParticipant.getParticipantNumber()).isEqualTo(20);
     
     // We have now 20 participants in total
@@ -272,38 +264,15 @@ public class ParticipantSwapNumbersServiceTest {
   
     setUpDefaultDinner(17);
     
-    Participant rootParticipant = registerParticipantsAsFixedTeam("Max Muster", "max@muster.de", "Maria Muster");
+    Participant rootParticipant = testHelperService.registerParticipantsAsFixedTeam(runningDinner,"Max Muster", "max@muster.de", "Maria Muster");
     Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
     assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
     assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
     
-    Participant singleParticipant = registerSingleParticipant("Sandra Single", "sandra@single.de");
+    Participant singleParticipant = testHelperService.registerSingleParticipant(runningDinner,"Sandra Single", "sandra@single.de");
     assertThat(singleParticipant.getParticipantNumber()).isEqualTo(20);
     
     participantSwapNumbersService.swapParticipantNumbers(runningDinner.getAdminId(), singleParticipant.getId(), childParticipant.getId());
-  }
-  
-  private Participant registerParticipantsAsFixedTeam(String rootFullname, String rootEmail, String childFullname) {
-    
-    ParticipantName childName = ParticipantName.newName().withCompleteNameString(childFullname);
-    
-    // Register (and activate) fixed team
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData(rootFullname, rootEmail, TestUtil.newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData(childName.getFirstnamePart(), childName.getLastname()));
-    frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
-    
-    Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), rootEmail)
-        .get(0);
-    return participantService.updateParticipantSubscription(rootParticipant.getId(), LocalDateTime.now(), true, runningDinner);
-  }
-  
- private Participant registerSingleParticipant(String fullname, String email) {
-    
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData(fullname, email, TestUtil.newAddress(), 6);
-    frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
-    
-    Participant participant = participantService.findParticipantByEmail(runningDinner.getAdminId(), email).get(0);
-    return participantService.updateParticipantSubscription(participant.getId(), LocalDateTime.now(), true, runningDinner);
   }
   
   protected RunningDinner setUpDefaultDinner(int numParticipants) {
