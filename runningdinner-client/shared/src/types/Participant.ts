@@ -135,6 +135,7 @@ export interface ParticipantRegistrationInfo extends Omit<BaseEntity, "modifiedA
   activationDate?: Date;
   activatedBy: string;
   mobileNumber?: string;
+  teamPartnerWishChildInfo?: string;
 }
 
 export interface ParticipantRegistrationInfoList {

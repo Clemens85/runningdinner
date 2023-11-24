@@ -4,6 +4,7 @@ import {
   BaseRunningDinnerProps, CallbackHandler,
   fetchNextParticipantRegistrations,
   Fullname,
+  getFullname,
   getParticipantRegistrationsFetchSelector,
   HttpError,
   isArrayNotEmpty,
@@ -110,18 +111,34 @@ interface ParticipantRegistrationRowProps extends BaseAdminIdProps {
 function ParticipantRegistrationRow({participantRegistration, onShowConfirmSubscriptionActivationDialog, adminId}: ParticipantRegistrationRowProps) {
 
   const {t} = useTranslation(["admin", "common"]);
-  const {activationDate, createdAt, email, mobileNumber, firstnamePart, lastname, id} = participantRegistration;
+  const {activationDate, createdAt, email, mobileNumber, firstnamePart, lastname, teamPartnerWishChildInfo, id} = participantRegistration;
   const {navigateToParticipant} = useAdminNavigation();
 
   const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
 
   const participantActivated = !!activationDate;
 
+  function renderTeamPartnerWishChildInfo() {
+    if (isStringEmpty(teamPartnerWishChildInfo)) {
+      return null;
+    }
+    return (
+      <>
+        <br/>
+        <Trans i18nKey="admin:team_partner_wish_registration_child_participant_child_info_1" 
+               values={{ fullname: teamPartnerWishChildInfo }}
+               components={{ anchor: <span /> }}
+               />
+      </> 
+    );
+  }
+
   function renderAdditionalContactDetails() {
     return (
       <>
-      <br/><Fullname firstnamePart={firstnamePart} lastname={lastname}/>
-      { isStringNotEmpty(mobileNumber) && <><br/>{t("common:mobile")}: <LinkExtern href={`tel:${mobileNumber}`} title={mobileNumber} /></> }
+        <br/><Fullname firstnamePart={firstnamePart} lastname={lastname}/>
+        { isStringNotEmpty(mobileNumber) && <><br/>{t("common:mobile")}: <LinkExtern href={`tel:${mobileNumber}`} title={mobileNumber} /></> }
+        { renderTeamPartnerWishChildInfo() }
       </>
     );
   }
@@ -138,6 +155,7 @@ function ParticipantRegistrationRow({participantRegistration, onShowConfirmSubsc
             <Typography variant="caption"><i>{t("admin:registration_not_yet_confirmed")}</i></Typography>
             { !smUpDevice && renderShowConfirmSubscriptionActivationDialogButton() }
           </> }
+        { participantActivated && <>{renderTeamPartnerWishChildInfo()}</> }
       </>
     );
   }

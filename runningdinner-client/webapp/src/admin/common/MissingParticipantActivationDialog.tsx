@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Dialog, DialogContent } from "@mui/material";
 import { Fullname, LocalDate, ParticipantRegistrationInfo, Time, isStringNotEmpty } from "@runningdinner/shared";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useState } from "react";
 import LinkExtern from "../../common/theme/LinkExtern";
 import { FormCheckboxSimple } from "../../common/input/FormCheckboxSimple";
@@ -15,7 +15,7 @@ type MissingParticipantActivationDialogProps = {
   missingParticipantActivations: ParticipantRegistrationInfo[]
 };
 
-export function MissingParticipantActivationItem({email, firstnamePart, lastname, createdAt, mobileNumber}: ParticipantRegistrationInfo) {
+export function MissingParticipantActivationItem({email, firstnamePart, lastname, createdAt, mobileNumber, teamPartnerWishChildInfo}: ParticipantRegistrationInfo) {
 
   const {t} = useTranslation(['common', 'admin']);
 
@@ -29,6 +29,11 @@ export function MissingParticipantActivationItem({email, firstnamePart, lastname
           <>
             <Paragraph>{t("common:mobile")}: <LinkExtern href={`tel:${mobileNumber}`} title={mobileNumber}/></Paragraph>
           </>
+        }
+        { isStringNotEmpty(teamPartnerWishChildInfo) &&
+          <Trans i18nKey="admin:team_partner_wish_registration_child_participant_child_info_1" 
+                 values={{ fullname: teamPartnerWishChildInfo }}
+                 components={{ anchor: <span /> }} />
         }
       </CardContent>
     </Card>
