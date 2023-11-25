@@ -28,7 +28,7 @@ import MealSpecificsSection from "../admin/participants/form/MealSpecificsSectio
 import MiscSection from "../admin/participants/form/MiscSection";
 import SecondaryButton from "../common/theme/SecondaryButton";
 import {PrimaryButton} from "../common/theme/PrimaryButton";
-import React, {useEffect} from "react";
+import {useEffect} from "react";
 import FormCheckbox from "../common/input/FormCheckbox";
 import LinkExtern from "../common/theme/LinkExtern";
 import {IMPRESSUM_PATH} from "../common/mainnavigation/NavigationPaths";
