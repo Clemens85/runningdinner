@@ -75,7 +75,7 @@ public class ParticipantServiceTest {
  
     assertThat(participantList.getParticipants())
     							.extracting("teamId")
-    							.allMatch(t -> t == null);
+    							.allMatch(Objects::isNull);
     
     assertParticipantListNumbers(participantList.getParticipantsWaitingList(), 19, 22);
     assertThat(participantList.getParticipantsWaitingList()).hasSize(4);

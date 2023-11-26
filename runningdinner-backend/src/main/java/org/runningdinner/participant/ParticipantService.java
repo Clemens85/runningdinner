@@ -165,9 +165,9 @@ public class ParticipantService {
   /**
    * Updates existing participant of a running dinner
    * 
-   * @param adminId
-   * @param participantId
-   * @param incomingParticipant
+   * @param adminId adminId of dinner
+   * @param participantId id of participant to be updated
+   * @param incomingParticipant data to be updated
    * @return
    */
   @Transactional
@@ -186,13 +186,25 @@ public class ParticipantService {
 
     Participant result = participantRepository.save(existingParticipant);
 
-    if (incomingParticipant.isTeamPartnerWishRegistrationDataProvided()) {
-      result = handleTeamPartnerWishRegistrationData(result, incomingParticipant.getTeamPartnerWishRegistrationData());
-    }
-    
+    syncChangesToChildParticipant(adminId, result);
+
     putGeocodeEventToQueue(result, runningDinner);
 
     return result;
+  }
+
+  private void syncChangesToChildParticipant(String adminId, Participant participant) {
+    if (!participant.isTeamPartnerWishRegistratonRoot()) {
+      return;
+    }
+    Participant childParticipant = findChildParticipantOfTeamPartnerRegistration(adminId, participant);
+    childParticipant.setAddress(participant.getAddress().createDetachedClone());
+    childParticipant.setMobileNumber(participant.getMobileNumber());
+    childParticipant.setGeocodingResult(new GeocodingResult(participant.getGeocodingResult()));
+    childParticipant.setEmail(participant.getEmail());
+    childParticipant.setMealSpecifics(participant.getMealSpecifics().createDetachedClone());
+    childParticipant.setNotes(participant.getNotes());
+    participantRepository.save(childParticipant);
   }
 
   @Transactional
@@ -205,7 +217,9 @@ public class ParticipantService {
 
     existingParticipant.setGeocodingResult(incomingGeocodingResult);
 
-    return participantRepository.save(existingParticipant);
+    var result = participantRepository.save(existingParticipant);
+    syncChangesToChildParticipant(adminId, result);
+    return result;
   }
 
   /**
@@ -337,17 +351,22 @@ public class ParticipantService {
 
   protected void copyFields(ParticipantInputDataTO incomingParticipant, Participant dest) {
 
+    ParticipantName participantName = ParticipantName.newName()
+      .withFirstname(incomingParticipant.getFirstnamePart())
+      .andLastname(incomingParticipant.getLastname());
+    dest.setName(participantName);
+
+    if (dest.isTeamPartnerWishRegistratonChild()) {
+      // Children have currently only name as own data to be managed (all other fields are not used and/or are owned by root participant
+      return;
+    }
+
     dest.setGender(incomingParticipant.getGender());
 
     dest.setEmail(incomingParticipant.getEmail());
 
     dest.setNumSeats(incomingParticipant.getNumSeats());
 
-    ParticipantName participantName = ParticipantName.newName()
-        .withFirstname(incomingParticipant.getFirstnamePart())
-        .andLastname(incomingParticipant.getLastname());
-    dest.setName(participantName);
-    
     ParticipantAddress address = new ParticipantAddress();
     address.setZip(incomingParticipant.getZip());
     address.setStreet(incomingParticipant.getStreet());

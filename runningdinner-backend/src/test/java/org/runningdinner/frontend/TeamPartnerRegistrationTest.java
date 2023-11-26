@@ -15,6 +15,7 @@ import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
+import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
@@ -452,7 +453,73 @@ public class TeamPartnerRegistrationTest {
       .allMatch(teamPartnerWishOriginatorId -> teamPartnerWishOriginatorId == null);
   }
   
-  
+  @Test
+  public void updateOfRootParticipantIsSyncedToChildParticipant() {
+
+    var rootParticipant = registerParticipantsAsFixedTeam();
+
+    rootParticipant.setEmail("updated@email.de");
+    rootParticipant.setMealSpecifics(new MealSpecifics(true, true, true, true, "Meal-Notes"));
+    rootParticipant.setNotes("Additional Notes");
+    rootParticipant.getAddress().setStreetAndNr("Newstreet 1");
+    testHelperService.updateParticipant(rootParticipant);
+
+    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
+    assertThat(childParticipant.getEmail()).isEqualTo("updated@email.de");
+    assertThat(childParticipant.getNotes()).isEqualTo("Additional Notes");
+    assertThat(childParticipant.getMealSpecifics()).isEqualTo(new MealSpecifics(true, true, true, true, "Meal-Notes"));
+    assertThat(childParticipant.getAddress().getStreetWithNr()).isEqualTo("Newstreet 1");
+    assertThat(childParticipant.getName().getFullnameFirstnameFirst()).isEqualTo("Maria Musterfrau");
+    assertThat(childParticipant.getAge()).isEqualTo(Participant.UNDEFINED_AGE);
+    assertThat(childParticipant.getNumSeats()).isEqualTo(0);
+    assertThat(childParticipant.getGender()).isEqualTo(Gender.UNDEFINED);
+
+    rootParticipant = participantService.findParticipantById(runningDinner.getAdminId(), rootParticipant.getId());
+    assertThat(rootParticipant.getEmail()).isEqualTo("updated@email.de");
+    assertThat(rootParticipant.getNotes()).isEqualTo("Additional Notes");
+    assertThat(rootParticipant.getMealSpecifics()).isEqualTo(new MealSpecifics(true, true, true, true, "Meal-Notes"));
+    assertThat(rootParticipant.getAddress().getStreetWithNr()).isEqualTo("Newstreet 1");
+  }
+
+  @Test
+  public void updateOfChildParticipantUpdatesOnlyName() {
+
+    var rootParticipant = registerParticipantsAsFixedTeam();
+    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
+
+    childParticipant.setEmail("updated@email.de");
+    childParticipant.setMealSpecifics(new MealSpecifics(true, true, true, true, "Meal-Notes"));
+    childParticipant.setNotes("Additional Notes");
+    childParticipant.getAddress().setStreetAndNr("Newstreet 1");
+    childParticipant.setName(ParticipantName.newName().withCompleteNameString("Neuer Name"));
+
+    testHelperService.updateParticipant(childParticipant);
+
+    childParticipant = participantService.findParticipantById(runningDinner.getAdminId(), childParticipant.getId());
+
+    assertThat(childParticipant.getName().getFullnameFirstnameFirst()).isEqualTo("Neuer Name");
+    assertThat(childParticipant.getEmail()).isEqualTo("max@muster.de"); // Should not be changed
+    assertThat(childParticipant.getNotes()).isNullOrEmpty(); // Should not be changed
+    assertThat(childParticipant.getMealSpecifics()).isEqualTo(MealSpecifics.NONE); // Should not be changed
+  }
+
+  @Test
+  public void updateOfGeocodeDataIsSyncedToChild() {
+
+    var rootParticipant = registerParticipantsAsFixedTeam();
+
+    GeocodingResult geocodingResult = new GeocodingResult();
+    geocodingResult.setLat(1);
+    geocodingResult.setLng(11);
+    geocodingResult.setResultType(GeocodingResult.GeocodingResultType.EXACT);
+    participantService.updateParticipantGeocode(runningDinner.getAdminId(), rootParticipant.getId(), geocodingResult);
+
+    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
+    assertThat(childParticipant.getGeocodingResult().getLat()).isEqualTo(1);
+    assertThat(childParticipant.getGeocodingResult().getLng()).isEqualTo(11);
+    assertThat(childParticipant.getGeocodingResult().getResultType()).isEqualTo(GeocodingResult.GeocodingResultType.EXACT);
+  }
+
   private Participant registerParticipantsAsFixedTeam() {
     return testHelperService.registerParticipantsAsFixedTeam(runningDinner, "Max Mustermann", "max@muster.de", "Maria Musterfrau");
   }
