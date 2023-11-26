@@ -1,5 +1,10 @@
 const NewsMessages_de: any = {
 
+  news_title_20231126: 'Fehlerbehebungen',
+  news_content_20231126: 'Es konnte die letzten Tage im Zusammenhang mit der Möglichkeit der Sofort-Anmeldung von Wunschpartern zu Fehlern kommen, ' + 
+                         'welche sich dadurch geäußert haben, dass beispielsweise falsche Anreden oder falsche Essensgewohnheiten im Nachrichtenversand verwendet wurden. ' +
+                         '<br />Diese Fehler sind mittlerweile behoben. Entschuldigung an dieser Stelle, falls es bei euch dadurch zu Verwirrungen gekommen sein sollte.', 
+
   news_title_20231118: 'Speisen zwischen Teams tauschen',
   news_content_20231118: 'Es ist jetzt möglich die Speisen zwischen einzelnen Teams zu tauschen. Einfach auf die "..." neben dem ausgewählten Team klicken und dort "Speise tauschen" wählen.',
 

@@ -1,5 +1,10 @@
 const NewsMessages_en: any = {
 
+  news_title_20231126: 'Several bugfixes',
+  news_content_20231126: 'In the last few days, errors could occur in connection with the possibility of immediate registration of desired partners, ' + 
+                         'which could have manifested themselves in the fact that, for example, incorrect salutations or incorrect eating habits were used when sending messages. ' +
+                         '<br />These errors have now been corrected. Sorry, if this has caused you any confusion.', 
+
   news_title_20231118: 'Swap meals between teams',
   news_content_20231118: 'It is now possible to swap meals between individual teams. Simply click on the "..." next to the selected team and select "Swap meal".',
 
