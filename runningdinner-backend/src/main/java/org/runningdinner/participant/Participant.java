@@ -25,7 +25,7 @@ import java.util.UUID;
  */
 @Entity
 @Access(AccessType.FIELD)
-public class Participant extends RunningDinnerRelatedEntity implements Comparable<Participant>, HasTeamPartnerWishOriginator {
+public class Participant extends RunningDinnerRelatedEntity implements Comparable<Participant>, HasTeamPartnerWishOriginator, HasContactInfo {
 
   private static final long serialVersionUID = -8062709434676386371L;
 
@@ -185,6 +185,7 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     this.numSeats = numSeats;
   }
 
+  @Override
   public String getEmail() {
 
     if (email == null) {
@@ -198,6 +199,7 @@ public class Participant extends RunningDinnerRelatedEntity implements Comparabl
     this.email = StringUtils.trim(email);
   }
 
+  @Override
   public String getMobileNumber() {
 
     if (mobileNumber == null) {

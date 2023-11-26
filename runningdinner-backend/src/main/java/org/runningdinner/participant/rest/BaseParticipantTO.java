@@ -1,23 +1,23 @@
 package org.runningdinner.participant.rest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.SafeHtml;
+import org.runningdinner.common.rest.BaseTO;
+import org.runningdinner.core.Gender;
+import org.runningdinner.core.MealSpecifics;
+import org.runningdinner.participant.HasContactInfo;
+import org.runningdinner.participant.MealSpecificsAware;
+import org.runningdinner.participant.Participant;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
-import org.runningdinner.common.rest.BaseTO;
-import org.runningdinner.core.Gender;
-import org.runningdinner.core.MealSpecifics;
-import org.runningdinner.participant.MealSpecificsAware;
-import org.runningdinner.participant.Participant;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
-
-public class BaseParticipantTO extends BaseTO implements MealSpecificsAware {
+public class BaseParticipantTO extends BaseTO implements MealSpecificsAware, HasContactInfo {
 
   @NotBlank
   @SafeHtml
@@ -210,6 +210,7 @@ public class BaseParticipantTO extends BaseTO implements MealSpecificsAware {
     this.country = country;
   }
 
+  @Override
   public String getEmail() {
 
     return email;
@@ -220,6 +221,7 @@ public class BaseParticipantTO extends BaseTO implements MealSpecificsAware {
     this.email = email;
   }
 
+  @Override
   public String getMobileNumber() {
 
     return mobileNumber;
