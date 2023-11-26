@@ -112,6 +112,17 @@ export function removeEntityFromList<T extends BaseEntity>(entityList?: Array<T>
   return result;
 }
 
+export function removeEntitiesFromList<T extends BaseEntity>(entityList: Array<T>, entitiesToRemove: T[]): Array<T> {
+  const result = cloneDeep(entityList);
+
+  const entityIdsToRemove = entitiesToRemove.filter(e => isStringNotEmpty(e.id)).map(e => e.id);
+
+  remove(result, (entity) => {
+    return entityIdsToRemove.indexOf(entity.id) >= 0;
+  });
+  return result;
+}
+
 // @ts-ignore
 export const isClient = !!(
     // @ts-ignore
