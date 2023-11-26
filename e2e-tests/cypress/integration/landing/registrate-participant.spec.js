@@ -10,7 +10,14 @@ import {
   submitStandardDialog,
   assertRegistrationFinishedPage,
   acknowledgeDataProcessing,
-  assertRegistrationSummaryDialogNotShown, assertRegistrationSummaryDialogShown,
+  assertRegistrationSummaryDialogNotShown,
+  assertRegistrationSummaryDialogShown,
+  assertAddTeamPartnerWishDialogShown,
+  navigateAdminDashboard,
+  assertConfirmParticipantActivationDialogShown,
+  getRegistrationRows,
+  navigateParticipantsList,
+  getParticipantRows,
 } from "../../support";
 import {createRunningDinner} from "../../support/runningDinnerSetup"
 
@@ -97,6 +104,75 @@ describe('participant registration', () => {
     });
 
     assertRegistrationFinishedPage();
+  });
+
+
+  it('default registration without team partner wish', () => {
+
+    fillPersonalFieldsInRegistrationForm("Max", "Mustermann", "Max@Mustermann.de");
+    getByTestId("gender-male-action").click({ force: true});
+    assertGenderSelected("male");
+
+    fillAddressFieldsInRegistrationForm("Musterstraße", "1", "79100", "Freiburg");
+    getTextInputByName("addressRemarks").type("Adress-Bemerkungen");
+    getTextInputByName("numSeats").type("6");
+
+    getByTestId("add-teampartner-wish-action").click({ force: true});
+    assertAddTeamPartnerWishDialogShown(() => {
+      // Fixed team partner registration should automatically be pre-selected in dialog
+      // => Hence nothing further needs to be done here
+      submitStandardDialog();
+    });
+
+    getTextInputByName("teamPartnerWishRegistrationData.firstnamePart").type("Fixed");
+    getTextInputByName("teamPartnerWishRegistrationData.lastname").type("Partner");
+
+    acknowledgeDataProcessing();
+
+    getByTestId("registration-form-next-action").click({force: true});
+
+    assertRegistrationSummaryDialogShown(() => {
+      getByTestId("mobilenumber-missing-attention").should("exist");
+      cy.contains("Max Mustermann");
+      cy.contains("Musterstraße 1");
+      cy.contains("79100 Freiburg");
+      cy.contains("Max@Mustermann.de");
+      cy.contains("Fixed Partner");
+      cy.contains("Damit werdet ihr automatisch als ein Team zusammen kochen.");
+      cy.contains("Du hast genügend Plätze um als Gastgeber am Event teilzunehmen").should("exist");
+      submitStandardDialog();
+    });
+
+    assertRegistrationFinishedPage();
+
+    cy.log("Manually activate team partner registration in admin area")
+    navigateAdminDashboard(adminId);
+
+    getRegistrationRows()
+      .eq(0)
+      .within(() => {
+        cy.contains("Max@Mustermann.de");
+        cy.contains("Fixed Partner");
+      }
+    );
+    getByTestId("activate-participant-action").click(({force: true}));
+    assertConfirmParticipantActivationDialogShown(() => {
+      submitStandardDialog();
+    });
+
+    cy.log("Verify both participants are shown in participant list");
+    navigateParticipantsList(adminId);
+    getParticipantRows()
+      .eq(0)
+      .within(() => {
+        cy.contains("Max@Mustermann.de")
+      });
+    getParticipantRows()
+      .eq(1)
+      .within(() => {
+        cy.contains("Fixed Partner")
+        cy.contains("Angemeldet durch Max Mustermann")
+      });
   });
 
 })

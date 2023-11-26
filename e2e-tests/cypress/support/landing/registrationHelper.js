@@ -32,3 +32,7 @@ export function assertRegistrationSummaryDialogNotShown() {
 export function assertRegistrationSummaryDialogShown(funcToExecute) {
   return getByTestId("registration-summary-dialog").within(funcToExecute);
 }
+
+export function assertAddTeamPartnerWishDialogShown(funcToExecute) {
+  return getByTestId("add-teampartner-wish-dialog").within(funcToExecute);
+}

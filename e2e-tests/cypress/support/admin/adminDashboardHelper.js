@@ -35,3 +35,10 @@ function getMealItemByIndex(index) {
   return getByTestId("meal-item").eq(index);
 }
 
+export function assertConfirmParticipantActivationDialogShown(funcToExecute) {
+  return getByTestId("confirm-participant-activation-dialog").within(funcToExecute);
+}
+
+export function getRegistrationRows() {
+  return getByTestId("registration-row");
+}
