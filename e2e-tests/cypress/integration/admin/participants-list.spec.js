@@ -102,7 +102,7 @@ describe('participants list', () => {
     getParticipantRows()
       .eq(0)
       .within(() => {
-        cy.contains("firstname2@lastname2.de")
+        cy.contains("firstname2") // May be not full address due to ellipsis
       });
 
     getParticipantListSearchTextInput().clear();
