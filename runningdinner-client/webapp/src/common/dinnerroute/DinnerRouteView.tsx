@@ -28,7 +28,7 @@ import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
 import {GoogleMap, InfoWindow, Marker, Polyline} from '@react-google-maps/api';
 import {LoadScript} from "@react-google-maps/api";
-import { cloneDeep } from 'lodash';
+import { cloneDeep, uniq } from 'lodash';
 import Alert from '@mui/material/Alert';
 import { AlertTitle } from '@mui/material';
 import {useGeoPosition} from "../hooks/GeoPositionHook";
@@ -147,9 +147,11 @@ function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTeam}: Tea
       return <Span>-</Span>;
     }
 
+    const contactInfoUnique = uniq(contactInfo);
+
     return (
       <>
-        { contactInfo.map((mobileNumber, index) => 
+        { contactInfoUnique.map((mobileNumber: string, index: number) => 
             <>{index > 0 ? <span>, &nbsp;</span> : ""}<LinkExtern href={`tel:${mobileNumber}`} key={mobileNumber} title={mobileNumber}/></>)
         }
       </>
