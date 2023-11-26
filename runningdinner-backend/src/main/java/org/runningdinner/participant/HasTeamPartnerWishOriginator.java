@@ -19,6 +19,10 @@ public interface HasTeamPartnerWishOriginator extends Identifiable  {
     return getTeamPartnerWishOriginatorId() != null && getId() != null && Objects.equals(getTeamPartnerWishOriginatorId(), getId());
   }
 
+  default boolean isTeamPartnerWishRegistratonChild() {
+    return getTeamPartnerWishOriginatorId() != null && getId() != null && !Objects.equals(getTeamPartnerWishOriginatorId(), getId());
+  }
+
   default boolean isTeamPartnerWishRegistrationChildOf(HasTeamPartnerWishOriginator other) {
     return Objects.equals(other.getTeamPartnerWishOriginatorId(), this.getId()) ||
            Objects.equals(this.getTeamPartnerWishOriginatorId(), other.getId());
