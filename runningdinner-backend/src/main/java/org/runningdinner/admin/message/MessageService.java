@@ -1,20 +1,5 @@
 package org.runningdinner.admin.message;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityNotFoundException;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
@@ -23,15 +8,7 @@ import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.message.dinner.RunningDinnerRelatedMessage;
 import org.runningdinner.admin.message.dinnerroute.DinnerRouteMessage;
-import org.runningdinner.admin.message.job.Message;
-import org.runningdinner.admin.message.job.MessageJob;
-import org.runningdinner.admin.message.job.MessageJobOverview;
-import org.runningdinner.admin.message.job.MessageJobRepository;
-import org.runningdinner.admin.message.job.MessageTask;
-import org.runningdinner.admin.message.job.MessageTaskRepository;
-import org.runningdinner.admin.message.job.MessageType;
-import org.runningdinner.admin.message.job.SendingResult;
-import org.runningdinner.admin.message.job.SendingStatus;
+import org.runningdinner.admin.message.job.*;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.admin.message.processor.MessageJobProcessorHelperService;
@@ -64,9 +41,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+
+import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
@@ -714,11 +696,9 @@ public class MessageService {
 
     checkAcknowledgedDinner(messageJob);
     
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
-      
       public void afterCommit() {
-        
         LOGGER.info("Publishing {}", messageJob);
         messageJobProcessorHelperService.publishProcessingEventAsync(messageJob);
       }
