@@ -9,7 +9,6 @@ import {useTranslation} from "react-i18next";
 import {Dialog, DialogContent} from "@mui/material";
 import {DialogTitleCloseable} from "../common/theme/DialogTitleCloseable";
 import DialogActionsPanel from "../common/theme/DialogActionsPanel";
-import React from "react";
 import {RegistrationSummaryContentView} from "./RegistrationSummaryContentView";
 import {RegistrationPaymentDialog} from "./RegistrationPaymentDialog";
 

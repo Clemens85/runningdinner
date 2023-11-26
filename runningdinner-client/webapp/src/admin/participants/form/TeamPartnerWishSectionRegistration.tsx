@@ -149,7 +149,10 @@ function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinner
       <Grid container justifyContent={"flex-start"}>
         <Grid item>
           {currentTeamPartnerOption === TeamPartnerOption.NONE &&
-            <SecondaryButton color={"primary"} variant={"outlined"} onClick={() => openDialog()}>{t("common:teampartner_wish_add")}...</SecondaryButton>
+            <SecondaryButton color={"primary"} 
+                             variant={"outlined"}
+                             data-testid={"add-teampartner-wish-action"} 
+                             onClick={() => openDialog()}>{t("common:teampartner_wish_add")}...</SecondaryButton>
           }
           {currentTeamPartnerOption !== TeamPartnerOption.NONE &&
             <Box mb={1} mt={2}>
@@ -179,7 +182,7 @@ function AddTeamPartnerOptionsDialog({onCancel, handleTeamPartnerOptionChange}: 
   }
 
   return (
-    <Dialog onClose={onCancel} open={true}>
+    <Dialog onClose={onCancel} open={true} data-testid="add-teampartner-wish-dialog">
       <DialogTitleCloseable onClose={onCancel}>{t("common:teampartner_wish_add")}</DialogTitleCloseable>
       <DialogContent>
         <Grid item xs={12}>

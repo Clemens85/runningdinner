@@ -157,8 +157,8 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
       await performRegistration(publicDinnerId, registrationData);
       onRegistrationPerformed(registrationData);
     } catch (e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   }
 

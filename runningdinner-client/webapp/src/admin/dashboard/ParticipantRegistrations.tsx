@@ -161,7 +161,11 @@ function ParticipantRegistrationRow({participantRegistration, onShowConfirmSubsc
   }
 
   function renderShowConfirmSubscriptionActivationDialogButton() {
-    return <LinkAction onClick={onShowConfirmSubscriptionActivationDialog} color={"secondary"}>{t("admin:participant_subscription_activation_manual")}</LinkAction>;
+    return <LinkAction onClick={onShowConfirmSubscriptionActivationDialog} 
+                       data-testid="activate-participant-action"
+                       color={"secondary"}>
+                        {t("admin:participant_subscription_activation_manual")}
+            </LinkAction>;
   }
 
   function handleClick() {
@@ -172,7 +176,7 @@ function ParticipantRegistrationRow({participantRegistration, onShowConfirmSubsc
   }
 
   return (
-    <ListItem divider={true} onClick={handleClick} sx={{ cursor: participantActivated ? 'pointer' : "auto" }}>
+    <ListItem divider={true} onClick={handleClick} sx={{ cursor: participantActivated ? 'pointer' : "auto" }} data-testid="registration-row">
       <ListItemText primary={<Typography variant={"subtitle2"}>{email}</Typography>}
                     secondary={renderRegistrationDetails()} />
       { !participantActivated ?
@@ -228,7 +232,7 @@ function ConfirmParticipantActivationDialog({participantRegistration, adminId, o
   }
 
   return (
-    <Dialog open={true} onClose={onClose} aria-labelledby="Confirm Participant Activation">
+    <Dialog open={true} onClose={onClose} aria-labelledby="Confirm Participant Activation" data-testid="confirm-participant-activation-dialog">
       <DialogTitleCloseable onClose={onClose}>
         {t('confirmation_activate_subscription_title', {participantEmail: email })}
       </DialogTitleCloseable>
