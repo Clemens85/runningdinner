@@ -1,13 +1,13 @@
 package org.runningdinner.participant;
 
-import javax.persistence.Embeddable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.core.InvalidAddressException;
 import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
+
+import javax.persistence.Embeddable;
 
 /**
  * Represents the address of a participant.<br>
@@ -155,7 +155,7 @@ public class ParticipantAddress {
 	 * <br>
 	 * Additionally the zip is validated
 	 * 
-	 * @param streetWithNumber
+	 * @param zipWithCity
 	 * @throws IllegalArgumentException
 	 */
 	public void setZipAndCity(final String zipWithCity) {
@@ -297,7 +297,7 @@ public class ParticipantAddress {
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append(street).append(" ").append(streetNr).append(", ").append(zip).append(" ").append(cityName).toString();
+		return street + " " + streetNr + ", " + zip + " " + cityName;
 	}
 
 }
