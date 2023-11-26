@@ -19,6 +19,8 @@ on:
     branches: [ "main" ]
   schedule:
     - cron: '21 10 * * 3'
+  workflow_dispatch:
+
 
 jobs:
   analyze:
@@ -32,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'java', 'javascript' ]
+        language: [ 'java' ] #, 'javascript' ]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
@@ -50,13 +52,23 @@ jobs:
         # Prefix the list here with "+" to use these queries and those in the config file.
 
         # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
+        queries: security-and-quality
 
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+
+    - name: Package artefact
+      run: cd runningdinner-backend && mvn --batch-mode clean install -DskipTests -DfailIfNoTests=false
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+    #- name: Autobuild
+    #  uses: github/codeql-action/autobuild@v2
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
