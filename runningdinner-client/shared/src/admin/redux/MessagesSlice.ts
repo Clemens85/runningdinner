@@ -6,13 +6,12 @@ import cloneDeep from "lodash/cloneDeep";
 import set from "lodash/set";
 import {
   findMessageJobsByAdminIdAndTypeAsync,
-  findParticipantsAsync,
   findTeamsNotCancelledAsync,
   sendMessagesAsync,
   isOneMessageJobNotFinished,
   getExampleParticipantMessage,
   getExampleTeamMessage,
-  getMessagePreviewAsync, getBackendIssuesFromErrorResponse, getExampleDinnerRouteMessage, concatParticipantList
+  getMessagePreviewAsync, getBackendIssuesFromErrorResponse, getExampleDinnerRouteMessage, findParticipantRecipients
 } from "../../";
 import {
   PreviewMessage,
@@ -73,9 +72,8 @@ const fetchRecipients = createAsyncThunk(
   async (props: MessageTypeAdminIdPayload) => {
     const {adminId, messageType} = props;
     if (messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS) {
-      const participantList = await findParticipantsAsync(adminId);
-      const allParticipants = concatParticipantList(participantList);
-      return allParticipants as Recipient[];
+      const participantRecipients = await findParticipantRecipients(adminId);
+      return participantRecipients as Recipient[];
     } else {
       const teams = await findTeamsNotCancelledAsync(adminId);
       return teams as Recipient[];

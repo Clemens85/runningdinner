@@ -13,22 +13,34 @@ import {
   updateRecipientForPreviewById,
   useAdminSelector,
   useAdminDispatch,
-  useRecipientName, useBackendIssueHandler, isArrayNotEmpty, BackendIssue
+  useRecipientName, useBackendIssueHandler, isArrayNotEmpty, BackendIssue, getEffectiveSelectedRecipients, getRecipientsSelector
 } from "@runningdinner/shared";
 import {FetchStatus} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {TextViewHtml} from "../../common/TextViewHtml";
 import {PaperGrey} from "../../common/theme/CommonStyles";
+import { useCurrentRecipientSelectionValue } from "./useCurrentRecipientSelectionValue";
 
 export function MessagePreview({adminId, messageType}: MessageTypeAdminIdPayload) {
 
   const {previewLoading, previewMessages, isMailMessageValid, previewIssues} = useAdminSelector(getMessagePreviewSelector);
   const messageObject = useAdminSelector(getMessageObjectSelector);
   const {recipients, selectedRecipientForPreview} = useAdminSelector(getRecipientsPreviewSelector);
+  const {customSelectedRecipients} = useAdminSelector(getRecipientsSelector);
 
   const dispatch = useAdminDispatch();
 
   const {t} = useTranslation("admin");
+
+  const currentRecipientSelectionValue = useCurrentRecipientSelectionValue(messageType);
+
+  const recipientsForPreview = React.useMemo(
+    () => {
+      return getEffectiveSelectedRecipients(recipients.data || [], currentRecipientSelectionValue, customSelectedRecipients);
+    },
+    [recipients.data, currentRecipientSelectionValue, customSelectedRecipients]
+  );
+  
 
   const handleSelectionChange = (newSelectedRecipientId: string) => dispatch(updateRecipientForPreviewById(newSelectedRecipientId));
 
@@ -55,13 +67,14 @@ export function MessagePreview({adminId, messageType}: MessageTypeAdminIdPayload
         </PaperGrey>
       </Box>);
 
+
   return (
       <Box>
         <Box mb={2}>
           <Subtitle i18n="common:preview" />
         </Box>
 
-        { recipients.data && <PreviewSelection recipients={recipients.data} selectedRecipient={selectedRecipientForPreview} onSelectionChange={handleSelectionChange}/> }
+        <PreviewSelection recipients={recipientsForPreview} selectedRecipient={selectedRecipientForPreview} onSelectionChange={handleSelectionChange} />
         { (previewLoading || recipients.fetchStatus === FetchStatus.LOADING) && <LinearProgress color="secondary" /> }
         { previewMessageNodes }
 
