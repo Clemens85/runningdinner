@@ -1,11 +1,5 @@
 package org.runningdinner.participant;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.Issue;
@@ -16,7 +10,6 @@ import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.event.publisher.EventPublisher;
-import org.runningdinner.participant.rest.ParticipantListActive;
 import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,16 +17,18 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
+import java.util.*;
+
 @Service
 public class ParticipantSwapNumbersService {
   
-  private ParticipantRepository participantRepository;
+  private final ParticipantRepository participantRepository;
 
-  private ParticipantService participantService;
+  private final ParticipantService participantService;
   
-  private EventPublisher eventPublisher;
+  private final EventPublisher eventPublisher;
 
-  private RunningDinnerService runningDinnerService;
+  private final RunningDinnerService runningDinnerService;
   
   public ParticipantSwapNumbersService(ParticipantRepository participantRepository,
       ParticipantService participantService,
@@ -70,7 +65,7 @@ public class ParticipantSwapNumbersService {
     }
     
     var participantList = participantService.findActiveParticipantList(adminId);
-    List<ParticipantWithListNumberTO> allParticipants = mapToRawList(participantList);
+    List<ParticipantWithListNumberTO> allParticipants = ParticipantService.mapToRawList(participantList);
   
     final int firstNumber = firstParticipant.getParticipantNumber();
     final int secondNumber = secondParticipant.getParticipantNumber();
@@ -185,13 +180,5 @@ public class ParticipantSwapNumbersService {
       }
     });
   }
-  
-  static List<ParticipantWithListNumberTO> mapToRawList(ParticipantListActive participantList) {
-    List<ParticipantWithListNumberTO> participants = participantList.getParticipants();
-    List<ParticipantWithListNumberTO> waitingList = participantList.getParticipantsWaitingList();
-    List<ParticipantWithListNumberTO> result = new ArrayList<>(participants);
-    result.addAll(waitingList);
-    return result;
-  }
-  
+
 }
