@@ -31,10 +31,9 @@ import org.runningdinner.mail.formatter.ParticipantMessageFormatter;
 import org.runningdinner.mail.formatter.RunningDinnerEventCreatedMessageFormatter;
 import org.runningdinner.mail.formatter.TeamArrangementMessageFormatter;
 import org.runningdinner.mail.sendgrid.SuppressedEmail;
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantService;
-import org.runningdinner.participant.Team;
-import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.*;
+import org.runningdinner.participant.rest.ParticipantListActive;
+import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,10 +114,11 @@ public class MessageService {
                                                        MessageJob parentMessageJob) {
 
     final String replyTo = runningDinner.getEmail();
-    
-    List<MessageTask> result = participants
+
+    List<Participant> recipients = getRecipients(participants);
+
+    List<MessageTask> result = recipients
                                 .stream()
-                                .filter(p -> StringUtils.isNotEmpty(p.getEmail()))
                                 .map(p -> {
                                   MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
                                   String text = participantMessageFormatter.formatParticipantMessage(runningDinner, p, participantMessage);
@@ -395,13 +395,14 @@ public class MessageService {
     }
     return messageTaskRepository.findNonFailedByRecipientsAndParentJobTypeStartingFrom(lowerCasedRecipientEmails, fromTime, parentJobMessageTypes);
   }
-  
-  public Optional<MessageJob> findLatestEndUserMessageJob() {
 
-    MessageJob result = messageJobRepository.findFirstByMessageTypeInOrderByCreatedAtDesc(getEndUserMessageTypes());
-    return Optional.ofNullable(result);
+  public List<ParticipantWithListNumberTO> findParticipantRecipients(@ValidateAdminId String adminId) {
+
+    ParticipantListActive participantList = participantService.findActiveParticipantList(adminId);
+    List<ParticipantWithListNumberTO> result = ParticipantService.mapToRawList(participantList);
+    return getRecipients(result);
   }
-  
+
   // TODO: Test
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public MessageTask updateMessageTaskAsFailedInNewTransaction(UUID messageTaskId, SuppressedEmail suppressedEmail) {
@@ -508,11 +509,10 @@ public class MessageService {
     
     List<MessageTask> result = new ArrayList<>();
     for (Team team : teams) {
-      
-      for (Participant teamMember : team.getTeamMembers()) {
-        if (StringUtils.isEmpty(teamMember.getEmail())) {
-          continue;
-        }
+
+      var teamMembers = getRecipientsOfTeam(team);
+
+      for (Participant teamMember : teamMembers) {
         String text = teamArrangementMessageFormatter.formatTeamMemberMessage(runningDinner, teamMember, team, teamMessage);
         MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
         messageTask.setMessage(new Message(teamMessage.getSubject(), text, replyTo));
@@ -529,14 +529,11 @@ public class MessageService {
     
     List<MessageTask> result = new ArrayList<>();
     for (Team team : teams) {
-      
-      for (Participant teamMember : team.getTeamMembers()) {
-        if (StringUtils.isEmpty(teamMember.getEmail())) {
-          continue;
-        }
-        
+
+      var teamMembers = getRecipientsOfTeam(team);
+
+      for (Participant teamMember : teamMembers) {
         List<Team> dinnerRoute = TeamRouteBuilder.generateDinnerRoute(team);
-        
         String text = dinnerRouteMessageFormatter.formatDinnerRouteMessage(runningDinner, teamMember, team, dinnerRoute, dinnerRouteMessage);
         MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
         messageTask.setMessage(new Message(dinnerRouteMessage.getSubject(), text, replyTo));
@@ -598,7 +595,7 @@ public class MessageService {
   }
   
   private String getRecipientEmail(Participant participant) {
-    
+
     return participant.getEmail();
   }
   
@@ -690,6 +687,28 @@ public class MessageService {
       recipients.add(mt.getRecipientEmail());
     }
     return result;
+  }
+
+  private static<T extends HasTeamPartnerWishOriginator & HasContactInfo> List<T> getRecipients(List<T> participants) {
+    List<T> result = new ArrayList<>(
+      participants
+        .stream()
+        .filter(p -> StringUtils.isNotEmpty(p.getEmail()))
+        .toList()
+    );
+
+    var teamPartnerRegistrationChildren = result
+      .stream()
+      .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistratonChild)
+      .toList();
+
+    // It is never possible to have team partner registration child without its root participant, hence we can safely remove them:
+    result.removeAll(teamPartnerRegistrationChildren);
+    return result;
+  }
+
+  private static List<Participant> getRecipientsOfTeam(Team team) {
+    return getRecipients(team.getTeamMembersOrdered());
   }
   
   private void executeSendMessagesJobAfterCommit(final MessageJob messageJob) {
