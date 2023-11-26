@@ -6,11 +6,16 @@ import {SingleSelectionDialog} from "./SingleSelectionDialog";
 import {
   CallbackHandler,
   CONSTANTS,
-  getNumberOfSelectedRecipients, isArrayEmpty,
+  findEntityById,
+  getEffectiveSelectedRecipients,
+  getRecipientsPreviewSelector,
+  isArrayEmpty,
   isArrayNotEmpty,
   isStringEmpty,
   MessageType,
   Recipient, setCustomSelectedRecipients, setPreviousRecipientSelection,
+  updateRecipientForPreviewById,
+  useAdminDispatch,
   useAdminSelector,
   useParticipantSelectionOptions,
   useRecipientName,
@@ -25,15 +30,16 @@ import {
   MessageTypeAdminIdPayload,
   startEditCustomSelectedRecipients,
 } from "@runningdinner/shared";
-import {useDispatch} from "react-redux";
 import {FetchStatus} from "@runningdinner/shared";
+import { useCurrentRecipientSelectionValue } from "./useCurrentRecipientSelectionValue";
 
 function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
 
   const {t} = useTranslation('admin');
-  const dispatch = useDispatch();
-  const { setValue, watch } = useFormContext();
+  const dispatch = useAdminDispatch();
+  const { setValue } = useFormContext();
   const {recipients, previousRecipientSelection, customSelectedRecipients, showCustomSelectionDialog} = useAdminSelector(getRecipientsSelector);
+  const {selectedRecipientForPreview} = useAdminSelector(getRecipientsPreviewSelector);
 
   const teamSelectionOptions = useTeamSelectionOptions();
   const participantSelectionOptions = useParticipantSelectionOptions();
@@ -41,10 +47,26 @@ function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
   const name = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? "participantSelection" : "teamSelection";
   const label = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? t("participant_selection_text") : t("admin:team_selection_text");
 
-  const currentRecipientSelectionValue = watch(name);
+  const currentRecipientSelectionValue = useCurrentRecipientSelectionValue(messageType);
+
+  const effectiveSelectedRecipients = React.useMemo(
+    () => {
+      return getEffectiveSelectedRecipients(recipients.data || [], currentRecipientSelectionValue, customSelectedRecipients);
+    },
+    [recipients.data, currentRecipientSelectionValue, customSelectedRecipients]
+  );
+  const numberOfRecipients = effectiveSelectedRecipients.length;
 
   if (recipients.fetchStatus !== FetchStatus.SUCCEEDED) {
     return <LinearProgress variant={"indeterminate"} />;
+  }
+
+  function changeRecipientForPreviewIfNeeded(updatedSelectedRecipients: Recipient[]) {
+    if (updatedSelectedRecipients.length > 0) {
+      if (!findEntityById(updatedSelectedRecipients, selectedRecipientForPreview?.id)) {
+        dispatch(updateRecipientForPreviewById(updatedSelectedRecipients[0].id!));
+      }
+    }
   }
 
   function handleRecipientSelectionChange(event: React.ChangeEvent<{ value: unknown }>) {
@@ -55,22 +77,26 @@ function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
       dispatch(setCustomSelectedRecipients([]));
       dispatch(setPreviousRecipientSelection(newRecipientSelection));
       setValue(name, newRecipientSelection);
+      const updatedSelectedRecipients = getEffectiveSelectedRecipients(recipients.data || [], newRecipientSelection, customSelectedRecipients);
+      changeRecipientForPreviewIfNeeded(updatedSelectedRecipients);
+    }
+  }
+
+  const handleStartEditCustomSelectedRecipients = () => dispatch(startEditCustomSelectedRecipients());
+
+  const handleFinishEditCustomSelectedRecipients = (updatedCustomSelectedRecipients: Recipient[]) => {
+    dispatch(finishEditCustomSelectedRecipients(updatedCustomSelectedRecipients));
+    if (isArrayEmpty(updatedCustomSelectedRecipients)) {
+      setValue(name, previousRecipientSelection);
+    } else {
+      setValue(name, CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION);
+      const updatedSelectedRecipients = getEffectiveSelectedRecipients(recipients.data || [], CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION, updatedCustomSelectedRecipients);
+      changeRecipientForPreviewIfNeeded(updatedSelectedRecipients);
     }
   }
 
   const recipientSelectionOptions = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? participantSelectionOptions : teamSelectionOptions;
 
-  const handleStartEditCustomSelectedRecipients = () => dispatch(startEditCustomSelectedRecipients());
-  const handleFinishEditCustomSelectedRecipients = (customSelectedEntities: Recipient[]) => {
-    dispatch(finishEditCustomSelectedRecipients(customSelectedEntities));
-    if (isArrayEmpty(customSelectedEntities)) {
-      setValue(name, previousRecipientSelection);
-    } else {
-      setValue(name, CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION);
-    }
-  }
-
-  const numberOfRecipients = getNumberOfSelectedRecipients(recipients.data || [], currentRecipientSelectionValue);
   return (
       <Box mb={3} mt={2}>
         <FormSelect name={name}

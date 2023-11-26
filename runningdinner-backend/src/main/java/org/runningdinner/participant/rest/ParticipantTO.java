@@ -1,16 +1,17 @@
 
 package org.runningdinner.participant.rest;
 
+import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.participant.HasTeamPartnerWishOriginator;
+import org.runningdinner.participant.Participant;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import org.runningdinner.geocoder.GeocodingResult;
-import org.runningdinner.participant.Participant;
-
-public class ParticipantTO extends BaseParticipantTO {
+public class ParticipantTO extends BaseParticipantTO implements HasTeamPartnerWishOriginator {
 
   private static final long serialVersionUID = 1L;
 
@@ -71,7 +72,8 @@ public class ParticipantTO extends BaseParticipantTO {
 
     this.geocodingResult = geocodingResult;
   }
-  
+
+  @Override
   public UUID getTeamPartnerWishOriginatorId() {
     return teamPartnerWishOriginatorId;
   }

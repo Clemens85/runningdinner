@@ -4,8 +4,6 @@ import org.runningdinner.participant.Participant;
 
 public class ParticipantWithListNumberTO extends ParticipantTO {
 
-  private static final long serialVersionUID = 1L;
-
   private int listNumber;
 
   protected ParticipantWithListNumberTO() {

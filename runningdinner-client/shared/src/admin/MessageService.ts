@@ -1,6 +1,6 @@
 import {BackendConfig} from "../BackendConfig";
 import axios from "axios";
-import {isArrayEmpty, isStringEmpty} from "../Utils";
+import {isArrayEmpty, isStringEmpty, removeEntitiesFromList} from "../Utils";
 import cloneDeep from 'lodash/cloneDeep';
 import get from 'lodash/get';
 import {
@@ -11,6 +11,7 @@ import {
   MessageTask,
   MessageType,
   Participant,
+  ParticipantListable,
   ParticipantMessage,
   ParticipantSelection,
   PreviewMessageList,
@@ -22,6 +23,12 @@ import {
 import {CONSTANTS} from "../Constants";
 import find from "lodash/find";
 import {filterParticipantsOrganizedInTeams} from "./ParticipantService";
+
+export async function findParticipantRecipients(adminId: string): Promise<ParticipantListable[]> {
+  const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/participants`);
+  const response = await axios.get(url);
+  return response.data;
+}
 
 export async function findMessageJobsByAdminIdAndTypeAsync(adminId: string, messageType: MessageType): Promise<MessageJob[]> {
   const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagejobs?messageType=${messageType}`);
@@ -63,7 +70,7 @@ export async function sendMessagesAsync<T extends BaseMessage>(adminId: string, 
 export async function getMessagePreviewAsync<T extends BaseMessage>(adminId: string, messageTemplate: T, recipientToUse: BaseEntity, messageType: MessageType): Promise<PreviewMessageList> {
   const recipientType = mapRecipientType(messageType);
   const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/mails/${recipientType}/preview`);
-  let messageObject = getMailMessageForSelectedRecipient(messageTemplate, messageType, recipientToUse);
+  const messageObject = getMailMessageForSelectedRecipient(messageTemplate, messageType, recipientToUse);
   const response = await axios.put(url, messageObject);
   return response.data;
 }
@@ -175,27 +182,27 @@ export function getExampleDinnerRouteMessage(): DinnerRouteMessage {
   };
 }
 
-export function getNumberOfSelectedRecipients(recipients: Recipient[], recipientSelection: string): number | null {
-  if (isArrayEmpty(recipients) || isStringEmpty(recipientSelection) ||
-      recipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION) {
-    return null;
-  }
-  if (recipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.ALL) {
-    return recipients.length;
-  }
-  return _getNumberOfSelectedParticipants(recipients as Participant[], recipientSelection);
-}
+// export function getNumberOfSelectedRecipients(recipients: Recipient[], recipientSelection: string): number | null {
+//   if (isArrayEmpty(recipients) || isStringEmpty(recipientSelection) ||
+//       recipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION) {
+//     return null;
+//   }
+//   if (recipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.ALL) {
+//     return recipients.length;
+//   }
+//   return _getNumberOfSelectedParticipants(recipients as Participant[], recipientSelection);
+// }
 
-function _getNumberOfSelectedParticipants(participants: Participant[], participantSelection: string): number | null {
-  const assignedParticipants = filterParticipantsOrganizedInTeams(participants);
-  const assignedParticipantsSize = assignedParticipants.length;
-  if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.ASSIGNED_TO_TEAM) {
-    return assignedParticipantsSize;
-  } else if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.NOT_ASSIGNED_TO_TEAM) {
-    return participants.length - assignedParticipantsSize;
-  }
-  return null;
-}
+// function _getNumberOfSelectedParticipants(participants: Participant[], participantSelection: string): number | null {
+//   const assignedParticipants = filterParticipantsOrganizedInTeams(participants);
+//   const assignedParticipantsSize = assignedParticipants.length;
+//   if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.ASSIGNED_TO_TEAM) {
+//     return assignedParticipantsSize;
+//   } else if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.NOT_ASSIGNED_TO_TEAM) {
+//     return participants.length - assignedParticipantsSize;
+//   }
+//   return null;
+// }
 
 
 function mapEmptySelectionStringToNull<T extends BaseMessage>(incomingMailMessage: T): T {
@@ -218,4 +225,31 @@ function mapRecipientType(messageType: MessageType): string {
     return "dinnerroute";
   }
   throw new Error(`Unknown messageType: ${messageType}`);
+}
+
+
+export function getEffectiveSelectedRecipients(allRecipients: Recipient[], 
+                                              recipientSelection: string, 
+                                              customSelectedRecipients?: Recipient[]): Recipient[] {
+
+  if (isArrayEmpty(allRecipients) || isStringEmpty(recipientSelection)) {
+    return [];
+  }
+  if (recipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.ALL) {
+    return allRecipients;
+  }
+  if (recipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION) {
+    return customSelectedRecipients || [];
+  }
+  return calculateRecipientsForSpecialSelection(allRecipients as Participant[], recipientSelection);
+}
+
+function calculateRecipientsForSpecialSelection(allParticipants: Participant[], participantSelection: string): Recipient[] {
+  const assignedParticipants = filterParticipantsOrganizedInTeams(allParticipants);
+  if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.ASSIGNED_TO_TEAM) {
+    return assignedParticipants;
+  } else if (participantSelection === CONSTANTS.PARTICIPANT_SELECTION.NOT_ASSIGNED_TO_TEAM) {
+    return removeEntitiesFromList(allParticipants, assignedParticipants || []);
+  }
+  return [];
 }

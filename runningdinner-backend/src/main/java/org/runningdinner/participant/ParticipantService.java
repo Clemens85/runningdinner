@@ -493,6 +493,14 @@ public class ParticipantService {
             .filter(p -> p.getTeamPartnerWishOriginatorId() != null)
             .collect(Collectors.toList());
   }
+
+  public static List<ParticipantWithListNumberTO> mapToRawList(ParticipantListActive participantList) {
+    List<ParticipantWithListNumberTO> participants = participantList.getParticipants();
+    List<ParticipantWithListNumberTO> waitingList = participantList.getParticipantsWaitingList();
+    List<ParticipantWithListNumberTO> result = new ArrayList<>(participants);
+    result.addAll(waitingList);
+    return result;
+  }
   
   public static boolean hasConsistentTeamPartnerWishRegistration(List<Participant> participants) {
     if (CollectionUtils.isEmpty(participants) || participants.size() == 1) {
