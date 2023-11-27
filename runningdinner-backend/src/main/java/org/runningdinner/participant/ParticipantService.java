@@ -304,7 +304,12 @@ public class ParticipantService {
 
     Participant existingParticipant = participantRepository.findByIdAndAdminId(participantId, runningDinner.getAdminId());
     validatorService.checkEntityNotNull(existingParticipant, "Could not load participant " + participantId + " for dinner " + runningDinner.getAdminId());
-    
+
+    if (existingParticipant.getActivationDate() != null) {
+      LOGGER.info("Participant {} was already activated", existingParticipant);
+      return existingParticipant;
+    }
+
     String activatedBy = existingParticipant.getEmail();
     if (!activatedByParticipant) {
       activatedBy = runningDinner.getEmail();

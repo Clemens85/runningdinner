@@ -20,6 +20,7 @@ import org.runningdinner.initialization.CreateRunningDinnerInitializationService
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.participant.*;
+import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
 import org.runningdinner.test.util.ApplicationTest;
@@ -518,6 +519,29 @@ public class TeamPartnerRegistrationTest {
     assertThat(childParticipant.getGeocodingResult().getLat()).isEqualTo(1);
     assertThat(childParticipant.getGeocodingResult().getLng()).isEqualTo(11);
     assertThat(childParticipant.getGeocodingResult().getResultType()).isEqualTo(GeocodingResult.GeocodingResultType.EXACT);
+  }
+
+  @Test
+  public void updateParticipantSubscription() {
+    Participant participant = ParticipantGenerator.generateParticipants(1).get(0);
+    participant = participantService.addParticipant(runningDinner, new ParticipantInputDataTO(participant), true);
+    assertThat(participant.getActivationDate()).isNull();
+    assertThat(participant.getActivatedBy()).isNull();
+
+    assertThat(participantService.findParticipants(runningDinner.getAdminId(), true)).isEmpty();
+
+    LocalDateTime now = LocalDateTime.now();
+    participantService.updateParticipantSubscription(participant.getId(), now, true, runningDinner);
+
+    var participants = participantService.findParticipants(runningDinner.getAdminId(), true);
+    assertThat(participants).containsExactly(participant);
+    assertThat(participants.get(0).getActivationDate()).isEqualToIgnoringNanos(now);
+
+    // Should not change anything
+    participantService.updateParticipantSubscription(participant.getId(), LocalDateTime.now().minusDays(1), false, runningDinner);
+    participant = participantService.findParticipantById(runningDinner.getAdminId(), participant.getId());
+    assertThat(participant.getActivationDate()).isEqualToIgnoringNanos(now);
+    assertThat(participant.getActivatedBy()).isEqualTo(participant.getEmail());
   }
 
   private Participant registerParticipantsAsFixedTeam() {
