@@ -50,7 +50,10 @@ export interface ParticipantList {
   missingParticipantsInfo: MissingParticipantsInfo
 }
 
-export function concatParticipantList(participantList: ParticipantList): ParticipantListable[] {
+export function concatParticipantList(participantList?: ParticipantList): ParticipantListable[] {
+  if (!participantList) {
+    return [];
+  }
   return participantList.participants.concat(participantList.participantsWaitingList);
 }
 

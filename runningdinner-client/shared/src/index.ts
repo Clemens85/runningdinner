@@ -27,5 +27,5 @@ export * from "./self";
 export * from "./landing";
 
 export * from './afterpartylocation';
-
+export * from './query';
 
