@@ -7,11 +7,10 @@ import { SwapParticipantNumbersDialog } from "./SwapParticipantNumbersDialog";
 type ParticipantFormContextMenuProps = {
   teamPartnerWishChild: boolean;
   participant: Participant;
-  participantList: ParticipantList;
   onParticipantsSwapped: CallbackHandler
 } & BaseAdminIdProps;
 
-export function ParticipantFormContextMenu({adminId, participant, participantList, teamPartnerWishChild, onParticipantsSwapped}: ParticipantFormContextMenuProps) {
+export function ParticipantFormContextMenu({adminId, participant, teamPartnerWishChild, onParticipantsSwapped}: ParticipantFormContextMenuProps) {
 
   const {t} = useTranslation("admin");
 
@@ -44,7 +43,6 @@ export function ParticipantFormContextMenu({adminId, participant, participantLis
     <>
       <ContextMenuIcon entries={actionMenuItems} dataTestId={"participant-form-context-menu-icon"}/>
       { showSwapParticipantsDialog && <SwapParticipantNumbersDialog adminId={adminId} 
-                                                                    participantList={participantList} 
                                                                     srcParticipant={participant} 
                                                                     onParticipantsSwapped={handleParticipantsSwapped}
                                                                     onCancel={closeSwapParticipantsDialog} /> }

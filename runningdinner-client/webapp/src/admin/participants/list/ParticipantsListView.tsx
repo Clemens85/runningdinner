@@ -8,7 +8,7 @@ import {
   ParticipantListable,
   useAdminSelector,
 } from "@runningdinner/shared";
-import {ReFetchParticipantsCallback, WaitingListManagementAlert} from './WaitingListManagementAlert';
+import {WaitingListManagementAlert} from './WaitingListManagementAlert';
 import {ParticipantSearchResult} from "./ParticipantsListHeader";
 
 export type ParticipantsListProps = {
@@ -17,9 +17,9 @@ export type ParticipantsListProps = {
   participantSearchResult: ParticipantSearchResult;
   selectedParticipant?: ParticipantListable;
   showMiscNotes: boolean;
-} & ParticipantClickCallback & ReFetchParticipantsCallback;
+} & ParticipantClickCallback;
 
-export default function ParticipantsListView({participantList, selectedParticipant, participantsListInfo, participantSearchResult, onClick, onReFetch, showMiscNotes}: ParticipantsListProps) {
+export default function ParticipantsListView({participantList, selectedParticipant, participantsListInfo, participantSearchResult, onClick, showMiscNotes}: ParticipantsListProps) {
 
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
   const { sessionData } = runningDinner;
@@ -62,7 +62,7 @@ export default function ParticipantsListView({participantList, selectedParticipa
           {showParticipantsOnWaitingListInOwnSection &&
             <Box mt={2} data-testid={"waitinglist-participants"}>
               <Box mb={2}>
-                <WaitingListManagementAlert runningDinner={runningDinner} onReFetch={onReFetch} teamsGenerated={participantList.teamsGenerated}/>
+                <WaitingListManagementAlert runningDinner={runningDinner} teamsGenerated={participantList.teamsGenerated}/>
               </Box>
               <TableContainer component={Paper}>
                 <Table size={"small"}>

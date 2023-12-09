@@ -10,7 +10,9 @@ import {
   BaseAdminIdProps,
   ParticipantList,
   concatParticipantList,
-  ParticipantListable
+  ParticipantListable,
+  useFindParticipants,
+  useNumberOfParticipants
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import {Link as RouterLink} from "react-router-dom";
@@ -19,6 +21,7 @@ import {useAdminNavigation} from "../../AdminNavigationHook";
 import Button from "@mui/material/Button";
 import {FormCheckboxSimple} from "../../../common/input/FormCheckboxSimple";
 import {commonStyles} from "../../../common/theme/CommonStyles";
+import HtmlTranslate from '../../../common/i18n/HtmlTranslate';
 
 export type ParticipantSearchResult = {
   filteredParticipants: ParticipantListable[],
@@ -34,12 +37,12 @@ export type ParticipantShowMiscNotesCallback = {
 };
 
 type ParticipantsListHeaderProps = {
-  numberOfParticipants: React.ReactNode;
-  participantList: ParticipantList
   showMiscNotes: boolean;
 } & BaseAdminIdProps & ParticipantSearchChangeCallback & ParticipantShowMiscNotesCallback;
 
-export function ParticipantsListHeader({adminId, numberOfParticipants, participantList, onParticipantSearchChanged, showMiscNotes, onShowMiscNotesChange}: ParticipantsListHeaderProps) {
+export function ParticipantsListHeader({adminId, onParticipantSearchChanged, showMiscNotes, onShowMiscNotesChange}: ParticipantsListHeaderProps) {
+
+  const {data: participantList} = useFindParticipants(adminId);
 
   const [search, setSearch] = useState({ searchText: '', isSearching: false });
   const [searchableParticipants, setSearchableParticipants] = useState<ParticipantListable[]>([]);
@@ -89,7 +92,9 @@ export function ParticipantsListHeader({adminId, numberOfParticipants, participa
               }} />
           </Grid>
           <Grid item xs={12} sm={5} lg={2}>
-            <Typography variant={"subtitle1"}>{numberOfParticipants}</Typography>
+            <Typography variant={"subtitle1"}>
+                <NumberOfParticipants participantList={participantList!} />
+              </Typography>
           </Grid>
           <Grid item xs={12} sm={12} lg={2} sx={commonStyles.textAlignRight}>
             <Button color={"primary"} variant={"outlined"}
@@ -120,3 +125,29 @@ export function ParticipantsListHeader({adminId, numberOfParticipants, participa
   );
 
 }
+
+type NumberOfParticipantsProps = {
+  participantList: ParticipantList;
+}
+
+function NumberOfParticipants({participantList}: NumberOfParticipantsProps) {
+
+  const {t} = useTranslation('admin');
+
+  const { numberOfParticipantsTotal, numberOfParticipantsWaitingList } = useNumberOfParticipants(participantList);
+
+  let result = <HtmlTranslate i18n="participants_number" ns="admin" parameters={{numberParticipants: numberOfParticipantsTotal}} />;
+
+  let numberOfParticipantsWaitingListInfo = '';
+  if (numberOfParticipantsWaitingList > 0) {
+    numberOfParticipantsWaitingListInfo = ' ' + t('participants_number_waiting_list', {numRemainingNotAssignableParticipants: numberOfParticipantsWaitingList});
+  }
+
+  return (
+      <>
+        {result} {numberOfParticipantsWaitingListInfo}
+      </>
+  );
+
+}
+

@@ -34,7 +34,6 @@ import {
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {BasicDinnerSettingsFormControl} from "../../common/dinnersettings/BasicDinnerSettingsFormControl";
-import {Fetch} from "../../common/Fetch";
 import {PageTitle, Span, Subtitle} from "../../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
 import {Box, Button, Grid, useMediaQuery, useTheme} from '@mui/material';
@@ -50,17 +49,20 @@ import { useDispatch } from 'react-redux';
 import FormCheckbox from '../../common/input/FormCheckbox';
 import {AfterPartyLocationToggleButton} from "../../common/dinnersettings/AfterPartyLocationToggleButton";
 import {AfterPartyLocationFormControl} from "../../common/dinnersettings/AfterPartyLocationFormControl";
+import { useQuery } from '@tanstack/react-query';
+import { FetchProgressBar, isQuerySucceeded } from '../../common/FetchProgressBar';
 
 export function SettingsPage({runningDinner}: BaseRunningDinnerProps) {
 
-  return (
-    <>
-      <Fetch asyncFunction={findRegistrationTypesAsync}
-             parameters={[]}
-             render={resultWrapper => <SettingsViewController registrationTypes={resultWrapper.result} runningDinner={runningDinner} /> }
-      />
-    </>
-  );
+  const registrationTypesQuery = useQuery({
+    queryFn: () => findRegistrationTypesAsync(),
+    queryKey: ['findRegistrationTypes']
+  });
+
+  if (!isQuerySucceeded(registrationTypesQuery)) {
+    return <FetchProgressBar {...registrationTypesQuery} />;
+  }
+  return <SettingsViewController registrationTypes={registrationTypesQuery.data!} runningDinner={runningDinner} />;
 }
 
 export interface SettingsViewControllerProps extends BaseRunningDinnerProps {
@@ -269,7 +271,7 @@ function BasicDinnerSettingsView({runningDinner, registrationTypes, onSettingsSa
                             helperText={t("common:team_partner_wish_disabled_help")} />
             </Grid>
           </Grid>
-          <Grid container justify={"flex-end"} sx={{ justifyContent: "flex-end" }}>
+          <Grid container justifyContent={"flex-end"}>
             <Grid item sx={{ pt: 3, pb: 6 }}>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitBasicDetailsAsync)}>
                 { t('common:save') }
@@ -364,7 +366,7 @@ function PublicDinnerSettingsView({runningDinner, onSettingsSaved}: BaseRunningD
               <PublicDinnerSettingsFormControl mediumDeviceHalfSize={false} />
             </Grid>
           </Grid>
-          <Grid container justify={"flex-end"} sx={{ justifyContent: "flex-end" }}>
+          <Grid container justifyContent={"flex-end"}>
             <Grid item sx={{ pt: 3, pb: 6 }}>
               <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}...</SecondaryButton>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} sx={{ ml: 2}}>
@@ -481,7 +483,7 @@ function AfterPartyLocationFormView({adminId, afterPartyLocation, onSettingsSave
       <FormProvider {...formMethods}>
         <form>
           <AfterPartyLocationFormControl />
-          <Grid container justify={"flex-end"} sx={{ justifyContent: "flex-end" }}>
+          <Grid container justifyContent={"flex-end"}>
             <Grid item sx={{ pt: 3, pb: 6, justifyContent: "flex-end" }}>
               <PrimaryButton disabled={formState.isSubmitting} size={"large"} onClick={handleSubmit(handleSubmitAfterPartyLocation)} sx={{ ml: 2}}>
                 { t('common:save') }

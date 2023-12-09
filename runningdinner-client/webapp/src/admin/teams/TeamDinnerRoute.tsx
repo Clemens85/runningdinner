@@ -1,12 +1,12 @@
-import React from 'react';
-import {Fetch} from "../../common/Fetch";
 import {
-  findDinnerRouteByAdminIdAndTeamIdAsync,
+  assertDefined,
   getRunningDinnerMandatorySelector,
-  useAdminSelector
+  useAdminSelector,
+  useFindDinnerRouteByAdminIdAndTeamId
 } from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
 import DinnerRouteView from "../../common/dinnerroute/DinnerRouteView";
+import { FetchProgressBar, isQuerySucceeded } from "../../common/FetchProgressBar";
 
 export default function TeamDinnerRoute() {
 
@@ -16,9 +16,11 @@ export default function TeamDinnerRoute() {
   const params = useParams<Record<string, string>>();
   const teamId = params.teamId;
 
-  return (
-      <Fetch asyncFunction={findDinnerRouteByAdminIdAndTeamIdAsync}
-             parameters={[adminId, teamId]}
-             render={resultWrapper => <DinnerRouteView dinnerRoute={resultWrapper.result} />} />
-  );
+  assertDefined(teamId);
+
+  const dinnerRouteQuery = useFindDinnerRouteByAdminIdAndTeamId(adminId, teamId);
+  if (!isQuerySucceeded(dinnerRouteQuery)) {
+    return <FetchProgressBar {...dinnerRouteQuery} />
+  }
+  return <DinnerRouteView dinnerRoute={dinnerRouteQuery.data!} />
 }

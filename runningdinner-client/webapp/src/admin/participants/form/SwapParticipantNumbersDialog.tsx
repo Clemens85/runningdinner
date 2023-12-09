@@ -1,6 +1,8 @@
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
 import {Box, Dialog, DialogActions, DialogContent, Alert, Autocomplete, TextField, UseAutocompleteProps} from "@mui/material";
-import {BaseAdminIdProps, CallbackHandler, concatParticipantList, findEntityById, Fullname, getFullname, HttpError, isStringNotEmpty, Participant, ParticipantList, ParticipantListable, removeEntityFromList, swapParticipantNumbersAsync, useBackendIssueHandler} from "@runningdinner/shared";
+import {BaseAdminIdProps, CallbackHandler, concatParticipantList, findEntityById, getFullname, HttpError, 
+        isStringNotEmpty, Participant, ParticipantList, ParticipantListable, removeEntityFromList, swapParticipantNumbersAsync, 
+        useBackendIssueHandler,  useFindParticipantsListMandatory} from "@runningdinner/shared";
 import { useMemo, useState } from "react";
 import {Trans, useTranslation} from "react-i18next";
 import Paragraph from "../../../common/theme/typography/Paragraph";
@@ -13,7 +15,6 @@ import { useNotificationHttpError } from "../../../common/NotificationHttpErrorH
 
 
 interface SelectParticiantToSwitchProps extends BaseAdminIdProps {
-  participantList: ParticipantList,
   srcParticipant: Participant,
   // @ts-ignore
   selectedParticipant: UseAutocompleteProps | null;
@@ -21,7 +22,8 @@ interface SelectParticiantToSwitchProps extends BaseAdminIdProps {
   onSelectedParticipantChange: (newVal: UseAutocompleteProps | null) => unknown;
 }
 
-interface SwitchParticipantNumbersDialogProps extends Omit<SelectParticiantToSwitchProps, "selectedParticipant" | "onSelectedParticipantChange"> {
+interface SwitchParticipantNumbersDialogProps extends BaseAdminIdProps {
+  srcParticipant: Participant,
   onCancel: CallbackHandler;
   onParticipantsSwapped: CallbackHandler
 };
@@ -47,7 +49,7 @@ function HasTeamAlert({adminId}: BaseAdminIdProps) {
   )
 }
 
-function getParticipantSelectionOptions(participantList: ParticipantList, srcParticipant: Participant) {
+function getParticipantSelectionOptions(srcParticipant: Participant, participantList: ParticipantList) {
   let allParticipants = concatParticipantList(participantList);
   allParticipants = removeEntityFromList(allParticipants, srcParticipant as ParticipantListable)!;
   return allParticipants.map(p => {
@@ -58,12 +60,14 @@ function getParticipantSelectionOptions(participantList: ParticipantList, srcPar
   });
 }
 
-function SelectParticiantToSwitch({adminId, participantList, srcParticipant, selectedParticipant, onSelectedParticipantChange}: SelectParticiantToSwitchProps) {
+function SelectParticiantToSwitch({adminId, srcParticipant, selectedParticipant, onSelectedParticipantChange}: SelectParticiantToSwitchProps) {
 
   const {t} = useTranslation(["admin", "common"]);
 
+  const participantList = useFindParticipantsListMandatory(adminId);
+
   const participantOptions = useMemo(
-    () => getParticipantSelectionOptions(participantList, srcParticipant),
+    () => getParticipantSelectionOptions(srcParticipant, participantList),
     [participantList, srcParticipant]
   );
 
@@ -87,11 +91,13 @@ function SelectParticiantToSwitch({adminId, participantList, srcParticipant, sel
   )
 }
 
-export function SwapParticipantNumbersDialog({onCancel, onParticipantsSwapped, srcParticipant, participantList, adminId}: SwitchParticipantNumbersDialogProps) {
+export function SwapParticipantNumbersDialog({onCancel, onParticipantsSwapped, srcParticipant, adminId}: SwitchParticipantNumbersDialogProps) {
 
   const {t} = useTranslation(["admin", "common"]);
 
   const {showSuccess, showError} = useCustomSnackbar();
+
+  const participantList = useFindParticipantsListMandatory(adminId);
 
   const {getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
@@ -137,7 +143,6 @@ export function SwapParticipantNumbersDialog({onCancel, onParticipantsSwapped, s
         <Box>
           { hasTeam && <HasTeamAlert adminId={adminId}/> }
           { !hasTeam && <SelectParticiantToSwitch srcParticipant={srcParticipant} 
-                                                  participantList={participantList} 
                                                   adminId={adminId}
                                                   selectedParticipant={selectedParticipant}
                                                   onSelectedParticipantChange={setSelectedParticipant}  /> }

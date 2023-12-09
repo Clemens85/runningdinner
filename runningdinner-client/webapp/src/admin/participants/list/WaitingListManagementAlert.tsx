@@ -1,18 +1,13 @@
-import React from 'react';
 import { Box, }from "@mui/material";
 import { Alert } from '@mui/material';
 import {useTranslation} from "react-i18next";
 import { PrimaryButton } from '../../../common/theme/PrimaryButton';
-import { BaseRunningDinnerProps, useDisclosure } from '@runningdinner/shared';
+import { BaseRunningDinnerProps, useDisclosure, useFindParticipants } from '@runningdinner/shared';
 import { WaitingListManagementDialog } from './WaitingListManagementDialog';
-
-export type ReFetchParticipantsCallback = {
-  onReFetch: () => Promise<any>;
-};
 
 type WaitingListManagementAlertProps = {
   teamsGenerated: boolean;
-} & BaseRunningDinnerProps & ReFetchParticipantsCallback;
+} & BaseRunningDinnerProps;
 
 export function WaitingListManagementAlert(props: WaitingListManagementAlertProps) {
 
@@ -20,9 +15,11 @@ export function WaitingListManagementAlert(props: WaitingListManagementAlertProp
 
   const {isOpen, close, open} = useDisclosure();
 
+  const {refetch: refetchParticipantList} = useFindParticipants(props.runningDinner.adminId);
+
   function handleClose() {
     close();
-    props.onReFetch();
+    refetchParticipantList();
   }
 
   const participantsWaitingListAlertMessage = props.teamsGenerated ? 'participants_remaining_not_assignable_teams_generated_text' : 'participants_remaining_not_assignable_text';

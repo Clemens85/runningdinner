@@ -8,6 +8,7 @@ export function createDefaultQueryClient() {
         networkMode: 'always', // We want always an fetch-error, even if the client seems to be offline (which might anywaay be a false indication)
         refetchOnWindowFocus: false,
         retry: 1,
+        staleTime: Infinity
       },
     },
   })

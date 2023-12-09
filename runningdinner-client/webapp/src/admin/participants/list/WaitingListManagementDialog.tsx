@@ -1,16 +1,17 @@
 import {AppBar, Button, Dialog, Grid, IconButton, Paper, Slide, Toolbar, Typography} from '@mui/material';
 import {
   addSelectedParticipantToTeam,
+  assertDefined,
   assignParticipantsToExistingTeamsAsync,
   BaseRunningDinnerProps,
   calculateCancelledTeamMembersNumArr,
   CallbackHandler,
   findEntityById,
-  findWaitingListInfoAsync,
   Fullname,
   generateNewTeamsFromWaitingListAsync,
   getNumCancelledTeamMembers,
   getTeamParticipantsAssignment,
+  HttpError,
   isArrayNotEmpty,
   MessageSubType,
   removeSelectedParticipantFromTeam,
@@ -21,6 +22,7 @@ import {
   TeamParticipantsAssignment,
   TeamParticipantsAssignmentModel,
   useBackendIssueHandler,
+  useFindWaitingListInfo,
   useTeamNameMembers,
   WaitingListAction,
   WaitingListActionAdditional,
@@ -28,7 +30,6 @@ import {
   WaitingListActionUI,
   WaitingListInfo
 } from '@runningdinner/shared';
-import {Fetch} from '../../../common/Fetch';
 import React, {useEffect, useState} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
 import {Subtitle} from "../../../common/theme/typography/Tags";
@@ -46,19 +47,18 @@ import { Breakpoint } from '@mui/material/styles';
 import {GridSize} from "@mui/material/Grid/Grid";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import { Alert, AlertTitle } from '@mui/material';
+import { FetchProgressBar, isQuerySucceeded } from '../../../common/FetchProgressBar';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
   ref: React.Ref<unknown>,
 ) {
+  // @ts-ignore
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 type CloseCallback = {
   onClose: CallbackHandler;
-};
-type ReFetchCallback = {
-  reFetch: () => Promise<WaitingListInfo>;
 };
 type SaveCallback = {
   onSave: (waitingListActionResult: WaitingListActionResult) => unknown;
@@ -99,28 +99,37 @@ export function WaitingListManagementDialog(props: BaseRunningDinnerProps & Clos
         </Toolbar>
       </AppBar>
 
-      <Fetch asyncFunction={findWaitingListInfoAsync}
-             parameters={[runningDinner.adminId]}
-             render={response =>
-                <Box mt={3}>
-                  <WaitingListManagementDialogContentView {...response.result} reFetch={response.reFetch} runningDinner={runningDinner} onClose={onClose} />
-                </Box>
-             } />
+      <Box mt={3}>
+        <WaitingListManagementDialogContentView runningDinner={runningDinner} onClose={onClose} />
+      </Box>
 
     </Dialog>
   );
 }
 
-function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetchCallback & CloseCallback & BaseRunningDinnerProps) {
+function WaitingListManagementDialogContentView(props: CloseCallback & BaseRunningDinnerProps) {
 
-  const { possibleActions, teamsGenerated, runningDinner, reFetch, onClose } = props;
+  const findWaitingListInfoQuery = useFindWaitingListInfo(props.runningDinner.adminId);
 
   const [currentWaitingListAction, setCurrentWaitingListAction] = React.useState<WaitingListActionUI>();
   const [teamNotificationModel, setTeamNotificationModel] = React.useState<TeamNotificationModel>();
 
   React.useEffect(() => {
+    const possibleActions = findWaitingListInfoQuery.data?.possibleActions;
+    if (!possibleActions) {
+      return;
+    }
     setCurrentWaitingListAction(isArrayNotEmpty(possibleActions) ? possibleActions[0] : undefined);
-  }, [possibleActions]);
+  }, [findWaitingListInfoQuery.data?.possibleActions]);
+
+  if (!isQuerySucceeded(findWaitingListInfoQuery)) {
+    return <FetchProgressBar {...findWaitingListInfoQuery} />
+  }
+  const {data: waitingListInfo, refetch} = findWaitingListInfoQuery;
+  assertDefined(waitingListInfo);
+
+  const { runningDinner, onClose } = props;
+  const { teamsGenerated } = waitingListInfo;
 
   async function handleSave(waitingListActionResult: WaitingListActionResult) {
     const {affectedTeams} = waitingListActionResult;
@@ -138,7 +147,7 @@ function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetch
 
   function reloadWaitingListContent() {
     setTeamNotificationModel(undefined);
-    reFetch();
+    refetch();
   }
 
   if (!teamsGenerated) {
@@ -158,9 +167,9 @@ function WaitingListManagementDialogContentView(props: WaitingListInfo & ReFetch
 
   return (
     <>
-      { currentWaitingListAction === WaitingListAction.GENERATE_NEW_TEAMS && <RegenerateTeamsWithAssignableParticipantsView {... props} onSave={handleSave} /> }
-      { currentWaitingListAction === WaitingListAction.ASSIGN_TO_EXISTING_TEAMS && <TeamParticipantsAssignmentView {...props} onSave={handleSave}/> }
-      { currentWaitingListAction === WaitingListAction.DISTRIBUTE_TO_TEAMS && <NoSimpleActionView {...props} /> }
+      { currentWaitingListAction === WaitingListAction.GENERATE_NEW_TEAMS && <RegenerateTeamsWithAssignableParticipantsView {... waitingListInfo} onSave={handleSave} runningDinner={runningDinner} /> }
+      { currentWaitingListAction === WaitingListAction.ASSIGN_TO_EXISTING_TEAMS && <TeamParticipantsAssignmentView {...waitingListInfo} onSave={handleSave} runningDinner={runningDinner}/> }
+      { currentWaitingListAction === WaitingListAction.DISTRIBUTE_TO_TEAMS && <NoSimpleActionView {...waitingListInfo} /> }
     </>
   );
 }
@@ -218,7 +227,7 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
       showSuccess(t("admin:waitinglist_assign_participants_teams_success"));
       onSave(result);
     } catch (e) {
-      showHttpErrorDefaultNotification(e, {
+      showHttpErrorDefaultNotification(e as HttpError, {
         showGenericMesssageOnValidationError: false,
         showMessageForValidationErrorsWithoutSource: true
       });
@@ -411,7 +420,7 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
       showSuccess(t("admin:waitinglist_generate_teams_success"));
       onSave(result);
     } catch (e) {
-      showHttpErrorDefaultNotification(e, {
+      showHttpErrorDefaultNotification(e as HttpError, {
         showGenericMesssageOnValidationError: false,
         showAllValidationErrorMessages: true
       });

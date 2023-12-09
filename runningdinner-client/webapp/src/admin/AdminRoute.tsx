@@ -1,6 +1,4 @@
-import React from 'react';
 import {DinnerRouteMessages, ParticipantMessages, TeamMessages} from "./messages/MessagesContainer";
-import ParticipantsPage from "./participants/ParticipantsPage";
 import TeamsContainer from "./teams/TeamsContainer";
 import Dashboard from "./dashboard/Dashboard";
 import {Route, Routes} from "react-router-dom";
@@ -11,7 +9,7 @@ import {MessageJobDetailsList} from "./messages/messagejobs/MessageJobDetailsLis
 import {SettingsPage} from "./settings/SettingsPage";
 import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 import {PaymentOptionsPage} from "./paymentoptions/PaymentOptionsPage";
-import { ParticipantsPageNew } from './participants/ParticipantsPageNew';
+import { ParticipantsPage } from './participants/ParticipantsPage';
 
 export default function AdminRoute() {
 
@@ -28,7 +26,7 @@ export default function AdminRoute() {
 
         <Route path={`participants/:participantId`} element={<ParticipantsPage runningDinner={runningDinner} />} />
 
-        <Route path={`participants`} element={<ParticipantsPageNew runningDinner={runningDinner} />} />
+        <Route path={`participants`} element={<ParticipantsPage runningDinner={runningDinner} />} />
 
         <Route path={`dinnerroute/messages`} element={<DinnerRouteMessages runningDinner={runningDinner} />} />
 

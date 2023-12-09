@@ -11,7 +11,7 @@ import {
   HttpError,
   isNewEntity,
   isTeamPartnerWishChild,
-  mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant, ParticipantList, ParticipantListable,
+  mapNullFieldsToEmptyStrings, newEmptyParticipantInstance, Participant, ParticipantListable,
   saveParticipantAsync,
   useBackendIssueHandler
 } from "@runningdinner/shared";
@@ -28,7 +28,6 @@ import { ParticipantFormContextMenu } from './ParticipantFormContextMenu';
 
 export interface ParticipantFormProps {
   participant: ParticipantListable;
-  participantList: ParticipantList
   adminId: string;
   onParticipantSaved: CallbackHandler;
   onParticipantDeleted: CallbackHandler;
@@ -37,7 +36,7 @@ export interface ParticipantFormProps {
 
 // Validation, see: https://www.reactnativeschool.com/build-and-validate-forms-with-formik-and-yup/handling-server-errors
 // and: https://github.com/jaredpalmer/formik/issues/150 and https://github.com/jaredpalmer/formik/issues/33
-export default function ParticipantForm({participant, participantList, adminId, onParticipantSaved, onParticipantDeleted, teamPartnerWishDisabled}: ParticipantFormProps) {
+export default function ParticipantForm({participant, adminId, onParticipantSaved, onParticipantDeleted, teamPartnerWishDisabled}: ParticipantFormProps) {
 
   const {t} = useTranslation('common');
 
@@ -114,7 +113,6 @@ export default function ParticipantForm({participant, participantList, adminId, 
               </Grid>
               <Grid item xs={12} md={4} sx={ commonStyles.textAlignRight }>
                 <ParticipantFormContextMenu participant={participant} 
-                                            participantList={participantList}
                                             teamPartnerWishChild={teamPartnerWishChild}
                                             onParticipantsSwapped={() => onParticipantSaved(participant)} 
                                             adminId={adminId} />

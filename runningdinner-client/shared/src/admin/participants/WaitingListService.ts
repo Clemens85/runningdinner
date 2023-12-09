@@ -130,7 +130,7 @@ function orderAndDistinctAllSelectableParticipants(teamParticipantsAssignmentMod
 
 export function calculateCancelledTeamMembersNumArr(team: Team, numSelectedParticipants: number, teamSizeOfRunningDinner: number): number[] {
   const numCancelledTeamMembers = getNumCancelledTeamMembers(team, numSelectedParticipants, teamSizeOfRunningDinner);
-  let cancelledTeamMembers = generateCancelledTeamMembersAsNumberArray(team, teamSizeOfRunningDinner);
+  const cancelledTeamMembers = generateCancelledTeamMembersAsNumberArray(team, teamSizeOfRunningDinner);
   return cancelledTeamMembers.slice(0, numCancelledTeamMembers);
 }
 

@@ -204,3 +204,9 @@ export function newObjectWithDefaultValuesIfNotSet<T>(incomingObj: T, defaultVal
 export function isInteger(s: string) {
   return /^[0-9]*$/.test(s);
 }
+
+export function assertDefined<T> (obj: T | undefined): asserts obj is T {
+  if (obj === undefined || obj === null) {
+    throw "Passed obj should be not-null but was null or undefined";
+  }
+}
