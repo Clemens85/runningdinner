@@ -7,6 +7,7 @@ export function useFindAdminActivitiesByAdminId(adminId: string) {
     placeholderData: keepPreviousData,
     queryFn: () => findAdminActivitiesByAdminIdAsync(adminId),
     queryKey: ['findAdminActivitiesByAdminId', adminId],
+    refetchOnMount: 'always'
   });
 
   useQuery({

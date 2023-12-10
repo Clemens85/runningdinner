@@ -22,7 +22,7 @@ export function ParticipantsPage({runningDinner}: BaseRunningDinnerProps) {
 
   const {adminId} = runningDinner;
 
-  const findParticipantsQuery = useFindParticipants(adminId);
+  const findParticipantsQuery = useFindParticipants(adminId, 'always');
 
   const [selectedParticipant, setSelectedParticipant] = useState<ParticipantListable>();
   const [showMiscNotes, setShowMiscNotes] = useState(false);
