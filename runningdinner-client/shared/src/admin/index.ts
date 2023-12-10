@@ -15,3 +15,4 @@ export * from "./messages/ParticipantSelectionOptionsHook";
 export * from "./messages/TeamSelectionOptionsHook";
 export * from "./SettingsService";
 export * from "./PaymentOptionsService";
+export * from "./dashboard";

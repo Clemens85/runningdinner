@@ -1,17 +1,15 @@
-import React from "react";
 import DashboardTitle from "./DashboardTitle"
 import MealsList from "./MealsList"
 import Overview from "./Overview";
 import {Box, Grid, useMediaQuery} from "@mui/material";
 import Checklist from "./Checklist";
 import {
+  assertDefined,
   BaseRunningDinnerProps,
-  fetchAdminActivities,
-  getAdminActivitiesFetchSelector,
   isClosedDinner,
   RunningDinner,
   setUpdatedRunningDinner,
-  useAdminSelector,
+  useFindAdminActivitiesByAdminId,
 } from "@runningdinner/shared";
 import { SuperSEO } from "react-super-seo";
 import {useDispatch} from "react-redux";
@@ -23,23 +21,27 @@ import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import {PublicRunningDinnerLink} from "./PublicRunningDinnerLink";
 import {Theme} from "@mui/material/styles";
+import { FetchProgressBar, isQuerySucceeded } from "../../common/FetchProgressBar";
 
 export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
 
   const { basicDetails, adminId } = runningDinner;
   const { meals } = runningDinner.options;
 
+  const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
+
   const dispatch = useDispatch();
   const {t} = useTranslation();
 
-  React.useEffect(() => {
-    dispatch(fetchAdminActivities(adminId));
-  }, [dispatch, adminId]);
-
-  const {data: dashboardAdminActivities} = useAdminSelector(getAdminActivitiesFetchSelector);
+  const findAdminActivitiesQuery = useFindAdminActivitiesByAdminId(adminId);
+  if (!isQuerySucceeded(findAdminActivitiesQuery)) {
+    return <FetchProgressBar {...findAdminActivitiesQuery} />;
+  }
+  const {data: dashboardAdminActivities, refetch} = findAdminActivitiesQuery;  
+  assertDefined(dashboardAdminActivities);
 
   function handleRunningDinnerUpdate(updatedRunningDinner: RunningDinner) {
-    dispatch(fetchAdminActivities(adminId));
+    refetch();
     dispatch(setUpdatedRunningDinner(updatedRunningDinner));
   }
 
@@ -49,8 +51,6 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
     pt: 2,
     pb: 2
   }
-
-  const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
 
   return (
     <div>

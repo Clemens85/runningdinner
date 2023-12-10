@@ -1,8 +1,7 @@
-import {CONSTANTS, getExampleParticipantMessage, ParticipantRegistrationInfoList, PaymentOptions,} from "../..";
+import {CONSTANTS, getExampleParticipantMessage, PaymentOptions,} from "../..";
 import {
   BackendIssue,
   BaseMessage,
-  DashboardAdminActivities,
   MessageJob,
   MessageTask,
   MessageType,
@@ -15,11 +14,6 @@ import {FetchData, INITIAL_FETCH_DATA} from "../../redux";
 
 export interface AdminState {
   runningDinner: FetchData<RunningDinner>;
-}
-
-export interface DashboardState {
-  adminActivities: FetchData<DashboardAdminActivities>,
-  participantRegistrations: FetchData<ParticipantRegistrationInfoList>
 }
 
 export interface ParticipantsState {
@@ -57,13 +51,6 @@ export interface MessageJobDetailsState {
 export function newInitialAdminState(): AdminState {
   return {
     runningDinner: INITIAL_FETCH_DATA
-  }
-}
-
-export function newInitialDashboardState(): DashboardState {
-  return {
-    adminActivities: INITIAL_FETCH_DATA,
-    participantRegistrations: INITIAL_FETCH_DATA
   }
 }
 

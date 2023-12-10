@@ -1,10 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { findParticipantsAsync } from "..";
 
 export function useFindParticipants(adminId: string) {
 
   return useQuery({
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     queryFn: () => findParticipantsAsync(adminId),
     queryKey: ['findParticipants', adminId],
   });

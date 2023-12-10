@@ -205,8 +205,12 @@ export function isInteger(s: string) {
   return /^[0-9]*$/.test(s);
 }
 
+export function isDefined<T>(obj: T) {
+  return obj !== undefined && obj !== null;
+}
+
 export function assertDefined<T> (obj: T | undefined): asserts obj is T {
-  if (obj === undefined || obj === null) {
+  if (!isDefined(obj)) {
     throw "Passed obj should be not-null but was null or undefined";
   }
 }

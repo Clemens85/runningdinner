@@ -1,30 +1,29 @@
 import {useEffect} from 'react';
 import {
+  assertDefined,
   BaseAdminIdProps,
   BaseRunningDinnerProps, CallbackHandler,
-  fetchNextParticipantRegistrations,
+  findEntityById,
+  findParticipantRegistrationsByAdminIdAsync,
   Fullname,
-  getFullname,
-  getParticipantRegistrationsFetchSelector,
   HttpError,
+  isArrayEmpty,
   isArrayNotEmpty,
-  isParticipantRegistrationsEmpty, isStringEmpty, isStringNotEmpty, LocalDate, ParticipantRegistrationInfo, Time, updateParticipantSubscription,
-  useAdminDispatch,
-  useAdminSelector, useBackendIssueHandler, useDisclosure
+  isDefined,
+  isStringEmpty, isStringNotEmpty, LocalDate, Participant, ParticipantRegistrationInfo, ParticipantRegistrationInfoList, Time,
+  updateParticipantSubscriptionByAdminIdAndIdAsync,
+  useBackendIssueHandler, useDisclosure
 } from "@runningdinner/shared";
 import {
   Box,
   Button, Card, CardContent,
   Dialog, DialogContent,
-  LinearProgress,
   List, ListItem,
   ListItemSecondaryAction,
   ListItemText,
   Typography, useMediaQuery
 } from "@mui/material";
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
-import {useDispatch} from "react-redux";
-import {FetchStatus} from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
 import LinkAction from "../../common/theme/LinkAction";
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
@@ -37,57 +36,109 @@ import {Theme} from "@mui/material/styles";
 import LinkExtern from '../../common/theme/LinkExtern';
 import { MissingParticipantActivationDialog } from '../common/MissingParticipantActivationDialog';
 import { useMissingParticipantActivation } from '../common/MissingParticipantActivationHook';
+import { InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { FetchProgressBar, isQuerySucceeded } from '../../common/FetchProgressBar';
+import cloneDeep from "lodash/cloneDeep";
+
+function filterNotActivatedRegistrationsTooOld(participantRegistrationDataPages: ParticipantRegistrationInfoList[]): ParticipantRegistrationInfo[] {
+  return participantRegistrationDataPages
+          .flatMap(p => p.notActivatedRegistrationsTooOld)
+          .filter(notActivatedRegistration => isDefined(notActivatedRegistration));
+}
+
+function exchangeParticipantInRegistrationsQueryData(updatedParticipant: Participant, existingRegistrationData: InfiniteData<ParticipantRegistrationInfoList, unknown>) {
+  const updatedPages: ParticipantRegistrationInfoList[] = cloneDeep(existingRegistrationData.pages);
+  for (let i = 0; i < updatedPages.length; i++) {
+    const matchedRegistration = findEntityById(updatedPages[i].registrations, updatedParticipant.id);
+    if (matchedRegistration) {
+      transferActivationDateFromParticipant(updatedParticipant, matchedRegistration);
+      const matchedNotActivatedRegistationTooOld = findEntityById(updatedPages[i].notActivatedRegistrationsTooOld, updatedParticipant.id);
+      transferActivationDateFromParticipant(updatedParticipant, matchedNotActivatedRegistationTooOld);
+      break;
+    }
+  }
+  return {
+    pages: updatedPages,
+    pageParams: existingRegistrationData.pageParams
+  }
+}
+
+function transferActivationDateFromParticipant(src: Participant, registration?: ParticipantRegistrationInfo) {
+  if (registration) {
+    registration.activationDate = src.activationDate;
+  }
+}
 
 export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps) {
 
-  const dispatch = useDispatch();
   const {adminId} = runningDinner;
 
-  const {data: participantRegistrationInfoList, fetchStatus} = useAdminSelector(getParticipantRegistrationsFetchSelector);
-  const hasNoRegistrations = useAdminSelector(isParticipantRegistrationsEmpty);
   const {t} = useTranslation(["admin", "common"]);
 
   const {isOpen, close, open, getIsOpenData} = useDisclosure<ParticipantRegistrationInfo>();
+
+  const findParticipantRegistrationsByAdminIdQuery = useInfiniteQuery({
+    queryFn: ({ pageParam }) => findParticipantRegistrationsByAdminIdAsync(adminId, pageParam),
+    queryKey: ['findParticipantRegistrationsByAdminId', adminId],
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, _allPages) => lastPage.hasMore ? lastPage.page + 1 : undefined,
+    refetchOnMount: 'always'
+  });
+
+  const {
+    data: participantRegistrationData, 
+    hasNextPage, 
+    fetchNextPage,
+    isFetchingNextPage} = findParticipantRegistrationsByAdminIdQuery;
 
   const { closeMissingParticipantActivationNotification, 
           enableMissingParticipantAcivationNotification,
           showMissingParticipantActivationNotification } = useMissingParticipantActivation({ adminId });
 
-  const showMoreLink = participantRegistrationInfoList?.hasMore;
+  const participantRegistrationDataPages = participantRegistrationData?.pages || [];     
+  const registrations = participantRegistrationDataPages.flatMap(p => p.registrations);
+  const notActivatedRegistrationsTooOld = filterNotActivatedRegistrationsTooOld(participantRegistrationDataPages);
 
   useEffect(() => {
-    // @ts-ignore
-    dispatch(fetchNextParticipantRegistrations({adminId, initialFetch: true}));
-  }, [adminId, dispatch]);
-
-  useEffect(() => {
-    if (fetchStatus === FetchStatus.SUCCEEDED) {
-      enableMissingParticipantAcivationNotification(participantRegistrationInfoList?.notActivatedRegistrationsTooOld);
+    // Use effect only for first fetched page!
+    if (participantRegistrationDataPages.length !== 1) {
+      return;
     }
-  }, [fetchStatus])
+    const notActivatedRegistrationsTooOldFirstPage = filterNotActivatedRegistrationsTooOld(participantRegistrationDataPages);
+    enableMissingParticipantAcivationNotification(notActivatedRegistrationsTooOldFirstPage);
+  }, [participantRegistrationDataPages])
+  
+  if (!isQuerySucceeded(findParticipantRegistrationsByAdminIdQuery)) {
+    return <FetchProgressBar {...findParticipantRegistrationsByAdminIdQuery} />;
+  }
+  assertDefined(participantRegistrationData);
+
+  const hasNoRegistrations = isArrayEmpty(registrations);
 
   return (
     <>
       <Card>
         <CardContent>
           <Subtitle i18n={"admin:latest_registrations"} />
-          { fetchStatus === FetchStatus.LOADING && <LinearProgress variant={"indeterminate"} /> }
           { hasNoRegistrations && <NoRegistrations /> }
-          { isArrayNotEmpty(participantRegistrationInfoList?.registrations) &&
+          { isArrayNotEmpty(registrations) &&
             <List>
-              { participantRegistrationInfoList!.registrations.map((registration: ParticipantRegistrationInfo, index: number) => <ParticipantRegistrationRow key={index}
-                                                                                                                                                             adminId={adminId}
-                                                                                                                                                             participantRegistration={registration}
-                                                                                                                                                             onShowConfirmSubscriptionActivationDialog={() => open(registration)} />) }
+              { registrations.map((registration: ParticipantRegistrationInfo, index: number) => <ParticipantRegistrationRow key={index}
+                                                                                                                            adminId={adminId}
+                                                                                                                            participantRegistration={registration}
+                                                                                                                            onShowConfirmSubscriptionActivationDialog={() => open(registration)} />) }
             </List>
           }
-          { showMoreLink &&
+          { hasNextPage &&
             <Box pb={2}>
               {/* @ts-ignore */}
-              <Button onClick={() => dispatch(fetchNextParticipantRegistrations({adminId}))}
+              <Button onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
                       variant={"outlined"}
                       fullWidth
-                      color={"primary"}>{t("common:show_more")}</Button>
+                      color={"primary"}>
+                        {t("common:show_more")}
+              </Button>
             </Box>
            }
 
@@ -98,7 +149,7 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
       </Card>
       { showMissingParticipantActivationNotification && <MissingParticipantActivationDialog open={showMissingParticipantActivationNotification} 
                                                                                             onClose={closeMissingParticipantActivationNotification} 
-                                                                                            missingParticipantActivations={participantRegistrationInfoList.notActivatedRegistrationsTooOld} /> 
+                                                                                            missingParticipantActivations={notActivatedRegistrationsTooOld} /> 
       }
     </>
   );
@@ -205,7 +256,10 @@ interface ConfirmParticipantActivationDialogProps extends BaseAdminIdProps {
 function ConfirmParticipantActivationDialog({participantRegistration, adminId, onClose}: ConfirmParticipantActivationDialogProps) {
 
   const {t} = useTranslation(["admin", "common"]);
-  const dispatch = useAdminDispatch();
+  
+  // const dispatch = useAdminDispatch();
+  const queryClient = useQueryClient();
+
   const {showSuccess} = useCustomSnackbar();
   const {getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
@@ -223,7 +277,12 @@ function ConfirmParticipantActivationDialog({participantRegistration, adminId, o
       throw new Error("participantId must be set");
     }
     try {
-      await dispatch(updateParticipantSubscription({adminId, participantId: id})).unwrap();
+      const updatedParticipant = await updateParticipantSubscriptionByAdminIdAndIdAsync(adminId, id);
+      queryClient.setQueryData(['findParticipantRegistrationsByAdminId', adminId], (oldData: InfiniteData<ParticipantRegistrationInfoList, unknown>) => {
+        return exchangeParticipantInRegistrationsQueryData(updatedParticipant, oldData);
+      });
+
+      // await dispatch(updateParticipantSubscription({adminId, participantId: id})).unwrap();
       showSuccess(t("admin:participant_manual_activation_success", {participantEmail: email}));
       onClose();
     } catch (e) {

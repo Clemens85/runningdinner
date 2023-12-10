@@ -2,10 +2,6 @@ import { BaseAdminIdProps, ParticipantRegistrationInfo, isArrayNotEmpty } from "
 import { useState } from "react";
 import { getLocalStorageInAdminId, setLocalStorageInAdminId } from "../../common/LocalStorageService";
 
-type MissingParticipantActivationProps = {
-  // missingParticipantActivations?: ParticipantRegistrationInfo[]
-} & BaseAdminIdProps;
-
 function isNotificationAllowed(adminId: string): boolean {
   const showMissingParticipantActionNotification = getLocalStorageInAdminId<boolean>("showMissingParticipantActionNotification", adminId);
   return showMissingParticipantActionNotification !== false;
@@ -15,29 +11,25 @@ function disableNotification(adminId: string) {
   setLocalStorageInAdminId("showMissingParticipantActionNotification", false, adminId);
 }
 
-export function useMissingParticipantActivation({adminId}: MissingParticipantActivationProps) {
+export function useMissingParticipantActivation({adminId}: BaseAdminIdProps) {
   
-  const [showMissingParticipantActivationNotification, setShowMissingParticipantActivationNotification] = useState<boolean>(false);
+  const [missingParticipantActivationNotificationEnabled, setMissingParticipantActivationNotificationEnabled] = useState<boolean>(false);
+  const [notificationWasShown, setNotificationWasShown] = useState<boolean>(false);
 
   const closeMissingParticipantActivationNotification = (disallowNotification?: boolean) => {
     if (disallowNotification) {
       disableNotification(adminId);
     }
-    setShowMissingParticipantActivationNotification(false);
+    setMissingParticipantActivationNotificationEnabled(false);
+    setNotificationWasShown(true);
   };
-
-  // const missingParticipantActivationsMemo = useMemo(() => missingParticipantActivations, []);
 
   const enableMissingParticipantAcivationNotification = (missingParticipantActivations: ParticipantRegistrationInfo[]) => {
-    setShowMissingParticipantActivationNotification(isArrayNotEmpty(missingParticipantActivations) && isNotificationAllowed(adminId));
+    setMissingParticipantActivationNotificationEnabled(isArrayNotEmpty(missingParticipantActivations) && isNotificationAllowed(adminId));
   };
 
-  // useEffect(() => {
-  //   setShowMissingParticipantActivationNotification(isArrayNotEmpty(missingParticipantActivations) && isNotificationAllowed(adminId));
-  // }, [adminId])
-
   return {
-    showMissingParticipantActivationNotification,
+    showMissingParticipantActivationNotification: !notificationWasShown && missingParticipantActivationNotificationEnabled,
     enableMissingParticipantAcivationNotification,
     closeMissingParticipantActivationNotification
   }
