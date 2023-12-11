@@ -4,14 +4,12 @@ import {combineReducers} from 'redux';
 import {adminSlice} from "./AdminSlice";
 import {messagesSlice} from "./MessagesSlice";
 import {messageJobDetailsSlice} from "./MessageJobDetailsSlice";
-import {paymentOptionsSlice} from "./PaymentOptionsSlice";
 
 export const adminStore = configureStore({
   reducer: combineReducers({
     root: adminSlice,
     messages: messagesSlice,
-    messageJobDetails: messageJobDetailsSlice,
-    paymentOptions: paymentOptionsSlice
+    messageJobDetails: messageJobDetailsSlice
   }),
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}).concat(logger)
 });
