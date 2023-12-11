@@ -3,7 +3,13 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { ProgressBar } from "./ProgressBar";
 
 export function isQuerySucceeded(query: UseQueryResult<unknown, unknown>) {
-  return query.data && !query.error;
+  if (query.error) {
+    return false;
+  }
+  if (!query.data && query.isFetched) {
+    return true;
+  }
+  return !!query.data;
 }
 
 export function FetchProgressBar(query: UseQueryResult<unknown, unknown>) {

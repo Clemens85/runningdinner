@@ -2,17 +2,13 @@ import {Grid} from "@mui/material";
 import {
   BaseAdminIdProps,
   BaseRunningDinnerProps,
-  fetchPaymentOptions,
-  getPaymentOptionsFetchSelector,
-  useAdminDispatch,
-  useAdminSelector,
-  FetchStatus,
   useBackendIssueHandler,
   PaymentOptions,
   isNewEntity,
   createOrUpdatePaymentOptionsAsync,
   newEmptyPaymentOptions,
-  updatePaymentOptions, deletePaymentOptionsAsync
+  deletePaymentOptionsAsync, findPaymentOptionsAsync, 
+  HttpError
 } from "@runningdinner/shared";
 import React from "react";
 import {PageTitle} from "../../common/theme/typography/Tags";
@@ -25,35 +21,40 @@ import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 import FormTextField from "../../common/input/FormTextField";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {commonStyles} from "../../common/theme/CommonStyles";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { FetchProgressBar, isQuerySucceeded } from "../../common/FetchProgressBar";
 
 export function PaymentOptionsPage({runningDinner}: BaseRunningDinnerProps) {
 
-  const dispatch = useAdminDispatch();
   const {adminId} = runningDinner;
 
-  const {data: paymentOptions, fetchStatus} = useAdminSelector(getPaymentOptionsFetchSelector);
+  const paymentOptionsQuery = useQuery({
+    queryKey: ['findPaymentOptions', adminId],
+    queryFn: () => findPaymentOptionsAsync(adminId),
+    refetchOnMount: 'always'
+  });
 
-  React.useEffect(() => {
-    dispatch(fetchPaymentOptions(adminId));
-  }, [dispatch, adminId]);
-
-  if (fetchStatus !== FetchStatus.SUCCEEDED) {
-    return null;
+  if (!isQuerySucceeded(paymentOptionsQuery)) {
+    return <FetchProgressBar {... paymentOptionsQuery} />
   }
 
-  if (!paymentOptions) {
-    return <NewPaymentOptionsView />;
+  if (!paymentOptionsQuery.data) {
+    return <NewPaymentOptionsView adminId={runningDinner.adminId} />;
   }
   return (
-    <><PaymentOptionsFormView paymentOptions={paymentOptions} adminId={runningDinner.adminId} /></>
+    <><PaymentOptionsFormView paymentOptions={paymentOptionsQuery.data} adminId={runningDinner.adminId} /></>
   );
 }
 
 
-function NewPaymentOptionsView() {
+function NewPaymentOptionsView({adminId}: BaseAdminIdProps) {
 
   const {t} = useTranslation(["admin", "common"]);
-  const dispatch = useAdminDispatch();
+
+  const queryClient = useQueryClient();
+  function handleCreate() {
+    queryClient.setQueryData(['findPaymentOptions', adminId], newEmptyPaymentOptions());
+  }
 
   return (
     <>
@@ -61,7 +62,7 @@ function NewPaymentOptionsView() {
       <Paragraph i18n={"admin:payment_options_help"} />
       <Grid container justifyContent={"flex-start"} sx={{ mt: 3 }}>
         <Grid item>
-          <PrimaryButton onClick={() => dispatch(updatePaymentOptions(newEmptyPaymentOptions()))} size="large">
+          <PrimaryButton onClick={handleCreate} size="large">
             {t('admin:payment_options_create')}
           </PrimaryButton>
         </Grid>
@@ -78,7 +79,7 @@ function PaymentOptionsFormView({paymentOptions, adminId}: PaymentOptionsFormVie
 
   const {t} = useTranslation(["admin", "common"]);
   const {showSuccess} = useCustomSnackbar();
-  const dispatch = useAdminDispatch();
+  const queryClient = useQueryClient();
 
   const formMethods = useForm({
     defaultValues: paymentOptions,
@@ -103,6 +104,10 @@ function PaymentOptionsFormView({paymentOptions, adminId}: PaymentOptionsFormVie
   });
   const {showHttpErrorDefaultNotification} = useNotificationHttpError();
 
+  function updateQueryData(updatedPaymentOptions: PaymentOptions | null) {
+    queryClient.setQueryData(['findPaymentOptions', adminId], updatedPaymentOptions);
+  }
+
   async function savePaymentOptions(values: PaymentOptions) {
     const paymentOptionsToSave = {
       id: !isNewEntity(paymentOptions) ? paymentOptions.id : undefined,
@@ -111,10 +116,10 @@ function PaymentOptionsFormView({paymentOptions, adminId}: PaymentOptionsFormVie
     try {
       const updatedPaymentOptions = await createOrUpdatePaymentOptionsAsync(adminId, paymentOptionsToSave);
       showSuccess(t("admin:payment_options_save_success"));
-      dispatch(updatePaymentOptions(updatedPaymentOptions));
+      updateQueryData(updatedPaymentOptions);
     } catch (e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   }
 
@@ -122,9 +127,9 @@ function PaymentOptionsFormView({paymentOptions, adminId}: PaymentOptionsFormVie
     try {
       await deletePaymentOptionsAsync(adminId, paymentOptions.id!);
       showSuccess(t("admin:payment_options_delete_success"));
-      dispatch(updatePaymentOptions(undefined));
+      updateQueryData(null);
     } catch (e) {
-      showHttpErrorDefaultNotification(e);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
 
   }
