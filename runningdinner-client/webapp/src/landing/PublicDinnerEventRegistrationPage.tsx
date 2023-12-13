@@ -1,9 +1,7 @@
 import React from 'react';
 import {Trans, useTranslation} from "react-i18next";
-import {Fetch} from "../common/Fetch";
 import {
   AddressLocation, BasePublicDinnerProps,
-  findPublicRunningDinnerByPublicId,
   formatLocalDate, isAfterPartyLocationDefined,
   isStringEmpty,
   isStringNotEmpty,
@@ -12,7 +10,10 @@ import {
   RegistrationData,
   Time,
   useDisclosure,
-  AfterPartyLocationHeadline
+  AfterPartyLocationHeadline,
+  useFindPublicDinner,
+  isQuerySucceeded,
+  assertDefined
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
@@ -31,6 +32,7 @@ import { Alert } from '@mui/material';
 import LinkExtern from "../common/theme/LinkExtern";
 import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
 import { TextViewHtml } from '../common/TextViewHtml';
+import { FetchProgressBar } from '../common/FetchProgressBar';
 
 
 type RegistrationFormSettingsType = {
@@ -42,13 +44,12 @@ export function PublicDinnerEventRegistrationPage({showRegistrationForm}: Regist
   const params = useParams<Record<string, string>>();
   const publicDinnerId = params.publicDinnerId;
 
-  return <Fetch asyncFunction={findPublicRunningDinnerByPublicId}
-                parameters={[publicDinnerId]}
-                render={publicRunningDinner =>
-                  <div>
-                    <PublicDinnerEventDetailsView publicRunningDinner={publicRunningDinner.result} showRegistrationForm={showRegistrationForm} />
-                  </div>
-                } />;
+  const findPublicDinnerQuery = useFindPublicDinner(publicDinnerId || '');
+  if (!isQuerySucceeded(findPublicDinnerQuery)) {
+    return <FetchProgressBar {...findPublicDinnerQuery} />;
+  }
+  assertDefined(findPublicDinnerQuery.data);
+  return <PublicDinnerEventDetailsView publicRunningDinner={findPublicDinnerQuery.data} showRegistrationForm={showRegistrationForm} />;
 }
 
 const MealListItemIcon = styled(ListItemIcon)({

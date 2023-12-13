@@ -1,11 +1,9 @@
-import React from 'react';
 import {PageTitle, Span, Subtitle} from "../common/theme/typography/Tags";
 import {useTranslation} from "react-i18next";
-import {Fetch} from "../common/Fetch";
 import {
   AddressLocation,
   findPublicRunningDinnersAsync,
-  isArrayNotEmpty, LocalDate,
+  isArrayNotEmpty, isQuerySucceeded, LocalDate,
   PublicRunningDinner
 } from "@runningdinner/shared";
 import {Box, CardActions, Grid} from "@mui/material";
@@ -20,20 +18,29 @@ import { Alert, AlertTitle } from '@mui/material';
 import LinkIntern from "../common/theme/LinkIntern";
 import {LANDING_CREATE_RUNNING_DINNER_PATH} from "../common/mainnavigation/NavigationPaths";
 import { TextViewHtml } from '../common/TextViewHtml';
+import { useQuery } from '@tanstack/react-query';
+import { FetchProgressBar } from '../common/FetchProgressBar';
 
 export function PublicDinnerEventsPage() {
 
   const {t} = useTranslation(["landing", "common"]);
 
-  return <Fetch asyncFunction={findPublicRunningDinnersAsync}
-                parameters={[]}
-                render={publicRunningDinners =>
-                    <Box>
-                      <PageTitle>{t('landing:public_dinner_events_headline')}</PageTitle>
-                      { isArrayNotEmpty(publicRunningDinners.result) ? <PublicDinnerEventsListPage publicRunningDinners={publicRunningDinners.result} />
-                                                                     : <NoPublicDinnerEventsPage /> }
-                    </Box>
-                } />;
+  const findPublicRunningDinnersQuery = useQuery({
+    queryKey:["findPublicRunningDinners"],
+    queryFn: () => findPublicRunningDinnersAsync()
+  });
+  if (!isQuerySucceeded(findPublicRunningDinnersQuery)) {
+    return <FetchProgressBar {...findPublicRunningDinnersQuery} />
+  }
+  
+  const publicRunningDinners = findPublicRunningDinnersQuery.data || [];
+  return (
+    <Box>
+      <PageTitle>{t('landing:public_dinner_events_headline')}</PageTitle>
+      { isArrayNotEmpty(publicRunningDinners) ? <PublicDinnerEventsListPage publicRunningDinners={publicRunningDinners} />
+                                              : <NoPublicDinnerEventsPage /> }
+    </Box>
+  );
 }
 
 export interface PublicDinnerEventsListProps {

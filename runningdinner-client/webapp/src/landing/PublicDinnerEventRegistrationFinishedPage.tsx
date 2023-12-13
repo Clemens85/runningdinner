@@ -1,24 +1,23 @@
 import React from 'react';
 import {useParams} from "react-router-dom";
-import {Fetch} from "../common/Fetch";
-import {BasePublicDinnerProps, findPublicRunningDinnerByPublicId, isStringNotEmpty} from "@runningdinner/shared";
+import {BasePublicDinnerProps, assertDefined, isQuerySucceeded, isStringNotEmpty, useFindPublicDinner} from "@runningdinner/shared";
 import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
 import { Alert, AlertTitle } from '@mui/material';
 import LinkExtern from "../common/theme/LinkExtern";
+import { FetchProgressBar } from '../common/FetchProgressBar';
 
 
 export function PublicDinnerEventRegistrationFinishedPage() {
   const params = useParams<Record<string, string>>();
   const publicDinnerId = params.publicDinnerId;
 
-  return <Fetch asyncFunction={findPublicRunningDinnerByPublicId}
-                parameters={[publicDinnerId]}
-                render={publicRunningDinner =>
-                  <div>
-                    <PublicDinnerEventRegistrationFinishedView publicRunningDinner={publicRunningDinner.result} />
-                  </div>
-                } />;
+  const findPublicDinnerQuery = useFindPublicDinner(publicDinnerId || '');
+  if (!isQuerySucceeded(findPublicDinnerQuery)) {
+    return <FetchProgressBar {...findPublicDinnerQuery} />;
+  }
+  assertDefined(findPublicDinnerQuery.data);
+  return <PublicDinnerEventRegistrationFinishedView publicRunningDinner={findPublicDinnerQuery.data} />;
 }
 
 
