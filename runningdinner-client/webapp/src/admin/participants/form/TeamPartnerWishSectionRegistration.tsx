@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Box, Button, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, Grid, Radio,
   RadioGroup
@@ -8,8 +8,10 @@ import FormFieldset from "../../../common/theme/FormFieldset";
 import {Trans, useTranslation} from "react-i18next";
 import {Span} from '../../../common/theme/typography/Tags';
 import {
+  assertDefined,
   CallbackHandler,
   findRunningDinnerSessionDataByPublicId,
+  isQuerySucceeded,
   isStringEmpty,
   isStringNotEmpty,
   RunningDinnerSessionData,
@@ -22,9 +24,10 @@ import Paragraph from "../../../common/theme/typography/Paragraph";
 import SecondaryButton from "../../../common/theme/SecondaryButton";
 import {TeamPartnerWishFormInput} from "./TeamPartnerWishFormInput";
 import { Alert } from '@mui/material';
-import {Fetch} from "../../../common/Fetch";
 import {useFormContext} from "react-hook-form";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
+import { useQuery } from '@tanstack/react-query';
+import { FetchProgressBar } from '../../../common/FetchProgressBar';
 
 export type TeamPartnerWishSectionRegistrationProps = {
   invitingParticipantEmail?: string;
@@ -32,9 +35,15 @@ export type TeamPartnerWishSectionRegistrationProps = {
 };
 
 export function TeamPartnerWishSectionRegistration(props: TeamPartnerWishSectionRegistrationProps) {
-  return <Fetch asyncFunction={findRunningDinnerSessionDataByPublicId}
-                parameters={[props.publicDinnerId]}
-                render={resultObj => <TeamPartnerWishSectionRegistrationView {...props} runningDinnerSessionData={resultObj.result} />} />
+  const findRunningDinnerSessionDataQuery = useQuery({
+    queryKey: ["findRunningDinnerSessionData", props.publicDinnerId],
+    queryFn: () => findRunningDinnerSessionDataByPublicId(props.publicDinnerId)
+  });
+  if (!isQuerySucceeded(findRunningDinnerSessionDataQuery)) {
+    return <FetchProgressBar {...findRunningDinnerSessionDataQuery} />;
+  }
+  assertDefined(findRunningDinnerSessionDataQuery.data);
+  return <TeamPartnerWishSectionRegistrationView {...props} runningDinnerSessionData={findRunningDinnerSessionDataQuery.data} />;
 }
 
 type TeamPartnerWishSectionRegistrationViewProps = {

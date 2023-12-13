@@ -9,7 +9,6 @@ import React, {useState} from "react";
 import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
 import {SmallTitle, Span} from "../../../common/theme/typography/Tags";
 import { Alert, AlertTitle } from '@mui/material';
-import { Fetch } from "../../../common/Fetch";
 import {
   Fullname,
   CONSTANTS,
@@ -28,7 +27,10 @@ import {
   CallbackHandlerAsync,
   isArrayEmpty,
   cancelTeamAsync,
-  findParticipantsAsync
+  useFindParticipants,
+  isQuerySucceeded,
+  assertDefined,
+  HttpError
 } from "@runningdinner/shared";
 import SelectableEntity from "../../common/SelectableEntity";
 import cloneDeep from "lodash/cloneDeep";
@@ -39,6 +41,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
+import { FetchProgressBar } from "../../../common/FetchProgressBar";
 
 export interface TeamCancelDialogProps {
   runningDinner: RunningDinner,
@@ -91,7 +94,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}:
       }
       onClose(cancelledOrReplacedTeam);
     } catch (e) {
-      showHttpErrorDefaultNotification(e, { showGenericMesssageOnValidationError: false });
+      showHttpErrorDefaultNotification(e as HttpError, { showGenericMesssageOnValidationError: false });
     }
   };
 
@@ -121,7 +124,7 @@ export const TeamCancelDialog = ({runningDinner, teamToCancel, isOpen, onClose}:
         teamCancellationPreviewResult: teamCancellationPreviewResult
       });
     } catch (e) {
-      showHttpErrorDefaultNotification(e, { showGenericMesssageOnValidationError: false, showAllValidationErrorMessages: true });
+      showHttpErrorDefaultNotification(e as HttpError, { showGenericMesssageOnValidationError: false, showAllValidationErrorMessages: true });
     }
   };
 
@@ -158,6 +161,12 @@ function TeamCancelOverview({runningDinner, team, onCancelDialog, onShowPreview,
   const okLabel = t('common:next') + ' ...';
   const { adminId } = runningDinner;
 
+  const findParticipantsQuery = useFindParticipants(adminId);
+  if (!isQuerySucceeded(findParticipantsQuery)) {
+    return <FetchProgressBar {...findParticipantsQuery} />;
+  }
+  assertDefined(findParticipantsQuery.data);
+
   return (
       <Dialog open={true} onClose={onCancelDialog} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true} data-testid={"team-cancel-dialog-overview"}>
         <DialogTitleCloseable onClose={onCancelDialog}>{t('team_member_cancel', {teamMemberToCancel: teamName})}</DialogTitleCloseable>
@@ -166,13 +175,10 @@ function TeamCancelOverview({runningDinner, team, onCancelDialog, onShowPreview,
             <Span i18n="admin:team_cancel_info_text" />
           </Box>
           <Box mt={3}>
-            <Fetch asyncFunction={findParticipantsAsync}
-                   parameters={[adminId]}
-                   render={resultObj => <TeamCancelOverviewContent
-                                            team={team}
-                                            runningDinner={runningDinner}
-                                            onReplacementParticipantSelectionChange={onReplacementParticipantSelectionChange}
-                                            notAssignedParticipants={resultObj.result.participantsWaitingList} /> }/>
+            <TeamCancelOverviewContent team={team}
+                                      runningDinner={runningDinner}
+                                      onReplacementParticipantSelectionChange={onReplacementParticipantSelectionChange}
+                                      notAssignedParticipants={findParticipantsQuery.data.participantsWaitingList} /> 
           </Box>
         </DialogContent>
         <DialogActionsPanel onOk={onShowPreview} onCancel={onCancelDialog} okLabel={okLabel} cancelLabel={t('common:cancel')} danger={false}/>
@@ -195,7 +201,7 @@ function TeamCancelOverviewContent({team, runningDinner, notAssignedParticipants
   React.useEffect(() => {
     if (hasEnoughNotAssignedParticipantsToReplaceTeam) {
       const preselectedReplacementParticipants = take(notAssignedParticipants, team.teamMembers.length);
-      preselectedReplacementParticipants.map(participant => onReplacementParticipantSelectionChange(participant, true));
+      preselectedReplacementParticipants.map((participant: Participant) => onReplacementParticipantSelectionChange(participant, true));
     } // eslint-disable-next-line
   }, [notAssignedParticipants, hasEnoughNotAssignedParticipantsToReplaceTeam]);
 
