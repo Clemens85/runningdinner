@@ -1,24 +1,48 @@
-import React from "react";
 import {useTranslation, Trans} from "react-i18next";
-import {Paper, Box, LinearProgress, Grid} from "@mui/material";
+import {Paper, Box, Grid} from "@mui/material";
 import HtmlTranslate from "../../common/i18n/HtmlTranslate";
 import Alert from '@mui/material/Alert';
 import { AlertTitle } from '@mui/material';
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
-import {formatLocalDate, isArrayEmpty, isClosedDinner, useTeamsNotExisting} from "@runningdinner/shared";
+import {formatLocalDate, isArrayEmpty, isClosedDinner, useTeamsNotExisting, 
+        useUpdateFindTeamsQueryData, useBackendIssueHandler, createTeamArrangementsAsync, 
+        BaseRunningDinnerProps, TeamsNotExistingInfo, BaseAdminIdProps, assertDefined, HttpError} from "@runningdinner/shared";
 import LinkIntern from "../../common/theme/LinkIntern";
 import {useAdminNavigation} from "../AdminNavigationHook";
 import {MissingParticipantActivationItem} from "../common/MissingParticipantActivationDialog";
+import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
+import { ProgressBar } from "../../common/ProgressBar";
 
-const TeamsNotExisting = ({runningDinner, onGenerateTeams}) => {
+const TeamsNotExisting = ({runningDinner}: BaseRunningDinnerProps) => {
 
   const {t} = useTranslation('admin');
+  const {adminId} = runningDinner;
+  const {teamsNotExistingInfo, loading, error} = useTeamsNotExisting(runningDinner);
+  const {updateTeams} = useUpdateFindTeamsQueryData(adminId);
 
-  const [teamsNotExistingInfo, loading, error] = useTeamsNotExisting(runningDinner);
-  if (error) { return ( <div>{error}</div> ); }
-  if (loading) { return ( <LinearProgress color="secondary" /> ); }
+  const {getIssuesTranslated} = useBackendIssueHandler({
+    defaultTranslationResolutionSettings: {
+      namespaces: ['admin', 'common']
+    }
+  });
+  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
 
+  if (loading || error || teamsNotExistingInfo === null) {
+    // @ts-ignore
+    return <ProgressBar showLoadingProgress={loading} fetchError={error} />
+  }
+
+  const handleGenerateTeams = async () => {
+    try {
+      const teamGenerationResult = await createTeamArrangementsAsync(adminId);
+      updateTeams(teamGenerationResult.teams);
+    } catch (e) {
+      showHttpErrorDefaultNotification(e as HttpError);
+    }
+  };
+
+  assertDefined(teamsNotExistingInfo);
   const closedDinner = isClosedDinner(runningDinner);
   const { numParticipants, numExpectedTeams, numNotAssignableParticipants } = teamsNotExistingInfo;
   const canGenerateTeams = numExpectedTeams > 0;
@@ -32,14 +56,21 @@ const TeamsNotExisting = ({runningDinner, onGenerateTeams}) => {
         <NotActivatedParticipantsAlert teamsNotExistingInfo={teamsNotExistingInfo} adminId={runningDinner.adminId} />
       </Box>
       <Box p={3}>
-        <PrimarySuccessButtonAsync disabled={!canGenerateTeams} onClick={onGenerateTeams} data-testid={"generate-teams-action"}>{t('teams_generate')}</PrimarySuccessButtonAsync>
+        <PrimarySuccessButtonAsync disabled={!canGenerateTeams} onClick={handleGenerateTeams} 
+                                   data-testid={"generate-teams-action"}>
+                                    {t('teams_generate')}
+        </PrimarySuccessButtonAsync>
       </Box>
     </Paper>
   );
 
 };
 
-function NotActivatedParticipantsAlert({teamsNotExistingInfo, adminId}) {
+type TeamsNotExistingAlertProps = {
+  teamsNotExistingInfo: TeamsNotExistingInfo;
+}
+
+function NotActivatedParticipantsAlert({teamsNotExistingInfo, adminId}: TeamsNotExistingAlertProps & BaseAdminIdProps) {
 
   const {t} = useTranslation('admin');
   const { generateDashboardPath } = useAdminNavigation();
@@ -60,7 +91,7 @@ function NotActivatedParticipantsAlert({teamsNotExistingInfo, adminId}) {
 
       <Grid container>
         <Grid item xs={12} md={8} lg={6}>
-        { teamsNotExistingInfo.notActivatedParticipants.map(nap => 
+        { teamsNotExistingInfo.notActivatedParticipants?.map(nap => 
           <Box key={nap.id} sx={{ mt: 3 }}>
             <MissingParticipantActivationItem {... nap} />
           </Box>
@@ -72,7 +103,7 @@ function NotActivatedParticipantsAlert({teamsNotExistingInfo, adminId}) {
 );
 }
 
-function RegistrationStillRunningAlert({teamsNotExistingInfo})  {
+function RegistrationStillRunningAlert({teamsNotExistingInfo}: TeamsNotExistingAlertProps)  {
 
   const {t} = useTranslation('admin');
 

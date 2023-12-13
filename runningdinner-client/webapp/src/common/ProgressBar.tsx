@@ -9,7 +9,7 @@ import {LinearProgress} from "@mui/material";
 
 export interface ProgressBarProps {
   showLoadingProgress: boolean;
-  fetchError?: HttpError;
+  fetchError?: HttpError | null;
 }
 
 export function ProgressBar({showLoadingProgress, fetchError}: ProgressBarProps) {

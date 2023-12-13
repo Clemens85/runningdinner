@@ -10,6 +10,7 @@ export * from "./teams/NumberOfAssignableParticipantsToReplaceTeamHook";
 export * from "./teams/TeamNameHook";
 export * from "./teams/TeamNameMembersHook";
 export * from "./teams/useFindDinnerRouteByAdminIdAndTeamId";
+export * from "./teams/useFindTeams";
 export * from "./messages/RecipientNameHook";
 export * from "./messages/ParticipantSelectionOptionsHook";
 export * from "./messages/TeamSelectionOptionsHook";

@@ -6,24 +6,24 @@ import TeamsNotExisting from "./TeamsNotExisting";
 import TeamsList from "./TeamsList";
 import {EmptyDetails} from "../common/EmptyDetails";
 import TeamDetails from "./TeamDetails";
-import {Fetch, RenderArg} from "../../common/Fetch";
 import {DndProvider} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
 import {PageTitle} from "../../common/theme/typography/Tags";
 import {useQuery} from "../../common/hooks/QueryHook";
 import {
-  createTeamArrangementsAsync,
-  exchangeEntityInList,
+  assertDefined,
   findEntityById,
-  findTeamsAsync,
   getFullname, getRunningDinnerMandatorySelector,
   HttpError,
+  isArrayNotEmpty,
+  isQuerySucceeded,
   swapTeamMembersAsync,
   Team,
-  TeamArrangementList,
   useAdminSelector, useBackendIssueHandler,
-  useDisclosure
+  useDisclosure,
+  useFindTeams,
+  useUpdateFindTeamsQueryData
 } from "@runningdinner/shared";
 import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../AdminNavigationHook";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
@@ -34,6 +34,7 @@ import { TeamArrangementActionsButton } from "./TeamArrangementActionsButton";
 import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 import { useIsBigTabletDevice } from "../../common/theme/CustomMediaQueryHook";
+import { FetchProgressBar } from "../../common/FetchProgressBar";
 
 const TeamsContainer = () => {
 
@@ -45,24 +46,34 @@ const TeamsContainer = () => {
   const teamId = params.teamId;
   const teamMemberIdToCancel = query.get(TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM);
 
-  return <Fetch asyncFunction={findTeamsAsync}
-                parameters={[runningDinner.adminId]}
-                render={(resultObj: RenderArg<Team[]>) => <Teams teamId={teamId}
-                                                                 teamMemberIdToCancel={teamMemberIdToCancel}
-                                                                 incomingTeams={resultObj.result} />} />;
+  const findTeamsQuery = useFindTeams(runningDinner.adminId);
+  if (!isQuerySucceeded(findTeamsQuery)) {
+    return <FetchProgressBar {...findTeamsQuery} />;
+  }
+
+  const teams = findTeamsQuery.data || [];
+
+  return <Teams teamId={teamId}
+                teamMemberIdToCancel={teamMemberIdToCancel}
+                incomingTeams={teams}
+                refetch={findTeamsQuery.refetch} />;
 };
 
 interface TeamsProps {
   incomingTeams: Team[];
   teamId?: string;
   teamMemberIdToCancel: string | null;
+  refetch: () => unknown;
 }
 
-function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
+function Teams({incomingTeams, teamId, teamMemberIdToCancel, refetch}: TeamsProps) {
 
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
 
-  const [teams, setTeams] = useState(incomingTeams);
+  const { adminId } = runningDinner;
+
+  const {exchangeTeams} = useUpdateFindTeamsQueryData(adminId);
+
   const [selectedTeam, setSelectedTeam] = useState<Team>();
 
   const {isOpen: isChangeTeamHostDialogOpen,
@@ -70,9 +81,8 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
          open: openChangeTeamHostDialog,
          getIsOpenData: getTeamForChangeTeamHostDialog} = useDisclosure();
 
-  const {generateTeamPath, navigateToTeam} = useAdminNavigation();
+  const {navigateToTeam} = useAdminNavigation();
   const {t} = useTranslation('admin');
-
 
   const {getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
@@ -89,16 +99,15 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
 
   useEffect(() => {
     if (teamId) {
-      const foundTeam = findEntityById(teams, teamId);
+      const foundTeam = findEntityById(incomingTeams, teamId);
       if (foundTeam && foundTeam.id !== selectedTeam?.id) {
         openTeamDetails(foundTeam);
       }
     }
     // eslint-disable-next-line
-  }, [teamId, teams, selectedTeam]);
+  }, [teamId, incomingTeams, selectedTeam]);
 
-  const { adminId } = runningDinner;
-  const teamsExisting = teams.length > 0;
+  const teamsExisting = isArrayNotEmpty(incomingTeams);
 
   function handleTeamClick(team: Team) {
     navigateToTeam(adminId, team.id!);
@@ -115,19 +124,10 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
     setSelectedTeam(undefined);
   }
 
-  const handleGenerateTeams = async () => {
-    try {
-      const teamGenerationResult = await createTeamArrangementsAsync(adminId);
-      setTeams(teamGenerationResult.teams);
-    } catch (e) {
-      showHttpErrorDefaultNotification(e as HttpError);
-    }
-  };
-
-  const handleTeamsRegenerated = async(_regeneratedTeamArrangementList: TeamArrangementList, successMessage: string) => {
+  function handleMealsSwapped() {
     setNoSelectedTeam();
-    window.open(generateTeamPath(adminId), '_self');
-    showSuccess(t(successMessage));
+    showSuccess(t("admin:meals_swap_success"));
+    refetch();
   }
 
   const handleTeamMemberSwap = async(srcParticipantId: string, destParticipantId: string) => {
@@ -140,12 +140,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
       return;
     }
 
-    let updatedTeams = teams;
-    for (let i = 0; i < teamArrangementListResult.teams.length; i++) {
-      const affectedTeam = teamArrangementListResult.teams[i];
-      updatedTeams = exchangeEntityInList(updatedTeams, affectedTeam);
-    }
-    setTeams(updatedTeams);
+    const updatedTeams = exchangeTeams(teamArrangementListResult.teams);
 
     if (selectedTeam) {
       let selectedTeamWhichIsAffected = findEntityById(teamArrangementListResult.teams, selectedTeam.id);
@@ -163,8 +158,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
   };
 
   const updateTeamStateInList = (team: Team) => {
-    const updatedTeamsList = exchangeEntityInList(teams, team);
-    setTeams(updatedTeamsList);
+    exchangeTeams([team]);
     handleTeamClick(team);
     openTeamDetails(team)
   };
@@ -177,7 +171,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
     return (
         <Box>
           <TeamsTitle hasTeams={false}/>
-          <TeamsNotExisting runningDinner={runningDinner} onGenerateTeams={handleGenerateTeams} />
+          <TeamsNotExisting runningDinner={runningDinner} />
         </Box>
     );
   }
@@ -193,10 +187,10 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
                     <SendTeamMessagsDropdown adminId={adminId} />
                   </Grid>
                   <Grid item xs={12} md={isBigTablet ? 12 :5 } sx={{ textAlign: 'right' }}>
-                    <TeamArrangementActionsButton adminId={adminId} onTeamsRegenerated={handleTeamsRegenerated}/>
+                    <TeamArrangementActionsButton adminId={adminId} />
                   </Grid>
                   <Grid item xs={12} md={isBigTablet ? 12 : 7}>
-                    <TeamsList teams={teams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}
+                    <TeamsList teams={incomingTeams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}
                                onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} selectedTeam={selectedTeam} />
                   </Grid>
                 </>
@@ -206,10 +200,9 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel}: TeamsProps) {
                   ? <>
                       { showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}
                       <TeamDetails team={selectedTeam}
-                                   allTeams={teams}
+                                   onMealsSwapSuccess={handleMealsSwapped}
                                    onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
                                    teamMemberIdToCancel={teamMemberIdToCancel}
-                                   onMealsSwapped={(teamArrangementList: TeamArrangementList) => handleTeamsRegenerated(teamArrangementList, "admin:meals_swap_success")}
                                    onUpdateTeamState={updateTeamStateInList} />
                     </>
                   : <EmptyDetails labelI18n='teams_no_selection' />

@@ -1,4 +1,4 @@
-import { BaseRunningDinnerProps, Participant, ParticipantList, ParticipantListable, assertDefined, concatParticipantList, findEntityById, findTeamPartnerWishInfoAsync, isStringNotEmpty, useDisclosure, useFindParticipants } from "@runningdinner/shared";
+import { BaseRunningDinnerProps, Participant, ParticipantList, ParticipantListable, assertDefined, concatParticipantList, findEntityById, findTeamPartnerWishInfoAsync, isQuerySucceeded, isStringNotEmpty, useDisclosure, useFindParticipants } from "@runningdinner/shared";
 import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { BackToListButton, useMasterDetailView } from "../../common/hooks/MasterDetailViewHook";
@@ -13,7 +13,7 @@ import ParticipantForm from "./form/ParticipantForm";
 import { StickyActionButton } from "../../common/theme/StickyActionButton";
 import { EmptyDetails } from "../common/EmptyDetails";
 import { TeamPartnerWishDialog } from "./teampartnerwish/TeamPartnerWishDialog";
-import { FetchProgressBar, isQuerySucceeded } from "../../common/FetchProgressBar";
+import { FetchProgressBar } from "../../common/FetchProgressBar";
 
 export function ParticipantsPage({runningDinner}: BaseRunningDinnerProps) {
 

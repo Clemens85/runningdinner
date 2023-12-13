@@ -1,7 +1,7 @@
 import { Autocomplete, Box, Dialog, DialogActions, DialogContent, TextField, Theme, UseAutocompleteProps, useMediaQuery} from "@mui/material";
 import { DialogTitleCloseable } from "../../common/theme/DialogTitleCloseable";
 import { DialogActionsButtons, DefaultDialogCancelButton } from "../../common/theme/dialog/DialogActionsButtons";
-import { BaseAdminIdProps, HttpError, Team, TeamArrangementList, TeamStatus, findEntityById, getFullnameList, isSameEntity, removeEntityFromList, swapMealsAsync, useBackendIssueHandler, useTeamName, useTeamNameMembers } from "@runningdinner/shared";
+import { BaseAdminIdProps, HttpError, Team, TeamArrangementList, TeamStatus, assertDefined, findEntityById, getFullnameList, isSameEntity, removeEntityFromList, swapMealsAsync, useBackendIssueHandler, useFindTeams, useTeamName, useTeamNameMembers } from "@runningdinner/shared";
 import { Trans, useTranslation } from "react-i18next";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import { useMemo, useState } from "react";
@@ -58,16 +58,18 @@ function SelectTeamToSwap({allTeams, srcTeam, selectedTeam, onSelectedTeamChange
 }
 interface SwapMealsDialogProps extends BaseAdminIdProps {
   srcTeam: Team;
-  allTeams: Team[];
   onClose: (updatedTeams?: TeamArrangementList) => unknown;
 }
 
-export function SwapMealsDialog({srcTeam, allTeams, adminId, onClose}: SwapMealsDialogProps) {
+export function SwapMealsDialog({srcTeam, adminId, onClose}: SwapMealsDialogProps) {
 
   const {t} = useTranslation(["admin", "common"]);
   const {getTeamName} = useTeamName();
   const {getTeamNameMembers} = useTeamNameMembers();
 
+  const {data: allTeams} = useFindTeams(adminId);
+  assertDefined(allTeams);
+  
   // @ts-ignore
   const [selectedTeam, setSelectedTeam] = useState<UseAutocompleteProps | null>(null);
   const smDownDevice = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));

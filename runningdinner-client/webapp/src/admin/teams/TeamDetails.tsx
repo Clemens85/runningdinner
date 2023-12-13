@@ -41,19 +41,17 @@ import { SwapMealsDialog } from "./SwapMealsDialog";
 
 export interface TeamDetailsProps {
   team: Team;
-  allTeams: Team[];
   teamMemberIdToCancel: string | null;
   onOpenChangeTeamHostDialog: (team: Team) => unknown;
   onUpdateTeamState: (team: Team) => unknown;
-  onMealsSwapped: (teams: TeamArrangementList) => unknown;
+  onMealsSwapSuccess: () => unknown;
 }
 
 export default function TeamDetails({team, 
                                      teamMemberIdToCancel, 
-                                     onOpenChangeTeamHostDialog, 
-                                     onUpdateTeamState,
-                                     onMealsSwapped,
-                                     allTeams}: TeamDetailsProps) {
+                                     onOpenChangeTeamHostDialog,
+                                     onMealsSwapSuccess, 
+                                     onUpdateTeamState}: TeamDetailsProps) {
 
   const {t} = useTranslation('common');
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
@@ -114,7 +112,7 @@ export default function TeamDetails({team,
   function handleCloseSwapMealsDialog(updatedTeams?: TeamArrangementList) {
     closeSwapMealsDialog();
     if (updatedTeams) {
-      onMealsSwapped(updatedTeams);
+      onMealsSwapSuccess();
     }
   }
 
@@ -196,7 +194,6 @@ export default function TeamDetails({team,
 
         { isSwapMealsDialogOpen && <SwapMealsDialog onClose={handleCloseSwapMealsDialog}
                                                     srcTeam={team}
-                                                    allTeams={allTeams}
                                                     adminId={runningDinner.adminId} /> }
 
       </Paper>

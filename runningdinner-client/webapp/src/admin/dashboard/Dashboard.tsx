@@ -7,6 +7,7 @@ import {
   assertDefined,
   BaseRunningDinnerProps,
   isClosedDinner,
+  isQuerySucceeded,
   RunningDinner,
   setUpdatedRunningDinner,
   useFindAdminActivitiesByAdminId,
@@ -21,7 +22,7 @@ import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
 import {PublicRunningDinnerLink} from "./PublicRunningDinnerLink";
 import {Theme} from "@mui/material/styles";
-import { FetchProgressBar, isQuerySucceeded } from "../../common/FetchProgressBar";
+import { FetchProgressBar } from "../../common/FetchProgressBar";
 
 export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
 

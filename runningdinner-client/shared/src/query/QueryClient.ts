@@ -1,4 +1,4 @@
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, UseQueryResult } from "@tanstack/react-query";
 
 // Create a client
 export function createDefaultQueryClient() {
@@ -12,4 +12,14 @@ export function createDefaultQueryClient() {
       },
     },
   })
+}
+
+export function isQuerySucceeded(query: UseQueryResult<unknown, unknown>) {
+  if (query.error) {
+    return false;
+  }
+  if (!query.data && query.isFetched) {
+    return true;
+  }
+  return !!query.data;
 }

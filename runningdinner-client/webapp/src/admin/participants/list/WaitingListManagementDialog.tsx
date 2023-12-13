@@ -13,6 +13,7 @@ import {
   getTeamParticipantsAssignment,
   HttpError,
   isArrayNotEmpty,
+  isQuerySucceeded,
   MessageSubType,
   removeSelectedParticipantFromTeam,
   SelectableParticipant,
@@ -47,7 +48,7 @@ import { Breakpoint } from '@mui/material/styles';
 import {GridSize} from "@mui/material/Grid/Grid";
 import {useAdminNavigation} from "../../AdminNavigationHook";
 import { Alert, AlertTitle } from '@mui/material';
-import { FetchProgressBar, isQuerySucceeded } from '../../../common/FetchProgressBar';
+import { FetchProgressBar } from '../../../common/FetchProgressBar';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },

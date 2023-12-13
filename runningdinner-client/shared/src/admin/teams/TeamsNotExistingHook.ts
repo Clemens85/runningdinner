@@ -1,8 +1,9 @@
-import {useAsync} from "react-async-hook";
 import { isAfterInDays } from "../../date";
 import { findParticipantRegistrationsByAdminIdAsync, findParticipantsAsync } from "../ParticipantService";
 import { isClosedDinner } from "../RunningDinnerService";
 import {ParticipantList, ParticipantRegistrationInfo, RunningDinner} from "../../types";
+import { useQuery } from "@tanstack/react-query";
+import { assertDefined, isQuerySucceeded } from "../..";
 
 export interface TeamsNotExistingInfo {
   numParticipants: number,
@@ -32,18 +33,16 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
 
   const { adminId } = runningDinner;
 
-  const asyncResult = useAsync(findParticipantsAndRegistrationsAsync, [adminId]);
+  const findParticipantsAndRegistrationsQuery = useQuery({
+    queryKey: ["findParticipantsAndRegistrations", adminId],
+    queryFn: () => findParticipantsAndRegistrationsAsync(adminId)
+  })
 
-  const  { loading, error: errorObj } = asyncResult;
-  let error = null;
-  if (errorObj) {
-    error = errorObj.message;
-  }
-
-  let teamsNotExistingInfo = null;
-  if (!loading && !error) {
-    // @ts-ignore
-    teamsNotExistingInfo = calculateTeamsNotExistingInfo(asyncResult.result?.activatedParticipantList, asyncResult.result?.notActivatedParticipants);
+  let teamsNotExistingInfo: TeamsNotExistingInfo | null = null;
+  if (isQuerySucceeded(findParticipantsAndRegistrationsQuery)) {
+    assertDefined(findParticipantsAndRegistrationsQuery.data);
+    teamsNotExistingInfo = calculateTeamsNotExistingInfo(findParticipantsAndRegistrationsQuery.data.activatedParticipantList, 
+                                                         findParticipantsAndRegistrationsQuery.data.notActivatedParticipants);
   }
 
   function calculateTeamsNotExistingInfo(participantList: ParticipantList, notActivatedParticipants: ParticipantRegistrationInfo[]): TeamsNotExistingInfo {
@@ -86,5 +85,9 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
     return result;
   }
 
-  return [teamsNotExistingInfo, loading, error];
+  return {
+    teamsNotExistingInfo, 
+    loading: findParticipantsAndRegistrationsQuery.isFetching, 
+    error: findParticipantsAndRegistrationsQuery.error
+  };
 }

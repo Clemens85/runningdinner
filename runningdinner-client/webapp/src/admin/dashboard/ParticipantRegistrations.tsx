@@ -10,6 +10,7 @@ import {
   isArrayEmpty,
   isArrayNotEmpty,
   isDefined,
+  isQuerySucceeded,
   isStringEmpty, isStringNotEmpty, LocalDate, Participant, ParticipantRegistrationInfo, ParticipantRegistrationInfoList, Time,
   updateParticipantSubscriptionByAdminIdAndIdAsync,
   useBackendIssueHandler, useDisclosure
@@ -37,7 +38,7 @@ import LinkExtern from '../../common/theme/LinkExtern';
 import { MissingParticipantActivationDialog } from '../common/MissingParticipantActivationDialog';
 import { useMissingParticipantActivation } from '../common/MissingParticipantActivationHook';
 import { InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { FetchProgressBar, isQuerySucceeded } from '../../common/FetchProgressBar';
+import { FetchProgressBar } from '../../common/FetchProgressBar';
 import cloneDeep from "lodash/cloneDeep";
 
 function filterNotActivatedRegistrationsTooOld(participantRegistrationDataPages: ParticipantRegistrationInfoList[]): ParticipantRegistrationInfo[] {

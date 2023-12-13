@@ -10,7 +10,8 @@ import {
   filterActivitiesByType,
   ActivityType,
   useBackendIssueHandler,
-  dropTeamArrangementsAsync
+  dropTeamArrangementsAsync,
+  useUpdateFindTeamsQueryData
 }
   from '@runningdinner/shared';
 import { useTranslation, Trans } from 'react-i18next';
@@ -22,10 +23,10 @@ import DropdownButtonItem from '../../common/theme/dropdown/DropdownButtonItem';
 import { useQuery } from '../../common/hooks/QueryHook';
 import { OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM } from '../AdminNavigationHook';
 import { useEffect } from 'react';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 
 
 export interface TeamArrangementActionsButtonProps extends BaseAdminIdProps {
-  onTeamsRegenerated: (teamArrangementList: TeamArrangementList, successMessage: string) => unknown;
 }
 
 interface TeamArrangementActionConfirmationData {
@@ -39,11 +40,16 @@ enum TEAM_ARRANGEMENT_ACTION {
   DROP
 }
 
-export function TeamArrangementActionsButton({adminId, onTeamsRegenerated}: TeamArrangementActionsButtonProps) {
+export function TeamArrangementActionsButton({adminId}: TeamArrangementActionsButtonProps) {
 
   const {t} = useTranslation(["admin", "common"]);
 
   const query = useQuery();
+
+  const {updateTeams} = useUpdateFindTeamsQueryData(adminId);
+
+  const {showSuccess} = useCustomSnackbar();
+
   const initiallyShowDropTeamsDialog = query.get(OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM);
 
   const {isOpen: showRegenerateTeamsConfirmation, 
@@ -95,7 +101,8 @@ export function TeamArrangementActionsButton({adminId, onTeamsRegenerated}: Team
     try {
       const newTeamArrangements = await reCreateTeamArrangementsAsync(adminId);
       closeRegenerateTeamsConfirmation();
-      onTeamsRegenerated(newTeamArrangements, "admin:teams_drop_success_text");
+      updateTeams(newTeamArrangements.teams);
+      showSuccess(t("admin:teams_reset_success_text"));
     } catch (e) {
       showHttpErrorDefaultNotification(e as HttpError);
     }
@@ -109,7 +116,8 @@ export function TeamArrangementActionsButton({adminId, onTeamsRegenerated}: Team
     try {
       const newTeamArrangements = await dropTeamArrangementsAsync(adminId);
       closeDropTeamsConfirmation();
-      onTeamsRegenerated(newTeamArrangements, "admin:teams_reset_success_text");
+      updateTeams(newTeamArrangements.teams);
+      showSuccess(t("admin:teams_drop_success_text"));
     } catch (e) {
       showHttpErrorDefaultNotification(e as HttpError);
     }
