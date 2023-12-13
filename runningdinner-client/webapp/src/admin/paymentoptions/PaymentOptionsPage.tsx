@@ -8,7 +8,8 @@ import {
   createOrUpdatePaymentOptionsAsync,
   newEmptyPaymentOptions,
   deletePaymentOptionsAsync, findPaymentOptionsAsync, 
-  HttpError
+  HttpError,
+  isQuerySucceeded
 } from "@runningdinner/shared";
 import React from "react";
 import {PageTitle} from "../../common/theme/typography/Tags";
@@ -22,7 +23,7 @@ import FormTextField from "../../common/input/FormTextField";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {commonStyles} from "../../common/theme/CommonStyles";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FetchProgressBar, isQuerySucceeded } from "../../common/FetchProgressBar";
+import { FetchProgressBar } from "../../common/FetchProgressBar";
 
 export function PaymentOptionsPage({runningDinner}: BaseRunningDinnerProps) {
 

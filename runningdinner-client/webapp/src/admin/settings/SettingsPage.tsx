@@ -30,7 +30,8 @@ import {
   isAfterPartyLocationDefined,
   BaseAdminIdProps,
   updateAfterPartyLocationAsync,
-  deleteAfterPartyLocationAsync
+  deleteAfterPartyLocationAsync,
+  isQuerySucceeded
 } from "@runningdinner/shared";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {BasicDinnerSettingsFormControl} from "../../common/dinnersettings/BasicDinnerSettingsFormControl";
@@ -50,7 +51,7 @@ import FormCheckbox from '../../common/input/FormCheckbox';
 import {AfterPartyLocationToggleButton} from "../../common/dinnersettings/AfterPartyLocationToggleButton";
 import {AfterPartyLocationFormControl} from "../../common/dinnersettings/AfterPartyLocationFormControl";
 import { useQuery } from '@tanstack/react-query';
-import { FetchProgressBar, isQuerySucceeded } from '../../common/FetchProgressBar';
+import { FetchProgressBar } from '../../common/FetchProgressBar';
 
 export function SettingsPage({runningDinner}: BaseRunningDinnerProps) {
 
