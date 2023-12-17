@@ -5,6 +5,7 @@ import {
   Paper,
 } from "@mui/material";
 import {
+  assertDefined,
   BasePublicDinnerProps,
   CallbackHandler,
   finalizeRegistrationOrder,
@@ -32,15 +33,15 @@ import {useEffect} from "react";
 import FormCheckbox from "../common/input/FormCheckbox";
 import LinkExtern from "../common/theme/LinkExtern";
 import {IMPRESSUM_PATH} from "../common/mainnavigation/NavigationPaths";
-import { useQuery } from "../common/hooks/QueryHook";
+import { useUrlQuery } from "../common/hooks/useUrlQuery";
 import { getDecodedQueryParam } from "../common/QueryParamDecoder";
 import {TeamPartnerWishSectionRegistration} from "../admin/participants/form/TeamPartnerWishSectionRegistration";
 import {RegistrationSummaryDialog} from "./RegistrationSummaryDialog";
-import {useAsync} from "react-async-hook";
 import {RegistrationFormDrawer} from "./LandingStyles";
 import {RegistrationPaymentProgressBackdrop} from "./RegistrationPaymentProgressBackdrop";
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
 import {commonStyles} from "../common/theme/CommonStyles";
+import { useQuery } from "@tanstack/react-query";
 
 type BaseRegistrationFormProps = {
   onCancel: CallbackHandler;
@@ -60,7 +61,7 @@ type RegistrationFormProps = {
 
 export function PublicDinnerEventRegistrationFormContainer(props: BaseRegistrationFormProps) {
 
-  const query = useQuery();
+  const query = useUrlQuery();
   const registrationOrderToken = getDecodedQueryParam(query, "token");
   const callbackUrlType = getDecodedQueryParam(query, "callbackUrlType");
 
@@ -77,22 +78,29 @@ function PublicDinnerEventRegistrationOrderHandler({token, capturePayment, publi
   const {showError} = useCustomSnackbar();
   const {t} = useTranslation(["landing", "common"]);
   const publicDinnerId = publicRunningDinner.publicSettings.publicDinnerId;
-  const {loading, error, result} = useAsync(finalizeRegistrationOrder, [publicDinnerId, token, capturePayment]);
 
-  if (loading) {
+  const {isPending, error, data} = useQuery({
+    queryKey: ['finalizeRegistrationOrder', publicDinnerId, token, capturePayment],
+    queryFn: () => finalizeRegistrationOrder(publicDinnerId, token, capturePayment)
+  })
+
+  if (isPending) {
     return <RegistrationPaymentProgressBackdrop />
   }
   if (error) {
     showError(t("landing:registration_payment_error"));
     return null;
   }
+
+  assertDefined(data);
+
   if (capturePayment) {
-    onRegistrationPerformed(result!);
+    onRegistrationPerformed(data);
     return null;
   } else {
     return <PublicDinnerEventRegistrationForm publicRunningDinner={publicRunningDinner}
                                               onRegistrationPerformed={onRegistrationPerformed}
-                                              prefilledRegistrationData={result}
+                                              prefilledRegistrationData={data}
                                               onCancel={onCancel} />
   }
 }
@@ -104,7 +112,7 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
 
   const {t} = useTranslation(['landing', 'common']);
 
-  const query = useQuery();
+  const query = useUrlQuery();
 
   const { isOpen: isRegistrationSummaryOpen,
           open: openRegistrationSummary,

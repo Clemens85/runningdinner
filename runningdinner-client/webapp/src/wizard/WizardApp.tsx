@@ -6,7 +6,7 @@ import BasicDetailsStep from "./BasicDetailsStep";
 import OptionsStep from "./OptionsStep";
 import {Provider, useDispatch} from "react-redux";
 import {BasicDetailsNavigationStep, useWizardSelector, wizardStore} from "@runningdinner/shared";
-import {useQuery} from "../common/hooks/QueryHook";
+import {useUrlQuery} from "../common/hooks/useUrlQuery";
 import {fetchGenderAspects, fetchRegistrationTypes, getRunningDinnerOptionsSelector, updateMeals, updateRunningDinnerType} from "@runningdinner/shared";
 import {
   FinishNavigationStep,
@@ -29,7 +29,7 @@ import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 
 export default function WizardApp() {
 
-  const query = useQuery();
+  const query = useUrlQuery();
   const demoDinner = !!query.get("demoDinner");
 
   const { locale } = useDatePickerLocale();

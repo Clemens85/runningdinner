@@ -1,18 +1,17 @@
-import React from 'react';
 import {PageTitle, Span} from "../common/theme/typography/Tags";
 import {Trans, useTranslation} from "react-i18next";
-import {useAsync} from "react-async-hook";
 import {
   activateSubscribedParticipant, BackendIssue,
   CONSTANTS,
-  findPublicRunningDinnerByPublicId, getFullname,
+  getFullname,
   isParticipantActivationSuccessful,
   isStringEmpty, isStringNotEmpty, ParticipantActivationResult,
-  PublicRunningDinner, useBackendIssueHandler
+  PublicRunningDinner, useBackendIssueHandler, useFindPublicDinner
 } from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
 import { Alert, AlertTitle } from '@mui/material';
 import LinkExtern from "../common/theme/LinkExtern";
+import { useQuery } from "@tanstack/react-query";
 
 export function ParticipantActivationPage() {
 
@@ -22,31 +21,31 @@ export function ParticipantActivationPage() {
   const publicDinnerId = params.publicDinnerId || "";
   const participantId = params.participantId || "";
 
-  const activationAsyncResult = useAsync(activateSubscribedParticipant, [publicDinnerId, participantId]);
-  const publicDinnerAsyncResult = useAsync(findPublicRunningDinnerByPublicId, [publicDinnerId]);
+  const activationQuery = useQuery({
+    queryKey: ["activateSubscribedParticipant", publicDinnerId, participantId],
+    queryFn: () => activateSubscribedParticipant(publicDinnerId, participantId)
+  });
+  const findPublicDinnerQuery = useFindPublicDinner(publicDinnerId);
 
   if (isStringEmpty(participantId) || isStringEmpty(publicDinnerId)) {
     return <ParticipantActivationFailedView publicRunningDinnerLoading={false} />
   }
 
-  const  { loading: activationPending, result: activationResult } = activationAsyncResult;
-  const { loading: publicRunningDinnerLoading, result: publicRunningDinnerResult } = publicDinnerAsyncResult;
-
   return (
     <div>
       <PageTitle>{t("landing:registration_activation_title")}</PageTitle>
 
-      { !activationPending &&
-        isParticipantActivationSuccessful(activationResult) &&
-        <ParticipantActivationSucceededView activationResult={activationResult!}
-                                            publicRunningDinnerResult={publicRunningDinnerResult} />
+      { !activationQuery.isPending &&
+        isParticipantActivationSuccessful(activationQuery.data) &&
+        <ParticipantActivationSucceededView activationResult={activationQuery.data!}
+                                            publicRunningDinnerResult={findPublicDinnerQuery.data} />
       }
 
-      { !activationPending &&
-        !isParticipantActivationSuccessful(activationResult) &&
-        <ParticipantActivationFailedView publicRunningDinnerLoading={publicRunningDinnerLoading}
-                                         publicRunningDinnerResult={publicRunningDinnerResult}
-                                         validationIssue={activationResult?.validationIssue} />
+      { !activationQuery.isPending &&
+        !isParticipantActivationSuccessful(activationQuery.data) &&
+        <ParticipantActivationFailedView publicRunningDinnerLoading={findPublicDinnerQuery.isPending}
+                                         publicRunningDinnerResult={findPublicDinnerQuery.data}
+                                         validationIssue={activationQuery.data?.validationIssue} />
       }
 
     </div>

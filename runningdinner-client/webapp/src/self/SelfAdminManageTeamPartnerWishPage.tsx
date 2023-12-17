@@ -13,7 +13,7 @@ import {
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {Box, Grid, useMediaQuery, useTheme} from '@mui/material';
 import {PrimaryButton} from "../common/theme/PrimaryButton";
-import {useQuery} from "../common/hooks/QueryHook";
+import {useUrlQuery} from "../common/hooks/useUrlQuery";
 import { Alert, AlertTitle } from '@mui/material';
 import { getDecodedQueryParam } from '../common/QueryParamDecoder';
 import {commonStyles} from "../common/theme/CommonStyles";
@@ -21,7 +21,7 @@ import {commonStyles} from "../common/theme/CommonStyles";
 export default function SelfAdminManageTeamPartnerWishPage() {
 
   const {data: selfAdminSessionData} = useSelfAdminSelector(getSelfAdminSessionDataFetchSelector);
-  const query = useQuery();
+  const query = useUrlQuery();
 
   if (!selfAdminSessionData) {
     return null;

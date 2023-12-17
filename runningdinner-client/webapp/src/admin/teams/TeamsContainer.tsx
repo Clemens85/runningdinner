@@ -10,7 +10,7 @@ import {DndProvider} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
 import {PageTitle} from "../../common/theme/typography/Tags";
-import {useQuery} from "../../common/hooks/QueryHook";
+import {useUrlQuery} from "../../common/hooks/useUrlQuery";
 import {
   assertDefined,
   findEntityById,
@@ -38,7 +38,7 @@ import { FetchProgressBar } from "../../common/FetchProgressBar";
 
 const TeamsContainer = () => {
 
-  const query = useQuery();
+  const query = useUrlQuery();
 
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
 

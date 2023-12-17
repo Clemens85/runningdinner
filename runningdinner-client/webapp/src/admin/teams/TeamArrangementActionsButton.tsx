@@ -20,7 +20,7 @@ import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog
 import Paragraph from '../../common/theme/typography/Paragraph';
 import DropdownButton from '../../common/theme/dropdown/DropdownButton';
 import DropdownButtonItem from '../../common/theme/dropdown/DropdownButtonItem';
-import { useQuery } from '../../common/hooks/QueryHook';
+import { useUrlQuery } from '../../common/hooks/useUrlQuery';
 import { OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM } from '../AdminNavigationHook';
 import { useEffect } from 'react';
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
@@ -44,7 +44,7 @@ export function TeamArrangementActionsButton({adminId}: TeamArrangementActionsBu
 
   const {t} = useTranslation(["admin", "common"]);
 
-  const query = useQuery();
+  const query = useUrlQuery();
 
   const {updateTeams} = useUpdateFindTeamsQueryData(adminId);
 

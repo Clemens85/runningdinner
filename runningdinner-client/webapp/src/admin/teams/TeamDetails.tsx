@@ -11,10 +11,11 @@ import {CancelledTeamMember} from "./CancelledTeamMember";
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import {TeamCancelDialog} from "./cancellation/TeamCancelDialog";
 import {
+  assertDefined,
   BaseAdminIdProps,
   CallbackHandler,
   CONSTANTS,
-  findEntityById, findTeamMeetingPlanAsync,
+  findEntityById,
   Fullname,
   generateCancelledTeamMembersAsNumberArray,
   getFullname,
@@ -26,16 +27,16 @@ import {
   NoopFunction,
   Participant,
   RunningDinnerSessionData,
-  Team, TeamArrangementList, TeamMeetingPlan,
+  Team, TeamArrangementList,
   TeamNr,
   Time,
   useAdminSelector,
   useDisclosure,
+  useFindTeamMeetingPlan,
   ValueTranslate
 } from "@runningdinner/shared";
 import {useAdminNavigation} from "../AdminNavigationHook";
 import concat from "lodash/concat";
-import {useAsync} from "react-async-hook";
 import {TeamPartnerWishIcon} from "./TeamPartnerWishIcon";
 import { SwapMealsDialog } from "./SwapMealsDialog";
 
@@ -74,10 +75,7 @@ export default function TeamDetails({team,
          open: openSwapMealsDialog} = useDisclosure(false);
 
 
-  const findTeamMeetingPlanAsyncResult = useAsync<TeamMeetingPlan>(findTeamMeetingPlanAsync, [adminId, id]);
-  const { loading: isTeamMeetingPlanLoading,
-          result: teamMeetingPlanResult,
-          error: teamMeetingPlanError } = findTeamMeetingPlanAsyncResult;
+  const findTeamMeetingPlanQuery = useFindTeamMeetingPlan(adminId, id || '');
 
   let teamMemberNodes = teamMembers.map(participant => <TeamMember key={participant.id}
                                                                     adminId={adminId}
@@ -117,12 +115,9 @@ export default function TeamDetails({team,
   }
 
   function handleNotifyAffectedTeamsCancellation() {
-    if (!teamMeetingPlanResult) {
-      console.log("Could not navigate to team cancel messages, due to it seems like that the TeamMeetingPlan for calculating affected teams was not loaded yet");
-      console.log(`TeamMeetingPlan-Loading-State is ${isTeamMeetingPlanLoading} and TeamMeetingPlan-Error-State is ${JSON.stringify(teamMeetingPlanError)}`);
-      return;
-    }
-    const affectedTeams = concat(teamMeetingPlanResult.guestTeams, teamMeetingPlanResult.hostTeams);
+    const teamMeetingPlan = findTeamMeetingPlanQuery.data;
+    assertDefined(teamMeetingPlan);
+    const affectedTeams = concat(teamMeetingPlan.guestTeams, teamMeetingPlan.hostTeams);
     navigateToTeamMessages(adminId, MessageSubType.TEAM_CANCELLATION, affectedTeams);
   }
 
@@ -177,9 +172,9 @@ export default function TeamDetails({team,
             </Grid>
             <Grid container>
               <Grid item xs={12}>
-                <TeamSchedule isTeamMeetingPlanLoading={isTeamMeetingPlanLoading}
-                              teamMeetingPlanError={teamMeetingPlanError}
-                              teamMeetingPlanResult={teamMeetingPlanResult}
+                <TeamSchedule isTeamMeetingPlanLoading={findTeamMeetingPlanQuery.isPending}
+                              teamMeetingPlanError={findTeamMeetingPlanQuery.error}
+                              teamMeetingPlanResult={findTeamMeetingPlanQuery.data}
                               adminId={adminId}/>
               </Grid>
             </Grid>
