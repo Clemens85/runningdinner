@@ -8,7 +8,6 @@ import {useTranslation} from "react-i18next";
 import {bindPopover, bindTrigger, usePopupState,} from 'material-ui-popup-state/hooks';
 import LinkIntern from "../../common/theme/LinkIntern";
 import LinkExtern from "../../common/theme/LinkExtern";
-import {PrimaryDangerButtonAsync} from "../../common/theme/PrimaryDangerButtonAsync";
 import {
   Fullname,
   isSameEntity,
@@ -217,7 +216,7 @@ function MeetedTeamButton({team, adminId}) {
   return (
     <>
       { !isCancelled && <Button variant="outlined" size="medium" {...bindTrigger(popupState)}><TeamNr {...team} /></Button> }
-      { isCancelled && <PrimaryDangerButtonAsync variant="outlined" size="medium" {...bindTrigger(popupState)}><TeamNr {...team} /></PrimaryDangerButtonAsync> }
+      { isCancelled && <Button variant="contained" color="secondary" size="medium" {...bindTrigger(popupState)}><TeamNr {...team} /></Button> }
       <Popover
           {...bindPopover(popupState)}
           anchorOrigin={{
@@ -251,9 +250,9 @@ function CurrentTeamButton({team}) {
   return (
       <>
         { isCancelled
-            ? <PrimaryDangerButtonAsync size="medium" variant="contained" sx={commonStyles.defaultCursor} disableRipple={true} disableElevation={true}>
+            ? <Button variant="contained" color="secondary" size="medium" sx={commonStyles.defaultCursor} disableRipple={true} disableElevation={true}>
                 <TeamNr {...team} />
-              </PrimaryDangerButtonAsync>
+              </Button>
             : <PrimaryButton variant="contained" sx={commonStyles.defaultCursor} disableRipple={true} disableElevation={true}>
                 <TeamNr {...team} />
               </PrimaryButton>

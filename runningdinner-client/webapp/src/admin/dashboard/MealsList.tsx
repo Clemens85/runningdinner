@@ -3,7 +3,6 @@ import MealItem from "./MealItem";
 import {Box, Card, CardActions, CardContent, Grid, List} from "@mui/material";
 import {EditMealsDialog} from "./EditMealsDialog";
 import {useTranslation} from "react-i18next";
-import {PrimarySuccessButtonAsync} from "../../common/theme/PrimarySuccessButtonAsync";
 import {Subtitle} from "../../common/theme/typography/Tags";
 import {
   BaseRunningDinnerProps,
@@ -15,6 +14,7 @@ import {
 } from "@runningdinner/shared";
 import {useCustomSnackbar} from "../../common/theme/CustomSnackbarHook";
 import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
+import { PrimaryButton } from '../../common/theme/PrimaryButton';
 
 export interface MealsListProps extends BaseRunningDinnerProps {
   meals: Meal[];
@@ -66,9 +66,9 @@ export default function MealsList({meals, runningDinner, onRunningDinnerUpdate, 
         <Grid container justifyContent={"flex-end"}>
           <Grid item>
             <Box pr={2} mt={-2} pb={2}>
-              <PrimarySuccessButtonAsync onClick={() => setEditMealsDialogOpen(true)} size={"small"} data-testid="open-edit-meals-action">
+              <PrimaryButton onClick={() => setEditMealsDialogOpen(true)} size={"small"} data-testid="open-edit-meals-action">
                 {t('common:label_edit')}
-              </PrimarySuccessButtonAsync>
+              </PrimaryButton>
             </Box>
           </Grid>
         </Grid>

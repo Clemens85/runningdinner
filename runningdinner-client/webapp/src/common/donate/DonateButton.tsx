@@ -7,10 +7,10 @@ import Paragraph from "../theme/typography/Paragraph";
 import SecondaryButton from "../theme/SecondaryButton";
 import LinkExtern from "../theme/LinkExtern";
 import { commonStyles } from "../theme/CommonStyles";
-import { PrimarySuccessButtonAsync } from "../theme/PrimarySuccessButtonAsync";
 import { useState } from "react";
 import { DialogActionsButtons } from "../theme/dialog/DialogActionsButtons";
 import { FormCheckboxSimple } from "../input/FormCheckboxSimple";
+import { PrimaryButton } from "../theme/PrimaryButton";
 
 export enum DonateDialogType {
   STANDARD,
@@ -71,14 +71,14 @@ export function DonateDialog({onClose, donateDialogType}: DonateDialogProps) {
         { donateDialogType === DonateDialogType.DINNER_ROUTE_MESSAGES && <DinnerRouteMessagesDonateContent /> }                                                                                      
       </DialogContent>
       <DialogActions>
-        <DialogActionsButtons okButton={<PrimarySuccessButtonAsync onClick={handleClose} 
-                                                                   href={donationLink} 
-                                                                   target="_blank"
-                                                                   rel="noopener noreferrer"
-                                                                   size={"medium"} 
-                                                                   sx={fullWidthProps} data-testid="dialog-submit">
+        <DialogActionsButtons okButton={<PrimaryButton onClick={handleClose} 
+                                                        href={donationLink} 
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        size={"medium"} 
+                                                        sx={fullWidthProps} data-testid="dialog-submit">
                                           {t('common:donate_continue')}
-                                        </PrimarySuccessButtonAsync>} 
+                                        </PrimaryButton>} 
                               cancelButton={<SecondaryButton onClick={handleClose} sx={fullWidthProps} data-testid="dialog-cancel">{t('common:not_now')}</SecondaryButton>}/>
       </DialogActions>
 
