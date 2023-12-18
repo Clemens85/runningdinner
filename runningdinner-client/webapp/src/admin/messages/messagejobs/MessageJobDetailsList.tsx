@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   BaseRunningDinnerProps,
   fetchMessageJobDetailsData,
@@ -21,7 +21,8 @@ import {
   reSendMessageTaskAsync,
   Message,
   NoopFunction,
-  useAdminDispatch
+  useAdminDispatch,
+  HttpError
 } from "@runningdinner/shared";
 import {useParams} from "react-router-dom";
 import {
@@ -346,8 +347,8 @@ function ReSendMessageTaskDialog({messageTask, onClose}: ReSendMessageTaskDialog
       showSuccess(t('admin:message_task_resend_success'));
       onClose(true);
     } catch(e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   };
 
