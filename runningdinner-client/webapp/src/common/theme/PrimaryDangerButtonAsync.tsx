@@ -1,8 +1,7 @@
-import React from "react";
-import {useAsyncCallback} from "react-async-hook";
-import {Button} from "@mui/material";
+import {Button, ButtonProps} from "@mui/material";
+import { useAsyncCallback } from "@runningdinner/shared";
 
-export const PrimaryDangerButtonAsync = (props) => {
+export const PrimaryDangerButtonAsync = (props: ButtonProps) => {
 
   const {size, onClick, disabled, children, ...rest} = props;
 

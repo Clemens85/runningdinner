@@ -1,17 +1,20 @@
-import React from "react";
+import { useAsyncCallback } from "@runningdinner/shared";
 import {PrimaryButton} from "./PrimaryButton";
-import {useAsyncCallback} from "react-async-hook";
+import { ButtonProps } from "@mui/material";
 
-export const PrimarySuccessButtonAsync = (props) => {
+export const PrimarySuccessButtonAsync = (props: ButtonProps) => {
 
   const {size, onClick, disabled, children, ...rest} = props;
 
-  const asyncOnClick = useAsyncCallback(onClick);
+  let asyncClickHandler = onClick;
+  if (!asyncClickHandler) {
+    asyncClickHandler = () => {}; // Noop
+  }
+
+  const asyncOnClick = useAsyncCallback(asyncClickHandler);
 
   const sizeToUse = size ? size : 'large';
   const incomingDisabled = !!disabled;
-
-  // const labelToUse = asyncOnClick.loading ? '...' : props.children;
 
   return (
       <PrimaryButton disabled={incomingDisabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={sizeToUse} {...rest}>

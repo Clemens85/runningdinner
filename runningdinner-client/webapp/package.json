@@ -25,7 +25,6 @@
     "@reduxjs/toolkit": "1.9.5",
     "redux-thunk": "2.4.2",
     "react-geocode": "0.2.3",
-    "react-async-hook": "4.0.0",
     "redux": "4.2.1",
     "@runningdinner/shared": "workspace:*",
     "@mui/material": "5.14.3",

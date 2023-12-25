@@ -123,6 +123,7 @@ function PreviewSelection({recipients, selectedRecipient, onSelectionChange}: Pr
         label={selectionLabel}
         autoWidth
         value={selectedValue}
+        // @ts-ignore
         onChange={handleChange}
         inputProps={{ 'aria-label': selectionLabel }}>
         {selectionOptions}

@@ -41,9 +41,6 @@ importers:
       react:
         specifier: ^18.0.2
         version: 18.2.0
-      react-async-hook:
-        specifier: 4.0.0
-        version: 4.0.0(react@18.2.0)
       react-dom:
         specifier: ^18.0.2
         version: 18.2.0(react@18.2.0)
@@ -192,9 +189,6 @@ importers:
       react:
         specifier: ^18.0.2
         version: 18.2.0
-      react-async-hook:
-        specifier: 4.0.0
-        version: 4.0.0(react@18.2.0)
       react-dnd:
         specifier: ^16.0.1
         version: 16.0.1(@types/node@18.11.9)(@types/react@18.2.22)(react@18.2.0)
@@ -4370,15 +4364,6 @@ packages:
   /queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
     dev: true
-
-  /react-async-hook@4.0.0(react@18.2.0):
-    resolution: {integrity: sha512-97lgjFkOcHCTYSrsKBpsXg3iVWM0LnzedB749iP76sb3/8Ouu4nHIkCLEOrQWHVYqrYxjF05NN6GHoXWFkB3Kw==}
-    engines: {node: '>=8', npm: '>=5'}
-    peerDependencies:
-      react: '>=16.8'
-    dependencies:
-      react: 18.2.0
-    dev: false
 
   /react-dnd-html5-backend@16.0.1:
     resolution: {integrity: sha512-Wu3dw5aDJmOGw8WjH1I1/yTH+vlXEL4vmjk5p+MHxP8HuHJS1lAGeIdG/hze1AvNeXWo/JgULV87LyQOr+r5jw==}
