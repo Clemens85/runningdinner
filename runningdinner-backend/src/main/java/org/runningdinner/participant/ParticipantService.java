@@ -22,14 +22,16 @@ import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.*;
 import org.runningdinner.core.util.CoreUtil;
+import org.runningdinner.event.ParticipantSavedEvent;
 import org.runningdinner.geocoder.GeocodingResult;
-import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
 import org.runningdinner.participant.rest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +48,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ParticipantService {
+public class ParticipantService implements ApplicationEventPublisherAware {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantService.class);
 
@@ -63,13 +65,12 @@ public class ParticipantService {
   private TeamPartnerWishStateHandlerService teamPartnerWishStateHandlerService;
 
   @Autowired
-  private ParticipantGeocodeEventPublisher participantGeocodeEventPublisher;
-
-  @Autowired
   private MessageFormatterHelperService messageFormatterHelperService;
 
   @Autowired
   private LocalizationProviderService localizationProviderService;
+
+  private ApplicationEventPublisher applicationEventPublisher;
 
   public Participant findParticipantById(@ValidateAdminId String adminId, UUID participantId) {
 
@@ -549,7 +550,7 @@ public class ParticipantService {
   }
 
   private void putGeocodeEventToQueue(final Participant participant, final RunningDinner runningDinner) {
-    
+
     if (runningDinner.getRunningDinnerType() == RunningDinnerType.DEMO) {
       return;
     }
@@ -560,12 +561,7 @@ public class ParticipantService {
         if (status != TransactionSynchronization.STATUS_COMMITTED) {
           return;
         }
-        
-        try {
-          participantGeocodeEventPublisher.sendMessageToQueueAsync(participant);
-        } catch (Exception e) { 
-          LOGGER.error("Error while calling sendMessageToQueueAsync for {}", participant, e);
-        }
+        applicationEventPublisher.publishEvent(new ParticipantSavedEvent(this, participant, runningDinner));
       }
     });
   }
@@ -615,5 +611,10 @@ public class ParticipantService {
     
     participantRepository.save(teamPartnerWish);
     return participantRepository.save(participant);
+  }
+
+  @Override
+  public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    this.applicationEventPublisher = applicationEventPublisher;
   }
 }

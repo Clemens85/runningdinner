@@ -5,6 +5,7 @@ import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.event.NewRunningDinnerEvent;
+import org.runningdinner.messaging.integration.MessagingIntegrationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,17 @@ public class NewRunningDinnerListener implements ApplicationListener<NewRunningD
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NewRunningDinnerListener.class);
 
-  private MessageService messageService;
+  private final MessageService messageService;
 
-  private AfterPartyLocationService afterParLocationService;
+  private final AfterPartyLocationService afterParLocationService;
+
+  private final MessagingIntegrationService messagingIntegrationService;
   
   @Autowired
-  public NewRunningDinnerListener(MessageService messageService, AfterPartyLocationService afterParLocationService) {
+  public NewRunningDinnerListener(MessageService messageService, AfterPartyLocationService afterParLocationService, MessagingIntegrationService messagingIntegrationService) {
     this.messageService = messageService;
     this.afterParLocationService = afterParLocationService;
+    this.messagingIntegrationService = messagingIntegrationService;
   }
 
   @Override
@@ -36,5 +40,7 @@ public class NewRunningDinnerListener implements ApplicationListener<NewRunningD
     messageService.sendRunningDinnerCreatedMessage(newRunningDinner);
     
     afterParLocationService.putGeocodeEventToQueue(newRunningDinner);
+
+    messagingIntegrationService.handleNewOrUpdatedRunningDinner(newRunningDinner);
   }
 }

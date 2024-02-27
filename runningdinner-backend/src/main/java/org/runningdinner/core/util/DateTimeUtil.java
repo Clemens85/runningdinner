@@ -1,16 +1,14 @@
 
 package org.runningdinner.core.util;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
+
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public final class DateTimeUtil {
 
@@ -91,6 +89,19 @@ public final class DateTimeUtil {
     } else {
       return b;
     }
+  }
+
+  public static Date convertToDate(LocalDate date) {
+    return Date.from(date.atStartOfDay(getTimeZoneForEuropeBerlin()).toInstant());
+  }
+
+  public static String formatToIsoString(LocalDate date) {
+//    return DateTimeFormatter.ISO_DATE_TIME.format(date);
+    return ZonedDateTime.of(
+      date,
+      LocalTime.MIN,
+      getTimeZoneForEuropeBerlin()
+    ).toString();
   }
   
   private static boolean isEnglish(String languageCode) {
