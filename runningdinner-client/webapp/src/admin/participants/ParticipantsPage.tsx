@@ -1,4 +1,4 @@
-import { BaseRunningDinnerProps, Participant, ParticipantList, ParticipantListable, assertDefined, concatParticipantList, findEntityById, findTeamPartnerWishInfoAsync, isQuerySucceeded, isStringNotEmpty, useDisclosure, useFindParticipants } from "@runningdinner/shared";
+import { BaseRunningDinnerProps, Fullname, Participant, ParticipantList, ParticipantListable, assertDefined, concatParticipantList, findEntityById, findTeamPartnerWishInfoAsync, isQuerySucceeded, isStringNotEmpty, useDisclosure, useFindParticipants } from "@runningdinner/shared";
 import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { BackToListButton, useMasterDetailView } from "../../common/hooks/MasterDetailViewHook";
@@ -7,13 +7,15 @@ import ParticipantsListInfo from "./list/ParticipantsListInfo";
 import { CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION } from "./teampartnerwish/TeamPartnerWishAction";
 import { BrowserTitle } from "../../common/mainnavigation/BrowserTitle";
 import { ParticipantSearchResult, ParticipantShowMiscNotesCallback, ParticipantsListHeader } from "./list/ParticipantsListHeader";
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import ParticipantsListView from "./list/ParticipantsListView";
 import ParticipantForm from "./form/ParticipantForm";
 import { StickyActionButton } from "../../common/theme/StickyActionButton";
 import { EmptyDetails } from "../common/EmptyDetails";
 import { TeamPartnerWishDialog } from "./teampartnerwish/TeamPartnerWishDialog";
 import { FetchProgressBar } from "../../common/FetchProgressBar";
+import { Subtitle } from "../../common/theme/typography/Tags";
+import { isLocalDevEnv } from "../../common/EnvService";
 
 export function ParticipantsPage({runningDinner}: BaseRunningDinnerProps) {
 
@@ -173,6 +175,24 @@ function ParticipantsView({runningDinner, participantList, onUpdateSelectedParti
                                                                 onClose={handleTeamPartnerWishDialogResult}
                                                                 teamPartnerWishInfo={getTeamPartnerWishInfo()} /> }
 
+       {/* @ts-ignore        */}
+      { isLocalDevEnv() && <ParticipantMessagingIntegDevInfo runningDinner={runningDinner} participants={participantList.participants} /> }
+
     </>
   );
+}
+
+function ParticipantMessagingIntegDevInfo({runningDinner, participants}: BaseRunningDinnerProps & ParticipantList) {
+  return (
+    <Box mb={3} mt={3}>
+      <Subtitle>Messaging Dev Links</Subtitle>
+      { participants.map(participant => 
+        <div key={participant.id}>
+          <a href={`http://localhost:5173/${runningDinner.publicSettings?.publicDinnerId}/${participant?.id}`} target='_blank'>
+            <Fullname {...participant} />
+          </a>
+        </div>
+      )}
+    </Box>
+  )
 }
