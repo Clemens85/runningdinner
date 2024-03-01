@@ -209,7 +209,7 @@ public class AbstractExcelConverterHighLevel {
 		int cellIndex = 0;
 		writeStringToCell(row, cellIndex++, "Nr");
 		writeStringToCell(row, cellIndex++, "Name");
-		writeStringToCell(row, cellIndex++, "Email-Adresse");
+		writeStringToCell(row, cellIndex++, "E-Mail-Adresse");
 		writeStringToCell(row, cellIndex++, "Geschlecht");
 		writeStringToCell(row, cellIndex++, "Alter");
 		writeStringToCell(row, cellIndex++, "Adresse");

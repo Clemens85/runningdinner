@@ -84,7 +84,7 @@ export function ParticipantsListHeader({adminId, onParticipantSearchChanged, sho
               id="searchInput"
               size={"small"}
               data-testid={"participant-list-search-input"}
-              label="Suche nach Email, Name, Adresse"
+              label="Suche nach E-Mail, Name, Adresse"
               type="Search"
               fullWidth
               InputProps={{

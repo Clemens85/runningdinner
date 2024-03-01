@@ -5,7 +5,7 @@ const LandingMessages_de: any = {
     address_data: 'Deine Behausung',
     number_seats_placeholder: 'Für wie viele Personen hast du Platz in deiner Wohnung?',
     misc_notes_placeholder:'Willst du sonst noch etwas anmerken?',
-    teampartner_placeholder: 'Email deines Wunschpartners',
+    teampartner_placeholder: 'E-Mail deines Wunschpartners',
 
     registration_validate: 'Weiter',
     registration_perform: 'Jetzt Verbindlich Anmelden!',
@@ -47,7 +47,7 @@ const LandingMessages_de: any = {
     payment_no_paypal_contact: "Du hast kein PayPal und möchtest dennoch teilnehmen? Melde dich bitte bei <anchor href=\"mailto:{{ publicContactEmail }}\">{{ publicContactEmail }}</anchor>.",
 
     teampartner_wish_summary_not_existing: 'Du hast <italic>{{ teamPartnerWish }}</italic> als Wunschpartner angegeben. ' +
-      'Er oder Sie bekommt eine Einladung via Email sobald du deine Registrierung bestätigt hast. ' +
+      'Er oder Sie bekommt eine Einladung via E-Mail sobald du deine Registrierung bestätigt hast. ' +
       'Ihr werdet dann zusammen als Team kochen, wenn <italic>{{ teamPartnerWish }}</italic> sich anmeldet.',
 
     teampartner_wish_summary_match: 'Du wirst zusammen mit <italic>{{ teamPartnerWish }}</italic> als Team kochen.',
@@ -57,16 +57,16 @@ const LandingMessages_de: any = {
     gender_unknown: "Keine Angabe",
 
     registration_finished_headline: 'Anmeldung abgeschlossen!',
-    registration_finished_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine Email mit einem Bestätigungslink und weiteren Infos erhalten. ' +
+    registration_finished_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine E-Mail mit einem Bestätigungslink und weiteren Infos erhalten. ' +
       '<br/>Um deine Anmeldung erfolgreich abzuschließen musst du diesen Link aufrufen. Solltest du keine EMail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
-    registration_finished_payment_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine Email mit weiteren Infos erhalten. ' +
+    registration_finished_payment_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine E-Mail mit weiteren Infos erhalten. ' +
       '<br/>Solltest du keine EMail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
     street_placeholder: 'Deine Strasse + Nr',
     address_remarks_help: 'Optional: Wenn deine Wohnung schwer zu finden ist, können diese Angaben anderen Teams helfen, falls du Gastgeber bist.',
 
     team_partner_wish_help: 'Willst du zusammen mit einem/einer Freund/in kochen? ' +
-      'Durch Angabe der Email-Adresse bekommt dein(e) Freund(in) automatisch ' +
+      'Durch Angabe der E-Mail-Adresse bekommt dein(e) Freund(in) automatisch ' +
       'eine Einladung für dieses Event, sofern noch nicht angemeldet. ' +
       'Ihr werdet in ein Team eingeteilt.',
 
@@ -213,7 +213,7 @@ const LandingMessages_de: any = {
 
     teampartner_registration_summary_info: "Du hast <italic>{{ firstname }} {{ lastname }}</italic> als Wunschpartner eingetragen. Damit werdet ihr automatisch als ein Team zusammen kochen.",
     teampartner_wish_section_title: "Willst du zusammen mit einem/einer Freund/in kochen?",
-    teampartner_wish_section_subtitle: "Hast du einen Wunschpartner mit dem du auf jeden Fall zusammen kochen möchtest? Du kannst diese Person entweder direkt hier mit anmelden oder alternativ via Email zum Event einladen. " +
+    teampartner_wish_section_subtitle: "Hast du einen Wunschpartner mit dem du auf jeden Fall zusammen kochen möchtest? Du kannst diese Person entweder direkt hier mit anmelden oder alternativ via E-Mail zum Event einladen. " +
                                        "Ihr werdet dann in ein Team eingeteilt.",
     teampartner_wish_invitation_info: "Du wurdest von {{ invitingParticipantEmail }} zu diesem Event eingeladen. Ihr werdet zusammen als Team kochen.",
     x: 'x'
