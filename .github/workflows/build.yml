@@ -121,7 +121,7 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
-              
+
       - name: Download Backend artifact
         uses: actions/download-artifact@v4
         with:
@@ -144,7 +144,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: runningdinner-backend
-          file: infrastructure/deployment/docker/Dockerfile
+          file: runningdinner-backend/infrastructure/deployment/docker/Dockerfile
           push: true
           # tags: ${{ steps.meta.outputs.tags }}
           tags: clemensstich/runningdinner:${{ github.sha }}
