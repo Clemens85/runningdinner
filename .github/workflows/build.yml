@@ -18,9 +18,9 @@ jobs:
 
     services:
       postgres:
-        image: postgres
+        image: postgres:13.4
         env:
-          POSTGRES_USER: postgres:13.4
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: root
           POSTGRES_DB: runningdinner
         ports:
@@ -84,10 +84,11 @@ jobs:
         with:
           version: 8.14.1
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         name: 'Install Node.js & cache pnpm store'
         with:
           cache: 'pnpm'
+          cache-dependency-path: 'runningdinner-client/pnpm-lock.yaml'
 
       - name: Install dependencies
         run: |
