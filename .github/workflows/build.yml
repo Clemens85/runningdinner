@@ -137,6 +137,7 @@ jobs:
         run: |
           ls -la
           ls -la target/extracted
+          # mkdir -p target/extracted/snapshot-dependencies
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
