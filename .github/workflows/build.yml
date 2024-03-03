@@ -126,12 +126,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: runningdinner-backend
-          path: runningdinner-backend/target/extracted
+          path: target/extracted
+
+      - name: Copy Dockerfile to root
+        run: |
+         cp runningdinner-backend/infrastructure/deployment/docker/Dockerfile Dockerfile
 
       - name: Print dir layout
         run: |
           ls -la
-          ls -la runningdinner-backend
+          ls -la target/extracted
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -141,10 +145,8 @@ jobs:
 
       - name: Build and push Backend Docker image
         id: build-backend-image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
-          context: runningdinner-backend
-          file: runningdinner-backend/infrastructure/deployment/docker/Dockerfile
           push: true
           # tags: ${{ steps.meta.outputs.tags }}
           tags: clemensstich/runningdinner:${{ github.sha }}
