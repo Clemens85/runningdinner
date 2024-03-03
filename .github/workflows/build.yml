@@ -1,0 +1,259 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - github-actions
+  workflow_dispatch:
+
+env:
+  DEV_STAGE_BRANCH: develop
+  MAIN_STAGE_BRANCH: main
+
+jobs:
+  build_backend:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres:13.4
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: runningdinner
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Setup application-prod.properties # Not very nice, but sufficient for now
+        run: |
+          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f3)
+          STAGE_SUBDOMAIN=""
+          if [ $BRANCH == "${{env.DEV_STAGE_BRANCH}}" ]; then
+            STAGE_SUBDOMAIN="dev."
+          fi
+          echo "sendgrid.api.key=${{env.PROD_SENDGRID_API_KEY}}" >> runningdinner-backend/src/main/resources/application-prod.properties
+          echo "host.context.url=https://${STAGE_SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
+          echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
+        env:
+          PROD_SENDGRID_API_KEY: ${{secrets.PROD_SENDGRID_API_KEY}}
+
+      - name: Build and Test
+        run: |
+          cd runningdinner-backend
+          ./mvnw package
+          java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted/
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: "runningdinner-backend/target/surefire-reports/*.xml"
+
+      - name: Upload built backend contents
+        uses: actions/upload-artifact@v4 
+        with:
+          name: runningdinner-backend
+          path: runningdinner-backend/target/extracted/
+
+  build_webclient:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Check-out repository
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm package manager
+        with:
+          version: 8.14.1
+
+      - uses: actions/setup-node@v3
+        name: 'Install Node.js & cache pnpm store'
+        with:
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: cd runningdinner-client && pnpm i --frozen-lockfile
+
+      - name: Build webclient
+        run: |
+          export VITE_GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
+          cd runningdinner-client/webapp
+          pnpm build
+        env:
+          GOOGLE_MAPS_KEY_JS: ${{ secrets.GOOGLE_MAPS_KEY_JS }}
+
+      - name: Upload built webclient contents
+        uses: actions/upload-artifact@v4 
+        with:
+          name: runningdinner-client
+          path: runningdinner-client/webapp/dist
+
+  deploy_backend_ecs:
+    needs: [build_backend, build_webclient]
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+      url: https://dev.runyourdinner.eu
+    steps:
+      - name: Download Backend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: runningdinner-backend
+
+      - name: Print dir layout
+        run: |
+          ls -la
+          ls -la runningdinner-backend
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Backend Docker image
+        id: build-backend-image
+        uses: docker/build-push-action@v3
+        with:
+          context: runningdinner-backend
+          push: true
+          # tags: ${{ steps.meta.outputs.tags }}
+          tags: clemensstich/runningdinner:${{ github.sha }}
+          # build-args: VERSION=${{ env.BUILD_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition runningdinner-backend --query taskDefinition > task-definition.json
+
+      - name: Render task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: runningdinner-backend
+          image: ${{ steps.build-backend-image.outputs.image }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: runningdinner-service
+          cluster: runningdinner-ecs-cluster
+          wait-for-service-stability: true
+
+
+  deploy_webclient_s3:
+    needs: deploy_backend_ecs
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+      url: https://dev.runyourdinner.eu
+    steps:
+      - name: Download Webclient content
+        uses: actions/download-artifact@v4
+        with:
+          name: runningdinner-client
+
+      - name: Print dir layout
+        run: |
+          ls -la
+          ls -la runningdinner-client
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      # - name: Get Cloudfront Distribution Id
+      #   run: |
+      #     distributions=$(aws cloudfront list-distributions --query 'DistributionList.Items[*].{Id:Id}' --output text)
+      #     # Check if there is only one distribution
+      #     if [ $(echo "$distributions" | wc -l) -ne 1 ]; then
+      #       echo "Error: There are either no CloudFront distributions or multiple distributions in the account." >&2
+      #       exit 1
+      #     fi
+      #     # Get the distribution ID
+      #     distribution_id=$(echo "$distributions" | awk '{print $1}')
+      #     echo "CLOUDFRONT_DISTRIBUTION_ID=$distribution_id" >> $GITHUB_ENV
+
+      # - name: Deploy to S3
+      #   uses: reggionick/s3-deploy@v4
+      #   with:
+      #     folder: runningdinner-client/webapp-build/dist
+      #     bucket: "s3://runningdinner-web-${STAGE}"
+      #     bucket-region: eu-central-1
+      #     dist_id: $CLOUDFRONT_DISTRIBUTION_ID
+      #     delete-removed: true
+
+  check_backend_health:
+    needs: deploy_backend_ecs
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+      url: https://dev.runyourdinner.eu
+    steps:
+      - name: Check Backend REST service can be reached
+        run: |
+          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f3)
+          STAGE_SUBDOMAIN=""
+          if [ $BRANCH == "${{env.DEV_STAGE_BRANCH}}" ]; then
+            STAGE_SUBDOMAIN="dev."
+          fi
+          curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"
+
+  create_release_and_git_tag:
+    needs: deploy_webclient_s3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+
+# https://github.com/aws-actions/amazon-ecs-deploy-task-definition
+# https://medium.com/@octavio/ecs-deployments-with-github-actions-dd34beed6528
+# 
+
+# https://faun.pub/configure-aws-credentials-for-github-actions-with-assume-role-14a21926c1f6
+# https://medium.com/schmiedeone/providing-access-to-aws-from-github-actions-using-open-id-connect-bf3daa3c9cd3
+
+# https://dev.to/johnkevinlosito/deploy-static-website-to-s3-using-github-actions-4a0e
+# https://aws.plainenglish.io/deploying-a-web-app-on-aws-s3-using-github-actions-d7031160acac
+# https://github.com/marketplace/actions/s3-deploy
+
+# oidc:
+# https://registry.terraform.io/modules/unfunco/oidc-github/aws/latest
+# https://github.com/aws-actions/configure-aws-credentials
