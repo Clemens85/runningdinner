@@ -131,6 +131,7 @@ jobs:
       - name: Copy Dockerfile to root
         run: |
          cp runningdinner-backend/infrastructure/deployment/docker/Dockerfile Dockerfile
+         chmod 777 Dockerfile
 
       - name: Print dir layout
         run: |
@@ -145,9 +146,10 @@ jobs:
 
       - name: Build and push Backend Docker image
         id: build-backend-image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           push: true
+          context: .
           # tags: ${{ steps.meta.outputs.tags }}
           tags: clemensstich/runningdinner:${{ github.sha }}
           # build-args: VERSION=${{ env.BUILD_VERSION }}
