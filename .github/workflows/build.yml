@@ -122,6 +122,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: runningdinner-backend
+          path: runningdinner-backend/target/extracted
 
       - name: Print dir layout
         run: |
@@ -139,6 +140,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: runningdinner-backend
+          file: infrastructure/deployment/docker/Dockerfile
           push: true
           # tags: ${{ steps.meta.outputs.tags }}
           tags: clemensstich/runningdinner:${{ github.sha }}
@@ -188,6 +190,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: runningdinner-client
+          path: runningdinner-client/webapp/dist
 
       - name: Print dir layout
         run: |
