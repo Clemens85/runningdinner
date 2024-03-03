@@ -44,10 +44,11 @@ jobs:
 
       - name: Setup application-prod.properties # Not very nice, but sufficient for now
         run: |
-          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f3)
-          STAGE_SUBDOMAIN=""
-          if [ $BRANCH == "${{env.DEV_STAGE_BRANCH}}" ]; then
-            STAGE_SUBDOMAIN="dev."
+          BRANCH=${GITHUB_REF#refs/heads/}
+          echo "Comparing branch $BRANCH with branch ${{env.MAIN_STAGE_BRANCH}}"
+          STAGE_SUBDOMAIN="dev."
+          if [ $BRANCH == "${{env.MAIN_STAGE_BRANCH}}" ]; then
+            STAGE_SUBDOMAIN=""
           fi
           echo "sendgrid.api.key=${{env.PROD_SENDGRID_API_KEY}}" >> runningdinner-backend/src/main/resources/application-prod.properties
           echo "host.context.url=https://${STAGE_SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
@@ -154,6 +155,11 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition runningdinner-backend --query taskDefinition > task-definition.json
 
+      - name: Show downloaded task definition
+        run: |
+          ls -la
+          cat task-definition.json
+
       - name: Render task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -195,17 +201,31 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      # - name: Get Cloudfront Distribution Id
-      #   run: |
-      #     distributions=$(aws cloudfront list-distributions --query 'DistributionList.Items[*].{Id:Id}' --output text)
-      #     # Check if there is only one distribution
-      #     if [ $(echo "$distributions" | wc -l) -ne 1 ]; then
-      #       echo "Error: There are either no CloudFront distributions or multiple distributions in the account." >&2
-      #       exit 1
-      #     fi
-      #     # Get the distribution ID
-      #     distribution_id=$(echo "$distributions" | awk '{print $1}')
-      #     echo "CLOUDFRONT_DISTRIBUTION_ID=$distribution_id" >> $GITHUB_ENV
+      - name: Get Cloudfront Distribution Id
+        run: |
+          CONTENT_BUILD_DIR="runningdinner-client/webapp/dist"
+          if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then
+            echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
+            exit 1
+          fi
+
+          STAGE="dev"
+          # if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+          #   STAGE="dev"
+          # fi
+          aws s3 sync "$CONTENT_BUILD_DIR/" "s3://runningdinner-web-${STAGE}" --delete --region eu-central-1
+
+          distributions=$(aws cloudfront list-distributions --query 'DistributionList.Items[*].{Id:Id}' --output text)
+          # Check if there is only one distribution
+          if [ $(echo "$distributions" | wc -l) -ne 1 ]; then
+            echo "Error: There are either no CloudFront distributions or multiple distributions in the account." >&2
+            exit 1
+          fi
+          # Get the distribution ID
+          distribution_id=$(echo "$distributions" | awk '{print $1}')
+          echo "Invalidating $distribution_id"
+          aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
+          # echo "CLOUDFRONT_DISTRIBUTION_ID=$distribution_id" >> $GITHUB_ENV
 
       # - name: Deploy to S3
       #   uses: reggionick/s3-deploy@v4
