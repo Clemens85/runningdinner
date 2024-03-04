@@ -122,6 +122,17 @@ jobs:
       url: https://dev.runyourdinner.eu
     steps:
 
+      - name: Print env
+        run: |
+          echo "Env is $AWS_ACCOUNT_ID"
+          echo "Env is ${{ env.AWS_ACCOUNT_ID }}"
+
+      - name: Print env2
+        run: |
+          echo "Env is $AWS_ACCOUNT_ID"
+        env:
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -156,7 +167,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: eu-central-1
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
+          role-to-assume: arn:aws:iam::${{vars.AWS_ACCOUNT_ID}}:role/github
 
       - run: aws sts get-caller-identity
 
@@ -194,7 +205,7 @@ jobs:
 
 
   deploy_webclient_s3:
-    needs: deploy_backend_ecs
+    # needs: deploy_backend_ecs
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -210,8 +221,10 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: eu-central-1
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
-
+          role-to-assume: arn:aws:iam::$AWS_ACCOUNT_ID:role/github
+        env:
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+          
       - name: Get Cloudfront Distribution Id
         run: |
           CONTENT_BUILD_DIR="runningdinner-client/webapp/dist"
