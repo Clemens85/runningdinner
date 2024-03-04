@@ -124,11 +124,6 @@ jobs:
       - name: Print env
         run: |
           echo "Env is $AWS_ACCOUNT_ID"
-          echo "Env is ${{ env.AWS_ACCOUNT_ID }}"
-
-      - name: Print env2
-        run: |
-          echo "Env is $AWS_ACCOUNT_ID"
         env:
           AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
 
@@ -152,6 +147,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+      - name: Calculate short commit hash
+        run: echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Build and push Backend Docker image
         id: build-backend-image
         uses: docker/build-push-action@v5
@@ -159,7 +157,7 @@ jobs:
           push: true
           context: .
           # tags: ${{ steps.meta.outputs.tags }}
-          tags: clemensstich/runningdinner:${{ github.sha }}
+          tags: clemensstich/runningdinner:${{ env.SHA_SHORT }},clemensstich/runningdinner:latest-dev
           # build-args: VERSION=${{ env.BUILD_VERSION }}
 
       - name: Configure AWS credentials
@@ -185,7 +183,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: runningdinner-backend
-          image: ${{ steps.build-backend-image.outputs.imageId }}
+          image: clemensstich/runningdinner:${{ env.SHA_SHORT }}
 
       - name: Deploy to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -271,23 +269,23 @@ jobs:
           fi
           curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"
 
-  create_release_and_git_tag:
-    needs: [deploy_webclient_s3, deploy_backend_ecs]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # create_release_and_git_tag:
+  #   needs: [deploy_webclient_s3, deploy_backend_ecs]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+  #     - name: Create Release
+  #       id: create_release
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         tag_name: ${{ github.ref }}
+  #         release_name: Release ${{ github.ref }}
+  #         draft: false
+  #         prerelease: false
 
 
 # https://github.com/aws-actions/amazon-ecs-deploy-task-definition
