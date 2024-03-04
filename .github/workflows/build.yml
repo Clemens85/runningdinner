@@ -156,9 +156,7 @@ jobs:
         with:
           push: true
           context: .
-          # tags: ${{ steps.meta.outputs.tags }}
           tags: clemensstich/runningdinner:${{ env.SHA_SHORT }},clemensstich/runningdinner:latest-dev
-          # build-args: VERSION=${{ env.BUILD_VERSION }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -193,9 +191,18 @@ jobs:
           cluster: runningdinner-ecs-cluster
           wait-for-service-stability: true
 
+      - name: Check Backend REST service can be reached
+        run: |
+          # BRANCH=$(echo $GITHUB_REF | cut -d'/' -f3)
+          # STAGE_SUBDOMAIN=""
+          # if [ $BRANCH == "${{env.DEV_STAGE_BRANCH}}" ]; then
+          #   STAGE_SUBDOMAIN="dev."
+          # fi
+          STAGE_SUBDOMAIN="dev."
+          curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"       
 
   deploy_webclient_s3:
-    # needs: deploy_backend_ecs
+    needs: deploy_backend_ecs
     permissions:
       contents: read
       id-token: write   
@@ -244,48 +251,19 @@ jobs:
           aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
           # echo "CLOUDFRONT_DISTRIBUTION_ID=$distribution_id" >> $GITHUB_ENV
 
-      # - name: Deploy to S3
-      #   uses: reggionick/s3-deploy@v4
-      #   with:
-      #     folder: runningdinner-client/webapp-build/dist
-      #     bucket: "s3://runningdinner-web-${STAGE}"
-      #     bucket-region: eu-central-1
-      #     dist_id: $CLOUDFRONT_DISTRIBUTION_ID
-      #     delete-removed: true
-
-  check_backend_health:
-    needs: deploy_backend_ecs
+  create_git_tag:
+    needs: [deploy_webclient_s3, deploy_backend_ecs]
     runs-on: ubuntu-latest
-    environment:
-      name: dev
-      url: https://dev.runyourdinner.eu
     steps:
-      - name: Check Backend REST service can be reached
+      - name: Create Git Tag
         run: |
-          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f3)
-          STAGE_SUBDOMAIN=""
-          if [ $BRANCH == "${{env.DEV_STAGE_BRANCH}}" ]; then
-            STAGE_SUBDOMAIN="dev."
-          fi
-          curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"
-
-  # create_release_and_git_tag:
-  #   needs: [deploy_webclient_s3, deploy_backend_ecs]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-
-  #     - name: Create Release
-  #       id: create_release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         tag_name: ${{ github.ref }}
-  #         release_name: Release ${{ github.ref }}
-  #         draft: false
-  #         prerelease: false
+          git config --local user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+          git config --local user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+          SHA_SHORT=$(git rev-parse --short HEAD)"
+          TAG="${SHA_SHORT}_DATE"
+          MSG="Release Test"
+          git tag -a "${TAG}" -m "${MSG}"
+          git push --tags
 
 
 # https://github.com/aws-actions/amazon-ecs-deploy-task-definition
