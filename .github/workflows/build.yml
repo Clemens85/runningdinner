@@ -10,11 +10,11 @@ env:
 
 jobs:
   build_backend:
-    uses: ./.github/actions/build-backend.yml
+    uses: ./.github/workflows/build-backend.yml
     with:
       stageSubdomain: ""
     secrets: inherit
 
   build_webclient:
-    uses: ./.github/actions/build-webclient.yml
+    uses: ./.github/workflows/build-webclient.yml
     secrets: inherit
