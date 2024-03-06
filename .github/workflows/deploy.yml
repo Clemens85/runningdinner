@@ -32,9 +32,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Print env
+      - name: Set AWS_ACCOUNT_ID to Env
         run: |
-          echo "Env is $AWS_ACCOUNT_ID"
           echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
         env:
           AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
@@ -56,10 +55,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Calculate short commit hash
-        run: echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
-# TODO Calculate Docker tags in own step
+      - name: Calculate short commit hash and Docker Tags
+        run: |
+          echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          BRANCH=${GITHUB_REF#refs/heads/}
+          echo "Building on $BRANCH"
+          TAGS="clemensstich/runningdinner:$SHA_SHORT"
+          if [ "main" == "$BRANCH" ]; then
+            TAGS="$TAGS,clemensstich/runningdinner:latest"
+          fi
+          echo "DOCKER_IMAGE_TAGS=$TAGS" >> $GITHUB_ENV
 
       - name: Build and push Backend Docker image
         id: build-backend-image
@@ -67,7 +72,7 @@ jobs:
         with:
           push: true
           context: .
-          tags: clemensstich/runningdinner:${{ env.SHA_SHORT }},clemensstich/runningdinner:latest
+          tags: ${{ env.DOCKER_IMAGE_TAGS }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -155,19 +160,19 @@ jobs:
           echo "Invalidating $distribution_id"
           aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
 
-  create_git_tag:
-    needs: [deploy_webclient_s3, deploy_backend_ecs]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # create_git_tag:
+  #   needs: [deploy_webclient_s3, deploy_backend_ecs]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Create Git Tag
-        run: |
-          git config --local user.name "$(git --no-pager log --format=format:'%an' -n 1)"
-          git config --local user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-          SHA_SHORT=$(git rev-parse --short HEAD)"
-          TAG="${SHA_SHORT}_DATE"
-          MSG="Release Test"
-          git tag -a "${TAG}" -m "${MSG}"
-          git push --tags
+  #     - name: Create Git Tag
+  #       run: |
+  #         git config --local user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+  #         git config --local user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+  #         SHA_SHORT=$(git rev-parse --short HEAD)"
+  #         TAG="${SHA_SHORT}_DATE"
+  #         MSG="Release Test"
+  #         git tag -a "${TAG}" -m "${MSG}"
+  #         git push --tags

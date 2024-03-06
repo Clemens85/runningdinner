@@ -10,7 +10,7 @@ on:
         required: true
 
 jobs:
-  build-backend:
+  mvn-package-tests:
     runs-on: ubuntu-latest
 
     services:

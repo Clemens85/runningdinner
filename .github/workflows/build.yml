@@ -9,12 +9,12 @@ env:
   MAIN_STAGE_BRANCH: main
 
 jobs:
-  build_backend:
+  build-backend:
     uses: ./.github/workflows/build-backend-action.yml
     with:
       stageSubdomain: ""
     secrets: inherit
 
-  build_webclient:
+  build-webclient:
     uses: ./.github/workflows/build-webclient-action.yml
     secrets: inherit
