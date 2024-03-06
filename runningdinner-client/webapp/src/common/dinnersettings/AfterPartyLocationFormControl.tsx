@@ -3,7 +3,6 @@ import Grid from "@mui/material/Grid";
 import {Span} from "../theme/typography/Tags";
 import FormTextField from "../input/FormTextField";
 import FormTimePicker from "../input/FormTimePicker";
-import React from "react";
 
 export function AfterPartyLocationFormControl() {
 
@@ -19,6 +18,16 @@ export function AfterPartyLocationFormControl() {
           <Span i18n={"common:after_event_party_help_2"}/>
         </Grid>
       </Grid>
+
+      <Grid container sx={{mt: afterPartyLocationMt}} spacing={3}>
+        <Grid item xs={12} md={9}>
+          <FormTextField name="title"
+                         label={t('common:title')}
+                         variant="outlined"
+                         fullWidth/>
+        </Grid>
+      </Grid>
+
       <Grid container sx={{mt: afterPartyLocationMt}} spacing={3}>
         <Grid item xs={12} md={9}>
           <FormTextField name="addressName"
