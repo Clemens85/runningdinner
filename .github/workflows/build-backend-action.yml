@@ -41,13 +41,13 @@ jobs:
 
       - name: Setup application-prod.properties # Not very nice, but sufficient for now
         run: |
-          SUBDOMAIN=""
-          if [ "dev" == "${{inputs.stageSubdomain}}" ]; then
-            SUBDOMAIN="dev."
-          fi
-          echo "Using subdomain $SUBDOMAIN"
+          #SUBDOMAIN=""
+          #if [ "dev" == "${{inputs.stageSubdomain}}" ]; then
+          #  SUBDOMAIN="dev."
+          #fi
+          # echo "Using subdomain $SUBDOMAIN"
           echo "sendgrid.api.key=${{env.PROD_SENDGRID_API_KEY}}" >> runningdinner-backend/src/main/resources/application-prod.properties
-          echo "host.context.url=https://${SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
+          # echo "host.context.url=https://${SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
           echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
         env:
           PROD_SENDGRID_API_KEY: ${{secrets.PROD_SENDGRID_API_KEY}}
