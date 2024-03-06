@@ -7,7 +7,7 @@ on:
         description: 'Environment to deploy to'
         required: true
         default: 'dev'
-
+  push:
 
 env:
   DEV_STAGE_BRANCH: develop
