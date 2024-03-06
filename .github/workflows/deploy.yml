@@ -57,7 +57,8 @@ jobs:
 
       - name: Calculate short commit hash and Docker Tags
         run: |
-          echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_ENV
           BRANCH=${GITHUB_REF#refs/heads/}
           echo "Building on $BRANCH"
           TAGS="clemensstich/runningdinner:$SHA_SHORT"
