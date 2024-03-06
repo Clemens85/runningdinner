@@ -1,0 +1,44 @@
+
+on:
+  workflow_call:
+    secrets:
+      GOOGLE_MAPS_KEY_JS:
+        required: true
+
+jobs:
+  build-webclient:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Check-out repository
+
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm package manager
+        with:
+          version: 8.14.1
+
+      - uses: actions/setup-node@v4
+        name: 'Install Node.js & cache pnpm store'
+        with:
+          cache: 'pnpm'
+          cache-dependency-path: 'runningdinner-client/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        run: |
+          cd runningdinner-client
+          ls -la
+          pnpm i --frozen-lockfile
+
+      - name: Build webclient
+        run: |
+          export VITE_GOOGLE_MAPS_KEY_JS=$GOOGLE_MAPS_KEY_JS
+          cd runningdinner-client/webapp
+          pnpm build
+        env:
+          GOOGLE_MAPS_KEY_JS: ${{ secrets.GOOGLE_MAPS_KEY_JS }}
+
+      - name: Upload built webclient contents
+        uses: actions/upload-artifact@v4 
+        with:
+          name: runningdinner-client
+          path: runningdinner-client/webapp/dist
