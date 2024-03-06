@@ -3,7 +3,7 @@ ARG EXTRACTED=target/extracted
 ENV SPRING_PROFILES_ACTIVE=prod
 COPY ${EXTRACTED}/dependencies/ ./
 COPY ${EXTRACTED}/spring-boot-loader/ ./
-COPY ${EXTRACTED}/snapshot-dependencies/ ./
+# COPY ${EXTRACTED}/snapshot-dependencies/ ./
 RUN true
 COPY ${EXTRACTED}/application/ ./
 RUN mkdir -p /logs
