@@ -11,13 +11,13 @@ on:
 jobs:
 
   build_backend:
-    uses: ./.github/actions/build-backend
+    uses: ./.github/actions/build-backend.yml
     with:
-      stageSubdomain: "dev"
+      stageSubdomain: ${{ github.event.inputs.environment }}
     secrets: inherit
 
   build_webclient:
-    uses: ./.github/actions/build-webclient
+    uses: ./.github/actions/build-webclient.yml
     secrets: inherit
 
   deploy_backend_ecs:
