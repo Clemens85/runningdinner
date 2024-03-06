@@ -1,0 +1,142 @@
+name: Build + Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+
+
+env:
+  DEV_STAGE_BRANCH: develop
+  MAIN_STAGE_BRANCH: main
+
+jobs:
+  deploy_backend_ecs:
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+      url: https://dev.runyourdinner.eu
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Print env
+        run: |
+          echo "Env is $AWS_ACCOUNT_ID"
+          echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
+        env:
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::$AWS_ACCOUNT_ID:role/github
+
+      - run: aws sts get-caller-identity
+
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition runningdinner-backend --query taskDefinition > task-definition.json
+
+      - name: Show downloaded task definition
+        run: |
+          ls -la
+          cat task-definition.json
+
+      - name: Render task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: runningdinner-backend
+          image: clemensstich/runningdinner:${{ env.SHA_SHORT }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: runningdinner-service
+          cluster: runningdinner-ecs-cluster
+          wait-for-service-stability: true
+
+      - name: Check Backend REST service can be reached
+        run: |
+          # BRANCH=$(echo $GITHUB_REF | cut -d'/' -f3)
+          STAGE_SUBDOMAIN=""
+          if [ "dev" == "${{ github.event.inputs.environment }}" ]; then
+            STAGE_SUBDOMAIN="dev."
+          fi
+          curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"       
+
+  deploy_webclient_s3:
+    needs: deploy_backend_ecs
+    permissions:
+      contents: read
+      id-token: write   
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    steps:
+      # - name: Download Webclient content
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: runningdinner-client
+      #     path: runningdinner-client/webapp/dist
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::858092556984:role/github
+        # env:
+        #   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Get Cloudfront Distribution Id
+        run: |
+          CONTENT_BUILD_DIR="runningdinner-client/webapp/dist"
+          if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then
+            echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
+            exit 1
+          fi
+
+          STAGE="dev"
+          # if [ $CIRCLE_BRANCH == "<< pipeline.parameters.dev-stage-branch >>" ]; then
+          #   STAGE="dev"
+          # fi
+          aws s3 sync "$CONTENT_BUILD_DIR/" "s3://runningdinner-web-${STAGE}" --delete --region eu-central-1
+
+          distributions=$(aws cloudfront list-distributions --query 'DistributionList.Items[*].{Id:Id}' --output text)
+          # Check if there is only one distribution
+          if [ $(echo "$distributions" | wc -l) -ne 1 ]; then
+            echo "Error: There are either no CloudFront distributions or multiple distributions in the account." >&2
+            exit 1
+          fi
+          # Get the distribution ID
+          distribution_id=$(echo "$distributions" | awk '{print $1}')
+          echo "Invalidating $distribution_id"
+          aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
+          # echo "CLOUDFRONT_DISTRIBUTION_ID=$distribution_id" >> $GITHUB_ENV
+
+  # create_git_tag:
+  #   needs: [deploy_webclient_s3, deploy_backend_ecs]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Create Git Tag
+  #       run: |
+  #         git config --local user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+  #         git config --local user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+  #         SHA_SHORT=$(git rev-parse --short HEAD)"
+  #         TAG="${SHA_SHORT}_DATE"
+  #         MSG="Release Test"
+  #         git tag -a "${TAG}" -m "${MSG}"
+  #         git push --tags
