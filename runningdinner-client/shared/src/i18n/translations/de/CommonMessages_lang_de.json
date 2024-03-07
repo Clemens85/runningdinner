@@ -6,7 +6,7 @@
 	"address_remarks": "Anmerkungen / Klingeln Bei",
 	"address_remarks_placeholder": "Nur ausfüllen bei Besonderheiten",
 	"address_street_nr_invalid": "Die Straße ist ungültig",
-	"after_event_party": "After-Event-Party",
+	"after_party_location_title_help": "Das ist die Überschrift die später in der Event-Beschreibung und in den Dinner-Routen angezeigt wird.",
 	"after_event_party_help_1": "Falls ihr eine After-Event-Party veranstaltet, kannst du hier den Ort dafür angeben.",
 	"after_event_party_help_2": "Dieser Ort wird später in der Event-Beschreibung und in den Dinner-Routen angezeigt.",
 	"after_party_location_name": "Name",

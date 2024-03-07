@@ -1,22 +1,15 @@
 
 package org.runningdinner.core;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Central entity of application.<br>
@@ -71,7 +64,8 @@ public class RunningDinner extends AbstractEntity implements RunningDinnerInfo {
     @AttributeOverride(name = "zip", column = @Column(name = "afterPartyLocationZip")),
     @AttributeOverride(name = "cityName", column = @Column(name = "afterPartyLocationCityName")),
     @AttributeOverride(name = "addressName", column = @Column(name = "afterPartyLocationAddressName")),
-    @AttributeOverride(name = "addressRemarks", column = @Column(name = "afterPartyLocationRemarks"))
+    @AttributeOverride(name = "addressRemarks", column = @Column(name = "afterPartyLocationRemarks")),
+    @AttributeOverride(name = "title", column = @Column(name = "afterPartyTitle"))
   })
   private AfterPartyLocation afterPartyLocation = new AfterPartyLocation();
 

@@ -312,7 +312,7 @@ function MapView({dinnerRouteTeams, currentTeam, afterPartyLocation, googleMapsA
       return undefined;
     }
     return <Marker position={afterPartyLocation.geocodingResult}
-                   title={t("common:after_event_party")}
+                   title={afterPartyLocation.title}
                    onClick={() => handleMarkerClick(afterPartyLocation)}
                    icon={createMarkerIconUrl(AFTER_PARTY_LOCATION_MARKER_NUMBER, false)}/>;
   }

@@ -24,6 +24,7 @@ export function AfterPartyLocationFormControl() {
           <FormTextField name="title"
                          label={t('common:title')}
                          variant="outlined"
+                         helperText={t("common:after_party_location_title_help")}
                          fullWidth/>
         </Grid>
       </Grid>
