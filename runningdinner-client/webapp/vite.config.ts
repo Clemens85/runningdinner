@@ -13,7 +13,7 @@ export default defineConfig({
     https: true,
     proxy: {
       '/rest': {
-        target: "https://localhost",
+        target: "http://localhost:9090",
         secure: false,
         changeOrigin: true
       }
