@@ -87,7 +87,7 @@ jobs:
 
 
   analyze-webclient:
-    name: Analyze Backend
+    name: Analyze Webclient
     runs-on: ubuntu-latest
     permissions:
       actions: read
