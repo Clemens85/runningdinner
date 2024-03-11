@@ -1,6 +1,5 @@
 package org.runningdinner.core;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.junit.Test;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
@@ -63,17 +62,17 @@ public class RunningDinnerCalculatorTest {
 
 		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses(), NO_TEAMS_TO_KEEP);
 
-		assertEquals(3, CollectionUtils.countMatches(teams, obj -> {
+		assertEquals(3, IterableUtils.countMatches(teams, obj -> {
       Team team = obj;
       return team.getMealClass().equals(MealClass.APPETIZER());
     }));
 
-		assertEquals(3, CollectionUtils.countMatches(teams, obj -> {
+		assertEquals(3, IterableUtils.countMatches(teams, obj -> {
       Team team = obj;
       return team.getMealClass().equals(MealClass.MAINCOURSE());
     }));
 
-		assertEquals(3, CollectionUtils.countMatches(teams, obj -> {
+		assertEquals(3, IterableUtils.countMatches(teams, obj -> {
       Team team = obj;
       return team.getMealClass().equals(MealClass.DESSERT());
     }));

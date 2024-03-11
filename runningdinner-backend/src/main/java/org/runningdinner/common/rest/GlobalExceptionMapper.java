@@ -1,20 +1,10 @@
 package org.runningdinner.common.rest;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
-
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
-import org.runningdinner.common.exception.DinnerNotAcknowledgedException;
-import org.runningdinner.common.exception.DinnerNotFoundException;
-import org.runningdinner.common.exception.InvalidUuidException;
-import org.runningdinner.common.exception.TechnicalException;
-import org.runningdinner.common.exception.ValidationException;
+import org.runningdinner.common.exception.*;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.InvalidAddressException;
 import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
@@ -33,6 +23,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Locale;
+
 @ControllerAdvice
 public class GlobalExceptionMapper {
 
@@ -50,7 +45,7 @@ public class GlobalExceptionMapper {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(DinnerNotFoundException.class)
   @ResponseBody
-  IssueList mapDinnerNotFoundException(final HttpServletRequest req, final Locale locale, final Exception ex) {
+  IssueList mapDinnerNotFoundException(final Locale locale, final Exception ex) {
     String message = messages.getMessage("error.page.dinner.notfound.details", null, locale);
     LOGGER.error(ex.getMessage(), ex);
     return new IssueList(new Issue(message, IssueType.BAD_REQUEST));
@@ -59,7 +54,7 @@ public class GlobalExceptionMapper {
   @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
   @ExceptionHandler(DinnerNotAcknowledgedException.class)
   @ResponseBody
-  IssueList mapDinnerNotAcknowledgedException(final HttpServletRequest req, final Locale locale, final Exception ex) {
+  IssueList mapDinnerNotAcknowledgedException(final Locale locale, final Exception ex) {
 
 	  String message = messages.getMessage("error.dinner.acknowledge.required", null, locale);
 	  message = message.replaceAll(FormatterUtil.EMAIL, adminEmail);
@@ -70,7 +65,7 @@ public class GlobalExceptionMapper {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(value = { InvalidUuidException.class, EntityNotFoundException.class, IllegalStateException.class })
 	@ResponseBody
-	IssueList mapInvalidUuidException(final HttpServletRequest req, final Locale locale, final Exception ex) {
+	IssueList mapInvalidUuidException(final Exception ex) {
 		String message = "Eingehender Request war fehlerhaft, bitte versuche es zu einem späteren Zeitpunkt erneut!";
 		LOGGER.error(ex.getMessage(), ex);
 		return new IssueList(new Issue(message, IssueType.BAD_REQUEST));
@@ -79,7 +74,7 @@ public class GlobalExceptionMapper {
 	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 	@ExceptionHandler(InvalidAddressException.class)
 	@ResponseBody
-	IssueList mapInvalidAddressException(final HttpServletRequest req, final Locale locale, final InvalidAddressException ex) {
+	IssueList mapInvalidAddressException(final InvalidAddressException ex) {
 		ADDRESS_ERROR errorType = ex.getErrorType();
 		IssueList result = new IssueList();
 		if (errorType == ADDRESS_ERROR.ADDRESS_FORMAT_INVALID) {
@@ -97,7 +92,7 @@ public class GlobalExceptionMapper {
 	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 	@ExceptionHandler(ValidationException.class)
 	@ResponseBody
-	IssueList mapValidationException(final HttpServletRequest req, final Locale locale, final Exception ex) {
+	IssueList mapValidationException(final Exception ex) {
 		ValidationException validationException = (ValidationException)ex;
 		LOGGER.error("Validation-Error: {}", validationException.getIssues(), ex);
 		return validationException.getIssues();
@@ -126,7 +121,7 @@ public class GlobalExceptionMapper {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(RuntimeException.class)
 	@ResponseBody
-	IssueList processUncatchedException(final HttpServletRequest req, final Locale locale, final Exception ex) {
+	IssueList processUncatchedException(final Locale locale, final Exception ex) {
 		LOGGER.error("Unexpected error", ex);
 		String message = messages.getMessage("error.general", null, locale);
 		return new IssueList(new Issue(message, IssueType.TECHNICAL));

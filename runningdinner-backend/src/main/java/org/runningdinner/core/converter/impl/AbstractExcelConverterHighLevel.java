@@ -1,11 +1,6 @@
 package org.runningdinner.core.converter.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
+import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.ss.usermodel.Cell;
@@ -18,13 +13,7 @@ import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
-import org.runningdinner.core.converter.config.AbstractColumnConfig;
-import org.runningdinner.core.converter.config.AddressColumnConfig;
-import org.runningdinner.core.converter.config.GenderColumnConfig;
-import org.runningdinner.core.converter.config.NameColumnConfig;
-import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
-import org.runningdinner.core.converter.config.ParsingConfiguration;
-import org.runningdinner.core.converter.config.SequenceColumnConfig;
+import org.runningdinner.core.converter.config.*;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.Participant;
@@ -33,7 +22,7 @@ import org.runningdinner.participant.ParticipantName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
+import java.util.*;
 
 /**
  * Abstract class for parsing excel files which contains the main logic.<br>
@@ -46,7 +35,7 @@ public class AbstractExcelConverterHighLevel {
 
 	protected ParsingConfiguration parsingConfiguration;
 
-	private static Logger LOGGER = LoggerFactory.getLogger(AbstractExcelConverterHighLevel.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExcelConverterHighLevel.class);
 
 	public AbstractExcelConverterHighLevel(ParsingConfiguration parsingConfiguration) {
 		this.parsingConfiguration = parsingConfiguration;
@@ -407,7 +396,6 @@ public class AbstractExcelConverterHighLevel {
 	 * @param participantNr The generated participant number according to the order in excel. This is used as a result if no sequence column
 	 *            configuration exists
 	 * @return
-	 * @throws ConversionException
 	 */
 	private int getSequenceNumberIfAvailable(final Row row, final int participantNr) {
 		int result = participantNr;
@@ -453,7 +441,7 @@ public class AbstractExcelConverterHighLevel {
 					result = formater.formatCellValue(cell);
 				}
 				else {
-					Double doub = new Double(cell.getNumericCellValue());
+					Double doub = cell.getNumericCellValue();
 					result = String.valueOf(doub.longValue());
 				}
 			}

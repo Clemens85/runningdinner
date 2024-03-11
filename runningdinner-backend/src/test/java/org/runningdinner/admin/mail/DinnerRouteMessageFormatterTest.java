@@ -1,13 +1,6 @@
 package org.runningdinner.admin.mail;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -20,13 +13,8 @@ import org.runningdinner.admin.message.team.TeamSelection;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
-import org.runningdinner.core.GeneratedTeamsResult;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
-import org.runningdinner.core.ParticipantGenerator;
-import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.*;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
-import org.runningdinner.core.RunningDinnerCalculator;
-import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.core.util.DateTimeUtil;
@@ -36,6 +24,10 @@ import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.springframework.context.MessageSource;
+
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DinnerRouteMessageFormatterTest {
 
@@ -60,15 +52,17 @@ public class DinnerRouteMessageFormatterTest {
   @Mock
   private AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
 
-  private RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
+  private final RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
 
   @Mock
   private RunningDinnerService runningDinnerService;
+
+	private AutoCloseable mockitoInstance;
 	
   @Before
   public void setUp() {
 
-    MockitoAnnotations.initMocks(this);
+		mockitoInstance = MockitoAnnotations.openMocks(this);
 
     setupLocalizationProviderServiceMock();
 
@@ -83,6 +77,11 @@ public class DinnerRouteMessageFormatterTest {
     this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService,
         messageFormatterHelperService, afterPartyLocationService);
   }
+
+	@After
+	public void tearDown() throws Exception {
+		mockitoInstance.close();
+	}
 	
 	@Test
 	public void mobileNumbersFormattedForBothTeamMembers() {
@@ -147,7 +146,7 @@ public class DinnerRouteMessageFormatterTest {
 		List<Participant> teamMembers = team.getTeamMembersOrdered();
 		Participant teamMember = teamMembers
 															.stream()
-															.filter(member -> setToHostingTeamMember ? member.isHost() : !member.isHost())
+															.filter(member -> setToHostingTeamMember == member.isHost())
 															.findFirst()
 															.orElseThrow(IllegalStateException::new);
 		teamMember.setMobileNumber(mobileNumber);

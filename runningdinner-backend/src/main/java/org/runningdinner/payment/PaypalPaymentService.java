@@ -1,27 +1,8 @@
 package org.runningdinner.payment;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
-import javax.transaction.Transactional;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.payment.paypal.LinkTO;
-import org.payment.paypal.MoneyTO;
-import org.payment.paypal.OrderIntent;
-import org.payment.paypal.PayPalAppContextTO;
-import org.payment.paypal.PaymentLandingPage;
-import org.payment.paypal.PaypalCaptureResponseTO;
-import org.payment.paypal.PaypalHttpClientApache;
-import org.payment.paypal.PaypalOrderResponseTO;
-import org.payment.paypal.PaypalOrderStatus;
-import org.payment.paypal.PaypalOrderTO;
-import org.payment.paypal.PaypalPayerTO;
-import org.payment.paypal.PurchaseUnitTO;
+import org.payment.paypal.*;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueType;
@@ -30,7 +11,6 @@ import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.NumberUtil;
-import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.payment.paymentoptions.PaymentOptions;
@@ -38,6 +18,13 @@ import org.runningdinner.payment.paymentoptions.PaymentOptionsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 public class PaypalPaymentService {
@@ -53,23 +40,22 @@ public class PaypalPaymentService {
   
   private static final String EUR = "EUR";
 
-  private RegistrationOrderRepository registrationOrderRepository;
+  private final RegistrationOrderRepository registrationOrderRepository;
   
-  private PaypalHttpClientApache paypalHttpClient;
+  private final PaypalHttpClientApache paypalHttpClient;
 
-  private PaymentOptionsService paymentOptionsService;
+  private final PaymentOptionsService paymentOptionsService;
 
-  private UrlGenerator urlGenerator;
+  private final UrlGenerator urlGenerator;
   
-  private ValidatorService validatorService;
+  private final ValidatorService validatorService;
   
-  private RegistrationDataMapper registrationDataMapper = new RegistrationDataMapper();
+  private final RegistrationDataMapper registrationDataMapper = new RegistrationDataMapper();
   
   public PaypalPaymentService(RegistrationOrderRepository registrationOrderRepository, 
                               PaypalHttpClientApache paypalHttpClient, 
                               PaymentOptionsService paymentOptionsService,
                               UrlGenerator urlGenerator,
-                              FrontendRunningDinnerService frontendRunningDinnerService,
                               ValidatorService validatorService) {
     this.registrationOrderRepository = registrationOrderRepository;
     this.paypalHttpClient = paypalHttpClient;

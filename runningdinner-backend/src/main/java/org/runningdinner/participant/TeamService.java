@@ -1,10 +1,5 @@
 package org.runningdinner.participant;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityNotFoundException;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.activity.Activity;
@@ -18,14 +13,7 @@ import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.ValidatorService;
-import org.runningdinner.core.FuzzyBoolean;
-import org.runningdinner.core.GeneratedTeamsResult;
-import org.runningdinner.core.IdentifierUtil;
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
-import org.runningdinner.core.RunningDinner;
-import org.runningdinner.core.RunningDinnerCalculator;
-import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.*;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.event.MealsSwappedEvent;
@@ -47,6 +35,10 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamService {
@@ -184,7 +176,6 @@ public class TeamService {
    * 
    * @param adminId
    * @return
-   * @throws NoPossibleRunningDinnerException
    */
   @Transactional(rollbackFor = { NoPossibleRunningDinnerException.class, RuntimeException.class })
   public TeamArrangementListTO createTeamAndVisitationPlans(@ValidateAdminId String adminId) {
@@ -633,7 +624,7 @@ public class TeamService {
       checkSizeOfReplacementParticipantIds(replacementParticipantIds, team);
 
       List<Participant> replacementParticipants = participantService.findParticipantsByIds(adminId, replacementParticipantIds);
-      checkReplacementNotDestroyingTeamPartnerRegistration(adminId, team, replacementParticipants);
+      checkReplacementNotDestroyingTeamPartnerRegistration(replacementParticipants);
       
       team.setTeamMembers(new HashSet<>(replacementParticipants));
       runningDinnerCalculator.setHostingParticipant(team, runningDinner.getConfiguration());
@@ -665,7 +656,7 @@ public class TeamService {
     return result;
   }
 
-  public void checkReplacementNotDestroyingTeamPartnerRegistration(String adminId, Team team, List<Participant> replacementParticipants) {
+  public void checkReplacementNotDestroyingTeamPartnerRegistration(List<Participant> replacementParticipants) {
 
     if (!ParticipantService.hasConsistentTeamPartnerWishRegistration(replacementParticipants)) {
       throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH, IssueType.VALIDATION)));

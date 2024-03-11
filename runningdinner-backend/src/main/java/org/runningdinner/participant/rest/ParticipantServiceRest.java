@@ -96,7 +96,7 @@ public class ParticipantServiceRest {
   @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}", method = RequestMethod.PUT)
   public ParticipantTO updateParticipant(@PathVariable("adminId") String dinnerAdminId,
                                          @PathVariable("participantId") UUID participantId,
-                                         @Valid @RequestBody ParticipantInputDataTO participantTO, Locale locale) {
+                                         @Valid @RequestBody ParticipantInputDataTO participantTO) {
 
     Participant participant = participantService.updateParticipant(dinnerAdminId, participantId, participantTO);
     return new ParticipantTO(participant);
@@ -104,8 +104,7 @@ public class ParticipantServiceRest {
 
   @RequestMapping(value = "/runningdinner/{adminId}/participant", method = RequestMethod.POST)
   public ParticipantTO createParticipant(@PathVariable("adminId") String adminId,
-                                         @Valid @RequestBody ParticipantInputDataTO participantTO,
-                                         Locale locale) {
+                                         @Valid @RequestBody ParticipantInputDataTO participantTO) {
 
     Participant createdParticipant = participantService.addParticipant(adminId, participantTO);
     return new ParticipantTO(createdParticipant);
