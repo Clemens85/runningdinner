@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -86,7 +85,7 @@ public final class ParticipantFromCsvImporter {
      cityName = items[4];
     }
 
-    int numSeats
+    int numSeats;
     try {
       numSeats = Integer.parseInt(numSeatsStr);
     } catch (NumberFormatException e) {
