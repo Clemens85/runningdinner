@@ -3,10 +3,7 @@ package org.runningdinner.core.converter.impl;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.converter.ConversionException;
@@ -428,11 +425,11 @@ public class AbstractExcelConverterHighLevel {
 
 		String result = null;
 		if (cell != null) {
-			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+			if (cell.getCellType() == CellType.STRING) {
 				result = cell.getRichStringCellValue().getString();
 				result = result.trim();
 			}
-			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+			if (cell.getCellType() == CellType.NUMERIC) {
 				if (DateUtil.isCellDateFormatted(cell)) {
 
 					// if (HSSFDateUtil.isCellDateFormatted(cell)) {
@@ -445,7 +442,7 @@ public class AbstractExcelConverterHighLevel {
 					result = String.valueOf(doub.longValue());
 				}
 			}
-			if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+			if (cell.getCellType() == CellType.BOOLEAN) {
 				if (cell.getBooleanCellValue()) {
 					result = "true";
 				}
