@@ -1,20 +1,19 @@
 
 package org.runningdinner.common.service;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
-import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.participant.Participant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UrlGenerator {
@@ -51,8 +50,7 @@ public class UrlGenerator {
    * Typically the URL is constructed out of a configured property which identifies host on which this app is running. If this property
    * does not exist then it is tried to construct the host out of the passed request.
    * 
-   * @param adminId
-   * @param request (Optional) Used when there is no configured host property for constructing the resulting URL
+   * @param adminId AdminId of dinner
    * @return
    */
   public String constructAdministrationUrl(String adminId) {
@@ -138,7 +136,7 @@ public class UrlGenerator {
     if (result.endsWith("/")) {
       result = StringUtils.chop(result);
     }
-    result += "/" + participantId.toString() + "/activate";
+    result += "/" + participantId + "/activate";
     return result;
   }
 
@@ -201,12 +199,8 @@ public class UrlGenerator {
   }
   
   private static String urlEncode(String input) {
-    
-    try {
-      return URLEncoder.encode(input, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      throw new TechnicalException(e);
-    }
+
+    return URLEncoder.encode(input, StandardCharsets.UTF_8);
   }
 
 }

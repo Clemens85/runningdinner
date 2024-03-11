@@ -41,7 +41,7 @@ public class ConversionException extends Exception {
 	 * 
 	 * @param absoluteRowNumber the absolute row-number on which the error occured (0-based)
 	 * @param startRowNumberOffset the row-number at which the user wanted the parsing to be started (0-based)
-	 * @param errorType
+	 * @param errorType The error type
 	 * @return This exception instance for being able to call this method in a fluent way
 	 */
 	public ConversionException setClientErrorInformation(int absoluteRowNumber, int startRowNumberOffset, CONVERSION_ERROR errorType) {
@@ -54,8 +54,7 @@ public class ConversionException extends Exception {
 	/**
 	 * Adds details error information to this exception for displaying it in UI.<br>
 	 * 
-	 * @param rowNumber
-	 * @param errorType
+	 * @param errorType The error type
 	 * @return This exception instance for being able to call this method in a fluent way
 	 */
 	public ConversionException setClientErrorInformation(CONVERSION_ERROR errorType) {
