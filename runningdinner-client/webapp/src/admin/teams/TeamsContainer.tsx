@@ -12,7 +12,6 @@ import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
 import {PageTitle} from "../../common/theme/typography/Tags";
 import {useUrlQuery} from "../../common/hooks/useUrlQuery";
 import {
-  assertDefined,
   findEntityById,
   getFullname, getRunningDinnerMandatorySelector,
   HttpError,

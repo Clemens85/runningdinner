@@ -255,7 +255,8 @@ export const getRecipientsSelector = createSelector(
       showCustomSelectionDialog
     };
   }
-)
+);
+
 export const getMessagePreviewSelector = createSelector(
   (state: AdminStateType) => state.messages.previewMessages, 
   (state: AdminStateType) => state.messages.isMailMessageValid, 
@@ -270,7 +271,6 @@ export const getMessagePreviewSelector = createSelector(
     };
   }
 );
-
 
 export const getMessageObjectSelector = (state: AdminStateType) => state.messages.messageObject;
 

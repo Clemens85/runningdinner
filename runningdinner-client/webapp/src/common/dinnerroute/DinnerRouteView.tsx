@@ -305,7 +305,7 @@ function MapView({dinnerRouteTeams, currentTeam, afterPartyLocation, googleMapsA
   const getDinnerRouteItemMarkerInfoToShow = () : DinnerRouteItemMarkerInfoState | undefined => {
     const resultArr = dinnerRouteItemMarkerInfoState.filter(obj => obj.opened);
     return resultArr.length > 0 ? resultArr[0] : undefined;
-  }
+  };
 
   function createAfterPartyLocationMarker() {
     if (!afterPartyLocation || !isAfterPartyLocationDefined(afterPartyLocation)) {

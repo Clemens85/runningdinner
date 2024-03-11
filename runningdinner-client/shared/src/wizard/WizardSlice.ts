@@ -208,12 +208,6 @@ export const getNavigationStepSelector = createSelector(
     };
   }
 );
-// export const getNavigationStepSelector = (state: WizardRootState) => {
-//   return {
-//     nextNavigationStep: state.nextNavigationStep,
-//     previousNavigationStep: state.previousNavigationStep
-//   };
-// }
 
 export const isLoadingDataSelector = (state: WizardRootState) => {
   const loadingItems = getFetchDataItems(state)
@@ -224,7 +218,7 @@ export const getLoadingDataErrorSelector = (state: WizardRootState): HttpError |
   const errorItems = getFetchDataItems(state)
       .filter(item => item.fetchError !== undefined && item.fetchError !== null);
   return errorItems.length > 0 ? errorItems[0].fetchError : undefined;
-}
+};
 
 const getFetchDataItems = (state: WizardRootState): FetchData<any>[] => {
   return [state.registrationTypes, state.genderAspects];

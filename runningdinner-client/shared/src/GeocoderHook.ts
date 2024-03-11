@@ -96,7 +96,7 @@ export function useGeocoder(googleMapsApiKey: string, language = 'de') {
         result.push({
           ...teams[i],
           geocodingResult
-        })
+        });
       } catch (e) {
         // @ts-ignore
         console.log(`Failed to fetch geocoding for team ${teams[i].teamNumber} with address ${getAddress(teams[i].hostTeamMember)}: ${JSON.stringify(e)}`);

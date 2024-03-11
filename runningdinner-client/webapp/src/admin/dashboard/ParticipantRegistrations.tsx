@@ -107,7 +107,7 @@ export function ParticipantRegistrations({runningDinner}: BaseRunningDinnerProps
     }
     const notActivatedRegistrationsTooOldFirstPage = filterNotActivatedRegistrationsTooOld(participantRegistrationDataPages);
     enableMissingParticipantAcivationNotification(notActivatedRegistrationsTooOldFirstPage);
-  }, [participantRegistrationDataPages])
+  }, [participantRegistrationDataPages]);
   
   if (!isQuerySucceeded(findParticipantRegistrationsByAdminIdQuery)) {
     return <FetchProgressBar {...findParticipantRegistrationsByAdminIdQuery} />;

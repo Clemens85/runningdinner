@@ -145,7 +145,7 @@ describe('participant registration', () => {
 
     assertRegistrationFinishedPage();
 
-    cy.log("Manually activate team partner registration in admin area")
+    cy.log("Manually activate team partner registration in admin area");
     navigateAdminDashboard(adminId);
 
     getRegistrationRows()

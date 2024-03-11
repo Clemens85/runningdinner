@@ -93,7 +93,7 @@ function RecipientSelection({messageType}: MessageTypeAdminIdPayload) {
       const updatedSelectedRecipients = getEffectiveSelectedRecipients(recipients.data || [], CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION, updatedCustomSelectedRecipients);
       changeRecipientForPreviewIfNeeded(updatedSelectedRecipients);
     }
-  }
+  };
 
   const recipientSelectionOptions = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? participantSelectionOptions : teamSelectionOptions;
 

@@ -182,7 +182,7 @@ async function enhanceParticipantsWithTeamPartnerRegistrationData(adminId: strin
     }
   }
 
-  const participantsWithTeamPartnerWishEmail = filter(participants, p => isStringNotEmpty(p.teamPartnerWishEmail))
+  const participantsWithTeamPartnerWishEmail = filter(participants, p => isStringNotEmpty(p.teamPartnerWishEmail));
   const teamPartnerWishInfos = await findTeamPartnerWishInfoForListAsync(adminId, participantsWithTeamPartnerWishEmail) || [];
   for (let i = 0; i < teamPartnerWishInfos.length; i++) {
     const teamPartnerWishInfo = teamPartnerWishInfos[i];
