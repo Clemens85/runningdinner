@@ -1,14 +1,9 @@
 package org.runningdinner.mail.sendgrid;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,9 +31,14 @@ import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ApplicationTest
@@ -72,25 +72,29 @@ public class SendGridEmailSynchronizationSchedulerServiceTest {
   
   @Mock
   private SendGrid sendGridMock;
-  
-  private MailSenderMockInMemory mailSenderInMemory;
-  
+
   private RunningDinner runningDinner;
 
+  private AutoCloseable mockitoMocksInstance;
 
   @Before
   public void setUp() throws NoPossibleRunningDinnerException {
 
-    MockitoAnnotations.initMocks(this);
-    
-    this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
-    this.mailSenderInMemory.setUp();
+    mockitoMocksInstance = MockitoAnnotations.openMocks(this);
+
+    MailSenderMockInMemory mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
+    mailSenderInMemory.setUp();
     this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
     
     // setup mocks
     SendGridMailWrapper sendGridMailWrapper = new SendGridMailWrapper("MockedKey", objectMapper, true);
     PrivateFieldAccessor.setField(sendGridMailWrapper, "sendGridClient", sendGridMock);
     sendGridEmailSynchronizationService.setSendGridMailWrapper(sendGridMailWrapper);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    mockitoMocksInstance.close();
   }
 
   @Test
