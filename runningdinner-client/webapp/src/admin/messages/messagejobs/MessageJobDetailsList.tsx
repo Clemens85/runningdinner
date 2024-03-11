@@ -44,15 +44,14 @@ import {
 } from "@mui/material";
 import {BackToListButton, useMasterDetailView} from "../../../common/hooks/MasterDetailViewHook";
 import {useTranslation} from "react-i18next";
-import toLower from "lodash/toLower";
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from 'lodash-es';
 import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import {TableRowWithCursor} from "../../../common/theme/CommonStyles";
 import {MessageJobStatus} from "./MessageJobStatus";
 import {EmptyDetails} from "../../common/EmptyDetails";
 import FormFieldset from "../../../common/theme/FormFieldset";
-import get from 'lodash/get';
+import {get, toLower} from 'lodash-es';
 import {MessageContentView} from "./MessageContentView";
 import {SecondaryButtonAsync} from "../../../common/theme/SecondaryButtonAsync";
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";

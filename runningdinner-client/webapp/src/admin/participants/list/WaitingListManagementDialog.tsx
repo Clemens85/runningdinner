@@ -37,7 +37,7 @@ import {Subtitle} from "../../../common/theme/typography/Tags";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import Box from "@mui/material/Box";
 import SelectableEntity from "../../common/SelectableEntity";
-import cloneDeep from 'lodash/cloneDeep';
+import {cloneDeep} from 'lodash-es';
 import {CancelledTeamMember} from "../../teams/CancelledTeamMember";
 import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
 import {TransitionProps} from '@mui/material/transitions';

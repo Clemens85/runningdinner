@@ -28,7 +28,7 @@ import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
 import {GoogleMap, InfoWindow, Marker, Polyline} from '@react-google-maps/api';
 import {LoadScript} from "@react-google-maps/api";
-import { cloneDeep, uniq } from 'lodash';
+import { cloneDeep, uniq } from 'lodash-es';
 import Alert from '@mui/material/Alert';
 import { AlertTitle } from '@mui/material';
 import {useGeoPosition} from "../hooks/GeoPositionHook";

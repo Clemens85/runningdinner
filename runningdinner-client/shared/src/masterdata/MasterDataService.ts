@@ -1,7 +1,7 @@
 import {BackendConfig} from "../";
 import {LabelValue, MealSpecifics} from "../types";
 import axios from "axios";
-import find from "lodash/find";
+import {find} from "lodash-es";
 import {useTranslation} from "react-i18next";
 
 export async function findRegistrationTypesAsync(): Promise<LabelValue[]> {

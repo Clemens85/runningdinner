@@ -1,9 +1,9 @@
 import {handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../../redux";
 import {AnyAction, createAction, createAsyncThunk, createReducer, createSelector} from "@reduxjs/toolkit";
 import {ThunkDispatch} from "redux-thunk";
-import debounce from "lodash/debounce";
-import cloneDeep from "lodash/cloneDeep";
-import set from "lodash/set";
+import {debounce} from "lodash-es";
+import {cloneDeep} from 'lodash-es';
+import {set} from 'lodash-es';
 import {
   findMessageJobsByAdminIdAndTypeAsync,
   findTeamsNotCancelledAsync,

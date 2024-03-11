@@ -1,12 +1,10 @@
 import axios from "axios";
-import isDate from "lodash/isDate";
-import isObjectLike from "lodash/isObjectLike";
-import includes from "lodash/includes";
-import forIn from "lodash/forIn";
-import cloneDeep from "lodash/cloneDeep";
-import endsWith from "lodash/endsWith";
-import set from "lodash/set";
-import get from "lodash/get";
+import {isDate} from 'lodash-es';
+import {isObjectLike} from 'lodash-es';
+import {forIn} from 'lodash-es';
+import {cloneDeep} from 'lodash-es';
+import {set, endsWith, includes} from 'lodash-es';
+import {get} from 'lodash-es';
 import {deserializeArrayToDate, serializeLocalDateTimeToArray, serializeLocalDateToArray} from "./date/DateUtils";
 
 export function configureAxiosHttpInterceptors() {

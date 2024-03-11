@@ -9,7 +9,7 @@ import {
   AfterPartyLocation, BaseAddress, HasGeocoding
 } from "./types";
 import {isAfterPartyLocationDefined} from "./admin";
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from 'lodash-es';
 
 export const AFTER_PARTY_LOCATION_MARKER_NUMBER = "A";
 

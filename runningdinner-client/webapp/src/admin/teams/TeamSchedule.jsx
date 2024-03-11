@@ -1,6 +1,6 @@
 import React from "react";
 import {Box, Button, Grid, Paper, Popover, useMediaQuery, useTheme} from "@mui/material";
-import orderBy from 'lodash/orderBy';
+import {orderBy} from 'lodash-es';
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {SmallTitle, Span, Title} from "../../common/theme/typography/Tags";
 import {PrimaryButton} from "../../common/theme/PrimaryButton";

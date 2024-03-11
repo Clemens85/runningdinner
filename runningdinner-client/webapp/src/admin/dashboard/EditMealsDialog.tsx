@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {Box, Dialog, DialogContent, Grid} from '@mui/material';
 import MealTimeEditControl from "./MealTimeEditControl";
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from 'lodash-es';
 import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import {useTranslation} from 'react-i18next';
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";

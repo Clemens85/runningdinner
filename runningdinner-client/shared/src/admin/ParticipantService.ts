@@ -1,7 +1,5 @@
 import axios, {Method} from 'axios';
-import filter from 'lodash/filter';
-import lowerCase from 'lodash/lowerCase';
-import includes from 'lodash/includes';
+import {filter, lowerCase, includes} from 'lodash-es';
 import { BackendConfig } from "../BackendConfig";
 import {
   findEntityById, isArrayEmpty,

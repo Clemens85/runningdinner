@@ -1,6 +1,6 @@
 import {BaseEntity, HasGeocoding} from "./Base";
 import {CONSTANTS} from "../Constants";
-import clone from "lodash/clone";
+import {clone} from "lodash-es";
 import {isStringEmpty, isStringNotEmpty} from "../";
 
 export interface MealSpecifics {

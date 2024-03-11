@@ -33,8 +33,8 @@ import {
   HttpError
 } from "@runningdinner/shared";
 import SelectableEntity from "../../common/SelectableEntity";
-import cloneDeep from "lodash/cloneDeep";
-import take from "lodash/take";
+import {cloneDeep} from 'lodash-es';
+import {take} from "lodash-es";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";

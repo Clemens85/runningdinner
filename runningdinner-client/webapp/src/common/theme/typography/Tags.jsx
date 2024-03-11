@@ -1,6 +1,6 @@
 import {Box, Divider, Typography} from "@mui/material";
 import React from "react";
-import omit from 'lodash/omit';
+import {omit} from 'lodash-es';
 import {isStringEmpty} from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
 import HtmlTranslate from "../../i18n/HtmlTranslate";

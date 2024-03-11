@@ -36,7 +36,7 @@ import {
   ValueTranslate
 } from "@runningdinner/shared";
 import {useAdminNavigation} from "../AdminNavigationHook";
-import concat from "lodash/concat";
+import {concat} from "lodash-es";
 import {TeamPartnerWishIcon} from "./TeamPartnerWishIcon";
 import { SwapMealsDialog } from "./SwapMealsDialog";
 

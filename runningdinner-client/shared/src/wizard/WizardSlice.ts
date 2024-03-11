@@ -16,7 +16,7 @@ import {
   SummaryNavigationStep,
 } from "./CreateWizardService";
 import {WizardRootState} from "./WizardStore";
-import find from "lodash/find";
+import {find} from "lodash-es";
 import {
   RunningDinnerBasicDetails,
   RunningDinnerOptions,

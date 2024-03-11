@@ -39,7 +39,7 @@ import { MissingParticipantActivationDialog } from '../common/MissingParticipant
 import { useMissingParticipantActivation } from '../common/MissingParticipantActivationHook';
 import { InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { FetchProgressBar } from '../../common/FetchProgressBar';
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from 'lodash-es';
 
 function filterNotActivatedRegistrationsTooOld(participantRegistrationDataPages: ParticipantRegistrationInfoList[]): ParticipantRegistrationInfo[] {
   return participantRegistrationDataPages

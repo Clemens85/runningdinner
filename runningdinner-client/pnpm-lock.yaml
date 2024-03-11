@@ -7,13 +7,26 @@ settings:
 importers:
 
   .:
+    dependencies:
+      axios:
+        specifier: ^1.6.7
+        version: 1.6.7
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
     devDependencies:
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@types/node':
         specifier: 18.11.9
         version: 18.11.9
       typescript:
         specifier: ^4.1.0
         version: 4.9.5
+      vite:
+        specifier: ^4.5.2
+        version: 4.5.2(@types/node@18.11.9)
 
   shared:
     dependencies:
@@ -23,9 +36,6 @@ importers:
       '@tanstack/react-query':
         specifier: 5.13.4
         version: 5.13.4(react@18.2.0)
-      axios:
-        specifier: ^1.6.7
-        version: 1.6.7
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
@@ -35,9 +45,6 @@ importers:
       i18next-browser-languagedetector:
         specifier: 7.1.0
         version: 7.1.0
-      lodash:
-        specifier: 4.17.21
-        version: 4.17.21
       react:
         specifier: ^18.0.2
         version: 18.2.0
@@ -81,9 +88,6 @@ importers:
       '@types/jest':
         specifier: 29.5.5
         version: 29.5.5
-      '@types/lodash':
-        specifier: 4.14.198
-        version: 4.14.198
       '@types/react':
         specifier: 18.2.22
         version: 18.2.22
@@ -165,9 +169,6 @@ importers:
       '@tanstack/react-query':
         specifier: 5.13.4
         version: 5.13.4(react@18.2.0)
-      axios:
-        specifier: 1.5.0
-        version: 1.5.0
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
@@ -177,9 +178,6 @@ importers:
       i18next:
         specifier: 23.5.1
         version: 23.5.1
-      lodash:
-        specifier: 4.17.21
-        version: 4.17.21
       material-ui-popup-state:
         specifier: 5.0.9
         version: 5.0.9(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.22)(react-dom@18.2.0)(react@18.2.0)
@@ -262,9 +260,6 @@ importers:
       typescript:
         specifier: 5.2.2
         version: 5.2.2
-      vite:
-        specifier: ^4.5.2
-        version: 4.5.2(@types/node@18.11.9)
 
 packages:
 
@@ -1816,6 +1811,12 @@ packages:
     resolution: {integrity: sha512-RbSSoHliUbnXj3ny0CNFOoxrIDV6SUGyStHsvDqosw6CkdPV8TtWGlfecuK4ToyMEAql6pzNxgCFKanovUzlgQ==}
     dev: true
 
+  /@types/lodash-es@4.17.12:
+    resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
+    dependencies:
+      '@types/lodash': 4.14.198
+    dev: true
+
   /@types/lodash@4.14.198:
     resolution: {integrity: sha512-trNJ/vtMZYMLhfN45uLq4ShQSw0/S7xCTLLVM+WM1rmFpba/VS42jVUgaO3w/NOLiWR/09lnYk0yMaA/atdIsg==}
     dev: true
@@ -2169,16 +2170,6 @@ packages:
     resolution: {integrity: sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==}
     engines: {node: '>= 0.4'}
     dev: true
-
-  /axios@1.5.0:
-    resolution: {integrity: sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==}
-    dependencies:
-      follow-redirects: 1.15.2
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
 
   /axios@1.6.7:
     resolution: {integrity: sha512-/hDJGff6/c7u0hDkvkGxR/oy6CbCs8ziCsC7SqmhjfozqiJGc8Z11wrv9z9lYfY4K8l+H9TpjcMDX0xOZmx+RA==}
@@ -2972,16 +2963,6 @@ packages:
   /fn-name@3.0.0:
     resolution: {integrity: sha512-eNMNr5exLoavuAMhIUVsOKF79SWd/zG104ef6sxBTSw+cZc6BXdQXDvYcGvp0VbxVVSp1XDUNoz7mg1xMtSznA==}
     engines: {node: '>=8'}
-    dev: false
-
-  /follow-redirects@1.15.2:
-    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
     dev: false
 
   /follow-redirects@1.15.5:

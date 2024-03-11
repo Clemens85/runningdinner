@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BackendConfig } from "../BackendConfig";
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from 'lodash-es';
 import {
   Meal, RunningDinner, RunningDinnerBasicDetailsFormModel,
   RunningDinnerOptions, RunningDinnerPublicSettings, ReSendRunningDinnerCreatedMessageModel, AfterPartyLocation
