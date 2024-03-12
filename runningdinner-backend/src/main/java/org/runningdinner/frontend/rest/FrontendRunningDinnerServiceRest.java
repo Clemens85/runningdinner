@@ -1,12 +1,5 @@
 package org.runningdinner.frontend.rest;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
 import org.runningdinner.admin.RunningDinnerSessionData;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.frontend.FrontendRunningDinnerPaymentService;
@@ -15,22 +8,21 @@ import org.runningdinner.frontend.ParticipantActivationResult;
 import org.runningdinner.frontend.RegistrationSummary;
 import org.runningdinner.payment.RegistrationOrder;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/rest/frontend/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FrontendRunningDinnerServiceRest {
 
-  private FrontendRunningDinnerService frontendRunningDinnerService;
+  private final FrontendRunningDinnerService frontendRunningDinnerService;
 
-  private FrontendRunningDinnerPaymentService frontendRunningDinnerPaymentService;
+  private final FrontendRunningDinnerPaymentService frontendRunningDinnerPaymentService;
 
   public FrontendRunningDinnerServiceRest(FrontendRunningDinnerService frontendRunningDinnerService, 
                                           FrontendRunningDinnerPaymentService frontendRunningDinnerPaymentService) {
@@ -68,10 +60,9 @@ public class FrontendRunningDinnerServiceRest {
   @PostMapping(value = "/runningdinner/{publicDinnerId}/register", consumes = MediaType.APPLICATION_JSON_VALUE)
   public RegistrationSummaryTO performFreeRegistration(@PathVariable("publicDinnerId") String publicDinnerId,
                                                        @RequestParam(name = "validateOnly", defaultValue = "true") boolean onlyPreviewAndValidation,
-                                                       @RequestBody @Valid RegistrationDataTO registrationData,
-                                                       Locale locale) {
+                                                       @RequestBody @Valid RegistrationDataTO registrationData) {
 
-    RegistrationSummary result = frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData, locale);
+    RegistrationSummary result = frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData);
     return new RegistrationSummaryTO(result);
   }
   

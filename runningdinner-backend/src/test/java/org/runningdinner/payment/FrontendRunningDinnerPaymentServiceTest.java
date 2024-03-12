@@ -1,17 +1,7 @@
 package org.runningdinner.payment;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import org.awaitility.Awaitility;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.payment.paypal.PaypalConfig;
 import org.payment.paypal.PaypalOrderStatus;
@@ -39,6 +29,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.time.LocalDate;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ApplicationTest
@@ -117,14 +113,14 @@ public class FrontendRunningDinnerPaymentServiceTest {
         ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
 
     // Without payment a registration should work...
-    RegistrationSummary result = frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData, Locale.GERMAN);
+    RegistrationSummary result = frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData);
     assertThat(result).isNotNull();
     
     // ... But with payment not:
     paymentOptionsService.createPaymentOptions(adminId, PaymentTestUtil.newDefaultPaymentOptions(runningDinner));
     registrationData.setEmail("foo@bar.de"); // Circumvent duplicated Email
     try {
-      frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData, Locale.GERMAN);
+      frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData);
       Assert.fail("Registration should not be possible when we have paymentOptions but no succeeded order");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues()).hasSize(1);
@@ -220,7 +216,7 @@ public class FrontendRunningDinnerPaymentServiceTest {
     RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", 
         ParticipantAddress.parseFromCommaSeparatedString("Musterstraße 1, 47111 Musterstadt"), 6);
     
-    RegistrationSummary registrationSummary = frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData, Locale.GERMAN);
+    RegistrationSummary registrationSummary = frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData);
     assertThat(registrationSummary.getRegistrationPaymentSummary()).isNull();
     
     // Ensure participant is not automatically activated

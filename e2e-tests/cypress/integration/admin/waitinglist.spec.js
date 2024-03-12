@@ -226,7 +226,7 @@ describe('waitinglist', () => {
 
     acknowledgeRunningDinner(adminId);
 
-    cy.log("Generate 3 new participants, giving us in total 8 participants on waitinglist")
+    cy.log("Generate 3 new participants, giving us in total 8 participants on waitinglist");
     createParticipants(adminId, 24, 26);
 
     cy.log("Send Team Arrangement Messages so that we can test notification view");

@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Locale;
 
@@ -112,7 +111,7 @@ public class GlobalExceptionMapper {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(TechnicalException.class)
 	@ResponseBody
-	IssueList mapTechnicalException(final HttpServletRequest req, final Locale locale, final Exception ex) {
+	IssueList mapTechnicalException(final Exception ex) {
 		TechnicalException technicalException = (TechnicalException)ex;
 		LOGGER.error(ex.getMessage(), ex);
 		return technicalException.getIssues();

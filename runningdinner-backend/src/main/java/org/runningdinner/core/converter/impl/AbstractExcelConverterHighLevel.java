@@ -438,8 +438,8 @@ public class AbstractExcelConverterHighLevel {
 					result = formater.formatCellValue(cell);
 				}
 				else {
-					Double doub = cell.getNumericCellValue();
-					result = String.valueOf(doub.longValue());
+					double doub = cell.getNumericCellValue();
+					result = String.valueOf(doub);
 				}
 			}
 			if (cell.getCellType() == CellType.BOOLEAN) {

@@ -22,7 +22,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping(value = "/rest/wizardservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,8 +42,7 @@ public class CreateRunningDinnerWizardServiceRest {
 	@RequestMapping(value = "/validate/options", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void validateOptions(
 			@Valid @RequestBody OptionsTO options,
-			@RequestParam("runningDinnerDate") @Valid @NotNull(message = "error.required.date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate runningDinnerDate,
-			Locale locale) {
+			@RequestParam("runningDinnerDate") @Valid @NotNull(message = "error.required.date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate runningDinnerDate) {
 
 		List<MealClass> meals = options.getMeals();
 		createWizardService.validateMeals(meals, runningDinnerDate);
