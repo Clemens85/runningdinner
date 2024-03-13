@@ -170,7 +170,11 @@ export const getCurrentNavigationStepSelector = createSelector(
         }
       }
       if (!result) {
-        throw new Error(`nextNavigationStep is ${JSON.stringify(nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`);
+        console.error(`nextNavigationStep is ${JSON.stringify(nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`)
+        return {
+          currentNavigationStep: BasicDetailsNavigationStep,
+          redirectToBeginOfWizard: true
+        }
       }
       // Algorithm: Check if completedNavigationSteps contains the previous navigation step of the iterated navigation step (till we reach current step)
       // If not contained in completedNavigationSteps it was not run through!
