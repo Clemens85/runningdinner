@@ -110,7 +110,7 @@ export default function WizardMenu() {
               noWrap>Run Your Dinner Wizard</Typography>
           </WizardToolbar>
           <WizardAppBar position="static">
-            <WizardToolbar component={"nav"}>
+            <WizardToolbar>
               { isStringEmpty(administrationUrl) && <NavigationLinkList /> }
             </WizardToolbar>
             <WizardProgressBar />
@@ -143,7 +143,7 @@ function NavigationLinkList() {
   }, [redirectToBeginOfWizard]);
 
   return (
-    <NavList component="nav" aria-labelledby="main navigation">
+    <NavList aria-labelledby="main navigation">
       {navigationSteps.map(({ label, value }) => (
           <NavListItem key={value}>
             <NavListItemIcon>
