@@ -58,9 +58,9 @@ const LandingMessages_de: any = {
 
     registration_finished_headline: 'Anmeldung abgeschlossen!',
     registration_finished_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine E-Mail mit einem Bestätigungslink und weiteren Infos erhalten. ' +
-      '<br/>Um deine Anmeldung erfolgreich abzuschließen musst du diesen Link aufrufen. Solltest du keine EMail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
+      '<br/>Um deine Anmeldung erfolgreich abzuschließen musst du diesen Link aufrufen. Solltest du keine E-Mail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
     registration_finished_payment_text: 'Du hast dich soeben registriert. In den nächsten Minuten solltest du eine E-Mail mit weiteren Infos erhalten. ' +
-      '<br/>Solltest du keine EMail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
+      '<br/>Solltest du keine E-Mail erhalten melde dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
     street_placeholder: 'Deine Strasse + Nr',
     address_remarks_help: 'Optional: Wenn deine Wohnung schwer zu finden ist, können diese Angaben anderen Teams helfen, falls du Gastgeber bist.',
@@ -102,7 +102,7 @@ const LandingMessages_de: any = {
 
     manage_event_party_headline: 'Event durchführen & genießen',
     manage_event_party_description: 'Dir werden alle lästigen und komplizierten Arbeiten zur Organisation eines Running Dinner Events abgenommen,\n' +
-      'wie beispielsweise personalisierter EMail-Versand an die Teilnehmer / Teams.<br/>\n' +
+      'wie beispielsweise personalisierter E-Mail-Versand an die Teilnehmer / Teams.<br/>\n' +
       'Die Verantwortung der Durchführung des Events obliegt jedoch ganz alleine dir.<br/><br/>\n' +
       'Viel Spaß!',
 
@@ -174,7 +174,7 @@ const LandingMessages_de: any = {
     dinner_route_googlemaps_feature: 'Google-Maps Integration',
 
     mail_sending_personalized: 'Personalisierter Mailversand',
-    mail_sending_personalized_description: 'Flexibler + einfacher EMail-Versand mit indiviuellen EMails an jeden Empfänger.',
+    mail_sending_personalized_description: 'Flexibler + einfacher E-Mail-Versand mit indiviuellen E-Mails an jeden Empfänger.',
 
     mail_sending_personalized_participants: 'Versand an Teilnehmer',
     mail_sending_personalized_teams: 'Versand der Team-Einteilungen',

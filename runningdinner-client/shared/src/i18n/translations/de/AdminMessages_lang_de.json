@@ -3,8 +3,8 @@
 	"activate_registration_confirmation_text": "Willst du die Registrierung für dein Event wirklich wieder aktivieren? Danach können sich Teilnehmer wieder selbst anmelden.",
 	"activities_none": "Keine Aktivitäten vorhanden!",
 	"acknowledge_link_resend_title": "Bestätigungslink erneut versenden",
-	"acknowledge_link_resend_description": "Falls du die EMail mit dem Bestätigungslink nicht erhalten hast, kannst du sie dir hier erneut zuschicken lassen.",
-	"acknowledge_link_resend_change_email": "Du kannst deine verwendete EMail-Adresse hier auch nachträglich ändern, falls diese z.B. nicht korrekt war.",
+	"acknowledge_link_resend_description": "Falls du die E-Mail mit dem Bestätigungslink nicht erhalten hast, kannst du sie dir hier erneut zuschicken lassen.",
+	"acknowledge_link_resend_change_email": "Du kannst deine verwendete E-Mail-Adresse hier auch nachträglich ändern, falls diese z.B. nicht korrekt war.",
 	"acknowledge_link_resend_change_email_contact": "Falls es trotz erneutem Versand immer noch nicht klappt, wende dich bitte an uns:",
 	"acknowledge_link_resend_success": "Bestätigungslink wurde erneut versandt, bitte überprüfe dein E-Mail-Postfach (das kann ein paar Minuten dauern).",
 	"acknowledge_link_no_mail_received": "Keine Mail bekommen?",
@@ -53,7 +53,7 @@
 
 	"FAILURE_TYPE_BLOCKED": "Blockiert (z.B. vom Provider)",
 	"FAILURE_TYPE_BOUNCE": "Bounce",
-	"FAILURE_TYPE_INVALID_EMAIL": "Ungültige EMail-Adresse",
+	"FAILURE_TYPE_INVALID_EMAIL": "Ungültige E-Mail-Adresse",
 	"FAILURE_TYPE_SPAM": "Spam",
 	"fill_with_example_data": "Mit Musterdaten befüllen",
 
@@ -76,7 +76,7 @@
 	"mails_send_dinnerroutes_title": "Dinnerrouten Versenden - Running Dinner Administration",
 	"mails_send_participants_title": "Mailversand an Einzelteilnehmer - Running Dinner Administration",
 	"mails_send_teams_title": "Mailversand an Teams - Running Dinner Administration",
-	"mails_send_to_dinner_owner": "Test-E-Mail(s) erfolgreich versandt. Bitte überprüfe dein EMail-Postfach.",
+	"mails_send_to_dinner_owner": "Test-E-Mail(s) erfolgreich versandt. Bitte überprüfe dein E-Mail-Postfach.",
 	"mails_senddinnerroute_hosts": "Speisen-Beschreibung der zu besuchenden Gastgeber in der Route",
 	"mails_senddinnerroute_self": "Eigene Speisen-Beschreibung in der Route",
 	"mails_senddinnerroute_sendmessage": "Dinner-Routen verschicken",

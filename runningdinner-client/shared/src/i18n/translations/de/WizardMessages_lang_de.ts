@@ -7,7 +7,7 @@ const Wizard_de: any = {
       '<strong>Du erhälst außerdem einen Link zur Bestätigung, dass du wirklich der Ersteller dieses Events bist. ' +
       'Erst nach deiner Bestätigung werden alle Funktionalitäten (wie etwa der Nachrichtenversand) freigeschaltet!</strong>',
   administration_link_help: 'Dieser Link sollte nicht weitergegeben, sondern in den eigenen Favoriten gespeichert werden. ' +
-      'In deinem EMail-Postfach solltest du eine E-Mail mit diesem Link und einem Bestätigungslink (zur Freischaltung des Nachrichtenversands) erhalten haben.',
+      'In deinem E-Mail-Postfach solltest du eine E-Mail mit diesem Link und einem Bestätigungslink (zur Freischaltung des Nachrichtenversands) erhalten haben.',
   administration_link_open: 'Zur Administration',
 
   error_required_meal_label: 'Alle Speisen müssen benamt sein.',
