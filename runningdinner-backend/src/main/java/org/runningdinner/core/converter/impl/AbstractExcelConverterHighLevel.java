@@ -344,6 +344,7 @@ public class AbstractExcelConverterHighLevel {
 				String numSeatsStr = getCellValueAsString(row, numSeatsColumnIndex);
 
 				if (numSeatsColumnConfig.isNumericDeclaration()) {
+
 					return CoreUtil.convertToNumber(numSeatsStr, Participant.UNDEFINED_SEATS);
 				}
 				else {
