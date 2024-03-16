@@ -1,8 +1,7 @@
 package org.runningdinner.wizard.upload;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public class ParticipantUploadSettingsTO {
 

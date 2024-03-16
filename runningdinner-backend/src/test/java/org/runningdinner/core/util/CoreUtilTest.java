@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableSet;
+
+import org.junit.jupiter.api.Test;
 
 public class CoreUtilTest {
 

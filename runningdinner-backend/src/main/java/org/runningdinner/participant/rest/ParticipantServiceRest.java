@@ -18,8 +18,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -44,7 +44,7 @@ public class ParticipantServiceRest {
   private ParticipantRegistrationsAggregationService participantRegistrationsAggregationService;
 
   @GetMapping(value = "/runningdinner/{adminId}/participants")
-  public ParticipantListActive findActiveParticipantsList(@PathVariable("adminId") final String adminId) {
+  public ParticipantListActive findActiveParticipantsList(@PathVariable final String adminId) {
 
     ParticipantListActive result = participantService.findActiveParticipantList(adminId);
     return result;
@@ -52,7 +52,7 @@ public class ParticipantServiceRest {
 
   @GetMapping(value = "/runningdinner/{adminId}/participants/export", produces = {
       MediaType.APPLICATION_OCTET_STREAM_VALUE })
-  public void exportParticipants(@PathVariable("adminId") final String adminId, HttpServletResponse response) {
+  public void exportParticipants(@PathVariable final String adminId, HttpServletResponse response) {
 
     String fileName = "participants-export.xlsx";
 
@@ -66,26 +66,26 @@ public class ParticipantServiceRest {
     }
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/participants/{participantId}", method = RequestMethod.GET)
-  public ParticipantTO findParticipant(@PathVariable("adminId") final String adminId,
-      @PathVariable("participantId") final UUID participantId) {
+  @GetMapping("/runningdinner/{adminId}/participants/{participantId}")
+  public ParticipantTO findParticipant(@PathVariable final String adminId,
+      @PathVariable final UUID participantId) {
 
     Participant participant = participantService.findParticipantById(adminId, participantId);
     return new ParticipantTO(participant);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/participants/{participantId}/geocode", method = RequestMethod.PUT)
-  public ParticipantTO updateParticipantGeocode(@PathVariable("adminId") final String adminId,
-      @PathVariable("participantId") final UUID participantId,
+  @PutMapping("/runningdinner/{adminId}/participants/{participantId}/geocode")
+  public ParticipantTO updateParticipantGeocode(@PathVariable final String adminId,
+      @PathVariable final UUID participantId,
       @RequestBody GeocodingResult geocodingResult) {
 
     Participant participant = participantService.updateParticipantGeocode(adminId, participantId, geocodingResult);
     return new ParticipantTO(participant);
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}/activate", method = RequestMethod.PUT)
-  public ParticipantTO activateParticipantSubscription(@PathVariable("adminId") final String adminId,
-                                                       @PathVariable("participantId") final UUID participantId) {
+  @PutMapping("/runningdinner/{adminId}/participant/{participantId}/activate")
+  public ParticipantTO activateParticipantSubscription(@PathVariable final String adminId,
+                                                       @PathVariable final UUID participantId) {
 
     LocalDateTime now = LocalDateTime.now();
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
@@ -93,33 +93,33 @@ public class ParticipantServiceRest {
     return new ParticipantTO(result);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}", method = RequestMethod.PUT)
+  @PutMapping("/runningdinner/{adminId}/participant/{participantId}")
   public ParticipantTO updateParticipant(@PathVariable("adminId") String dinnerAdminId,
-                                         @PathVariable("participantId") UUID participantId,
+                                         @PathVariable UUID participantId,
                                          @Valid @RequestBody ParticipantInputDataTO participantTO) {
 
     Participant participant = participantService.updateParticipant(dinnerAdminId, participantId, participantTO);
     return new ParticipantTO(participant);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/participant", method = RequestMethod.POST)
-  public ParticipantTO createParticipant(@PathVariable("adminId") String adminId,
+  @PostMapping("/runningdinner/{adminId}/participant")
+  public ParticipantTO createParticipant(@PathVariable String adminId,
                                          @Valid @RequestBody ParticipantInputDataTO participantTO) {
 
     Participant createdParticipant = participantService.addParticipant(adminId, participantTO);
     return new ParticipantTO(createdParticipant);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}", method = RequestMethod.DELETE)
+  @DeleteMapping("/runningdinner/{adminId}/participant/{participantId}")
   public void deleteParticipant(@PathVariable("adminId") String dinnerAdminId,
-      @PathVariable("participantId") UUID participantId) {
+      @PathVariable UUID participantId) {
 
     participantService.deleteParticipant(dinnerAdminId, participantId);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/participant/{participantId}/team-partner-wish", method = RequestMethod.GET)
+  @GetMapping("/runningdinner/{adminId}/participant/{participantId}/team-partner-wish")
   public TeamPartnerWishTO getTeamPartnerWishInfo(@PathVariable("adminId") String dinnerAdminId,
-      @PathVariable("participantId") UUID participantId,
+      @PathVariable UUID participantId,
       @RequestParam(name = "relevantState", required = false) List<TeamPartnerWishInvitationState> relevantStates) {
 
     Participant participant = participantService.findParticipantById(dinnerAdminId, participantId);
@@ -142,15 +142,15 @@ public class ParticipantServiceRest {
 
   @GetMapping("/runningdinner/{adminId}/participants/registrations")
   public ParticipantRegistrationInfoList getParticipantRegistrations(@PathVariable("adminId") String dinnerAdminId,
-      @RequestParam(name = "page", defaultValue = "0") int page) {
+      @RequestParam(defaultValue = "0") int page) {
 
     return participantRegistrationsAggregationService.findParticipantRegistrations(dinnerAdminId, LocalDateTime.now(), page);
   }
 
   @PutMapping("/runningdinner/{adminId}/participants/swap/{firstParticipantId}/{secondParticipantId}")
   public void swapParticipantNumbers(@PathVariable("adminId") String dinnerAdminId, 
-                                     @PathVariable("firstParticipantId") UUID firstParticipantId, 
-                                     @PathVariable("secondParticipantId") UUID secondParticipantId) {
+                                     @PathVariable UUID firstParticipantId, 
+                                     @PathVariable UUID secondParticipantId) {
 
     participantSwapNumbersService.swapParticipantNumbers(dinnerAdminId, firstParticipantId, secondParticipantId);
   }

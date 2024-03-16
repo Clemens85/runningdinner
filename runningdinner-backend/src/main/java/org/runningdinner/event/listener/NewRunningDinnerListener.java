@@ -7,7 +7,6 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.event.NewRunningDinnerEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,6 @@ public class NewRunningDinnerListener implements ApplicationListener<NewRunningD
 
   private AfterPartyLocationService afterParLocationService;
   
-  @Autowired
   public NewRunningDinnerListener(MessageService messageService, AfterPartyLocationService afterParLocationService) {
     this.messageService = messageService;
     this.afterParLocationService = afterParLocationService;

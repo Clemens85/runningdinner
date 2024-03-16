@@ -4,8 +4,8 @@ package org.runningdinner.common.rest;
 import com.google.common.base.MoreObjects;
 import org.hibernate.validator.constraints.SafeHtml;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.Set;
 import java.util.UUID;
 

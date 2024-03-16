@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;

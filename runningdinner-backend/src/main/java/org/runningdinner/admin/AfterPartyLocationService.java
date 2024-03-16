@@ -17,7 +17,6 @@ import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.participant.ParticipantAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,6 @@ public class AfterPartyLocationService {
   
   private MessageSource messageSource;
   
-  @Autowired
   public AfterPartyLocationService(RunningDinnerService runningDinnerService,
       AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher,
       LocalizationProviderService localizationProviderService,
@@ -56,7 +54,7 @@ public class AfterPartyLocationService {
   
   public void putGeocodeEventToQueue(final RunningDinner runningDinner) {
     
-    if (runningDinner.getRunningDinnerType() == RunningDinnerType.DEMO || !runningDinner.getAfterPartyLocation().isPresent()) {
+    if (runningDinner.getRunningDinnerType() == RunningDinnerType.DEMO || runningDinner.getAfterPartyLocation().isEmpty()) {
       return;
     }
     try {
@@ -73,7 +71,7 @@ public class AfterPartyLocationService {
 
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     
-    if (!runningDinner.getAfterPartyLocation().isPresent()) {
+    if (runningDinner.getAfterPartyLocation().isEmpty()) {
       return runningDinner;
     }
     
@@ -122,7 +120,7 @@ public class AfterPartyLocationService {
   }
   
   public String replaceAfterPartyLocationTemplate(String message, RunningDinner runningDinner) {
-    if (!runningDinner.getAfterPartyLocation().isPresent()) {
+    if (runningDinner.getAfterPartyLocation().isEmpty()) {
       return message;
     }
     return message.replaceAll(FormatterUtil.AFTER_PARTY_LOCATION, generateAfterPartyLocationString(runningDinner));

@@ -1,9 +1,9 @@
 
 package org.runningdinner.admin.message.job;
 
-import javax.persistence.Embeddable;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.admin.message.BaseMessage;

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
@@ -17,9 +17,9 @@ import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class FeedbackServiceTest {
 
@@ -45,7 +45,7 @@ public class FeedbackServiceTest {
   
   private MailSenderMockInMemory mailSenderInMemory;
   
-  @Before
+  @BeforeEach
   public void setUp() {
 
     this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation

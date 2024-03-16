@@ -2,16 +2,17 @@
 package org.runningdinner.frontend;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.rest.BasicSettingsTO;
 import org.runningdinner.common.IssueKeys;
@@ -27,9 +28,9 @@ import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wizard.BasicDetailsTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class FrontendRunningDinnerTest {
 
@@ -46,7 +47,7 @@ public class FrontendRunningDinnerTest {
   private RunningDinner runningDinner;
   private String publicDinnerId;
 
-  @Before
+  @BeforeEach
   public void setUp() {
 
     todayIn30Days = LocalDate.now().plusDays(30);
@@ -62,15 +63,17 @@ public class FrontendRunningDinnerTest {
     assertThat(foundRunningDinner.getPublicSettings().getPublicId()).isEqualTo(runningDinner.getPublicSettings().getPublicId());
   }
   
-  @Test(expected = DinnerNotFoundException.class)
+  @Test
   public void testFindRunningDinnerByPublicIdFailsForClosedRegistration() {
+    assertThrows(DinnerNotFoundException.class, () -> {
 
-    BasicSettingsTO basicSettings = TestUtil.newBasicSettings(new BasicDetailsTO(runningDinner));
-    basicSettings.getBasicDetails().setRegistrationType(RegistrationType.CLOSED);
-    
-    runningDinnerService.updateBasicSettings(runningDinner.getAdminId(), basicSettings);
-    
-    frontendRunningDinnerService.findRunningDinnerByPublicId(runningDinner.getPublicSettings().getPublicId(), LocalDate.now());
+      BasicSettingsTO basicSettings = TestUtil.newBasicSettings(new BasicDetailsTO(runningDinner));
+      basicSettings.getBasicDetails().setRegistrationType(RegistrationType.CLOSED);
+
+      runningDinnerService.updateBasicSettings(runningDinner.getAdminId(), basicSettings);
+
+      frontendRunningDinnerService.findRunningDinnerByPublicId(runningDinner.getPublicSettings().getPublicId(), LocalDate.now());
+    });
   }
 
   @Test
@@ -94,7 +97,7 @@ public class FrontendRunningDinnerTest {
 	  
     try {
       frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, true);
-      Assert.fail("Expected ValidationException to be thrown");
+      Assertions.fail("Expected ValidationException to be thrown");
     } catch (IllegalArgumentException expectedEx) {
     	// NOP
 //      assertThat(expectedEx.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.FULLNAME_NOT_VALID);
@@ -113,7 +116,7 @@ public class FrontendRunningDinnerTest {
 
     try {
       frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, true);
-      Assert.fail("Expected ValidationException to be thrown");
+      Assertions.fail("Expected ValidationException to be thrown");
     } catch (ValidationException expectedEx) {
       assertThat(expectedEx.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.REGISTRATION_DATE_EXPIRED);
     }
@@ -157,7 +160,7 @@ public class FrontendRunningDinnerTest {
 
     try {
       frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
-      Assert.fail("Expected ValidationException to be thrown");
+      Assertions.fail("Expected ValidationException to be thrown");
     } catch (ValidationException ex) {
       assertThat(ex.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.PARTICIPANT_ALREADY_REGISTERED);
     }

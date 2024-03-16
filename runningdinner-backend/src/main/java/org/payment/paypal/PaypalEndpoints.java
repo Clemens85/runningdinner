@@ -18,7 +18,7 @@ public enum PaypalEndpoints {
   }
 
   public static String createUrl(String baseUrl, PaypalEndpoints endpoint, Object... params) {
-      return baseUrl + String.format(endpoint.path, params);
+      return baseUrl + endpoint.path.formatted(params);
   }
 
 }

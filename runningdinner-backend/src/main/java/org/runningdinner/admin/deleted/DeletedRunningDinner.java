@@ -2,10 +2,10 @@ package org.runningdinner.admin.deleted;
 
 import java.time.LocalDate;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import org.runningdinner.core.AbstractEntity;
 import org.runningdinner.core.PublicSettings;

@@ -23,21 +23,21 @@ public class WaitingListServiceRest {
 	private WaitingListService waitingListService;
 	
   @GetMapping("/runningdinner/{adminId}")
-  public WaitingListData findWaitingListData(@PathVariable("adminId") String adminId) {
+  public WaitingListData findWaitingListData(@PathVariable String adminId) {
  
     WaitingListData waitingListData = waitingListService.findWaitingListData(adminId);
     return waitingListData;
   }
 	
   @PutMapping("/runningdinner/{adminId}/generate-new-teams")
-  public WaitingListActionResult generateNewTeams(@PathVariable("adminId") String adminId, @RequestBody WaitingListGenerateTeamsRequestTO waitingListGenerateTeamsRequest) {
+  public WaitingListActionResult generateNewTeams(@PathVariable String adminId, @RequestBody WaitingListGenerateTeamsRequestTO waitingListGenerateTeamsRequest) {
 
   	List<ParticipantTO> participants = waitingListGenerateTeamsRequest.getParticipants();
   	return waitingListService.generateNewTeams(adminId, participants);
   }
   
   @PutMapping("/runningdinner/{adminId}/assign-participants-teams")
-  public WaitingListActionResult assignParticipantsToExistingTeams(@PathVariable("adminId") String adminId, 
+  public WaitingListActionResult assignParticipantsToExistingTeams(@PathVariable String adminId, 
   																															 @RequestBody @Validated TeamParticipantsAssignmentListTO teamParticipantsAssignmentList) {
   	
   	return waitingListService.assignParticipantsToExistingTeams(adminId, teamParticipantsAssignmentList.getTeamParticipantsAssignments());

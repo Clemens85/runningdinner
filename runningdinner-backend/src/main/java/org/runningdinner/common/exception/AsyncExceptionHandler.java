@@ -16,8 +16,8 @@ public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
   @Override
   public void handleUncaughtException(Throwable ex, Method method, Object... params) {
 
-    if (ex instanceof MessageAbuseSuspicionException) {
-      handleMessageAbuseSuspicionException((MessageAbuseSuspicionException) ex);
+    if (ex instanceof MessageAbuseSuspicionException exception) {
+      handleMessageAbuseSuspicionException(exception);
     } else {
       LOG.error("Unhandled exception in async method {}", method, ex);
     }

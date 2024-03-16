@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageTask;
@@ -30,9 +30,9 @@ import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class TeamPartnerWishStateHandlingTest {
   
@@ -58,7 +58,7 @@ public class TeamPartnerWishStateHandlingTest {
   private String dinnerDateAsStr;
 
   
-  @Before
+  @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
 
     runningDinner = testHelperService.createOpenRunningDinnerWithParticipants(DINNER_DATE, 16);

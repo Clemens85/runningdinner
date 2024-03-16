@@ -3,7 +3,7 @@ package org.runningdinner.core;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;

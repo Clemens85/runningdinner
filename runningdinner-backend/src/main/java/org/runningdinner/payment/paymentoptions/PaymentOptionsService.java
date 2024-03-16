@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
@@ -30,7 +30,7 @@ public class PaymentOptionsService {
     
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     
-    Assert.state(!findPaymentOptionsByAdminId(adminId).isPresent(), "Cannot create paymentOptions when one already exists! " + adminId);
+    Assert.state(findPaymentOptionsByAdminId(adminId).isEmpty(), "Cannot create paymentOptions when one already exists! " + adminId);
     
     PaymentOptions paymentOptions = new PaymentOptions(incomingPaymentOptions.getPricePerRegistration(), incomingPaymentOptions.getBrandName(), runningDinner);
     copyFields(incomingPaymentOptions, paymentOptions);

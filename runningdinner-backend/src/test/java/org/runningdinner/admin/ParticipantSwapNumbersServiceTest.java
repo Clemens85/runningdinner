@@ -1,7 +1,7 @@
 package org.runningdinner.admin;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.participant.Participant;
@@ -11,15 +11,16 @@ import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class ParticipantSwapNumbersServiceTest {
 
@@ -259,20 +260,22 @@ public class ParticipantSwapNumbersServiceTest {
     assertThat(allParticipants.get(18)).isEqualTo(participant14th); // The original 14th one should now be at the second last of list
   }
   
-  @Test(expected = ValidationException.class)
+  @Test
   public void swapChildParticipantDownNotPossible() {
-  
-    setUpDefaultDinner(17);
-    
-    Participant rootParticipant = testHelperService.registerParticipantsAsFixedTeam(runningDinner,"Max Muster", "max@muster.de", "Maria Muster");
-    Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
-    assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
-    assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
-    
-    Participant singleParticipant = testHelperService.registerSingleParticipant(runningDinner,"Sandra Single", "sandra@single.de");
-    assertThat(singleParticipant.getParticipantNumber()).isEqualTo(20);
-    
-    participantSwapNumbersService.swapParticipantNumbers(runningDinner.getAdminId(), singleParticipant.getId(), childParticipant.getId());
+    assertThrows(ValidationException.class, () -> {
+
+      setUpDefaultDinner(17);
+
+      Participant rootParticipant = testHelperService.registerParticipantsAsFixedTeam(runningDinner, "Max Muster", "max@muster.de", "Maria Muster");
+      Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
+      assertThat(rootParticipant.getParticipantNumber()).isEqualTo(18);
+      assertThat(childParticipant.getParticipantNumber()).isEqualTo(19);
+
+      Participant singleParticipant = testHelperService.registerSingleParticipant(runningDinner, "Sandra Single", "sandra@single.de");
+      assertThat(singleParticipant.getParticipantNumber()).isEqualTo(20);
+
+      participantSwapNumbersService.swapParticipantNumbers(runningDinner.getAdminId(), singleParticipant.getId(), childParticipant.getId());
+    });
   }
   
   protected RunningDinner setUpDefaultDinner(int numParticipants) {

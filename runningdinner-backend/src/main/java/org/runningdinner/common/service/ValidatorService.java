@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.Path.Node;
-import javax.validation.Validator;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import jakarta.validation.Path.Node;
+import jakarta.validation.Validator;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

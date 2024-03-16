@@ -1,6 +1,7 @@
 package org.runningdinner.admin.message;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,9 +12,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Condition;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.message.dinnerroute.DinnerRouteMessage;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageJobRepository;
@@ -46,9 +47,9 @@ import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class MessageServiceTest {
 
@@ -88,7 +89,7 @@ public class MessageServiceTest {
   
   private RunningDinner runningDinner;
 
-  @Before
+  @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
 
     this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
@@ -256,22 +257,24 @@ public class MessageServiceTest {
     testHelperService.awaitMessageJobFinished(createdMessageJob);
   }
   
-  @Test(expected = MailException.class)
+  @Test
   public void testReSendMessageTaskFailure() {
-    
-    ParticipantMessage participantMessage = new ParticipantMessage();
-    participantMessage.setMessage("Message");
-    participantMessage.setSubject("Subject");
-    participantMessage.setParticipantSelection(ParticipantSelection.ALL);
-    MessageJob messageJob = messageService.sendParticipantMessages(runningDinner.getAdminId(), participantMessage);
-    assertThat(messageJob).isNotNull();
-    
-    testHelperService.awaitMessageJobFinished(messageJob);
-   
-    List<MessageTask> messageTasks = messageTaskRepository.findByParentJobIdOrderByCreatedAtAsc(messageJob.getId());
-    MessageTask messageTask = messageTasks.get(0);
-    mailSenderInMemory.addFailingRecipientEmail(messageTask.getRecipientEmail());
-    messageService.reSendMessageTask(messageTask.getAdminId(), messageTask.getId(), messageTask);
+    assertThrows(MailException.class, () -> {
+
+      ParticipantMessage participantMessage = new ParticipantMessage();
+      participantMessage.setMessage("Message");
+      participantMessage.setSubject("Subject");
+      participantMessage.setParticipantSelection(ParticipantSelection.ALL);
+      MessageJob messageJob = messageService.sendParticipantMessages(runningDinner.getAdminId(), participantMessage);
+      assertThat(messageJob).isNotNull();
+
+      testHelperService.awaitMessageJobFinished(messageJob);
+
+      List<MessageTask> messageTasks = messageTaskRepository.findByParentJobIdOrderByCreatedAtAsc(messageJob.getId());
+      MessageTask messageTask = messageTasks.get(0);
+      mailSenderInMemory.addFailingRecipientEmail(messageTask.getRecipientEmail());
+      messageService.reSendMessageTask(messageTask.getAdminId(), messageTask.getId(), messageTask);
+    });
   }
   
   @Test

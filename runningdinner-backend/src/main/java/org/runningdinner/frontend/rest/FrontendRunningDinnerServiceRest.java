@@ -10,7 +10,7 @@ import org.runningdinner.payment.RegistrationOrder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +32,7 @@ public class FrontendRunningDinnerServiceRest {
   }
 
   @GetMapping(value = "/runningdinner/{publicDinnerId}")
-  public RunningDinnerPublicTO getRunningDinner(@PathVariable("publicDinnerId") String publicDinnerId, Locale locale) {
+  public RunningDinnerPublicTO getRunningDinner(@PathVariable String publicDinnerId, Locale locale) {
 
     LocalDate now = LocalDate.now();
     RunningDinner runningDinner = frontendRunningDinnerService.findRunningDinnerByPublicId(publicDinnerId, now);
@@ -48,7 +48,7 @@ public class FrontendRunningDinnerServiceRest {
   }
   
   @PostMapping(value = "/runningdinner/{publicDinnerId}/register/validate", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public RegistrationSummaryTO validateRegistration(@PathVariable("publicDinnerId") String publicDinnerId,
+  public RegistrationSummaryTO validateRegistration(@PathVariable String publicDinnerId,
                                                     @RequestBody @Valid RegistrationDataTO registrationData,
                                                     Locale locale) {
 
@@ -58,7 +58,7 @@ public class FrontendRunningDinnerServiceRest {
   }
   
   @PostMapping(value = "/runningdinner/{publicDinnerId}/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public RegistrationSummaryTO performFreeRegistration(@PathVariable("publicDinnerId") String publicDinnerId,
+  public RegistrationSummaryTO performFreeRegistration(@PathVariable String publicDinnerId,
                                                        @RequestParam(name = "validateOnly", defaultValue = "true") boolean onlyPreviewAndValidation,
                                                        @RequestBody @Valid RegistrationDataTO registrationData) {
 
@@ -67,7 +67,7 @@ public class FrontendRunningDinnerServiceRest {
   }
   
   @PostMapping(value = "/runningdinner/{publicDinnerId}/order", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public RegistrationOrderTO createRegistrationOrder(@PathVariable("publicDinnerId") String publicDinnerId,
+  public RegistrationOrderTO createRegistrationOrder(@PathVariable String publicDinnerId,
                                                      @RequestBody @Valid RegistrationDataTO registrationData) {
     
     RegistrationOrder result = frontendRunningDinnerPaymentService.createRegistrationOrder(publicDinnerId, registrationData);
@@ -75,7 +75,7 @@ public class FrontendRunningDinnerServiceRest {
   }
 
   @GetMapping(value = "/runningdinner/{publicDinnerId}/order/capture")
-  public RegistrationSummaryTO performRegistrationForRegistrationOrder(@PathVariable("publicDinnerId") String publicDinnerId,
+  public RegistrationSummaryTO performRegistrationForRegistrationOrder(@PathVariable String publicDinnerId,
                                                                        @RequestParam("token") String paypalOrderId,
                                                                        Locale locale) {
     
@@ -84,7 +84,7 @@ public class FrontendRunningDinnerServiceRest {
   }
   
   @GetMapping(value = "/runningdinner/{publicDinnerId}/order/cancel")
-  public RegistrationDataTO cancelRegistrationOrder(@PathVariable("publicDinnerId") String publicDinnerId,
+  public RegistrationDataTO cancelRegistrationOrder(@PathVariable String publicDinnerId,
                                                     @RequestParam("token") String paypalOrderId) {
     
     return frontendRunningDinnerPaymentService.cancelRegistrationOrder(publicDinnerId, paypalOrderId);
@@ -92,14 +92,14 @@ public class FrontendRunningDinnerServiceRest {
   
   @PutMapping(value = "/runningdinner/{publicDinnerId}/{participantId}/activate", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ParticipantActivationResult activateSubscribedParticipant(
-      @PathVariable("publicDinnerId") String publicDinnerId,
-      @PathVariable("participantId") UUID participantId) {
+      @PathVariable String publicDinnerId,
+      @PathVariable UUID participantId) {
 
     return frontendRunningDinnerService.activateSubscribedParticipant(publicDinnerId, participantId);
   }
 
   @GetMapping("/runningdinner/{publicDinnerId}/sessiondata")
-  public RunningDinnerSessionData findRunningDinnerSessionData(@PathVariable("publicDinnerId") String publicDinnerId,
+  public RunningDinnerSessionData findRunningDinnerSessionData(@PathVariable String publicDinnerId,
       Locale locale) {
 
     LocalDate now = LocalDate.now();

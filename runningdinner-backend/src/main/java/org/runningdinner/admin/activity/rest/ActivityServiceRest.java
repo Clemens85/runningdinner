@@ -12,11 +12,7 @@ import org.runningdinner.core.RunningDinner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/rest/activityservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -28,8 +24,8 @@ public class ActivityServiceRest {
   @Autowired
   private RunningDinnerService runningDinnerService;
 
-  @RequestMapping(value = "/runningdinner/{adminId}/admin", method = RequestMethod.GET)
-  public DashboardAdminActivitiesTO getAdminActivities(@PathVariable("adminId") String adminId) {
+  @GetMapping("/runningdinner/{adminId}/admin")
+  public DashboardAdminActivitiesTO getAdminActivities(@PathVariable String adminId) {
 
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 
@@ -41,8 +37,8 @@ public class ActivityServiceRest {
     return result;
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.GET)
-  public ActivityListTO findActivitiesByType(@PathVariable("adminId") String adminId, 
+  @GetMapping("/runningdinner/{adminId}")
+  public ActivityListTO findActivitiesByType(@PathVariable String adminId, 
                                              @RequestParam(name = "type") List<ActivityType> activityTypeParams) {
     
     ActivityType[] activityTypes = activityTypeParams.toArray(new ActivityType[] {});

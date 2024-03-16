@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.participant.Participant;
@@ -18,7 +18,7 @@ public class TeamPartnerWishServiceGenerateTuplesTest {
   private List<Participant> teamMembers;
   private RunningDinnerConfig configuration;
   
-  @Before
+  @BeforeEach
   public void setUp() {
     
     teamMembers = ParticipantGenerator.generateParticipants(18);

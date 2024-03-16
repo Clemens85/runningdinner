@@ -3,10 +3,10 @@ package org.runningdinner.mail.sendgrid;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -29,7 +29,7 @@ import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.PrivateFieldAccessor;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -40,7 +40,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class SendGridEmailSynchronizationSchedulerServiceTest {
 
@@ -77,7 +77,7 @@ public class SendGridEmailSynchronizationSchedulerServiceTest {
 
   private AutoCloseable mockitoMocksInstance;
 
-  @Before
+  @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
 
     mockitoMocksInstance = MockitoAnnotations.openMocks(this);
@@ -92,7 +92,7 @@ public class SendGridEmailSynchronizationSchedulerServiceTest {
     sendGridEmailSynchronizationService.setSendGridMailWrapper(sendGridMailWrapper);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     mockitoMocksInstance.close();
   }

@@ -10,9 +10,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.assertj.core.api.Condition;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.runningdinner.ApplicationConfig;
 import org.runningdinner.admin.message.job.FailureType;
 import org.runningdinner.admin.message.job.MessageJob;
@@ -35,10 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles({"dev", "junit"})
 @SpringBootTest(
   classes = { ApplicationConfig.class },
@@ -78,7 +75,7 @@ public class MessageAbuseSuspicionTest {
   private RunningDinner runningDinner;
 
   
-  @Before
+  @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
 
     this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation

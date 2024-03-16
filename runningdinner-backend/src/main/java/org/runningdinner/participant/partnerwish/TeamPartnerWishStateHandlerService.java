@@ -54,7 +54,7 @@ public class TeamPartnerWishStateHandlerService {
     }
     
     Optional<TeamPartnerWish> teamPartnerWishOptional = teamPartnerWishService.calculateTeamPartnerWishInfo(participant, runningDinner.getAdminId());
-    if (!teamPartnerWishOptional.isPresent()) {
+    if (teamPartnerWishOptional.isEmpty()) {
       return;
     }
     final Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);

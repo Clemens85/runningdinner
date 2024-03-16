@@ -1,8 +1,8 @@
 package org.runningdinner.admin.mail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -59,7 +59,7 @@ public class DinnerRouteMessageFormatterTest {
 
 	private AutoCloseable mockitoInstance;
 	
-  @Before
+  @BeforeEach
   public void setUp() {
 
 		mockitoInstance = MockitoAnnotations.openMocks(this);
@@ -78,7 +78,7 @@ public class DinnerRouteMessageFormatterTest {
         messageFormatterHelperService, afterPartyLocationService);
   }
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		mockitoInstance.close();
 	}

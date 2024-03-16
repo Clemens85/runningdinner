@@ -1,9 +1,9 @@
 package org.runningdinner.frontend;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
@@ -29,7 +29,7 @@ import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class TeamPartnerRegistrationTest {
 
@@ -76,7 +76,7 @@ public class TeamPartnerRegistrationTest {
 
   private String publicDinnerId;
   
-  @Before
+  @BeforeEach
   public void setUp() {
 
     this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
@@ -167,7 +167,7 @@ public class TeamPartnerRegistrationTest {
     
     try {
       frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
-      Assert.fail("Expected ValidationException to be thrown for not enough numSeats");
+      Assertions.fail("Expected ValidationException to be thrown for not enough numSeats");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues().get(0).getField()).isEqualTo("numSeats");
     }
@@ -193,7 +193,7 @@ public class TeamPartnerRegistrationTest {
     Team fixedTeam = teamService.findTeamById(runningDinner.getAdminId(), fixedTeamParticipants.get(0).getTeamId());
     try {
       teamService.updateTeamHosters(runningDinner, Collections.singletonMap(fixedTeam.getId(), fixedTeamParticipants.get(1).getId()));
-      Assert.fail("updateTeamHosters should fail");
+      Assertions.fail("updateTeamHosters should fail");
     } catch (IllegalStateException e) {
       // NOP
     }
@@ -207,7 +207,7 @@ public class TeamPartnerRegistrationTest {
     
     try {
       teamService.swapTeamMembers(runningDinner.getAdminId(), fixedTeamParticipants.get(1).getId(), otherTeam.getHostTeamMember().getId());
-      Assert.fail("Expected ValidationException to be thrown upon swap action");
+      Assertions.fail("Expected ValidationException to be thrown upon swap action");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.TEAM_SWAP_VIOLATES_TEAM_PARTNER_WISH);
     }
@@ -313,7 +313,7 @@ public class TeamPartnerRegistrationTest {
     
     try {
       teamService.cancelTeamMember(runningDinner.getAdminId(), fixedTeam.getId(), rootParticipantId);
-      Assert.fail("Cancelling of root participant in team should not be possible!");
+      Assertions.fail("Cancelling of root participant in team should not be possible!");
     } catch (ValidationException e) {
       
     }
@@ -359,14 +359,14 @@ public class TeamPartnerRegistrationTest {
     
     try {
       waitingListService.assignParticipantsToExistingTeams(adminId, List.of(TestUtil.newTeamParticipantsAssignment(firstTeam, rootParticipant)));
-      Assert.fail("Expected ValidationExcpetion to be thrown");
+      Assertions.fail("Expected ValidationExcpetion to be thrown");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH);
     }
     
     try {
       waitingListService.assignParticipantsToExistingTeams(adminId, List.of(TestUtil.newTeamParticipantsAssignment(firstTeam, childParticipant)));
-      Assert.fail("Expected ValidationExcpetion to be thrown");
+      Assertions.fail("Expected ValidationExcpetion to be thrown");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH);
     }
@@ -409,7 +409,7 @@ public class TeamPartnerRegistrationTest {
     generateNewTeamsParticipantList.add(new ParticipantTO(rootParticipant));
     try {
       waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
-      Assert.fail("Expected ValidationException");
+      Assertions.fail("Expected ValidationException");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
     }
@@ -419,7 +419,7 @@ public class TeamPartnerRegistrationTest {
     generateNewTeamsParticipantList.add(new ParticipantTO(childParticipant));
     try {
       waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
-      Assert.fail("Expected ValidationException");
+      Assertions.fail("Expected ValidationException");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
     }
@@ -433,7 +433,7 @@ public class TeamPartnerRegistrationTest {
     generateNewTeamsParticipantList.addAll(List.of(new ParticipantTO(rootParticipant), new ParticipantTO(childParticipant), new ParticipantTO(otherRootParticipant)));
     try {
       waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
-      Assert.fail("Expected ValidationException");
+      Assertions.fail("Expected ValidationException");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
     }

@@ -4,8 +4,9 @@ package org.runningdinner.admin.rest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.runningdinner.core.MealClass;
+
+import jakarta.validation.constraints.NotEmpty;
 
 public class UpdateMealsRequestTO {
 

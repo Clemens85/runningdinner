@@ -2,8 +2,7 @@ package org.runningdinner.initialization;
 
 import java.time.LocalDate;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.runningdinner.common.exception.TechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;

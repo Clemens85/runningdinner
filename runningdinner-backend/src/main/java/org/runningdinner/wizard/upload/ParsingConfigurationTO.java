@@ -4,10 +4,10 @@ package org.runningdinner.wizard.upload;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;

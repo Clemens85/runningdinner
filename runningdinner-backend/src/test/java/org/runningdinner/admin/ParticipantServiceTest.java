@@ -4,9 +4,9 @@ package org.runningdinner.admin;
 import com.amazonaws.services.sqs.model.MessageAttributeValue;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import org.awaitility.Awaitility;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
@@ -20,7 +20,7 @@ import org.runningdinner.queue.QueueProviderMockInMemory;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,8 +32,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class ParticipantServiceTest {
 
@@ -57,7 +58,7 @@ public class ParticipantServiceTest {
 
   private QueueProviderMockInMemory queueProvider;
 
-  @Before
+  @BeforeEach
   public void setUp() {
 
     this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, TOTAL_NUMBER_OF_PARTICIPANTS);
@@ -107,15 +108,17 @@ public class ParticipantServiceTest {
     assertThat(participantList.getMissingParticipantsInfo().getNumMinParticipantsNeeded()).isEqualTo(18);
   }
   
-  @Test(expected = ValidationException.class)
+  @Test
   public void updateWithAlreadyUsedEmailAddressNotPossible() {
+    assertThrows(ValidationException.class, () -> {
 
-    List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
-    Participant firstParticipant = participants.get(0);
-    Participant secondParticipant = participants.get(1);
-    
-    firstParticipant.setEmail(secondParticipant.getEmail()); // Duplicated Email
-    testHelperService.updateParticipant(firstParticipant);
+      List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
+      Participant firstParticipant = participants.get(0);
+      Participant secondParticipant = participants.get(1);
+
+      firstParticipant.setEmail(secondParticipant.getEmail()); // Duplicated Email
+      testHelperService.updateParticipant(firstParticipant);
+    });
   }
   
   @Test

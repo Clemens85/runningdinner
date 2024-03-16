@@ -1,7 +1,7 @@
 package org.runningdinner.core;
 
 import org.apache.commons.collections4.IterableUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.participant.Participant;
@@ -12,7 +12,7 @@ import org.runningdinner.test.util.TestUtil;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RunningDinnerCalculatorTest {
 
@@ -251,8 +251,8 @@ public class RunningDinnerCalculatorTest {
 		testSet.addAll(hostTeams);
 		testSet.addAll(guestTeams);
 		testSet.add(teamToTest);
-		assertEquals("There exist at least one team duplicate in test-set for visitation-plan of team " + teamToTest, hostTeams.size()
-				+ guestTeams.size() + 1, testSet.size());
+		assertEquals(hostTeams.size()
+				+ guestTeams.size() + 1, testSet.size(), "There exist at least one team duplicate in test-set for visitation-plan of team " + teamToTest);
 	}
 
 }

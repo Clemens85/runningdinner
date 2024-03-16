@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.core.util.CoreUtil;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
 /**

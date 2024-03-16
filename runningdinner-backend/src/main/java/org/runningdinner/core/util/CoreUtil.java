@@ -1,22 +1,15 @@
 
 package org.runningdinner.core.util;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.AbstractEntity;
 import org.runningdinner.core.FuzzyBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Contains some helper method used throughout the whole project
@@ -235,7 +228,8 @@ public class CoreUtil {
       if (StringUtils.isEmpty(str)) {
         return fallback;
       }
-      return Integer.valueOf(str.trim());
+      double tmp = Double.parseDouble(str.trim());
+      return (int) tmp;
     } catch (NumberFormatException ex) {
       LOGGER.error("Could not parse string {} as number", str, ex);
       return fallback;

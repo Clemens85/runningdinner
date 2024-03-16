@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.test.util.PrivateFieldAccessor;

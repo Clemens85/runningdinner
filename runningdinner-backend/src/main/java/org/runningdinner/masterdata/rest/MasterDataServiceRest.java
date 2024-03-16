@@ -4,8 +4,8 @@ import org.runningdinner.common.rest.SelectOptionTO;
 import org.runningdinner.masterdata.MasterDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,19 +18,19 @@ public class MasterDataServiceRest {
 	@Autowired
 	private MasterDataService masterDataService;
 	
-	@RequestMapping(value = "/genders", method = RequestMethod.GET)
+	@GetMapping("/genders")
 	public List<SelectOptionTO> findGenders(Locale locale) {
 
 		return masterDataService.findGenders(locale);
 	}
 	
-	@RequestMapping(value = "/registrationtypes", method = RequestMethod.GET)
+	@GetMapping("/registrationtypes")
 	public List<SelectOptionTO> findRegistrationTypes(Locale locale) {
 
 		return masterDataService.findRegistrationTypes(locale);
 	}
 	
-	@RequestMapping(value = "/genderaspects", method = RequestMethod.GET)
+	@GetMapping("/genderaspects")
 	public List<SelectOptionTO> findGenderAspects(Locale locale) {
 
 		return masterDataService.findGenderAspects(locale);

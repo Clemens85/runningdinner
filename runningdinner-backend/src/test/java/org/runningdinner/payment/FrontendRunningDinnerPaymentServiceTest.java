@@ -1,8 +1,12 @@
 package org.runningdinner.payment;
 
 import org.awaitility.Awaitility;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.payment.paypal.PaypalConfig;
 import org.payment.paypal.PaypalOrderStatus;
 import org.runningdinner.common.Issue;
@@ -28,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.util.Locale;
@@ -36,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class FrontendRunningDinnerPaymentServiceTest {
 
@@ -73,7 +77,7 @@ public class FrontendRunningDinnerPaymentServiceTest {
   private String publicDinnerId;
   private String adminId;
   
-  @Before
+  @BeforeEach
   public void setUp() {
 
     runningDinner = testHelperService.createPublicRunningDinner(LocalDate.now().plusDays(30), 2);
@@ -96,12 +100,12 @@ public class FrontendRunningDinnerPaymentServiceTest {
     
   }
   
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     WireMockControlService.startServer();
   }
   
-  @AfterClass
+  @AfterAll
   public static void afterClass() {
     WireMockControlService.stopServer();
   }
@@ -121,7 +125,7 @@ public class FrontendRunningDinnerPaymentServiceTest {
     registrationData.setEmail("foo@bar.de"); // Circumvent duplicated Email
     try {
       frontendRunningDinnerPaymentService.performFreeRegistration(publicDinnerId, registrationData);
-      Assert.fail("Registration should not be possible when we have paymentOptions but no succeeded order");
+      Assertions.fail("Registration should not be possible when we have paymentOptions but no succeeded order");
     } catch (ValidationException e) {
       assertThat(e.getIssues().getIssues()).hasSize(1);
       Issue issue = e.getIssues().getIssues().get(0);

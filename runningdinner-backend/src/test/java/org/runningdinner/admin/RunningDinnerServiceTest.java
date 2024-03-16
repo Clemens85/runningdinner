@@ -2,7 +2,7 @@
 package org.runningdinner.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.activity.ActivityType;
@@ -49,9 +49,9 @@ import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wizard.BasicDetailsTO;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class RunningDinnerServiceTest {
 
@@ -291,7 +291,7 @@ public class RunningDinnerServiceTest {
     
     try {
       frontendRunningDinnerService.performRegistration(dinner.getPublicSettings().getPublicId(), newRegistationData(), false);
-      Assert.fail("Expected registration to be not possible!");
+      Assertions.fail("Expected registration to be not possible!");
     } catch (IllegalStateException ex) {
       // NOP
     }

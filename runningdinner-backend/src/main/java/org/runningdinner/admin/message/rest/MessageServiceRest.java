@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,22 +43,22 @@ public class MessageServiceRest {
   private ParticipantService participantService;
 
   @GetMapping("/runningdinner/{adminId}/participants")
-  public List<ParticipantWithListNumberTO> findParticipantRecipients(@PathVariable("adminId") String adminId) {
+  public List<ParticipantWithListNumberTO> findParticipantRecipients(@PathVariable String adminId) {
     return messageService.findParticipantRecipients(adminId);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/mails/participant/preview", method = RequestMethod.PUT)
+  @PutMapping("/runningdinner/{adminId}/mails/participant/preview")
   @ResponseBody
-  public PreviewMessageList getParticipantMailPreview(@PathVariable("adminId") String adminId,
+  public PreviewMessageList getParticipantMailPreview(@PathVariable String adminId,
                                                       @RequestBody @Valid ParticipantMessage participantMessage) {
 
     List<PreviewMessage> previewMessages = messageService.getParticipantMailPreview(adminId, participantMessage);
     return mapToPreviewMessageList(participantMessage, previewMessages);
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/mails/participant", method = RequestMethod.PUT)
-  public MessageJob sendParticipantMails(@PathVariable("adminId") String adminId, 
-                                         @RequestParam(name="sendToDinnerOwner", required=false, defaultValue="false") boolean sendToDinnerOwner, 
+  @PutMapping("/runningdinner/{adminId}/mails/participant")
+  public MessageJob sendParticipantMails(@PathVariable String adminId, 
+                                         @RequestParam(required=false, defaultValue="false") boolean sendToDinnerOwner, 
                                          @RequestBody @Valid ParticipantMessage participantMessage) {
 
     MessageJob messageJob;
@@ -71,18 +71,18 @@ public class MessageServiceRest {
     return messageJob;
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/mails/team/preview", method = RequestMethod.PUT)
+  @PutMapping("/runningdinner/{adminId}/mails/team/preview")
   @ResponseBody
-  public PreviewMessageList getTeamMailPreview(@PathVariable("adminId") String adminId,
+  public PreviewMessageList getTeamMailPreview(@PathVariable String adminId,
                                                @RequestBody @Valid TeamMessage teamMessage) {
 
     List<PreviewMessage> previewMessages = messageService.getTeamPreview(adminId, teamMessage);
     return mapToPreviewMessageList(teamMessage, previewMessages);
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/mails/team", method = RequestMethod.PUT)
-  public MessageJob sendTeamArrangementMails(@PathVariable("adminId") String adminId,
-                                             @RequestParam(name="sendToDinnerOwner", required=false, defaultValue="false") boolean sendToDinnerOwner,
+  @PutMapping("/runningdinner/{adminId}/mails/team")
+  public MessageJob sendTeamArrangementMails(@PathVariable String adminId,
+                                             @RequestParam(required=false, defaultValue="false") boolean sendToDinnerOwner,
                                              @RequestBody @Valid TeamMessage teamMessage) {
 
     MessageJob messageJob;
@@ -94,18 +94,18 @@ public class MessageServiceRest {
     return messageJob;
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/mails/dinnerroute/preview", method = RequestMethod.PUT)
+  @PutMapping("/runningdinner/{adminId}/mails/dinnerroute/preview")
   @ResponseBody
-  public PreviewMessageList getDinnerRouteMailPreview(@PathVariable("adminId") String adminId,
+  public PreviewMessageList getDinnerRouteMailPreview(@PathVariable String adminId,
                                                       @RequestBody @Valid DinnerRouteMessage dinnerRouteMessage) {
 
     List<PreviewMessage> previewMessages = messageService.getDinnerRoutePreview(adminId, dinnerRouteMessage);
     return mapToPreviewMessageList(dinnerRouteMessage, previewMessages);
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/mails/dinnerroute", method = RequestMethod.PUT)
-  public MessageJob sendDinnerRouteMails(@PathVariable("adminId") String adminId, 
-                                         @RequestParam(name="sendToDinnerOwner", required=false, defaultValue="false") boolean sendToDinnerOwner,
+  @PutMapping("/runningdinner/{adminId}/mails/dinnerroute")
+  public MessageJob sendDinnerRouteMails(@PathVariable String adminId, 
+                                         @RequestParam(required=false, defaultValue="false") boolean sendToDinnerOwner,
                                          @RequestBody @Valid DinnerRouteMessage dinnerRouteMessage) {
 
     MessageJob messageJob;
@@ -119,33 +119,33 @@ public class MessageServiceRest {
   
   @RequestMapping(value = "/runningdinner/{adminId}/messagejobs")
   @ResponseBody
-  public List<MessageJob> findMessageJobs(@PathVariable(value = "adminId") String adminId, 
-                                          @RequestParam(value = "messageType", required = false) MessageType messageType) {
+  public List<MessageJob> findMessageJobs(@PathVariable String adminId, 
+                                          @RequestParam(required = false) MessageType messageType) {
     
     return messageService.findMessageJobs(adminId, messageType);
   }
   
   @RequestMapping(value = "/runningdinner/{adminId}/messagejobs/{messageJobId}")
   @ResponseBody
-  public MessageJob findMessageJob(@PathVariable(value = "adminId") String adminId, 
-                                   @PathVariable(value = "messageJobId") UUID messageJobId) {
+  public MessageJob findMessageJob(@PathVariable String adminId, 
+                                   @PathVariable UUID messageJobId) {
     
     return messageService.findMessageJob(adminId, messageJobId);
   }
   
   @RequestMapping(value = "/runningdinner/{adminId}/messagetasks/{messageJobId}")
   @ResponseBody
-  public List<MessageTask> findMessageTasks(@PathVariable(value = "adminId") String adminId, 
-                                            @PathVariable(value = "messageJobId") UUID messageJobId) {
+  public List<MessageTask> findMessageTasks(@PathVariable String adminId, 
+                                            @PathVariable UUID messageJobId) {
     
     List<MessageTask> result = messageService.findMessageTasks(adminId, messageJobId);
     return result;
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/messagetask/{messageTaskId}", method = RequestMethod.PUT)
+  @PutMapping("/runningdinner/{adminId}/messagetask/{messageTaskId}")
   @ResponseBody
-  public MessageTask reSendMessageTask(@PathVariable(value = "adminId") String adminId,
-                                       @PathVariable(value = "messageTaskId") UUID messageTaskId,
+  public MessageTask reSendMessageTask(@PathVariable String adminId,
+                                       @PathVariable UUID messageTaskId,
                                        @RequestBody @Valid MessageTask messageTask) {
     
     return messageService.reSendMessageTask(adminId, messageTaskId, messageTask);
@@ -153,16 +153,16 @@ public class MessageServiceRest {
   
   @RequestMapping("/runningdinner/{adminId}/messagejobs/{messageJobId}/overview")
   @ResponseBody
-  public MessageJobOverview findMessageJobOverview(@PathVariable(value = "adminId") String adminId, 
-                                                   @PathVariable(value = "messageJobId") UUID messageJobId) {
+  public MessageJobOverview findMessageJobOverview(@PathVariable String adminId, 
+                                                   @PathVariable UUID messageJobId) {
     
     return messageService.findMessageJobOverview(adminId, messageJobId);
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/mails/teampartnerwish/{participantId}", method = RequestMethod.PUT)
+  @PutMapping("/runningdinner/{adminId}/mails/teampartnerwish/{participantId}")
   @ResponseBody
-  public MessageJob sendTeamPartnerWishInvitation(@PathVariable(value = "adminId") String adminId,
-                                                  @PathVariable(value = "participantId") UUID participantId) {
+  public MessageJob sendTeamPartnerWishInvitation(@PathVariable String adminId,
+                                                  @PathVariable UUID participantId) {
     
     
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);

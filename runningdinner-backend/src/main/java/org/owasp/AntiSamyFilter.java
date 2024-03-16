@@ -9,9 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,8 +48,8 @@ public class AntiSamyFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		if (request instanceof HttpServletRequest) {
-			CleanServletRequest cleanRequest = new CleanServletRequest((HttpServletRequest)request, antiSamy);
+		if (request instanceof HttpServletRequest servletRequest) {
+			CleanServletRequest cleanRequest = new CleanServletRequest(servletRequest, antiSamy);
 			chain.doFilter(cleanRequest, response);
 		}
 		else {

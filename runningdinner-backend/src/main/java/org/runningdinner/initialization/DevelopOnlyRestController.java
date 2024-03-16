@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,8 +23,8 @@ public class DevelopOnlyRestController {
 	@Autowired
 	private RunningDinnerService runningDinnerService;
 	
-  @RequestMapping(value = "/{adminId}/acknowledge", method = RequestMethod.PUT)
-  public RunningDinnerAdminTO acknowledgeRunningDinner(@PathVariable("adminId") String adminId, Locale locale) {
+  @PutMapping("/{adminId}/acknowledge")
+  public RunningDinnerAdminTO acknowledgeRunningDinner(@PathVariable String adminId, Locale locale) {
     
   	RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     UUID acknowledgeId = runningDinner.getObjectId();

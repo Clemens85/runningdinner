@@ -1,8 +1,8 @@
 package org.runningdinner.core.converter;
 
 import com.google.common.collect.Collections2;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.runningdinner.core.*;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConverterTest {
 
@@ -193,14 +193,14 @@ public class ConverterTest {
 			Set<Team> hostTeams = team.getHostTeams();
 			Set<Team> guestTeams = team.getGuestTeams();
 
-			assertEquals(team + " has invalid size of host references", 2, hostTeams.size());
-			assertEquals(team + " has invalid size of guest references", 2, guestTeams.size());
+			assertEquals(2, hostTeams.size(), team + " has invalid size of host references");
+			assertEquals(2, guestTeams.size(), team + " has invalid size of guest references");
 			RunningDinnerCalculatorTest.assertDisjunctTeams(hostTeams, guestTeams, team);
 		}
 
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		CoreUtil.closeStream(inputStream);
 	}

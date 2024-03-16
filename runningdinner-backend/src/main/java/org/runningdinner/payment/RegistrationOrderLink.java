@@ -1,6 +1,6 @@
 package org.runningdinner.payment;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class RegistrationOrderLink {

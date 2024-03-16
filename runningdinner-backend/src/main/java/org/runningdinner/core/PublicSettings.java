@@ -3,9 +3,9 @@ package org.runningdinner.core;
 
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Transient;
 
 @Embeddable
 public class PublicSettings {

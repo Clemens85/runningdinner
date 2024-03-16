@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.activity.ActivityType;
@@ -29,10 +29,10 @@ import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class SelfAdminServiceTest {
 
@@ -64,7 +64,7 @@ public class SelfAdminServiceTest {
 
   private Team team;
 
-  @Before
+  @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
 
     runningDinner = testHelperService.createClosedRunningDinner(DINNER_DATE, CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
@@ -113,9 +113,9 @@ public class SelfAdminServiceTest {
 
     try {
       selfAdminService.findTeam(runningDinner.getSelfAdministrationId(), executingParticipant.getId(), otherTeam.getId());
-      Assert.fail("Expected exception to be thrown");
+      Assertions.fail("Expected exception to be thrown");
     } catch (IllegalArgumentException e) {
-      Assert.assertTrue(true);
+      Assertions.assertTrue(true);
     }
   }
   
