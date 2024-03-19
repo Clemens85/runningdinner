@@ -1,5 +1,20 @@
-import {add, format, isValid, parse, sub} from 'date-fns';
-import { getMonth, getDate, getYear, getHours, getMinutes, getSeconds, differenceInCalendarDays} from 'date-fns';
+import {
+  add,
+  differenceInMinutes,
+  format,
+  isValid,
+  parse,
+  sub,
+} from "date-fns";
+import {
+  getMonth,
+  getDate,
+  getYear,
+  getHours,
+  getMinutes,
+  getSeconds,
+  differenceInCalendarDays,
+} from "date-fns";
 
 export function isAfterInDays(a: Date, b: Date): boolean {
   const days = differenceInCalendarDays(a, b);
@@ -11,9 +26,13 @@ export function getDaysBetweenDates(a: Date, b: Date): number {
   return days;
 }
 
+export function getMinutesBetweenDates(a: Date, b: Date): number {
+  return differenceInMinutes(a, b);
+}
+
 export function minusDays(date: Date, days: number): Date {
   return sub(date, {
-    days
+    days,
   });
 }
 
@@ -27,13 +46,13 @@ export function isValidDate(d: Date) {
 
 export function plusDays(date: Date, days: number): Date {
   return add(date, {
-    days
+    days,
   });
 }
 
 export function plusHours(date: Date, hours: number): Date {
   return add(date, {
-    hours
+    hours,
   });
 }
 
@@ -45,7 +64,11 @@ export function getMinutesOfDate(date: Date) {
   return getMinutes(date);
 }
 
-export function withHourAndMinute(date: Date, hour: number, minute: number): Date {
+export function withHourAndMinute(
+  date: Date,
+  hour: number,
+  minute: number
+): Date {
   const result = new Date(date.getTime());
   result.setHours(hour, minute, 0, 0);
   return result;
@@ -57,18 +80,29 @@ export function setHoursAndMinutesFromSrcToDest(src: Date, dest: Date) {
   return withHourAndMinute(dest, hours, minutes);
 }
 
-export function formatLocalDate(date: Date | undefined): (string | undefined) {
+export function formatLocalDate(date: Date | undefined): string | undefined {
   if (!date) {
     return undefined;
   }
-  return format(date, 'dd.MM.yyyy');
+  return format(date, "dd.MM.yyyy");
 }
 
-export function formatLocalDateWithSeconds(date: Date | undefined) : (string | undefined) {
+export function parseLocalDateWithSeconds(
+  dateStr: string | undefined
+): Date | undefined {
+  if (!dateStr) {
+    return undefined;
+  }
+  return parse(dateStr, "dd.MM.yyyy HH:mm:ss", new Date());
+}
+
+export function formatLocalDateWithSeconds(
+  date: Date | undefined
+): string | undefined {
   if (!date) {
     return undefined;
   }
-  return format(date, 'dd.MM.yyyy HH:mm:ss');
+  return format(date, "dd.MM.yyyy HH:mm:ss");
 }
 
 export function getShortFormattedMonth(date: Date) {
@@ -80,19 +114,23 @@ export function getDayOfMonthInNumbers(date: Date) {
 
 export function toLocalDateQueryString(date: Date | undefined) {
   if (!date) {
-    return '';
+    return "";
   }
-  return format(date, 'yyyy-MM-dd');
+  return format(date, "yyyy-MM-dd");
 }
 
 export function deserializeArrayToDate(incomingObj: unknown): Date | unknown {
-
-  if (!incomingObj || !Array.isArray(incomingObj) || incomingObj.length < 3 || incomingObj.length > 7) {
+  if (
+    !incomingObj ||
+    !Array.isArray(incomingObj) ||
+    incomingObj.length < 3 ||
+    incomingObj.length > 7
+  ) {
     return incomingObj;
   }
 
   const dateArray = incomingObj.slice(0, 6);
-  const dateStr = dateArray.join(',');
+  const dateStr = dateArray.join(",");
 
   let result;
   if (dateArray.length === 3) {
@@ -105,7 +143,9 @@ export function deserializeArrayToDate(incomingObj: unknown): Date | unknown {
   return result;
 }
 
-export function serializeLocalDateToArray(incomingDate: Date | Array<number> | undefined): Array<number> | undefined {
+export function serializeLocalDateToArray(
+  incomingDate: Date | Array<number> | undefined
+): Array<number> | undefined {
   if (!incomingDate) {
     return undefined;
   }
@@ -114,12 +154,16 @@ export function serializeLocalDateToArray(incomingDate: Date | Array<number> | u
     return incomingDate;
   }
   if (Array.isArray(incomingDate)) {
-    throw new Error(`IncomingDate is an array, but cannot be handled due to length !== 3: ${incomingDate}`);
+    throw new Error(
+      `IncomingDate is an array, but cannot be handled due to length !== 3: ${incomingDate}`
+    );
   }
   return _serializeDateToArray(incomingDate, false);
 }
 
-export function serializeLocalDateTimeToArray(incomingDateTime: Date | Array<number> | undefined):  Array<number> | null {
+export function serializeLocalDateTimeToArray(
+  incomingDateTime: Date | Array<number> | undefined
+): Array<number> | null {
   if (!incomingDateTime) {
     return null;
   }
@@ -128,17 +172,22 @@ export function serializeLocalDateTimeToArray(incomingDateTime: Date | Array<num
     return incomingDateTime;
   }
   if (Array.isArray(incomingDateTime)) {
-    throw new Error(`IncomingDate is an array, but cannot be handled due to length !== 6: ${incomingDateTime}`);
+    throw new Error(
+      `IncomingDate is an array, but cannot be handled due to length !== 6: ${incomingDateTime}`
+    );
   }
   return _serializeDateToArray(incomingDateTime, true);
 }
 
-function _serializeDateToArray(incomingDate: Date, includeTime: boolean): Array<number> {
+function _serializeDateToArray(
+  incomingDate: Date,
+  includeTime: boolean
+): Array<number> {
   const month = getMonth(incomingDate) + 1; //months from 1-12
   const day = getDate(incomingDate);
   const year = getYear(incomingDate);
 
-  var result = [year, month, day];
+  let result = [year, month, day];
   if (includeTime) {
     const hour = getHours(incomingDate);
     const minute = getMinutes(incomingDate);
