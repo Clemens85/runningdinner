@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -26,10 +26,10 @@ public class DevOnlyMessageJobServiceRest {
   @Autowired
   private MessageService messageService;
   
-  @RequestMapping(value = "/runningdinner/{adminId}/messagejob/{messageJobId}/{email}/simulate-suppression", method = RequestMethod.PUT)
-  public MessageTask simulateSuppressedEmailInMessageJob(@PathVariable("adminId") String adminId, 
-                                                         @PathVariable("messageJobId") UUID messageJobId,
-                                                         @PathVariable("email") String email) {
+  @PutMapping("/runningdinner/{adminId}/messagejob/{messageJobId}/{email}/simulate-suppression")
+  public MessageTask simulateSuppressedEmailInMessageJob(@PathVariable String adminId, 
+                                                         @PathVariable UUID messageJobId,
+                                                         @PathVariable String email) {
 
     SuppressedEmail suppressedEmail = newSuppressedEmail(email);
 
@@ -49,8 +49,10 @@ public class DevOnlyMessageJobServiceRest {
     SuppressedEmail result = new SuppressedEmail();
     result.setEmail(email);
     result.setFailureType(FailureType.INVALID_EMAIL);
-    result.setReason("550 5.1.1 The email account that you tried to reach does not exist. Please try 5.1.1 double-checking the recipient's email address " +
-                     "for typos or 5.1.1 unnecessary spaces. Learn more at 5.1.1 https://support.google.com/mail/?p=NoSuchUser p184si1979633qkd.73 - gsmtp");
+    result.setReason("""
+                     550 5.1.1 The email account that you tried to reach does not exist. Please try 5.1.1 double-checking the recipient's email address \
+                     for typos or 5.1.1 unnecessary spaces. Learn more at 5.1.1 https://support.google.com/mail/?p=NoSuchUser p184si1979633qkd.73 - gsmtp\
+                     """);
     
     ZonedDateTime now = ZonedDateTime.now(DateTimeUtil.getTimeZoneForEuropeBerlin());
     result.setCreated(now.toEpochSecond());

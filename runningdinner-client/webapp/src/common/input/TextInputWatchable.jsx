@@ -1,7 +1,7 @@
 import React from 'react';
 import {Controller, useFormContext} from "react-hook-form";
 import TextField from "@mui/material/TextField";
-import {get} from "lodash";
+import {get} from "lodash-es";
 
 const TextInputWatchable = ({name, label, onChange, ...other}) => {
 

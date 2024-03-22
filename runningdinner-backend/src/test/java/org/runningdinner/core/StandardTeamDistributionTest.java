@@ -1,14 +1,12 @@
 package org.runningdinner.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;

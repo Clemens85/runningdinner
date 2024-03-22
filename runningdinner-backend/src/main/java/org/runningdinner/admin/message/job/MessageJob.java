@@ -1,10 +1,10 @@
 
 package org.runningdinner.admin.message.job;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.RunningDinner;

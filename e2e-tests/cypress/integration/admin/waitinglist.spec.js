@@ -170,7 +170,7 @@ describe('waitinglist', () => {
 
     generateTeamsAndRefresh(adminId);
 
-    cy.log("Generate 3 new participants, giving us in total 26 participants")
+    cy.log("Generate 3 new participants, giving us in total 26 participants");
     createParticipants(adminId, 24, 26);
 
     navigateParticipantsList(adminId);
@@ -197,7 +197,7 @@ describe('waitinglist', () => {
 
     generateTeamsAndRefresh(adminId);
 
-    cy.log("Generate 7 new participants, giving us in total 12 participants on waitinglist")
+    cy.log("Generate 7 new participants, giving us in total 12 participants on waitinglist");
     createParticipants(adminId, 24, 30);
 
     navigateParticipantsList(adminId);
@@ -226,7 +226,7 @@ describe('waitinglist', () => {
 
     acknowledgeRunningDinner(adminId);
 
-    cy.log("Generate 3 new participants, giving us in total 8 participants on waitinglist")
+    cy.log("Generate 3 new participants, giving us in total 8 participants on waitinglist");
     createParticipants(adminId, 24, 26);
 
     cy.log("Send Team Arrangement Messages so that we can test notification view");
@@ -302,7 +302,7 @@ describe('waitinglist', () => {
     selectParticipantForTeamAssignment(0,1);
     selectParticipantForTeamAssignment(0,2);
     assertWaitingListTooMuchParticipantsSelectedForAssignmentMessage();
-    cy.log("Submit participants assignment. If this works, the validation before also worked")
+    cy.log("Submit participants assignment. If this works, the validation before also worked");
     submitWaitingListTeamsParticipansAssignmentView();
 
     cy.log("Expected the 5 participants to be shown as remaining participants on waitinglist");

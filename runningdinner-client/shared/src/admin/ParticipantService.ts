@@ -1,7 +1,5 @@
 import axios, {Method} from 'axios';
-import filter from 'lodash/filter';
-import lowerCase from 'lodash/lowerCase';
-import includes from 'lodash/includes';
+import {filter, lowerCase, includes} from 'lodash-es';
 import { BackendConfig } from "../BackendConfig";
 import {
   findEntityById, isArrayEmpty,
@@ -184,7 +182,7 @@ async function enhanceParticipantsWithTeamPartnerRegistrationData(adminId: strin
     }
   }
 
-  const participantsWithTeamPartnerWishEmail = filter(participants, p => isStringNotEmpty(p.teamPartnerWishEmail))
+  const participantsWithTeamPartnerWishEmail = filter(participants, p => isStringNotEmpty(p.teamPartnerWishEmail));
   const teamPartnerWishInfos = await findTeamPartnerWishInfoForListAsync(adminId, participantsWithTeamPartnerWishEmail) || [];
   for (let i = 0; i < teamPartnerWishInfos.length; i++) {
     const teamPartnerWishInfo = teamPartnerWishInfos[i];

@@ -6,7 +6,6 @@ import org.runningdinner.admin.message.dinner.RunningDinnerRelatedMessage;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RunningDinner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +18,6 @@ public class RunningDinnerEventCreatedMessageFormatter {
 
   private LocalizationProviderService localizationProviderService;
   
-  @Autowired
   public RunningDinnerEventCreatedMessageFormatter(UrlGenerator urlGenerator, MessageSource messageSource,
       LocalizationProviderService localizationProviderService) {
     this.urlGenerator = urlGenerator;

@@ -1,5 +1,5 @@
 import {
-  assertMuiCheckboxByTestId, getButtonByLabel,
+  assertMuiCheckboxByTestId,
   getByTestId,
   navigateAdminDashboard,
   navigateTeamsList,

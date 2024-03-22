@@ -1,20 +1,7 @@
 package org.runningdinner.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Test;
+import org.apache.commons.collections4.IterableUtils;
+import org.junit.jupiter.api.Test;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.participant.Participant;
@@ -22,9 +9,14 @@ import org.runningdinner.participant.Team;
 import org.runningdinner.participant.rest.TeamTO;
 import org.runningdinner.test.util.TestUtil;
 
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+
 public class RunningDinnerCalculatorTest {
 
-	private RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
+	private final RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
 
 	private static final List<TeamTO> NO_TEAMS_TO_KEEP = Collections.emptyList(); 
 	
@@ -44,7 +36,7 @@ public class RunningDinnerCalculatorTest {
 	public void testCustomConfigTeamBuilding() throws NoPossibleRunningDinnerException {
 		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(13);
 		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.customConfig, teamMembers, NO_TEAMS_TO_KEEP, Collections::shuffle);
-		assertEquals(true, teamsResult.hasNotAssignedParticipants());
+    assertTrue(teamsResult.hasNotAssignedParticipants());
 		assertEquals(1, teamsResult.getNotAssignedParticipants().size());
 		assertEquals(13, teamsResult.getNotAssignedParticipants().get(0).getParticipantNumber()); // Ensure that last user is the one not
 																									// assigned
@@ -65,30 +57,29 @@ public class RunningDinnerCalculatorTest {
 		assertEquals(9, teams.size());
 
 		for (Team team : teams) {
-			assertEquals(null, team.getMealClass());
+      assertNull(team.getMealClass());
 		}
 
 		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses(), NO_TEAMS_TO_KEEP);
 
-		assertEquals(3, CollectionUtils.countMatches(teams, obj -> {
+		assertEquals(3, IterableUtils.countMatches(teams, obj -> {
       Team team = obj;
       return team.getMealClass().equals(MealClass.APPETIZER());
     }));
 
-		assertEquals(3, CollectionUtils.countMatches(teams, obj -> {
+		assertEquals(3, IterableUtils.countMatches(teams, obj -> {
       Team team = obj;
       return team.getMealClass().equals(MealClass.MAINCOURSE());
     }));
 
-		assertEquals(3, CollectionUtils.countMatches(teams, obj -> {
+		assertEquals(3, IterableUtils.countMatches(teams, obj -> {
       Team team = obj;
       return team.getMealClass().equals(MealClass.DESSERT());
     }));
 
 		final MealClass dummy = new MealClass("dummy");
-		assertEquals(0, CollectionUtils.countMatches(teams, obj -> {
-      Team team = obj;
-      return team.getMealClass().equals(dummy);
+		assertEquals(0, IterableUtils.countMatches(teams, obj -> {
+      return obj.getMealClass().equals(dummy);
     }));
 	}
 
@@ -116,7 +107,7 @@ public class RunningDinnerCalculatorTest {
 		List<Participant> participants = ParticipantGenerator.generateEqualBalancedParticipants(0);
 		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, participants, NO_TEAMS_TO_KEEP, Collections::shuffle);
 
-		assertEquals(false, teamsResult.hasNotAssignedParticipants());
+    assertFalse(teamsResult.hasNotAssignedParticipants());
 		assertEquals(9, teamsResult.getRegularTeams().size());
 
 		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses(), NO_TEAMS_TO_KEEP);
@@ -128,8 +119,8 @@ public class RunningDinnerCalculatorTest {
 			assertEquals(2, team.getNumberOfGuests());
 			assertEquals(2, team.getNumberOfHosts());
 			// assertEquals(team, team.getVisitationPlan().getDestTeam());
-			assertEquals(false, team.getGuestTeams().contains(team));
-			assertEquals(false, team.getHostTeams().contains(team));
+      assertFalse(team.getGuestTeams().contains(team));
+      assertFalse(team.getHostTeams().contains(team));
 
 			Set<Team> guestTeams = team.getGuestTeams();
 			checkMealClassNotContained(team, guestTeams);
@@ -192,7 +183,7 @@ public class RunningDinnerCalculatorTest {
     TestUtil.setMatchingTeamPartnerWish(participants, 8, 12, "foo@bar.de", "bar@foo.de", true);
     
     GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(config, participants, NO_TEAMS_TO_KEEP, Collections::shuffle);
-    assertEquals(false, teamsResult.hasNotAssignedParticipants());
+    assertFalse(teamsResult.hasNotAssignedParticipants());
     assertEquals(9, teamsResult.getRegularTeams().size());
 
     List<Team> teams = teamsResult.getRegularTeams();
@@ -210,7 +201,7 @@ public class RunningDinnerCalculatorTest {
 		RunningDinnerConfig config = RunningDinnerConfig.newConfigurer().withEqualDistributedCapacityTeams(true).withTeamSize(2).withGenderAspects(
 				GenderAspect.FORCE_GENDER_MIX).build();
 		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(config, participants, NO_TEAMS_TO_KEEP, Collections::shuffle);
-		assertEquals(false, teamsResult.hasNotAssignedParticipants());
+    assertFalse(teamsResult.hasNotAssignedParticipants());
 		assertEquals(numberOfTeams, teamsResult.getRegularTeams().size());
 
 		runningDinnerCalculator.assignRandomMealClasses(teamsResult, config.getMealClasses(), NO_TEAMS_TO_KEEP);
@@ -247,7 +238,7 @@ public class RunningDinnerCalculatorTest {
 		MealClass referenceMealClass = team.getMealClass();
 
 		for (Team teamToCheck : teamsToCheck) {
-			assertFalse(referenceMealClass.equals(teamToCheck.getMealClass()));
+      assertNotEquals(referenceMealClass, teamToCheck.getMealClass());
 		}
 	}
 
@@ -260,8 +251,8 @@ public class RunningDinnerCalculatorTest {
 		testSet.addAll(hostTeams);
 		testSet.addAll(guestTeams);
 		testSet.add(teamToTest);
-		assertEquals("There exist at least one team duplicate in test-set for visitation-plan of team " + teamToTest, hostTeams.size()
-				+ guestTeams.size() + 1, testSet.size());
+		assertEquals(hostTeams.size()
+				+ guestTeams.size() + 1, testSet.size(), "There exist at least one team duplicate in test-set for visitation-plan of team " + teamToTest);
 	}
 
 }

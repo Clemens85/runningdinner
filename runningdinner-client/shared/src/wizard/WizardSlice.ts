@@ -16,7 +16,7 @@ import {
   SummaryNavigationStep,
 } from "./CreateWizardService";
 import {WizardRootState} from "./WizardStore";
-import find from "lodash/find";
+import {find} from "lodash-es";
 import {
   RunningDinnerBasicDetails,
   RunningDinnerOptions,
@@ -170,7 +170,11 @@ export const getCurrentNavigationStepSelector = createSelector(
         }
       }
       if (!result) {
-        throw new Error(`nextNavigationStep is ${JSON.stringify(nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`);
+        console.error(`nextNavigationStep is ${JSON.stringify(nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`)
+        return {
+          currentNavigationStep: BasicDetailsNavigationStep,
+          redirectToBeginOfWizard: true
+        }
       }
       // Algorithm: Check if completedNavigationSteps contains the previous navigation step of the iterated navigation step (till we reach current step)
       // If not contained in completedNavigationSteps it was not run through!
@@ -208,12 +212,6 @@ export const getNavigationStepSelector = createSelector(
     };
   }
 );
-// export const getNavigationStepSelector = (state: WizardRootState) => {
-//   return {
-//     nextNavigationStep: state.nextNavigationStep,
-//     previousNavigationStep: state.previousNavigationStep
-//   };
-// }
 
 export const isLoadingDataSelector = (state: WizardRootState) => {
   const loadingItems = getFetchDataItems(state)
@@ -224,7 +222,7 @@ export const getLoadingDataErrorSelector = (state: WizardRootState): HttpError |
   const errorItems = getFetchDataItems(state)
       .filter(item => item.fetchError !== undefined && item.fetchError !== null);
   return errorItems.length > 0 ? errorItems[0].fetchError : undefined;
-}
+};
 
 const getFetchDataItems = (state: WizardRootState): FetchData<any>[] => {
   return [state.registrationTypes, state.genderAspects];

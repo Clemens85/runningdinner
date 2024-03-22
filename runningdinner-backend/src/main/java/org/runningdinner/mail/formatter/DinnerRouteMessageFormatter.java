@@ -15,7 +15,6 @@ import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -33,8 +32,7 @@ public class DinnerRouteMessageFormatter {
 
 	private MessageFormatterHelperService messageFormatterHelperService;
 
-	@Autowired
-  public DinnerRouteMessageFormatter(UrlGenerator urlGenerator,
+	public DinnerRouteMessageFormatter(UrlGenerator urlGenerator,
 	                                 MessageSource messageSource,
 	                                 LocalizationProviderService localizationProviderService,
 																	 MessageFormatterHelperService messageFormatterHelperService,

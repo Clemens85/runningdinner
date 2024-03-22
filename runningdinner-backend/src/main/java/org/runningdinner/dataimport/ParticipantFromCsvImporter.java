@@ -1,11 +1,5 @@
 package org.runningdinner.dataimport;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.Gender;
@@ -15,15 +9,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+
 public final class ParticipantFromCsvImporter {
 
   private static final String SEPARATOR = ";";
   
-  private String adminId;
+  private final String adminId;
   private int currentParticipantNr;
-  private String applicationUrl;
+  private final String applicationUrl;
 
-  private RestTemplate restTemplate = new RestTemplate();
+  private final RestTemplate restTemplate = new RestTemplate();
   
   public ParticipantFromCsvImporter(String applicationUrl, String adminId, int participantNrOffset) {
     this.applicationUrl = applicationUrl;
@@ -84,8 +84,13 @@ public final class ParticipantFromCsvImporter {
     if (items.length > 4) {
      cityName = items[4];
     }
-    
-    int numSeats = Integer.parseInt(numSeatsStr);
+
+    int numSeats;
+    try {
+      numSeats = Integer.parseInt(numSeatsStr);
+    } catch (NumberFormatException e) {
+      throw new RuntimeException("Could not parse " + numSeatsStr + " in csvline " + csvLine, e);
+    }
     
     ParticipantName participantName = newParticipantName(participantNr);
     
@@ -110,7 +115,7 @@ public final class ParticipantFromCsvImporter {
   private static List<String> readLines(String filePath, int startWithLineIndex) {
     
     try {
-      List<String> lines = FileUtils.readLines(new File(filePath), Charset.forName("UTF-8"));
+      List<String> lines = FileUtils.readLines(new File(filePath), StandardCharsets.UTF_8);
       if (startWithLineIndex > 0 && lines.size() >= startWithLineIndex) {
         return lines.subList(startWithLineIndex, lines.size());
       }

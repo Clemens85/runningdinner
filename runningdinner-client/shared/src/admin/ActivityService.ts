@@ -1,10 +1,10 @@
 import axios from "axios";
-import filter from "lodash/filter";
+import {filter} from 'lodash-es';
 import { BackendConfig } from "../BackendConfig";
 import {CONSTANTS} from "../Constants";
 import {Activity, ActivityList, ActivityType, DashboardAdminActivities, MessageJobOverview} from "../types";
 import { findMessageJobOverviewByAdminIdAndMessageJobId } from "./MessageService";
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from 'lodash-es';
 import { isStringNotEmpty, findEntityById } from "../Utils";
 
 const messageActivities = [

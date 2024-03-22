@@ -1,11 +1,10 @@
 package org.runningdinner.participant;
 
-import javax.persistence.Embeddable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.core.util.CoreUtil;
 
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
 /**
@@ -127,7 +126,6 @@ public class ParticipantName {
 		/**
 		 * Construct a ParticipantName with passing in firstname and lastname separately.
 		 * 
-		 * @param firstname
 		 * @return
 		 */
 		public FirstLastNameBuilder withFirstname(final String firstname) {
@@ -140,7 +138,6 @@ public class ParticipantName {
 		 * Peter Lustig<br>
 		 * Max Middlename Mustermann<br>
 		 * 
-		 * @param firstname
 		 * @throws IllegalArgumentException If string was passed in wrong format
 		 * @return
 		 */
@@ -171,7 +168,7 @@ public class ParticipantName {
 
 	public static class FirstLastNameBuilder {
 
-		private String firstname;
+		private final String firstname;
 
 		protected FirstLastNameBuilder(String firstname) {
 			this.firstname = firstname;

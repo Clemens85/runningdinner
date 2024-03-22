@@ -1,12 +1,6 @@
 package org.runningdinner.core;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.google.common.base.MoreObjects;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
@@ -14,15 +8,16 @@ import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.MoreObjects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TeamDistributorGender {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TeamDistributorGender.class); 
   
-  private List<Team> teams;
+  private final List<Team> teams;
   
-  private RunningDinnerConfig configuration;
+  private final RunningDinnerConfig configuration;
 
   public TeamDistributorGender(List<Team> teams, RunningDinnerConfig configuration) {
 
@@ -61,7 +56,7 @@ public class TeamDistributorGender {
       LOGGER.info("Calculating swap action for {} in team {}", teamMembers.get(1), team);
       teamSwapActions.addAll(findAllTeamSwapActions(team, teamMembers.get(1), teamPartnerWishTuples));
 
-      TeamSwapAction bestTeamSwapAction = TeamSwapAction.findBestTeamSwapAction(teamSwapActions, configuration);
+      TeamSwapAction bestTeamSwapAction = TeamSwapAction.findBestTeamSwapAction(teamSwapActions);
       if (bestTeamSwapAction != null) {
         swapTeamMember(bestTeamSwapAction.getSrcTeam().getTeam(), bestTeamSwapAction.getSrcTeam().getTeamMember(), 
                        bestTeamSwapAction.getDestTeam().getTeam(), bestTeamSwapAction.getDestTeam().getTeamMember());
@@ -247,7 +242,7 @@ public class TeamDistributorGender {
 
     NO_HOST(-4);
 
-    private int value;
+    private final int value;
 
     HostingDistributionStatus(int value) {
 
@@ -270,13 +265,13 @@ public class TeamDistributorGender {
 
   static class TeamSwapPreview {
 
-    private Team team;
+    private final Team team;
 
-    private Participant teamMember;
+    private final Participant teamMember;
 
-    private int distributionComparisionStatus;
+    private final int distributionComparisionStatus;
     
-    private boolean genderAspectSatisfied;
+    private final boolean genderAspectSatisfied;
 
     public TeamSwapPreview(Team team, Participant teamMember, int distributionComparisionStatus, boolean genderAspectSatisfied) {
 
@@ -340,9 +335,9 @@ public class TeamDistributorGender {
 
   static class TeamSwapAction {
 
-    private TeamSwapPreview srcTeam;
+    private final TeamSwapPreview srcTeam;
 
-    private TeamSwapPreview destTeam;
+    private final TeamSwapPreview destTeam;
 
     public TeamSwapAction(TeamSwapPreview srcTeam, TeamSwapPreview destTeam) {
 
@@ -370,7 +365,7 @@ public class TeamDistributorGender {
       return getSrcTeam().getDistributionComparisionStatus() + getDestTeam().getDistributionComparisionStatus();
     }
     
-    public static TeamSwapAction findBestTeamSwapAction(Set<TeamSwapAction> teamSwapActions, RunningDinnerConfig runningDinnerConfig) {
+    public static TeamSwapAction findBestTeamSwapAction(Set<TeamSwapAction> teamSwapActions) {
 
       TeamSwapAction bestTeamSwapAction = null;
 

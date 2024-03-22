@@ -1,12 +1,11 @@
 package org.runningdinner.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.junit.Assert.assertEquals;
-
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TeamCombinationInfoTest {
 
@@ -14,14 +13,14 @@ public class TeamCombinationInfoTest {
 	public void testCombintionWithThreeMeals() throws NoPossibleRunningDinnerException {
 		TeamCombinationInfo info = new TeamCombinationInfo(9, 3);
 		assertEquals(0, info.getNumRemaindingTeams());
-		assertThat(info.getCombinationFactors()).containsExactlyInAnyOrder(new Integer(9), new Integer(12), new Integer(15));
+		assertThat(info.getCombinationFactors()).containsExactlyInAnyOrder(9, 12, 15);
 	}
 
 	@Test
 	public void testCombinationWithTwoMeals() throws NoPossibleRunningDinnerException {
 		TeamCombinationInfo info = new TeamCombinationInfo(9, 2);
 		assertEquals(1, info.getNumRemaindingTeams());
-		assertThat(info.getCombinationFactors()).containsExactlyInAnyOrder(new Integer(4), new Integer(6));
+		assertThat(info.getCombinationFactors()).containsExactlyInAnyOrder(4, 6);
 	}
 
 	@Test

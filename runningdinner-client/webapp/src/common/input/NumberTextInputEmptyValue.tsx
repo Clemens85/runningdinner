@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import {CallbackHandler, isInteger, isStringEmpty} from "@runningdinner/shared";
 import {Controller, useFormContext} from "react-hook-form";
 import { BaseTextFieldProps } from '@mui/material';
-import parseInt from 'lodash/parseInt';
+import {parseInt} from 'lodash-es';
 
 export interface NumberFormTextFieldEmptyValueAllowedProps extends BaseTextFieldProps {
   emptyValue: number;

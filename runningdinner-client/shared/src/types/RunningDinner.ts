@@ -125,6 +125,7 @@ export interface AfterPartyLocationAddress extends BaseAddress {
 }
 
 export interface AfterPartyLocation extends AfterPartyLocationAddress, HasGeocoding {
+  title: string;
   time: Date;
 }
 
@@ -147,7 +148,8 @@ export function newAfterPartyLocation(runningDinner?: CreateRunningDinnerWizardM
     cityName,
     addressName: '',
     addressRemarks: '',
-    time
+    time,
+    title: 'After-Event-Party',
   };
 }
 

@@ -1,4 +1,4 @@
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import { Alert, AlertTitle } from '@mui/material';
 import {
   BaseAdminIdProps,
@@ -6,7 +6,6 @@ import {
   reCreateTeamArrangementsAsync,
   useDisclosure,
   findAdminActivitiesByAdminIdAndTypesAsync,
-  TeamArrangementList,
   filterActivitiesByType,
   ActivityType,
   useBackendIssueHandler,

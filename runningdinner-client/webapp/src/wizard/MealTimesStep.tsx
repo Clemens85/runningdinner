@@ -23,7 +23,7 @@ import {
 } from "@runningdinner/shared";
 import {useWizardSelector} from "@runningdinner/shared";
 import MealTimeEditControl from "../admin/dashboard/MealTimeEditControl";
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
 import {FormProvider, useForm} from "react-hook-form";
 import {Grid, useMediaQuery, useTheme} from "@mui/material";

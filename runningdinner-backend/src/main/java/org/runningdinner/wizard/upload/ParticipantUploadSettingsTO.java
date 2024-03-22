@@ -1,8 +1,7 @@
 package org.runningdinner.wizard.upload;
 
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public class ParticipantUploadSettingsTO {
 
@@ -30,7 +29,7 @@ public class ParticipantUploadSettingsTO {
 
 	@Override
 	public String toString() {
-		return "fileId=" + fileId + ", parsingConfiguration=" + parsingConfiguration;
+		return "fileId=" + fileId;
 	}
 
 }

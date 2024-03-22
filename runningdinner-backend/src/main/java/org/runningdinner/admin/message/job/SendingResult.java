@@ -3,9 +3,9 @@ package org.runningdinner.admin.message.job;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Embeddable;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import org.apache.commons.lang3.StringUtils;
 

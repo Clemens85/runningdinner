@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.deleted.DeletedRunningDinner;
@@ -35,9 +35,9 @@ import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wizard.PublicSettingsTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class RunningDinnerDeletionTest {
   
@@ -78,7 +78,7 @@ public class RunningDinnerDeletionTest {
 
   private RunningDinner runningDinner;
 
-  @Before
+  @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
 
     runningDinner = testHelperService.createClosedRunningDinner(DINNER_DATE.toLocalDate(), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);

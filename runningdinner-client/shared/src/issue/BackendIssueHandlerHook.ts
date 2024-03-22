@@ -3,7 +3,7 @@ import {
   mapBackendIssuesToIssues,
 } from "./BackendIssueHandler";
 import { useTranslation } from "react-i18next";
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from 'lodash-es';
 import { isStringNotEmpty } from "../Utils";
 import {BackendIssue, HttpError, Issue, IssueOption, Issues} from "../types";
 

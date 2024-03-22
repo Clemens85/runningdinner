@@ -1,26 +1,15 @@
 
 package org.runningdinner.core;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Version;
-
+import com.google.common.base.MoreObjects;
+import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
-import com.google.common.base.MoreObjects;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Base class for all JPA entity classes.
@@ -39,14 +28,12 @@ public abstract class AbstractEntity implements Serializable, Identifiable {
   @Id
   @GeneratedValue(generator = "rfc4122-uuid")
   @GenericGenerator(name = "rfc4122-uuid", strategy = "uuid2")
-  @Type(type = "pg-uuid")
   protected UUID id;
 
   /**
    * Natural business key which is also used from the "outside" for identifying entities
    */
   @Column(nullable = false, unique = true)
-  @Type(type = "pg-uuid")
   protected UUID objectId;
 
   /**
@@ -173,11 +160,10 @@ public abstract class AbstractEntity implements Serializable, Identifiable {
     if (obj == this) {
       return true;
     }
-    if (!(obj instanceof AbstractEntity)) { // Needed for hibernate because of proxying
+    if (!(obj instanceof AbstractEntity entity)) { // Needed for hibernate because of proxying
       return false;
     }
 
-    AbstractEntity entity = (AbstractEntity) obj;
     return new EqualsBuilder().append(objectId, entity.objectId).isEquals();
   }
 

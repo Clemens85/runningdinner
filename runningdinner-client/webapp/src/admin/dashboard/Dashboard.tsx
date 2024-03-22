@@ -51,7 +51,7 @@ export default function Dashboard({runningDinner}: BaseRunningDinnerProps) {
     pr: 2,
     pt: 2,
     pb: 2
-  }
+  };
 
   return (
     <div>

@@ -28,7 +28,7 @@ import {PageTitle, SmallTitle, Span, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
 import {GoogleMap, InfoWindow, Marker, Polyline} from '@react-google-maps/api';
 import {LoadScript} from "@react-google-maps/api";
-import { cloneDeep, uniq } from 'lodash';
+import { cloneDeep, uniq } from 'lodash-es';
 import Alert from '@mui/material/Alert';
 import { AlertTitle } from '@mui/material';
 import {useGeoPosition} from "../hooks/GeoPositionHook";
@@ -305,14 +305,14 @@ function MapView({dinnerRouteTeams, currentTeam, afterPartyLocation, googleMapsA
   const getDinnerRouteItemMarkerInfoToShow = () : DinnerRouteItemMarkerInfoState | undefined => {
     const resultArr = dinnerRouteItemMarkerInfoState.filter(obj => obj.opened);
     return resultArr.length > 0 ? resultArr[0] : undefined;
-  }
+  };
 
   function createAfterPartyLocationMarker() {
     if (!afterPartyLocation || !isAfterPartyLocationDefined(afterPartyLocation)) {
       return undefined;
     }
     return <Marker position={afterPartyLocation.geocodingResult}
-                   title={t("common:after_event_party")}
+                   title={afterPartyLocation.title}
                    onClick={() => handleMarkerClick(afterPartyLocation)}
                    icon={createMarkerIconUrl(AFTER_PARTY_LOCATION_MARKER_NUMBER, false)}/>;
   }

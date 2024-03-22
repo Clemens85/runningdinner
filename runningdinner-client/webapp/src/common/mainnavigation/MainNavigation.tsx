@@ -104,7 +104,7 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
   }
 
   return <>
-    { topNotificationBar && topNotificationBar }
+    { !!topNotificationBar && topNotificationBar }
     <AppBarBlackWhite position="static">
       <Toolbar>
         <Grid container justifyContent={"space-between"} alignItems={"center"}>

@@ -30,7 +30,7 @@ const TeamsNotExisting = ({runningDinner}: BaseRunningDinnerProps) => {
 
   if (loading || error || teamsNotExistingInfo === null) {
     // @ts-ignore
-    return <ProgressBar showLoadingProgress={loading} fetchError={error} />
+    return <ProgressBar showLoadingProgress={loading} fetchError={error} />;
   }
 
   const handleGenerateTeams = async () => {

@@ -1,11 +1,6 @@
 
 package org.runningdinner.mail.formatter;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.Set;
-
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.util.CoreUtil;
@@ -13,6 +8,11 @@ import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Util class that is used for formatting email messages
@@ -148,7 +148,7 @@ public class FormatterUtil {
    * Safely returns a formatted date string.
    * 
    * @param time The date to format
-   * @param timeFormat The dateformat which shall be used for formatting
+   * @param timeFormatter The dateformat which shall be used for formatting
    * @param fallback The fallback to return if the date cannot be formatted
    * @return
    */

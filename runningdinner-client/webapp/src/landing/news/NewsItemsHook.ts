@@ -2,8 +2,7 @@ import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 import News_de from "./NewsMessages_lang_de";
 import News_en from "./NewsMessages_lang_en";
-import startsWith from "lodash/startsWith";
-import orderBy from 'lodash/orderBy';
+import {orderBy, startsWith} from 'lodash-es';
 import {parse} from 'date-fns';
 
 export interface NewsItem {

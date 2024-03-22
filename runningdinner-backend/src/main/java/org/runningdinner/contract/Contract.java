@@ -1,18 +1,16 @@
 
 package org.runningdinner.contract;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
-import org.hibernate.annotations.Type;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.core.AbstractEntity;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 public class Contract extends AbstractEntity {
@@ -47,11 +45,9 @@ public class Contract extends AbstractEntity {
   private LocalDateTime newsletterEnabledChangeDateTime;
 
   @Column(columnDefinition = "uuid references runningdinner.RunningDinner")
-  @Type(type = "pg-uuid")
   private UUID parentRunningDinnerId;
 
   @Column(columnDefinition = "uuid references runningdinner.DeletedRunningDinner")
-  @Type(type = "pg-uuid")
   private UUID parentDeletedRunningDinnerId;
 
   public String getFullname() {

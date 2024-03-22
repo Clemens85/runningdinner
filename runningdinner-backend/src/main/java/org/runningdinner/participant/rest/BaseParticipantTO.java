@@ -11,11 +11,11 @@ import org.runningdinner.participant.HasContactInfo;
 import org.runningdinner.participant.MealSpecificsAware;
 import org.runningdinner.participant.Participant;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class BaseParticipantTO extends BaseTO implements MealSpecificsAware, HasContactInfo {
 

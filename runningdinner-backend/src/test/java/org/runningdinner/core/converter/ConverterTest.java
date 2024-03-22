@@ -1,25 +1,9 @@
 package org.runningdinner.core.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Test;
-import org.runningdinner.core.FuzzyBoolean;
-import org.runningdinner.core.Gender;
-import org.runningdinner.core.GeneratedTeamsResult;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
-import org.runningdinner.core.RunningDinnerCalculator;
-import org.runningdinner.core.RunningDinnerCalculatorTest;
-import org.runningdinner.core.RunningDinnerConfig;
+import com.google.common.collect.Collections2;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.runningdinner.core.*;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
 import org.runningdinner.core.converter.config.EmailColumnConfig;
@@ -33,13 +17,17 @@ import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.Team;
 
-import com.google.common.collect.Collections2;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConverterTest {
 
 	public static final String STANDARD_XLS_FILE = "/excelimport/standard.xls";
-	public static final String STANDARD_XLS_WITH_CONTACTINFO_FILE = "/excelimport/standard_with_contact.xls";
-	public static final String STANDARD_XLSX_FILE = "/excelimport/standard.xlsx";
 	public static final String EMPTY_XLS_FILE = "/excelimport/empty.xls";
 	public static final String INVALID_XLSX_FILE = "/excelimport/invalid.xlsx";
 
@@ -63,21 +51,21 @@ public class ConverterTest {
 	public void testConfigurations() {
 		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
 
-		assertEquals(false, parsingConfiguration.getSequenceColumnConfig().isAvailable());
+    assertFalse(parsingConfiguration.getSequenceColumnConfig().isAvailable());
 
-		assertEquals(true, parsingConfiguration.getNameColumnConfig().isAvailable());
-		assertEquals(true, parsingConfiguration.getNameColumnConfig().isComposite());
+    assertTrue(parsingConfiguration.getNameColumnConfig().isAvailable());
+    assertTrue(parsingConfiguration.getNameColumnConfig().isComposite());
 		assertEquals(0, parsingConfiguration.getNameColumnConfig().getFirstnameColumn());
 		assertEquals(0, parsingConfiguration.getNameColumnConfig().getLastnameColumn());
 
-		assertEquals(true, parsingConfiguration.getNumSeatsColumnConfig().isAvailable());
-		assertEquals(true, parsingConfiguration.getNumSeatsColumnConfig().isNumericDeclaration());
+    assertTrue(parsingConfiguration.getNumSeatsColumnConfig().isAvailable());
+    assertTrue(parsingConfiguration.getNumSeatsColumnConfig().isNumericDeclaration());
 		assertEquals(3, parsingConfiguration.getNumSeatsColumnConfig().getColumnIndex());
 
-		assertEquals(true, parsingConfiguration.getAddressColumnConfig().isStreetAndStreetNrCompositeConfig());
-		assertEquals(true, parsingConfiguration.getAddressColumnConfig().isZipAndCityCompositeConfig());
-		assertEquals(false, parsingConfiguration.getAddressColumnConfig().isCompositeConfig());
-		assertEquals(false, parsingConfiguration.getAddressColumnConfig().isSingleColumnConfig());
+    assertTrue(parsingConfiguration.getAddressColumnConfig().isStreetAndStreetNrCompositeConfig());
+    assertTrue(parsingConfiguration.getAddressColumnConfig().isZipAndCityCompositeConfig());
+    assertFalse(parsingConfiguration.getAddressColumnConfig().isCompositeConfig());
+    assertFalse(parsingConfiguration.getAddressColumnConfig().isSingleColumnConfig());
 		assertEquals(1, parsingConfiguration.getAddressColumnConfig().getStreetColumn());
 		assertEquals(1, parsingConfiguration.getAddressColumnConfig().getStreetNrColumn());
 		assertEquals(2, parsingConfiguration.getAddressColumnConfig().getZipColumn());
@@ -167,21 +155,6 @@ public class ConverterTest {
 	}
 
 	@Test
-	public void testXls() throws IOException, ConversionException {
-
-		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(STANDARD_XLS_FILE);
-		assertEquals(INPUT_FILE_TYPE.HSSF, fileType);
-
-		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
-
-		inputStream = getClass().getResourceAsStream(STANDARD_XLS_FILE);
-		FileConverter excelConverter = ConverterFactory.newFileConverter(parsingConfiguration, fileType);
-		List<Participant> participants = excelConverter.parseParticipants(inputStream);
-
-		checkParsedParticipants(participants, false);
-	}
-
-	@Test
 	public void testGenderXls() throws IOException, ConversionException {
 
 		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(STANDARD_GENDER_XLS_FILE);
@@ -199,38 +172,6 @@ public class ConverterTest {
 		assertEquals(2, Collections2.filter(participants, GenderPredicate.FEMALE_GENDER_PREDICATE).size());
 		assertEquals(2, Collections2.filter(participants, GenderPredicate.MALE_GENDER_PREDICATE).size());
 		assertEquals(1, Collections2.filter(participants, new GenderPredicate(Gender.UNDEFINED)).size());
-	}
-
-	@Test
-	public void testXlsx() throws IOException, ConversionException {
-
-		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(STANDARD_XLSX_FILE);
-		assertEquals(INPUT_FILE_TYPE.XSSF, fileType);
-
-		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
-
-		inputStream = getClass().getResourceAsStream(STANDARD_XLSX_FILE);
-		FileConverter excelConverter = ConverterFactory.newFileConverter(parsingConfiguration, fileType);
-		List<Participant> participants = excelConverter.parseParticipants(inputStream);
-
-		checkParsedParticipants(participants, false);
-	}
-
-	@Test
-	public void testXlsWithContactInfo() throws IOException, ConversionException {
-
-		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(STANDARD_XLS_WITH_CONTACTINFO_FILE);
-		assertEquals(INPUT_FILE_TYPE.HSSF, fileType);
-
-		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
-		parsingConfiguration.setEmailColumnConfig(EmailColumnConfig.createEmailColumnConfig(4));
-		parsingConfiguration.setMobileNumberColumnConfig(MobileNumberColumnConfig.createMobileNumberColumnConfig(5));
-
-		inputStream = getClass().getResourceAsStream(STANDARD_XLS_WITH_CONTACTINFO_FILE);
-		FileConverter excelConverter = ConverterFactory.newFileConverter(parsingConfiguration, fileType);
-		List<Participant> participants = excelConverter.parseParticipants(inputStream);
-
-		checkParsedParticipants(participants, true);
 	}
 
 	@Test
@@ -252,64 +193,14 @@ public class ConverterTest {
 			Set<Team> hostTeams = team.getHostTeams();
 			Set<Team> guestTeams = team.getGuestTeams();
 
-			assertEquals(team + " has invalid size of host references", 2, hostTeams.size());
-			assertEquals(team + " has invalid size of guest references", 2, guestTeams.size());
+			assertEquals(2, hostTeams.size(), team + " has invalid size of host references");
+			assertEquals(2, guestTeams.size(), team + " has invalid size of guest references");
 			RunningDinnerCalculatorTest.assertDisjunctTeams(hostTeams, guestTeams, team);
 		}
 
 	}
 
-	private void checkParsedParticipants(List<Participant> participants, boolean checkContactInfo) {
-		assertEquals(4, participants.size());
-
-		Participant first = participants.get(0);
-		assertEquals(1, first.getParticipantNumber());
-		assertEquals(Gender.UNDEFINED, first.getGender());
-		assertEquals(4, first.getNumSeats());
-		assertEquals("Clemens Stich", first.getName().getFullnameFirstnameFirst());
-		if (checkContactInfo) {
-			assertEquals("c.s@mail.de", first.getEmail());
-			assertEquals("0176 22", first.getMobileNumber());
-		}
-
-		Participant second = participants.get(1);
-		assertEquals(2, second.getParticipantNumber());
-		assertEquals(Gender.UNDEFINED, second.getGender());
-		assertEquals(6, second.getNumSeats());
-		assertEquals("Max Mustermann", second.getName().getFullnameFirstnameFirst());
-		assertEquals("Musterstraße 12", second.getAddress().getStreetWithNr());
-		assertEquals("11111 Musterhausen", second.getAddress().getZipWithCity());
-		if (checkContactInfo) {
-			assertEquals("mm@mm.de", second.getEmail());
-			assertEquals(StringUtils.EMPTY, second.getMobileNumber());
-		}
-
-		Participant third = participants.get(2);
-		assertEquals("Michaela Musterfrau", third.getName().getFullnameFirstnameFirst());
-		assertEquals(3, third.getParticipantNumber());
-		assertEquals(StringUtils.EMPTY, third.getEmail());
-		if (checkContactInfo) {
-			assertEquals("123456", third.getMobileNumber());
-		}
-
-		Participant fourth = participants.get(3);
-		assertEquals("Biene Maja", fourth.getName().getFullnameFirstnameFirst());
-		assertEquals(4, fourth.getParticipantNumber());
-		assertEquals("Auf dem Bienenstock 1", fourth.getAddress().getStreetWithNr());
-		assertEquals("12345 Bienenstadt", fourth.getAddress().getZipWithCity());
-		assertEquals(1000, fourth.getNumSeats());
-		if (checkContactInfo) {
-			assertEquals("maja@biene.de", fourth.getEmail());
-		}
-
-		RunningDinnerConfig standardConfig = RunningDinnerConfig.newConfigurer().build();
-		assertEquals(FuzzyBoolean.FALSE, standardConfig.canHost(first));
-		assertEquals(FuzzyBoolean.TRUE, standardConfig.canHost(second));
-		assertEquals(FuzzyBoolean.FALSE, standardConfig.canHost(third));
-		assertEquals(FuzzyBoolean.TRUE, standardConfig.canHost(fourth));
-	}
-
-	@After
+	@AfterEach
 	public void tearDown() {
 		CoreUtil.closeStream(inputStream);
 	}

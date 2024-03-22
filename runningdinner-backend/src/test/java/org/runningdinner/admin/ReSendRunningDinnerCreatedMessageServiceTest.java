@@ -6,9 +6,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageType;
@@ -27,9 +27,9 @@ import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class ReSendRunningDinnerCreatedMessageServiceTest {
 
@@ -58,7 +58,7 @@ public class ReSendRunningDinnerCreatedMessageServiceTest {
 
   private MailSenderMockInMemory mailSenderInMemory;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     this.runningDinnerNotAcknowledged = testHelperService.createPublicRunningDinner(LocalDate.now().plusDays(7), 2, RegistrationType.PUBLIC, false);
     

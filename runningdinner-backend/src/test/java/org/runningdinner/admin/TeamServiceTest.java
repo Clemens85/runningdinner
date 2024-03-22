@@ -2,6 +2,7 @@
 package org.runningdinner.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -10,10 +11,10 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.activity.ActivityType;
@@ -40,11 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.google.common.collect.ImmutableMap;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class TeamServiceTest {
 
@@ -71,7 +72,7 @@ public class TeamServiceTest {
 
   private JdbcTemplate jdbcTemplate;
 
-  @Before
+  @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
 
     runningDinner = testHelperService.createClosedRunningDinner(DINNER_DATE, CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
@@ -134,26 +135,28 @@ public class TeamServiceTest {
     assertTeamCancelledActivityCreated();
   }
 
-  @Test(expected = ValidationException.class)
+  @Test
   public void testCancelTeamWithReplacementInvalid() {
+    assertThrows(ValidationException.class, () -> {
 
-    Team team = findFirstTeam();
-    assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
-    Set<Participant> oldTeamMembers = team.getTeamMembers();
+      Team team = findFirstTeam();
+      assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
+      Set<Participant> oldTeamMembers = team.getTeamMembers();
 
-    TeamCancellation teamCancellation = new TeamCancellation();
-    teamCancellation.setReplaceTeam(true);
-    teamCancellation.setTeamId(team.getId());
+      TeamCancellation teamCancellation = new TeamCancellation();
+      teamCancellation.setReplaceTeam(true);
+      teamCancellation.setTeamId(team.getId());
 
-    try {
-      teamService.cancelTeam(runningDinner.getAdminId(), teamCancellation);
-    } catch (ValidationException e) {
-      assertThat(e.getIssues().getIssues()).hasSize(1);
-      team = findFirstTeam();
-      assertThat(team.getStatus()).isEqualTo(TeamStatus.OK);
-      assertThat(team.getTeamMembers()).containsExactlyInAnyOrder(oldTeamMembers.toArray(new Participant[] {}));
-      throw e;
-    }
+      try {
+        teamService.cancelTeam(runningDinner.getAdminId(), teamCancellation);
+      } catch (ValidationException e) {
+        assertThat(e.getIssues().getIssues()).hasSize(1);
+        team = findFirstTeam();
+        assertThat(team.getStatus()).isEqualTo(TeamStatus.OK);
+        assertThat(team.getTeamMembers()).containsExactlyInAnyOrder(oldTeamMembers.toArray(new Participant[]{}));
+        throw e;
+      }
+    });
   }
 
   @Test
@@ -200,7 +203,7 @@ public class TeamServiceTest {
     
     try {
     	teamService.dropAndReCreateTeamAndVisitationPlans(runningDinner.getAdminId(), Collections.emptyList());
-      Assert.fail("Expected ValidationException to be thrown!");
+      Assertions.fail("Expected ValidationException to be thrown!");
     } catch (ValidationException e) {
     	assertThat(e.getIssues().getIssues()).hasSize(1);
     	assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo("dinner_not_possible");
@@ -328,7 +331,7 @@ public class TeamServiceTest {
     Team otherTeam = TestUtil.findTeamByTeamMemberEmail(allTeams, "ohne@freund.de");
     try {
       teamService.swapTeamMembers(runningDinner.getAdminId(), otherTeam.getHostTeamMember().getId(), team.getHostTeamMember().getId());
-      Assert.fail("Expected swap between " + team + " and " + otherTeam + " to fail due to they are fixed due to team partner wishes");
+      Assertions.fail("Expected swap between " + team + " and " + otherTeam + " to fail due to they are fixed due to team partner wishes");
     } catch (ValidationException e) {
       // NOP
     }
@@ -510,7 +513,7 @@ public class TeamServiceTest {
         return;
       }
     }
-    Assert.fail("Could not find activity for team cancellati0on in " + customAdminChangeActivities);
+    Assertions.fail("Could not find activity for team cancellati0on in " + customAdminChangeActivities);
   }
 
   private void assertParticipantsAreDeleted(Set<Participant> participants) {

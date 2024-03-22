@@ -1,0 +1,2 @@
+paths-ignore:
+  - 'runningdinner-client/webapp/dist'

@@ -3,7 +3,7 @@ import {Controller, useFormContext} from "react-hook-form";
 import TextField, {TextFieldProps} from "@mui/material/TextField";
 import {styled} from "@mui/material";
 import {spacing} from "@mui/system";
-import get from "lodash/get";
+import {get} from 'lodash-es';
 
 export type FormTextFieldProps = Omit<TextFieldProps, "name"> & {
   name: string;

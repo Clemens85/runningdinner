@@ -2,10 +2,8 @@
 
 import {
   assertTeamCancelOverviewDialog,
-  generateTeams, generateTeamsAndRefresh,
+  generateTeamsAndRefresh,
   getByTestId, getTeamAt,
-  navigateAdminDashboard,
-  navigateTeamsList
 } from "../../support";
 import { createRunningDinner } from "../../support/runningDinnerSetup"
 

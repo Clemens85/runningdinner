@@ -2,7 +2,7 @@ package org.runningdinner.payment.paymentoptions.rest;
 
 import java.util.UUID;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.runningdinner.payment.paymentoptions.PaymentOptions;
 import org.runningdinner.payment.paymentoptions.PaymentOptionsService;
@@ -27,29 +27,29 @@ public class PaymentOptionsServiceRest {
   }
   
   @GetMapping(value = "/runningdinner/{adminId}")
-  public PaymentOptions getPaymentOptions(@PathVariable("adminId") String adminId) {
+  public PaymentOptions getPaymentOptions(@PathVariable String adminId) {
     
     return paymentOptionsService.findPaymentOptionsByAdminId(adminId)
             .orElse(null);
   }  
   
   @PostMapping(value = "/runningdinner/{adminId}")
-  public PaymentOptions createPaymentOptions(@PathVariable("adminId") String adminId, @RequestBody @Valid PaymentOptions paymentOptions) {
+  public PaymentOptions createPaymentOptions(@PathVariable String adminId, @RequestBody @Valid PaymentOptions paymentOptions) {
     
     return paymentOptionsService.createPaymentOptions(adminId, paymentOptions);
   }  
   
   @PutMapping(value = "/runningdinner/{adminId}/{paymentOptionsId}")
-  public PaymentOptions updatePaymentOptions(@PathVariable("adminId") String adminId,
-                                             @PathVariable("paymentOptionsId") UUID paymentOptionsId,
+  public PaymentOptions updatePaymentOptions(@PathVariable String adminId,
+                                             @PathVariable UUID paymentOptionsId,
                                              @RequestBody @Valid PaymentOptions paymentOptions) {
     
     return paymentOptionsService.updatePaymentOptions(adminId, paymentOptionsId, paymentOptions);
   }
   
   @DeleteMapping(value = "/runningdinner/{adminId}/{paymentOptionsId}")
-  public void deletePaymentOptions(@PathVariable("adminId") String adminId,
-                                   @PathVariable("paymentOptionsId") UUID paymentOptionsId) {
+  public void deletePaymentOptions(@PathVariable String adminId,
+                                   @PathVariable UUID paymentOptionsId) {
     
     paymentOptionsService.deletePaymentOptions(adminId, paymentOptionsId);
   }

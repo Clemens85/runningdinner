@@ -1,17 +1,17 @@
-import get from "lodash/get";
-import filter from "lodash/filter";
-import cloneDeep from "lodash/cloneDeep";
-import remove from "lodash/remove";
-import isArray from "lodash/isArray";
+import {get} from 'lodash-es';
+import {filter} from 'lodash-es';
+import {cloneDeep} from 'lodash-es';
+import {remove} from 'lodash-es';
+import {isArray} from 'lodash-es';
 import {BaseEntity} from "./types"
-import truncate from "lodash/truncate";
-import mergeWith from 'lodash/mergeWith';
-import isString from 'lodash/isString';
-import trim from 'lodash/trim';
-import isObjectLike from "lodash/isObjectLike";
-import isDate from "lodash/isDate";
-import forIn from "lodash/forIn";
-import set from "lodash/set";
+import {truncate} from 'lodash-es';
+import {mergeWith} from 'lodash-es';
+import {isString} from 'lodash-es';
+import {trim} from 'lodash-es';
+import {isObjectLike} from 'lodash-es';
+import {isDate} from 'lodash-es';
+import {forIn} from 'lodash-es';
+import {set} from 'lodash-es';
 /**
  * Iterates the passed list and tries to find the entity with the passed id.
  * @param entities

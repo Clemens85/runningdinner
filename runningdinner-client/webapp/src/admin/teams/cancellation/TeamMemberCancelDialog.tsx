@@ -5,7 +5,6 @@ import {
   Box,
 } from "@mui/material";
 import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
-import React from "react";
 import {
   cancelTeamMemberAsync,
   CONSTANTS, findIssueByMessage,
@@ -111,7 +110,7 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
 
   const cancelDialog = () => {
     onClose();
-  }
+  };
 
   if (!isOpen) {
     return null;

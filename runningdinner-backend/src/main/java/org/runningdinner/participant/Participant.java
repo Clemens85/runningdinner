@@ -10,7 +10,7 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
 import org.runningdinner.geocoder.GeocodingResult;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

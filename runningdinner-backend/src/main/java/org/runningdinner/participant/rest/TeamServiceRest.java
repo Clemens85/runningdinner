@@ -3,7 +3,7 @@ package org.runningdinner.participant.rest;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellation;
@@ -17,15 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/rest/teamservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,16 +28,16 @@ public class TeamServiceRest {
 	@Autowired
 	private TeamService teamService;
 
-	@RequestMapping(value = "/runningdinner/{adminId}/team/{teamId}/meetingplan", method = RequestMethod.GET)
-	public TeamMeetingPlanTO findTeamMeetingPlan(@PathVariable("adminId") String adminId, @PathVariable("teamId") UUID teamId) {
+	@GetMapping("/runningdinner/{adminId}/team/{teamId}/meetingplan")
+	public TeamMeetingPlanTO findTeamMeetingPlan(@PathVariable String adminId, @PathVariable UUID teamId) {
 
 	  TeamMeetingPlan teamMeetingPlan = teamService.findTeamMeetingPlan(adminId, teamId);
 		TeamMeetingPlanTO result = new TeamMeetingPlanTO(teamMeetingPlan);
 		return result;
 	}
 	
-  @RequestMapping(value = "/runningdinner/{adminId}", method = RequestMethod.GET)
-  public TeamArrangementListTO findTeamArrangements(@PathVariable("adminId") String adminId, 
+  @GetMapping("/runningdinner/{adminId}")
+  public TeamArrangementListTO findTeamArrangements(@PathVariable String adminId, 
                                                     @RequestParam(value = "filterCancelledTeams", defaultValue = "false", required = false) boolean excludeCancelledTeams) {
 
     List<Team> teams = teamService.findTeamArrangements(adminId, excludeCancelledTeams);
@@ -65,28 +57,28 @@ public class TeamServiceRest {
 	} 
   
   @PostMapping(value = "/runningdinner/{adminId}")
-  public TeamArrangementListTO generateTeamArrangements(@PathVariable("adminId") final String adminId) {
+  public TeamArrangementListTO generateTeamArrangements(@PathVariable final String adminId) {
     
     TeamArrangementListTO result = teamService.createTeamAndVisitationPlans(adminId);
     return result;
   }
   
   @PutMapping(value = "/runningdinner/{adminId}")
-  public TeamArrangementListTO reGenerateTeamArrangements(@PathVariable("adminId") final String adminId) {
+  public TeamArrangementListTO reGenerateTeamArrangements(@PathVariable final String adminId) {
     
     TeamArrangementListTO result = teamService.dropAndReCreateTeamAndVisitationPlans(adminId, Collections.emptyList());
     return result;
   }
   
   @DeleteMapping(value = "/runningdinner/{adminId}")
-  public TeamArrangementListTO dropTeamArrangements(@PathVariable("adminId") final String adminId) {
+  public TeamArrangementListTO dropTeamArrangements(@PathVariable final String adminId) {
     
     List<TeamTO> teams = teamService.dropTeamAndAndVisitationPlans(adminId, false, true);
     return new TeamArrangementListTO(teams, adminId);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/teamhosts", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public TeamArrangementListTO updateTeamHosts(@PathVariable("adminId") String adminId,
+  @PutMapping(value = "/runningdinner/{adminId}/teamhosts", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public TeamArrangementListTO updateTeamHosts(@PathVariable String adminId,
       @RequestBody TeamArrangementListTO teamHostList) {
 
     List<TeamTO> teams = teamHostList.getTeams();
@@ -97,19 +89,19 @@ public class TeamServiceRest {
     return new TeamArrangementListTO(TeamTO.convertTeamList(updatedTeams), adminId);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/teammembers/swap/{firstParticipantId}/{secondParticipantId}", method = RequestMethod.PUT)
-  public TeamArrangementListTO swapTeamMembers(@PathVariable("adminId") String adminId,
-      @PathVariable("firstParticipantId") UUID firstParticipantId,
-      @PathVariable("secondParticipantId") UUID secondParticipantId) {
+  @PutMapping("/runningdinner/{adminId}/teammembers/swap/{firstParticipantId}/{secondParticipantId}")
+  public TeamArrangementListTO swapTeamMembers(@PathVariable String adminId,
+      @PathVariable UUID firstParticipantId,
+      @PathVariable UUID secondParticipantId) {
 
     List<Team> updatedTeams = teamService.swapTeamMembers(adminId, firstParticipantId, secondParticipantId);
     return newSwapResponse(updatedTeams, adminId);
   }
 
   @PutMapping(value = "/runningdinner/{adminId}/meals/swap/{firstTeamId}/{secondTeamId}")
-  public TeamArrangementListTO swapMeals(@PathVariable("adminId") String adminId,
-                                         @PathVariable("firstTeamId") UUID firstTeamId,
-                                         @PathVariable("secondTeamId") UUID secondTeamId) {
+  public TeamArrangementListTO swapMeals(@PathVariable String adminId,
+                                         @PathVariable UUID firstTeamId,
+                                         @PathVariable UUID secondTeamId) {
 
     List<Team> updatedTeams = teamService.swapMeals(adminId, firstTeamId, secondTeamId);
     return newSwapResponse(updatedTeams, adminId);
@@ -121,8 +113,8 @@ public class TeamServiceRest {
     return new TeamArrangementListTO(result, adminId);
   }
 
-  @RequestMapping(value = "/runningdinner/{adminId}/team/{teamId}/cancel", method = RequestMethod.PUT)
-  public TeamCancellationResultTO cancelTeam(@PathVariable("adminId") String adminId, @PathVariable("teamId") UUID teamId,
+  @PutMapping("/runningdinner/{adminId}/team/{teamId}/cancel")
+  public TeamCancellationResultTO cancelTeam(@PathVariable String adminId, @PathVariable UUID teamId,
   		@Valid @RequestBody TeamCancellation teamCancellation) {
   
   	Assert.state(Objects.equals(teamId, teamCancellation.getTeamId()), "Passed teamId does not match teamId in teamCancellation obj");
@@ -134,8 +126,8 @@ public class TeamServiceRest {
   	return new TeamCancellationResultTO(result);
   }
 	
-  @RequestMapping(value = "/runningdinner/{adminId}/team/{teamId}/{participantId}/cancel", method = RequestMethod.PUT)
-  public TeamTO cancelTeamMember(@PathVariable("adminId") String adminId, @PathVariable("teamId") UUID teamId, @PathVariable("participantId") UUID participantId) {
+  @PutMapping("/runningdinner/{adminId}/team/{teamId}/{participantId}/cancel")
+  public TeamTO cancelTeamMember(@PathVariable String adminId, @PathVariable UUID teamId, @PathVariable UUID participantId) {
   
     Team result = teamService.cancelTeamMember(adminId, teamId, participantId);
   	
@@ -144,15 +136,15 @@ public class TeamServiceRest {
     return new TeamTO(result);
   }
 	
-  @RequestMapping(value = "/runningdinner/{adminId}/team/{teamId}/dinnerroute", method = RequestMethod.GET)
-  public DinnerRouteTO findDinnerRoute(@PathVariable("adminId") String adminId, @PathVariable("teamId") UUID teamId) {
+  @GetMapping("/runningdinner/{adminId}/team/{teamId}/dinnerroute")
+  public DinnerRouteTO findDinnerRoute(@PathVariable String adminId, @PathVariable UUID teamId) {
 
     return teamService.findDinnerRoute(adminId, teamId)
                         .withMealSpecificsInHtmlFormat();
   }
   
-  @RequestMapping(value = "/runningdinner/{adminId}/team-locations-event-data", method = RequestMethod.GET)
-  public TeamLocationsEventData findTeamLocationsEventData(@PathVariable("adminId") String adminId) {
+  @GetMapping("/runningdinner/{adminId}/team-locations-event-data")
+  public TeamLocationsEventData findTeamLocationsEventData(@PathVariable String adminId) {
     
     return teamService.findTeamLocationsEventData(adminId);
   }

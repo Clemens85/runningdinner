@@ -5,7 +5,7 @@ import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.admin.message.team.BaseTeamMessage;
 import org.runningdinner.mail.formatter.DinnerRouteTextMessage;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class DinnerRouteMessage extends BaseTeamMessage implements DinnerRouteTextMessage {
 

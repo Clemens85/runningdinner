@@ -14,7 +14,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class MailService {
@@ -41,8 +41,7 @@ public class MailService {
 
     MailSender mailSenderToUse = getMailSender();
 
-    if (mailSenderToUse instanceof JavaMailSender) {
-      JavaMailSender javaMailSender = (JavaMailSender) mailSenderToUse;
+    if (mailSenderToUse instanceof JavaMailSender javaMailSender) {
       MimeMessagePreparator preparator = prepareMessage(simpleMailMessage);
       javaMailSender.send(preparator);
     } else {

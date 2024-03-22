@@ -27,5 +27,5 @@ it("trimStringsInObject should trim strings in object and don't modify non-strin
   expect(result.subObj.otherStr).toBe("foo");
 
   // Original obj should not be touched
-  expect(myObj.email2).toBe("foo@bar.de  ")
+  expect(myObj.email2).toBe("foo@bar.de  ");
 });

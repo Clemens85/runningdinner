@@ -1,6 +1,6 @@
 import { BackendConfig } from "../BackendConfig";
 import axios from "axios";
-import cloneDeep from "lodash/cloneDeep";
+import {cloneDeep} from 'lodash-es';
 import {isSameEntity} from "../Utils";
 import {DinnerRoute, Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo} from "../types";
 import {getFullname} from "./ParticipantService";

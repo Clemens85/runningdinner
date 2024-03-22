@@ -2,7 +2,7 @@ package org.runningdinner.participant.rest;
 
 import java.util.Objects;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.participant.ParticipantName;

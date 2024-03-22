@@ -1,36 +1,23 @@
 package org.runningdinner.core;
 
-import java.time.LocalDateTime;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.MoreObjects;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.geocoder.GeocodingResult;
 
-import com.google.common.base.MoreObjects;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Embeddable
 public class AfterPartyLocation {
-  
-//  @Embedded
-//  @AttributeOverrides({
-//    @AttributeOverride(name = "street", column = @Column(name = "afterPartyLocationStreet")),
-//    @AttributeOverride(name = "streetNr", column = @Column(name = "afterPartyLocationStreetNr")),
-//    @AttributeOverride(name = "zip", column = @Column(name = "afterPartyLocationZip")),
-//    @AttributeOverride(name = "cityName", column = @Column(name = "afterPartyLocationCityName")),
-//    @AttributeOverride(name = "addressName", column = @Column(name = "afterPartyLocationAddressName")),
-//    @AttributeOverride(name = "remarks", column = @Column(name = "afterPartyLocationRemarks"))
-//  })
-//  private ParticipantAddress address;
-  
- 
+
+  @SafeHtml
+  @NotBlank
+  @Length(max = 512)
+  private String title;
+
   @SafeHtml
   @NotBlank
   @Length(max = 256)
@@ -139,7 +126,16 @@ public class AfterPartyLocation {
   public boolean isDefined() {
     return time != null;
   }
-  
+
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
   public AfterPartyLocation createDetachedClone() {
     AfterPartyLocation result = new AfterPartyLocation();
     copyValues(this, result);
@@ -155,6 +151,7 @@ public class AfterPartyLocation {
     dest.setStreetNr(src.getStreetNr());
     dest.setTime(src.getTime());
     dest.setZip(src.getZip());
+    dest.setTitle(src.getTitle());
   }
 
   @Override

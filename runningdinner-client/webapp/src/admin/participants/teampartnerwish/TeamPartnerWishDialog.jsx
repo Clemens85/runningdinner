@@ -86,7 +86,7 @@ export const TeamPartnerWishDialog = ({runningDinner, teamPartnerWishInfo, isOpe
 
   const onCancel = () => {
     onClose(noTeamPartnerWishAction());
-  }
+  };
 
   if (!isOpen) {
     return null;

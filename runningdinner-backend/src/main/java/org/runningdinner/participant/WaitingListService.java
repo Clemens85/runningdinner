@@ -1,16 +1,5 @@
 package org.runningdinner.participant;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
@@ -43,28 +32,32 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
 @Service
 public class WaitingListService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WaitingListService.class);
   
-	private TeamService teamService;
+	private final TeamService teamService;
 	
-	private RunningDinnerService runningDinnerService;
+	private final RunningDinnerService runningDinnerService;
 	
-	private ParticipantService participantService;
+	private final ParticipantService participantService;
 
-	private LocalizationProviderService localizationProviderService;
+	private final LocalizationProviderService localizationProviderService;
 
-	private RunningDinnerCalculator runningDinnerCalculator;
+	private final RunningDinnerCalculator runningDinnerCalculator;
 
-	private TeamRepository teamRepository;
+	private final TeamRepository teamRepository;
 
-	private ActivityService activityService;
+	private final ActivityService activityService;
 
-	private EventPublisher eventPublisher;
+	private final EventPublisher eventPublisher;
 
-    private ParticipantRepository participantRepository;
+    private final ParticipantRepository participantRepository;
 
     public WaitingListService(TeamService teamService,
                               TeamRepository teamRepository,
@@ -254,7 +247,7 @@ public class WaitingListService {
           team + " is not allowed to be in status OK, but must either be cancelled or have a cancelled team member");
 
       List<Participant> participantsToAssign = findParticipantsToAssign(adminId, participantIds);
-      teamService.checkReplacementNotDestroyingTeamPartnerRegistration(adminId, team, participantsToAssign);
+      teamService.checkReplacementNotDestroyingTeamPartnerRegistration(participantsToAssign);
       
       List<Participant> teamMembers = team.getTeamMembersOrdered();
       teamMembers.addAll(participantsToAssign);

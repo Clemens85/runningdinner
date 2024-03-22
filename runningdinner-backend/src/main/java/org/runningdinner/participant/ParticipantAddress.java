@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.core.InvalidAddressException;
 import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  * Represents the address of a participant.<br>

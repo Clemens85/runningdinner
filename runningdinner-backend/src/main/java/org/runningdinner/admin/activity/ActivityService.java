@@ -63,7 +63,7 @@ public class ActivityService {
               ActivityType.PARTICIPANT_UNSUBSCRIBED
               );
   
-  private static final String NEW_RUNNING_DINNER_MESSAGE_TEMPLATE = "Du hast dieses Running Dinner unter der Email-Addresse <strong>{email}</strong> angelegt.";
+  private static final String NEW_RUNNING_DINNER_MESSAGE_TEMPLATE = "Du hast dieses Running Dinner unter der E-Mail-Addresse <strong>{email}</strong> angelegt.";
 
   private static final String PARTICIPANT_SUBSCRIBED_MESSAGE_TEMPLATE = "{participantName} hat sich angemeldet";
   
@@ -88,11 +88,11 @@ public class ActivityService {
   
   private static final String TEAM_CANCELLED_REPLACED_MESSAGE_TEMPLATE = "Folgende Teilnehmer wurden ersetzt:<br>{participantName}";
 
-  private static final String TEAM_ARRANGEMENT_MAIL_SENT_MESSAGE_TEMPLATE = "Du hast insgesamt {numSentMails} Emails mit Infos über die <strong>Teameinteilungen</strong> versandt.";
+  private static final String TEAM_ARRANGEMENT_MAIL_SENT_MESSAGE_TEMPLATE = "Du hast insgesamt {numSentMails} E-Mails mit Infos über die <strong>Teameinteilungen</strong> versandt.";
   
-  private static final String DINNER_ROUTE_MAIL_SENT_MESSAGE_TEMPLATE = "Du hast insgesamt {numSentMails} Emails mit Infos über die <strong>Dinner Routen</strong> versandt.";
+  private static final String DINNER_ROUTE_MAIL_SENT_MESSAGE_TEMPLATE = "Du hast insgesamt {numSentMails} E-Mails mit Infos über die <strong>Dinner Routen</strong> versandt.";
   
-  private static final String PARTICIPANT_MAIL_SENT_MESSAGE_TEMPLATE = "Du hast insgesamt <strong>{numSentMails}</strong> Emails (Rundmails) an Einzelteilnehmer versandt.";
+  private static final String PARTICIPANT_MAIL_SENT_MESSAGE_TEMPLATE = "Du hast insgesamt <strong>{numSentMails}</strong> E-Mails (Rundmails) an Einzelteilnehmer versandt.";
   
   private static final String RUNNING_DINNER_CANCELLED_MESSAGE_TEMPLATE = "Du hast dieses Running Dinner endgültig abgesagt. Es wird demnächst automatisch gelöscht.";
 
@@ -322,7 +322,7 @@ public class ActivityService {
     Activity activity = new Activity(LocalDateTime.now(), activityType, originator, messageJob.getRunningDinner());
 
     activity.setActivityMessage(activityMessage);
-    activity.setActivityHeadline("Nicht alle Emails konnten zugestellt werden");
+    activity.setActivityHeadline("Nicht alle E-Mails konnten zugestellt werden");
 
     activity.setRelatedEntityId(messageJob.getId());
     activity.setRelatedEntityType(RelatedEntityType.MESSAGE_JOB);
@@ -522,7 +522,7 @@ public class ActivityService {
       return "Dinner-Routen versandt";
     }
     else if (messageJob.getMessageType() == MessageType.PARTICIPANT) {
-      return "Emails an Teilnehmer versandt";
+      return "E-Mails an Teilnehmer versandt";
     }
     throw new IllegalArgumentException("Cannot map messageJob type " + messageJob);
   }
@@ -530,13 +530,13 @@ public class ActivityService {
   private String getMessageJobSendingFailedMessage(MessageJob messageJob) {
 
     if (messageJob.getMessageType() == MessageType.TEAM) {
-      return "Beim Email-Versand von Team-Nachrichten konnte mindestens eine Email nicht zugestellt werden.";
+      return "Beim E-Mail-Versand von Team-Nachrichten konnte mindestens eine E-Mail nicht zugestellt werden.";
     }
     else if (messageJob.getMessageType() == MessageType.DINNER_ROUTE) {
-      return "Beim Email-Versand der Dinner-Routen konnte mindestens eine Email nicht zugestellt werden.";
+      return "Beim E-Mail-Versand der Dinner-Routen konnte mindestens eine E-Mail nicht zugestellt werden.";
     }
     else if (messageJob.getMessageType() == MessageType.PARTICIPANT) {
-      return "Beim Versand der Emails an die Teilnehmer konnte mindestens eine Email nicht zugestellt werden.";
+      return "Beim Versand der E-Mails an die Teilnehmer konnte mindestens eine E-Mail nicht zugestellt werden.";
     }
     LOGGER.warn("Currently we support only TEAM, DINNER_ROUTE and PARTICIPANT MessageJob Types for generating Activity Entities. Passed MessageJob was {}", messageJob);
     return null;

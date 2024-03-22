@@ -3,8 +3,8 @@ package org.runningdinner.admin.message;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.mail.formatter.SimpleTextMessage;

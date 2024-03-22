@@ -44,6 +44,7 @@ public class ParticipantRegistrationInfo implements HasTeamPartnerWishOriginator
     this.teamPartnerWishOriginatorId = src.getTeamPartnerWishOriginatorId();
   }
 
+  @Override
   public UUID getId() {
     return id;
   }

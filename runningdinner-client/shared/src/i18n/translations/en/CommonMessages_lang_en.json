@@ -6,7 +6,7 @@
 	"address_remarks": "Remarks / Bell at",
 	"address_remarks_placeholder": "Fill only for special remarks",
 	"address_street_nr_invalid": "Street is not valid",
-	"after_event_party": "After-Event-Party",
+	"after_party_location_title_help": "This is the heading that will be displayed later in the event description and in the dinner routes.",
 	"after_event_party_help_1": "If you are having an after-event party, you can specify the location here.",
 	"after_event_party_help_2": "This location will be displayed later in the event description and dinner routes.",
 	"after_party_location_name": "Name",

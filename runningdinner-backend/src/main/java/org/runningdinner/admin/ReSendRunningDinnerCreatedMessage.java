@@ -1,7 +1,7 @@
 package org.runningdinner.admin;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 
 import org.hibernate.validator.constraints.SafeHtml;
 

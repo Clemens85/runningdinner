@@ -1,21 +1,14 @@
 package org.runningdinner.core.dinnerplan;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
-
 import org.runningdinner.core.GeneratedTeamsResult;
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.TeamCombinationInfo;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Team;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class StaticTemplateDinnerPlanGenerator implements DinnerPlanGenerator {
 
@@ -100,7 +93,7 @@ public class StaticTemplateDinnerPlanGenerator implements DinnerPlanGenerator {
 				Team team = teamsWithMeal.poll();
 				if (team == null) {
 					throw new IllegalStateException("No more teams left on teamsByMealMapping which may never happen. MealClass="
-							+ mealClassOfHoster + ", Matrix was: " + matrix);
+							+ mealClassOfHoster + ", Matrix was: " + Arrays.deepToString(matrix));
 				}
 
 				teamToMatrixNumberMapping.put(hosterNumber, team);

@@ -22,8 +22,10 @@ public interface TeamRepository extends RunningDinnerRelatedRepository<Team> {
   @EntityGraph(value = Team.NAMED_ENTITIY_GRAPH_TEAMMEMBERS_AND_MEALCLASS, type = EntityGraphType.LOAD)
   Team findWithTeamMembersAndMealClassDistinctByIdAndAdminId(UUID teamId, String adminId);
 	
-  @Query("SELECT DISTINCT t FROM Team t JOIN t.teamMembers members LEFT JOIN FETCH t.teamMembers " +
-         "WHERE members.id IN :participantIds AND t.adminId=:adminId ORDER BY t.teamNumber")
+  @Query("""
+         SELECT DISTINCT t FROM Team t JOIN t.teamMembers members LEFT JOIN FETCH t.teamMembers \
+         WHERE members.id IN :participantIds AND t.adminId=:adminId ORDER BY t.teamNumber\
+         """)
   List<Team> findTeamsByParticipantIds(@Param("participantIds") Set<UUID> participantIds, @Param("adminId") String adminId);
 
   @EntityGraph(value = Team.NAMED_ENTITIY_GRAPH_VISITATIONPLAN, type = EntityGraphType.LOAD)

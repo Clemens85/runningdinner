@@ -4,7 +4,7 @@ package org.runningdinner.admin.message.team;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.mail.formatter.TeamArrangementTextMessage;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class TeamMessage extends BaseTeamMessage implements TeamArrangementTextMessage {
 

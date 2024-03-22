@@ -8,6 +8,7 @@ import {
   LANDING_CREATE_RUNNING_DINNER_PATH, LANDING_NEWS_PATH, LANDING_START_PATH,
   RUNNING_DINNER_EVENTS_PATH
 } from "../common/mainnavigation/NavigationPaths";
+import { FameOnMePopup } from '../common/teaserpopup/FameOnMePopup';
 
 
 export default function LandingApp() {
@@ -41,6 +42,7 @@ export default function LandingApp() {
       <MainNavigation mainTitle={mainTitle}
                       navigationItems={navigationItems} />
       <LandingRoute />
+      <FameOnMePopup />
     </div>
   );
 

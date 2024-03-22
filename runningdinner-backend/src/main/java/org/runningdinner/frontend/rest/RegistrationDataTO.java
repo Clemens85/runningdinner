@@ -1,6 +1,6 @@
 package org.runningdinner.frontend.rest;
 
-import javax.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.AssertTrue;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.SafeHtml;

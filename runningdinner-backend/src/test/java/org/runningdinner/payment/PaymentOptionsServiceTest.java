@@ -6,18 +6,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.payment.paymentoptions.PaymentOptions;
 import org.runningdinner.payment.paymentoptions.PaymentOptionsService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ApplicationTest
 public class PaymentOptionsServiceTest {
   
@@ -31,7 +31,7 @@ public class PaymentOptionsServiceTest {
 
   private String adminId;
   
-  @Before
+  @BeforeEach
   public void setUp() {
 
     runningDinner = testHelperService.createPublicRunningDinner(LocalDate.now().plusDays(30), 2);
