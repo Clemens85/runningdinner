@@ -3,11 +3,11 @@ const Wizard_de: any = {
 
   public_settings: 'Daten für die Veröffentlichung',
 
-  email_administration_link_help: 'Ein Link zur Administration wird an diese Email-Adresse versandt. Diese Adresse wird als Absender benutzt wenn du Nachrichten an deine Teilnehmer verschickst.<br> ' +
+  email_administration_link_help: 'Ein Link zur Administration wird an diese E-Mail-Adresse versandt. Diese Adresse wird als Absender benutzt wenn du Nachrichten an deine Teilnehmer verschickst.<br> ' +
       '<strong>Du erhälst außerdem einen Link zur Bestätigung, dass du wirklich der Ersteller dieses Events bist. ' +
       'Erst nach deiner Bestätigung werden alle Funktionalitäten (wie etwa der Nachrichtenversand) freigeschaltet!</strong>',
   administration_link_help: 'Dieser Link sollte nicht weitergegeben, sondern in den eigenen Favoriten gespeichert werden. ' +
-      'In deinem EMail-Postfach solltest du eine Email mit diesem Link und einem Bestätigungslink (zur Freischaltung des Nachrichtenversands) erhalten haben.',
+      'In deinem E-Mail-Postfach solltest du eine E-Mail mit diesem Link und einem Bestätigungslink (zur Freischaltung des Nachrichtenversands) erhalten haben.',
   administration_link_open: 'Zur Administration',
 
   error_required_meal_label: 'Alle Speisen müssen benamt sein.',
@@ -36,7 +36,7 @@ const Wizard_de: any = {
 
   almost_there: 'Fast geschafft...',
 
-  administration_email_label: 'Deine Email Adresse',
+  administration_email_label: 'Deine E-Mail Adresse',
 
   adv_headline: 'Zustimmung zur Auftragsdatenverarbeitung',
   adv_text_question: 'Warum muss ich dies tun?',

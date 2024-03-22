@@ -30,7 +30,7 @@
 			"response": []
 		},
 		{
-			"name": "EMail als Bounce ḱennzeichnen (DEV)",
+			"name": "E-Mail als Bounce kennzeichnen (DEV)",
 			"request": {
 				"method": "PUT",
 				"header": [],

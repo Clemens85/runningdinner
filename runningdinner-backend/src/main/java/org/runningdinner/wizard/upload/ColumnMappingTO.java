@@ -68,7 +68,7 @@ public class ColumnMappingTO implements Serializable {
 		result.add(new SelectOptionTO(CAN_HOST, "Genuegend Anzahl Plaetze vorhanden"));
 		result.add(new SelectOptionTO(GENDER, "Geschlecht"));
 		result.add(new SelectOptionTO(AGE, "Alter"));
-		result.add(new SelectOptionTO(EMAIL, "Email"));
+		result.add(new SelectOptionTO(EMAIL, "E-Mail"));
 		result.add(new SelectOptionTO(MOBILE, "Handy-Nummer"));
 		result.add(new SelectOptionTO(SEQUENCE_NR, "Nummerierung (Reihenfolge)"));
 		return result;

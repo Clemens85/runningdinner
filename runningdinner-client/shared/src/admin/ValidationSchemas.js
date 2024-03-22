@@ -5,7 +5,7 @@ setLocale({
   string: {
     required: 'Pflichtfeld',
     max: 'Max. Zeichenanzahl überschritten',
-    email: 'Ungültige EMail-Adresse'
+    email: 'Ungültige E-Mail-Adresse'
   }
 });
 
