@@ -223,7 +223,6 @@ public class CoreUtil {
    * @return
    */
   public static int convertToNumber(String str, int fallback) {
-    LOGGER.warn("Dummy Logging for checking whether adaption works for {} ...", str);
     try {
       if (StringUtils.isEmpty(str)) {
         return fallback;
