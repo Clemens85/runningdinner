@@ -7,4 +7,4 @@ COPY ${EXTRACTED}/spring-boot-loader/ ./
 RUN true
 COPY ${EXTRACTED}/application/ ./
 RUN mkdir -p /logs
-ENTRYPOINT ["java",  "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java",  "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "org.springframework.boot.loader.launch.JarLauncher"]
