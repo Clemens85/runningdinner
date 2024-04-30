@@ -2,6 +2,7 @@ package org.runningdinner.messaging.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.participant.Participant;
 import org.slf4j.Logger;
@@ -29,17 +30,21 @@ public class MessagingIntegrationService {
 
   private final SnsProvider snsProvider;
 
-  public MessagingIntegrationService(@Value("${aws.sns.messaging-integration.arn}") String snsTopicArn, ObjectMapper objectMapper, SnsProvider snsProvider) {
+  private final UrlGenerator urlGenerator;
+
+  public MessagingIntegrationService(@Value("${aws.sns.messaging-integration.arn}") String snsTopicArn, ObjectMapper objectMapper, SnsProvider snsProvider, UrlGenerator urlGenerator) {
     this.snsTopicArn = snsTopicArn;
     this.objectMapper = objectMapper;
     this.snsProvider = snsProvider;
+    this.urlGenerator = urlGenerator;
   }
 
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   @Async
   public CompletableFuture<PublishResponse> handleNewOrUpdatedRunningDinner(RunningDinner runningDinner) {
 
-    RunningDinnerIntegrationPayload payloadObj = new RunningDinnerIntegrationPayload(runningDinner);
+    RunningDinner runningDinnerWithPublicUrl = urlGenerator.addPublicDinnerUrl(runningDinner);
+    RunningDinnerIntegrationPayload payloadObj = new RunningDinnerIntegrationPayload(runningDinnerWithPublicUrl);
 
     String payloadStr = toJsonString(payloadObj);
 
