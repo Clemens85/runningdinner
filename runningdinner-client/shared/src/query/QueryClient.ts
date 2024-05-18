@@ -23,3 +23,7 @@ export function isQuerySucceeded(query: UseQueryResult<unknown, unknown>) {
   }
   return !!query.data;
 }
+
+export function isAllQueriesSucceeded(queries: UseQueryResult<unknown, unknown>[]) {
+  return queries.every(query => isQuerySucceeded(query));
+}
