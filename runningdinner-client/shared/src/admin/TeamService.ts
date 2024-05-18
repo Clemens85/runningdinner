@@ -2,7 +2,7 @@ import { BackendConfig } from "../BackendConfig";
 import axios from "axios";
 import {cloneDeep} from 'lodash-es';
 import {isSameEntity} from "../Utils";
-import {DinnerRoute, Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo} from "../types";
+import {DinnerRoute, DinnerRouteList, Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo} from "../types";
 import {getFullname} from "./ParticipantService";
 
 export async function findTeamsAsync(adminId: string): Promise<Array<Team>> {
@@ -74,6 +74,12 @@ export async function cancelTeamMemberAsync(adminId: string, teamId: string, tea
 
 export async function findDinnerRouteByAdminIdAndTeamIdAsync(adminId: string, teamId: string): Promise<DinnerRoute> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/team/${teamId}/dinnerroute`);
+  const response = await axios.get(url);
+  return response.data;
+}
+
+export async function findAllDinnerRoutesByAdminIdAsync(adminId: string): Promise<DinnerRouteList> {
+  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/dinnerroutes`);
   const response = await axios.get(url);
   return response.data;
 }

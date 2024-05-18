@@ -24,6 +24,10 @@ export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {
 
 }
 
+export interface DinnerRouteList {
+  dinnerRoutes: DinnerRoute[];
+}
+
 export function isSameDinnerRouteTeam(a: DinnerRouteTeam | Team, b: DinnerRouteTeam | Team) {
  return a.teamNumber === b.teamNumber;
 }
