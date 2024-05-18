@@ -1,15 +1,8 @@
 package org.runningdinner.participant.rest;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import jakarta.validation.Valid;
-
-import org.runningdinner.participant.Team;
-import org.runningdinner.participant.TeamCancellation;
-import org.runningdinner.participant.TeamCancellationResult;
-import org.runningdinner.participant.TeamMeetingPlan;
-import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.*;
+import org.runningdinner.participant.rest.dinnerroute.DinnerRouteListTO;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
 import org.runningdinner.routeoptimization.TeamLocationsEventData;
 import org.slf4j.Logger;
@@ -18,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/rest/teamservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -142,7 +138,15 @@ public class TeamServiceRest {
     return teamService.findDinnerRoute(adminId, teamId)
                         .withMealSpecificsInHtmlFormat();
   }
-  
+
+  @GetMapping("/runningdinner/{adminId}/dinnerroutes")
+  public DinnerRouteListTO findAllDinnerRoutes(@PathVariable String adminId) {
+
+    var result = teamService.findAllDinnerRoutes(adminId);
+    return new DinnerRouteListTO(result);
+  }
+
+
   @GetMapping("/runningdinner/{adminId}/team-locations-event-data")
   public TeamLocationsEventData findTeamLocationsEventData(@PathVariable String adminId) {
     

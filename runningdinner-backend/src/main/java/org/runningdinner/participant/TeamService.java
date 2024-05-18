@@ -1,5 +1,6 @@
 package org.runningdinner.participant;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.activity.Activity;
@@ -36,7 +37,6 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,21 +133,34 @@ public class TeamService {
   }
   
   public DinnerRouteTO findDinnerRoute(@ValidateAdminId String adminId, UUID teamId) {
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    return findDinnerRoute(runningDinner, teamId);
+  }
 
-    TeamMeetingPlan teamMeetingPlan = findTeamMeetingPlan(adminId, teamId);
+  private DinnerRouteTO findDinnerRoute(RunningDinner runningDinner, UUID teamId) {
+    TeamMeetingPlan teamMeetingPlan = findTeamMeetingPlan(runningDinner.getAdminId(), teamId);
     Assert.notNull(teamMeetingPlan, "teamMeetingPlan");
     Assert.notNull(teamMeetingPlan.getTeam(), "teamMeetingPlan.getDestTeam()");
-    
-    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-    
+
     List<Team> dinnerRoute = TeamRouteBuilder.generateDinnerRoute(teamMeetingPlan.getTeam());
-    
-    Team dinnerRouteTeam = IdentifierUtil.filterListForIdMandatory(dinnerRoute, teamId); 
+
+    Team dinnerRouteTeam = IdentifierUtil.filterListForIdMandatory(dinnerRoute, teamId);
 
     String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(dinnerRouteTeam,
-        runningDinner);
-    
+      runningDinner);
+
     return DinnerRouteTO.newInstance(teamId, dinnerRoute, mealSpecificsOfGuestTeams, runningDinner.getAfterPartyLocation());
+  }
+
+  public List<DinnerRouteTO> findAllDinnerRoutes(@ValidateAdminId String adminId) {
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+
+    List<DinnerRouteTO> result = new ArrayList<>();
+    List<Team> teams = findTeamArrangements(adminId, true);
+    for (Team team : teams) {
+      result.add(findDinnerRoute(runningDinner, team.getId()));
+    }
+    return result;
   }
 
   public Team findTeamById(@ValidateAdminId String adminId, UUID teamId) {
