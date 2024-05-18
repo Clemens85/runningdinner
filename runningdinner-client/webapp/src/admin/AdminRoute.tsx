@@ -10,6 +10,7 @@ import {SettingsPage} from "./settings/SettingsPage";
 import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 import {PaymentOptionsPage} from "./paymentoptions/PaymentOptionsPage";
 import { ParticipantsPage } from './participants/ParticipantsPage';
+import { HostLocationsPage } from "./hostlocations";
 
 export default function AdminRoute() {
 
@@ -37,6 +38,8 @@ export default function AdminRoute() {
         <Route path={`teams/:teamId`} element={<TeamsContainer />} />
 
         <Route path={`teams`} element={<TeamsContainer />} />
+
+        <Route path={`hostlocations`} element={<HostLocationsPage runningDinner={runningDinner} />} />
 
         <Route path={`:acknowledgeId/acknowledge`} element={<Acknowledge runningDinner={runningDinner} />} />
 
