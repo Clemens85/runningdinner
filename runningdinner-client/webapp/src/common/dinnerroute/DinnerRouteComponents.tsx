@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/system";
-import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, TeamNr, Time, isArrayEmpty, isStringNotEmpty } from "@runningdinner/shared";
+import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, TeamNr, Time, getFullname, isArrayEmpty, isStringNotEmpty } from "@runningdinner/shared";
 import { SmallTitle, Span, Subtitle } from "../theme/typography/Tags";
 import { uniq } from "lodash-es";
 import LinkExtern from "../theme/LinkExtern";
@@ -8,7 +8,7 @@ import { Alert, AlertTitle } from "@mui/material";
 import { useGeoPosition } from "../hooks/GeoPositionHook";
 import { AdvancedMarker, InfoWindow, Pin, useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
-import { AfterPartyLocationMapEntry, getMarkerLabel } from "./DinnerRouteMapCalculationService";
+import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry, getMarkerLabel } from "./DinnerRouteMapCalculationService";
 
 export const TeamCardDetailRow = styled('div')( {
   display: 'flex',
@@ -145,6 +145,46 @@ export function TeamMarkerInfoWindowContent({team, isCurrentTeam}: TeamMarkerInf
       <Subtitle>{team.meal.label} - <TeamNr {...team} /></Subtitle>
       <TeamCardDetails {...team} isCurrentTeam={isCurrentTeam} />
     </Box>
+  )
+}
+
+type TeamHostMarkerProps = {
+  team: DinnerRouteTeamMapEntry;
+  isCurrentTeam: boolean;
+  teamLabel: string;
+  scale?: number;
+};
+
+export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel}: TeamHostMarkerProps) {
+  
+  const [markerRef, marker] = useAdvancedMarkerRef();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <AdvancedMarker 
+        ref={markerRef}
+        title={`Team ${team.teamNumber} - ${team.meal.label} (${getFullname(team.hostTeamMember)})`}
+        onClick={() => setOpen(!open)}
+        position={{ lat: team.position.lat!, lng: team.position.lng! }}> 
+        <Pin 
+          scale={scale}
+          background={team.color}
+          borderColor={'#000'}>
+            <span>
+              <center>{getMarkerLabel(team.meal.label)}</center> <center>{teamLabel}</center>
+            </span>
+          </Pin>
+      </AdvancedMarker>
+      {open && (
+        <InfoWindow
+          anchor={marker}
+          maxWidth={300}
+          onCloseClick={() => setOpen(false)}>
+            <TeamMarkerInfoWindowContent team={team} isCurrentTeam={isCurrentTeam} />
+        </InfoWindow>
+      )}
+    </>
   )
 }
 

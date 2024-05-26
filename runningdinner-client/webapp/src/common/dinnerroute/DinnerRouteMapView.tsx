@@ -1,12 +1,12 @@
-import { DinnerRoute, getFullname, isQuerySucceeded } from "@runningdinner/shared";
+import { DinnerRoute, isQuerySucceeded } from "@runningdinner/shared";
 import { useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "./useGetGeocodePositionsOfTeamHosts";
 import { FetchProgressBar } from "../FetchProgressBar";
-import { AdvancedMarker, InfoWindow, Map, Pin, useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
-import { useRef, useState } from "react";
+import { Map} from "@vis.gl/react-google-maps";
+import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../hooks/DynamicFullscreenHeightHook";
-import { AfterPartyLocationMarker, CurrentPositionMarker, TeamMarkerInfoWindowContent, WarningAlert } from "./DinnerRouteComponents";
+import { AfterPartyLocationMarker, CurrentPositionMarker, TeamHostMarker, WarningAlert } from "./DinnerRouteComponents";
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../maps";
-import { DinnerRouteMapData, DinnerRouteTeamMapEntry, calculateDinnerRouteMapData, findDinnerRouteMapEntryForCurrentDinnerRouteTeam, getMarkerLabel } from "./DinnerRouteMapCalculationService";
+import { DinnerRouteMapData, calculateDinnerRouteMapData, findDinnerRouteMapEntryForCurrentDinnerRouteTeam } from "./DinnerRouteMapCalculationService";
 
 type DinnerRouteMapViewProps = {
   dinnerRoute: DinnerRoute;
@@ -79,6 +79,7 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
         { dinnerRouteMapEntries
             .map((team, index) => <TeamHostMarker key={team.teamNumber} 
                                                   team={team} 
+                                                  scale={1.3}
                                                   teamLabel={`#${index + 1}`}
                                                   isCurrentTeam={dinnerRoute.currentTeam.teamNumber === team.teamNumber} />) 
         }
@@ -90,42 +91,5 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
       </Map>
       { (showWarnings || currentPosError) && <WarningAlert /> }
     </div>
-  )
-}
-
-type TeamHostMarkerProps = {
-  team: DinnerRouteTeamMapEntry;
-  isCurrentTeam: boolean;
-  teamLabel: string;
-}
-
-function TeamHostMarker({team, isCurrentTeam, teamLabel}: TeamHostMarkerProps) {
-  
-  const [open, setOpen] = useState(false);
-  const [markerRef, marker] = useAdvancedMarkerRef();
-
-  return (
-    <>
-      <AdvancedMarker 
-        ref={markerRef}
-        title={`Team ${team.teamNumber} - ${team.meal.label} (${getFullname(team.hostTeamMember)})`}
-        onClick={() => setOpen(!open)}
-        position={{ lat: team.position.lat!, lng: team.position.lng! }}> 
-        <Pin 
-          scale={1.3}
-          background={team.color}
-          borderColor={'#000'}>
-            <span><center>{getMarkerLabel(team.meal.label)}</center> <center>{teamLabel}</center></span>
-          </Pin>
-      </AdvancedMarker>
-      {open && (
-        <InfoWindow
-          anchor={marker}
-          maxWidth={300}
-          onCloseClick={() => setOpen(false)}>
-            <TeamMarkerInfoWindowContent isCurrentTeam={isCurrentTeam} team={team} />
-        </InfoWindow>
-      )}
-    </>
   )
 }
