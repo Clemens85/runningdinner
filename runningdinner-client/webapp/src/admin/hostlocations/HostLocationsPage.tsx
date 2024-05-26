@@ -1,18 +1,12 @@
-import { BaseRunningDinnerProps, DinnerRouteTeam, Fullname, TeamNr, Time,  getFullname,  isQuerySucceeded, isStringNotEmpty, useGeocoder } from "@runningdinner/shared";
+import { BaseRunningDinnerProps, getFullname,  isQuerySucceeded } from "@runningdinner/shared";
 import { useRef, useState } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { APIProvider, AdvancedMarker, InfoWindow, Map, Pin, useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
 import { FetchProgressBar } from "../../common/FetchProgressBar";
-import { useTranslation } from "react-i18next";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Box, styled } from "@mui/system";
-import { SmallTitle, Span, Subtitle } from "../../common/theme/typography/Tags";
-import { Polyline } from "../../common/maps";
-import { DinnerRouteMapData, DinnerRouteTeamMapEntry, TeamConnectionPath, calculateDinnerRouteMapData, distinctDinnerRouteTeams, useFindAllDinnerRoutes } from "./HostLocationsService";
-import { Alert, AlertTitle } from "@mui/material";
+import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../../common/maps";
 import { cloneDeep } from "lodash-es";
-
-const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY_JS || "";
+import {  AfterPartyLocationMarker, DinnerRouteMapData, DinnerRouteTeamMapEntry, TeamConnectionPath, TeamMarkerInfoWindowContent, WarningAlert, calculateDinnerRouteMapData, distinctDinnerRouteTeams, getMarkerLabel, useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "../../common/dinnerroute";
+import { useFindAllDinnerRoutes } from "./useFindAllDinnerRoutes";
 
 export function HostLocationsPage({runningDinner}: BaseRunningDinnerProps) {
   return (
@@ -24,9 +18,6 @@ export function HostLocationsPage({runningDinner}: BaseRunningDinnerProps) {
 
 function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
   
-  const { i18n } = useTranslation();
-  const {getGeocodePositionsOfTeamHosts} = useGeocoder(GOOGLE_MAPS_KEY, i18n.language);
-
   const {adminId} = runningDinner;
 
   const dinnerRoutesQueryResult = useFindAllDinnerRoutes(adminId);
@@ -34,18 +25,16 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
   let allDinnerRouteTeams = allDinnerRoutes.flatMap(dinnerRoute => dinnerRoute.teams);
   allDinnerRouteTeams = distinctDinnerRouteTeams(allDinnerRouteTeams);
 
-  const geocodePositionsQueryResult = useQuery({
-    placeholderData: keepPreviousData,
-    queryFn: () => getGeocodePositionsOfTeamHosts(allDinnerRouteTeams),
-    queryKey: ['getGeocodePositionsOfTeamHosts', allDinnerRouteTeams],
-    enabled: allDinnerRouteTeams.length > 0,
-  });
+  const afterPartyLocation = allDinnerRoutes.length > 0 ? allDinnerRoutes[0].afterPartyLocation : null;
 
-  if (!isQuerySucceeded(geocodePositionsQueryResult)) {
-    return <FetchProgressBar {...dinnerRoutesQueryResult} />;
+  const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(allDinnerRouteTeams, GOOGLE_MAPS_KEY);
+  const geocodeAfterPartyQueryResult = useGetGeocodePositionOfAfterPartyLocation(afterPartyLocation, GOOGLE_MAPS_KEY);
+
+  if (!isQuerySucceeded(geocodePositionsQueryResult) || !isQuerySucceeded(geocodeAfterPartyQueryResult)) {
+    return <FetchProgressBar {...geocodePositionsQueryResult} />;
   }
 
-  const dinnerRouteMapData = calculateDinnerRouteMapData(allDinnerRoutes, geocodePositionsQueryResult.data);
+  const dinnerRouteMapData = calculateDinnerRouteMapData(allDinnerRoutes, geocodePositionsQueryResult.data, geocodeAfterPartyQueryResult.data!, {});
 
   if (dinnerRouteMapData.dinnerRouteMapEntries.length === 0) {
     return <WarningAlert />;
@@ -56,7 +45,7 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
   )
 }
 
-function HostLocationsView({showWarnings, dinnerRouteMapEntries, centerPosition}: DinnerRouteMapData) {
+function HostLocationsView({showWarnings, dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry}: DinnerRouteMapData) {
 
   const mapContainerRef = useRef(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400);
@@ -111,7 +100,7 @@ function HostLocationsView({showWarnings, dinnerRouteMapEntries, centerPosition}
       <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }}
             defaultZoom={11} 
             style={{ height: `${mapHeight}px`}}
-            mapId="5062543108f93729">
+            mapId={GOOGLE_MAPS_ID}>
             
         { Object.keys(pathsByTeam).map(color => 
             <Polyline 
@@ -131,6 +120,8 @@ function HostLocationsView({showWarnings, dinnerRouteMapEntries, centerPosition}
                                          isOpen={teamHostMarkersActive[team.teamNumber] !== undefined}
                                          team={team} />) 
         }
+
+        { afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} /> }
     
       </Map>
       { showWarnings && <WarningAlert /> }
@@ -146,7 +137,6 @@ type TeamHostMarkerProps = {
 
 function TeamHostMarker({team, handleOpen, isOpen}: TeamHostMarkerProps) {
   
-  // const [infowindowOpen, setInfowindowOpen] = useState(false);
   const [markerRef, marker] = useAdvancedMarkerRef();
 
   return (
@@ -160,7 +150,9 @@ function TeamHostMarker({team, handleOpen, isOpen}: TeamHostMarkerProps) {
           scale={1.5}
           background={team.color}
           borderColor={'#000'}>
-            <center>{team.meal.label.substring(0, 4)}</center> <center>#{team.teamNumber}</center>
+            <span>
+              <center>{getMarkerLabel(team.meal.label)}</center> <center>#{team.teamNumber}</center>
+            </span>
           </Pin>
       </AdvancedMarker>
       {isOpen && (
@@ -168,59 +160,9 @@ function TeamHostMarker({team, handleOpen, isOpen}: TeamHostMarkerProps) {
           anchor={marker}
           maxWidth={300}
           onCloseClick={() => handleOpen(false)}>
-          <Box p={1} style={{ backgroundColor: '#fff', opacity: 0.75}}>
-            <Subtitle>{team.meal.label} - <TeamNr {...team} /></Subtitle>
-            <TeamCardDetails {...team}/>
-          </Box>
+            <TeamMarkerInfoWindowContent team={team} isCurrentTeam={false} />
         </InfoWindow>
       )}
     </>
   )
-}
-
-
-const TeamCardDetailRow = styled('div')( {
-  display: 'flex',
-  alignItems: 'baseline'
-});
-const TeamCardDetailRowMarginBottom = styled('div')( {
-  display: 'flex',
-  alignItems: 'baseline',
-  mb: 1
-});
-
-function TeamCardDetails({hostTeamMember, meal}: DinnerRouteTeam) {
-  return (
-    <>
-    <TeamCardDetailRowMarginBottom>
-      <SmallTitle i18n="host"/>:&nbsp; <Span><Fullname {...hostTeamMember} /></Span>
-    </TeamCardDetailRowMarginBottom>
-    <SmallTitle i18n="address" gutterBottom={false}/>
-    <TeamCardDetailRow>
-      <Span gutterBottom={false}>{hostTeamMember.street}</Span>&nbsp;<Span gutterBottom={false}>{hostTeamMember.streetNr}</Span>
-    </TeamCardDetailRow>
-    <TeamCardDetailRowMarginBottom>
-      <Span>{hostTeamMember.zip}</Span>&nbsp;<Span>{hostTeamMember.cityName}</Span>
-    </TeamCardDetailRowMarginBottom>
-    { isStringNotEmpty(hostTeamMember.addressRemarks) && <em>{hostTeamMember.addressRemarks}</em> }
-
-    <TeamCardDetailRow>
-      <SmallTitle i18n="time"/>:&nbsp; <Span><Time date={meal.time }/></Span>
-    </TeamCardDetailRow>
-    </>
-  );
-}
-
-function WarningAlert() {
-
-  const {t} = useTranslation('common');
-
-  return (
-    <Box mt={2}>
-      <Alert severity="warning" variant="outlined">
-        <AlertTitle>{t('attention')}</AlertTitle>
-          {t('dinner_route_geocoding_warning')}
-        </Alert>
-    </Box>
-  );
 }

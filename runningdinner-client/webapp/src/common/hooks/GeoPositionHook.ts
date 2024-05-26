@@ -17,12 +17,13 @@ export interface Position {
   longitude?: number,
   accuracy?: any,
   speed?: any,
-  timestamp?: any
+  timestamp?: any,
+  error?: string
 }
 
 export const useGeoPosition = (watch = false, settings: PositionSettings = defaultSettings) => {
   const [position, setPosition] = useState<Position>({});
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const onChange = ({coords, timestamp}: any) => {
     setPosition({
@@ -33,6 +34,15 @@ export const useGeoPosition = (watch = false, settings: PositionSettings = defau
       timestamp,
     });
   };
+
+  function setError(error: string) {
+    setPosition(prev => {
+      return {
+        ...prev,
+        error
+      }
+    })
+  }
 
   const onError = (error: any) => {
     setError(error.message);
@@ -59,5 +69,5 @@ export const useGeoPosition = (watch = false, settings: PositionSettings = defau
     settings.maximumAge,
   ]);
 
-  return {...position, error};
+  return {...position};
 };

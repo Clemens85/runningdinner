@@ -107,9 +107,9 @@ export function useGeocoder(googleMapsApiKey: string, language = 'de') {
     return result;
   }
 
-  async function getGeocodePositionOfAfterPartyLocation(afterPartyLocation?: AfterPartyLocation): Promise<AfterPartyLocation | undefined> {
+  async function getGeocodePositionOfAfterPartyLocation(afterPartyLocation?: AfterPartyLocation | null): Promise<AfterPartyLocation | null> {
     if (!afterPartyLocation || !isAfterPartyLocationDefined(afterPartyLocation)) {
-      return undefined;
+      return null;
     }
 
     const result = cloneDeep(afterPartyLocation);
