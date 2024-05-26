@@ -4,10 +4,9 @@ import { FetchProgressBar } from "../FetchProgressBar";
 import { AdvancedMarker, InfoWindow, Map, Pin, useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
 import { useRef, useState } from "react";
 import { useDynamicFullscreenHeight } from "../hooks/DynamicFullscreenHeightHook";
-import { Box } from "@mui/system";
-import { AfterPartyLocationCard, CurrentPositionMarker, TeamMarkerInfoWindowContent, WarningAlert } from "./DinnerRouteComponents";
+import { AfterPartyLocationMarker, CurrentPositionMarker, TeamMarkerInfoWindowContent, WarningAlert } from "./DinnerRouteComponents";
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../maps";
-import { AfterPartyLocationMapEntry, DinnerRouteMapData, DinnerRouteTeamMapEntry, calculateDinnerRouteMapData, findDinnerRouteMapEntryForCurrentDinnerRouteTeam, getMarkerLabel } from "./DinnerRouteMapCalculationService";
+import { DinnerRouteMapData, DinnerRouteTeamMapEntry, calculateDinnerRouteMapData, findDinnerRouteMapEntryForCurrentDinnerRouteTeam, getMarkerLabel } from "./DinnerRouteMapCalculationService";
 
 type DinnerRouteMapViewProps = {
   dinnerRoute: DinnerRoute;
@@ -25,7 +24,8 @@ export function DinnerRouteMapView({dinnerRoute}: DinnerRouteMapViewProps) {
   const settings =  {
     addMarkersForOtherHostTeams: true,
     currentTeamColorOverride: '#2e7d32',
-    otherHostTeamColorOverride: '#999'
+    otherHostTeamColorOverride: '#999',
+    afterPartyLocationColorOverride: '#999'
   };
 
   const dinnerRouteMapData = calculateDinnerRouteMapData([dinnerRoute], 
@@ -124,41 +124,6 @@ function TeamHostMarker({team, isCurrentTeam, teamLabel}: TeamHostMarkerProps) {
           maxWidth={300}
           onCloseClick={() => setOpen(false)}>
             <TeamMarkerInfoWindowContent isCurrentTeam={isCurrentTeam} team={team} />
-        </InfoWindow>
-      )}
-    </>
-  )
-}
-
-function AfterPartyLocationMarker(afterPartyLocationMapEntry: AfterPartyLocationMapEntry) {
-  
-  const [open, setOpen] = useState(false);
-  const [markerRef, marker] = useAdvancedMarkerRef();
-
-  const {position, color, title} = afterPartyLocationMapEntry;
-
-  return (
-    <>
-      <AdvancedMarker 
-        ref={markerRef}
-        title={title}
-        onClick={() => setOpen(!open)}
-        position={{ lat: position.lat!, lng: position.lng! }}> 
-        <Pin 
-          scale={1.3}
-          background={color}
-          borderColor={'#000'}>
-            <span><center>{getMarkerLabel(title)}</center></span>
-          </Pin>
-      </AdvancedMarker>
-      {open && (
-        <InfoWindow
-          anchor={marker}
-          maxWidth={300}
-          onCloseClick={() => setOpen(false)}>
-          <Box p={1} style={{ backgroundColor: '#fff', opacity: 0.75}}>
-            <AfterPartyLocationCard {...afterPartyLocationMapEntry} />
-          </Box>
         </InfoWindow>
       )}
     </>

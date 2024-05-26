@@ -34,7 +34,9 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
     return <FetchProgressBar {...geocodePositionsQueryResult} />;
   }
 
-  const dinnerRouteMapData = calculateDinnerRouteMapData(allDinnerRoutes, geocodePositionsQueryResult.data, geocodeAfterPartyQueryResult.data!, {});
+  const dinnerRouteMapData = calculateDinnerRouteMapData(allDinnerRoutes, geocodePositionsQueryResult.data, geocodeAfterPartyQueryResult.data!, {
+    afterPartyLocationColorOverride: '#999'
+  });
 
   if (dinnerRouteMapData.dinnerRouteMapEntries.length === 0) {
     return <WarningAlert />;

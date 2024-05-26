@@ -41,6 +41,11 @@ export type DinnerRouteMapDataCalculationSettings = {
    * If set, the color of the host team is overridden with this color (and not dynamically calculated) => reasonable for single dinner route map view
    */
   otherHostTeamColorOverride?: string;
+
+  /**
+   * If set, the color of the after party location is overridden with this color (and not dynamically calculated) => reasonable for all types of view
+   */
+  afterPartyLocationColorOverride?: string;
 }
 
 
@@ -135,7 +140,7 @@ export function calculateDinnerRouteMapData(allDinnerRoutes: DinnerRoute[],
     afterPartyLocationMapEntry = {
       ...afterPartyLocation,
       position: afterPartyLocation.geocodingResult!,
-      color: calculatAfterPartyLocationColor(afterPartyLocation, settings.otherHostTeamColorOverride)
+      color: calculatAfterPartyLocationColor(afterPartyLocation, settings.afterPartyLocationColorOverride)
     };
   }
 
