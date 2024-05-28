@@ -51,7 +51,7 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
 function HostLocationsView({showWarnings, dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry}: DinnerRouteMapData) {
 
   const mapContainerRef = useRef(null);
-  const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400);
+  const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
 
   const [activeTeamsFilter, setActiveTeamsFilter] = useState<Record<number, DinnerRouteTeamMapEntry>>({});
   

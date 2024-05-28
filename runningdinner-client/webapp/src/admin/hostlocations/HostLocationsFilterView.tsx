@@ -1,9 +1,9 @@
-import { Box, Checkbox, FormControlLabel, Paper, styled } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Grid, IconButton, Paper, styled } from "@mui/material";
 import { Span, Subtitle } from "../../common/theme/typography/Tags";
 import { DinnerRouteTeamMapEntry } from "../../common/dinnerroute";
 import { Fullname } from "@runningdinner/shared";
-import { DialogTitleCloseable } from "../../common/theme/DialogTitleCloseable";
 import { Virtuoso } from "react-virtuoso";
+import MinimizeIcon from '@mui/icons-material/Minimize';
 import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 
@@ -17,7 +17,7 @@ const HostFilterPaper = styled(Paper)(({theme}) => ({
   position: 'fixed',
   minWidth: 250,
   maxWidth: 400,
-  padding: theme.spacing(2),
+  // padding: theme.spacing(2),
 }));
 
 
@@ -30,13 +30,26 @@ type HostLocationsFilterViewProps = {
 export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, onFilterChange}: HostLocationsFilterViewProps) {
 
   const teamsFilterContainerRef = useRef(null);
-  const teamsFilterHeight = useDynamicFullscreenHeight(teamsFilterContainerRef, 300) - 200;
+  const teamsFilterHeight = useDynamicFullscreenHeight(teamsFilterContainerRef, 300, true) - 200;
 
   return (
     <HostFilterPaper elevation={3} id="HostFilterPaper" ref={teamsFilterContainerRef}>
-      <Subtitle>Filter</Subtitle>
-      <div style={{ height: `${teamsFilterHeight}px` }}>
-        <Span>Wähle einzelne Teams aus zur Routen-Filterung</Span>
+      <Box sx={{ backgroundColor: 'green'}}>
+        <Grid container justifyContent={"space-between"} alignItems={"center"}>
+          <Grid item sx={{ paddingTop: 1, paddingLeft: 1, color: 'white' }}>
+            <Subtitle>Filter</Subtitle>
+          </Grid>
+          <Grid item alignContent={"end"}>
+            <IconButton onClick={() => {}} sx={{ color: 'white'}}>
+              <MinimizeIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box sx={{ height: `${teamsFilterHeight}px`, padding: 3 }}>
+        <Box pb={1}>
+          <Span>Wähle einzelne Teams aus zur Routen-Filterung</Span>
+        </Box>
         <Virtuoso 
           data={dinnerRouteMapEntries}
           style={{ height: '100%' }}
@@ -50,7 +63,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
             </Box>
           )}>
         </Virtuoso>
-      </div>
+      </Box>
     </HostFilterPaper>
   )
 }
