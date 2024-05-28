@@ -1,14 +1,18 @@
 import { Box, Checkbox, FormControlLabel, Paper, styled } from "@mui/material";
-import { SmallTitle, Span, Subtitle } from "../../common/theme/typography/Tags";
+import { Span, Subtitle } from "../../common/theme/typography/Tags";
 import { DinnerRouteTeamMapEntry } from "../../common/dinnerroute";
 import { Fullname } from "@runningdinner/shared";
+import { DialogTitleCloseable } from "../../common/theme/DialogTitleCloseable";
+import { Virtuoso } from "react-virtuoso";
+import { useRef } from "react";
+import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 
 function getTeamLabel(team: DinnerRouteTeamMapEntry) {
   return <>Team {team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
 }
 
 const HostFilterPaper = styled(Paper)(({theme}) => ({
-  top: 200,
+  top: 160,
   right: 50,
   position: 'fixed',
   minWidth: 250,
@@ -25,20 +29,28 @@ type HostLocationsFilterViewProps = {
 
 export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, onFilterChange}: HostLocationsFilterViewProps) {
 
-  return (
-    <HostFilterPaper elevation={3} id="HostFilterPaper">
-      <Subtitle>Filter</Subtitle>
-      <Span>Wähle einzelne Teams aus zum Filtern ihrer Routen</Span>
+  const teamsFilterContainerRef = useRef(null);
+  const teamsFilterHeight = useDynamicFullscreenHeight(teamsFilterContainerRef, 300) - 200;
 
-      { dinnerRouteMapEntries.map(team => 
-        <Box key={team.teamNumber} >
-          <FormControlLabel sx={{ color: team.color}} label={getTeamLabel(team)} control={
-            <Checkbox color="primary" 
-                      onChange={() => onFilterChange(team, !filteredTeams[team.teamNumber])} 
-                      checked={!!filteredTeams[team.teamNumber]} />
-          } />
-        </Box>
-      )}
+  return (
+    <HostFilterPaper elevation={3} id="HostFilterPaper" ref={teamsFilterContainerRef}>
+      <Subtitle>Filter</Subtitle>
+      <div style={{ height: `${teamsFilterHeight}px` }}>
+        <Span>Wähle einzelne Teams aus zur Routen-Filterung</Span>
+        <Virtuoso 
+          data={dinnerRouteMapEntries}
+          style={{ height: '100%' }}
+          itemContent={(_, team) => (
+            <Box>
+              <FormControlLabel sx={{ color: team.color}} label={getTeamLabel(team)} control={
+                <Checkbox color="primary" 
+                          onChange={() => onFilterChange(team, !filteredTeams[team.teamNumber])} 
+                          checked={!!filteredTeams[team.teamNumber]} />
+              } />
+            </Box>
+          )}>
+        </Virtuoso>
+      </div>
     </HostFilterPaper>
   )
 }
