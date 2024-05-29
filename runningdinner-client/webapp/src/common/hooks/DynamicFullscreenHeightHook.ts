@@ -3,7 +3,7 @@ import {useMediaQuery, useTheme} from "@mui/material";
 import { useElementPosition } from "./ElementPositionHook";
 import { useWindowSize } from "./WindowSizeHook";
 
-export function useDynamicFullscreenHeight(containerRef: RefObject<HTMLElement>, minHeight: number) {
+export function useDynamicFullscreenHeight(containerRef: RefObject<HTMLElement>, minHeight: number, calculateForSmallDevice: boolean = false) {
 
   const browserOffset = 20; // Add 20 px offset for browser
 
@@ -12,7 +12,9 @@ export function useDynamicFullscreenHeight(containerRef: RefObject<HTMLElement>,
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
-  let resultHeight = innerHeight && top && !isSmallDevice ? innerHeight - top - browserOffset : minHeight;
+  const performDynamicCalculation = !isSmallDevice || calculateForSmallDevice;
+
+  let resultHeight = innerHeight && top && performDynamicCalculation ? innerHeight - top - browserOffset : minHeight;
   if (resultHeight < minHeight) {
     resultHeight = minHeight;
   }
