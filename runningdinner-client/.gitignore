@@ -10,3 +10,4 @@ packages/**/build
 /webapp/public/apple-touch-icon.png.old
 /webapp/public/favicon.ico.old
 /webapp/public/favicon.png.old
+start-dev-win.ps1
