@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/system";
-import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, TeamNr, Time, getFullname, isArrayEmpty, isStringNotEmpty } from "@runningdinner/shared";
+import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, TeamNr, Time, getFullname, isArrayEmpty, isDarkColor, isStringNotEmpty } from "@runningdinner/shared";
 import { SmallTitle, Span, Subtitle } from "../theme/typography/Tags";
 import { uniq } from "lodash-es";
 import LinkExtern from "../theme/LinkExtern";
@@ -74,7 +74,7 @@ export function WarningAlert() {
   const {t} = useTranslation('common');
 
   return (
-    <Box mt={2}>
+    <Box mt={2} mb={2}>
       <Alert severity="warning" variant="outlined">
         <AlertTitle>{t('attention')}</AlertTitle>
           {t('dinner_route_geocoding_warning')}
@@ -160,6 +160,8 @@ export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel}: TeamHost
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [open, setOpen] = useState(false);
 
+  const glyphColor = isDarkColor(team.color) ? '#fff' : '#000';
+
   return (
     <>
       <AdvancedMarker 
@@ -170,6 +172,7 @@ export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel}: TeamHost
         <Pin 
           scale={scale}
           background={team.color}
+          glyphColor={glyphColor}
           borderColor={'#000'}>
             <span>
               <center>{getMarkerLabel(team.meal.label)}</center> <center>{teamLabel}</center>
@@ -222,3 +225,4 @@ export function AfterPartyLocationMarker(afterPartyLocationMapEntry: AfterPartyL
     </>
   )
 }
+

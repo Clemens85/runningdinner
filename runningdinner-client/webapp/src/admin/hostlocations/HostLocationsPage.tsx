@@ -7,7 +7,7 @@ import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../../common/maps";
 import { cloneDeep } from "lodash-es";
 import {  AfterPartyLocationMarker, DinnerRouteMapData, DinnerRouteTeamMapEntry, TeamConnectionPath, TeamHostMarker, WarningAlert, calculateDinnerRouteMapData, distinctDinnerRouteTeams, useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "../../common/dinnerroute";
 import { useFindAllDinnerRoutes } from "./useFindAllDinnerRoutes";
-import { HostLocationsFilterView } from "./HostLocationsFilterView";
+import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from "./HostLocationsFilterView";
 
 export function HostLocationsPage({runningDinner}: BaseRunningDinnerProps) {
   return (
@@ -54,7 +54,8 @@ function HostLocationsView({showWarnings, dinnerRouteMapEntries, centerPosition,
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
 
   const [activeTeamsFilter, setActiveTeamsFilter] = useState<Record<number, DinnerRouteTeamMapEntry>>({});
-  
+  const [hostFilterViewMinimized, setHostFilterViewMinimized] = useState(false);
+
   const allTeamConnectionPaths = dinnerRouteMapEntries.flatMap(team => team.teamConnectionPaths);
 
   const handleActiveTeamsFilterChange = (dinnerRouteTeam: DinnerRouteTeamMapEntry, open: boolean) => {
@@ -131,9 +132,13 @@ function HostLocationsView({showWarnings, dinnerRouteMapEntries, centerPosition,
         </Map>
         { showWarnings && <WarningAlert /> }
       </div>
-      <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} 
-                               onFilterChange={(team, open) => handleActiveTeamsFilterChange(team, open)} 
-                               filteredTeams={activeTeamsFilter} />
+      { !hostFilterViewMinimized && 
+        <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} 
+                                 onFilterChange={(team, open) => handleActiveTeamsFilterChange(team, open)} 
+                                 onToggleMinize={() => setHostFilterViewMinimized(true)}
+                                 filteredTeams={activeTeamsFilter} /> 
+      }
+      { hostFilterViewMinimized && <HostLocationsFilterMinimizedButton onToggleMinize={() => setHostFilterViewMinimized(false)} /> }
     </>
   )
 }
