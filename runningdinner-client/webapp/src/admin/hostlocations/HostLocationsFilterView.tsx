@@ -1,4 +1,4 @@
-import { AppBar, Box, Checkbox, Fab, FormControlLabel, IconButton, Paper, styled, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Checkbox, Fab, FormControlLabel, IconButton, Paper, styled, SxProps, Toolbar, Typography } from "@mui/material";
 import { Span } from "../../common/theme/typography/Tags";
 import { DinnerRouteTeamMapEntry } from "../../common/dinnerroute";
 import { CallbackHandler, Fullname } from "@runningdinner/shared";
@@ -7,20 +7,11 @@ import ExpandCircleDownOutlinedIcon from '@mui/icons-material/ExpandCircleDownOu
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
+import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 
 function getTeamLabel(team: DinnerRouteTeamMapEntry) {
   return <>Team {team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
 }
-
-const HostFilterPaper = styled(Paper)(() => ({
-  top: 160,
-  right: 50,
-  position: 'fixed',
-  minWidth: 250,
-  maxWidth: 400,
-  // padding: theme.spacing(2),
-}));
-
 
 type HostLocationsFilterMinimizeProps = {
   onToggleMinize: CallbackHandler;
@@ -54,8 +45,25 @@ export function HostLocationsFilterMinimizedButton({onToggleMinize}: HostLocatio
 
 export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, onFilterChange, onToggleMinize}: HostLocationsFilterViewProps) {
 
+  
+  const isMobileDevice = useIsMobileDevice('sm');
+  const isBigDevice = useIsBigDevice();
+
   const teamsFilterContainerRef = useRef(null);
-  const teamsFilterHeight = useDynamicFullscreenHeight(teamsFilterContainerRef, 300, true) - 200;
+  const teamsFilterHeight = useDynamicFullscreenHeight(teamsFilterContainerRef, 300, true) - (isMobileDevice ? 150 : 200);
+
+  let paperWidth = isMobileDevice ? 150 : 380; // 380 is for tablet devices 
+  if (isBigDevice) {
+    paperWidth = 470;
+  }
+
+  const hostFilterPaperStyles: SxProps = {
+    top: 160,
+    right: isMobileDevice ? 5 : 50,
+    position: 'fixed',
+    minWidth: paperWidth,
+    maxWidth: 280
+  };
 
   function renderTitleBar2() {
     return (
@@ -76,7 +84,10 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
   }
 
   return (
-    <HostFilterPaper elevation={3} id="HostFilterPaper" ref={teamsFilterContainerRef}>
+    <Paper elevation={3} 
+           id="HostFilterPaper" 
+           sx={hostFilterPaperStyles}
+           ref={teamsFilterContainerRef}>
       { renderTitleBar2() }
       <Box sx={{ height: `${teamsFilterHeight}px`, padding: 3 }}>
         <Box pb={1}>
@@ -96,6 +107,6 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
           )}>
         </Virtuoso>
       </Box>
-    </HostFilterPaper>
+    </Paper>
   )
 }
