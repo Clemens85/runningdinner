@@ -24,6 +24,9 @@ export default function AdminMenu() {
       routePath: "teams",
       title: "Teams"
     }, {
+      routePath: "messages/overview",
+      title: "Nachrichten"
+    }, {
       routePath: "settings",
       title: t("common:settings")
     }

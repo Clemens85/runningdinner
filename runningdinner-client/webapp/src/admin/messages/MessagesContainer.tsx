@@ -44,6 +44,7 @@ import {FetchStatus} from "@runningdinner/shared";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 import { useDonatePopup } from "../common/useDonatePopup";
 import { DonateDialog, DonateDialogType } from "../../common/donate/DonateButton";
+import { useAdminNavigation } from "../AdminNavigationHook";
 
 export function TeamMessages({runningDinner}: BaseRunningDinnerProps) {
 
@@ -132,7 +133,8 @@ interface MessagesViewProps<T extends BaseMessage> extends BaseAdminIdProps {
 function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates, messageType}: MessagesViewProps<T>) {
 
   const {t} = useTranslation(['admin', 'common']);
-  const {showSuccess} = useCustomSnackbar();
+  // const {showSuccess} = useCustomSnackbar();
+  const {navigateToMessagesLandingPage} = useAdminNavigation();
 
   const theme = useTheme();
   const isMdDeviceOrUp = useMediaQuery(theme.breakpoints.up('md'));
@@ -191,8 +193,9 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
       const sendMessagesPromise = dispatch(sendMessages(values)).unwrap();
       window.scrollTo(0, 0);
       await sendMessagesPromise;
-      showSuccess(t("admin:mails_sending_submitted"));
-      setDonatePopupOpenIfSuitable(messageType);
+      // showSuccess(t("admin:mails_sending_submitted"));
+      navigateToMessagesLandingPage(adminId, messageType);
+      // setDonatePopupOpenIfSuitable(messageType);
     } catch(e) {
       applyValidationIssuesToForm(e as HttpError, setError);
       showHttpErrorDefaultNotification(e as HttpError);

@@ -11,6 +11,7 @@ import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 import {PaymentOptionsPage} from "./paymentoptions/PaymentOptionsPage";
 import { ParticipantsPage } from './participants/ParticipantsPage';
 import { HostLocationsPage } from "./hostlocations";
+import { MessagesLandingPage } from "./messages/landing/MessagesLandingPage";
 
 export default function AdminRoute() {
 
@@ -51,6 +52,8 @@ export default function AdminRoute() {
             <BrowserTitle  namespaces={"common"} titleI18nKey={"common:settings"} />
           </>
         } />
+
+        <Route path={"messages/overview"} element={<MessagesLandingPage runningDinner={runningDinner} />} />
 
         <Route path={`paymentoptions`} element={<PaymentOptionsPage runningDinner={runningDinner} />} />
 

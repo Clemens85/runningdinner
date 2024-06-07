@@ -11,7 +11,7 @@ export function useIsBigTabletDevice() {
   return isMdDevice && !isLgDevice;
 }
 
-export function useIsMobileDevice(breakpoint: Breakpoint = "md") {
+export function useIsMobileDevice(breakpoint: Breakpoint = "sm") {
   const theme = useTheme();
   return useMediaQuery(theme.breakpoints.down(breakpoint));
 }

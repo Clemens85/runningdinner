@@ -46,7 +46,7 @@ export function HostLocationsFilterMinimizedButton({onToggleMinize}: HostLocatio
 export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, onFilterChange, onToggleMinize}: HostLocationsFilterViewProps) {
 
   
-  const isMobileDevice = useIsMobileDevice('sm');
+  const isMobileDevice = useIsMobileDevice();
   const isBigDevice = useIsBigDevice();
 
   const teamsFilterContainerRef = useRef(null);
