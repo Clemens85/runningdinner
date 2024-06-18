@@ -5,10 +5,8 @@ import {debounce} from "lodash-es";
 import {cloneDeep} from 'lodash-es';
 import {set} from 'lodash-es';
 import {
-  findMessageJobsByAdminIdAndTypeAsync,
   findTeamsNotCancelledAsync,
   sendMessagesAsync,
-  isOneMessageJobNotFinished,
   getExampleParticipantMessage,
   getExampleTeamMessage,
   getMessagePreviewAsync, getBackendIssuesFromErrorResponse, getExampleDinnerRouteMessage, findParticipantRecipients
@@ -18,7 +16,6 @@ import {
   Recipient,
   MessageType,
   HttpError,
-  MessageJob,
   BaseMessage,
   BaseAdminIdProps,
   ParticipantMessage,
@@ -50,7 +47,6 @@ const recalculatePreviewMessagesPending = createAction('recalculatePreviewMessag
 const recalculatePreviewMessagesRejected = createAction<HttpError>('recalculatePreviewMessagesRejected');
 const recalculatePreviewMessagesSucceeded = createAction<PreviewMessage[]>('recalculatePreviewMessagesSucceeded');
 const updatePreviewInputDataValid = createAction<boolean>("updatePreviewInputDataValid");
-const updateMessageJobs = createAction<MessageJob[]>("updateMessageJobs");
 
 export function updateRecipientForPreviewById(newRecipientId: string) : AdminThunk {
   return async (dispatch) => {
@@ -58,14 +54,6 @@ export function updateRecipientForPreviewById(newRecipientId: string) : AdminThu
     dispatch(recalculatePreviewMessages());
   };
 }
-
-const fetchMessageJobs = createAsyncThunk(
-  'fetchMessageJobs',
-  async (props: MessageTypeAdminIdPayload) => {
-    const {adminId, messageType} = props;
-    return await findMessageJobsByAdminIdAndTypeAsync(adminId, messageType);
-  }
-);
 
 const fetchRecipients = createAsyncThunk(
   'fetchRecipients',
@@ -98,28 +86,9 @@ export const sendMessages = createAsyncThunk(
 export function fetchInitialMessageData(adminId: string, messageType: MessageType) : AdminThunk {
   return async (dispatch) => {
     dispatch(setupInitialMessageType({ adminId, messageType }));
-    dispatch(fetchMessageJobs({ adminId, messageType }));
     dispatch(fetchRecipients({ adminId, messageType }));
   };
 }
-
-export function queryNotFinishedMessageJobs(messageJobs: MessageJob[]) : AdminThunk {
-  // @ts-ignore
-  return async (dispatch, getState) => {
-    const {adminId, messageType} = getState().messages;
-    executeFindMessageJobsDebounced(adminId, messageType, messageJobs);
-  };
-}
-
-const executeFindMessageJobsDebounced = debounce((adminId: string, messageType: MessageType, messageJobs: MessageJob[]) => {
-  if (isArrayNotEmpty(messageJobs) && isOneMessageJobNotFinished(messageJobs)) {
-    const dispatch = getThunkDispatch();
-    findMessageJobsByAdminIdAndTypeAsync(adminId, messageType)
-      .then((messageJobs) => {
-        dispatch(updateMessageJobs(messageJobs));
-      });
-  }
-}, 1500);
 
 export function recalculatePreviewMessages() : AdminThunk {
   return async (dispatch, getState) => {
@@ -149,16 +118,6 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
   })
   .addCase(fetchRecipients.rejected, (state, action) => {
     handleFetchRejected(state.recipients, action);
-  })
-  .addCase(fetchMessageJobs.pending, (state) => {
-    handleFetchLoading(state.messageJobs);
-  })
-  .addCase(fetchMessageJobs.rejected, (state, action) => {
-    handleFetchRejected(state.messageJobs, action);
-  })
-  .addCase(fetchMessageJobs.fulfilled, (state, action) => {
-    handleFetchSucceeded(state.messageJobs, action.payload);
-    state.lastPollDate = new Date();
   })
   .addCase(setupInitialMessageType, (state, action) => {
     state.messageType = action.payload.messageType;
@@ -233,15 +192,9 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
     state.previewIssues = getBackendIssuesFromErrorResponse(action.payload, false) || [];
     state.previewLoading = false;
   })
-  .addCase(updateMessageJobs, (state, action) => {
-    state.messageJobs.data = action.payload;
-    state.lastPollDate = new Date();
-  });
 });
 
 // *** Selectors *** //
-export const getMessageJobsSelector = (state: AdminStateType) => state.messages.messageJobs;
-export const getMessageJobsLastPollDate = (state: AdminStateType) => state.messages.lastPollDate;
 export const getRecipientsSelector = createSelector(
   (state: AdminStateType) => state.messages.recipients, 
   (state: AdminStateType) => state.messages.previousRecipientSelection, 
