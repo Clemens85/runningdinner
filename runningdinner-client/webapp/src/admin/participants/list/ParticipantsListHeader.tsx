@@ -15,9 +15,7 @@ import {
   useNumberOfParticipants
 } from "@runningdinner/shared";
 import {useTranslation} from "react-i18next";
-import {Link as RouterLink} from "react-router-dom";
 import {PageTitle} from "../../../common/theme/typography/Tags";
-import {useAdminNavigation} from "../../AdminNavigationHook";
 import Button from "@mui/material/Button";
 import {FormCheckboxSimple} from "../../../common/input/FormCheckboxSimple";
 import {commonStyles} from "../../../common/theme/CommonStyles";
@@ -50,7 +48,6 @@ export function ParticipantsListHeader({adminId, onParticipantSearchChanged, sho
   const debouncedSearchText = useDebounce(search.searchText, 400);
 
   const {t} = useTranslation(['admin', 'common']);
-  const {generateParticipantMessagesPath} = useAdminNavigation();
 
   React.useEffect(() => {
     setSearchableParticipants(concatParticipantList(participantList));
@@ -97,9 +94,9 @@ export function ParticipantsListHeader({adminId, onParticipantSearchChanged, sho
               </Typography>
           </Grid>
           <Grid item xs={12} sm={12} lg={2} sx={commonStyles.textAlignRight}>
-            <Button color={"primary"} variant={"outlined"}
+            {/* <Button color={"primary"} variant={"outlined"}
                     to={generateParticipantMessagesPath(adminId)}
-                    component={RouterLink}>{t('messages_send_participants')}</Button>
+                    component={RouterLink}>{t('messages_send_participants')}</Button> */}
           </Grid>
 
 

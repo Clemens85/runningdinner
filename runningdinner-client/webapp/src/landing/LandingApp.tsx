@@ -1,4 +1,3 @@
-import React from 'react';
 import {useMediaQuery} from "@mui/material";
 import {MainNavigation} from "../common/mainnavigation/MainNavigation";
 import {LandingRoute} from "./LangingRoute";

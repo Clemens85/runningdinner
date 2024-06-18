@@ -33,7 +33,7 @@ export function useDonatePopup({adminId}: BaseAdminIdProps) {
     }
   };
 
-  const closeDonatePopup = (messageType: MessageType, remindMe: boolean) => {
+  const closeDonatePopup = (messageType: MessageType | undefined, remindMe: boolean) => {
     setLocalStorageInAdminId("donateStatus", {
       teamMessagesShown: true, // Due to this is our first touch-point, we always mark it as true
       dinnerRouteMessagesShown: messageType === MessageType.MESSAGE_TYPE_DINNERROUTE,

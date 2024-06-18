@@ -1,5 +1,5 @@
 import {useParams} from "react-router-dom";
-import {Box, Grid} from "@mui/material";
+import {Box, Button, Grid} from "@mui/material";
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import TeamsNotExisting from "./TeamsNotExisting";
@@ -26,8 +26,7 @@ import {
 } from "@runningdinner/shared";
 import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../AdminNavigationHook";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
-import DropdownButton from "../../common/theme/dropdown/DropdownButton";
-import DropdownButtonItem from "../../common/theme/dropdown/DropdownButtonItem";
+import {Link as RouterLink} from "react-router-dom";
 import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
 import { TeamArrangementActionsButton } from "./TeamArrangementActionsButton";
 import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
@@ -242,13 +241,15 @@ interface SendMessagesDropdownProps {
 function SendTeamMessagsDropdown({adminId}: SendMessagesDropdownProps) {
 
   const {t} = useTranslation('admin');
-  const {navigateToTeamMessages, navigateToDinnerRouteMessages} = useAdminNavigation();
+  const {generateHostLocationsPath} = useAdminNavigation();
 
   return (
-    <DropdownButton label={t('messages_send_general')}>
-      <DropdownButtonItem onClick={() => navigateToTeamMessages(adminId)}>{t('messages_send_teams')}</DropdownButtonItem>
-      <DropdownButtonItem onClick={() => navigateToDinnerRouteMessages(adminId)}>{t('messages_send_dinnerroutes')}</DropdownButtonItem>
-    </DropdownButton>
+    <Button color={"primary"}
+            variant={"outlined"}
+            to={generateHostLocationsPath(adminId)}
+            target="_blank"
+            component={RouterLink}>{t('admin:hostlocations_overview')}
+    </Button>
   );
 }
 

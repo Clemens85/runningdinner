@@ -139,6 +139,10 @@ export function useAdminNavigation() {
     navigate(generateMessagesLandingPath(adminId, sentFromMessageType));
   }
 
+  function generateHostLocationsPath(adminId: string) {
+    return `/admin/${adminId}/hostlocations`;
+  }
+
   return {
     generateTeamPath,
     generateDropTeamsPath,
@@ -156,5 +160,6 @@ export function useAdminNavigation() {
     navigateToParticipant,
     navigateToMessagesLandingPage,
     generateDinnerRouteMessagesPath,
+    generateHostLocationsPath,
   };
 }

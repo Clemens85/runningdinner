@@ -22,10 +22,10 @@ export default function AdminMenu() {
       title: t("common:participants")
     }, {
       routePath: "teams",
-      title: "Teams"
+      title: 'Teams'
     }, {
       routePath: "messages/overview",
-      title: "Nachrichten"
+      title: t("common:messages")
     }, {
       routePath: "settings",
       title: t("common:settings")

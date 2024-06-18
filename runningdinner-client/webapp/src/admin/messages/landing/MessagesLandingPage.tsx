@@ -1,22 +1,23 @@
 import { BaseAdminIdProps, BaseRunningDinnerProps, CallbackHandler, isQuerySucceeded, isStringNotEmpty, MessageType, useFindTeams } from "@runningdinner/shared";
 import {Box, Button, Card, Grid, Link, Stack, Typography} from "@mui/material";
-import {PageTitle} from "../../../common/theme/typography/Tags";
+import {PageTitle, Span} from "../../../common/theme/typography/Tags";
 import Paragraph from "../../../common/theme/typography/Paragraph";
 import { useTranslation } from "react-i18next";
 
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import { SENT_FROM_MESSAGE_TYPE_QUERY_PARAM } from "../../AdminNavigationHook";
-import { MessageJobsOverview2 } from "../messagejobs/MessageJobsOverview2";
+import { MessageJobsOverview } from "../messagejobs/MessageJobsOverview";
 import React from "react";
-import {Link as RouterLink} from "react-router-dom";
+import {Link as RouterLink, useSearchParams} from "react-router-dom";
 import { FetchProgressBar } from "../../../common/FetchProgressBar";
 import { useIsMobileDevice } from "../../../common/theme/CustomMediaQueryHook";
-import { useUrlQuery } from "../../../common/hooks/useUrlQuery";
 import { useCustomSnackbar } from "../../../common/theme/CustomSnackbarHook";
 import { BackToListButton, useMasterDetailView } from "../../../common/hooks/MasterDetailViewHook";
 import { BrowserTitle } from "../../../common/mainnavigation/BrowserTitle";
 import { useMessageCardInfo } from "./useMessageCardInfo";
 import { CardRoundedClickable } from "./CardRoundedClickable";
+import { useDonatePopup } from "../../common/useDonatePopup";
+import { DonateDialog, DonateDialogType } from "../../../common/donate/DonateButton";
 
 
 type BaseMessagesCardProps = {
@@ -35,11 +36,14 @@ type MessagesCardProps = {
 
 export function MessagesLandingPage({runningDinner}: BaseRunningDinnerProps) {
 
-  const query = useUrlQuery();
+  const {adminId} = runningDinner;
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const {showSuccess} = useCustomSnackbar();
   const {t} = useTranslation('admin');
 
-  const {adminId} = runningDinner;
+  const {setDonatePopupOpenIfSuitable, showDonatePopup, closeDonatePopup} = useDonatePopup({adminId});
+
   const [currentMessageType, setCurrentMessageType] = React.useState<MessageType>();
 
   const teamsQuery = useFindTeams(adminId);
@@ -47,14 +51,19 @@ export function MessagesLandingPage({runningDinner}: BaseRunningDinnerProps) {
 
   const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
 
-  const sentFromMessageType = query.get(SENT_FROM_MESSAGE_TYPE_QUERY_PARAM);
+  const sentFromMessageType = searchParams.get(SENT_FROM_MESSAGE_TYPE_QUERY_PARAM);
 
   React.useEffect(() => {
     if (isStringNotEmpty(sentFromMessageType)) {
-      setCurrentMessageType(sentFromMessageType as MessageType);
       showSuccess(t("admin:mails_sending_submitted"));
-      // TODO: Donation phandleCurrentMessageTypeChangedopup
-      // TODO: Trigger polling for message jobs
+
+      const messageType = sentFromMessageType as MessageType;
+      handleCurrentMessageTypeChanged(messageType);
+      
+      setDonatePopupOpenIfSuitable(messageType);
+
+      searchParams.delete(SENT_FROM_MESSAGE_TYPE_QUERY_PARAM);
+      setSearchParams(searchParams);
     }
   }, [sentFromMessageType, setCurrentMessageType]);
 
@@ -62,6 +71,11 @@ export function MessagesLandingPage({runningDinner}: BaseRunningDinnerProps) {
     setCurrentMessageType(messageType);
     setShowDetailsView(true);
   }
+
+  const handleBackToListView = () => {
+    setCurrentMessageType(undefined);
+    setShowDetailsView(false)
+  };
 
   if (!isQuerySucceeded(teamsQuery)) {
     return <FetchProgressBar {...teamsQuery} />;
@@ -71,13 +85,13 @@ export function MessagesLandingPage({runningDinner}: BaseRunningDinnerProps) {
 
   return (
     <>
-      <BrowserTitle titleI18nKey={'Nachrichtenversand'} namespaces={'admin'} />
+      <BrowserTitle titleI18nKey={'messages_landing_messaging'} namespaces={'admin'} />
       <Grid container>
-        <Grid item xs={12}><PageTitle>Nachrichtenversand</PageTitle></Grid>
+        <Grid item xs={12}><PageTitle>{t('admin:messages_landing_messaging')}</PageTitle></Grid>
       </Grid>
 
       { showBackToListViewButton && 
-        <BackToListButton onBackToList={() => setShowDetailsView(false)} />
+        <BackToListButton onBackToList={handleBackToListView} />
       }
       <Grid container spacing={2} sx={{ mb: 2 }}>
         { showListView && <MessageCardListView currentMessageType={currentMessageType} 
@@ -86,22 +100,33 @@ export function MessagesLandingPage({runningDinner}: BaseRunningDinnerProps) {
                                                adminId={adminId} />
         }
 
-        { showDetailsView ?
-          <Grid item xs={12} md={6}>
-            <MessagesCardContent currentMessageType={currentMessageType} adminId={adminId} hasTeams={hasTeams} />
-          </Grid> : 
-          <NoMessageTypeSelected />
+        { showDetailsView && 
+          <>
+            <Grid item xs={12} md={6}>
+              <MessagesCardContent currentMessageType={currentMessageType} adminId={adminId} hasTeams={hasTeams} />
+            </Grid> 
+          </>
         }
       </Grid>
+      { showDonatePopup && <DonateDialog onClose={remindMe => closeDonatePopup(currentMessageType, remindMe) } 
+                          donateDialogType={currentMessageType === MessageType.MESSAGE_TYPE_DINNERROUTE ? DonateDialogType.DINNER_ROUTE_MESSAGES : DonateDialogType.TEAM_MESSAGES} /> }
+
     </>
   )
 }
 
 function MessageCardListView({currentMessageType, hasTeams, onCurrentMessageTypeChanged, adminId}: MessageCardListViewProps) {
+  
+  const {t} = useTranslation('admin');
+
   return (
     <>
-      <Grid item xs={12} sx={{ mt: -2}}>
-        <Paragraph>Hier kannst du alle Arten von Nachrichten via EMail an deine Teilnehmer bzw. Teams versenden.</Paragraph>
+      <Grid container>
+        <Grid item xs={12} md={6} sx={{ pl: 2}}>
+          <Paragraph>
+            {t("admin:messages_landing_start_1")}<br/>{t("admin:messages_landing_start_2")}
+          </Paragraph>
+        </Grid>
       </Grid>
       <Grid item xs={12} md={6}>
         <Stack
@@ -148,11 +173,16 @@ function MessagesCardContent({currentMessageType, hasTeams, adminId}: BaseMessag
   return (
     <Card sx={{ p: 3, height: isMobileDevice ? "100%": "50vh" }}>
       <Box sx={{ mb: 3}}>
-        <Button color={"primary"} variant={"contained"} size="large" fullWidth to={routerPath} component={RouterLink} disabled={!routeEnabled}>
+        <Button color={"primary"} variant={"outlined"} size="large" fullWidth to={routerPath} component={RouterLink} disabled={!routeEnabled}>
           {routerPathTitle}
         </Button>
+        { routeEnabled === false && 
+            <Box mt={2}>
+              <Span i18n="admin:messages_landing_team_arrangements_needed_hint"></Span>
+            </Box>
+        }
       </Box>
-      <MessageJobsOverview2 adminId={adminId} messageType={currentMessageType} />
+      <MessageJobsOverview adminId={adminId} messageType={currentMessageType} />
     </Card>
   );
 }
@@ -238,7 +268,7 @@ function NoMessageTypeSelected() {
     <Card sx={{ p: 3, height: "50vh" }}>
       <Grid container justifyContent={"center"} alignItems={"baseline"}>
         <Grid item>
-          <Typography variant="subtitle1" sx={{ px: 2, verticalAlign: "center" }}>{t("Bitte wähle einen Nachrichten-Typ aus")}</Typography>
+          <Typography variant="subtitle1" sx={{ px: 2, verticalAlign: "center" }}>{t("admin:messages_landing_no_selection_hint")}</Typography>
         </Grid>
       </Grid>
     </Card>

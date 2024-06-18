@@ -26,7 +26,7 @@ export function useMessageCardInfo(messageType: MessageType | undefined, adminId
   if (messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS) {
     return {
       title: t('admin:mails_participant_sendmessage_headline'),
-      description: "Willst du (Vorab-)Informationen an alle oder einzelne Teilnehmer schicken? Dann bist du hier richtig.",
+      description: t("admin:messages_landing_participants_description"),
       icon: <MailIcon />,
       routerPath: generateParticipantMessagesPath(adminId),
       routerPathTitle: t('messages_send_participants'),
@@ -35,8 +35,7 @@ export function useMessageCardInfo(messageType: MessageType | undefined, adminId
   } else if (messageType === MessageType.MESSAGE_TYPE_TEAMS) {
     return {
       title: t('admin:mails_team_sendmessage_headline'),
-      description: "Hier kannst du Nachrichten über die Team-Einteilnugen an die Teams verschicken (wer kocht mit wem welche Speise). " +
-                   "Aber du kannst auch sonstige Nachrichten an (Einzel-)Teams schicken.",
+      description: t("admin:messages_landing_teams_description"),
       icon: <GroupIcon />,
       routerPath: generateTeamMessagesPath(adminId),
       routerPathTitle: t('messages_send_teams'),
@@ -45,7 +44,7 @@ export function useMessageCardInfo(messageType: MessageType | undefined, adminId
   } else if (messageType === MessageType.MESSAGE_TYPE_DINNERROUTE) {
     return {
       title: t('admin:mails_senddinnerroute_sendmessage'),
-      description: "Willst du die Laufwege an alle Teams schicken? Dann bist du hier richtig.",
+      description: t("admin:messages_landing_dinnerroutes_description"),
       icon: <GroupIcon />,
       routerPath: generateDinnerRouteMessagesPath(adminId),
       routerPathTitle: t('messages_send_dinnerroutes'),

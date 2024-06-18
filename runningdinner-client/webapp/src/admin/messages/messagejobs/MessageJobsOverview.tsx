@@ -1,19 +1,15 @@
-import React from "react";
 import {Box, LinearProgress, Paper, TableCell} from "@mui/material";
 import {Span, Subtitle} from "../../../common/theme/typography/Tags";
 import {
   formatLocalDateWithSeconds,
-  getMessageJobsLastPollDate,
-  getMessageJobsSelector,
   isArrayEmpty,
-  isArrayNotEmpty,
   LocalDate,
   MessageJob,
-  MessageTypeAdminIdPayload,
-  queryNotFinishedMessageJobs,
   Time,
-  useAdminSelector,
-  useAdminDispatch
+  BaseAdminIdProps,
+  MessageType,
+  useFindMessageJobs,
+  isQuerySucceeded
 } from "@runningdinner/shared";
 import Grid from "@mui/material/Grid";
 import {MessageJobStatus} from "./MessageJobStatus";
@@ -24,50 +20,58 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import {HelpIconTooltip} from "../../../common/theme/HelpIconTooltip";
 import {useAdminNavigation} from "../../AdminNavigationHook";
-import {FetchStatus} from "@runningdinner/shared";
 
-export function MessageJobsOverview({adminId}: MessageTypeAdminIdPayload) {
+type MessageJobsOverviewProps = {
+  messageType: MessageType
+} & BaseAdminIdProps;
 
-  const {data: messageJobs, fetchStatus: messageJobsFetchStatus} = useAdminSelector(getMessageJobsSelector);
-  const lastPollDate = useAdminSelector(getMessageJobsLastPollDate);
-  const dispatch = useAdminDispatch();
+function getLastUpdatedDateFormatted(dataUpdatedAt: number | undefined): string | undefined {
+  let date = new Date();
+  if (dataUpdatedAt) {
+    date = new Date(dataUpdatedAt);
+  }
+  return formatLocalDateWithSeconds(date);
+}
 
-  React.useEffect(() => {
-    if (messageJobsFetchStatus !== FetchStatus.LOADING && isArrayNotEmpty(messageJobs)) {
-      dispatch(queryNotFinishedMessageJobs(messageJobs as MessageJob[]));
-    }
-  }, [messageJobs, lastPollDate, messageJobsFetchStatus, dispatch]);
+export function MessageJobsOverview({adminId, messageType}: MessageJobsOverviewProps) {
 
-  const lastPollDateFormatted = formatLocalDateWithSeconds(lastPollDate);
+  const messageJobsQueryResult = useFindMessageJobs(adminId, messageType);
+  const messageJobs = messageJobsQueryResult.data || [];
 
-  if (!messageJobs) {
+  const lastPollDateFormatted = getLastUpdatedDateFormatted(messageJobsQueryResult.dataUpdatedAt);
+
+  if (!isQuerySucceeded(messageJobsQueryResult)) {
     return <LinearProgress color="secondary" />;
   }
 
+  const protocolsSubtitle = `admin:protocols_${messageType}`;
+
   return (
-    <Paper elevation={3}>
-      <Box p={2}>
-        <Box mb={2}>
-          <Subtitle i18n="admin:protocols" />
-        </Box>
-        { isArrayEmpty(messageJobs) && <i><Span i18n="admin:protocols_empty"/></i> }
-        { !isArrayEmpty(messageJobs) && <MessageJobsTable adminId={adminId} messageJobs={messageJobs}/> }
-        <Box mt={2}>
-          <Grid container justifyContent="space-between">
-            { !isArrayEmpty(messageJobs) &&
-              <Grid item>
-                <Grid container alignItems="center" spacing={1}>
-                  <Grid item><Span>Info</Span></Grid>
-                  <Grid item><HelpIconTooltip title={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' /></Grid>
-                </Grid>
-              </Grid> }
-            <Grid item sx={{ textAlign: "right" }}>
-              <i><Span i18n="admin:protocols_last_update_text" parameters={{ lastPollDate: lastPollDateFormatted }} /></i>
-            </Grid>
-          </Grid>
-        </Box>
+    <>
+      <Box mb={2}>
+        <Subtitle i18n={protocolsSubtitle} />
       </Box>
-    </Paper>
+      <Paper elevation={3}>
+        <Box p={2}>
+          { isArrayEmpty(messageJobs) && <i><Span i18n="admin:protocols_empty"/></i> }
+          { !isArrayEmpty(messageJobs) && <MessageJobsTable adminId={adminId} messageJobs={messageJobs}/> }
+          <Box mt={2}>
+            <Grid container justifyContent="space-between">
+              { !isArrayEmpty(messageJobs) &&
+                <Grid item>
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid item><Span>Info</Span></Grid>
+                    <Grid item><HelpIconTooltip title={<Paragraph i18n='admin:synchronize_messagejobs_help'/>} placement='right' /></Grid>
+                  </Grid>
+                </Grid> }
+              <Grid item sx={{ textAlign: "right" }}>
+                <i><Span i18n="admin:protocols_last_update_text" parameters={{ lastPollDate: lastPollDateFormatted }} /></i>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </Paper>
+    </>
   );
 }
 

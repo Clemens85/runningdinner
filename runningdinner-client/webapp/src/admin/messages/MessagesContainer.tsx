@@ -1,9 +1,8 @@
 import {Box, Grid, Paper, useMediaQuery, useTheme} from "@mui/material";
 import {PageTitle} from "../../common/theme/typography/Tags";
 import {FormProvider, useForm} from "react-hook-form";
-import React, {useEffect} from "react";
+import {useEffect} from "react";
 import {useTranslation} from "react-i18next";
-import {MessageJobsOverview} from "./messagejobs/MessageJobsOverview";
 import MessageHeadline from "./MessageHeadline";
 import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import MessageSubject from "./MessageSubject";
@@ -41,9 +40,6 @@ import {useNotificationHttpError} from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
 import {useMessagesQueryHandler} from "./MessagesQueryHandlerHook";
 import {FetchStatus} from "@runningdinner/shared";
-import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
-import { useDonatePopup } from "../common/useDonatePopup";
-import { DonateDialog, DonateDialogType } from "../../common/donate/DonateButton";
 import { useAdminNavigation } from "../AdminNavigationHook";
 
 export function TeamMessages({runningDinner}: BaseRunningDinnerProps) {
@@ -151,8 +147,6 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
 
   const {headline, selectedTeamIds, preselectAllRecipients} = useMessagesQueryHandler(messageType);
 
-  const {setDonatePopupOpenIfSuitable, showDonatePopup, closeDonatePopup} = useDonatePopup({adminId});
-
   const formMethods = useForm({
     // @ts-ignore
     defaultValues: exampleMessage,
@@ -191,11 +185,8 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
     clearErrors();
     try {
       const sendMessagesPromise = dispatch(sendMessages(values)).unwrap();
-      window.scrollTo(0, 0);
       await sendMessagesPromise;
-      // showSuccess(t("admin:mails_sending_submitted"));
       navigateToMessagesLandingPage(adminId, messageType);
-      // setDonatePopupOpenIfSuitable(messageType);
     } catch(e) {
       applyValidationIssuesToForm(e as HttpError, setError);
       showHttpErrorDefaultNotification(e as HttpError);
@@ -303,10 +294,7 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
 
           <Grid item xs={12} lg={5}>
             <Grid item xs={12}>
-              <MessageJobsOverview adminId={adminId} messageType={messageType} />
-            </Grid>
-            <Grid item xs={12}>
-              <Box mt={3}>
+              <Box mt={0}>
                 <Paper elevation={3}>
                   <Box p={2}>
                     <MessagePreview adminId={adminId} messageType={messageType} />
@@ -320,7 +308,5 @@ function MessagesView<T extends BaseMessage>({adminId, exampleMessage, templates
 
       </form>
     </FormProvider>
-    { showDonatePopup && <DonateDialog onClose={remindMe => closeDonatePopup(messageType, remindMe) } 
-                          donateDialogType={messageType === MessageType.MESSAGE_TYPE_DINNERROUTE ? DonateDialogType.DINNER_ROUTE_MESSAGES : DonateDialogType.TEAM_MESSAGES} /> }
   </>;
 }

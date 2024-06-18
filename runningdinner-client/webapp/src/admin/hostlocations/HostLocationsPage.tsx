@@ -8,12 +8,16 @@ import { cloneDeep } from "lodash-es";
 import {  AfterPartyLocationMarker, DinnerRouteMapData, DinnerRouteTeamMapEntry, TeamConnectionPath, TeamHostMarker, WarningAlert, calculateDinnerRouteMapData, distinctDinnerRouteTeams, useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "../../common/dinnerroute";
 import { useFindAllDinnerRoutes } from "./useFindAllDinnerRoutes";
 import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from "./HostLocationsFilterView";
+import { BrowserTitle } from "../../common/mainnavigation/BrowserTitle";
 
 export function HostLocationsPage({runningDinner}: BaseRunningDinnerProps) {
   return (
+    <>
+    <BrowserTitle titleI18nKey={'hostlocations_overview'} namespaces={'admin'} />
     <APIProvider apiKey={GOOGLE_MAPS_KEY}>
       <HostLocationsMapsPage runningDinner={runningDinner} />
     </APIProvider>
+    </>
   )
 }
 
