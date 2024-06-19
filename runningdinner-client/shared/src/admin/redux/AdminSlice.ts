@@ -48,13 +48,13 @@ export const getRunningDinnerFetchSelector = (state: AdminStateType) => state.ro
 
 export const isFetchingDataSelector = (state: AdminStateType) => {
   const loadingItems = getFetchDataItems(state)
-    .filter(item => item.fetchStatus === FetchStatus.LOADING);
+    .filter(item => item?.fetchStatus === FetchStatus.LOADING);
   return loadingItems.length > 0;
 };
 
 export const getFetchDataErrorSelector = (state: AdminStateType): HttpError | undefined => {
   const errorItems = getFetchDataItems(state)
-    .filter(item => item.fetchError !== undefined && item.fetchError !== null);
+    .filter(item => item?.fetchError !== undefined && item?.fetchError !== null);
   return errorItems.length > 0 ? errorItems[0].fetchError : undefined;
 }
 

@@ -136,17 +136,11 @@ export const messagesSlice = createReducer(newInitialMessagesState, builder => {
     state.previewIssues = [];
     state.selectedRecipientForPreview = undefined;
     state.isMailMessageValid = false;
-    state.lastPollDate = new Date();
   })
   .addCase(updatePreviewInputData, (state, action) => {
     const {pathInMessageObject, value} = action.payload;
     set(state.messageObject, pathInMessageObject, value);
     setFirstRecipientForPreviewIfNeeded(state);
-  })
-  .addCase(sendMessages.fulfilled, (state, action) => {
-    const messageJobs = state.messageJobs.data || [];
-    state.messageJobs.data = messageJobs.concat(action.payload);
-    // Other states (pending | rejected) won't need to be handled in here, due to form handles ithhttps://github.com/Clemens85/Net.gitttps://github.com/Clemens85/Net.git
   })
   .addCase(setPreviousRecipientSelection, (state, action) => {
     state.previousRecipientSelection = action.payload;

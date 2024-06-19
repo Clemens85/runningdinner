@@ -24,8 +24,6 @@ export interface MessagesState {
   adminId: string;
 
   recipients: FetchData<Recipient[]>;
-  // recipientSelection: string;
-  // previousSelection: string;
   previousRecipientSelection: string;
   customSelectedRecipients?: Recipient[];
   showCustomSelectionDialog: boolean;
@@ -38,9 +36,6 @@ export interface MessagesState {
   previewMessages: PreviewMessage[];
   isMailMessageValid: boolean;
   previewIssues: BackendIssue[];
-
-  messageJobs: FetchData<MessageJob[]>;
-  lastPollDate: Date;
 }
 
 export interface MessageJobDetailsState {
@@ -69,10 +64,8 @@ export const newInitialMessagesState : MessagesState = {
   previewLoading: false,
   previewMessages: [],
   isMailMessageValid: false,
-  previewIssues: [],
+  previewIssues: []
 
-  messageJobs: INITIAL_FETCH_DATA,
-  lastPollDate: new Date()
 };
 
 export const newInitialMessageJobDetailsState: MessageJobDetailsState = {
