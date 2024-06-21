@@ -47,6 +47,14 @@ type MapViewProps = {
   dinnerRoute: DinnerRoute;
 }
 
+function calculateTeamOrderNumbers(dinnerRoute: DinnerRoute): Record<number, number> {
+  const result: Record<number, number> = {};
+  for (let i = 0; i < dinnerRoute.teams.length; i++) {
+    result[dinnerRoute.teams[i].teamNumber] = i + 1;
+  }
+  return result;
+}
+
 function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
   
   const mapContainerRef = useRef(null);
@@ -55,6 +63,7 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
 
   const {dinnerRouteMapEntries, afterPartyLocationMapEntry, centerPosition, showWarnings} = dinnerRouteMapData;
   const currentDinnerRouteTeamEntry = findDinnerRouteMapEntryForCurrentDinnerRouteTeam(dinnerRouteMapData, dinnerRoute);
+  const teamOrderNumberByTeamNumber = calculateTeamOrderNumbers(dinnerRoute)
 
   const teamConnectionPaths = currentDinnerRouteTeamEntry?.teamConnectionPaths || []; 
   const paths = teamConnectionPaths
@@ -77,11 +86,11 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
           strokeColor={currentDinnerRouteTeamEntry?.color}/>
 
         { dinnerRouteMapEntries
-            .map((team, index) => <TeamHostMarker key={team.teamNumber} 
-                                                  team={team} 
-                                                  scale={1.3}
-                                                  teamLabel={`#${index + 1}`}
-                                                  isCurrentTeam={dinnerRoute.currentTeam.teamNumber === team.teamNumber} />) 
+            .map((team) => <TeamHostMarker key={team.teamNumber} 
+                                                team={team} 
+                                                scale={1.3}
+                                                teamLabel={`#${teamOrderNumberByTeamNumber[team.teamNumber]}`}
+                                                isCurrentTeam={dinnerRoute.currentTeam.teamNumber === team.teamNumber} />) 
         }
 
         { afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} /> }
