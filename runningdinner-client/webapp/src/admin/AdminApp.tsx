@@ -45,6 +45,7 @@ function AdminAppPage({adminId}: BaseAdminIdProps) {
   const fetchError = useAdminSelector(getFetchDataErrorSelector);
 
   React.useEffect(() => {
+    // @ts-ignore
     dispatch(fetchRunningDinner(adminId));
   }, [dispatch, adminId]);
 

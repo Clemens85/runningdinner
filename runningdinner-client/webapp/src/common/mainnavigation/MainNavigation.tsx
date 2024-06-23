@@ -2,7 +2,7 @@ import React from 'react';
 import {
   AppBar,
   Drawer,
-  Grid, Hidden,
+  Grid,
   IconButton,
   Link,
   List,
@@ -18,9 +18,9 @@ import {Link as RouterLink, useLocation} from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import {FeedbackButtonContainerRightAligned} from "../feedback/FeedbackButton";
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "./NavigationPaths";
-import {Breakpoint, styled} from '@mui/material/styles';
+import {styled} from '@mui/material/styles';
 import { DonateButton } from '../donate/DonateButton';
-import { useIsBigTabletDevice } from '../theme/CustomMediaQueryHook';
+import { useIsBigTabletDevice, useIsDeviceMinWidth } from '../theme/CustomMediaQueryHook';
 import { CallbackHandler } from '@runningdinner/shared';
 
 const HomeTitle = styled(Typography)(({theme}) => ({
@@ -58,35 +58,41 @@ export interface MainNavigationProps {
   navigationItems: NavigationItem[];
   mainTitle?: string;
   topNotificationBar?: React.ReactNode;
-  mobileBreakpoint?: Breakpoint;
+  // isBigDeviceMinWidth?: number;
 }
+
+export type MainNavigationResponsiveProps = {
+  isMobileDevice: boolean;
+  showHomeLink: boolean;
+  donatePaddingRight: number;
+};
 
 interface NavigationItem {
   routePath: string;
   title: string;
 }
 
-const breakpoints: Array<Breakpoint> = ["xs", "sm", "md", "lg", "xl"];
-
-export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, mobileBreakpoint = "sm"}: MainNavigationProps) => {
+export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, isMobileDevice, showHomeLink, donatePaddingRight/*, isBigDeviceMinWidth = 1250*/}: MainNavigationProps & MainNavigationResponsiveProps) => {
 
   const [showFeedback, setShowFeedback] = React.useState(isShowFeedbackButton());
   const [mobileDrawerNavigationOpen, setMobileDrawerNavigationOpen] = React.useState(false);
 
   const location = useLocation();
   
-  const theme = useTheme();
-  const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
-  const isBigTabletDevice = useIsBigTabletDevice();
+  // const theme = useTheme();
+  // let isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
+  // const isBigTabletDevice = useIsBigTabletDevice();
+
+  // const isBigDevice = useIsDeviceMinWidth(isBigDeviceMinWidth);
+  // if (isBigDeviceMinWidth > 1250 && !isBigDevice) {
+  //   isMobileDevice = true;
+  // }
 
   React.useEffect(() => {
     setShowFeedback(isShowFeedbackButton());
   }, [location]);
 
-  const hiddenForMobileView = getMobileBreakpointsDown(mobileBreakpoint);
-  const hiddenForDesktopView = getMobileBreakpointsUp(mobileBreakpoint);
-
-  const donatePaddingRight = isMobileDevice || isBigTabletDevice ? 3 : 12;
+  // const donatePaddingRight = isMobileDevice || isBigTabletDevice ? 3 : 12;
 
   const handleToggleMobileDrawerNavigation = () => {
     setMobileDrawerNavigationOpen((prevState) => !prevState);
@@ -95,6 +101,7 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
   function createLink(navigationItem: NavigationItem) {
     return (
       <MenuLink
+        // @ts-ignore
         to={`${navigationItem.routePath}`}
         component={RouterLink}
         color="inherit"
@@ -110,17 +117,19 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
         <Grid container justifyContent={"space-between"} alignItems={"center"}>
           <Grid item>
             <Grid container alignItems={"center"}>
-              <Hidden only={hiddenForDesktopView}>
+              { isMobileDevice && 
                 <Grid item>
                   <MobileNavigation navigationItems={navigationItems} mobileDrawerNavigationOpen={mobileDrawerNavigationOpen} 
                                                                       onToggleMobileDrawerNavigation={handleToggleMobileDrawerNavigation} />
                 </Grid>
-              </Hidden>
-              <Hidden only={hiddenForMobileView}>
+              }
+              { !isMobileDevice && 
                 <Grid item>
                   <Grid container alignItems={"center"}>
+                    { showHomeLink && 
                     <Grid item>
                       <HomeLink
+                        // @ts-ignore
                         to={`${navigationItems[0].routePath}`}
                         component={RouterLink}
                         color="inherit"
@@ -128,12 +137,13 @@ export const MainNavigation = ({mainTitle, navigationItems, topNotificationBar, 
                         <HomeTitle variant="h6">{mainTitle}</HomeTitle>
                       </HomeLink>
                     </Grid>
+                    }
                     <Grid item>
                       {navigationItems.map(navigationItem => createLink(navigationItem))}
                     </Grid>
                   </Grid>
                 </Grid>
-              </Hidden>
+              }
             </Grid>
           </Grid>
           <Grid item>
@@ -162,17 +172,6 @@ function isShowFeedbackButton() {
          pathName.indexOf(RUNNING_DINNER_EVENTS_PATH) >= 0;
 }
 
-function getMobileBreakpointsDown(breakpoint: Breakpoint): Breakpoint[] {
-  return breakpoints.slice(0, breakpoints.indexOf(breakpoint) + 1);
-}
-function getMobileBreakpointsUp(breakpoint: Breakpoint): Breakpoint[] {
-  const indexOfIncomingBreakpoint = breakpoints.indexOf(breakpoint);
-  if (indexOfIncomingBreakpoint + 1 >= breakpoints.length) {
-    return [breakpoints[breakpoints.length - 1]];
-  }
-  return breakpoints.slice(indexOfIncomingBreakpoint + 1);
-}
-
 interface MobileNavigationProps extends MainNavigationProps {
   mobileDrawerNavigationOpen: boolean;
   onToggleMobileDrawerNavigation: CallbackHandler;
@@ -182,6 +181,7 @@ function MobileNavigation({navigationItems, mobileDrawerNavigationOpen, onToggle
   function createLink(navigationItem: NavigationItem) {
 
     const link = <MenuLink
+      // @ts-ignore
       to={`${navigationItem.routePath}`}
       component={RouterLink}
       color="inherit"

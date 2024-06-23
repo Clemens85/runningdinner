@@ -8,6 +8,7 @@ import {
   RUNNING_DINNER_EVENTS_PATH
 } from "../common/mainnavigation/NavigationPaths";
 import { FameOnMePopup } from '../common/teaserpopup/FameOnMePopup';
+import { useIsDeviceMinWidth } from "../common/theme/CustomMediaQueryHook";
 
 
 export default function LandingApp() {
@@ -16,6 +17,22 @@ export default function LandingApp() {
 
   const showMainTitle = useMediaQuery('(min-width:1090px)');
   const mainTitle = showMainTitle ? "Run Your Dinner" : undefined;
+  
+  const isMobileDevice = !useIsDeviceMinWidth(1280);
+  const isLgDevice = useIsDeviceMinWidth(1333);
+  const isXlDevice = useIsDeviceMinWidth(1380);
+  let donateBtnPaddingRight = 12;
+  if (!isXlDevice) {
+    if (isLgDevice) {
+      donateBtnPaddingRight = 1;
+    } else {
+      donateBtnPaddingRight = 3;
+    }
+  }
+  const showHomeLink = isLgDevice;
+
+  console.log("showHomeLink: " + showHomeLink);
+  console.log("isMobileDevice: " + isMobileDevice);
 
   const navigationItems = [
     {
@@ -39,6 +56,9 @@ export default function LandingApp() {
   return (
     <div>
       <MainNavigation mainTitle={mainTitle}
+                      showHomeLink={showHomeLink}
+                      isMobileDevice={isMobileDevice}
+                      donatePaddingRight={donateBtnPaddingRight}
                       navigationItems={navigationItems} />
       <LandingRoute />
       <FameOnMePopup />
