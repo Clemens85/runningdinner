@@ -167,8 +167,8 @@ importers:
         specifier: 5.13.4
         version: 5.13.4(react@18.2.0)
       '@vis.gl/react-google-maps':
-        specifier: ^0.11.2
-        version: 0.11.2(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^1.1.0
+        version: 1.1.0(react-dom@18.2.0)(react@18.2.0)
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
@@ -2268,8 +2268,8 @@ packages:
       eslint-visitor-keys: 3.4.3
     dev: true
 
-  /@vis.gl/react-google-maps@0.11.2(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-tzkCVi58jSLvRHiiAtA1wUdsKkx7KYp3FBFawcKwOMwiCVsIKsjme2ALdyP9PqEreIELxjjRhWux5+j7vH2YVg==}
+  /@vis.gl/react-google-maps@1.1.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-MxDIhCfPRzTQY1c6sS0GFg8Ukl40o13fkIKEaCN0cR1BIrV4LPo+EuCov9WElbe0bOo8MApx5qAbqBKOmLQyKg==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'

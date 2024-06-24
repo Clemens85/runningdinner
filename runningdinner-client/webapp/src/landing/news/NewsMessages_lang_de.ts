@@ -1,5 +1,13 @@
 const NewsMessages_de: any = {
 
+  news_title_20240624: 'Dinner Routen Verbesserungen',
+  news_content_20240624: 'Die Dinner Routen wurden verbessert: Es gibt nun eine neue Ansicht, welche alle Gastgeber und deren Route in einer Karte anzeigt. ' + 
+                         'Diese Übersicht über alle Dinner-Routen wird nach und nach noch erweitert werden mit Zusatzfunktionen.<br/> ' +
+                         'Zudem wurden Fehler in der Einzel-Dinner-Routen-Sicht behoben.',
+
+  news_title_20240616: 'Restrukturierung Navigation',
+  news_content_20240616: 'Alle Funktionen des Nachrichtenversands sind nun unter einem eigenen Menüpunkt zu finden, was der besseren Auffindbarkeit + Übersichtlichkeit dient.',
+                       
   news_title_20231126: 'Fehlerbehebungen',
   news_content_20231126: 'Es konnte die letzten Tage im Zusammenhang mit der Möglichkeit der Sofort-Anmeldung von Wunschpartern zu Fehlern kommen, ' + 
                          'welche sich dadurch geäußert haben, dass beispielsweise falsche Anreden oder falsche Essensgewohnheiten im Nachrichtenversand verwendet wurden. ' +

@@ -1,4 +1,11 @@
 const NewsMessages_en: any = {
+  news_title_20240624: 'Dinner Route improvements',
+  news_content_20240624: 'The dinner routes have been improved: There is now a new view that shows all hosts and their routes on a map. ' + 
+                         'This overview of all dinner routes will gradually be enhanced with additional functions.<br/> ' +
+                         'Bugs in the single dinner route view have also been fixed.',
+
+  news_title_20240616: 'Improved navigation',
+  news_content_20240616: 'All messaging functions can now be found under a separate navigation item, which makes them easier to find and provides a better overview.',
 
   news_title_20231126: 'Several bugfixes',
   news_content_20231126: 'In the last few days, errors could occur in connection with the possibility of immediate registration of desired partners, ' + 
