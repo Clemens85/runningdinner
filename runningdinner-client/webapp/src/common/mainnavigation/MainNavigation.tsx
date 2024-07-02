@@ -10,8 +10,6 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  useMediaQuery,
-  useTheme
 } from "@mui/material";
 import {LanguageSwitch} from "../i18n/LanguageSwitch";
 import {Link as RouterLink, useLocation} from "react-router-dom";
@@ -20,7 +18,6 @@ import {FeedbackButtonContainerRightAligned} from "../feedback/FeedbackButton";
 import {LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH} from "./NavigationPaths";
 import {styled} from '@mui/material/styles';
 import { DonateButton } from '../donate/DonateButton';
-import { useIsBigTabletDevice, useIsDeviceMinWidth } from '../theme/CustomMediaQueryHook';
 import { CallbackHandler } from '@runningdinner/shared';
 
 const HomeTitle = styled(Typography)(({theme}) => ({

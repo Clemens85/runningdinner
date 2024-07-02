@@ -49,7 +49,7 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
 
   return (
     <HostLocationsView {...dinnerRouteMapData} />
-  )
+  );
 }
 
 function HostLocationsView({showWarnings, dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry}: DinnerRouteMapData) {
