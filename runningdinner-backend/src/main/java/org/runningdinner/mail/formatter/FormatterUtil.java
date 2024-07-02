@@ -23,7 +23,9 @@ import java.util.Set;
 public class FormatterUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FormatterUtil.class);
-  
+
+  public static final String DEFAULT_BRAND_NAME = "runyourdinner";
+
   public static final String PARTNER = "\\{partner\\}";
 
   public static final String FIRSTNAME = "\\{firstname\\}";
@@ -32,6 +34,7 @@ public class FormatterUtil {
   public static final String EMAIL = "\\{email\\}";
   
   public static final String DATE = "\\{date\\}";
+  public static final String DAYS = "\\{days\\}";
   public static final String CITY = "\\{city\\}";
   public static final String TITLE = "\\{title\\}";
   

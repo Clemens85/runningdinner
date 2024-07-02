@@ -1,22 +1,16 @@
 package org.runningdinner.admin;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.runningdinner.admin.activity.ActivityRepository;
 import org.runningdinner.admin.deleted.DeletedRunningDinner;
 import org.runningdinner.admin.deleted.DeletedRunningDinnerRepository;
+import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJobRepository;
 import org.runningdinner.admin.message.job.MessageTaskRepository;
+import org.runningdinner.admin.message.job.MessageType;
 import org.runningdinner.contract.ContractService;
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantRepository;
-import org.runningdinner.participant.ParticipantService;
-import org.runningdinner.participant.Team;
-import org.runningdinner.participant.TeamRepository;
+import org.runningdinner.core.RunningDinnerPreferences;
+import org.runningdinner.participant.*;
 import org.runningdinner.payment.RegistrationOrderRepository;
 import org.runningdinner.payment.paymentoptions.PaymentOptionsRepository;
 import org.slf4j.Logger;
@@ -25,10 +19,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Service
 public class RunningDinnerDeletionService {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(RunningDinnerDeletionService.class);
+  private static final int DAYS_TO_KEEP_OLD_DINNER = 5;
+
+  private static final int DAYS_BEFORE_DELETION_TO_WARN = 2;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RunningDinnerDeletionService.class);
 
   @Autowired
   private RunningDinnerRepository runningDinnerRepository;
@@ -41,7 +45,10 @@ public class RunningDinnerDeletionService {
   
   @Autowired
   private TeamRepository teamRepository;
-  
+
+  @Autowired
+  private MessageService messageService;
+
   @Autowired
   private MessageTaskRepository messageTaskRepository;
   
@@ -62,6 +69,9 @@ public class RunningDinnerDeletionService {
   
   @Autowired
   private DeletedRunningDinnerRepository deletedRunningDinnerRepository;
+
+  @Autowired
+  private RunningDinnerService runningDinnerService;
   
   @Transactional
   public void deleteRunningDinner(final RunningDinner runningDinner) {
@@ -114,5 +124,36 @@ public class RunningDinnerDeletionService {
     LOGGER.info("Saving metadata about dinner to delete {}", runningDinner);
     return result;
   }
-  
+
+  @Transactional
+  public void warnAboutDeletion(RunningDinner runningDinner, LocalDateTime now) {
+
+    RunningDinnerPreferences preferences = runningDinnerService.getPreferences(runningDinner.getAdminId());
+    if (isAlreadyWarnedAboutDeletion(preferences)) {
+      LOGGER.info("{} was already warned about deletion", runningDinner);
+      return;
+    }
+
+    LocalDateTime deletionDate = runningDinner.getDate().plusDays(DAYS_TO_KEEP_OLD_DINNER).atStartOfDay();
+    if (deletionDate.isAfter(now)) {
+      messageService.sendRunningDinnerDeletionWarnMessage(runningDinner, deletionDate, now);
+    } else {
+      LOGGER.warn("Don't send deletion warn message for {} due to deletion-date {} is before current date {}", runningDinner, deletionDate, now);
+    }
+
+    preferences.addPreference(MessageType.RUNNING_DINNER_DELETION_WARN_MESSAGE.name(), Boolean.TRUE.toString());
+  }
+
+  private boolean isAlreadyWarnedAboutDeletion(RunningDinnerPreferences preferences) {
+    return preferences.getBooleanValue(MessageType.RUNNING_DINNER_DELETION_WARN_MESSAGE.name()).orElse(false);
+  }
+
+  protected LocalDateTime calculateFilterDateForDeletion(LocalDateTime now) {
+    return now.minusDays(DAYS_TO_KEEP_OLD_DINNER);
+  }
+
+  protected LocalDateTime calculateFilterDateForWarn(LocalDateTime now) {
+
+    return now.minusDays(DAYS_BEFORE_DELETION_TO_WARN);
+  }
 }

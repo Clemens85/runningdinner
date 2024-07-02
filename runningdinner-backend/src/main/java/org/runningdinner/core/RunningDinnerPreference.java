@@ -22,19 +22,8 @@ public class RunningDinnerPreference extends RunningDinnerRelatedEntity {
 	}
 
 	public RunningDinnerPreference(RunningDinner runningDinner) {
-		this.runningDinner = runningDinner;
+		super(runningDinner);
 	}
-
-	@Override
-  public RunningDinner getRunningDinner() {
-		return runningDinner;
-	}
-
-	@Override
-  public void setRunningDinner(RunningDinner runningDinner) {
-		this.runningDinner = runningDinner;
-	}
-
 	public String getPreferenceName() {
 		return preferenceName;
 	}

@@ -1,13 +1,5 @@
 package org.runningdinner.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +28,14 @@ import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wizard.PublicSettingsTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -95,7 +95,7 @@ public class RunningDinnerDeletionTest {
     assertThat(contract.getParentRunningDinnerId()).isEqualTo(runningDinner.getId());
     assertThat(contract.getParentDeletedRunningDinnerId()).isNull();
     
-    LocalDateTime now = DINNER_DATE.plusDays(3);
+    LocalDateTime now = DINNER_DATE.plusDays(6);
     deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);
     
     assertNoRunningDinnerEntities();
@@ -126,7 +126,7 @@ public class RunningDinnerDeletionTest {
     LocalDateTime cancellationDate = DINNER_DATE;
     runningDinnerService.cancelRunningDinner(runningDinner.getAdminId(), cancellationDate);
 
-    LocalDateTime now = DINNER_DATE.plusDays(3);
+    LocalDateTime now = DINNER_DATE.plusDays(5);
     deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);
     
     assertNoRunningDinnerEntities();
@@ -142,7 +142,7 @@ public class RunningDinnerDeletionTest {
     LocalDateTime cancellationDate = DINNER_DATE;
     runningDinnerService.cancelRunningDinner(runningDinner.getAdminId(), cancellationDate);
 
-    LocalDateTime now = DINNER_DATE.plusDays(3);
+    LocalDateTime now = DINNER_DATE.plusDays(5);
     deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);
     
     List<DeletedRunningDinner> deletedRunningDinners = assertNoRunningDinnerEntities();
@@ -173,15 +173,15 @@ public class RunningDinnerDeletionTest {
     assertThat(participants.get(18).getTeamPartnerWishOriginatorId()).isNotNull();
     assertThat(participants.get(19).getTeamPartnerWishOriginatorId()).isNotNull();
     
-    LocalDateTime now = DINNER_DATE.plusDays(5);
+    LocalDateTime now = DINNER_DATE.plusDays(6);
     deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);
     
     assertNoRunningDinnerEntities();
   }
-  
+
   private RunningDinner changeClosedToPublic() {
     runningDinner = assertExistingRunningDinnerEntities();
-    runningDinner.setEmail(UUID.randomUUID().toString() + "@mail.de"); // Used later on for identifying this dinner
+    runningDinner.setEmail(UUID.randomUUID() + "@mail.de"); // Used later on for identifying this dinner
     runningDinner = runningDinnerRepository.save(runningDinner);
     
     BasicSettingsTO basicSettings = TestUtil.newBasicSettings(TestUtil.newBasicDetails(runningDinner.getTitle(),

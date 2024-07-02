@@ -1,5 +1,6 @@
 package org.runningdinner.admin.message;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
@@ -26,10 +27,7 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.mail.MailService;
-import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
-import org.runningdinner.mail.formatter.ParticipantMessageFormatter;
-import org.runningdinner.mail.formatter.RunningDinnerEventCreatedMessageFormatter;
-import org.runningdinner.mail.formatter.TeamArrangementMessageFormatter;
+import org.runningdinner.mail.formatter.*;
 import org.runningdinner.mail.sendgrid.SuppressedEmail;
 import org.runningdinner.participant.*;
 import org.runningdinner.participant.rest.ParticipantListActive;
@@ -44,7 +42,6 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -83,6 +80,9 @@ public class MessageService {
   
   @Autowired
   private RunningDinnerEventCreatedMessageFormatter runningDinnerEventCreatedMessageFormatter;
+
+  @Autowired
+  private RunningDinnerDeletionWarningMessageFormatter runningDinnerDeletionWarningMessageFormatter;
   
   @Autowired
   private MessageJobProcessorHelperService messageJobProcessorHelperService;
@@ -256,6 +256,19 @@ public class MessageService {
     final MessageJob messageJob = createNewRunningDinnerMessageJob(runningDinnerCreatedMessage);
     executeSendMessagesJobAfterCommit(messageJob);
     return messageJob;
+  }
+
+  public MessageJob sendRunningDinnerDeletionWarnMessage(RunningDinner runningDinner, LocalDateTime deletionDate, LocalDateTime now) {
+
+    RunningDinnerRelatedMessage runningDinnerCreatedMessage = runningDinnerDeletionWarningMessageFormatter.formatRunningDinnerDeletionWarnMessage(runningDinner, deletionDate, now);
+
+    MessageJob parentMessageJob = new MessageJob(MessageType.RUNNING_DINNER_DELETION_WARN_MESSAGE, runningDinner);
+
+    MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
+    messageTask.setMessage(new Message(runningDinnerCreatedMessage.getSubject(), runningDinnerCreatedMessage.getMessage(), mailConfig.getDefaultFrom()));
+    messageTask.setRecipientEmail(runningDinner.getEmail());
+    mailService.sendMessage(messageTask);
+    return parentMessageJob;
   }
 
   private MessageJob createNewRunningDinnerMessageJob(RunningDinnerRelatedMessage newRunningDinnerMessage) {

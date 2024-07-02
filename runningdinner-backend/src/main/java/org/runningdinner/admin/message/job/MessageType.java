@@ -10,6 +10,8 @@ public enum MessageType {
   TEAM_HOST_CHANGED_BY_PARTICIPANT,
   
   NEW_RUNNING_DINNER,
+
+  RUNNING_DINNER_DELETION_WARN_MESSAGE,
   
   PARTICIPANT_SUBSCRIPTION_ACTIVATION,
   
@@ -17,7 +19,10 @@ public enum MessageType {
   
   public boolean isAcknowledgedDinnerNeeded() {
     
-    return this != NEW_RUNNING_DINNER && this != PARTICIPANT_SUBSCRIPTION_ACTIVATION && this != MessageType.TEAM_PARTNER_WISH;
+    return this != NEW_RUNNING_DINNER &&
+            this != PARTICIPANT_SUBSCRIPTION_ACTIVATION &&
+            this != MessageType.TEAM_PARTNER_WISH &&
+            this != RUNNING_DINNER_DELETION_WARN_MESSAGE;
   }
   
   public boolean isSendingToDinnerAdminInDemoModeNeeded() {

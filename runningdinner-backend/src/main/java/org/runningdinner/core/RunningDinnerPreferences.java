@@ -1,12 +1,6 @@
 
 package org.runningdinner.core;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerPreferencesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +8,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.Optional;
+import java.util.*;
+
 
 @Component
 @Scope("prototype")
 public class RunningDinnerPreferences {
-
-  public static final String USE_CUSTOM_MAILSERVER = "customMailServer";
 
   protected Set<RunningDinnerPreference> preferences;
 
@@ -70,7 +63,7 @@ public class RunningDinnerPreferences {
         return Optional.of(Boolean.parseBoolean(value));
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   /**
