@@ -137,6 +137,7 @@
 	"notification_dinner_acknowledge_required": "Currently you can't send any messages, due to you have not yet confirmed your dinner event (check your emails for a confirmation link).",
 	"notification_dinner_cancellation_text": "You have finally cancelled this dinner event at {{ cancellationDate }}. Please notify all participants if not yet done. All data will automatically be deleted in the next days.",
 	"notification_dinner_demo_mode": "This is the demo mode. You can test all features. All messages will however be send to you (instead of the 'real' recipients).",
+	"notification_dinner_expired": "Your event has expired. For data protection reasons, your Running Dinner event will be automatically deleted in the next few days. If you still need data, please download it.",
 
 	"open_dinner_link_help": "You can share this link with your friends and acquaintances. Each person who knows this link can self-register to your event.",
 

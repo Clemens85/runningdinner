@@ -139,6 +139,8 @@
 	"notification_dinner_acknowledge_required": "Aktuell ist der Nachrichtenversand deaktiviert, da du noch nicht den per Mail versandten Bestätigungslink aufgerufen hast.",
 	"notification_dinner_cancellation_text": "Du hast dieses Dinner-Event am {{ cancellationDate }} endgültig abgesagt. Bitte benachrichtige alle Teilnehmer sofern noch nicht geschehen. Alle Daten werden in den nächsten Tagen automatisch gelöscht!",
 	"notification_dinner_demo_mode": "Du befindest dich im Demo-Modus. Du kannst hier alle Funktionalitäten testen. Alle Nachrichten werden an dich - und nicht an die realen Empfänger - versandt.",
+	"notification_dinner_expired": "Dein Event ist abgelaufen. Aus datenschutzrechtlichen Gründen wird dein Running Dinner Event in den nächsten Tagen automatisch gelöscht werden. Falls du noch Daten benötigst, lade sie dir bitte herunter.",
+
 
 	"open_dinner_link_help": "Jeder der diesen Link kennt, kann sich zu deinem Event anmelden. Du kannst diesen an deine Bekannten zur Anmeldung weitergeben.",
 

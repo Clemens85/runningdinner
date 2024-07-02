@@ -1,5 +1,8 @@
 const NewsMessages_de: any = {
 
+  news_title_20240702: 'Automatische Benachrichtigung bevor Dinner gelöscht wird',
+  news_content_20240702: 'Ab jetzt bekommt ihr mit ein paar Tagen Vorlauf eine Benachrichtigung, bevor euer Dinner nach Ablauf automatisch gelöscht wird.',
+
   news_title_20240624: 'Dinner Routen Verbesserungen',
   news_content_20240624: 'Die Dinner Routen wurden verbessert: Es gibt nun eine neue Ansicht, welche alle Gastgeber und deren Route in einer Karte anzeigt. ' + 
                          'Diese Übersicht über alle Dinner-Routen wird nach und nach noch erweitert werden mit Zusatzfunktionen.<br/> ' +

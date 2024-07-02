@@ -6,7 +6,7 @@ import {
   RunningDinnerOptions, RunningDinnerPublicSettings, ReSendRunningDinnerCreatedMessageModel, AfterPartyLocation
 } from "../types";
 import {CONSTANTS} from "../Constants";
-import {getDaysBetweenDates} from '../date';
+import {getDaysBetweenDates, isAfterInDays} from '../date';
 import {CreateRunningDinnerWizardModel} from "../wizard";
 import {hasClosedRegistrationType} from "./SettingsService"
 import {isStringNotEmpty} from "../Utils";
@@ -96,7 +96,15 @@ export function isAcknowledgeRequired(runningDinner: RunningDinner) {
 }
 
 export function isNotificationRequired(runningDinner: RunningDinner): boolean {
-  return isAcknowledgeRequired(runningDinner) || !!runningDinner.cancellationDate || runningDinner.runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO;
+  return isAcknowledgeRequired(runningDinner) || 
+         !!runningDinner.cancellationDate || 
+         runningDinner.runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO ||
+         isDinnerExpired(runningDinner, new Date());
+}
+
+export function isDinnerExpired(runningDinner: RunningDinner, now: Date) {
+  const dinnerDate = new Date(runningDinner.basicDetails.date);
+  return isAfterInDays(now, dinnerDate);
 }
 
 export function getMinimumParticipantsNeeded(runningDinnerOptions: RunningDinnerOptions) {

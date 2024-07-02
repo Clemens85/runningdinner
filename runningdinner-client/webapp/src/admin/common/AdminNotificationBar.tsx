@@ -9,7 +9,8 @@ import {
   CallbackHandler, BaseRunningDinnerProps, ReSendRunningDinnerCreatedMessageModel,
   useBackendIssueHandler, useAdminDispatch,
   setUpdatedRunningDinner,
-  HttpError, newReSendRunningdinnerCreatedMessageModel
+  HttpError, newReSendRunningdinnerCreatedMessageModel,
+  isDinnerExpired
 } from "@runningdinner/shared";
 import {Trans, useTranslation} from "react-i18next";
 import {AlertColor, Box, Dialog, DialogContent, Grid} from "@mui/material";
@@ -50,11 +51,15 @@ export default function AdminNotificationBar() {
   const {cancellationDate, acknowledgedDate, runningDinnerType} = runningDinner;
 
   const acknowledgeRequired = isAcknowledgeRequired(runningDinner);
+  const expired = isDinnerExpired(runningDinner, new Date());
 
   let notificationMessage = [];
   if (cancellationDate) {
     const cancellationDateFormatted = formatLocalDateWithSeconds(cancellationDate);
     notificationMessage.push(<Box key="cancellationDate">{t('notification_dinner_cancellation_text', { cancellationDate: cancellationDateFormatted })}</Box>);
+    if (expired) {
+      notificationMessage.push(<Box key="expired">{t("notification_dinner_expired")}</Box>);
+    }
   } else if (acknowledgeRequired) {
     notificationMessage.push(<ReSendRunningDinnerCreatedMessageContainer key="acknowledgedDate" runningDinner={runningDinner} />);
   } else if (runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO) {
@@ -62,10 +67,12 @@ export default function AdminNotificationBar() {
     if (!acknowledgedDate) {
       notificationMessage.push(<ReSendRunningDinnerCreatedMessageContainer key="acknowledgedDate" runningDinner={runningDinner} />);
     }
+  } else if (expired) {
+    notificationMessage.push(<Box key="expired">{t("notification_dinner_expired")}</Box>);
   }
 
   let severity:AlertColor = acknowledgeRequired ? "warning" : "info";
-  severity = cancellationDate ? "error" : severity;
+  severity = (cancellationDate || expired) ? "error" : severity;
  
   return (
       <>

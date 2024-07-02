@@ -1,4 +1,8 @@
 const NewsMessages_en: any = {
+
+  news_title_20240702: 'Automatic notification before dinner is deleted',
+  news_content_20240702: 'From now on, you will receive a notification a few days in advance before your dinner is automatically deleted after it expires.',
+
   news_title_20240624: 'Dinner Route improvements',
   news_content_20240624: 'The dinner routes have been improved: There is now a new view that shows all hosts and their routes on a map. ' + 
                          'This overview of all dinner routes will gradually be enhanced with additional functions.<br/> ' +
