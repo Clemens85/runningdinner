@@ -11,9 +11,9 @@ import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMedi
 
 function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
   if (includeHostFullname) {
-    return <>Team {team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
+    return <>Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
   } else {
-    return <>Team {team.teamNumber} ({team.meal.label})</>;
+    return <>Team #{team.teamNumber} ({team.meal.label})</>;
   }
 }
 
@@ -107,13 +107,6 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
             <FilterTeamCheckbox team={team}
                                 selected={!!filteredTeams[team.teamNumber]}
                                 onFilterChange={(team, selected) => onFilterChange(team, selected)} />
-            // <Box>
-            //   <FormControlLabel sx={{ color: team.color}} label={getTeamLabel(team)} control={
-            //     <Checkbox color="primary" 
-            //               onChange={() => onFilterChange(team, !filteredTeams[team.teamNumber])} 
-            //               checked={!!filteredTeams[team.teamNumber]} />
-            //   } />
-            // </Box>
           )}>
         </Virtuoso>
       </Box>
@@ -137,8 +130,8 @@ function FilterTeamCheckbox({ team, selected, onFilterChange }: FilterTeamCheckb
 
   return (
     <>
-      <Box>
-        <FormControlLabel sx={{ color: team.color}} label={getTeamLabel(team, isBigDevice)} control={
+      <Box sx={{ mb: '-12px' }}>
+        <FormControlLabel sx={{ color: team.color }} label={getTeamLabel(team, isBigDevice)} control={
           <Checkbox color="primary" 
                     onChange={() => onFilterChange(team, !selected)} 
                     checked={selected} />
@@ -146,8 +139,8 @@ function FilterTeamCheckbox({ team, selected, onFilterChange }: FilterTeamCheckb
       </Box>
 
       { isBigDevice &&
-        <Box sx={{ pl: 1 }}>
-          {hostTeams.map(hostTeam => <Box key={hostTeam.teamNumber}>Zu Gast bei {getTeamLabel(hostTeam, false)}</Box>) }
+        <Box sx={{ pl: 4 }}>
+          {hostTeams.map(hostTeam => <Box key={hostTeam.teamNumber}><small>Zu Gast bei {getTeamLabel(hostTeam, false)}</small></Box>) }
         </Box>
       }
     </>
