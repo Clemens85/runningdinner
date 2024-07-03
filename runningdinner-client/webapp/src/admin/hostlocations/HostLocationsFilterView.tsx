@@ -1,7 +1,7 @@
 import { AppBar, Box, Checkbox, Fab, FormControlLabel, IconButton, Paper, styled, SxProps, Toolbar, Typography } from "@mui/material";
 import { Span } from "../../common/theme/typography/Tags";
 import { DinnerRouteTeamMapEntry } from "../../common/dinnerroute";
-import { CallbackHandler, Fullname } from "@runningdinner/shared";
+import { CallbackHandler, DinnerRouteTeam, Fullname } from "@runningdinner/shared";
 import { Virtuoso } from "react-virtuoso";
 import ExpandCircleDownOutlinedIcon from '@mui/icons-material/ExpandCircleDownOutlined';
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
@@ -9,19 +9,26 @@ import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 
-function getTeamLabel(team: DinnerRouteTeamMapEntry) {
-  return <>Team {team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
+function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
+  if (includeHostFullname) {
+    return <>Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
+  } else {
+    return <>Team #{team.teamNumber} ({team.meal.label})</>;
+  }
 }
 
 type HostLocationsFilterMinimizeProps = {
   onToggleMinize: CallbackHandler;
 };
 
+type OnFilterChangeProps = {
+  onFilterChange: (team: DinnerRouteTeamMapEntry, open: boolean) => void;
+};
+
 type HostLocationsFilterViewProps = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
   filteredTeams: Record<number, DinnerRouteTeamMapEntry>,
-  onFilterChange: (team: DinnerRouteTeamMapEntry, open: boolean) => void;
-} & HostLocationsFilterMinimizeProps
+} & HostLocationsFilterMinimizeProps & OnFilterChangeProps;
 
 
 const MinimizedFab = styled(Fab)({
@@ -91,22 +98,51 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
       { renderTitleBar2() }
       <Box sx={{ height: `${teamsFilterHeight}px`, padding: 3 }}>
         <Box pb={1}>
-          <Span>Wähle einzelne Teams aus zur Routen-Filterung</Span>
+          <Span i18n="admin:hostlocations_team_filter" />
         </Box>
         <Virtuoso 
           data={dinnerRouteMapEntries}
           style={{ height: '92%' }}
           itemContent={(_, team) => (
-            <Box>
-              <FormControlLabel sx={{ color: team.color}} label={getTeamLabel(team)} control={
-                <Checkbox color="primary" 
-                          onChange={() => onFilterChange(team, !filteredTeams[team.teamNumber])} 
-                          checked={!!filteredTeams[team.teamNumber]} />
-              } />
-            </Box>
+            <FilterTeamCheckbox team={team}
+                                selected={!!filteredTeams[team.teamNumber]}
+                                onFilterChange={(team, selected) => onFilterChange(team, selected)} />
           )}>
         </Virtuoso>
       </Box>
     </Paper>
+  )
+}
+
+type FilterTeamCheckboxProps = {
+  team: DinnerRouteTeamMapEntry;
+  selected?: boolean;
+} & OnFilterChangeProps;
+
+function FilterTeamCheckbox({ team, selected, onFilterChange }: FilterTeamCheckboxProps) {
+  
+  const isBigDevice = useIsBigDevice();
+
+  const hostTeams = team.teamConnectionPaths
+                          .filter(tcp => tcp.team)
+                          .map(tcp => tcp.team!)
+                          .filter(t => t.teamNumber !== team.teamNumber);
+
+  return (
+    <>
+      <Box sx={{ mb: '-12px' }}>
+        <FormControlLabel sx={{ color: team.color }} label={getTeamLabel(team, isBigDevice)} control={
+          <Checkbox color="primary" 
+                    onChange={() => onFilterChange(team, !selected)} 
+                    checked={selected} />
+        } />
+      </Box>
+
+      { isBigDevice &&
+        <Box sx={{ pl: 4 }}>
+          {hostTeams.map(hostTeam => <Box key={hostTeam.teamNumber}><small>Zu Gast bei {getTeamLabel(hostTeam, false)}</small></Box>) }
+        </Box>
+      }
+    </>
   )
 }

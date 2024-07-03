@@ -9,7 +9,8 @@ export type TeamConnectionPath = {
   path: GeocodingResult;
   color: string;
   key: string;
-}
+  team?: DinnerRouteTeam;
+};
 
 export type DinnerRouteTeamMapEntry = {
   teamConnectionPaths: TeamConnectionPath[];
@@ -93,7 +94,8 @@ function calculateDinnerRouteMapEntry(dinnerRoute: DinnerRoute,
     teamConnectionPaths.push({
       path: team.geocodingResult!,
       color,
-      key: `${currentTeam.teamNumber}-${team.teamNumber}`
+      key: `${currentTeam.teamNumber}-${team.teamNumber}`,
+      team,
     });
   });
 

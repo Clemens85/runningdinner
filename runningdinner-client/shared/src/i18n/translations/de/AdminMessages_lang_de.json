@@ -62,6 +62,7 @@
 
 	"headline_teams": "Teams",
 	"hostlocations_overview": "Dinner Routen Gastgeber Übersicht",
+	"hostlocations_team_filter": "Wähle einzelne Teams aus zur Routen-Filterung",
 
 	"invalid_size_replacement_participants_too_little": "Zu wenig Teilnehmer ausgewählt",
 	"invalid_size_replacement_participants_too_many": "Zu viele Teilnehmer ausgewählt",
