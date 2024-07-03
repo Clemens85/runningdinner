@@ -137,7 +137,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
             </Box>
             {!teamPartnerWishChild &&
               <Box mb={3}>
-                <MiscSection/>
+                <MiscSection activationDate={participant?.activationDate}/>
               </Box>
             }
 
