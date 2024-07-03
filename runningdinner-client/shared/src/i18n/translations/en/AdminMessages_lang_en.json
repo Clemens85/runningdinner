@@ -61,6 +61,7 @@
 
 	"headline_teams": "Teams",
 	"hostlocations_overview": "Dinner Route Locations Overview",
+	"hostlocations_team_filter": "Select single team(s) for filtering the dinner routes",
 
 	"invalid_size_replacement_participants_too_little": "Not enough participants selected",
 	"invalid_size_replacement_participants_too_many": "Selected too much participants",
