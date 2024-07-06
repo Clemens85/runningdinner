@@ -1,7 +1,7 @@
 import {AfterPartyLocation, Meal} from "./RunningDinner";
 import {Team, TeamStatus} from "./Team";
 import {Participant} from "./Participant";
-import {GeocodingResult, HasGeocoding} from "./Base";
+import {BaseEntity, GeocodingResult, HasGeocoding} from "./Base";
 import {filterForValidGeocdingResults} from "../GeocoderHook";
 
 export interface DinnerRoute {
@@ -26,6 +26,19 @@ export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {
 
 export interface DinnerRouteList {
   dinnerRoutes: DinnerRoute[];
+}
+export interface DinnerRouteAddressEntityList {
+  addressEntities: DinnerRouteAddressEntity[];
+}
+export interface DinnerRouteAddressEntity extends GeocodingResult, BaseEntity { }
+
+interface DistanceEntry {
+  srcId: string;
+  destId: string;
+}
+
+export interface DistanceMatrix {
+  entries: Map<DistanceEntry, number>;
 }
 
 export function isSameDinnerRouteTeam(a: DinnerRouteTeam | Team, b: DinnerRouteTeam | Team) {

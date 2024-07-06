@@ -4,10 +4,8 @@ import jakarta.validation.Valid;
 import org.runningdinner.participant.*;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteListTO;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
-import org.runningdinner.routeoptimization.TeamLocationsEventData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +19,16 @@ public class TeamServiceRest {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamServiceRest.class);
 
-	@Autowired
-	private TeamService teamService;
+	private final TeamService teamService;
 
-	@GetMapping("/runningdinner/{adminId}/team/{teamId}/meetingplan")
+  private final DinnerRouteService dinnerRouteService;
+
+  public TeamServiceRest(TeamService teamService, DinnerRouteService dinnerRouteService) {
+    this.teamService = teamService;
+    this.dinnerRouteService = dinnerRouteService;
+  }
+
+  @GetMapping("/runningdinner/{adminId}/team/{teamId}/meetingplan")
 	public TeamMeetingPlanTO findTeamMeetingPlan(@PathVariable String adminId, @PathVariable UUID teamId) {
 
 	  TeamMeetingPlan teamMeetingPlan = teamService.findTeamMeetingPlan(adminId, teamId);
@@ -131,26 +135,21 @@ public class TeamServiceRest {
     
     return new TeamTO(result);
   }
-	
+
+  // TODO: Remove as moved to DinnerRouteServiceRest
+
   @GetMapping("/runningdinner/{adminId}/team/{teamId}/dinnerroute")
   public DinnerRouteTO findDinnerRoute(@PathVariable String adminId, @PathVariable UUID teamId) {
 
-    return teamService.findDinnerRoute(adminId, teamId)
+    return dinnerRouteService.findDinnerRoute(adminId, teamId)
                         .withMealSpecificsInHtmlFormat();
   }
 
   @GetMapping("/runningdinner/{adminId}/dinnerroutes")
   public DinnerRouteListTO findAllDinnerRoutes(@PathVariable String adminId) {
 
-    var result = teamService.findAllDinnerRoutes(adminId);
+    var result = dinnerRouteService.findAllDinnerRoutes(adminId);
     return new DinnerRouteListTO(result);
-  }
-
-
-  @GetMapping("/runningdinner/{adminId}/team-locations-event-data")
-  public TeamLocationsEventData findTeamLocationsEventData(@PathVariable String adminId) {
-    
-    return teamService.findTeamLocationsEventData(adminId);
   }
 
   protected Map<UUID, UUID> convertToTeamHostMap(final List<TeamTO> teams) {
