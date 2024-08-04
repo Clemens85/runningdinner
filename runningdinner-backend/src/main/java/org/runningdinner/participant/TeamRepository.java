@@ -1,15 +1,15 @@
 package org.runningdinner.participant;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
 import org.runningdinner.core.RunningDinnerRelatedRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public interface TeamRepository extends RunningDinnerRelatedRepository<Team> {
 
@@ -18,6 +18,9 @@ public interface TeamRepository extends RunningDinnerRelatedRepository<Team> {
 
   @EntityGraph(value = Team.NAMED_ENTITIY_GRAPH_TEAMMEMBERS_AND_MEALCLASS, type = EntityGraphType.LOAD)
   List<Team> findWithTeamMembersAndMealClassDistinctByIdInAndAdminIdOrderByTeamNumber(Collection<UUID> teamIds, String adminId);
+
+  @EntityGraph(value = Team.NAMED_ENTITIY_GRAPH_TEAMMEMBERS_AND_MEALCLASS, type = EntityGraphType.LOAD)
+  List<Team> findWithTeamMembersAndMealClassDistinctByTeamNumberInAndAdminIdOrderByTeamNumber(Collection<Integer> teamNumbers, String adminId);
 	
   @EntityGraph(value = Team.NAMED_ENTITIY_GRAPH_TEAMMEMBERS_AND_MEALCLASS, type = EntityGraphType.LOAD)
   Team findWithTeamMembersAndMealClassDistinctByIdAndAdminId(UUID teamId, String adminId);

@@ -27,10 +27,10 @@ export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {
 export interface DinnerRouteList {
   dinnerRoutes: DinnerRoute[];
 }
-export interface DinnerRouteAddressEntityList {
-  addressEntities: DinnerRouteAddressEntity[];
+export interface GeocodedAddressEntityList {
+  addressEntities: GeocodedAddressEntity[];
 }
-export interface DinnerRouteAddressEntity extends GeocodingResult, BaseEntity { }
+export interface GeocodedAddressEntity extends GeocodingResult, BaseEntity { }
 
 interface DistanceEntry {
   srcId: string;
@@ -39,6 +39,14 @@ interface DistanceEntry {
 
 export interface DistanceMatrix {
   entries: Map<DistanceEntry, number>;
+}
+
+export interface TeamDistanceCluster {
+  teams: Team[];
+  distance: number;
+}
+export interface TeamDistanceClusterList {
+  teamDistanceClusters: TeamDistanceCluster[];
 }
 
 export function isSameDinnerRouteTeam(a: DinnerRouteTeam | Team, b: DinnerRouteTeam | Team) {

@@ -1,6 +1,9 @@
+import { Meal } from "./RunningDinner";
+
 export interface SelfAdminSessionData {
   selfAdministrationId: string;
   languageCode: string;
+  meals: Meal[];
 }
 
 export interface SelfAdminBaseParams {

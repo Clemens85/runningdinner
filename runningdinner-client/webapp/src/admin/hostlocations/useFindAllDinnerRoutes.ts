@@ -5,7 +5,7 @@ export function useFindAllDinnerRoutes(adminId: string) {
   return useQuery({
     placeholderData: keepPreviousData,
     queryFn: () => findAllDinnerRoutesByAdminIdAsync(adminId),
-    queryKey: ['findAllDinnerRoutesByAdminI', adminId],
+    queryKey: ['findAllDinnerRoutesByAdminId', adminId],
   });
 }
   

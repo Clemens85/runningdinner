@@ -3,6 +3,7 @@ package org.runningdinner.selfservice;
 import com.google.common.base.MoreObjects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
@@ -119,7 +120,7 @@ public class SelfAdminService {
    
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(selfAdministrationId);
     participantService.findParticipantById(runningDinner.getAdminId(), participantId); // Checks whether this ID really exists!
-    return new SelfAdminSessionDataTO(selfAdministrationId, runningDinner.getLanguageCode());
+    return new SelfAdminSessionDataTO(selfAdministrationId, runningDinner.getLanguageCode(), MealTO.fromMeals(runningDinner.getConfiguration().getMealClasses()));
   }
   
   protected void emitTeamsHostChangedByParticipantEvent(List<Team> teams, RunningDinner runningDinner, Participant executingParticipant, String comment) {

@@ -3,6 +3,7 @@ import {
   DinnerRouteTeam,
   isAfterPartyLocationDefined,
   isStringNotEmpty,
+  Meal,
   TeamStatus,
 } from "@runningdinner/shared";
 import {Box, Grid, Paper, Typography} from '@mui/material';
@@ -16,10 +17,11 @@ import { APIProvider } from '@vis.gl/react-google-maps';
 import { GOOGLE_MAPS_KEY } from '../maps';
 
 export interface DinnerRouteProps {
-  dinnerRoute: DinnerRoute
+  dinnerRoute: DinnerRoute,
+  meals: Meal[]
 }
 
-export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
+export default function DinnerRouteView({dinnerRoute, meals}: DinnerRouteProps) {
 
   const {mealSpecificsOfGuestTeams, teams, afterPartyLocation} = dinnerRoute;
 
@@ -51,7 +53,7 @@ export default function DinnerRouteView({dinnerRoute}: DinnerRouteProps) {
           }
           <Grid item xs={12} sx={{ mb: 2 }}>
             <APIProvider apiKey={GOOGLE_MAPS_KEY}>
-              <DinnerRouteMapView dinnerRoute={dinnerRoute} />
+              <DinnerRouteMapView dinnerRoute={dinnerRoute} meals={meals} />
             </APIProvider>
           </Grid>
         </Grid>

@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/system";
-import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, TeamNr, Time, getFullname, isArrayEmpty, isDarkColor, isStringNotEmpty } from "@runningdinner/shared";
+import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, MealType, TeamNr, Time, getFullname, isArrayEmpty, isDarkColor, isStringNotEmpty } from "@runningdinner/shared";
 import { SmallTitle, Span, Subtitle } from "../theme/typography/Tags";
 import { uniq } from "lodash-es";
 import LinkExtern from "../theme/LinkExtern";
@@ -8,7 +8,10 @@ import { Alert, AlertTitle } from "@mui/material";
 import { useGeoPosition } from "../hooks/GeoPositionHook";
 import { AdvancedMarker, InfoWindow, Pin, useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
-import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry, getMarkerLabel } from "./DinnerRouteMapCalculationService";
+import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry, getMarkerLabel } from "@runningdinner/shared";
+import SoupKitchenIcon from '@mui/icons-material/SoupKitchen';
+import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
+import IcecreamIcon from '@mui/icons-material/Icecream';
 
 export const TeamCardDetailRow = styled('div')( {
   display: 'flex',
@@ -153,14 +156,24 @@ type TeamHostMarkerProps = {
   isCurrentTeam: boolean;
   teamLabel: string;
   scale?: number;
+  zIndex?: number;
 };
 
-export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel}: TeamHostMarkerProps) {
+export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel, zIndex = 1}: TeamHostMarkerProps) {
   
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [open, setOpen] = useState(false);
 
   const glyphColor = isDarkColor(team.color) ? '#fff' : '#000';
+
+  function getMealTypeIcon(mealType: MealType) {
+    if (mealType === MealType.APPETIZER) {
+      return <SoupKitchenIcon sx={{ fontSize: 16 }}/>;
+    } else if (mealType === MealType.DESSERT) {
+      return <IcecreamIcon sx={{ fontSize: 16 }} />;
+    }
+    return <DinnerDiningIcon sx={{ fontSize: 16 }}/>;
+  }
 
   return (
     <>
@@ -168,8 +181,21 @@ export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel}: TeamHost
         ref={markerRef}
         title={`Team ${team.teamNumber} - ${team.meal.label} (${getFullname(team.hostTeamMember)})`}
         onClick={() => setOpen(!open)}
+        zIndex={zIndex + 1}
         position={{ lat: team.position.lat!, lng: team.position.lng! }}> 
-        <Pin 
+          <Box sx={{ 
+            backgroundColor: team.color, 
+            borderColor: '#000', 
+            color: glyphColor,
+            // fonSize: '16px',
+            borderRadius: '8px',
+            py: 1,
+            px: 1
+          }}>
+            <>{getMealTypeIcon(team.mealType)}</>  
+            {getMarkerLabel(`#${team.teamNumber}`)}
+          </Box>
+        {/* <Pin 
           scale={scale}
           background={team.color}
           glyphColor={glyphColor}
@@ -177,7 +203,7 @@ export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel}: TeamHost
             <span>
               <center>{getMarkerLabel(team.meal.label)}</center> <center>{teamLabel}</center>
             </span>
-          </Pin>
+          </Pin> */}
       </AdvancedMarker>
       {open && (
         <InfoWindow

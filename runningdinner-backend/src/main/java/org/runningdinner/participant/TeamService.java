@@ -141,7 +141,11 @@ public class TeamService {
    
     return teamRepository.findWithTeamMembersAndMealClassDistinctByIdInAndAdminIdOrderByTeamNumber(teamIds, adminId);
   }
-  
+
+  public List<Team> findTeamsWithMembersOrderedByTeamNumbers(@ValidateAdminId String adminId, Collection<Integer> teamNumbers) {
+
+    return teamRepository.findWithTeamMembersAndMealClassDistinctByTeamNumberInAndAdminIdOrderByTeamNumber(teamNumbers, adminId);
+  }
 
   /**
    * Randomly creates teams for the running dinner identified by the passed id.<br>

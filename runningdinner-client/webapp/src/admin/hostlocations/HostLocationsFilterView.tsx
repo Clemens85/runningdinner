@@ -1,35 +1,24 @@
-import { AppBar, Box, Checkbox, Fab, FormControlLabel, IconButton, Paper, styled, SxProps, Toolbar, Typography } from "@mui/material";
+import {Box, Checkbox, Fab, FormControlLabel, Paper, styled, SxProps } from "@mui/material";
 import { Span } from "../../common/theme/typography/Tags";
-import { DinnerRouteTeamMapEntry } from "../../common/dinnerroute";
-import { CallbackHandler, DinnerRouteTeam, Fullname } from "@runningdinner/shared";
 import { Virtuoso } from "react-virtuoso";
-import ExpandCircleDownOutlinedIcon from '@mui/icons-material/ExpandCircleDownOutlined';
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
+import { DinnerRouteOverviewActionType, getDinnerRouteTeamLabel, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry } from "@runningdinner/shared";
+import { TitleBar } from "./TitleBar";
 
-function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
-  if (includeHostFullname) {
-    return <>Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
-  } else {
-    return <>Team #{team.teamNumber} ({team.meal.label})</>;
-  }
-}
-
-type HostLocationsFilterMinimizeProps = {
-  onToggleMinize: CallbackHandler;
-};
-
-type OnFilterChangeProps = {
-  onFilterChange: (team: DinnerRouteTeamMapEntry, open: boolean) => void;
-};
+// function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
+//   if (includeHostFullname) {
+//     return <>Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
+//   } else {
+//     return <>Team #{team.teamNumber} ({team.meal.label})</>;
+//   }
+// }
 
 type HostLocationsFilterViewProps = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
-  filteredTeams: Record<number, DinnerRouteTeamMapEntry>,
-} & HostLocationsFilterMinimizeProps & OnFilterChangeProps;
-
+};
 
 const MinimizedFab = styled(Fab)({
   margin: 0,
@@ -41,18 +30,29 @@ const MinimizedFab = styled(Fab)({
   position: 'fixed',
 });
 
-export function HostLocationsFilterMinimizedButton({onToggleMinize}: HostLocationsFilterMinimizeProps) {
+export function HostLocationsFilterMinimizedButton() {
+
+  const {dispatch} = useDinnerRouteOverviewContext();
+
+  function handleMaximizeFilterView() {
+    dispatch({ 
+      type: DinnerRouteOverviewActionType.UPDATE_HOST_FILTER_VIEW_MINIMIZED, 
+      payload: false
+    });
+  }
+
   return (
-    <MinimizedFab variant="extended" color="primary" onClick={onToggleMinize}>
+    <MinimizedFab variant="extended" color="primary" onClick={handleMaximizeFilterView}>
       Filter
       <OpenInFullRoundedIcon sx={{ ml: 1 }} />
     </MinimizedFab>
   )
 }
 
-export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, onFilterChange, onToggleMinize}: HostLocationsFilterViewProps) {
+export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFilterViewProps) {
 
-  
+  const {dispatch} = useDinnerRouteOverviewContext();
+
   const isMobileDevice = useIsMobileDevice();
   const isBigDevice = useIsBigDevice();
 
@@ -72,22 +72,11 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
     maxWidth: 280
   };
 
-  function renderTitleBar2() {
-    return (
-      <AppBar sx={{ position: 'relative', color: '#fff', backgroundColor: 'primary.main' }}>
-      <Toolbar>
-        <Typography variant="h6" sx={{ ml: 0, flex: 1 }}>Filter</Typography>
-        <IconButton
-          edge="end"
-          color="inherit"
-          onClick={onToggleMinize}
-          aria-label="close"
-          size="large">
-            <ExpandCircleDownOutlinedIcon />
-        </IconButton>
-      </Toolbar>
-    </AppBar>
-    )
+  function handleMinimizeFilterView() {
+    dispatch({ 
+      type: DinnerRouteOverviewActionType.UPDATE_HOST_FILTER_VIEW_MINIMIZED, 
+      payload: true
+    });
   }
 
   return (
@@ -95,7 +84,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
            id="HostFilterPaper" 
            sx={hostFilterPaperStyles}
            ref={teamsFilterContainerRef}>
-      { renderTitleBar2() }
+      <TitleBar onToggleMinize={handleMinimizeFilterView} title={'Filter'} />
       <Box sx={{ height: `${teamsFilterHeight}px`, padding: 3 }}>
         <Box pb={1}>
           <Span i18n="admin:hostlocations_team_filter" />
@@ -104,9 +93,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
           data={dinnerRouteMapEntries}
           style={{ height: '92%' }}
           itemContent={(_, team) => (
-            <FilterTeamCheckbox team={team}
-                                selected={!!filteredTeams[team.teamNumber]}
-                                onFilterChange={(team, selected) => onFilterChange(team, selected)} />
+            <FilterTeamCheckbox team={team} />
           )}>
         </Virtuoso>
       </Box>
@@ -116,31 +103,39 @@ export function HostLocationsFilterView({dinnerRouteMapEntries, filteredTeams, o
 
 type FilterTeamCheckboxProps = {
   team: DinnerRouteTeamMapEntry;
-  selected?: boolean;
-} & OnFilterChangeProps;
+};
 
-function FilterTeamCheckbox({ team, selected, onFilterChange }: FilterTeamCheckboxProps) {
+function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
   
+  const {state, dispatch} = useDinnerRouteOverviewContext();
+  const {activeTeamsFilter} = state;
+
+  const selected = !!activeTeamsFilter[team.teamNumber];
+
   const isBigDevice = useIsBigDevice();
 
-  const hostTeams = team.teamConnectionPaths
-                          .filter(tcp => tcp.team)
-                          .map(tcp => tcp.team!)
-                          .filter(t => t.teamNumber !== team.teamNumber);
+  const hostTeams = getHostTeamsOfDinnerRouteMapEntry(team); 
+
+  function handleChange() {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_ACTIVE_TEAM,
+      payload: team
+    })
+  }
 
   return (
     <>
       <Box sx={{ mb: '-12px' }}>
-        <FormControlLabel sx={{ color: team.color }} label={getTeamLabel(team, isBigDevice)} control={
+        <FormControlLabel sx={{ color: team.color }} label={getDinnerRouteTeamLabel(team, isBigDevice, false)} control={
           <Checkbox color="primary" 
-                    onChange={() => onFilterChange(team, !selected)} 
+                    onChange={handleChange} 
                     checked={selected} />
         } />
       </Box>
 
       { isBigDevice &&
         <Box sx={{ pl: 4 }}>
-          {hostTeams.map(hostTeam => <Box key={hostTeam.teamNumber}><small>Zu Gast bei {getTeamLabel(hostTeam, false)}</small></Box>) }
+          {hostTeams.map(hostTeam => <Box key={hostTeam.teamNumber}><small>Zu Gast bei {getDinnerRouteTeamLabel(hostTeam, false, false)}</small></Box>) }
         </Box>
       }
     </>

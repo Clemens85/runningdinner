@@ -1,18 +1,24 @@
 package org.runningdinner.selfservice;
 
+import org.runningdinner.admin.rest.MealTO;
+
+import java.util.List;
 import java.util.UUID;
 
 public class SelfAdminSessionDataTO {
 
-  private UUID selfAdministrationId;
+  private final UUID selfAdministrationId;
   
-  private String languageCode;
+  private final String languageCode;
 
-  public SelfAdminSessionDataTO(UUID selfAdministrationId, String languageCode) {
+  private final List<MealTO> meals;
+
+  public SelfAdminSessionDataTO(UUID selfAdministrationId, String languageCode, List<MealTO> meals) {
 
     super();
     this.selfAdministrationId = selfAdministrationId;
     this.languageCode = languageCode;
+    this.meals = meals;
   }
 
   public UUID getSelfAdministrationId() {
@@ -24,5 +30,8 @@ public class SelfAdminSessionDataTO {
   
     return languageCode;
   }
-  
+
+  public List<MealTO> getMeals() {
+    return meals;
+  }
 }

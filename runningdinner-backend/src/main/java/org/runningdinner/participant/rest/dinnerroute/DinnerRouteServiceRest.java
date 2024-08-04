@@ -1,11 +1,12 @@
 package org.runningdinner.participant.rest.dinnerroute;
 
-import org.runningdinner.geocoder.distance.DistanceCalculator;
-import org.runningdinner.geocoder.distance.DistanceMatrix;
+import jakarta.validation.Valid;
 import org.runningdinner.participant.DinnerRouteService;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -31,10 +32,14 @@ public class DinnerRouteServiceRest {
     return new DinnerRouteListTO(result);
   }
 
-  @PutMapping("/runningdinner/{adminId}/distances")
-  public DistanceMatrix findDistanceMatrix(@RequestBody DinnerRouteAddressEntityListTO addressEntityList) {
+  @PutMapping("/runningdinner/{adminId}/distances/{range}/teams")
+  public TeamDistanceClusterListTO calculateTeamDistanceClusters(@PathVariable("adminId") String adminId,
+                                                                 @PathVariable("range") Integer rangeInMeters,
+                                                                 @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
 
-    DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(addressEntityList.getAddressEntities());
-    return distanceMatrix;
+    Assert.state(rangeInMeters >= 0, "range must be > 0");
+    List<TeamDistanceClusterTO> result = dinnerRouteService.calculateTeamDistanceClusters(adminId, addressEntityList.getAddressEntities(), rangeInMeters);
+    return new TeamDistanceClusterListTO(result);
   }
+
 }

@@ -63,6 +63,11 @@ export const getLanguageOfDinnerSelfAdmin = (state: SelfAdminStateType) => {
   return result ? result : "de";
 }
 
+export const getMealsOfDinnerSelfAdmin = (state: SelfAdminStateType) => {
+  const result = state.selfAdminSessionData.data?.meals;
+  return result ? result : [];
+}
+
 export const isFetchingSelfAdminDataSelector = (state: SelfAdminStateType) => {
   const loadingItems = getFetchDataItems(state)
     .filter(item => item.fetchStatus === FetchStatus.LOADING);

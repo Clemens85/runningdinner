@@ -1,4 +1,4 @@
-import { DinnerRoute, isQuerySucceeded } from "@runningdinner/shared";
+import { DinnerRoute, isQuerySucceeded, Meal } from "@runningdinner/shared";
 import { useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "./useGetGeocodePositionsOfTeamHosts";
 import { FetchProgressBar } from "../FetchProgressBar";
 import { Map} from "@vis.gl/react-google-maps";
@@ -6,13 +6,14 @@ import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../hooks/DynamicFullscreenHeightHook";
 import { AfterPartyLocationMarker, CurrentPositionMarker, TeamHostMarker, WarningAlert } from "./DinnerRouteComponents";
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../maps";
-import { DinnerRouteMapData, calculateDinnerRouteMapData, findDinnerRouteMapEntryForCurrentDinnerRouteTeam } from "./DinnerRouteMapCalculationService";
+import { DinnerRouteMapData, DinnerRouteTeamMapEntry, calculateDinnerRouteMapData } from "@runningdinner/shared";
 
 type DinnerRouteMapViewProps = {
   dinnerRoute: DinnerRoute;
+  meals: Meal[]
 };
 
-export function DinnerRouteMapView({dinnerRoute}: DinnerRouteMapViewProps) {
+export function DinnerRouteMapView({dinnerRoute, meals}: DinnerRouteMapViewProps) {
   
   const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(dinnerRoute.teams, GOOGLE_MAPS_KEY);
   const geocodeAfterPartyQueryResult = useGetGeocodePositionOfAfterPartyLocation(dinnerRoute.afterPartyLocation, GOOGLE_MAPS_KEY);
@@ -21,17 +22,14 @@ export function DinnerRouteMapView({dinnerRoute}: DinnerRouteMapViewProps) {
     return <FetchProgressBar {...geocodePositionsQueryResult} />;
   }
 
-  const settings =  {
-    addMarkersForOtherHostTeams: true,
-    currentTeamColorOverride: '#2e7d32',
-    otherHostTeamColorOverride: '#999',
-    afterPartyLocationColorOverride: '#999'
-  };
 
-  const dinnerRouteMapData = calculateDinnerRouteMapData([dinnerRoute], 
-                                                         geocodePositionsQueryResult.data, 
-                                                         geocodeAfterPartyQueryResult.data!,
-                                                         settings);
+  const dinnerRouteMapData = calculateDinnerRouteMapData({
+    allDinnerRoutes: [dinnerRoute], 
+    dinnerRouteTeamsWithGeocodes: geocodePositionsQueryResult.data, 
+    afterPartyLocation: geocodeAfterPartyQueryResult.data!,
+    teamClustersWithSameAddress: [],
+    meals
+});
 
   if (dinnerRouteMapData.dinnerRouteMapEntries.length === 0) {
     return <WarningAlert />;
@@ -62,13 +60,8 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
   const currentPosError = null;
 
   const {dinnerRouteMapEntries, afterPartyLocationMapEntry, centerPosition, showWarnings} = dinnerRouteMapData;
-  const currentDinnerRouteTeamEntry = findDinnerRouteMapEntryForCurrentDinnerRouteTeam(dinnerRouteMapData, dinnerRoute);
+  // const currentDinnerRouteTeamEntry = findDinnerRouteMapEntryForCurrentDinnerRouteTeam(dinnerRouteMapData, dinnerRoute);
   const teamOrderNumberByTeamNumber = calculateTeamOrderNumbers(dinnerRoute)
-
-  const teamConnectionPaths = currentDinnerRouteTeamEntry?.teamConnectionPaths || []; 
-  const paths = teamConnectionPaths
-                  .map(tcp => tcp.path)
-                  .map(path => new google.maps.LatLng(path.lat!, path.lng!));
 
   return (
     <div ref={mapContainerRef}>
@@ -77,13 +70,18 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
            style={{ height: `${mapHeight}px`}}
            mapId={GOOGLE_MAPS_ID}>
 
+
+    { dinnerRouteMapData.dinnerRouteMapEntries.map(path => <TeamConnectionPathLine  key={path.teamNumber} {...path} />) }
+
+
+{/* 
         <Polyline 
           key={currentDinnerRouteTeamEntry?.color} 
           strokeWeight={3}
           geodesic={true}
           icons={[ { icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '100%' } ]}
           path={paths}
-          strokeColor={currentDinnerRouteTeamEntry?.color}/>
+          strokeColor={currentDinnerRouteTeamEntry?.color}/> */}
 
         { dinnerRouteMapEntries
             .map((team) => <TeamHostMarker key={team.teamNumber} 
@@ -101,4 +99,26 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
       { (showWarnings || currentPosError) && <WarningAlert /> }
     </div>
   )
+}
+
+
+function TeamConnectionPathLine({color, teamConnectionPaths}: DinnerRouteTeamMapEntry) {
+
+  return (
+    <>
+      { teamConnectionPaths
+        .filter(path => path.coordinates?.length >= 2)
+        .map(path =>
+          <Polyline 
+              key={path.key} 
+              strokeWeight={4}
+              geodesic={true}
+              icons={[ { icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '100%' } ]}
+              strokeOpacity={1.0} 
+              path={[ {lat: path.coordinates[0].lat!, lng: path.coordinates[0].lng!}, {lat: path.coordinates[1].lat!, lng: path.coordinates[1].lng!} ]}
+              strokeColor={color}/>
+        )
+      }
+    </>
+  );
 }

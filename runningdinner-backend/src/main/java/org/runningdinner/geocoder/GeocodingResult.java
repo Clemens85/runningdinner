@@ -1,11 +1,10 @@
 package org.runningdinner.geocoder;
 
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
-
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.SafeHtml;
 
 @Embeddable
 public class GeocodingResult {
@@ -73,6 +72,10 @@ public class GeocodingResult {
 	@Override
 	public String toString() {
 		return "(" + lat + ", " + lng + ", " + resultType + ")";
+	}
+
+	public static boolean isValid(GeocodingResult geocodingResult) {
+		return geocodingResult != null && geocodingResult.getLng() >= 0 && geocodingResult.getLat() >= 0;
 	}
 
 	public enum GeocodingResultType {

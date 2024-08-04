@@ -1,6 +1,7 @@
 package org.runningdinner.geocoder.distance;
 
-import org.runningdinner.geocoder.HasGeocodingResult;
+import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.participant.rest.dinnerroute.GeocodedAddressEntity;
 
 import java.util.List;
 
@@ -15,10 +16,10 @@ public final class DistanceCalculator {
     // NOP
   }
 
-  //  public static double calculateDistanceHaversine(HasGeocodingResult a, HasGeocodingResult b) {
-//    if (a.getGeocodingResult() == null || b.getGeocodingResult() == null) {
-//      return -1;
-//    }
+  //  public static double calculateDistanceHaversine(GeocodedAddressEntity a, GeocodedAddressEntity b) {
+//    if (!GeocodingResult.isValid(a) || !GeocodingResult.isValid(b)) {
+//    return -1;
+//  }
 //
 //    double distanceLat = Math.toRadians(lat(b) - lat(a));
 //    double distanceLng = Math.toRadians(lng(b) - lng(a));
@@ -32,9 +33,9 @@ public final class DistanceCalculator {
 //    return EARTH_RADIUS * c; // Distance in kilometers
 //  }
 
-  public static double calculateDistanceVincenty(HasGeocodingResult a, HasGeocodingResult b) {
+  public static double calculateDistanceVincenty(GeocodedAddressEntity a, GeocodedAddressEntity b) {
 
-    if (a.getGeocodingResult() == null || b.getGeocodingResult() == null) {
+    if (!GeocodingResult.isValid(a) || !GeocodingResult.isValid(b)) {
       return -1;
     }
 
@@ -80,35 +81,51 @@ public final class DistanceCalculator {
           (-3 + 4 * cos2SigmaM * cos2SigmaM)));
 
     double s = B * A_ * (sigma - deltaSigma);
-    return s / 1000; // Distance in Kilometern
+    return s / 1000; // Distance in Kilometers
   }
 
-  public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations) {
+
+  public static DistanceMatrix calculateDistanceMatrix(List<GeocodedAddressEntity> locations) {
+    return calculateDistanceMatrix(locations, -1);
+  }
+
+  public static DistanceMatrix calculateDistanceMatrix(List<GeocodedAddressEntity> locations, double maxRangeInMetersToInclude) {
 
     DistanceMatrix result = new DistanceMatrix();
 
     int size = locations.size();
 
+    double maxRangeInKilometersToInclude = -1;
+    if (maxRangeInMetersToInclude >= 0) {
+      maxRangeInKilometersToInclude = maxRangeInMetersToInclude / 1000;
+    }
+
     for (int i = 0; i < size; i++) {
       for (int j = i; j < size; j++) {
-        HasGeocodingResult a = locations.get(i);
-        HasGeocodingResult b = locations.get(j);
-        if (i == j) {
-          result.addDistanceEntry(a, b, 0);
-        } else {
+        GeocodedAddressEntity a = locations.get(i);
+        GeocodedAddressEntity b = locations.get(j);
+        if (i != j) {
           double distance = calculateDistanceVincenty(locations.get(i), locations.get(j));
-          result.addDistanceEntry(a, b, distance);
+          if (maxRangeInKilometersToInclude < 0 || distance <= maxRangeInKilometersToInclude) {
+            result.addDistanceEntry(a, b, distance);
+          }
         }
+//        if (i == j) {
+//          result.addDistanceEntry(a, b, 0);
+//        } else {
+//          double distance = calculateDistanceVincenty(locations.get(i), locations.get(j));
+//          result.addDistanceEntry(a, b, distance);
+//        }
       }
     }
     return result;
   }
 
-  private static double lat(HasGeocodingResult g) {
-    return g.getGeocodingResult().getLat();
+  private static double lat(GeocodedAddressEntity g) {
+    return g.getLat();
   }
 
-  private static double lng(HasGeocodingResult g) {
-    return g.getGeocodingResult().getLng();
+  private static double lng(GeocodedAddressEntity g) {
+    return g.getLng();
   }
 }

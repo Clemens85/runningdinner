@@ -1,31 +1,44 @@
 package org.runningdinner.participant;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
+import org.runningdinner.geocoder.distance.DistanceCalculator;
+import org.runningdinner.geocoder.distance.DistanceEntry;
+import org.runningdinner.geocoder.distance.DistanceMatrix;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
+import org.runningdinner.participant.rest.TeamTO;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
+import org.runningdinner.participant.rest.dinnerroute.GeocodedAddressEntity;
+import org.runningdinner.participant.rest.dinnerroute.GeocodedAddressEntityIdType;
+import org.runningdinner.participant.rest.dinnerroute.TeamDistanceClusterTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class DinnerRouteService {
+
+  private static  final Logger LOGGER = LoggerFactory.getLogger(DinnerRouteService.class);
 
   private final RunningDinnerService runningDinnerService;
 
   private final TeamService teamService;
 
+  private final ParticipantService participantService;
+
   private final DinnerRouteMessageFormatter dinnerRouteMessageFormatter;
 
-  public DinnerRouteService(RunningDinnerService runningDinnerService, TeamService teamService, DinnerRouteMessageFormatter dinnerRouteMessageFormatter) {
+  public DinnerRouteService(RunningDinnerService runningDinnerService, TeamService teamService, ParticipantService participantService, DinnerRouteMessageFormatter dinnerRouteMessageFormatter) {
     this.runningDinnerService = runningDinnerService;
     this.teamService = teamService;
+    this.participantService = participantService;
     this.dinnerRouteMessageFormatter = dinnerRouteMessageFormatter;
   }
 
@@ -58,6 +71,61 @@ public class DinnerRouteService {
       result.add(findDinnerRoute(runningDinner, team.getId()));
     }
     return result;
+  }
+
+  public List<TeamDistanceClusterTO> calculateTeamDistanceClusters(@ValidateAdminId String adminId, List<GeocodedAddressEntity> addressEntities, double rangeInMeters) {
+    DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(addressEntities, rangeInMeters);
+    List<Team> teams = findTeamsForEntries(adminId, distanceMatrix.getEntries().keySet(), addressEntities);
+    return buildTeamClusters(distanceMatrix, teams);
+  }
+
+  private List<TeamDistanceClusterTO> buildTeamClusters(DistanceMatrix distanceMatrix, List<Team> teams) {
+    List<TeamDistanceClusterTO> result = new ArrayList<>();
+    for (var entry : distanceMatrix.getEntries().entrySet()) {
+      Team srcTeam = findTeamForTeamNumber(entry.getKey().srcId(), teams);
+      Team destTeam = findTeamForTeamNumber(entry.getKey().destId(), teams);
+      result.add(new TeamDistanceClusterTO(List.of(new TeamTO(srcTeam), new TeamTO(destTeam)), entry.getValue()));
+    }
+    return result;
+  }
+
+    private static Team findTeamForTeamNumber(String teamNumberStr, List<Team> teams) {
+    int teamNumber = Integer.parseInt(teamNumberStr);
+    return teams
+            .stream()
+            .filter(t -> t.getTeamNumber() == teamNumber)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Could not find team with teamMember " + teamNumber + " within teams " + teams));
+  }
+
+
+//  private static Team findTeamForParticipantId(UUID participantId, List<Team> teams) {
+//    return teams
+//            .stream()
+//            .filter(t -> t.isParticipantTeamMember(participantId))
+//            .findFirst()
+//            .orElseThrow(() -> new IllegalStateException("Could not find team with teamMember " + participantId + " within teams " + teams));
+//  }
+
+  private List<Team> findTeamsForEntries(String adminId, Set<DistanceEntry> distanceEntries, List<GeocodedAddressEntity> addressEntities) {
+
+    if (CollectionUtils.isEmpty(distanceEntries) || CollectionUtils.isEmpty(addressEntities)) {
+      return Collections.emptyList();
+    }
+
+    GeocodedAddressEntityIdType idType = addressEntities.get(0).getIdType();
+    if (idType != GeocodedAddressEntityIdType.TEAM_NR) {
+      LOGGER.error("Only TEAM_NR is supported as GeocodedAddressEntityIdType but got {}  in event {}", idType, adminId);
+      return Collections.emptyList();
+    }
+
+    Set<Integer> teamNumbers = new HashSet<>();
+    distanceEntries
+      .forEach(entry -> {
+        teamNumbers.add(Integer.parseInt(entry.srcId()));
+        teamNumbers.add(Integer.parseInt(entry.destId()));
+      });
+    return teamService.findTeamsWithMembersOrderedByTeamNumbers(adminId, teamNumbers);
   }
 
 //  public TeamLocationsEventData findTeamLocationsEventData(@ValidateAdminId String adminId) {
