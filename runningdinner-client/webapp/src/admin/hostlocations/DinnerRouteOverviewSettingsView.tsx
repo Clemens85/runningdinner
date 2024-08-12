@@ -1,8 +1,8 @@
-import { Box, Checkbox, CircularProgress, Divider, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, SxProps } from "@mui/material";
+import { Box, Checkbox, CircularProgress, Divider, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, SxProps, Typography } from "@mui/material";
 import { TitleBar } from "./TitleBar";
 import { useTranslation } from "react-i18next";
-import { DinnerRouteOverviewActionType, getDinnerRouteTeamLabel, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry } from "@runningdinner/shared";
-import { SmallTitle } from "../../common/theme/typography/Tags";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, mapToDinnerRouteMapEntries, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined } from "@runningdinner/shared";
+import { SmallTitle, Span } from "../../common/theme/typography/Tags";
 import { BaseAdminIdProps, isAfterPartyLocationDefined, Team, TeamDistanceCluster } from "@runningdinner/shared";
 import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
 import { useState } from "react";
@@ -50,7 +50,7 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapEntries}
     });
   }
 
-  const filterMealsLabel = "Zeige nur Routen für Speise";
+  const filterMealsLabel = "Zeige nur Wege für Teams als Gast zu ihrer zu kochenden Speise";
 
   return (
     <>
@@ -61,10 +61,10 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapEntries}
           
         <TitleBar onToggleMinize={handleMinimizeView} title={t("common:settings")} />
 
-        <Box p={3}>
+        <Box p={2}>
           <Box>
             <SmallTitle>Speisen</SmallTitle>
-            <FormControl variant="outlined" sx={{ mt: 1, minWidth: '250px' }} size="small">
+            <FormControl variant="outlined" sx={{ mt: 1, minWidth: '400px' }} size="small">
               <InputLabel>{filterMealsLabel}</InputLabel>
               <Select
                 variant="outlined"
@@ -74,9 +74,11 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapEntries}
                 size="small"
                 onChange={(evt: SelectChangeEvent) => handleMealFilterChange(evt.target.value)}
                 inputProps={{ 'aria-label': filterMealsLabel }}>
-                { mealFilterOptions.map(meal => 
-                    <MenuItem value={meal.id} key={meal.id}>
-                      {meal.label}
+                { mealFilterOptions.map(mealFilterOption => 
+                    <MenuItem value={mealFilterOption.id} key={mealFilterOption.id}>
+                      { isSameEntity(mealFilterOption, ALL_MEALS_OPTION) && <>Alle</> }
+                      { isDefined(mealFilterOption.toMeal) && <>{mealFilterOption.fromMeal?.label} &nbsp;=&gt;&nbsp; <strong>{mealFilterOption.toMeal.label}</strong></> }
+                      { (!isSameEntity(mealFilterOption, ALL_MEALS_OPTION) && !isDefined(mealFilterOption.toMeal)) && <><strong>{mealFilterOption.fromMeal?.label}</strong> &nbsp;=&gt;&nbsp; {afterPartyLocation?.title}</> }
                     </MenuItem>
                 )}
               </Select>
@@ -115,7 +117,9 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapEntries}
         </Box>          
           <Box>
             { !teamDistanceClusters && <TeamDistanceClustersLoadingView /> } 
-            { teamDistanceClusters && <TeamDistanceClusterView teamDistanceClusters={teamDistanceClusters} distanceRange={distanceRange}/> }
+            { teamDistanceClusters && <TeamDistanceClusterView teamDistanceClusters={teamDistanceClusters} 
+                                                               dinnerRouteMapEntries={dinnerRouteMapEntries}
+                                                               distanceRange={distanceRange}/> }
           </Box>
 
         </Box>
@@ -138,9 +142,10 @@ function TeamDistanceClustersLoadingView() {
 
 type TeamDistanceClusterViewProps = {
   teamDistanceClusters: TeamDistanceCluster[];
+  dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
   distanceRange: number;
 };
-function TeamDistanceClusterView({teamDistanceClusters, distanceRange}: TeamDistanceClusterViewProps) {
+function TeamDistanceClusterView({teamDistanceClusters, dinnerRouteMapEntries, distanceRange}: TeamDistanceClusterViewProps) {
 
   if (teamDistanceClusters.length === 0) {
     return <Box sx={{ my: 2 }}>Keine Teams gefunden welche unter {distanceRange} m zueinander liegen.</Box>;
@@ -154,54 +159,61 @@ function TeamDistanceClusterView({teamDistanceClusters, distanceRange}: TeamDist
     <>
     { teamDistanceClusters.map(cluster => 
       <Box key={buildClusterKey(cluster)} sx={{ my: 2 }}>
-        <SingleTeamClusterView teams={cluster.teams} distance={cluster.distance} />
+        <SingleTeamClusterView {...enhanceTeamDistanceClusterWithDinnerRouteMapEntries(cluster, dinnerRouteMapEntries)} />
       </Box>
     )}
     </>
   );
-
 }
 
 
-function SingleTeamClusterView({teams, distance}: TeamDistanceCluster) {
+function SingleTeamClusterView({dinnerRouteMapEntries, distance}: TeamDistanceClusterWithMapEntry) {
 
-  if (teams?.length !== 2) {
+  if (dinnerRouteMapEntries?.length !== 2) {
     return null;
   }
 
-  const firstTeam = teams[0].teamNumber < teams[1].teamNumber ? teams[0] : teams[1];
-  const secondTeam = teams[0].teamNumber > teams[1].teamNumber ? teams[0] : teams[1];
+  const firstTeam = dinnerRouteMapEntries[0].teamNumber < dinnerRouteMapEntries[1].teamNumber ? dinnerRouteMapEntries[0] : dinnerRouteMapEntries[1];
+  const secondTeam = dinnerRouteMapEntries[0].teamNumber > dinnerRouteMapEntries[1].teamNumber ? dinnerRouteMapEntries[0] : dinnerRouteMapEntries[1];
 
   return (
     <Grid container justifyContent="space-between" alignItems={"center"}>
-      <Grid item xs={5}>
+      <Grid item>
         <TeamClusterItem {...firstTeam} />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item>
         <Box>
           <center>{Math.round(distance * 1000)} m</center>
         </Box>
       </Grid>
-      <Grid item xs={5}>
+      <Grid item>
         <TeamClusterItem {...secondTeam} />
       </Grid>
     </Grid>
   )
 }
 
-const TeamBox = styled(Box)(({theme}) => ({
-  margin: '0 auto',
-  border: '2px solid',
-  borderRadius: "16px",
-  borderColor: theme.palette.primary.main,
-  padding: theme.spacing(1),
-}));
+// const TeamBox = styled(Box)(({theme}) => ({
+//   margin: '0 auto',
+//   border: '2px solid',
+//   borderRadius: "8px",
+//   borderColor: theme.palette.primary.main,
+//   padding: 4,
+// }));
 
-function TeamClusterItem(team: Team) {
+function TeamClusterItem(team: DinnerRouteTeamMapEntry) {
+
+  const {t} = useTranslation('common');
+
   return (
-    <TeamBox>
-      { getDinnerRouteTeamLabel(team, false, true) }
-    </TeamBox>
+    // <TeamBox>
+    <Box sx={{ color: team.color, margin: '0 auto', border: '2px solid', borderRadius: '8px', borderColor: team.color, padding: "4px" }}>
+      <Span>
+        Team #{team.teamNumber} {t("common:at_time")} <Time date={team.meal.time} />
+      </Span>
+      <Span>{team.meal.label}</Span>
+    </Box>
+    // </TeamBox>
   );
 }
 

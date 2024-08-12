@@ -1,41 +1,8 @@
 import { uniqBy } from "lodash-es";
 import { isGeocodingResultValid } from "../../GeocoderHook";
-import { AfterPartyLocation, DinnerRoute, DinnerRouteTeam, GeocodingResult, Meal, TeamDistanceCluster } from "../../types";
+import { AfterPartyLocation, AfterPartyLocationMapEntry, DinnerRoute, DinnerRouteMapData, DinnerRouteTeam, DinnerRouteTeamMapEntry, GeocodingResult, Meal, MealType, Team, TeamConnectionPath, TeamDistanceCluster, TeamDistanceClusterWithMapEntry } from "../../types";
 import { isDefined, isStringNotEmpty, stringToColor } from "../../Utils";
 import { getFullname } from "../ParticipantService";
-
-export type MapEntry = {
-  color: string;
-  position: GeocodingResult
-};
-
-export type TeamConnectionPath = {
-  coordinates: GeocodingResult[];
-  color: string;
-  key: string;
-  team: DinnerRouteTeam;
-  toTeam?: DinnerRouteTeam;
-};
-
-export type DinnerRouteTeamMapEntry = {
-  teamConnectionPaths: TeamConnectionPath[];
-  mealType: MealType;
-} & DinnerRouteTeam & MapEntry;
-
-export type AfterPartyLocationMapEntry = AfterPartyLocation & MapEntry;
-
-export type DinnerRouteMapData = {
-  dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
-  showWarnings?: boolean;
-  centerPosition: GeocodingResult;
-  afterPartyLocationMapEntry?: AfterPartyLocationMapEntry
-};
-
-export enum MealType  {
-  APPETIZER = "APPETIZER",
-  MAIN_COURSE = "MAIN_COURSE",
-  DESSERT = "DESSERT"
-}
 
 export type DinnerRouteMapDataCalculationSettings = {
   /**
@@ -302,4 +269,23 @@ export function getHostTeamsOfDinnerRouteMapEntry(dinnerRouteMapEntry: DinnerRou
     }
   }
   return uniqBy(result, "teamNumber");
+}
+
+export function mapToDinnerRouteMapEntries(teams: Team[], dinnerRouteMapEntries: DinnerRouteTeamMapEntry[]): DinnerRouteTeamMapEntry[] {
+  const result = new Array<DinnerRouteTeamMapEntry>();
+  for (let i = 0; i < teams.length; i++) {
+    const team = teams[i];
+    const dinnerRouteMapEntry = dinnerRouteMapEntries.find(entry => entry.teamNumber === team.teamNumber);
+    if (dinnerRouteMapEntry) {
+      result.push(dinnerRouteMapEntry);
+    }
+  }
+  return result;
+}
+
+export function enhanceTeamDistanceClusterWithDinnerRouteMapEntries(teamDistanceCluster: TeamDistanceCluster, dinnerRouteMapEntries: DinnerRouteTeamMapEntry[]): TeamDistanceClusterWithMapEntry {
+  return {
+    ...teamDistanceCluster,
+    dinnerRouteMapEntries: mapToDinnerRouteMapEntries(teamDistanceCluster.teams, dinnerRouteMapEntries)
+  }; 
 }

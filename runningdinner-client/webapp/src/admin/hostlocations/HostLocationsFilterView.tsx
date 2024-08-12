@@ -5,16 +5,16 @@ import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
-import { DinnerRouteOverviewActionType, getDinnerRouteTeamLabel, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry, DinnerRouteTeam, Fullname } from "@runningdinner/shared";
 import { TitleBar } from "./TitleBar";
 
-// function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
-//   if (includeHostFullname) {
-//     return <>Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
-//   } else {
-//     return <>Team #{team.teamNumber} ({team.meal.label})</>;
-//   }
-// }
+function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
+  if (includeHostFullname) {
+    return <>Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
+  } else {
+    return <>Team #{team.teamNumber} ({team.meal.label})</>;
+  }
+}
 
 type HostLocationsFilterViewProps = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
@@ -126,7 +126,7 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
   return (
     <>
       <Box sx={{ mb: '-12px' }}>
-        <FormControlLabel sx={{ color: team.color }} label={getDinnerRouteTeamLabel(team, isBigDevice, false)} control={
+        <FormControlLabel sx={{ color: team.color }} label={getTeamLabel(team, isBigDevice)} control={
           <Checkbox color="primary" 
                     onChange={handleChange} 
                     checked={selected} />
@@ -135,7 +135,7 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
 
       { isBigDevice &&
         <Box sx={{ pl: 4 }}>
-          {hostTeams.map(hostTeam => <Box key={hostTeam.teamNumber}><small>Zu Gast bei {getDinnerRouteTeamLabel(hostTeam, false, false)}</small></Box>) }
+          {hostTeams.map(hostTeam => <Box key={hostTeam.teamNumber}><small>Zu Gast bei {getTeamLabel(hostTeam, false)}</small></Box>) }
         </Box>
       }
     </>

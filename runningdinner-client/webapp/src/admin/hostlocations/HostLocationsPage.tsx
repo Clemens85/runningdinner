@@ -126,7 +126,10 @@ function TeamConnectionPathLine({color, teamConnectionPaths}: DinnerRouteTeamMap
               key={path.key} 
               strokeWeight={4}
               geodesic={true}
-              icons={[ { icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '100%' } ]}
+              icons={[ 
+                {  icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '60%' },
+                {  icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '12%' },
+              ]}
               strokeOpacity={1.0} 
               path={[ {lat: path.coordinates[0].lat!, lng: path.coordinates[0].lng!}, {lat: path.coordinates[1].lat!, lng: path.coordinates[1].lng!} ]}
               strokeColor={color}/>

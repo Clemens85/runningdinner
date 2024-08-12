@@ -159,6 +159,30 @@ type TeamHostMarkerProps = {
   zIndex?: number;
 };
 
+const TeamHostPin = styled("div", {
+  shouldForwardProp: (prop) => prop !== "teamColor"
+  // @ts-ignore
+})(({ teamColor }) => ({
+
+  backgroundColor: teamColor, 
+  borderColor: '#000', 
+  color: isDarkColor(teamColor) ? '#fff' : '#000',
+  borderRadius: '8px',
+  padding: '6px',
+  '&:after': {
+    content: `""`,
+    position: "absolute",
+    left: "50%",
+    top: "100%",
+    transform: "translate(-50%, 0)",
+    width: 0,
+    height: 0,
+    borderLeft: "8px solid transparent",
+    borderRight: "8px solid transparent",
+    borderTop: `8px solid ${teamColor}`
+  }
+}));
+
 export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel, zIndex = 1}: TeamHostMarkerProps) {
   
   const [markerRef, marker] = useAdvancedMarkerRef();
@@ -183,18 +207,25 @@ export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel, zIndex = 
         onClick={() => setOpen(!open)}
         zIndex={zIndex + 1}
         position={{ lat: team.position.lat!, lng: team.position.lng! }}> 
-          <Box sx={{ 
+
+          {/* @ts-ignore */}
+          <TeamHostPin teamColor={team.color}>
+            <>{getMealTypeIcon(team.mealType)}</>  
+            {getMarkerLabel(`#${team.teamNumber}`)}
+          </TeamHostPin>
+
+          {/* <Box sx={{ 
             backgroundColor: team.color, 
             borderColor: '#000', 
             color: glyphColor,
-            // fonSize: '16px',
             borderRadius: '8px',
             py: 1,
             px: 1
           }}>
             <>{getMealTypeIcon(team.mealType)}</>  
             {getMarkerLabel(`#${team.teamNumber}`)}
-          </Box>
+          </Box> */}
+
         {/* <Pin 
           scale={scale}
           background={team.color}

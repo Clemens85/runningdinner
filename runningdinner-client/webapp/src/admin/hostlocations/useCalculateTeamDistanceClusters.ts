@@ -1,6 +1,5 @@
-import { calculateTeamDistanceClusters, DinnerRouteTeam, GeocodedAddressEntityList } from "@runningdinner/shared";
+import { calculateTeamDistanceClusters, DinnerRouteTeam, DinnerRouteTeamMapEntry, GeocodedAddressEntityList } from "@runningdinner/shared";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { DinnerRouteTeamMapEntry } from "../../common/dinnerroute";
 
 export function useCalculateTeamDistanceClusters(adminId: string, dinnerRouteMapEntries: DinnerRouteTeamMapEntry[] | DinnerRouteTeam[], range: number) {
 

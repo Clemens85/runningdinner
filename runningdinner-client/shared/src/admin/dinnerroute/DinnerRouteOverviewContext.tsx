@@ -1,24 +1,26 @@
 import React from "react";
 import { cloneDeep, remove } from "lodash-es";
-import { buildMealTypeMappings, DinnerRouteMapData, DinnerRouteTeamMapEntry, MealType, TeamConnectionPath } from "./DinnerRouteMapCalculationService";
-import { AfterPartyLocation, BaseRunningDinnerProps, DinnerRouteTeam, Meal, Parent, RunningDinner, Team } from "../../types";
+import { buildMealTypeMappings } from "./DinnerRouteMapCalculationService";
+import { AfterPartyLocation, BaseEntity, BaseRunningDinnerProps, DinnerRouteMapData, DinnerRouteTeamMapEntry, Meal, MealType, Parent, RunningDinner, TeamConnectionPath} from "../../types";
 import { isAfterPartyLocationDefined } from "../RunningDinnerService";
-import { findEntityById, isSameEntity } from "../../Utils";
-import { Fullname } from "../../Fullname";
-import { Time } from "../../date";
+import { findEntityById, isDefined, isSameEntity } from "../../Utils";
 
-export const ALL_MEALS_OPTION: Meal = {
-  label: "Alle",
-  id: "ALL",
-  time: new Date()
+
+export type MealFilterOption = {
+  fromMeal?: Meal;
+  toMeal?: Meal;
+} & BaseEntity;
+
+export const ALL_MEALS_OPTION: MealFilterOption = {
+  id: "ALL"
 };
 
 export type DinnerRouteOverviewState = {
   activeTeamsFilter: Record<number, DinnerRouteTeamMapEntry>;
   hostFilterViewMinimized: boolean;
   settingsViewMinimized: boolean;
-  mealFilter: Meal;
-  mealFilterOptions: Meal[];
+  mealFilter: MealFilterOption;
+  mealFilterOptions: MealFilterOption[];
   excludeAfterPartyLocation: boolean;
 
   meals: Meal[];
@@ -69,18 +71,23 @@ function newInitialState(runningDinner: RunningDinner) {
   return result;
 }
 
-function buildMealFilterOptions(incomingMeals: Meal[], afterPartyLocation: AfterPartyLocation | undefined, excludeAfterPartyLocation: boolean): Meal[] {
+function buildMealFilterOptions(incomingMeals: Meal[], afterPartyLocation: AfterPartyLocation | undefined, excludeAfterPartyLocation: boolean): MealFilterOption[] {
   const result = [
     ALL_MEALS_OPTION
   ];
   for (let i = 0; i < incomingMeals.length; i++) {
     const meal = cloneDeep(incomingMeals[i]);
     if (i + 1 < incomingMeals.length) {
-      meal.label = meal.label + " => " + incomingMeals[i + 1].label;
-      result.push(meal);
+      result.push({
+        fromMeal: meal,
+        toMeal: incomingMeals[i + 1],
+        id: meal.id
+      });
     } else if (isAfterPartyLocationDefined(afterPartyLocation) && !excludeAfterPartyLocation) {
-      meal.label = meal.label + " => " + afterPartyLocation?.title;
-      result.push(meal);
+      result.push({
+        fromMeal: meal,
+        id: meal.id
+      });
     }
   }
   return result;
@@ -122,7 +129,7 @@ export function filterTeamConnectionPaths(dinnerRouteMapData: DinnerRouteMapData
     const currentEntry = result[i];
     const currentTeamConnectionPaths = currentEntry.teamConnectionPaths;
  
-    remove(currentTeamConnectionPaths, path => { return !isIncludedInMealFilter(mealFilter, path, state.excludeAfterPartyLocation); });
+    remove(currentTeamConnectionPaths, path => { return !isIncludedInMealFilter(mealFilter, currentEntry, path, state.excludeAfterPartyLocation); });
 
     // This removes all paths that are connected to the after party location (entry with after party location has no team set)
     if (state.excludeAfterPartyLocation) {
@@ -133,15 +140,18 @@ export function filterTeamConnectionPaths(dinnerRouteMapData: DinnerRouteMapData
   return result;
 }
 
-function isIncludedInMealFilter(mealFilter: Meal, teamConnectionPath: TeamConnectionPath, excludeAfterPartyLocation: boolean): boolean {
+function isIncludedInMealFilter(mealFilter: MealFilterOption, dinnerRouteMapEntry: DinnerRouteTeamMapEntry, teamConnectionPath: TeamConnectionPath, excludeAfterPartyLocation: boolean): boolean {
   if (isSameEntity(mealFilter, ALL_MEALS_OPTION)) {
     return true;
   }
 
-  if (excludeAfterPartyLocation && !teamConnectionPath.team) {
-    return false;
+  // if (excludeAfterPartyLocation && !teamConnectionPath.team) {
+  //   return false;
+  // }
+  if (isSameEntity(dinnerRouteMapEntry.meal, mealFilter.toMeal) && isSameEntity(teamConnectionPath.team.meal, mealFilter.fromMeal)) {
+    return true;
   }
-  if (isSameEntity(teamConnectionPath.team?.meal, mealFilter)) {
+  if (isSameEntity(dinnerRouteMapEntry.meal, mealFilter.fromMeal) && !isDefined(mealFilter.toMeal) && !excludeAfterPartyLocation) {
     return true;
   }
   return false;
@@ -205,18 +215,4 @@ export function useDinnerRouteOverviewContext() {
     throw new Error('useDinnerRouteOverviewContext must be used within a DinnerRouteOverviewContextProvider');
   }
   return context;
-}
-
-export function getDinnerRouteTeamLabel(team: DinnerRouteTeam | Team, includeHostFullname: boolean, includeMealTime: boolean) {
-
-  const teamWithMealLabel = <>Team #{team.teamNumber} ({team.meal.label}) </>;
-  const mealTimeLabel = includeMealTime ? <> (<Time date={team.meal.time} />)</> : null;
-
-  return (
-    <>
-      {teamWithMealLabel}
-      {mealTimeLabel}
-      { includeHostFullname ? <> - <Fullname {...team.hostTeamMember} /></> : null }
-    </>
-  );
 }

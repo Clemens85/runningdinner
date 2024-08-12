@@ -49,6 +49,43 @@ export interface TeamDistanceClusterList {
   teamDistanceClusters: TeamDistanceCluster[];
 }
 
+export type MapEntry = {
+  color: string;
+  position: GeocodingResult
+};
+
+export type TeamConnectionPath = {
+  coordinates: GeocodingResult[];
+  color: string;
+  key: string;
+  team: DinnerRouteTeam;
+  toTeam?: DinnerRouteTeam;
+};
+
+export type DinnerRouteTeamMapEntry = {
+  teamConnectionPaths: TeamConnectionPath[];
+  mealType: MealType;
+} & DinnerRouteTeam & MapEntry;
+
+export type AfterPartyLocationMapEntry = AfterPartyLocation & MapEntry;
+
+export type DinnerRouteMapData = {
+  dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
+  showWarnings?: boolean;
+  centerPosition: GeocodingResult;
+  afterPartyLocationMapEntry?: AfterPartyLocationMapEntry
+};
+
+export enum MealType  {
+  APPETIZER = "APPETIZER",
+  MAIN_COURSE = "MAIN_COURSE",
+  DESSERT = "DESSERT"
+}
+
+export type TeamDistanceClusterWithMapEntry = {
+  dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
+} & TeamDistanceCluster;
+
 export function isSameDinnerRouteTeam(a: DinnerRouteTeam | Team, b: DinnerRouteTeam | Team) {
  return a.teamNumber === b.teamNumber;
 }
