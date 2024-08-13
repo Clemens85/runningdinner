@@ -1,6 +1,7 @@
 
 package org.runningdinner.participant.rest.dinnerroute;
 
+import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
 
 public class DinnerRouteTeamHostTO {
@@ -21,6 +22,8 @@ public class DinnerRouteTeamHostTO {
 
   private String addressRemarks;
 
+  private GeocodingResult geocodingResult;
+
   protected DinnerRouteTeamHostTO() {
     
     // NOP
@@ -36,6 +39,7 @@ public class DinnerRouteTeamHostTO {
     this.zip = hostTeamMember.getAddress().getZip();
     this.addressRemarks = hostTeamMember.getAddress().getRemarks();
     this.addressName = hostTeamMember.getAddress().getAddressName();
+    this.geocodingResult = hostTeamMember.getGeocodingResult();
   }
 
   public String getFirstnamePart() {
@@ -118,4 +122,11 @@ public class DinnerRouteTeamHostTO {
     this.addressRemarks = addressRemarks;
   }
 
+  public GeocodingResult getGeocodingResult() {
+    return geocodingResult;
+  }
+
+  public void setGeocodingResult(GeocodingResult geocodingResult) {
+    this.geocodingResult = geocodingResult;
+  }
 }
