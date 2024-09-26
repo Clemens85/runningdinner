@@ -11,10 +11,7 @@ import org.runningdinner.geocoder.distance.DistanceEntry;
 import org.runningdinner.geocoder.distance.DistanceMatrix;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.rest.TeamTO;
-import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
-import org.runningdinner.participant.rest.dinnerroute.GeocodedAddressEntity;
-import org.runningdinner.participant.rest.dinnerroute.GeocodedAddressEntityIdType;
-import org.runningdinner.participant.rest.dinnerroute.TeamDistanceClusterTO;
+import org.runningdinner.participant.rest.dinnerroute.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,14 +28,11 @@ public class DinnerRouteService {
 
   private final TeamService teamService;
 
-  private final ParticipantService participantService;
-
   private final DinnerRouteMessageFormatter dinnerRouteMessageFormatter;
 
-  public DinnerRouteService(RunningDinnerService runningDinnerService, TeamService teamService, ParticipantService participantService, DinnerRouteMessageFormatter dinnerRouteMessageFormatter) {
+  public DinnerRouteService(RunningDinnerService runningDinnerService, TeamService teamService, DinnerRouteMessageFormatter dinnerRouteMessageFormatter) {
     this.runningDinnerService = runningDinnerService;
     this.teamService = teamService;
-    this.participantService = participantService;
     this.dinnerRouteMessageFormatter = dinnerRouteMessageFormatter;
   }
 
@@ -90,22 +84,13 @@ public class DinnerRouteService {
   }
 
     private static Team findTeamForTeamNumber(String teamNumberStr, List<Team> teams) {
-    int teamNumber = Integer.parseInt(teamNumberStr);
-    return teams
-            .stream()
-            .filter(t -> t.getTeamNumber() == teamNumber)
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Could not find team with teamMember " + teamNumber + " within teams " + teams));
+      int teamNumber = Integer.parseInt(teamNumberStr);
+      return teams
+              .stream()
+              .filter(t -> t.getTeamNumber() == teamNumber)
+              .findFirst()
+              .orElseThrow(() -> new IllegalStateException("Could not find team with teamMember " + teamNumber + " within teams " + teams));
   }
-
-
-//  private static Team findTeamForParticipantId(UUID participantId, List<Team> teams) {
-//    return teams
-//            .stream()
-//            .filter(t -> t.isParticipantTeamMember(participantId))
-//            .findFirst()
-//            .orElseThrow(() -> new IllegalStateException("Could not find team with teamMember " + participantId + " within teams " + teams));
-//  }
 
   private List<Team> findTeamsForEntries(String adminId, Set<DistanceEntry> distanceEntries, List<GeocodedAddressEntity> addressEntities) {
 
@@ -128,25 +113,85 @@ public class DinnerRouteService {
     return teamService.findTeamsWithMembersOrderedByTeamNumbers(adminId, teamNumbers);
   }
 
-//  public TeamLocationsEventData findTeamLocationsEventData(@ValidateAdminId String adminId) {
-//
-//    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-//
-//    List<MealClass> mealClasses = runningDinner.getConfiguration().getMealClasses();
-//    List<Team> teams = teamService.findTeamArrangements(adminId, false);
-//
-//    List<TeamLocation> teamLocations = new ArrayList<TeamLocation>();
-//    for (Team t : teams) {
-//      if (t.getStatus() == TeamStatus.CANCELLED) {
-//        teamLocations.add(new TeamLocation(t.getId(), t.getMealClass().getId(), t.getStatus(), null, null));
-//      } else {
-//        teamLocations.add(new TeamLocation(t.getId(), t.getMealClass().getId(), t.getStatus(), t.getHostTeamMember().getAddress(), t.getHostTeamMember().getGeocodingResult()));
-//      }
-//    }
-//
-//    TeamLocationsEventData result = new TeamLocationsEventData(runningDinner.getAdminId(), MealTO.fromMeals(mealClasses), teamLocations);
-//    result.setAfterPartyLocation(null);
-//    return result;
-//  }
+  public List<DinnerRouteWithDistancesTO> calculateDinnerRouteDistances(String adminId, GeocodedAddressEntityListTO addressEntityList) {
+
+    List<DinnerRouteWithDistancesTO> result = new ArrayList<>();
+
+    List<DinnerRouteTO> allDinnerRoutes = findAllDinnerRoutes(adminId);
+
+    DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(addressEntityList.getAddressEntities());
+
+    for (DinnerRouteTO dinnerRoute: allDinnerRoutes) {
+      List<DinnerRouteTeamWithDistanceTO> dinnerRouteTeamsWithDistances = calculateDistancesBetweenTeamsOnRoute(dinnerRoute, distanceMatrix);
+      result.add(new DinnerRouteWithDistancesTO(dinnerRouteTeamsWithDistances));
+    }
+    result.sort(DinnerRouteTeamWithDistanceComparator.INSTANCE);
+    return result;
+  }
+
+  private List<DinnerRouteTeamWithDistanceTO> calculateDistancesBetweenTeamsOnRoute(DinnerRouteTO dinnerRoute, DistanceMatrix distanceMatrix) {
+
+    List<DinnerRouteTeamTO> dinnerRouteTeams = dinnerRoute.getTeams();
+    List<DinnerRouteTeamWithDistanceTO> result = new ArrayList<>(dinnerRouteTeams.size());
+
+    Map<DistanceEntry, Double> distanceMatrixEntries = distanceMatrix.getEntries();
+
+    DinnerRouteTeamWithDistanceTO teamWithLargestDistance = null;
+
+    for (int i = 0; i < dinnerRouteTeams.size(); i++) {
+      DinnerRouteTeamTO a = dinnerRouteTeams.get(i);
+      boolean isCurrentTeam = a.getTeamNumber() == dinnerRoute.getCurrentTeam().getTeamNumber();
+      if (i + 1 >= dinnerRouteTeams.size()) {
+        result.add(new DinnerRouteTeamWithDistanceTO(a, null, isCurrentTeam));
+        break;
+      }
+      DinnerRouteTeamTO b = dinnerRouteTeams.get(i + 1);
+      DistanceEntry distanceEntry = new DistanceEntry(String.valueOf(a.getTeamNumber()), String.valueOf(b.getTeamNumber()));
+      Double distance = distanceMatrixEntries.get(distanceEntry);
+      DinnerRouteTeamWithDistanceTO dinnerRouteTeamWithDistanceTO = new DinnerRouteTeamWithDistanceTO(a, distance, isCurrentTeam);
+      result.add(dinnerRouteTeamWithDistanceTO);
+      if (teamWithLargestDistance == null || (distance != null && distance > teamWithLargestDistance.getDistanceToNextTeam())) {
+        teamWithLargestDistance = dinnerRouteTeamWithDistanceTO;
+      }
+    }
+
+    if (teamWithLargestDistance != null) {
+      teamWithLargestDistance.setLargestDistanceInRoute(true);
+    }
+
+    return result;
+  }
+
+  static class DinnerRouteTeamWithDistanceComparator implements Comparator<DinnerRouteWithDistancesTO> {
+
+    static final DinnerRouteTeamWithDistanceComparator INSTANCE = new DinnerRouteTeamWithDistanceComparator();
+
+    @Override
+    public int compare(DinnerRouteWithDistancesTO o1, DinnerRouteWithDistancesTO o2) {
+      Double o1MaxDistance = getMaxDistanceInRoute(o1);
+      Double o2MaxDistance = getMaxDistanceInRoute(o2);
+      if (o1MaxDistance == null && o2MaxDistance == null) {
+        return 0;
+      }
+      if (o2MaxDistance == null) {
+        return 1;
+      }
+      if (o1MaxDistance == null) {
+        return -1;
+      }
+      return o2MaxDistance.compareTo(o1MaxDistance);
+    }
+
+    private Double getMaxDistanceInRoute(DinnerRouteWithDistancesTO route) {
+      return route.teams()
+              .stream()
+              .map(DinnerRouteTeamWithDistanceTO::getDistanceToNextTeam)
+              .filter(Objects::nonNull)
+              .max(Comparator.naturalOrder())
+              .orElse(null);
+    }
+  }
 
 }
+
+

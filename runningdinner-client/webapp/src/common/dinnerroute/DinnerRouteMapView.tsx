@@ -60,7 +60,6 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
   const currentPosError = null;
 
   const {dinnerRouteMapEntries, afterPartyLocationMapEntry, centerPosition, showWarnings} = dinnerRouteMapData;
-  // const currentDinnerRouteTeamEntry = findDinnerRouteMapEntryForCurrentDinnerRouteTeam(dinnerRouteMapData, dinnerRoute);
   const teamOrderNumberByTeamNumber = calculateTeamOrderNumbers(dinnerRoute)
 
   return (
@@ -71,17 +70,8 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
            mapId={GOOGLE_MAPS_ID}>
 
 
-    { dinnerRouteMapData.dinnerRouteMapEntries.map(path => <TeamConnectionPathLine  key={path.teamNumber} {...path} />) }
+        { dinnerRouteMapData.dinnerRouteMapEntries.map(path => <TeamConnectionPathLine  key={path.teamNumber} {...path} />) }
 
-
-{/* 
-        <Polyline 
-          key={currentDinnerRouteTeamEntry?.color} 
-          strokeWeight={3}
-          geodesic={true}
-          icons={[ { icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '100%' } ]}
-          path={paths}
-          strokeColor={currentDinnerRouteTeamEntry?.color}/> */}
 
         { dinnerRouteMapEntries
             .map((team) => <TeamHostMarker key={team.teamNumber} 
@@ -113,7 +103,7 @@ function TeamConnectionPathLine({color, teamConnectionPaths}: DinnerRouteTeamMap
               key={path.key} 
               strokeWeight={4}
               geodesic={true}
-              icons={[ { icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '100%' } ]}
+              icons={[ { icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '50%' } ]}
               strokeOpacity={1.0} 
               path={[ {lat: path.coordinates[0].lat!, lng: path.coordinates[0].lng!}, {lat: path.coordinates[1].lat!, lng: path.coordinates[1].lng!} ]}
               strokeColor={color}/>

@@ -86,9 +86,6 @@ function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardPro
         { isCurrentTeam && <Box component={"span"} pl={1}>
                               <Typography variant={"body2"} component={"span"}>{t('common:with_you')}</Typography>
                            </Box> }
-        {/* { !isCurrentTeam && <Box component={"span"} pl={1}>
-                                <Typography variant={"body2"} component={"span"}>(<TeamNr {...dinnerRouteTeam} />)</Typography>
-                            </Box> } */}
       </PageTitle>
       <Paper elevation={3} sx={{ p:2 }}>
         {isCancelled && <Subtitle i18n={"cancelled"} color="error" />}

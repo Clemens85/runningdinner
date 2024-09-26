@@ -6,12 +6,13 @@ import LinkExtern from "../theme/LinkExtern";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertTitle } from "@mui/material";
 import { useGeoPosition } from "../hooks/GeoPositionHook";
-import { AdvancedMarker, InfoWindow, Pin, useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
+import { AdvancedMarker, InfoWindow,  useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry, getMarkerLabel } from "@runningdinner/shared";
 import SoupKitchenIcon from '@mui/icons-material/SoupKitchen';
 import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 import IcecreamIcon from '@mui/icons-material/Icecream';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
 
 export const TeamCardDetailRow = styled('div')( {
   display: 'flex',
@@ -159,7 +160,7 @@ type TeamHostMarkerProps = {
   zIndex?: number;
 };
 
-const TeamHostPin = styled("div", {
+const MapEntryPin = styled("div", {
   shouldForwardProp: (prop) => prop !== "teamColor"
   // @ts-ignore
 })(({ teamColor }) => ({
@@ -183,12 +184,12 @@ const TeamHostPin = styled("div", {
   }
 }));
 
-export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel, zIndex = 1}: TeamHostMarkerProps) {
+export function TeamHostMarker({team, isCurrentTeam, zIndex = 1}: TeamHostMarkerProps) {
   
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [open, setOpen] = useState(false);
 
-  const glyphColor = isDarkColor(team.color) ? '#fff' : '#000';
+  // const glyphColor = isDarkColor(team.color) ? '#fff' : '#000';
 
   function getMealTypeIcon(mealType: MealType) {
     if (mealType === MealType.APPETIZER) {
@@ -209,10 +210,10 @@ export function TeamHostMarker({team, scale, isCurrentTeam, teamLabel, zIndex = 
         position={{ lat: team.position.lat!, lng: team.position.lng! }}> 
 
           {/* @ts-ignore */}
-          <TeamHostPin teamColor={team.color}>
+          <MapEntryPin teamColor={team.color}>
             <>{getMealTypeIcon(team.mealType)}</>  
             {getMarkerLabel(`#${team.teamNumber}`)}
-          </TeamHostPin>
+          </MapEntryPin>
 
           {/* <Box sx={{ 
             backgroundColor: team.color, 
@@ -262,12 +263,18 @@ export function AfterPartyLocationMarker(afterPartyLocationMapEntry: AfterPartyL
         title={title}
         onClick={() => setOpen(!open)}
         position={{ lat: position.lat!, lng: position.lng! }}> 
-        <Pin 
+          {/* @ts-ignore */}
+          <MapEntryPin teamColor={color}>
+            <LocalBarIcon sx={{ fontSize: 16 }} />
+            {getMarkerLabel(title)}
+          </MapEntryPin>
+
+        {/* <Pin 
           scale={1.3}
           background={color}
           borderColor={'#000'}>
             <span><center>{getMarkerLabel(title)}</center></span>
-          </Pin>
+          </Pin> */}
       </AdvancedMarker>
       {open && (
         <InfoWindow

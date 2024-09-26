@@ -5,10 +5,7 @@ export function useCalculateTeamDistanceClusters(adminId: string, dinnerRouteMap
 
   const addressEntityList = buildAddressEntityList(dinnerRouteMapEntries);
 
-  const addressEntityIds = addressEntityList.addressEntities
-                            .map(addressEntity => addressEntity.id || '')
-                            .sort()
-                            .join(','); 
+  const addressEntityIds = buildAddressEntityIdsQueryKey(addressEntityList);
 
   return useQuery({
     placeholderData: keepPreviousData,
@@ -18,7 +15,7 @@ export function useCalculateTeamDistanceClusters(adminId: string, dinnerRouteMap
   });
 }
 
-function buildAddressEntityList(dinnerRouteMapEntries: DinnerRouteTeamMapEntry[] | DinnerRouteTeam[]): GeocodedAddressEntityList {
+export function buildAddressEntityList(dinnerRouteMapEntries: DinnerRouteTeamMapEntry[] | DinnerRouteTeam[]): GeocodedAddressEntityList {
   const addressEntities = dinnerRouteMapEntries.map(entry => ({
     id: `${entry.teamNumber}`,
     lat: entry.geocodingResult?.lat,
@@ -30,3 +27,9 @@ function buildAddressEntityList(dinnerRouteMapEntries: DinnerRouteTeamMapEntry[]
   };
 }
   
+export function buildAddressEntityIdsQueryKey(addressEntityList: GeocodedAddressEntityList): string {
+  return addressEntityList.addressEntities
+            .map(addressEntity => addressEntity.id || '')
+            .sort()
+            .join(','); 
+}

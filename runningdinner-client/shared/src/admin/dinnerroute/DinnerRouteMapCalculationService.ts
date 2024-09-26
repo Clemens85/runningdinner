@@ -37,21 +37,15 @@ const CURRENT_TEAM_COLOR_SINGLE_ROUTE_VIEW = '#2e7d32';
 const GUEST_TEAM_COLOR_SINGLE_ROUTE_VIEW = '#999';
 
 
-function calculateTeamColor(team: DinnerRouteTeam, mealTypeMappings: Record<string, MealType>, colorOverride?: string): string {
+function calculateTeamColor(team: DinnerRouteTeam, colorOverride?: string): string {
   if (isStringNotEmpty(colorOverride)) {
     return colorOverride;
   }
-  // const mealType = mealTypeMappings[team.meal.id!];
-  // return mapMealTypeToColor(mealType);
   return stringToColor(`${getFullname(team.hostTeamMember)}${team.teamNumber}`);
 }
 
 function calculatAfterPartyLocationColor(): string {
   return AFTER_PARTY_LOCATION_COLOR;
-  // if (isSingleDinnerRouteView) {
-  //   return colorOverride;
-  // }
-  // return stringToColor(`${afterPartyLocation.cityName}${afterPartyLocation.street}`);
 }
 
 function isGuestTeam(team: DinnerRouteTeam, currentTeam: DinnerRouteTeam): boolean {
@@ -72,7 +66,7 @@ function calculateDinnerRouteMapEntry(dinnerRoute: DinnerRoute,
 
   const result = new Array<DinnerRouteTeamMapEntry>();
 
-  const currentTeamColor = calculateTeamColor(currentTeam, mealTypeMappings, isSingleDinnerRouteView ? CURRENT_TEAM_COLOR_SINGLE_ROUTE_VIEW : undefined);
+  const currentTeamColor = calculateTeamColor(currentTeam, isSingleDinnerRouteView ? CURRENT_TEAM_COLOR_SINGLE_ROUTE_VIEW : undefined);
 
   const teamConnectionPaths = new Array<TeamConnectionPath>();
 
@@ -82,7 +76,7 @@ function calculateDinnerRouteMapEntry(dinnerRoute: DinnerRoute,
     if (isSingleDinnerRouteView && isGuestTeam(team, currentTeam)) {
       // Case: Show complete dinner-route for only one team (we need also the positions of the other host teams in the result)
       result.push(
-        newDinnerRouteMapEntry(team, calculateTeamColor(team, mealTypeMappings, GUEST_TEAM_COLOR_SINGLE_ROUTE_VIEW), team.geocodingResult!, [], mealTypeMappings)
+        newDinnerRouteMapEntry(team, calculateTeamColor(team, GUEST_TEAM_COLOR_SINGLE_ROUTE_VIEW), team.geocodingResult!, [], mealTypeMappings)
       );
     }
 

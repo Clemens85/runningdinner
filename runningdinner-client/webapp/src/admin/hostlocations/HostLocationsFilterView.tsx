@@ -5,7 +5,7 @@ import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry, DinnerRouteTeam, Fullname } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry, DinnerRouteTeam, Fullname, isAfterPartyLocationDefined } from "@runningdinner/shared";
 import { TitleBar } from "./TitleBar";
 
 function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
@@ -97,6 +97,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
           )}>
         </Virtuoso>
       </Box>
+      <FilterAfterPartyLocationCheckbox />
     </Paper>
   )
 }
@@ -140,4 +141,29 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
       }
     </>
   )
+}
+
+function FilterAfterPartyLocationCheckbox() {
+
+  const {dispatch, state} = useDinnerRouteOverviewContext();
+  const {excludeAfterPartyLocation, afterPartyLocation} = state;
+
+  function handleToggleExcludeAfterPartyLocation() {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_EXCLUDE_AFTER_PARTY_LOCATION
+    })
+  }
+
+  if (!isAfterPartyLocationDefined(afterPartyLocation)) {
+    return null;
+  }
+
+  return (
+    <Box pl={3}>
+      <FormControlLabel label={`Zeige ${afterPartyLocation?.title} Routen`} sx={{ mt: -4 }} control={
+        <Checkbox color="primary" onChange={handleToggleExcludeAfterPartyLocation} checked={!excludeAfterPartyLocation} />
+      } />
+    </Box>
+  );
+
 }

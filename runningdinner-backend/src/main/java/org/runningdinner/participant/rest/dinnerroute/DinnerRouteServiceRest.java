@@ -42,4 +42,11 @@ public class DinnerRouteServiceRest {
     return new TeamDistanceClusterListTO(result);
   }
 
+  @PutMapping("/runningdinner/{adminId}/distances/teams")
+  public DinnerRouteWithDistancesListTO calculateRouteDistances(@PathVariable("adminId") String adminId,
+                                                                @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
+
+    List<DinnerRouteWithDistancesTO> result = dinnerRouteService.calculateDinnerRouteDistances(adminId, addressEntityList);
+    return new DinnerRouteWithDistancesListTO(result);
+  }
 }

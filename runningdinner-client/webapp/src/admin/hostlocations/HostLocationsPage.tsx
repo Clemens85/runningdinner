@@ -9,7 +9,7 @@ import { useFindAllDinnerRoutes } from "./useFindAllDinnerRoutes";
 import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from "./HostLocationsFilterView";
 import { BrowserTitle } from "../../common/mainnavigation/BrowserTitle";
 import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, DinnerRouteMapData, calculateDinnerRouteMapData, distinctDinnerRouteTeams, } from "@runningdinner/shared";
-import { DinnerRouteOverviewSettingsView } from "./DinnerRouteOverviewSettingsView";
+import { DinnerRouteOverviewSettingsMinimizedButton, DinnerRouteOverviewSettingsView } from "./DinnerRouteOverviewSettingsView";
 import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
 
 export function HostLocationsPage({runningDinner}: BaseRunningDinnerProps) {
@@ -106,7 +106,7 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
       </div>
 
       { !settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} dinnerRouteMapEntries={dinnerRouteMapEntries} /> }      
-      { settingsViewMinimized && <>TODO</> }      
+      { settingsViewMinimized && <DinnerRouteOverviewSettingsMinimizedButton /> }      
 
       { !hostFilterViewMinimized && <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} /> }
       { hostFilterViewMinimized && <HostLocationsFilterMinimizedButton /> }

@@ -27,11 +27,24 @@ export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {
 export interface DinnerRouteList {
   dinnerRoutes: DinnerRoute[];
 }
+
 export interface GeocodedAddressEntityList {
   addressEntities: GeocodedAddressEntity[];
 }
 export interface GeocodedAddressEntity extends GeocodingResult, BaseEntity { }
 
+export interface DinnerRouteTeamWithDistance extends DinnerRouteTeam {
+  distanceToNextTeam: number;
+  currentTeam: boolean;
+  largestDistanceInRoute: boolean;
+}
+export interface DinnerRouteWithDistances {
+  teams: DinnerRouteTeamWithDistance[];
+}
+
+export interface DinnerRouteWithDistancesList {
+  dinnerRoutes: DinnerRouteWithDistances[];
+}
 interface DistanceEntry {
   srcId: string;
   destId: string;
