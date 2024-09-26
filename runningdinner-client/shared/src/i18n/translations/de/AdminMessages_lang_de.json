@@ -314,7 +314,7 @@
 	"teams_reset_hint_team_partner_wish": "<strong>Hinweis</strong>: Teilnehmer mit Wunschpartner werden natürlich wieder mit ihren Partnern als ein Team gelost.",
 	"teams_reset_success_text": "Alte Team-Einteilungen verworfen und erfolgreich neue Teams generiert",
 	"teams_selection": "Team-Auswahl",
-	"teams_show_dinnerroute": "Dinnerroute anzeigen",
+	"teams_show_dinnerroute": "Dinnerroute öffnen",
 	"teams_modified_waitinglist_message_headline": "Team Änderungen durch Warteliste",
 	"team_swap_violates_team_partner_wish": "Das Tauschen dieser Team-Mitglieder würde mindestens einen Team-Partner-Wunsch verletzen, und ist daher geblockt. Falls du dies dennoch wirklich tun willst, musst du die Team-Partner-Wünsche der betroffenen Teilnehmer händisch entfernen.",
 	"text_host_saved": "Gastgeber erfolgreich gespeichert!",

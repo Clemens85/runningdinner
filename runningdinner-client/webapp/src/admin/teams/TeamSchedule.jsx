@@ -104,14 +104,15 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
       return null;
     }
     return (
-      <Grid container spacing={spacing} justifyContent={"center"} alignItems={"center"}>
-        {!isMobileDevice && <GridContentRight item xs={xs} md={md} />}
-        <GridContentCenter item xs={12} md={md}>
-          <Box mt={1}>
-            <LinkExtern href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} title={t('teams_show_dinnerroute')}/>
-          </Box>
-        </GridContentCenter>
-        {!isMobileDevice && <GridContentCenter item xs={xs} md={md} />}
+      <Grid container spacing={spacing} justifyContent={"center"} alignItems={"center"} sx={{ mb: 1 }}>
+        <Grid item xs={12} sx={{ textAlign: "center", mt: 1 }}>
+          <Button color={"primary"}
+                  variant={"outlined"}
+                  size="medium"
+                  href={generateTeamDinnerRoutePath(adminId, activeTeam.id)}
+                  target="_blank">{t('teams_show_dinnerroute')}
+          </Button>
+        </Grid>
       </Grid>
     );
   };
@@ -143,9 +144,9 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
 
   return (
       <>
+        {renderScheduleRowLinkToRoute()}
         {renderScheduleRowHeading()}
         {resultRows}
-        {renderScheduleRowLinkToRoute()}
       </>
   );
 }

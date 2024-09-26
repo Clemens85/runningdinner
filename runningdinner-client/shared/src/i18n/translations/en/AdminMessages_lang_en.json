@@ -311,7 +311,7 @@
 	"teams_reset_hint_team_partner_wish": "<strong>Note</strong>: Participants with fixed team partner wishes will of course be mixed again with their wish partners as a team.",
 	"teams_reset_success_text": "Old team arrangements were removed and new team arrangements have been generated",
 	"teams_selection": "Team selection",
-	"teams_show_dinnerroute": "Show dinner route",
+	"teams_show_dinnerroute": "Open Dinner Route",
 	"teams_modified_waitinglist_message_headline": "Team Changes by waitinglist",
 	"team_swap_violates_team_partner_wish": "The swap of those team members would violate at least one team partner wish and is hence blocked. If you really want to perform this action, then you have to remove the respective team partner wishes of the affected participants.",
 	"time_schedule": "Time schedule",
