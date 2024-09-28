@@ -178,7 +178,7 @@ function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
       <Virtuoso 
         data={routeDistances}
         itemContent={(_, routeDistance) => <>
-        <Box pr={1}>
+        <Box pr={1} sx={{ borderBottom: "1px dotted"}}>
           <Grid container justifyContent="space-between" alignItems={"center"}>
             { routeDistance.teams.map((team, index) =>
               <React.Fragment key={index}>
