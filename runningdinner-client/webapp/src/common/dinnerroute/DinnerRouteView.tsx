@@ -82,7 +82,7 @@ function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardPro
   return (
     <>
       <PageTitle color={teamTitleColor}>
-        ({positionInRoute}) {dinnerRouteTeam.meal.label}
+        {/* ({positionInRoute})  */}{dinnerRouteTeam.meal.label}
         { isCurrentTeam && <Box component={"span"} pl={1}>
                               <Typography variant={"body2"} component={"span"}>{t('common:with_you')}</Typography>
                            </Box> }
