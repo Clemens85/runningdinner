@@ -123,7 +123,7 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapEntries}
             <FormGroup>
               <FormControlLabel 
                 control={<Switch onChange={evt => setShowRouteDistances(evt.target.checked)} checked={showRouteDistances} />} 
-                label="Zeige Entfernungen" />
+                label="Zeige Entfernungen pro Route" />
             </FormGroup>
             { showRouteDistances && <RouteDistancesView routeDistances={routeDistances} /> }
           </Box>

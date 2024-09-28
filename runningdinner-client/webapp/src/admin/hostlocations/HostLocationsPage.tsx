@@ -115,7 +115,7 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
   )
 }
 
-function TeamConnectionPathLine({color, teamConnectionPaths}: DinnerRouteTeamMapEntry) {
+function TeamConnectionPathLine({teamConnectionPaths}: DinnerRouteTeamMapEntry) {
 
   return (
     <>
@@ -132,7 +132,7 @@ function TeamConnectionPathLine({color, teamConnectionPaths}: DinnerRouteTeamMap
               ]}
               strokeOpacity={1.0} 
               path={[ {lat: path.coordinates[0].lat!, lng: path.coordinates[0].lng!}, {lat: path.coordinates[1].lat!, lng: path.coordinates[1].lng!} ]}
-              strokeColor={color}/>
+              strokeColor={path.color}/>
         )
       }
     </>

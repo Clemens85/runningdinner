@@ -80,13 +80,12 @@ function calculateDinnerRouteMapEntry(dinnerRoute: DinnerRoute,
       );
     }
 
-    // let coordinates: GeocodingResult[] = [];
     if (i + 1 < dinnerRouteTeams.length) {
       teamConnectionPaths.push(newTeamConnectionPath(team, currentTeamColor, dinnerRouteTeams[i + 1]));
     } else if (afterPartyLocationMapEntry) {
       teamConnectionPaths.push({
         coordinates: [team.geocodingResult!, afterPartyLocationMapEntry.position],
-        color: currentTeamColor,
+        color: calculatAfterPartyLocationColor(),
         key: `${currentTeam.teamNumber}-afterparty`,
         team,
       })
@@ -233,20 +232,20 @@ export function buildMealTypeMappings(meals: Meal[]): Record<string, MealType> {
   return result;
 }
 
-export function mapMealTypeToColor(mealType: MealType | undefined): string {
-  if (!mealType) {
-    // return "#7ebb89";
-    return "#000";
-  }
-  switch (mealType) {
-    case MealType.APPETIZER:
-      return "#f74324";
-    case MealType.MAIN_COURSE:
-      return "#000";
-    case MealType.DESSERT:
-      return "#a18ed2";
-  }
-}
+// export function mapMealTypeToColor(mealType: MealType | undefined): string {
+//   if (!mealType) {
+//     // return "#7ebb89";
+//     return "#000";
+//   }
+//   switch (mealType) {
+//     case MealType.APPETIZER:
+//       return "#f74324";
+//     case MealType.MAIN_COURSE:
+//       return "#000";
+//     case MealType.DESSERT:
+//       return "#a18ed2";
+//   }
+// }
 
 export function getHostTeamsOfDinnerRouteMapEntry(dinnerRouteMapEntry: DinnerRouteTeamMapEntry): DinnerRouteTeam[] {
   

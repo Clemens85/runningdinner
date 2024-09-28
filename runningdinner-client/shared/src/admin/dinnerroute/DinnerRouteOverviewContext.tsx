@@ -131,9 +131,8 @@ export function filterTeamConnectionPaths(dinnerRouteMapData: DinnerRouteMapData
  
     remove(currentTeamConnectionPaths, path => { return !isIncludedInMealFilter(mealFilter, currentEntry, path, state.excludeAfterPartyLocation); });
 
-    // This removes all paths that are connected to the after party location (entry with after party location has no team set)
     if (state.excludeAfterPartyLocation) {
-      remove(currentTeamConnectionPaths, (path) => !path.team);
+      remove(currentTeamConnectionPaths, (path) => !path.toTeam);
     }
   }
 
@@ -145,9 +144,6 @@ function isIncludedInMealFilter(mealFilter: MealFilterOption, dinnerRouteMapEntr
     return true;
   }
 
-  // if (excludeAfterPartyLocation && !teamConnectionPath.team) {
-  //   return false;
-  // }
   if (isSameEntity(dinnerRouteMapEntry.meal, mealFilter.toMeal) && isSameEntity(teamConnectionPath.team.meal, mealFilter.fromMeal)) {
     return true;
   }
