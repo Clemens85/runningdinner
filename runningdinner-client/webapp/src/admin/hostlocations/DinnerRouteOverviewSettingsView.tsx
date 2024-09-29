@@ -1,7 +1,7 @@
 import { Box, Chip, CircularProgress, Divider, Fab, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, Switch, SxProps, Typography } from "@mui/material";
 import { TitleBar } from "./TitleBar";
 import { useTranslation } from "react-i18next";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus } from "@runningdinner/shared";
 import { SmallTitle, Span } from "../../common/theme/typography/Tags";
 import { BaseAdminIdProps, TeamDistanceCluster } from "@runningdinner/shared";
 import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
@@ -10,6 +10,7 @@ import { useCalculateRouteDistances } from "./useCalculateRouteDistances";
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { Virtuoso } from "react-virtuoso";
 import React from "react";
+import { CancelledTeamMember } from "../teams/CancelledTeamMember";
 
 type DinnerRouteOverviewSettingsViewProps = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
@@ -183,7 +184,10 @@ function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
             { routeDistance.teams.map((team, index) =>
               <React.Fragment key={index}>
                 <Grid item sx={{ my: 2 }}>
-                  <Chip label={`Team ${team.teamNumber}`} color={team.currentTeam ? "primary" : "default"} variant={team.currentTeam ? "filled" : "outlined"} />
+                  {team.status === TeamStatus.CANCELLED && <CancelledTeamMember /> }
+                  {team.status !== TeamStatus.CANCELLED &&
+                    <Chip label={`Team ${team.teamNumber}`} color={team.currentTeam ? "primary" : "default"} variant={team.currentTeam ? "filled" : "outlined"} />
+                  }
                 </Grid>
                 { isDefined(team.distanceToNextTeam) &&
                   <Grid>
