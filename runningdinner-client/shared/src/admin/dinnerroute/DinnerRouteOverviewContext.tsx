@@ -144,12 +144,16 @@ function isIncludedInMealFilter(mealFilter: MealFilterOption, dinnerRouteMapEntr
     return true;
   }
 
+  // The current team's meal is the next one coming up in the route (toMeal) && the meal of the current path's team is the meal from which we want to filter for
+  // For exmpale: Vorspeise (fromMeal) -> Hauptspeise (toMeal)
   if (isSameEntity(dinnerRouteMapEntry.meal, mealFilter.toMeal) && isSameEntity(teamConnectionPath.team.meal, mealFilter.fromMeal)) {
     return true;
   }
-  if (isSameEntity(dinnerRouteMapEntry.meal, mealFilter.fromMeal) && !isDefined(mealFilter.toMeal) && !excludeAfterPartyLocation) {
+  // The current team's meal is the from from which we want to filter for, but their exist no coming up meal (toMeal) and we want to show the after party location path
+  if (isSameEntity(teamConnectionPath.team.meal, mealFilter.fromMeal) && !isDefined(teamConnectionPath.toTeam) && !isDefined(mealFilter.toMeal) && !excludeAfterPartyLocation) {
     return true;
   }
+
   return false;
 }
 
