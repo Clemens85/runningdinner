@@ -7,6 +7,7 @@ import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreen
 import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry, DinnerRouteTeam, Fullname, isAfterPartyLocationDefined } from "@runningdinner/shared";
 import { TitleBar } from "./TitleBar";
+import { useTranslation } from "react-i18next";
 
 function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
   if (includeHostFullname) {
@@ -33,6 +34,7 @@ const MinimizedFab = styled(Fab)({
 export function HostLocationsFilterMinimizedButton() {
 
   const {dispatch} = useDinnerRouteOverviewContext();
+  const {t} = useTranslation('common');
 
   function handleMaximizeFilterView() {
     dispatch({ 
@@ -43,7 +45,7 @@ export function HostLocationsFilterMinimizedButton() {
 
   return (
     <MinimizedFab variant="extended" color="primary" onClick={handleMaximizeFilterView}>
-      Filter
+      {t('common:filter')}
       <OpenInFullRoundedIcon sx={{ ml: 1 }} />
     </MinimizedFab>
   )
@@ -58,6 +60,8 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
 
   const teamsFilterContainerRef = useRef(null);
   const teamsFilterHeight = useDynamicFullscreenHeight(teamsFilterContainerRef, 300, true) - (isMobileDevice ? 150 : 200);
+
+  const {t} = useTranslation('common');
 
   let paperWidth = isMobileDevice ? 150 : 380; // 380 is for tablet devices 
   if (isBigDevice) {
@@ -84,7 +88,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
            id="HostFilterPaper" 
            sx={hostFilterPaperStyles}
            ref={teamsFilterContainerRef}>
-      <TitleBar onToggleMinize={handleMinimizeFilterView} title={'Filter'} />
+      <TitleBar onToggleMinize={handleMinimizeFilterView} title={t('common:filter')} />
       <Box sx={{ height: `${teamsFilterHeight}px`, padding: 3 }}>
         <Box pb={1}>
           <Span i18n="admin:hostlocations_team_filter" />
@@ -107,6 +111,8 @@ type FilterTeamCheckboxProps = {
 };
 
 function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
+
+  const {t} = useTranslation('admin');
   
   const {state, dispatch} = useDinnerRouteOverviewContext();
   const {activeTeamsFilter} = state;
@@ -136,7 +142,9 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
 
       { isBigDevice &&
         <Box sx={{ pl: 4 }}>
-          {hostTeams.map(hostTeam => <Box key={hostTeam.teamNumber}><small>Zu Gast bei {getTeamLabel(hostTeam, false)}</small></Box>) }
+          {hostTeams.map(hostTeam => 
+            <Box key={hostTeam.teamNumber}><small>{t("admin:dinner_route_filter_team_guest_info_prefix")} {getTeamLabel(hostTeam, false)}</small></Box>) 
+          }
         </Box>
       }
     </>
@@ -147,6 +155,8 @@ function FilterAfterPartyLocationCheckbox() {
 
   const {dispatch, state} = useDinnerRouteOverviewContext();
   const {excludeAfterPartyLocation, afterPartyLocation} = state;
+
+  const {t} = useTranslation('admin');
 
   function handleToggleExcludeAfterPartyLocation() {
     dispatch({
@@ -160,7 +170,7 @@ function FilterAfterPartyLocationCheckbox() {
 
   return (
     <Box pl={3}>
-      <FormControlLabel label={`Zeige ${afterPartyLocation?.title} Routen`} sx={{ mt: -4 }} control={
+      <FormControlLabel label={t('admin:dinner_route_show_after_party_location', {location: afterPartyLocation?.title})} sx={{ mt: -4 }} control={
         <Checkbox color="primary" onChange={handleToggleExcludeAfterPartyLocation} checked={!excludeAfterPartyLocation} />
       } />
     </Box>
