@@ -84,7 +84,8 @@ export type AfterPartyLocationMapEntry = AfterPartyLocation & MapEntry;
 
 export type DinnerRouteMapData = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
-  showWarnings?: boolean;
+  // showWarnings?: boolean;
+  teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
   centerPosition: GeocodingResult;
   afterPartyLocationMapEntry?: AfterPartyLocationMapEntry
 };

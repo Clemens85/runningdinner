@@ -32,7 +32,7 @@ export function DinnerRouteMapView({dinnerRoute, meals}: DinnerRouteMapViewProps
 });
 
   if (dinnerRouteMapData.dinnerRouteMapEntries.length === 0) {
-    return <WarningAlert />;
+    return <WarningAlert teamsWithUnresolvedGeocodings={dinnerRouteMapData.teamsWithUnresolvedGeocodings} />;
   }
 
   return (
@@ -57,37 +57,38 @@ function MapView({dinnerRouteMapData, dinnerRoute}: MapViewProps) {
   
   const mapContainerRef = useRef(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400);
-  const currentPosError = null;
 
-  const {dinnerRouteMapEntries, afterPartyLocationMapEntry, centerPosition, showWarnings} = dinnerRouteMapData;
+  const {dinnerRouteMapEntries, afterPartyLocationMapEntry, centerPosition, teamsWithUnresolvedGeocodings} = dinnerRouteMapData;
   const teamOrderNumberByTeamNumber = calculateTeamOrderNumbers(dinnerRoute)
 
   return (
-    <div ref={mapContainerRef}>
-      <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }}
-           defaultZoom={12} 
-           style={{ height: `${mapHeight}px`}}
-           mapId={GOOGLE_MAPS_ID}>
+    <>
+      <WarningAlert teamsWithUnresolvedGeocodings={teamsWithUnresolvedGeocodings} />
+      <div ref={mapContainerRef}>
+        <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }}
+            defaultZoom={12} 
+            style={{ height: `${mapHeight}px`}}
+            mapId={GOOGLE_MAPS_ID}>
 
 
-        { dinnerRouteMapData.dinnerRouteMapEntries.map(path => <TeamConnectionPathLine  key={path.teamNumber} {...path} />) }
+          { dinnerRouteMapData.dinnerRouteMapEntries.map(path => <TeamConnectionPathLine  key={path.teamNumber} {...path} />) }
 
 
-        { dinnerRouteMapEntries
-            .map((team) => <TeamHostMarker key={team.teamNumber} 
-                                                team={team} 
-                                                scale={1.3}
-                                                teamLabel={`#${teamOrderNumberByTeamNumber[team.teamNumber]}`}
-                                                isCurrentTeam={dinnerRoute.currentTeam.teamNumber === team.teamNumber} />) 
-        }
+          { dinnerRouteMapEntries
+              .map((team) => <TeamHostMarker key={team.teamNumber} 
+                                                  team={team} 
+                                                  scale={1.3}
+                                                  teamLabel={`#${teamOrderNumberByTeamNumber[team.teamNumber]}`}
+                                                  isCurrentTeam={dinnerRoute.currentTeam.teamNumber === team.teamNumber} />) 
+          }
 
-        { afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} /> }
+          { afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} /> }
 
-        <CurrentPositionMarker onError={(error) => console.error(error)}/>
+          <CurrentPositionMarker onError={(error) => console.error(error)}/>
 
-      </Map>
-      { (showWarnings || currentPosError) && <WarningAlert /> }
-    </div>
+        </Map>
+      </div>
+    </>
   )
 }
 

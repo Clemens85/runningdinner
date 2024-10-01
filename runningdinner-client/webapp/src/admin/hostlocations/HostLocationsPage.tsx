@@ -52,7 +52,7 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
   });
 
   if (dinnerRouteMapData.dinnerRouteMapEntries.length === 0) {
-    return <WarningAlert />;
+    return <WarningAlert teamsWithUnresolvedGeocodings={dinnerRouteMapData.teamsWithUnresolvedGeocodings} />;
   }
 
   return (
@@ -68,7 +68,7 @@ type HostLocationsViewProps = {
 
 function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsViewProps) {
 
-  const {showWarnings, dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry} = dinnerRouteMapData;
+  const {dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry} = dinnerRouteMapData;
 
   const mapContainerRef = useRef(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
@@ -76,7 +76,6 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
   const {state} = useDinnerRouteOverviewContext();
   const {hostFilterViewMinimized, settingsViewMinimized} = state;
 
-  // const pathsByTeam = calculatePathsByTeam(dinnerRouteMapData, state);
   const filteredTeamConnectionPaths = filterTeamConnectionPaths(dinnerRouteMapData, state);
 
   return (
@@ -102,10 +101,10 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
           { afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} /> }
       
         </Map>
-        { showWarnings && <WarningAlert /> }
       </div>
 
-      { !settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} dinnerRouteMapEntries={dinnerRouteMapEntries} /> }      
+      { !settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} 
+                                                                   dinnerRouteMapData={dinnerRouteMapData} /> }      
       { settingsViewMinimized && <DinnerRouteOverviewSettingsMinimizedButton /> }      
 
       { !hostFilterViewMinimized && <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} /> }

@@ -53,7 +53,7 @@
 	"dear_users": "Liebe Nutzerinnen und Nutzer",
 	"details": "Details",
 	"dinner_route": "Dinner-Route",
-	"dinner_route_geocoding_warning": "Die Route kann nicht vollständig dargestellt werden, da es mindestens einen Standort gibt der nicht aufgelöst werden konnte.",
+	"dinner_route_geocoding_warning": "Die Darstellung ist nicht vollständig, da folgende Standorte nicht aufgelöst werden konnten: ",
 	"distance": "Entfernung",
 	"donate": "Spenden",
 	"donate_continue": "Weiter zum Spenden",

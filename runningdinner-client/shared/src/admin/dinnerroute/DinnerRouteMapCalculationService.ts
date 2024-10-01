@@ -148,7 +148,6 @@ export function calculateDinnerRouteMapData(settings: DinnerRouteMapDataCalculat
   const dinnerRouteMapEntries = new Array<DinnerRouteTeamMapEntry>();
 
   let centerPosition;
-  let showWarnings = false;
 
   const isSingleDinnerRouteView = allDinnerRoutes.length === 1;
   const mealTypeMappings = buildMealTypeMappings(meals);
@@ -162,13 +161,19 @@ export function calculateDinnerRouteMapData(settings: DinnerRouteMapDataCalculat
     };
   }
 
+  const teamsWithUnresolvedGeocodings = new Array<DinnerRouteTeam>();
+
   for (let i = 0; i < allDinnerRoutes.length; i++) {
     const dinnerRoute = allDinnerRoutes[i];
 
     const entriesForRoute = calculateDinnerRouteMapEntry(dinnerRoute, dinnerRouteTeamsWithGeocodes, afterPartyLocationMapEntry, mealTypeMappings, isSingleDinnerRouteView);
     if (entriesForRoute.length === 0) {
-      showWarnings = true;
+      teamsWithUnresolvedGeocodings.push(...dinnerRoute.teams.filter(team => dinnerRoute.currentTeam.teamNumber === team.teamNumber));
       continue;
+    } else if (isSingleDinnerRouteView && dinnerRouteMapEntries.length < dinnerRoute.teams.length) {
+      // Get DinnerRoute Teams that are not contained in dinnerRouteMapEntries
+      const teamsWithoutDinnerRouteMapEntry = dinnerRoute.teams.filter(team => !entriesForRoute.some(entry => entry.teamNumber === team.teamNumber));
+      teamsWithUnresolvedGeocodings.push(...teamsWithoutDinnerRouteMapEntry);
     }
     entriesForRoute.forEach(entry => dinnerRouteMapEntries.push(entry));
 
@@ -183,7 +188,7 @@ export function calculateDinnerRouteMapData(settings: DinnerRouteMapDataCalculat
     dinnerRouteMapEntries,
     afterPartyLocationMapEntry,
     centerPosition: centerPosition || { lat: 0, lng: 0 },
-    showWarnings
+    teamsWithUnresolvedGeocodings
   };
 }
 

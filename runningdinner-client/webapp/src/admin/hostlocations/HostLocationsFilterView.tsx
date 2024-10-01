@@ -5,17 +5,10 @@ import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry, DinnerRouteTeam, Fullname, isAfterPartyLocationDefined } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry, isAfterPartyLocationDefined } from "@runningdinner/shared";
 import { TitleBar } from "./TitleBar";
 import { useTranslation } from "react-i18next";
-
-function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
-  if (includeHostFullname) {
-    return <>Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
-  } else {
-    return <>Team #{team.teamNumber} ({team.meal.label})</>;
-  }
-}
+import { getTeamLabel } from "../../common/dinnerroute";
 
 type HostLocationsFilterViewProps = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];

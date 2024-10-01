@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/system";
-import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, MealType, TeamNr, Time, getFullname, isArrayEmpty, isDarkColor, isStringNotEmpty } from "@runningdinner/shared";
+import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, MealType, Team, TeamNr, Time, getFullname, isArrayEmpty, isArrayNotEmpty, isDarkColor, isStringNotEmpty, useDisclosure } from "@runningdinner/shared";
 import { SmallTitle, Span, Subtitle } from "../theme/typography/Tags";
 import { uniq } from "lodash-es";
 import LinkExtern from "../theme/LinkExtern";
@@ -25,6 +25,14 @@ export const TeamCardDetailRowMarginBottom = styled('div')( {
   mb: 1
 });
 
+
+export function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
+  if (includeHostFullname) {
+    return <>Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} /></>;
+  } else {
+    return <>Team #{team.teamNumber} ({team.meal.label})</>;
+  }
+}
 
 interface TeamCardDetailsProps extends DinnerRouteTeam {
   isCurrentTeam: boolean;
@@ -73,17 +81,42 @@ export function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTea
   )
 }
 
-export function WarningAlert() {
+type WarningAlertProps = {
+  teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
+};
+
+export function WarningAlert({teamsWithUnresolvedGeocodings}: WarningAlertProps) {
 
   const {t} = useTranslation('common');
 
+  const show = isArrayNotEmpty(teamsWithUnresolvedGeocodings);
+  const {isOpen, close, open} = useDisclosure(show);
+
+  useEffect(() => {
+    if (show) {
+      open();
+    }
+    // eslint-disable-next-line
+  }, [show]);
+
+  if (!show) {
+    return null;
+  }
+
   return (
-    <Box mt={2} mb={2}>
-      <Alert severity="warning" variant="outlined">
-        <AlertTitle>{t('attention')}</AlertTitle>
-          {t('dinner_route_geocoding_warning')}
-        </Alert>
-    </Box>
+    <>
+    { isOpen &&
+      <Box mt={2} mb={2}>
+        <Alert severity="warning" variant="outlined"  onClose={close} >
+          <AlertTitle>{t('attention')}</AlertTitle>
+            {t('dinner_route_geocoding_warning')}
+            <ul>
+              { teamsWithUnresolvedGeocodings.map(team => <li key={team.teamNumber}>{getTeamLabel(team, true)}</li>) }
+            </ul>
+          </Alert>
+      </Box>
+    }
+    </>
   );
 }
 

@@ -1,7 +1,7 @@
 import { Box, Chip, CircularProgress, Divider, Fab, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, Switch, SxProps, Typography } from "@mui/material";
 import { TitleBar } from "./TitleBar";
 import { Trans, useTranslation } from "react-i18next";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData } from "@runningdinner/shared";
 import { SmallTitle, Span } from "../../common/theme/typography/Tags";
 import { BaseAdminIdProps, TeamDistanceCluster } from "@runningdinner/shared";
 import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
@@ -11,17 +11,20 @@ import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { Virtuoso } from "react-virtuoso";
 import React from "react";
 import { CancelledTeamMember } from "../teams/CancelledTeamMember";
+import { WarningAlert } from "../../common/dinnerroute";
 
 type DinnerRouteOverviewSettingsViewProps = {
-  dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
+  dinnerRouteMapData: DinnerRouteMapData;
 } & BaseAdminIdProps;
 
 
-export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapEntries}: DinnerRouteOverviewSettingsViewProps) {
+export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: DinnerRouteOverviewSettingsViewProps) {
 
   const {t} = useTranslation(['common', 'admin']);
   const {dispatch, state} = useDinnerRouteOverviewContext();
   const {mealFilterOptions, mealFilter, afterPartyLocation} = state;
+
+  const {dinnerRouteMapEntries, teamsWithUnresolvedGeocodings} = dinnerRouteMapData;
 
   const [distanceRange, setDistanceRange] = useState(0);
   const [showRouteDistances, setShowRouteDistances] = useState(false);
@@ -77,7 +80,9 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapEntries}
 
         <Box p={2}>
 
-        <Box>
+          <WarningAlert teamsWithUnresolvedGeocodings={teamsWithUnresolvedGeocodings}/>
+
+          <Box>
             <SmallTitle>{t("admin:dinner_route_hosts_near_distance")}</SmallTitle>
             <Box px={2}>
               <Slider aria-label={t("common:distance")}
@@ -136,6 +141,7 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapEntries}
           </Box>
 
           <Divider sx={{ mb: 3, mt: 4 }}/>
+
           <Box>
             <FormGroup>
               <FormControlLabel 
