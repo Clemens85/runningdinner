@@ -217,21 +217,25 @@ const MapEntryPin = styled("div", {
   }
 }));
 
+export function getMealTypeIcon(mealType: MealType) {
+  if (mealType === MealType.APPETIZER) {
+    return <SoupKitchenIcon sx={{ fontSize: 16 }}/>;
+  } else if (mealType === MealType.DESSERT) {
+    return <IcecreamIcon sx={{ fontSize: 16 }} />;
+  }
+  return <DinnerDiningIcon sx={{ fontSize: 16 }}/>;
+}
+
+export function getAfterPartyLocationIcon() {
+  return <LocalBarIcon sx={{ fontSize: 16 }} />;
+}
+
 export function TeamHostMarker({team, isCurrentTeam, zIndex = 1}: TeamHostMarkerProps) {
   
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [open, setOpen] = useState(false);
 
   // const glyphColor = isDarkColor(team.color) ? '#fff' : '#000';
-
-  function getMealTypeIcon(mealType: MealType) {
-    if (mealType === MealType.APPETIZER) {
-      return <SoupKitchenIcon sx={{ fontSize: 16 }}/>;
-    } else if (mealType === MealType.DESSERT) {
-      return <IcecreamIcon sx={{ fontSize: 16 }} />;
-    }
-    return <DinnerDiningIcon sx={{ fontSize: 16 }}/>;
-  }
 
   return (
     <>
@@ -298,7 +302,7 @@ export function AfterPartyLocationMarker(afterPartyLocationMapEntry: AfterPartyL
         position={{ lat: position.lat!, lng: position.lng! }}> 
           {/* @ts-ignore */}
           <MapEntryPin teamColor={color}>
-            <LocalBarIcon sx={{ fontSize: 16 }} />
+            {getAfterPartyLocationIcon()}
             {getMarkerLabel(title)}
           </MapEntryPin>
 

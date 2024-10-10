@@ -96,11 +96,13 @@
 	"gender_female": "Weiblich",
 	"gender_male": "Männlich",
 	"gender_unknown": "Geschlecht nicht bekannt",
+	"general": "Allgemein",
 	"generic_error_label": "Es ist ein unbekannter Fehler aufgetreten",
 	"gluten": "Glutenfrei",
 	"guests": "Gäste",
 
 	"headline_participantlist": "Teilnehmerliste",
+	"help": "Hilfe",
 	"hidden_link": "Geheimer Link",
 	"hidden_link_text": "Geheimer Link zur Event-Registrierung:",
 	"host": "Gastgeber",

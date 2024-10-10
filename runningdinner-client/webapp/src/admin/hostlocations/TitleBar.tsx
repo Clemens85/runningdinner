@@ -1,7 +1,8 @@
 import { AppBar, IconButton, styled, Toolbar, Typography } from "@mui/material";
 import ExpandCircleDownOutlinedIcon from '@mui/icons-material/ExpandCircleDownOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { CallbackHandler } from "@runningdinner/shared";
+import { CallbackHandler, useDisclosure } from "@runningdinner/shared";
+import { DinnerRouteOverviewHelpDialog } from "./DinnerRouteOverviewHelpDialog";
 
 export type TitleBarProps = {
   onToggleMinize: CallbackHandler;
@@ -16,18 +17,18 @@ const ToolbarSmall = styled(Toolbar)(({}) => ({
 
 export function TitleBar({onToggleMinize, title}: TitleBarProps) {
 
-  function handleShowHelp() {
-    // TODO
-  }
+  const {open, isOpen, close} = useDisclosure();
+
 
   return (
+    <>
     <AppBar sx={{ position: 'relative', color: '#fff', backgroundColor: 'primary.main' }}>
       <ToolbarSmall data-testid={title}>
         <Typography variant="h6" sx={{ ml: 0, flex: 1 }}>{title}</Typography>
         <IconButton
           edge="end"
           color="inherit"
-          onClick={handleShowHelp}
+          onClick={open}
           aria-label="help"
           size="large">
             <HelpOutlineIcon />
@@ -42,5 +43,7 @@ export function TitleBar({onToggleMinize, title}: TitleBarProps) {
         </IconButton>
       </ToolbarSmall>
     </AppBar>
+    { isOpen && <DinnerRouteOverviewHelpDialog onClose={close} /> }
+    </>
   );
 }

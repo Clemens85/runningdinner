@@ -97,11 +97,13 @@
 	"gender_female": "Female",
 	"gender_male": "Male",
 	"gender_unknown": "Unknown gender",
+	"general": "General",
 	"generic_error_label": "There occurred an unexpected error",
 	"gluten": "Gluten free",
 	"guests": "Guests",
 
 	"headline_participantlist": "Participants",
+	"help": "Help",
 	"hidden_link": "Hidden link",
 	"hidden_link_text": "Hidden link for registration:",
 	"host": "Host",
