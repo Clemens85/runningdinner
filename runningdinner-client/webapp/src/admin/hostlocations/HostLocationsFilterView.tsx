@@ -22,6 +22,7 @@ const MinimizedFab = styled(Fab)({
   right: 80,
   minWidth: 100,
   position: 'fixed',
+  zIndex: 1
 });
 
 export function HostLocationsFilterMinimizedButton() {
@@ -67,7 +68,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
     position: 'fixed',
     minWidth: paperWidth,
     maxWidth: 280,
-    zIndex: 10001
+    zIndex: 10
   };
 
   function handleMinimizeFilterView() {

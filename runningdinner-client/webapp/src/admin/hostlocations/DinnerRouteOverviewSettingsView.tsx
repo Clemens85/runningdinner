@@ -42,7 +42,7 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
     position: 'fixed',
     minWidth: 300,
     maxWidth: isMobileDevice ? 360 : 480,
-    zIndex: 10001
+    zIndex: 10
   };
 
   function handleMinimizeView() {
@@ -314,6 +314,7 @@ const MinimizedFab = styled(Fab)({
   right: 'autp',
   minWidth: 100,
   position: 'fixed',
+  zIndex: 1
 });
 
 export function DinnerRouteOverviewSettingsMinimizedButton() {
