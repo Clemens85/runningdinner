@@ -1,4 +1,4 @@
-import { Chip, Dialog, DialogContent, Divider, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from "@mui/material";
+import { Chip, Dialog, DialogContent, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery } from "@mui/material";
 import { styled, useTheme } from "@mui/system";
 import { CallbackHandler, findEntityById, isAfterPartyLocationDefined, useDinnerRouteOverviewContext } from "@runningdinner/shared";
 import { Trans, useTranslation } from "react-i18next";
