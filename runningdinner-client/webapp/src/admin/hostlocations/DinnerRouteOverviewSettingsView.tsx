@@ -34,12 +34,15 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
 
   const {data: routeDistances} = useCalculateRouteDistances(adminId, dinnerRouteMapEntries);
   
+  const isMobileDevice = useIsMobileDevice();
+
   const settingsPaperStyles: SxProps = {
     top: 80,
-    left: 40,
+    left: isMobileDevice ? 0 : 40,
     position: 'fixed',
     minWidth: 300,
-    maxWidth: 480
+    maxWidth: isMobileDevice ? 360 : 480,
+    zIndex: 10001
   };
 
   function handleMinimizeView() {
@@ -114,7 +117,7 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
 
           <Box>
             <SmallTitle>{t("admin:dinner_route_filter_meal_routes_title")}</SmallTitle>
-            <FormControl variant="outlined" sx={{ mt: 1, minWidth: '400px' }} size="small">
+            <FormControl variant="outlined" sx={{ mt: 1, minWidth: isMobileDevice ? '340px' : '400px' }} size="small">
               <InputLabel>{filterMealsLabel}</InputLabel>
               <Select
                 variant="outlined"
@@ -163,22 +166,6 @@ type RouteDistancesViewProps = {
   routeDistances: DinnerRouteWithDistances[] | undefined;
 };
 
-
-// const GridWithLine = styled(Grid)( {
-//   position: 'relative',
-//   padding: "0 10px",
-//   '&:before': {
-//     content: '""',
-//     position: "absolute",
-//     top: "50%",
-//     left: 0,
-//     right: 0,
-//     height: "1px",
-//     backgroundColor: "#000",
-//     transform: "translateY(-50%)",
-//     zIndex: -1
-//   }
-// });
 
 const HrGreenLine = styled('hr')(({theme}) => ({
   marginTop: '-3px', 
@@ -301,10 +288,18 @@ function TeamClusterItem(team: DinnerRouteTeamMapEntry) {
 
   const {t} = useTranslation('common');
 
+  const isMobileDevice = useIsMobileDevice();
+
   return (
     <Box sx={{ color: team.color, margin: '0 auto', border: '2px solid', borderRadius: '8px', borderColor: team.color, padding: "4px" }}>
       <Span>
-        Team #{team.teamNumber} {t("common:at_time")} <Time date={team.meal.time} />
+        Team #{team.teamNumber} {!isMobileDevice && <>{t("common:at_time")} <Time date={team.meal.time} /></> }
+        { isMobileDevice && 
+          <>
+            <br />
+            <Time date={team.meal.time} />
+          </>
+        }
       </Span>
       <Span>{team.meal.label}</Span>
     </Box>
@@ -315,7 +310,6 @@ function TeamClusterItem(team: DinnerRouteTeamMapEntry) {
 const MinimizedFab = styled(Fab)({
   margin: 0,
   top: 'auto',
-  // left: 40,
   bottom: 40,
   right: 'autp',
   minWidth: 100,
@@ -348,3 +342,19 @@ export function DinnerRouteOverviewSettingsMinimizedButton() {
     </MinimizedFab>
   )
 }
+
+// const GridWithLine = styled(Grid)( {
+//   position: 'relative',
+//   padding: "0 10px",
+//   '&:before': {
+//     content: '""',
+//     position: "absolute",
+//     top: "50%",
+//     left: 0,
+//     right: 0,
+//     height: "1px",
+//     backgroundColor: "#000",
+//     transform: "translateY(-50%)",
+//     zIndex: -1
+//   }
+// });

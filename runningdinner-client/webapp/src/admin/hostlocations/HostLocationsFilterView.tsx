@@ -66,7 +66,8 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
     right: isMobileDevice ? 5 : 50,
     position: 'fixed',
     minWidth: paperWidth,
-    maxWidth: 280
+    maxWidth: 280,
+    zIndex: 10001
   };
 
   function handleMinimizeFilterView() {
