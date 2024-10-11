@@ -1,9 +1,11 @@
 import {
+  buildMealTypeMappings,
   DinnerRoute,
   DinnerRouteTeam,
   isAfterPartyLocationDefined,
   isStringNotEmpty,
   Meal,
+  MealType,
   TeamStatus,
 } from "@runningdinner/shared";
 import {Box, Grid, Paper, Typography} from '@mui/material';
@@ -11,7 +13,7 @@ import {PageTitle, Subtitle} from '../theme/typography/Tags';
 import {useTranslation} from "react-i18next";
 import {TextViewHtml} from "../TextViewHtml";
 import {SuperSEO} from "react-super-seo";
-import { AfterPartyLocationCard, TeamCardDetails } from './DinnerRouteComponents';
+import { AfterPartyLocationCard, getMealTypeIcon, TeamCardDetails } from './DinnerRouteComponents';
 import { DinnerRouteMapView } from './DinnerRouteMapView';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { GOOGLE_MAPS_KEY } from '../maps';
@@ -25,11 +27,14 @@ export default function DinnerRouteView({dinnerRoute, meals}: DinnerRouteProps) 
 
   const {mealSpecificsOfGuestTeams, teams, afterPartyLocation} = dinnerRoute;
 
-  const teamCardNodes = teams.map((team, index) =>
+  const mealTypeMappings = buildMealTypeMappings(meals);
+
+  const teamCardNodes = teams.map((team) =>
     <Grid item xs={12} md={4} key={team.teamNumber}>
       <TeamCard dinnerRouteTeam={team}
                 isCurrentTeam={team.teamNumber === dinnerRoute.currentTeam.teamNumber}
-                positionInRoute={index + 1}/>
+                mealType={mealTypeMappings[team.meal.id || '']}
+                />
     </Grid>
   );
 
@@ -64,12 +69,12 @@ export default function DinnerRouteView({dinnerRoute, meals}: DinnerRouteProps) 
 
 interface TeamCardProps {
   dinnerRouteTeam: DinnerRouteTeam;
-  positionInRoute: number;
+  mealType: MealType
   isCurrentTeam: boolean;
 }
 
 
-function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardProps) {
+function TeamCard({dinnerRouteTeam, mealType, isCurrentTeam}: TeamCardProps) {
 
   const {t} = useTranslation(['common']);
   const isCancelled = dinnerRouteTeam.status === TeamStatus.CANCELLED;
@@ -82,7 +87,7 @@ function TeamCard({dinnerRouteTeam, positionInRoute, isCurrentTeam}: TeamCardPro
   return (
     <>
       <PageTitle color={teamTitleColor}>
-        {/* ({positionInRoute})  */}{dinnerRouteTeam.meal.label}
+        {getMealTypeIcon(mealType, 24)} {dinnerRouteTeam.meal.label}
         { isCurrentTeam && <Box component={"span"} pl={1}>
                               <Typography variant={"body2"} component={"span"}>{t('common:with_you')}</Typography>
                            </Box> }

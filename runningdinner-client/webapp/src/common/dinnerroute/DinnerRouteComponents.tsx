@@ -161,7 +161,8 @@ export function CurrentPositionMarker({onError}: CurrentPositionMarkerProps) {
 export function AfterPartyLocationCard(afterPartyLocation: AfterPartyLocation) {
   return (
     <Span>
-      <strong><AfterPartyLocationHeadline {...afterPartyLocation} />: </strong>
+      {getAfterPartyLocationIcon(12)} 
+      <strong style={{ paddingLeft: '4px' }}><AfterPartyLocationHeadline {...afterPartyLocation} />: </strong>
       { isStringNotEmpty(afterPartyLocation.addressName) && <>{afterPartyLocation.addressName}, </> }
       <>{afterPartyLocation.street} {afterPartyLocation.streetNr}, {afterPartyLocation.zip} {afterPartyLocation.cityName}</>
       <>{ isStringNotEmpty(afterPartyLocation.addressRemarks) && <><br />{afterPartyLocation.addressRemarks}</> }</>
@@ -217,17 +218,17 @@ const MapEntryPin = styled("div", {
   }
 }));
 
-export function getMealTypeIcon(mealType: MealType) {
+export function getMealTypeIcon(mealType: MealType, fontSize: number = 16) {
   if (mealType === MealType.APPETIZER) {
-    return <SoupKitchenIcon sx={{ fontSize: 16 }}/>;
+    return <SoupKitchenIcon sx={{ fontSize }}/>;
   } else if (mealType === MealType.DESSERT) {
-    return <IcecreamIcon sx={{ fontSize: 16 }} />;
+    return <IcecreamIcon sx={{ fontSize }} />;
   }
-  return <DinnerDiningIcon sx={{ fontSize: 16 }}/>;
+  return <DinnerDiningIcon sx={{ fontSize }}/>;
 }
 
-export function getAfterPartyLocationIcon() {
-  return <LocalBarIcon sx={{ fontSize: 16 }} />;
+export function getAfterPartyLocationIcon(fontSize: number = 16) {
+  return <LocalBarIcon sx={{ fontSize }} />;
 }
 
 export function TeamHostMarker({team, isCurrentTeam, zIndex = 1}: TeamHostMarkerProps) {
