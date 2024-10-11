@@ -13,6 +13,7 @@ import React from "react";
 import { CancelledTeamMember } from "../teams/CancelledTeamMember";
 import { WarningAlert } from "../../common/dinnerroute";
 import { useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
+import { ProgressBar } from "../../common/ProgressBar";
 
 type DinnerRouteOverviewSettingsViewProps = {
   dinnerRouteMapData: DinnerRouteMapData;
@@ -30,7 +31,7 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
   const [distanceRange, setDistanceRange] = useState(0);
   const [showRouteDistances, setShowRouteDistances] = useState(false);
 
-  const {data: teamDistanceClusters} = useCalculateTeamDistanceClusters(adminId, dinnerRouteMapEntries, distanceRange);
+  const {data: teamDistanceClusters, isPending: teamDistanceClustersLoading} = useCalculateTeamDistanceClusters(adminId, dinnerRouteMapEntries, distanceRange);
 
   const {data: routeDistances} = useCalculateRouteDistances(adminId, dinnerRouteMapEntries);
   
@@ -110,6 +111,7 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
             { !teamDistanceClusters && <TeamDistanceClustersLoadingView /> } 
             { teamDistanceClusters && <TeamDistanceClusterView teamDistanceClusters={teamDistanceClusters} 
                                                                dinnerRouteMapEntries={dinnerRouteMapEntries}
+                                                               loading={teamDistanceClustersLoading}
                                                                distanceRange={distanceRange}/> }
           </Box>
 
@@ -233,36 +235,37 @@ type TeamDistanceClusterViewProps = {
   teamDistanceClusters: TeamDistanceCluster[];
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
   distanceRange: number;
+  loading?: boolean;
 };
-function TeamDistanceClusterView({teamDistanceClusters, dinnerRouteMapEntries, distanceRange}: TeamDistanceClusterViewProps) {
+function TeamDistanceClusterView({teamDistanceClusters, dinnerRouteMapEntries, distanceRange, loading}: TeamDistanceClusterViewProps) {
 
   const {t} = useTranslation('admin');
+
+  const isMobileDevice = useIsMobileDevice();
   
   if (teamDistanceClusters.length === 0) {
     return <Box sx={{ my: 2 }}><small>{t("admin:dinner_route_hosts_near_distance_not_found", {distanceRange})}</small></Box>;
   }
 
-  function buildClusterKey(cluster: TeamDistanceCluster): string {
-    return cluster.teams.map(team => team.teamNumber).join("-");
+  let heightInPx = 100;
+  if (!isMobileDevice && teamDistanceClusters.length > 2) {
+    heightInPx = 200;
   }
 
   return (
-    <Box sx={{ height: "100px" }}>
-      <Virtuoso 
-        data={teamDistanceClusters}
-        itemContent={(_, cluster) => 
-          <Box sx={{ my: 2 }}>
-            <SingleTeamClusterView {...enhanceTeamDistanceClusterWithDinnerRouteMapEntries(cluster, dinnerRouteMapEntries)} />
-          </Box>
-        }>
-      </Virtuoso>
-
-    {/* { teamDistanceClusters.map(cluster => 
-      <Box key={buildClusterKey(cluster)} sx={{ my: 2 }}>
-        <SingleTeamClusterView {...enhanceTeamDistanceClusterWithDinnerRouteMapEntries(cluster, dinnerRouteMapEntries)} />
+    <>
+      <ProgressBar showLoadingProgress={!!loading} />
+      <Box sx={{ height: `${heightInPx}px` }}>
+        <Virtuoso 
+          data={teamDistanceClusters}
+          itemContent={(_, cluster) => 
+            <Box sx={{ my: 2 }}>
+              <SingleTeamClusterView {...enhanceTeamDistanceClusterWithDinnerRouteMapEntries(cluster, dinnerRouteMapEntries)} />
+            </Box>
+          }>
+        </Virtuoso>
       </Box>
-    )} */}
-    </Box>
+    </>
   );
 }
 
