@@ -247,13 +247,22 @@ function TeamDistanceClusterView({teamDistanceClusters, dinnerRouteMapEntries, d
   }
 
   return (
-    <>
-    { teamDistanceClusters.map(cluster => 
+    <Box sx={{ height: "100px" }}>
+      <Virtuoso 
+        data={teamDistanceClusters}
+        itemContent={(_, cluster) => 
+          <Box sx={{ my: 2 }}>
+            <SingleTeamClusterView {...enhanceTeamDistanceClusterWithDinnerRouteMapEntries(cluster, dinnerRouteMapEntries)} />
+          </Box>
+        }>
+      </Virtuoso>
+
+    {/* { teamDistanceClusters.map(cluster => 
       <Box key={buildClusterKey(cluster)} sx={{ my: 2 }}>
         <SingleTeamClusterView {...enhanceTeamDistanceClusterWithDinnerRouteMapEntries(cluster, dinnerRouteMapEntries)} />
       </Box>
-    )}
-    </>
+    )} */}
+    </Box>
   );
 }
 
