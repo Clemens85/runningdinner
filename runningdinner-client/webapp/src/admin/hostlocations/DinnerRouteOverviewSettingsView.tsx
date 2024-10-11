@@ -12,6 +12,7 @@ import { Virtuoso } from "react-virtuoso";
 import React from "react";
 import { CancelledTeamMember } from "../teams/CancelledTeamMember";
 import { WarningAlert } from "../../common/dinnerroute";
+import { useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 
 type DinnerRouteOverviewSettingsViewProps = {
   dinnerRouteMapData: DinnerRouteMapData;
@@ -314,7 +315,7 @@ function TeamClusterItem(team: DinnerRouteTeamMapEntry) {
 const MinimizedFab = styled(Fab)({
   margin: 0,
   top: 'auto',
-  left: 40,
+  // left: 40,
   bottom: 40,
   right: 'autp',
   minWidth: 100,
@@ -326,6 +327,8 @@ export function DinnerRouteOverviewSettingsMinimizedButton() {
   const {dispatch} = useDinnerRouteOverviewContext();
   const {t} = useTranslation('common');
 
+  const isMobileDevice = useIsMobileDevice();
+
   function handleMaximizeView() {
     dispatch({ 
       type: DinnerRouteOverviewActionType.UPDATE_SETTINGS_VIEW_MINIMIZED, 
@@ -334,7 +337,12 @@ export function DinnerRouteOverviewSettingsMinimizedButton() {
   }
 
   return (
-    <MinimizedFab variant="extended" color="primary" onClick={handleMaximizeView}>
+    <MinimizedFab 
+      variant="extended" 
+      color="primary" 
+      onClick={handleMaximizeView}
+      sx={{ left: isMobileDevice ? 0 : 40 }}
+      >
       {t('common:settings')}
       <OpenInFullRoundedIcon sx={{ ml: 1 }} />
     </MinimizedFab>
