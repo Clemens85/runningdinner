@@ -1,5 +1,9 @@
 const NewsMessages_de: any = {
 
+
+  news_title_20241011: 'Dinner Routen Gastgeber Übersicht erweitert',
+  news_content_20241011: 'Die Gesamt-Übersicht über alle Routen im Teams-Bereich wurde um einige nützliche Zusatz-Features erweitert.',
+
   news_title_20240702: 'Automatische Benachrichtigung bevor Dinner gelöscht wird',
   news_content_20240702: 'Ab jetzt bekommt ihr mit ein paar Tagen Vorlauf eine Benachrichtigung, bevor euer Dinner nach Ablauf automatisch gelöscht wird.',
 

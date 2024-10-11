@@ -1,13 +1,9 @@
 package org.runningdinner.selfservice;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.google.common.base.MoreObjects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
@@ -15,10 +11,7 @@ import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.event.publisher.EventPublisher;
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantService;
-import org.runningdinner.participant.Team;
-import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.*;
 import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
 import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTeamTO;
@@ -31,18 +24,21 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import com.google.common.base.MoreObjects;
+import java.util.*;
 
 @Service
 public class SelfAdminService {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(SelfAdminService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SelfAdminService.class);
   
   @Autowired
   private TeamService teamService;
   
   @Autowired
   private ParticipantService participantService;
+
+  @Autowired
+  private DinnerRouteService dinnerRouteService;
   
   @Autowired
   private RunningDinnerService runningDinnerService;
@@ -100,7 +96,7 @@ public class SelfAdminService {
     
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(selfAdministrationId);
     
-    DinnerRouteTO result = teamService.findDinnerRoute(runningDinner.getAdminId(), teamId);
+    DinnerRouteTO result = dinnerRouteService.findDinnerRoute(runningDinner.getAdminId(), teamId);
     
     Optional<Team> teamOfParticipant = result.getTeams()
                                         .stream()
@@ -124,7 +120,7 @@ public class SelfAdminService {
    
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(selfAdministrationId);
     participantService.findParticipantById(runningDinner.getAdminId(), participantId); // Checks whether this ID really exists!
-    return new SelfAdminSessionDataTO(selfAdministrationId, runningDinner.getLanguageCode());
+    return new SelfAdminSessionDataTO(selfAdministrationId, runningDinner.getLanguageCode(), MealTO.fromMeals(runningDinner.getConfiguration().getMealClasses()));
   }
   
   protected void emitTeamsHostChangedByParticipantEvent(List<Team> teams, RunningDinner runningDinner, Participant executingParticipant, String comment) {
@@ -153,11 +149,11 @@ public class SelfAdminService {
   
   private static class SelfAdminContext {
     
-    private RunningDinner runningDinner;
+    private final RunningDinner runningDinner;
     
-    private Participant executingParticipant;
+    private final Participant executingParticipant;
     
-    private Team team;
+    private final Team team;
 
     public SelfAdminContext(RunningDinner runningDinner, Participant executingParticipant, Team team) {
       this.runningDinner = runningDinner;

@@ -2,7 +2,7 @@ import { BackendConfig } from "../BackendConfig";
 import axios from "axios";
 import {cloneDeep} from 'lodash-es';
 import {isSameEntity} from "../Utils";
-import {DinnerRoute, DinnerRouteList, Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo} from "../types";
+import { Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo} from "../types";
 import {getFullname} from "./ParticipantService";
 
 export async function findTeamsAsync(adminId: string): Promise<Array<Team>> {
@@ -69,18 +69,6 @@ export async function findTeamMeetingPlanAsync(adminId: string, teamId: string):
 export async function cancelTeamMemberAsync(adminId: string, teamId: string, teamMemberId: string): Promise<Team> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/team/${teamId}/${teamMemberId}/cancel`);
   const response = await axios.put(url);
-  return response.data;
-}
-
-export async function findDinnerRouteByAdminIdAndTeamIdAsync(adminId: string, teamId: string): Promise<DinnerRoute> {
-  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/team/${teamId}/dinnerroute`);
-  const response = await axios.get(url);
-  return response.data;
-}
-
-export async function findAllDinnerRoutesByAdminIdAsync(adminId: string): Promise<DinnerRouteList> {
-  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/dinnerroutes`);
-  const response = await axios.get(url);
   return response.data;
 }
 

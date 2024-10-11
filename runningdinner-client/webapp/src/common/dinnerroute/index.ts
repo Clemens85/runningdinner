@@ -1,4 +1,4 @@
 export * from './DinnerRouteView';
 export * from './DinnerRouteComponents';
 export * from './useGetGeocodePositionsOfTeamHosts';
-export * from './DinnerRouteMapCalculationService';
+export * from '@runningdinner/shared/src/admin/dinnerroute/DinnerRouteMapCalculationService';

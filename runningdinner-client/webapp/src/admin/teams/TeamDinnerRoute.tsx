@@ -23,5 +23,5 @@ export default function TeamDinnerRoute() {
   if (!isQuerySucceeded(dinnerRouteQuery)) {
     return <FetchProgressBar {...dinnerRouteQuery} />
   }
-  return <DinnerRouteView dinnerRoute={dinnerRouteQuery.data!} />
+  return <DinnerRouteView dinnerRoute={dinnerRouteQuery.data!} meals={runningDinner.options.meals} />
 }

@@ -1,5 +1,8 @@
 const NewsMessages_en: any = {
 
+  news_title_20241011: 'Enhanced Dinner Route Locations Overview',
+  news_content_20241011: 'The complete overview of all routes in the teams area has been enhanced to include some useful additional features.',
+
   news_title_20240702: 'Automatic notification before dinner is deleted',
   news_content_20240702: 'From now on, you will receive a notification a few days in advance before your dinner is automatically deleted after it expires.',
 

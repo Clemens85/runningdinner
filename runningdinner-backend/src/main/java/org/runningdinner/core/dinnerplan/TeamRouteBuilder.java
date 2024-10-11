@@ -1,21 +1,13 @@
 package org.runningdinner.core.dinnerplan;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.MealClassSorter;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class TeamRouteBuilder {
 
@@ -87,18 +79,20 @@ public final class TeamRouteBuilder {
 		final Participant hostTeamMember = team.getHostTeamMember();
   	
   	List<String> result = new ArrayList<String>(2); 
-  	if (StringUtils.isNotEmpty(hostTeamMember.getMobileNumber())) {
+  	if (hostTeamMember != null && StringUtils.isNotEmpty(hostTeamMember.getMobileNumber())) {
   		result.add(hostTeamMember.getMobileNumber());
   	}
 
-  	result.addAll(
-  			team.getTeamMembersOrdered()
+		List<Participant> teamMembersOrdered = team.getTeamMembersOrdered() != null ? team.getTeamMembersOrdered() : Collections.emptyList();
+
+		result.addAll(
+  			teamMembersOrdered
 					.stream()
 					.distinct()
 					.filter(teamMember -> !Objects.equals(teamMember, hostTeamMember))
 					.map(teamMember -> teamMember.getMobileNumber())
 					.filter(StringUtils::isNotEmpty)
-					.collect(Collectors.toList())
+					.toList()
 		);
   	
 		return result;

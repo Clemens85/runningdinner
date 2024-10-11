@@ -3,14 +3,15 @@ package org.runningdinner.participant;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
+import jakarta.persistence.*;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
 import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.geocoder.HasGeocodingResult;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -25,7 +26,8 @@ import java.util.UUID;
  */
 @Entity
 @Access(AccessType.FIELD)
-public class Participant extends RunningDinnerRelatedEntity implements Comparable<Participant>, HasTeamPartnerWishOriginator, HasContactInfo {
+public class Participant extends RunningDinnerRelatedEntity
+                         implements Comparable<Participant>, HasTeamPartnerWishOriginator, HasContactInfo, HasGeocodingResult {
 
   private static final long serialVersionUID = -8062709434676386371L;
 

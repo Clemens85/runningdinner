@@ -19,3 +19,4 @@ export * from "./messages/useFindMessageJobs";
 export * from "./SettingsService";
 export * from "./PaymentOptionsService";
 export * from "./dashboard";
+export * from './dinnerroute';

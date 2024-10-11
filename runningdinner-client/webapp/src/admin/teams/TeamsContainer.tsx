@@ -182,7 +182,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel, refetch}: TeamsProp
             { showListView &&
                 <>
                   <Grid item xs={12} md={isBigTablet ? 12 : 7} sx={{ textAlign: 'right' }}>
-                    <SendTeamMessagsDropdown adminId={adminId} />
+                    <DinnerRouteOverviewLinkButton adminId={adminId} />
                   </Grid>
                   <Grid item xs={12} md={isBigTablet ? 12 :5 } sx={{ textAlign: 'right' }}>
                     <TeamArrangementActionsButton adminId={adminId} />
@@ -235,10 +235,10 @@ function TeamsTitle({hasTeams}: TeamsTitleProps) {
 }
 
 
-interface SendMessagesDropdownProps {
+interface DinnerRouteOverviewLinkButtonProps {
   adminId: string;
 }
-function SendTeamMessagsDropdown({adminId}: SendMessagesDropdownProps) {
+function DinnerRouteOverviewLinkButton({adminId}: DinnerRouteOverviewLinkButtonProps) {
 
   const {t} = useTranslation('admin');
   const {generateHostLocationsPath} = useAdminNavigation();

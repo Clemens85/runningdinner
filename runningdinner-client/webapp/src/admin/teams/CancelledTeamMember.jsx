@@ -4,7 +4,7 @@ import {styled} from "@mui/material/styles";
 
 const CancelledTeamMemberText = styled('span')(({theme}) => ({
   color: theme.palette.secondary.main,
-  letterSpacing: "4px",
+  letterSpacing: "2px",
   textTransform: "uppercase"
 }));
 

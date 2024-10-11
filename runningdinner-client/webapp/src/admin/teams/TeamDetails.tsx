@@ -1,7 +1,6 @@
-import {Box, Button, Grid, Hidden, Paper} from "@mui/material";
+import {Box, Button, Divider, Grid, Hidden, Paper} from "@mui/material";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
-import FormFieldset from "../../common/theme/FormFieldset";
 import TeamSchedule from "./TeamSchedule";
 import {Span, Subtitle} from "../../common/theme/typography/Tags";
 import LinkAction from "../../common/theme/LinkAction";
@@ -155,21 +154,13 @@ export default function TeamDetails({team,
 
           { isCancelled ? <Box mt={2}><CancelledTeamMember /></Box>
               : <Box mt={2}>
-                  <Grid container>
-                    <Grid item xs={12}>
-                      <FormFieldset>{t('team_members')}</FormFieldset>
-                    </Grid>
-                  </Grid>
+                  <Divider><strong>{t('team_members')}</strong></Divider>
                   {teamMemberNodes}
                   <TeamHostInfo sessionData={sessionData} team={team} onOpenChangeTeamHostDialog={onOpenChangeTeamHostDialog}/>
                 </Box> }
 
           <Box mt={2}>
-            <Grid container>
-              <Grid item xs={12}>
-                <FormFieldset>{t('admin:team_schedule')}</FormFieldset>
-              </Grid>
-            </Grid>
+            <Divider><strong>{t('admin:team_schedule')}</strong></Divider>
             <Grid container>
               <Grid item xs={12}>
                 <TeamSchedule isTeamMeetingPlanLoading={findTeamMeetingPlanQuery.isPending}
