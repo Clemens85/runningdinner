@@ -48,6 +48,7 @@
 	"dinner_route_filter_from_meal_to_meal_help": "Route for teams that prepare <strong>{{ to }}</strong> and come from {{ from }}.",
 	"dinner_route_filter_team_guest_info_prefix": "Guest of ",
 	"dinner_route_hosts_near_distance": "Hosts with short distance to each other (in meters)",
+	"dinner_route_help_near_distance_title": "Hosts with short distance to each other",
 	"dinner_route_hosts_near_distance_not_found": "No teams found which are less than {{distanceRange}} m apart.",
 	"dinner_route_distances_show": "Show distances per route",
 	"dinner_route_help_intro_1": "Help, everything is so confusing!",
@@ -65,6 +66,7 @@
 	"dinner_route_help_distances_3": "The longest distance in each route is highlighted in <LongestDistance>color</LongestDistance>.",
 	"dinner_route_help_distances_4": "The display within a route is from left to right: ",
 	"dinner_route_help_distances_5": "The team to which the route applies is highlighted. Example: ",
+	"dinner_route_help_misc": "All distances are calculated as the crow flies using an approximation method. The actual distances may therefore differ. <br/>The overall route overview is not very mobile-friendly, so it is recommended to use at least a tablet.",
 
 	"event_cancel_button": "Cancel event finally",
 	"event_cancel_headline": "Cancel Running Dinner Event",

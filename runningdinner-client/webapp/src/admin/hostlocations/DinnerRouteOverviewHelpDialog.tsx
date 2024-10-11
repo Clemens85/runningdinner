@@ -33,8 +33,16 @@ export function DinnerRouteOverviewHelpDialog({onClose}: DinnerRouteOverviewHelp
     onClose();
   };
 
+  const dividerSxProps = {
+    my: 3,
+    mx: isMobileDevice ? 0 : 9
+  }
+
   return (
-    <Dialog onClose={handleClose} open={true} maxWidth={"md"}>
+    <Dialog onClose={handleClose} open={true} maxWidth={"md"} sx={{
+      ...fullWidthProps,
+      zIndex: 10002
+    }}>
       <DialogTitleCloseable onClose={handleClose}>{t("common:help")}</DialogTitleCloseable>
       <DialogContent>
         <Paragraph>
@@ -42,7 +50,7 @@ export function DinnerRouteOverviewHelpDialog({onClose}: DinnerRouteOverviewHelp
           {t("admin:dinner_route_help_intro_2")}
         </Paragraph>
 
-        <Divider sx={{ my: 3, mx: 9 }}><strong>{t("common:general")}</strong></Divider>
+        <Divider sx={dividerSxProps}><strong>{t("common:general")}</strong></Divider>
 
         <Paragraph>
           <Trans i18nKey="admin:dinner_route_help_filter" components={{ strong: <strong /> }} />
@@ -73,10 +81,10 @@ export function DinnerRouteOverviewHelpDialog({onClose}: DinnerRouteOverviewHelp
           }
         </List>
 
-        <Divider sx={{ my: 3, mx: 9 }}><strong>{t("admin:dinner_route_hosts_near_distance")}</strong></Divider>
+        <Divider sx={dividerSxProps}><strong>{t("admin:dinner_route_help_near_distance_title")}</strong></Divider>
         <Paragraph>{t("admin:dinner_route_help_near_distance")}</Paragraph>
 
-        <Divider sx={{ my: 3, mx: 9 }}><strong>{t("admin:dinner_route_filter_meal_routes_title")}</strong></Divider>
+        <Divider sx={dividerSxProps}><strong>{t("admin:dinner_route_filter_meal_routes_title")}</strong></Divider>
         <Paragraph>
           {t("admin:dinner_route_help_from_meal_to_meal_1")}<br/>
           <Trans i18nKey={"admin:dinner_route_help_from_meal_to_meal_2"}
@@ -89,7 +97,7 @@ export function DinnerRouteOverviewHelpDialog({onClose}: DinnerRouteOverviewHelp
                  components={{ strong: <strong/> }} />
         </Paragraph>
 
-        <Divider sx={{ my: 3, mx: 9 }}><strong>{t("admin:dinner_route_help_distances")}</strong></Divider>
+        <Divider sx={dividerSxProps}><strong>{t("admin:dinner_route_help_distances")}</strong></Divider>
         <Paragraph>
           {t("admin:dinner_route_help_distances_1")}<br/>
           {t("admin:dinner_route_help_distances_2")}<br/>
@@ -107,7 +115,10 @@ export function DinnerRouteOverviewHelpDialog({onClose}: DinnerRouteOverviewHelp
           {t("admin:dinner_route_help_distances_5")} <Chip label={`Team 1`} color={"primary"} variant={"filled"} sx={{ mr: 1, ml: 1}} /><br/>
         </Paragraph>
 
-        
+        <Divider sx={dividerSxProps}><strong>{t("common:misc")}</strong></Divider>
+        <Paragraph>
+          <Trans i18nKey={"admin:dinner_route_help_misc"} />
+        </Paragraph>
 
       </DialogContent>
       <DialogActionsPanel onOk={handleClose}
