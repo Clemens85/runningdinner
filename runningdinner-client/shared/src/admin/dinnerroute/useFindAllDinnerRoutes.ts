@@ -1,5 +1,5 @@
-import { findAllDinnerRoutesByAdminIdAsync } from "@runningdinner/shared";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { findAllDinnerRoutesByAdminIdAsync } from "./DinnerRouteService";
 
 export function useFindAllDinnerRoutes(adminId: string) {
   return useQuery({

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { BackendConfig } from "../../BackendConfig";
 import { DinnerRoute, GeocodedAddressEntityList, DinnerRouteList, TeamDistanceCluster, TeamDistanceClusterList, DinnerRouteWithDistances, DinnerRouteWithDistancesList } from "../../types";
+import { findEntityById, mapToGeocodedAddressEntityId } from "../..";
 
 export async function findDinnerRouteByAdminIdAndTeamIdAsync(adminId: string, teamId: string): Promise<DinnerRoute> {
   const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/teams/${teamId}`);
@@ -23,5 +24,21 @@ export async function calculateTeamDistanceClusters(adminId: string, addressEnti
 export async function calculateRouteDistances(adminId: string, addressEntityList: GeocodedAddressEntityList): Promise<DinnerRouteWithDistances[]> {
   const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/teams`);
   const response = await axios.put<DinnerRouteWithDistancesList>(url, addressEntityList);
-  return response.data?.dinnerRoutes || [];
+  const result = response.data?.dinnerRoutes || [];
+  return enrichDinnerRoutesWithGeocodingResults(result, addressEntityList);
+}
+
+function enrichDinnerRoutesWithGeocodingResults(dinnerRouteWithDistances: DinnerRouteWithDistances[], 
+                                                addressEntityList: GeocodedAddressEntityList) {
+
+  for (const route of dinnerRouteWithDistances) {
+    for (let i = 0; i < route.teams.length; i++) {
+      const team = route.teams[i];
+      const geocodingResult = findEntityById(addressEntityList.addressEntities, mapToGeocodedAddressEntityId(team));
+      if (geocodingResult) {
+        team.geocodingResult = geocodingResult;
+      }
+    }
+  }
+  return dinnerRouteWithDistances;
 }

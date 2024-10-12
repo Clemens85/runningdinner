@@ -1,6 +1,7 @@
-import { calculateRouteDistances, DinnerRouteTeam, DinnerRouteTeamMapEntry } from "@runningdinner/shared";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { buildAddressEntityIdsQueryKey, buildAddressEntityList } from "./useCalculateTeamDistanceClusters";
+import { DinnerRouteTeam, DinnerRouteTeamMapEntry } from "../../types";
+import { calculateRouteDistances } from "./DinnerRouteService";
 
 export function useCalculateRouteDistances(adminId: string, dinnerRouteMapEntries: DinnerRouteTeamMapEntry[] | DinnerRouteTeam[]) {
 
@@ -15,5 +16,3 @@ export function useCalculateRouteDistances(adminId: string, dinnerRouteMapEntrie
     enabled: addressEntityList.addressEntities?.length > 0
   });
 }
-
-  

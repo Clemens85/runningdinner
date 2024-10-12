@@ -1,16 +1,14 @@
-import { BaseRunningDinnerProps, isQuerySucceeded } from "@runningdinner/shared";
+import { BaseRunningDinnerProps, isQuerySucceeded, useCalculateTeamDistanceClusters, useFindAllDinnerRoutes } from "@runningdinner/shared";
 import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { APIProvider, Map} from "@vis.gl/react-google-maps";
 import { FetchProgressBar } from "../../common/FetchProgressBar";
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../../common/maps";
 import { AfterPartyLocationMarker, TeamHostMarker, WarningAlert, useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "../../common/dinnerroute";
-import { useFindAllDinnerRoutes } from "./useFindAllDinnerRoutes";
 import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from "./HostLocationsFilterView";
 import { BrowserTitle } from "../../common/mainnavigation/BrowserTitle";
 import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, DinnerRouteMapData, calculateDinnerRouteMapData, distinctDinnerRouteTeams, } from "@runningdinner/shared";
 import { DinnerRouteOverviewSettingsMinimizedButton, DinnerRouteOverviewSettingsView } from "./DinnerRouteOverviewSettingsView";
-import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
 
 export function HostLocationsPage({runningDinner}: BaseRunningDinnerProps) {
   return (
@@ -82,9 +80,9 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
     <>
       <div ref={mapContainerRef}>
         <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }}
-              defaultZoom={11} 
-              style={{ height: `${mapHeight}px`}}
-              mapId={GOOGLE_MAPS_ID}>
+             defaultZoom={11} 
+             style={{ height: `${mapHeight}px`}}
+             mapId={GOOGLE_MAPS_ID}>
 
 
           { filteredTeamConnectionPaths.map(path => <TeamConnectionPathLine key={path.teamNumber} {...path} />) }
@@ -100,16 +98,15 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
 
           { afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} /> }
       
+          { !settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} 
+                                                                   dinnerRouteMapData={dinnerRouteMapData} /> }      
+          { settingsViewMinimized && <DinnerRouteOverviewSettingsMinimizedButton /> }      
+
+          { !hostFilterViewMinimized && <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} /> }
+          { hostFilterViewMinimized && <HostLocationsFilterMinimizedButton /> }
+
         </Map>
       </div>
-
-      { !settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} 
-                                                                   dinnerRouteMapData={dinnerRouteMapData} /> }      
-      { settingsViewMinimized && <DinnerRouteOverviewSettingsMinimizedButton /> }      
-
-      { !hostFilterViewMinimized && <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} /> }
-      { hostFilterViewMinimized && <HostLocationsFilterMinimizedButton /> }
-        
     </>
   )
 }

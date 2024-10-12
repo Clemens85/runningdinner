@@ -1,5 +1,6 @@
-import { calculateTeamDistanceClusters, DinnerRouteTeam, DinnerRouteTeamMapEntry, GeocodedAddressEntityList } from "@runningdinner/shared";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { DinnerRouteTeam, DinnerRouteTeamMapEntry, GeocodedAddressEntityList } from "../../types";
+import { calculateTeamDistanceClusters } from "./DinnerRouteService";
 
 export function useCalculateTeamDistanceClusters(adminId: string, dinnerRouteMapEntries: DinnerRouteTeamMapEntry[] | DinnerRouteTeam[], range: number) {
 
@@ -17,7 +18,7 @@ export function useCalculateTeamDistanceClusters(adminId: string, dinnerRouteMap
 
 export function buildAddressEntityList(dinnerRouteMapEntries: DinnerRouteTeamMapEntry[] | DinnerRouteTeam[]): GeocodedAddressEntityList {
   const addressEntities = dinnerRouteMapEntries.map(entry => ({
-    id: `${entry.teamNumber}`,
+    id: mapToGeocodedAddressEntityId(entry),
     lat: entry.geocodingResult?.lat,
     lng: entry.geocodingResult?.lng,
     idType: "TEAM_NR"
@@ -25,6 +26,10 @@ export function buildAddressEntityList(dinnerRouteMapEntries: DinnerRouteTeamMap
   return {
     addressEntities
   };
+}
+
+export function mapToGeocodedAddressEntityId<T extends DinnerRouteTeam>(dinnerRouteTeam: T): string {
+  return `${dinnerRouteTeam.teamNumber}`;
 }
   
 export function buildAddressEntityIdsQueryKey(addressEntityList: GeocodedAddressEntityList): string {

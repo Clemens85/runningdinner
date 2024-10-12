@@ -1,12 +1,10 @@
 import { Box, Chip, CircularProgress, Divider, Fab, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, Switch, SxProps, Typography } from "@mui/material";
 import { TitleBar } from "./TitleBar";
 import { Trans, useTranslation } from "react-i18next";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData, DinnerRouteTeamWithDistance, useCalculateTeamDistanceClusters, useCalculateRouteDistances } from "@runningdinner/shared";
 import { SmallTitle, Span } from "../../common/theme/typography/Tags";
 import { BaseAdminIdProps, TeamDistanceCluster } from "@runningdinner/shared";
-import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
 import { useState } from "react";
-import { useCalculateRouteDistances } from "./useCalculateRouteDistances";
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { Virtuoso } from "react-virtuoso";
 import React from "react";
@@ -14,6 +12,7 @@ import { CancelledTeamMember } from "../teams/CancelledTeamMember";
 import { WarningAlert } from "../../common/dinnerroute";
 import { useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 import { ProgressBar } from "../../common/ProgressBar";
+import { useMap } from "@vis.gl/react-google-maps";
 
 type DinnerRouteOverviewSettingsViewProps = {
   dinnerRouteMapData: DinnerRouteMapData;
@@ -182,6 +181,21 @@ const HrRedLine = styled('hr')(({theme}) => ({
 
 function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
 
+  const mapRef = useMap();
+
+  function handleClick(team: DinnerRouteTeamWithDistance) {
+    const lat = team.geocodingResult?.lat;
+    const lng = team.geocodingResult?.lng;
+    if (!isDefined(lat) || !isDefined(lng)) {
+      return;
+    }
+    if (!mapRef) {
+      return;
+    }
+    mapRef.panTo({lat, lng});
+    mapRef.setZoom(15);
+  }
+
   if (!routeDistances) {
     return <LinearProgress variant="determinate" />;
   }
@@ -196,9 +210,12 @@ function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
             { routeDistance.teams.map((team, index) =>
               <React.Fragment key={index}>
                 <Grid item sx={{ my: 2 }}>
-                  {team.status === TeamStatus.CANCELLED && <CancelledTeamMember /> }
-                  {team.status !== TeamStatus.CANCELLED &&
-                    <Chip label={`Team ${team.teamNumber}`} color={team.currentTeam ? "primary" : "default"} variant={team.currentTeam ? "filled" : "outlined"} />
+                  { team.status === TeamStatus.CANCELLED && <CancelledTeamMember /> }
+                  { team.status !== TeamStatus.CANCELLED && team.currentTeam &&
+                    <Chip label={`Team ${team.teamNumber}`} color={"primary"} variant={"filled"} onClick={() => handleClick(team)} />
+                  }
+                  { team.status !== TeamStatus.CANCELLED && !team.currentTeam &&
+                    <Chip label={`Team ${team.teamNumber}`} color={"default"} variant={"outlined"} />
                   }
                 </Grid>
                 { isDefined(team.distanceToNextTeam) &&
