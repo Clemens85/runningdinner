@@ -9,6 +9,7 @@ import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRou
 import { TitleBar } from "./TitleBar";
 import { useTranslation } from "react-i18next";
 import { getTeamLabel } from "../../common/dinnerroute";
+import { useZoomToMarker } from "./useZoomToMarker";
 
 type HostLocationsFilterViewProps = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
@@ -116,13 +117,19 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
 
   const isBigDevice = useIsBigDevice();
 
+  const {handleZoomTo} = useZoomToMarker();
+
   const hostTeams = getHostTeamsOfDinnerRouteMapEntry(team); 
 
   function handleChange() {
     dispatch({
       type: DinnerRouteOverviewActionType.TOGGLE_ACTIVE_TEAM,
       payload: team
-    })
+    });
+    if (!selected) {
+      // User wants to explicitly see this team
+      handleZoomTo(team.geocodingResult);
+    }
   }
 
   return (
