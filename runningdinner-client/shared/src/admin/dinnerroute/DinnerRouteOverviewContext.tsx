@@ -27,6 +27,8 @@ export type DinnerRouteOverviewState = {
   mealTypeMappings: Record<string, MealType>;
 
   afterPartyLocation?: AfterPartyLocation;
+
+  scrollToTeamRequest: number | undefined;
 };
 
 const INITIAL_STATE_TEMPLATE: DinnerRouteOverviewState = {
@@ -38,6 +40,7 @@ const INITIAL_STATE_TEMPLATE: DinnerRouteOverviewState = {
   mealFilter: ALL_MEALS_OPTION,
   mealTypeMappings: {},
   meals: [],
+  scrollToTeamRequest: undefined
 };
 
 export enum DinnerRouteOverviewActionType {
@@ -45,7 +48,8 @@ export enum DinnerRouteOverviewActionType {
   UPDATE_SETTINGS_VIEW_MINIMIZED,
   UPDATE_HOST_FILTER_VIEW_MINIMIZED,
   TOGGLE_ACTIVE_TEAM,
-  TOGGLE_EXCLUDE_AFTER_PARTY_LOCATION
+  TOGGLE_EXCLUDE_AFTER_PARTY_LOCATION,
+  SCROLL_TO_TEAM
 }
 
 type Action = {
@@ -67,6 +71,7 @@ function newInitialState(runningDinner: RunningDinner) {
   result.mealFilterOptions = buildMealFilterOptions(result.meals, result.afterPartyLocation, false);
   result.mealTypeMappings = buildMealTypeMappings(result.meals);
   result.mealFilter = ALL_MEALS_OPTION;
+  result.scrollToTeamRequest = undefined;
 
   return result;
 }
@@ -194,6 +199,10 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
           isAfterPartyLocationDefined(result.afterPartyLocation)) {
         result.mealFilter = ALL_MEALS_OPTION; // Reset due to Nachspeise => AfterEventParty is not possible anymore
       }
+      return result;
+    }
+    case DinnerRouteOverviewActionType.SCROLL_TO_TEAM: {
+      result.scrollToTeamRequest = action.payload;
       return result;
     }
   }

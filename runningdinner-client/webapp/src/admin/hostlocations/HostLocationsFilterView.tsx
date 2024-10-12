@@ -1,8 +1,8 @@
 import {Box, Checkbox, Fab, FormControlLabel, Paper, styled, SxProps } from "@mui/material";
 import { Span } from "../../common/theme/typography/Tags";
-import { Virtuoso } from "react-virtuoso";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry, isAfterPartyLocationDefined } from "@runningdinner/shared";
@@ -48,13 +48,16 @@ export function HostLocationsFilterMinimizedButton() {
 
 export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFilterViewProps) {
 
-  const {dispatch} = useDinnerRouteOverviewContext();
+  const {dispatch, state} = useDinnerRouteOverviewContext();
+  const {scrollToTeamRequest} = state;
 
   const isMobileDevice = useIsMobileDevice();
   const isBigDevice = useIsBigDevice();
 
   const teamsFilterContainerRef = useRef(null);
   const teamsFilterHeight = useDynamicFullscreenHeight(teamsFilterContainerRef, 300, true) - (isMobileDevice ? 150 : 200);
+
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
 
   const {t} = useTranslation('common');
 
@@ -79,6 +82,36 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
     });
   }
 
+  function handleScrollToTeam(scrollToTeamWithNumber: number) {
+    if (!virtuosoRef.current) {
+      return;
+    }
+
+    let teamIndex = -1;
+    for (let i = 0; i < dinnerRouteMapEntries.length; i++) {
+      const team = dinnerRouteMapEntries[i];
+      if (team.teamNumber === scrollToTeamWithNumber) {
+        teamIndex = i;
+        break;
+      }
+    }
+    if (teamIndex < 0) {
+      return;
+    }
+
+    virtuosoRef.current.scrollToIndex({
+      index: teamIndex,
+      behavior: 'smooth',
+      align: 'start'
+    });
+  }
+
+  useEffect(() => {
+    if (scrollToTeamRequest) {
+      handleScrollToTeam(scrollToTeamRequest);
+    }
+  }, [scrollToTeamRequest]);
+
   return (
     <Paper elevation={3} 
            id="HostFilterPaper" 
@@ -89,7 +122,8 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
         <Box pb={1}>
           <Span i18n="admin:hostlocations_team_filter" />
         </Box>
-        <Virtuoso 
+        <Virtuoso
+          ref={virtuosoRef}
           data={dinnerRouteMapEntries}
           style={{ height: '92%' }}
           itemContent={(_, team) => (

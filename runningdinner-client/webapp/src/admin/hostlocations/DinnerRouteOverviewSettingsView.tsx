@@ -182,6 +182,15 @@ const HrRedLine = styled('hr')(({theme}) => ({
 function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
 
   const {handleZoomTo} = useZoomToMarker();
+  const {dispatch} = useDinnerRouteOverviewContext();
+
+  function handleClick(team: DinnerRouteTeamWithDistance) {
+    handleZoomTo(team.geocodingResult);
+    dispatch({ 
+      type: DinnerRouteOverviewActionType.SCROLL_TO_TEAM, 
+      payload: team.teamNumber
+    });
+  }
 
   if (!routeDistances) {
     return <LinearProgress variant="determinate" />;
@@ -201,7 +210,7 @@ function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
                   { team.status !== TeamStatus.CANCELLED && team.currentTeam &&
                     <Tooltip title={getTeamLabel(team, true)} placement="top-end">
                       <Chip label={`Team ${team.teamNumber}`} color={"primary"} variant={"filled"} 
-                            onClick={() => handleZoomTo(team.geocodingResult)} />
+                            onClick={() => handleClick(team)} />
                     </Tooltip>
                   }
                   { team.status !== TeamStatus.CANCELLED && !team.currentTeam &&
@@ -311,9 +320,18 @@ function TeamClusterItem(team: DinnerRouteTeamMapEntry) {
 
   const isMobileDevice = useIsMobileDevice();
   const {handleZoomTo} = useZoomToMarker();
+  const {dispatch} = useDinnerRouteOverviewContext();
+
+  function handleClick() {
+    handleZoomTo(team.geocodingResult);
+    dispatch({ 
+      type: DinnerRouteOverviewActionType.SCROLL_TO_TEAM, 
+      payload: team.teamNumber
+    });
+  }
 
   return (
-    <Box onClick={() => handleZoomTo(team.geocodingResult)}
+    <Box onClick={handleClick}
          sx={{ color: team.color, margin: '0 auto', border: '2px solid', borderRadius: '8px', borderColor: team.color, padding: "4px", cursor: "pointer" }}>
       <Span>
         Team #{team.teamNumber} {!isMobileDevice && <>{t("common:at_time")} <Time date={team.meal.time} /></> }
