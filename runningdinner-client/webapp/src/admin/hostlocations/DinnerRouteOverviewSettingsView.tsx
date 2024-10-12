@@ -12,7 +12,7 @@ import { CancelledTeamMember } from "../teams/CancelledTeamMember";
 import { getTeamLabel, WarningAlert } from "../../common/dinnerroute";
 import { useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 import { ProgressBar } from "../../common/ProgressBar";
-import { useMap } from "@vis.gl/react-google-maps";
+import { useZoomToMarker } from "./useZoomToMarker";
 
 type DinnerRouteOverviewSettingsViewProps = {
   dinnerRouteMapData: DinnerRouteMapData;
@@ -181,20 +181,7 @@ const HrRedLine = styled('hr')(({theme}) => ({
 
 function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
 
-  const mapRef = useMap();
-
-  function handleClick(team: DinnerRouteTeamWithDistance) {
-    const lat = team.geocodingResult?.lat;
-    const lng = team.geocodingResult?.lng;
-    if (!isDefined(lat) || !isDefined(lng)) {
-      return;
-    }
-    if (!mapRef) {
-      return;
-    }
-    mapRef.panTo({lat, lng});
-    mapRef.setZoom(15);
-  }
+  const {handleZoomTo} = useZoomToMarker();
 
   if (!routeDistances) {
     return <LinearProgress variant="determinate" />;
@@ -213,7 +200,8 @@ function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
                   { team.status === TeamStatus.CANCELLED && <CancelledTeamMember /> }
                   { team.status !== TeamStatus.CANCELLED && team.currentTeam &&
                     <Tooltip title={getTeamLabel(team, true)} placement="top-end">
-                      <Chip label={`Team ${team.teamNumber}`} color={"primary"} variant={"filled"} onClick={() => handleClick(team)} />
+                      <Chip label={`Team ${team.teamNumber}`} color={"primary"} variant={"filled"} 
+                            onClick={() => handleZoomTo(team.geocodingResult)} />
                     </Tooltip>
                   }
                   { team.status !== TeamStatus.CANCELLED && !team.currentTeam &&
@@ -322,9 +310,11 @@ function TeamClusterItem(team: DinnerRouteTeamMapEntry) {
   const {t} = useTranslation('common');
 
   const isMobileDevice = useIsMobileDevice();
+  const {handleZoomTo} = useZoomToMarker();
 
   return (
-    <Box sx={{ color: team.color, margin: '0 auto', border: '2px solid', borderRadius: '8px', borderColor: team.color, padding: "4px" }}>
+    <Box onClick={() => handleZoomTo(team.geocodingResult)}
+         sx={{ color: team.color, margin: '0 auto', border: '2px solid', borderRadius: '8px', borderColor: team.color, padding: "4px", cursor: "pointer" }}>
       <Span>
         Team #{team.teamNumber} {!isMobileDevice && <>{t("common:at_time")} <Time date={team.meal.time} /></> }
         { isMobileDevice && 
