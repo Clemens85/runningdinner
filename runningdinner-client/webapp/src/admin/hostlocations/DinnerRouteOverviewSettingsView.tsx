@@ -1,4 +1,4 @@
-import { Box, Chip, CircularProgress, Divider, Fab, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, Switch, SxProps, Typography } from "@mui/material";
+import { Box, Chip, CircularProgress, Divider, Fab, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, Switch, SxProps, Tooltip, Typography } from "@mui/material";
 import { TitleBar } from "./TitleBar";
 import { Trans, useTranslation } from "react-i18next";
 import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData, DinnerRouteTeamWithDistance, useCalculateTeamDistanceClusters, useCalculateRouteDistances } from "@runningdinner/shared";
@@ -9,7 +9,7 @@ import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { Virtuoso } from "react-virtuoso";
 import React from "react";
 import { CancelledTeamMember } from "../teams/CancelledTeamMember";
-import { WarningAlert } from "../../common/dinnerroute";
+import { getTeamLabel, WarningAlert } from "../../common/dinnerroute";
 import { useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 import { ProgressBar } from "../../common/ProgressBar";
 import { useMap } from "@vis.gl/react-google-maps";
@@ -212,10 +212,14 @@ function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
                 <Grid item sx={{ my: 2 }}>
                   { team.status === TeamStatus.CANCELLED && <CancelledTeamMember /> }
                   { team.status !== TeamStatus.CANCELLED && team.currentTeam &&
-                    <Chip label={`Team ${team.teamNumber}`} color={"primary"} variant={"filled"} onClick={() => handleClick(team)} />
+                    <Tooltip title={getTeamLabel(team, true)} placement="top-end">
+                      <Chip label={`Team ${team.teamNumber}`} color={"primary"} variant={"filled"} onClick={() => handleClick(team)} />
+                    </Tooltip>
                   }
                   { team.status !== TeamStatus.CANCELLED && !team.currentTeam &&
-                    <Chip label={`Team ${team.teamNumber}`} color={"default"} variant={"outlined"} />
+                    <Tooltip title={getTeamLabel(team, true)} placement="top-end">
+                      <Chip label={`Team ${team.teamNumber}`} color={"default"} variant={"outlined"} />
+                    </Tooltip>
                   }
                 </Grid>
                 { isDefined(team.distanceToNextTeam) &&
