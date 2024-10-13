@@ -51,6 +51,7 @@
 	"dinner_route_hosts_near_distance": "Gastgeber mit geringer Entfernung zueinander (in Metern)",
 	"dinner_route_hosts_near_distance_not_found": "Keine Teams gefunden welche unter {{distanceRange}} m zueinander liegen.",
 	"dinner_route_distances_show": "Zeige Entfernungen pro Route",
+	"dinner_route_filter_reset": "Filter zurücksetzen",
 	"dinner_route_help_intro_1": "Hilfe, alles ist so unübersichtlich!",
 	"dinner_route_help_intro_2": "Verständlich. Es ist leider gar nicht so einfach eine Übersicht über alle Routen aller Teams zu geben...",
 	"dinner_route_help_filter": "Jedes Team und dessen Route wird auf der Karte mit einer eigenen Farbe dargestellt. Zoomen kann helfen, wenn du viele Teams hast. <br/>Standardmäßig werden alle Teams angezeigt. Rechts (<strong>Filter</strong>) kannst du einzelne Teams anklicken, so dass nur noch deren Routen angezeigt werden. Das kann dir helfen dich besser zurecht zu finden.",

@@ -1,7 +1,7 @@
 import React from "react";
 import { cloneDeep, remove } from "lodash-es";
 import { buildMealTypeMappings } from "./DinnerRouteMapCalculationService";
-import { AfterPartyLocation, BaseEntity, BaseRunningDinnerProps, DinnerRouteMapData, DinnerRouteTeamMapEntry, Meal, MealType, Parent, RunningDinner, TeamConnectionPath} from "../../types";
+import { AfterPartyLocation, BaseEntity, BaseRunningDinnerProps, DinnerRouteMapData, DinnerRouteTeamMapEntry, Meal, MealType, Parent, TeamConnectionPath} from "../../types";
 import { isAfterPartyLocationDefined } from "../RunningDinnerService";
 import { findEntityById, isDefined, isSameEntity } from "../../Utils";
 
@@ -49,7 +49,8 @@ export enum DinnerRouteOverviewActionType {
   UPDATE_HOST_FILTER_VIEW_MINIMIZED,
   TOGGLE_ACTIVE_TEAM,
   TOGGLE_EXCLUDE_AFTER_PARTY_LOCATION,
-  SCROLL_TO_TEAM
+  SCROLL_TO_TEAM,
+  RESET
 }
 
 type Action = {
@@ -63,10 +64,10 @@ type DinnerRouteOverviewContextType = {
 }
 
 
-function newInitialState(runningDinner: RunningDinner) {
+function newInitialState(meals: Meal[], afterPartyLocation: AfterPartyLocation | undefined): DinnerRouteOverviewState {
   const result = cloneDeep(INITIAL_STATE_TEMPLATE);
-  result.afterPartyLocation = isAfterPartyLocationDefined(runningDinner.afterPartyLocation) ? cloneDeep(runningDinner.afterPartyLocation) : runningDinner.afterPartyLocation;
-  result.meals = cloneDeep(runningDinner.options.meals);
+  result.afterPartyLocation = isAfterPartyLocationDefined(afterPartyLocation) ? cloneDeep(afterPartyLocation) : afterPartyLocation;
+  result.meals = cloneDeep(meals);
 
   result.mealFilterOptions = buildMealFilterOptions(result.meals, result.afterPartyLocation, false);
   result.mealTypeMappings = buildMealTypeMappings(result.meals);
@@ -205,14 +206,19 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
       result.scrollToTeamRequest = action.payload;
       return result;
     }
+    case DinnerRouteOverviewActionType.RESET: {
+      return newInitialState(result.meals, result.afterPartyLocation);
+    }
   }
+  // Should not reach this point
+  return result;
 }
 
 type DinnerRouteOverviewContextProviderProps = BaseRunningDinnerProps & Parent;
 
 export function DinnerRouteOverviewContextProvider({children, runningDinner}: DinnerRouteOverviewContextProviderProps) {
 
-  const [state, dispatch] = React.useReducer(dinnerRouteOverviewReducer, newInitialState(runningDinner));
+  const [state, dispatch] = React.useReducer(dinnerRouteOverviewReducer, newInitialState(runningDinner.options.meals, runningDinner.afterPartyLocation));
   const value = {state, dispatch};
   return <DinnerRouteOverviewContext.Provider value={value}>{children}</DinnerRouteOverviewContext.Provider>
 }

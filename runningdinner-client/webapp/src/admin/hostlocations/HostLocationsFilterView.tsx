@@ -1,4 +1,4 @@
-import {Box, Checkbox, Fab, FormControlLabel, Paper, styled, SxProps } from "@mui/material";
+import {Box, Button, Checkbox, Fab, FormControlLabel, Paper, styled, SxProps } from "@mui/material";
 import { Span } from "../../common/theme/typography/Tags";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
@@ -117,7 +117,11 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
            id="HostFilterPaper" 
            sx={hostFilterPaperStyles}
            ref={teamsFilterContainerRef}>
-      <TitleBar onToggleMinize={handleMinimizeFilterView} title={t('common:filter')} />
+      <TitleBar 
+        onToggleMinize={handleMinimizeFilterView} 
+        title={t('common:filter')} 
+        actionButtton={<ResetAllButton />}
+        />
       <Box sx={{ height: `${teamsFilterHeight}px`, padding: 3 }}>
         <Box pb={1}>
           <Span i18n="admin:hostlocations_team_filter" />
@@ -212,4 +216,26 @@ function FilterAfterPartyLocationCheckbox() {
     </Box>
   );
 
+}
+
+function ResetAllButton() {
+
+  const {dispatch} = useDinnerRouteOverviewContext();
+
+  const {t} = useTranslation(['admin', 'common']);
+  const isMobileDevice = useIsMobileDevice();
+
+  function handleReset() {
+    dispatch({
+      type: DinnerRouteOverviewActionType.RESET
+    })
+  }
+
+  return (
+    <Button variant="outlined"
+            sx={{ mr: 2 }}
+            color="inherit"
+            size="small"
+            onClick={handleReset}>{t(isMobileDevice ? "common:reset": "admin:dinner_route_filter_reset")}</Button>
+  )
 }
