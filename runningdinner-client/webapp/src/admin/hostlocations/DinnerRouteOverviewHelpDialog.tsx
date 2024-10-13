@@ -1,4 +1,4 @@
-import { Chip, Dialog, DialogContent, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery } from "@mui/material";
+import { Chip, Dialog, DialogContent, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from "@mui/material";
 import { styled, useTheme } from "@mui/system";
 import { CallbackHandler, findEntityById, isAfterPartyLocationDefined, useDinnerRouteOverviewContext } from "@runningdinner/shared";
 import { Trans, useTranslation } from "react-i18next";
@@ -98,7 +98,7 @@ export function DinnerRouteOverviewHelpDialog({onClose}: DinnerRouteOverviewHelp
         </Paragraph>
 
         <Divider sx={dividerSxProps}><strong>{t("admin:dinner_route_help_distances")}</strong></Divider>
-        <Paragraph>
+        <Typography variant={"body1"} component="div">
           {t("admin:dinner_route_help_distances_1")}<br/>
           {t("admin:dinner_route_help_distances_2")}<br/>
           <Trans i18nKey={"admin:dinner_route_help_distances_3"} components={{ LongestDistance: <LongestDistance /> }} />
@@ -113,7 +113,7 @@ export function DinnerRouteOverviewHelpDialog({onClose}: DinnerRouteOverviewHelp
             )}
           ).<br/>
           {t("admin:dinner_route_help_distances_5")} <Chip label={`Team 1`} color={"primary"} variant={"filled"} sx={{ mr: 1, ml: 1}} /><br/>
-        </Paragraph>
+        </Typography>
 
         <Divider sx={dividerSxProps}><strong>{t("common:misc")}</strong></Divider>
         <Paragraph>
