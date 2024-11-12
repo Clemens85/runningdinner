@@ -25,6 +25,7 @@ import {DialogTitleCloseable} from "../../common/theme/DialogTitleCloseable";
 import { Span } from '../../common/theme/typography/Tags';
 import FormTextField from '../../common/input/FormTextField';
 import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
+import { GLOBAL_NOTIFICATION_BANNER_ENABLED, GlobalNotificationBanner, GlobalNotificationBannerApp } from '../../common/global-notification';
 
 export default function AdminNotificationBar() {
 
@@ -43,6 +44,10 @@ export default function AdminNotificationBar() {
     // eslint-disable-next-line
   }, [notificationRequired]);
 
+  if (GLOBAL_NOTIFICATION_BANNER_ENABLED) {
+    return <GlobalNotificationBanner app={GlobalNotificationBannerApp.ADMIN} />;
+  }
+  
   if (!notificationRequired) {
     return null;
   }
@@ -54,6 +59,7 @@ export default function AdminNotificationBar() {
   const expired = isDinnerExpired(runningDinner, new Date());
 
   let notificationMessage = [];
+  
   if (cancellationDate) {
     const cancellationDateFormatted = formatLocalDateWithSeconds(cancellationDate);
     notificationMessage.push(<Box key="cancellationDate">{t('notification_dinner_cancellation_text', { cancellationDate: cancellationDateFormatted })}</Box>);

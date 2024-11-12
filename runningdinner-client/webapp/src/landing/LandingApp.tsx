@@ -9,6 +9,7 @@ import {
 } from "../common/mainnavigation/NavigationPaths";
 import { FameOnMePopup } from '../common/teaserpopup/FameOnMePopup';
 import { useIsDeviceMinWidth } from "../common/theme/CustomMediaQueryHook";
+import { GlobalNotificationBanner, GlobalNotificationBannerApp } from "../common/global-notification";
 
 
 export default function LandingApp() {
@@ -55,6 +56,7 @@ export default function LandingApp() {
 
   return (
     <div>
+      <GlobalNotificationBanner app={GlobalNotificationBannerApp.LANDING} />
       <MainNavigation mainTitle={mainTitle}
                       showHomeLink={showHomeLink}
                       isMobileDevice={isMobileDevice}
