@@ -28,7 +28,13 @@ public class MailConfig {
 
   @Value("${sendgrid.api.key}")
   private String sendGridApiKey;
-  
+
+  @Value("${mailjet.api.key.public}")
+  private String mailJetApiKeyPublic;
+
+  @Value("${mailjet.api.key.private}")
+  private String mailJetApiKeyPrivate;
+
   @Value("${mail.replyto}")
   private String defaultReplyTo;
 
@@ -95,5 +101,13 @@ public class MailConfig {
 
   public MailProvider getActiveMailProvider() {
     return activeMailProvider;
+  }
+
+  public String getMailJetApiKeyPublic() {
+    return mailJetApiKeyPublic;
+  }
+
+  public String getMailJetApiKeyPrivate() {
+    return mailJetApiKeyPrivate;
   }
 }

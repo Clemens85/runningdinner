@@ -139,16 +139,9 @@
 			<artifactId>flyway-core</artifactId>
 		</dependency>
 		
-<!--		<dependency>-->
-<!--			<groupId>javax.mail</groupId>-->
-<!--			<artifactId>mail</artifactId>-->
-<!--			<version>1.4</version>-->
-<!--		</dependency>-->
-		
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
-			<!--				<version>${assertj.version}</version>-->
 			<scope>test</scope>
 		</dependency>
 		
@@ -273,6 +266,13 @@
 			<groupId>com.sendgrid</groupId>
 			<artifactId>sendgrid-java</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.mailjet</groupId>
+			<artifactId>mailjet-client</artifactId>
+			<version>5.2.5</version>
+		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sqs -->
 		<dependency>

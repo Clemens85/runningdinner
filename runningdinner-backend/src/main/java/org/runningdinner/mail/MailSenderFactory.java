@@ -5,6 +5,7 @@ import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
 import org.runningdinner.core.util.EnvUtilService;
+import org.runningdinner.mail.mailjet.MailJetWrapper;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.mail.sendgrid.SendGridMailWrapper;
 import org.slf4j.Logger;
@@ -52,6 +53,12 @@ public class MailSenderFactory {
     if (mailConfig.getActiveMailProvider() == MailProvider.SENDGRID_API) {
       LOGGER.info("*** Using SendGrid MailSender ***");
       mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKey(), objectMapper, mailConfig.isHtmlEmail());
+      return;
+    }
+
+    if (mailConfig.getActiveMailProvider() == MailProvider.MAILJET_API) {
+      LOGGER.info("*** Using MailJet MailSender with public API Key {} ***", StringUtils.substring(mailConfig.getMailJetApiKeyPublic(), 0, 5));
+      mailSender = new MailJetWrapper(mailConfig.getMailJetApiKeyPublic(), mailConfig.getMailJetApiKeyPrivate(), mailConfig.isHtmlEmail());
       return;
     }
 
