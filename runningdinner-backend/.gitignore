@@ -13,6 +13,7 @@
 /src/main/resources/application-sendgrid.properties
 /src/main/resources/application-smtp.properties
 /src/main/resources/application-mailjet.properties
+/src/main/resources/application-ses.properties
 /bower_removed.json
 /dinners.txt
 /package_removed.json

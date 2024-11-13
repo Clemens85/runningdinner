@@ -8,6 +8,7 @@ import org.runningdinner.core.util.EnvUtilService;
 import org.runningdinner.mail.mailjet.MailJetWrapper;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.mail.sendgrid.SendGridMailWrapper;
+import org.runningdinner.mail.ses.AwsSesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailSender;
@@ -53,6 +54,12 @@ public class MailSenderFactory {
     if (mailConfig.getActiveMailProvider() == MailProvider.SENDGRID_API) {
       LOGGER.info("*** Using SendGrid MailSender ***");
       mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKey(), objectMapper, mailConfig.isHtmlEmail());
+      return;
+    }
+
+    if (mailConfig.getActiveMailProvider() == MailProvider.AWS_SES_API) {
+      LOGGER.info("*** Using AWS SES MailSender with accessKey {} ***", StringUtils.substring(mailConfig.getUsername(), 0, 5));
+      mailSender = new AwsSesWrapper(mailConfig.getUsername(), mailConfig.getPassword(), mailConfig.isHtmlEmail());
       return;
     }
 

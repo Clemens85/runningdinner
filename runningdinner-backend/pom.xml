@@ -273,6 +273,13 @@
 			<version>5.2.5</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/ses -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>ses</artifactId>
+			<version>2.29.10</version>
+		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sqs -->
 		<dependency>
