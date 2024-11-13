@@ -101,10 +101,10 @@
 	"gluten": "Glutenfrei",
 	"guests": "Gäste",
 
-	"global_banner_alert_generic_msg": "Aktuell ist der Nachrichtenversand leider gestört, daher können derzeit keine Emails versendet werden.",
-	"global_banner_alert_wizard_msg": "Bitte notiere dir die Administrations-URL nach Erstellung des Events, da du bis zur Behebung der Störung keine Email erhalten wirst.",
-	"global_banner_alert_admin_msg": "Wir arbeiten an der Behebung des Problems. Wenn der Email-Versand wieder funktioniert, wird diese Warnung verschwinden.",
-	"global_banner_alert_landing_msg": "Du wirst daher aktuell keine Besätigungsemail nach Registrierung erhalten. Bitte wende dich an deinen Organisator, damit deine Anmeldung aktiviert wird.",
+	"global_banner_alert_generic_msg": "Aktuell ist der Nachrichtenversand leider gestört, daher werden gehen <strong>manche</strong> Emails verloren. Wir arbeiten mit Hochdruck an einer Lösung.",
+	"global_banner_alert_wizard_msg": "Bitte notiere dir die Administrations-URL nach Erstellung des Events, da es sein kann, dass du bis zur Behebung der Störung keine Email erhalten wirst.",
+	"global_banner_alert_admin_msg": "Bitte versende Team und/oder Dinner-Routen Benachrichtungen nur wenn es wirklich gerade nötig ist. Es kann nicht garantiert werden, dass alle Nachrichten zugestellt werden.",
+	"global_banner_alert_landing_msg": "Wenn du keine Besätigungsemail nach Registrierung erhälst, wende dich bitte an deinen Organisator, damit deine Anmeldung aktiviert wird.",
 
 	"headline_participantlist": "Teilnehmerliste",
 	"help": "Hilfe",

@@ -24,17 +24,17 @@ export function GlobalNotificationBanner({app}: GlobalNotificationBannerProps) {
     return null;
   }
 
-  let severity: AlertColor = "warning";
-  if (app === GlobalNotificationBannerApp.ADMIN || app === GlobalNotificationBannerApp.WIZARD) {
-    severity = "warning";
-  }
+  const severity: AlertColor = "info";
+  // if (app === GlobalNotificationBannerApp.ADMIN || app === GlobalNotificationBannerApp.WIZARD) {
+  //   severity = "warning";
+  // }
 
   return (
     <AlertCentered severity={severity} icon={false}>
       <strong><Trans i18nKey={"common:attention"} /></strong>{' '}
       <Trans i18nKey={"common:global_banner_alert_generic_msg"} />{' '}
-      { app === GlobalNotificationBannerApp.WIZARD && <Trans i18nKey={"common:global_banner_alert_wizard_msg"} /> }
-      { app === GlobalNotificationBannerApp.ADMIN && <Trans i18nKey={"common:global_banner_alert_admin_msg"} /> }
+      { app === GlobalNotificationBannerApp.WIZARD && <><br/><Trans i18nKey={"common:global_banner_alert_wizard_msg"} /></> }
+      { app === GlobalNotificationBannerApp.ADMIN && <><br/><Trans i18nKey={"common:global_banner_alert_admin_msg"} /></> }
       { showLandingMsg && <><br/>{<Trans i18nKey={"common:global_banner_alert_landing_msg"} />}</>}
     </AlertCentered>
   )
