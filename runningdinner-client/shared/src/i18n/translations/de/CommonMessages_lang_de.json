@@ -101,7 +101,7 @@
 	"gluten": "Glutenfrei",
 	"guests": "Gäste",
 
-	"global_banner_alert_generic_msg": "Aktuell ist der Nachrichtenversand leider gestört, daher werden gehen <strong>manche</strong> Emails verloren. Wir arbeiten mit Hochdruck an einer Lösung.",
+	"global_banner_alert_generic_msg": "Der Nachrichtenversand funktioniert wieder. Ein paar Features wie die Info über Rückläufer (z.B. bei falschen Mail-Adressen) sind noch nicht wieder aktiv, werden aber bald folgen.",
 	"global_banner_alert_wizard_msg": "Bitte notiere dir die Administrations-URL nach Erstellung des Events, da es sein kann, dass du bis zur Behebung der Störung keine Email erhalten wirst.",
 	"global_banner_alert_admin_msg": "Bitte versende Team und/oder Dinner-Routen Benachrichtungen nur wenn es wirklich gerade nötig ist. Es kann nicht garantiert werden, dass alle Nachrichten zugestellt werden.",
 	"global_banner_alert_landing_msg": "Wenn du keine Besätigungsemail nach Registrierung erhälst, wende dich bitte an deinen Organisator, damit deine Anmeldung aktiviert wird.",

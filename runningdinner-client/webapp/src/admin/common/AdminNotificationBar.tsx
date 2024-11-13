@@ -44,22 +44,22 @@ export default function AdminNotificationBar() {
     // eslint-disable-next-line
   }, [notificationRequired]);
 
-  if (GLOBAL_NOTIFICATION_BANNER_ENABLED) {
-    return <GlobalNotificationBanner app={GlobalNotificationBannerApp.ADMIN} />;
-  }
-  
-  if (!notificationRequired) {
+
+  if (!notificationRequired && !GLOBAL_NOTIFICATION_BANNER_ENABLED) {
     return null;
   }
 
   const runningDinner = runningDinnerFetchData.data!;
+  if (!runningDinner) {
+    return null;
+  }
+
   const {cancellationDate, acknowledgedDate, runningDinnerType} = runningDinner;
 
   const acknowledgeRequired = isAcknowledgeRequired(runningDinner);
   const expired = isDinnerExpired(runningDinner, new Date());
 
   let notificationMessage = [];
-  
   if (cancellationDate) {
     const cancellationDateFormatted = formatLocalDateWithSeconds(cancellationDate);
     notificationMessage.push(<Box key="cancellationDate">{t('notification_dinner_cancellation_text', { cancellationDate: cancellationDateFormatted })}</Box>);
@@ -82,6 +82,7 @@ export default function AdminNotificationBar() {
  
   return (
       <>
+        <GlobalNotificationBanner key="globalNotificationBanner" app={GlobalNotificationBannerApp.ADMIN} />
         { isOpen && <AlertCentered severity={severity} icon={false} onClose={close}>
                       {notificationMessage}
                     </AlertCentered> }

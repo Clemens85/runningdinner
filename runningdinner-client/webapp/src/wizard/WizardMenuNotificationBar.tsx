@@ -9,18 +9,18 @@ export default function WizardMenuNotificationBar() {
 
   const isDemoDinner = useWizardSelector(isDemoDinnerSelector);
 
-  if (GLOBAL_NOTIFICATION_BANNER_ENABLED) {
-    return <GlobalNotificationBanner app={GlobalNotificationBannerApp.WIZARD} />;
-  }
-
-  if (!isDemoDinner) {
+  if (!isDemoDinner && !GLOBAL_NOTIFICATION_BANNER_ENABLED) {
     return null;
   }
+
   return (
     <>
-      <AlertCentered severity={"info"} icon={false}>
-        <Trans i18nKey={'wizard_demo_mode_text'} ns={"wizard"}/>
-      </AlertCentered>
+      { GLOBAL_NOTIFICATION_BANNER_ENABLED && <GlobalNotificationBanner app={GlobalNotificationBannerApp.WIZARD} /> }
+      { isDemoDinner && 
+          <AlertCentered severity={"info"} icon={false}>
+            <Trans i18nKey={'wizard_demo_mode_text'} ns={"wizard"}/>
+          </AlertCentered>
+    }
     </>
   );
 }

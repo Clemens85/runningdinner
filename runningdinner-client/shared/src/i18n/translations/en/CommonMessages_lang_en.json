@@ -102,7 +102,7 @@
 	"gluten": "Gluten free",
 	"guests": "Guests",
 
-	"global_banner_alert_generic_msg": "Unfortunately, messaging is currently disrupted, so no emails can be sent at the moment.",
+	"global_banner_alert_generic_msg": "Sending messages is working again. A few features such as the information about returned messages (e.g. incorrect e-mail addresses) are not yet active again, but will follow soon.",
 	"global_banner_alert_wizard_msg": "Please make a note of the administration URL after creating the event, as you will not receive an email until the issue has been resolved.",
 	"global_banner_alert_admin_msg": "We are working on fixing the problem. This warning will disappear as soon as email delivery is working again.",
 	"global_banner_alert_landing_msg": "You will therefore not receive a confirmation email after registration. Please contact your organizer to activate your registration.",
