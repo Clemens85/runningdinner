@@ -1,63 +1,68 @@
 package org.runningdinner.mail;
 
-import java.util.Arrays;
-import java.util.Properties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
 import org.runningdinner.core.util.EnvUtilService;
-import org.runningdinner.mail.mock.MailSenderMockFile;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.mail.sendgrid.SendGridMailWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Properties;
 
 @Component
 public class MailSenderFactory {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(MailSenderFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MailSenderFactory.class);
   
-  @Autowired
-  private MailConfig mailConfig;
+  private final MailConfig mailConfig;
   
-  @Autowired
-  private EnvUtilService envUtilService;
+  private final EnvUtilService envUtilService;
   
-  @Autowired  
-  private ObjectMapper objectMapper; // Maybe needed later on for sendgrid
+  private final ObjectMapper objectMapper; // Maybe needed later on for sendgrid
 
   private MailSender mailSender;
-  
+
+  public MailSenderFactory(ObjectMapper objectMapper, EnvUtilService envUtilService, MailConfig mailConfig) {
+    this.objectMapper = objectMapper;
+    this.envUtilService = envUtilService;
+    this.mailConfig = mailConfig;
+  }
+
   public MailSender getMailSender() {
-    
     Assert.notNull(mailSender, "Mailsender was not properly initialized");
     return mailSender;
   }
   
   @PostConstruct
   protected void initMailSender() {
-    
-    if (StringUtils.isNotEmpty(mailConfig.getSendGridApiKey())) {
-      LOGGER.info("*** Using SendGrid MailSender ***");
-      mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKey(), objectMapper, mailConfig.isHtmlEmail());
-    } else if (envUtilService.isProfileActive("junit")) {
+
+    if (envUtilService.isProfileActive("junit") || mailConfig.getActiveMailProvider() == MailProvider.MOCK) {
       LOGGER.info("*** Using mocked In-Memory MailSender ***");
       mailSender = new MailSenderMockInMemory();
-    } else if (envUtilService.isProfileActive("dev")) {
-      LOGGER.info("*** Using mocked File based MailSender ***");
-      mailSender = new MailSenderMockFile();
-    } else {
-      LOGGER.info("*** Using SMTP MailSender ***");
-      mailSender = newJavaSmtpMailSender();
+      return;
     }
+
+    if (mailConfig.getActiveMailProvider() == MailProvider.SENDGRID_API) {
+      LOGGER.info("*** Using SendGrid MailSender ***");
+      mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKey(), objectMapper, mailConfig.isHtmlEmail());
+      return;
+    }
+
+    if (mailConfig.getActiveMailProvider() == MailProvider.SMTP) {
+      LOGGER.info("*** Using SMTP MailSender with SMTP Host {} and username {} ***",
+                  mailConfig.getHost(), StringUtils.substring(mailConfig.getUsername(), 0, 5));
+      mailSender = newJavaSmtpMailSender();
+      return;
+    }
+
+    throw new IllegalStateException("MailSender not properly initialized. ActiveMailProvider was " + mailConfig.getActiveMailProvider());
   }
   
   private MailSender newJavaSmtpMailSender() {

@@ -1,6 +1,7 @@
 
 package org.runningdinner.mail;
 
+import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
 import org.runningdinner.admin.message.job.MessageTask;
@@ -13,8 +14,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
-
-import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class MailService {
@@ -55,6 +54,7 @@ public class MailService {
       
       @Override
       public void prepare(MimeMessage mimeMessage) throws Exception {
+        mimeMessage.setHeader("X-SES-CONFIGURATION-SET", "runyourdinner");
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
         helper.setFrom(simpleMailMessage.getFrom());
         helper.setTo(simpleMailMessage.getTo());

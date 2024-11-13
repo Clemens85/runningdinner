@@ -1,12 +1,10 @@
 
 package org.runningdinner.mail.sendgrid;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
+import com.sendgrid.*;
 import org.runningdinner.admin.message.job.FailureType;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.core.util.DateTimeUtil;
@@ -14,30 +12,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
-import com.sendgrid.Content;
-import com.sendgrid.Email;
-import com.sendgrid.Mail;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class SendGridMailWrapper implements MailSender {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(SendGridMailWrapper.class);
   
-  private ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
   
-  private SendGrid sendGridClient;
+  private final SendGrid sendGridClient;
   
-  private boolean htmlEmail;
+  private final boolean htmlEmail;
   
   public SendGridMailWrapper(String sendGridApiKey, ObjectMapper objectMapper, boolean htmlEmail) {
-
+    Assert.hasText(sendGridApiKey, "sendGridApiKey must be set when using SendGrid API");
     this.objectMapper = objectMapper;
     this.sendGridClient = new SendGrid(sendGridApiKey);
     this.htmlEmail = htmlEmail;

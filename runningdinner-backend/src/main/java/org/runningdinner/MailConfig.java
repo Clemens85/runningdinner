@@ -1,6 +1,7 @@
 
 package org.runningdinner;
 
+import org.runningdinner.mail.MailProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,6 +37,9 @@ public class MailConfig {
   
   @Value("${mail.html}")
   private boolean htmlEmail;
+
+  @Value("${mail.provider.active}")
+  private MailProvider activeMailProvider;
 
   public String getHost() {
 
@@ -88,5 +92,8 @@ public class MailConfig {
   
     return htmlEmail;
   }
-  
+
+  public MailProvider getActiveMailProvider() {
+    return activeMailProvider;
+  }
 }
