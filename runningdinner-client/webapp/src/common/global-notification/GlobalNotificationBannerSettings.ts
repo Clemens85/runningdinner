@@ -1,4 +1,4 @@
-export const GLOBAL_NOTIFICATION_BANNER_ENABLED = true;
+export const GLOBAL_NOTIFICATION_BANNER_ENABLED = false;
 
 export enum GlobalNotificationBannerApp {
   LANDING = "LANDING",
