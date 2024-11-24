@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Button, Grid, Paper, Popover, useMediaQuery, useTheme} from "@mui/material";
+import {Box, Button, Grid, Paper, Popover} from "@mui/material";
 import {orderBy} from 'lodash-es';
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {SmallTitle, Span, Title} from "../../common/theme/typography/Tags";
@@ -77,8 +77,6 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
 
   const {t} = useTranslation('admin');
   const {generateTeamDinnerRoutePath} = useAdminNavigation();
-
-  const theme = useTheme();
 
   const scheduleItems = buildScheduledMealsWithTeams(teamMeetingPlan);
   const activeTeam = teamMeetingPlan.team;
