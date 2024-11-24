@@ -1,10 +1,10 @@
 package org.runningdinner;
 
-import java.nio.charset.Charset;
-import java.util.TimeZone;
-
-import javax.sql.DataSource;
-
+import ch.qos.logback.classic.helpers.MDCInsertingServletFilter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.owasp.AntiSamyFilter;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.impl.DefaultIdGenerator;
@@ -28,12 +28,10 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import ch.qos.logback.classic.helpers.MDCInsertingServletFilter;
-import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
-import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import javax.sql.DataSource;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.TimeZone;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "org.runningdinner", "org.payment.paypal" })
@@ -62,7 +60,7 @@ public class ApplicationConfig /*extends WebMvcConfigurerAdapter*/ {
 
     // and actually verify it is being used
     Charset charset = Charset.defaultCharset();
-    Assert.isTrue(charset.equals(Charset.forName("UTF-8")), "Charset UTF-8 must be used!");
+    Assert.isTrue(charset.equals(StandardCharsets.UTF_8), "Charset UTF-8 must be used!");
   }
   
   @Bean
@@ -91,8 +89,8 @@ public class ApplicationConfig /*extends WebMvcConfigurerAdapter*/ {
   @Bean
   public LocaleResolver localeResolver() {
     
-    CookieLocaleResolver result = new CookieLocaleResolver();
-    result.setCookieName("NG_TRANSLATE_LANG_KEY");
+    CookieLocaleResolver result = new CookieLocaleResolver("NG_TRANSLATE_LANG_KEY");
+//    result.setCookieName("NG_TRANSLATE_LANG_KEY");
     result.setDefaultLocale(CoreUtil.getDefaultLocale());
     result.setDefaultTimeZone(TimeZone.getTimeZone(DateTimeUtil.getTimeZoneForEuropeBerlin()));
     return result;

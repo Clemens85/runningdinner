@@ -7,7 +7,6 @@ import {PrimaryButton} from "../../common/theme/PrimaryButton";
 import {useTranslation} from "react-i18next";
 import {bindPopover, bindTrigger, usePopupState,} from 'material-ui-popup-state/hooks';
 import LinkIntern from "../../common/theme/LinkIntern";
-import LinkExtern from "../../common/theme/LinkExtern";
 import {
   Fullname,
   isSameEntity,
@@ -80,7 +79,6 @@ function TeamScheduleView({teamMeetingPlan, adminId}) {
   const {generateTeamDinnerRoutePath} = useAdminNavigation();
 
   const theme = useTheme();
-  const isMobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
 
   const scheduleItems = buildScheduledMealsWithTeams(teamMeetingPlan);
   const activeTeam = teamMeetingPlan.team;

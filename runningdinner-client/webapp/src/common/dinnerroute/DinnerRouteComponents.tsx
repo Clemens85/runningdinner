@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/system";
-import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, MealType, Team, TeamNr, Time, getFullname, isArrayEmpty, isArrayNotEmpty, isDarkColor, isStringNotEmpty, useDisclosure } from "@runningdinner/shared";
+import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, MealType, TeamNr, Time, getFullname, isArrayEmpty, isArrayNotEmpty, isDarkColor, isStringNotEmpty, useDisclosure } from "@runningdinner/shared";
 import { SmallTitle, Span, Subtitle } from "../theme/typography/Tags";
 import { uniq } from "lodash-es";
 import LinkExtern from "../theme/LinkExtern";

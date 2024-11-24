@@ -2,7 +2,6 @@ import { Trans } from "react-i18next";
 import AlertCentered from "../theme/AlertCentered";
 import { AlertColor } from "@mui/material";
 import { GLOBAL_NOTIFICATION_BANNER_ENABLED, GlobalNotificationBannerApp } from "./GlobalNotificationBannerSettings";
-import { useLocation } from "react-router-dom";
 
 
 type GlobalNotificationBannerProps = {

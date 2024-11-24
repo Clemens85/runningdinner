@@ -137,7 +137,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
       </Box>
       <FilterAfterPartyLocationCheckbox />
     </Paper>
-  )
+  );
 }
 
 type FilterTeamCheckboxProps = {

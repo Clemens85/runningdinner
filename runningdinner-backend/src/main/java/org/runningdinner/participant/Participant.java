@@ -326,6 +326,7 @@ public class Participant extends RunningDinnerRelatedEntity
     return getActivationDate() != null;
   }
 
+  @Override
   public GeocodingResult getGeocodingResult() {
 
     return geocodingResult;

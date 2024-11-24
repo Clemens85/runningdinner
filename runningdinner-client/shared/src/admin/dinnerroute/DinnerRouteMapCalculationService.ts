@@ -88,7 +88,7 @@ function calculateDinnerRouteMapEntry(dinnerRoute: DinnerRoute,
         color: calculatAfterPartyLocationColor(),
         key: `${currentTeam.teamNumber}-afterparty`,
         team,
-      })
+      });
     }
   }
 

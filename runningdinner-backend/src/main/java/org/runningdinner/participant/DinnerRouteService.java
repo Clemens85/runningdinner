@@ -3,9 +3,11 @@ package org.runningdinner.participant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
+import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
+import org.runningdinner.core.util.LogSanitizer;
 import org.runningdinner.geocoder.distance.DistanceCalculator;
 import org.runningdinner.geocoder.distance.DistanceEntry;
 import org.runningdinner.geocoder.distance.DistanceMatrix;
@@ -84,7 +86,7 @@ public class DinnerRouteService {
   }
 
     private static Team findTeamForTeamNumber(String teamNumberStr, List<Team> teams) {
-      int teamNumber = Integer.parseInt(teamNumberStr);
+      int teamNumber = parseIntSafe(teamNumberStr);
       return teams
               .stream()
               .filter(t -> t.getTeamNumber() == teamNumber)
@@ -100,15 +102,16 @@ public class DinnerRouteService {
 
     GeocodedAddressEntityIdType idType = addressEntities.get(0).getIdType();
     if (idType != GeocodedAddressEntityIdType.TEAM_NR) {
-      LOGGER.error("Only TEAM_NR is supported as GeocodedAddressEntityIdType but got {}  in event {}", idType, adminId);
+      LOGGER.error("Only TEAM_NR is supported as GeocodedAddressEntityIdType but got {}  in event {}",
+                   idType, LogSanitizer.sanitize(adminId));
       return Collections.emptyList();
     }
 
     Set<Integer> teamNumbers = new HashSet<>();
     distanceEntries
       .forEach(entry -> {
-        teamNumbers.add(Integer.parseInt(entry.srcId()));
-        teamNumbers.add(Integer.parseInt(entry.destId()));
+        teamNumbers.add(parseIntSafe(entry.srcId()));
+        teamNumbers.add(parseIntSafe(entry.destId()));
       });
     return teamService.findTeamsWithMembersOrderedByTeamNumbers(adminId, teamNumbers);
   }
@@ -189,6 +192,14 @@ public class DinnerRouteService {
               .filter(Objects::nonNull)
               .max(Comparator.naturalOrder())
               .orElse(null);
+    }
+  }
+
+  private static int parseIntSafe(String src) {
+    try {
+      return Integer.parseInt(src);
+    } catch (NumberFormatException e) {
+      throw new TechnicalException("could not parse " + LogSanitizer.sanitize(src) + " as integer", e);
     }
   }
 
