@@ -5,9 +5,6 @@ on:
       stageSubdomain:
         required: true
         type: string
-    secrets:
-      PROD_SENDGRID_API_KEY:
-        required: true
 
 jobs:
   mvn-package-tests:
@@ -46,11 +43,8 @@ jobs:
           #  SUBDOMAIN="dev."
           #fi
           # echo "Using subdomain $SUBDOMAIN"
-          # echo "sendgrid.api.key=${{env.PROD_SENDGRID_API_KEY}}" >> runningdinner-backend/src/main/resources/application-prod.properties
           # echo "host.context.url=https://${SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
           echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
-        #env:
-        #  PROD_SENDGRID_API_KEY: ${{secrets.PROD_SENDGRID_API_KEY}}
 
       - name: Build and Test
         run: |
