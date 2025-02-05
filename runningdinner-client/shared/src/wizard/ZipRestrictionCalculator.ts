@@ -5,14 +5,18 @@ export type ZipRestrictionsCalculationResult = {
   invalidZips: string[];
 }
 
-export function calculateResultingZipRestrictions(zipRestrictionsStr: string): ZipRestrictionsCalculationResult {
+export function calculateResultingZipRestrictions(zipRestrictionsStr?: string): ZipRestrictionsCalculationResult {
 
   const result: ZipRestrictionsCalculationResult = {
     zipRestrictions: [],
     invalidZips: [] 
   };
 
-  const zipEntries = zipRestrictionsStr.split(",");
+  if (isStringEmpty(zipRestrictionsStr)) {
+    return result;
+  }
+
+  const zipEntries = zipRestrictionsStr!.split(",");
   for (const zipEntry of zipEntries) {
     const singleZipEntry = zipEntry.trim();
     if (isStringEmpty(singleZipEntry)) {
