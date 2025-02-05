@@ -1,4 +1,3 @@
-import React from 'react';
 import FormSelect from "../input/FormSelect";
 import {getByValue, LabelValue} from "@runningdinner/shared";
 import {Box, FormHelperText, FormLabel, MenuItem} from "@mui/material";
@@ -8,6 +7,7 @@ import FormDatePicker from "../input/FormDatePicker";
 import {Controller, useFormContext} from "react-hook-form";
 import {LanguageSwitchButtons} from "../i18n/LanguageSwitch";
 import {useTranslation} from "react-i18next";
+import { ZipRestrictionsFormControl } from "./ZipRestrictionsFormControl";
 
 export interface BasicDinnerSettingsFormControlProps {
   registrationTypes: LabelValue[];
@@ -16,9 +16,14 @@ export interface BasicDinnerSettingsFormControlProps {
 export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerSettingsFormControlProps) {
 
   const {t} = useTranslation( ['common']);
-  const {control, watch} = useFormContext();
+  const {control, watch, setValue} = useFormContext();
 
   const selectedRegistrationTypeValue = watch('registrationType');
+  const currentZipRestrictions = watch('zipRestrictions');
+
+  function handleUpdateZipRestrictions(zipRestrictions: string) {
+    setValue('zipRestrictions', zipRestrictions);
+  }
 
   return (
     <>
@@ -62,6 +67,11 @@ export function BasicDinnerSettingsFormControl({registrationTypes}: BasicDinnerS
                          variant="outlined"
                          fullWidth/>
         </Grid>
+
+        <ZipRestrictionsFormControl currentRegistrationType={selectedRegistrationTypeValue}
+                                    currentZipRestrictions={currentZipRestrictions}
+                                    onUpdateZipRestrictions={handleUpdateZipRestrictions} />
+
         <Grid item xs={12} md={3}>
           <FormDatePicker name={"date"} label={t('common:date' )} />
         </Grid>

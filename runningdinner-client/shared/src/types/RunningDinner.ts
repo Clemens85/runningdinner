@@ -17,6 +17,7 @@ export interface RunningDinnerBasicDetails {
   zip: string;
   date: Date;
   languageCode: string;
+  zipRestrictions?: string;
 }
 
 export interface Meal extends BaseEntity {
