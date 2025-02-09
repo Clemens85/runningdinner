@@ -8,6 +8,7 @@ import { useState } from "react";
 import { debounce } from "lodash-es";
 import DialogActionsPanel from "../theme/DialogActionsPanel";
 import ClearIcon from '@mui/icons-material/Clear';
+import { useIsMobileDevice } from "../theme/CustomMediaQueryHook";
 
 export type ZipRestrictionsFormControlProps = {
   currentRegistrationType: string;
@@ -20,6 +21,7 @@ export function ZipRestrictionsFormControl({currentRegistrationType, currentZipR
   const {t} = useTranslation(['common']);
 
   const {open, isOpen, close} = useDisclosure();
+  const isMobileDevice =useIsMobileDevice();
 
   if (isStringEmpty(currentRegistrationType) || currentRegistrationType === CONSTANTS.REGISTRATION_TYPE.CLOSED) {
     return null;
@@ -40,7 +42,7 @@ export function ZipRestrictionsFormControl({currentRegistrationType, currentZipR
   return (
     <>
       <Grid item xs={12} sx={{ mt: 1, mb: 2 }}>
-        <Stack direction="row" gap={1} alignItems="center">
+        <Stack direction={isMobileDevice ? "column" : "row"} gap={1} alignItems={isMobileDevice ? "flex-start" : "center"}>
           <Box>
             { hasZipRestrictions && <Typography variant="body2">{t("common:zip_restrictions_enabled")} <strong>{currentZipRestrictions}</strong></Typography> }
             { !hasZipRestrictions && <Typography variant="body2">{t("common:zip_restrictions_disabled")}</Typography> }
