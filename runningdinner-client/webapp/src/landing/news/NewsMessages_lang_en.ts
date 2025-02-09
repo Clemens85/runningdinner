@@ -1,5 +1,8 @@
 const NewsMessages_en: any = {
 
+  news_title_20250209: 'Limit registrations to zip codes',
+  news_content_20250209: 'It is now possible to restrict a Running Dinner event to certain zip codes by configuration, so that the route distances are not too long.',
+
   news_title_20241011: 'Enhanced Dinner Route Locations Overview',
   news_content_20241011: 'The complete overview of all routes in the teams area has been enhanced to include some useful additional features.',
 

@@ -1,5 +1,7 @@
 const NewsMessages_de: any = {
 
+  news_title_20250209: 'Anmeldungen auf Postleitzahlen beschränken',
+  news_content_20250209: 'Es ist nun möglich ein Running Dinner Event per Konfiguration auf bestimmte Postleitzahlen zu beschränken, so dass die Wege nicht zu lang werden.',
 
   news_title_20241011: 'Dinner Routen Gastgeber Übersicht erweitert',
   news_content_20241011: 'Die Gesamt-Übersicht über alle Routen im Teams-Bereich wurde um einige nützliche Zusatz-Features erweitert.',
