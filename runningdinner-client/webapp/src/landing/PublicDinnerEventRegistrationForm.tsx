@@ -1,19 +1,25 @@
 import {
+  Alert,
   Box,
+  Chip,
   Grid,
   LinearProgress,
+  Link,
   Paper,
 } from "@mui/material";
 import {
   assertDefined,
   BasePublicDinnerProps,
+  calculateResultingZipRestrictions,
   CallbackHandler,
   finalizeRegistrationOrder,
   HttpError,
   isStringEmpty,
+  isStringNotEmpty,
   newEmptyRegistrationDataInstance,
   performRegistration,
   performRegistrationValidation,
+  PublicRunningDinner,
   RegistrationData,
   RegistrationDataCollection,
   useBackendIssueHandler,
@@ -42,6 +48,9 @@ import {RegistrationPaymentProgressBackdrop} from "./RegistrationPaymentProgress
 import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
 import {commonStyles} from "../common/theme/CommonStyles";
 import { useQuery } from "@tanstack/react-query";
+import { ConfirmationDialog } from "../common/theme/dialog/ConfirmationDialog";
+import Paragraph from "../common/theme/typography/Paragraph";
+import { PublicContactInfo } from "./PublicContactInfo";
 
 type BaseRegistrationFormProps = {
   onCancel: CallbackHandler;
@@ -119,6 +128,10 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
           close: closeRegistrationSummary,
           getIsOpenData: getRegistrationDataCollection } = useDisclosure<RegistrationDataCollection>();
 
+  const { isOpen: isZipRestrictionDialogOpen,
+          open: openZipRestrictionDialog,
+          close: closeZipRestrictionDialog} = useDisclosure();
+
   const {applyValidationIssuesToForm, getIssuesTranslated} = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
       namespaces: 'admin'
@@ -151,7 +164,12 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
       openRegistrationSummary({registrationSummary, registrationData});
     } catch (e) {
       applyValidationIssuesToForm(e as HttpError, setError);
-      showHttpErrorDefaultNotification(e as HttpError);
+      if (hasZipRestrictionIssue(e as HttpError)) {
+        clearErrors();
+        openZipRestrictionDialog();
+      } else {
+        showHttpErrorDefaultNotification(e as HttpError);
+      }
     }
   };
 
@@ -168,6 +186,11 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
       applyValidationIssuesToForm(e as HttpError, setError);
       showHttpErrorDefaultNotification(e as HttpError);
     }
+  }
+
+  function hasZipRestrictionIssue(error: HttpError): boolean {
+    const issues = getIssuesTranslated(error);
+    return issues.issuesFieldRelated.some(issue => issue.field === 'zipRestrictions');
   }
 
   return <>
@@ -212,7 +235,7 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
                                     <Trans i18nKey="landing:data_processing_acknowledge" /><br />
                                     <Trans i18nKey="landing:data_processing_acknowledge_hint"
                                            values={{ privacyLink: `/${IMPRESSUM_PATH}` }}
-                                      // @ts-ignore
+                                           // @ts-ignore
                                            components={{ anchor: <LinkExtern /> }} />
                                   </>
                                 } />
@@ -244,5 +267,51 @@ function PublicDinnerEventRegistrationForm({onCancel, onRegistrationPerformed, p
                                                               publicRunningDinner={publicRunningDinner}
                                                               onCancel={closeRegistrationSummary}
                                                               onPerformRegistration={handlePerformRegistration} /> }
+
+    { isZipRestrictionDialogOpen && 
+      <ConfirmationDialog open={isZipRestrictionDialogOpen} 
+                          onClose={closeZipRestrictionDialog}
+                          dialogTitle={t('landing:registration_not_possible')}
+                          dialogContent={<ZipRestrictionDialogView publicRunningDinner={publicRunningDinner} />}
+                          buttonConfirmText={t('common:ok')}>
+                          
+      </ConfirmationDialog>
+      }
   </>;
+}
+
+type ZipRestrictionDialogViewProps = {
+  publicRunningDinner: PublicRunningDinner;
+}
+
+function ZipRestrictionDialogView({publicRunningDinner}: ZipRestrictionDialogViewProps) {
+
+  const {publicSettings} = publicRunningDinner;
+  const title = publicSettings.title;
+
+  const resultingZipRestrictions = calculateResultingZipRestrictions(publicRunningDinner.zipRestrictions);
+  
+  return (
+    <>
+    <Alert severity="info" variant="outlined">
+      <Trans i18nKey="landing:registration_not_possible_zip_restriction" values={{title}} />
+    </Alert>
+
+    <Box my={2}>
+      <PublicContactInfo {...publicSettings} />
+    </Box>
+
+    <Box my={2}>
+      <Trans i18nKey={"common:zip_restrictions_enabled"} />
+      <Grid container spacing={1} sx={{ pt: 1 }}>
+        {resultingZipRestrictions.zipRestrictions.map((zipRestriction: string, index: number) => 
+          <Grid key={index} item>
+            <Chip label={zipRestriction} variant="outlined" color="primary" />
+          </Grid>
+        )} 
+      </Grid>
+
+    </Box>
+    </>
+  );
 }

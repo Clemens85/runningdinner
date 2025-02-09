@@ -48,5 +48,12 @@ public interface RunningDinnerInfo {
 	RegistrationType getRegistrationType();
 	
 	String getLanguageCode();
+
+	/**
+	 * Gets the allowed zips for restrictions of participants
+	 *
+	 * @return The zip restrictions as plain string
+	 */
+	String getZipRestrictions();
 	
 }

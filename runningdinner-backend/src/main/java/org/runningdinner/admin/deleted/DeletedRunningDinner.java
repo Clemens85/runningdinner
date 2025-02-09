@@ -38,6 +38,8 @@ public class DeletedRunningDinner extends AbstractEntity implements RunningDinne
   
   @Enumerated(EnumType.STRING)
   private RegistrationType registrationType;
+
+  private String zipRestrictions;
   
   @Embedded
   private PublicSettings publicSettings = new PublicSettings();
@@ -57,6 +59,7 @@ public class DeletedRunningDinner extends AbstractEntity implements RunningDinne
     this.zip = src.getZip();
     this.languageCode = src.getLanguageCode();
     this.publicSettings = src.getPublicSettings() != null ? src.getPublicSettings().createDetachedClone() : new PublicSettings();
+    this.zipRestrictions = src.getZipRestrictions();
   }
   
   @Override
@@ -94,7 +97,12 @@ public class DeletedRunningDinner extends AbstractEntity implements RunningDinne
 
     return languageCode;
   }
-  
+
+  @Override
+  public String getZipRestrictions() {
+    return zipRestrictions;
+  }
+
   public String getEmail() {
   
     return email;

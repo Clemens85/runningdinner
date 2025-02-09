@@ -160,7 +160,7 @@ public class CreateRunningDinnerWizardService {
         }
       }
 
-      if (issueList.size() > 0) {
+      if (!issueList.isEmpty()) {
         throw new ValidationException(new IssueList(issueList));
       }
     }

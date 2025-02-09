@@ -27,6 +27,8 @@ public class RunningDinnerPublicTO {
 
   private String zip;
 
+  private String zipRestrictions;
+
   private List<MealTO> meals;
 
   private String adminEmail;
@@ -56,6 +58,7 @@ public class RunningDinnerPublicTO {
     this.runningDinnerType = runningDinner.getRunningDinnerType();
     this.teamPartnerWishDisabled = runningDinner.getConfiguration().isTeamPartnerWishDisabled();
     this.afterPartyLocation = runningDinner.getAfterPartyLocation().orElse(null);
+    this.zipRestrictions = runningDinner.getZipRestrictions();
     if (incomingPaymentOptions != null) {
       this.paymentOptions = newPaymentOptionsTO(incomingPaymentOptions, locale);
     }
@@ -181,6 +184,14 @@ public class RunningDinnerPublicTO {
 
   public void setPaymentOptions(PaymentOptionsTO paymentOptions) {
     this.paymentOptions = paymentOptions;
+  }
+
+  public String getZipRestrictions() {
+    return zipRestrictions;
+  }
+
+  public void setZipRestrictions(String zipRestrictions) {
+    this.zipRestrictions = zipRestrictions;
   }
 
   @Override

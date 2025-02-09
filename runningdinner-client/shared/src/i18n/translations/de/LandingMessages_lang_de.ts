@@ -30,6 +30,10 @@ const LandingMessages_de: any = {
       'Versuche es bitte später erneut. <br/>' +
       'Falls der Fehler immer noch auftritt wende dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
+    registration_not_possible: "Anmeldung nicht möglich",
+    registration_not_possible_zip_restriction: "Deine Adresse scheint leider zu weit entfernt für eine Teilnahme an <strong>{{title}}</strong> zu sein.<br/>" +
+                                               "Bitte wende dich mit deinen Daten an den Veranstalter, um zu klären, ob dennoch eine Teilnahme möglich ist.",                   
+
     registration_payment_error: 'Leider ist etwas schief gelaufen. Versuche es bitte erneut in ein paar Minuten. Falls es immer noch nicht klappt, kontaktiere bitte den Veranstalter.',
     registration_not_possible_without_payment: 'Für dieses Event ist eine kostenpflichtige Anmeldung nötig.',
     registration_payment_continue: "Weiter zur Bezahlung...",

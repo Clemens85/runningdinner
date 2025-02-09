@@ -38,8 +38,8 @@ public class CreateRunningDinnerWizardServiceRest {
 
 	@PutMapping(value = "/validate/basicdetails", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void validateBasicDetails(@Valid @RequestBody BasicDetailsTO basicDetails) {
-
 		RunningDinnerService.validateRunningDinnerDate(basicDetails.getDate());
+		RunningDinnerService.validateZipRestrictions(basicDetails.getZipRestrictions());
 	}
 
 	@PutMapping(value = "/validate/options", consumes = MediaType.APPLICATION_JSON_VALUE)

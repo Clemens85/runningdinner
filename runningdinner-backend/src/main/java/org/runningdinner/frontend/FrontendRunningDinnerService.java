@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerRepository;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.RunningDinnerSessionData;
@@ -22,6 +23,8 @@ import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
+import org.runningdinner.core.ZipRestrictionCalculator;
+import org.runningdinner.core.ZipRestrictionCalculator.ZipRestrictionsCalculationResult;
 import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.participant.Participant;
@@ -127,7 +130,8 @@ public class FrontendRunningDinnerService {
 
     checkRegistrationDate(runningDinner, now);
     checkFullname(participantName.getFullnameFirstnameFirst());
-    
+    checkZipCodeAllowed(runningDinner, registrationData);
+
     if (onlyPreviewAndValidation) {
       Participant participant = participantService.mapParticipantInputToParticipant(registrationData, new Participant(), runningDinner, true);
       return createRegistrationSummary(runningDinner, participant, registrationData);
@@ -137,6 +141,26 @@ public class FrontendRunningDinnerService {
     emitNewParticipantEvent(registeredParticipant, runningDinner);
     
     return createRegistrationSummary(runningDinner, registeredParticipant, registrationData);
+  }
+
+  private void checkZipCodeAllowed(RunningDinner runningDinner, RegistrationDataTO registrationData) {
+    String zip = registrationData.getZip();
+    var zipRestrictionsCalculationResult = ZipRestrictionCalculator.calculateResultingZipRestrictions(runningDinner.getZipRestrictions());
+    List<String> zipCodeRestrictions = zipRestrictionsCalculationResult.getZipRestrictions();
+
+    if (ZipRestrictionCalculator.isZipCodeAllowed(zip, zipCodeRestrictions)) {
+      return;
+    }
+
+    // If this registration is performed by invitation of an already registered participant, we bypass the zip code check:
+    if (registrationData.isTeamPartnerWishInvitationEmailAddressProvided()) {
+      String teamPartnerWishEmail = registrationData.getTeamPartnerWishEmail();
+      if (CollectionUtils.isNotEmpty(participantService.findParticipantByEmail(runningDinner.getAdminId(), teamPartnerWishEmail))) {
+        return;
+      }
+    }
+
+    throw new ValidationException(new IssueList(new Issue("zipRestrictions", "zip_not_allowed", IssueType.VALIDATION)));
   }
 
   @Transactional

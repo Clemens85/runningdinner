@@ -49,6 +49,9 @@ public class RunningDinner extends AbstractEntity implements RunningDinnerInfo {
 
   @Column(nullable = false)
   private String languageCode;
+
+  @Column(nullable = false)
+  private String zipRestrictions;
   
   @Enumerated(EnumType.STRING)
   @Column(length = 32, nullable = false)
@@ -283,6 +286,15 @@ public class RunningDinner extends AbstractEntity implements RunningDinnerInfo {
     this.afterPartyLocation = afterPartyLocation;
   }
 
+  @Override
+  public String getZipRestrictions() {
+    return zipRestrictions;
+  }
+
+  public void setZipRestrictions(String zipRestrictions) {
+    this.zipRestrictions = zipRestrictions;
+  }
+
   public RunningDinnerInfo createDetachedCloneRunningDinnerInfo() {
 
     RunningDinner result = new RunningDinner(); // Abuse that this object is an implementation of RunningDinnerInfo
@@ -292,6 +304,7 @@ public class RunningDinner extends AbstractEntity implements RunningDinnerInfo {
     result.setTitle(getTitle());
     result.setZip(getZip());
     result.setLanguageCode(getLanguageCode());
+    result.setZipRestrictions(getZipRestrictions());
     return result;
   }
   

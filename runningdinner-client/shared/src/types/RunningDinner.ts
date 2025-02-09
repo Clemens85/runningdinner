@@ -102,6 +102,7 @@ export interface PublicRunningDinner extends Omit<RunningDinnerBasicDetails, "re
   registrationDateExpired: boolean;
   runningDinnerType: RunningDinnerType;
   languageCode: string;
+  zipRestrictions?: string;
   teamPartnerWishDisabled: boolean;
   meals: Meal[];
   publicSettings: RunningDinnerPublicSettings;

@@ -43,6 +43,10 @@ public class BasicDetailsTO implements RunningDinnerInfo, Serializable {
   @Size(max = 16)
   private String languageCode;
 
+  @SafeHtml
+  @Size(max = 1024)
+  private String zipRestrictions;
+
   public BasicDetailsTO() {
 
   }
@@ -54,6 +58,7 @@ public class BasicDetailsTO implements RunningDinnerInfo, Serializable {
     this.date = runningDinnerInfo.getDate();
     this.registrationType = runningDinnerInfo.getRegistrationType();
     this.languageCode = runningDinnerInfo.getLanguageCode();
+    this.zipRestrictions = runningDinnerInfo.getZipRestrictions();
   }
 
   @Override
@@ -122,4 +127,12 @@ public class BasicDetailsTO implements RunningDinnerInfo, Serializable {
     this.registrationType = registrationType;
   }
 
+  @Override
+  public String getZipRestrictions() {
+    return zipRestrictions;
+  }
+
+  public void setZipRestrictions(String zipRestrictions) {
+    this.zipRestrictions = zipRestrictions;
+  }
 }

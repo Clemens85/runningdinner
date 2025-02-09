@@ -30,6 +30,10 @@ const LandingMessages_en: any = {
       'Please try it again later. <br/> ' +
       'If the error still occurs, please send an email to <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
+    registration_not_possible: "Registration not possible",
+    registration_not_possible_zip_restriction: "Unfortunately, your address seems to be too far away to participate in  <strong>{{title}}</strong>.<br/>" +
+                                                "Please contact the organizer with your details to clarify whether participation is still possible.",                   
+
     registration_payment_error: 'Unfortunately, something went wrong. Please try again in a few minutes. If it still does not work out, please contact the organizer.',
     registration_not_possible_without_payment: 'For this event a paid registration is necessary',
     registration_payment_continue: "Continue to payment...",

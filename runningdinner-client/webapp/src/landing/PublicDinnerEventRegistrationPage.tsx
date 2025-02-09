@@ -13,11 +13,14 @@ import {
   AfterPartyLocationHeadline,
   useFindPublicDinner,
   isQuerySucceeded,
-  assertDefined
+  assertDefined,
+  RunningDinnerPublicSettings,
+  calculateResultingZipRestrictions,
+  isArrayEmpty
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
-import { Box, Grid, Link, List, ListItem, ListItemIcon, ListItemText, styled, Typography } from '@mui/material';
+import { Box, Chip, Grid, Link, List, ListItem, ListItemIcon, ListItemText, styled, Typography } from '@mui/material';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Paragraph from "../common/theme/typography/Paragraph";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -33,6 +36,7 @@ import LinkExtern from "../common/theme/LinkExtern";
 import {PublicDemoDinnerEventNotification} from "./PublicDemoDinnerEventNotification";
 import { TextViewHtml } from '../common/TextViewHtml';
 import { FetchProgressBar } from '../common/FetchProgressBar';
+import { PublicContactInfo } from './PublicContactInfo';
 
 
 type RegistrationFormSettingsType = {
@@ -165,17 +169,14 @@ export function PublicDinnerEventDetailsView({publicRunningDinner, showRegistrat
 
     { isPublicContactInfoAvailable &&
       <Box mt={2}>
-        <FormFieldset>{t("common:contact")}</FormFieldset>
-        {isStringNotEmpty(publicSettings.publicContactName) && <Paragraph>{t("common:organizer")}: {publicSettings.publicContactName}</Paragraph>}
-        {isStringNotEmpty(publicSettings.publicContactEmail) && <Paragraph>{t("common:email")}: &nbsp;
-            <Link href={`mailto:${publicSettings.publicContactEmail}`} underline="hover">{publicSettings.publicContactEmail}</Link>
-          </Paragraph>}
-        {isStringNotEmpty(publicSettings.publicContactMobileNumber) && <Paragraph>{t("common:mobile")}: {publicSettings.publicContactMobileNumber}</Paragraph>}
-      </Box> }
+        <PublicContactInfo {...publicSettings} />
+      </Box> 
+    }
 
     <Box mt={2}>
       <FormFieldset>{t("common:registration")}</FormFieldset>
       <Paragraph i18n={"landing:dinner_event_deadline_text"} parameters={{ endOfRegistrationDate: endOfRegistrationDateStr}} />
+      <ZipRestrictionsInfo {...publicRunningDinner} />
       <PaymentInfo {...publicRunningDinner} />
     </Box>
 
@@ -229,4 +230,25 @@ function PaymentInfo(publicRunningDinner: PublicRunningDinner) {
     );
   }
   return null;
+}
+
+
+function ZipRestrictionsInfo({zipRestrictions}: PublicRunningDinner) {
+
+  const {t} = useTranslation(["common"]);
+
+  const zipRestrictionsCalcResult = calculateResultingZipRestrictions(zipRestrictions);
+  if (isArrayEmpty(zipRestrictionsCalcResult.zipRestrictions)) {
+    return null;
+  }
+
+  const zipRestrictionsText = zipRestrictionsCalcResult.zipRestrictions.map((zipRestriction => ` ${zipRestriction}`)).join(",");
+
+  return (
+    <>
+      <Paragraph>{t("common:zip_restrictions_enabled")}
+        { zipRestrictionsText }
+      </Paragraph>
+    </>
+  )
 }

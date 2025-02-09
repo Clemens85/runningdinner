@@ -19,6 +19,7 @@
 	"age": "Age",
 	"all": "All",
 	"appetizer": "Appetizer",
+	"apply": "Apply",
 	"at_time": "at",
 	"attention": "Attention!",
 
@@ -77,6 +78,7 @@
 	"endOfRegistrationDate_help": "Typically the deadline should be some days before the event.",
 	"error_date_invalid": "Dinner date must not be in past",
 	"error_endofregistrationdate_invalid": "Deadline must not be after the event (-> Basic settings for your event date)",
+	"error_zipRestrictions_invalid": "The entered zip code restrictions contain errors, please correct your entry",
 	"error_report": "Error Report",
 	"event_language_help": "When creating a hidden or public dinner event, then this language will be preset when a user opens the event.It is quite reasonable to choose e.g. English when your event will be performed in a non-german speaking community.",
 	"event_language_label": "Preset language",
@@ -232,6 +234,14 @@
 	"x": "x",
 
 	"zip": "Zip",
-	"zip_help": "For public events the zip will be displayed. For closed events the zip has no relevance."
+	"zip_help": "For public events the zip will be displayed. For closed events the zip has no relevance.",
+	"zip_restrictions_enabled": "Registration limited to zip codes:",
+	"zip_restrictions_disabled": "Registration possible with any zip code",
+	"zip_restrictions_add": "Limit registrations to zip codes...",
+	"zip_restrictions_add_info": "Your city is large and you only want to admit participants from certain districts?<br/>Then you can restrict the registration to zip code districts here.<br/>All other zip codes will be rejected during registration.",
+	"zip_restrictions_edit_info": "You can adjust the zip code restriction at any time. If you do not want a restriction, simply delete the content of the field.",
+	"zip_restrictions_input_help": "Zip codes can be entered both comma-separated and as a range. Example: 79098, 79100-79102, 79104",
+	"zip_restrictions_input_label": "Allowed zip codes",
+	"zip_restrictions_input_invalid": "The following zip code entries are invalid: {{invalidZips}}<br/>Please correct your entry."
 
 }

@@ -19,6 +19,7 @@
 	"age": "Alter",
 	"all": "Alle",
 	"appetizer": "Vorspeise",
+	"apply": "Übernehmen",
 	"at_time": "um",
 	"attention": "Achtung!",
 
@@ -76,6 +77,7 @@
 	"endOfRegistrationDate_help": "Sollte typischerweise ein paar Tage vor dem Veranstaltungstag sein",
 	"error_date_invalid": "Das Datum darf nicht in der Vergangenheit liegen",
 	"error_endofregistrationdate_invalid": "Anmeldeschluss darf nicht nach Datum des Events liegen (siehe Einstellungen)",
+	"error_zipRestrictions_invalid": "Die eingegebenen Postleitzahlen-Beschränkungen enthalten Fehler, bitte korrigiere deine Eingabe",
 	"error_report": "Fehlerbericht",
 	"event_language_help": "Wenn du ein verstecktes oder öffentliches Dinner veranstaltest, dann wird diese Sprache beim Öffnen des Events voreingestellt. Wenn dein Event z.B. im nicht-deutschsprachigem Raum statt findet, ist es sinnvoll hier Englisch auszuwählen.",
 	"event_language_label": "Voreingestellte Sprache",
@@ -232,6 +234,15 @@
 	"x": "x",
 
 	"zip": "PLZ",
-	"zip_help": "Ohne Bedeutung bei geschlossenen Veranstaltungen, bei öffentlichen Veranstaltungen wird PLZ und Stadt jedoch veröffentlicht."
+	"zip_help": "Ohne Bedeutung bei geschlossenen Veranstaltungen, bei öffentlichen Veranstaltungen wird PLZ und Stadt jedoch veröffentlicht.",
+	"zip_restrictions_enabled": "Anmeldung beschränkt auf Postleitzahlen:",
+	"zip_restrictions_disabled": "Anmeldung mit jeder Postleitzahl möglich",
+	"zip_restrictions_add": "Anmeldungen auf Postleitzahlen beschränken...",
+	"zip_restrictions_add_info": "Deine Stadt ist groß und du willst nur Teilnehmer aus bestimmten Stadtteilen zulassen?<br/>Dann kannst du hier die Anmeldung auf Postleitzahlen-Kreise einschränken.<br/>Alle anderen Postleitzahlen werden bei der Anmeldung abgelehnt.",
+	"zip_restrictions_edit_info": "Du kannst die Postleitzahlen-Einschränkung jederzeit anpassen. Wenn du keine Einschränkung möchtest, lösche einfach den Inhalt des Feldes.",
+	"zip_restrictions_input_help": "Postleitzahlen können sowohl komma-separiert als auch als Reihe eingeben werden. Beispiel: 79098, 79100-79102, 79104",
+	"zip_restrictions_input_label": "Erlaubte Postleitzahlen",
+	"zip_restrictions_input_invalid": "Folgende Postleitzahlen-Eingaben sind ungültig: {{invalidZips}}<br/>Bitte korrigiere deine Eingabe."
+
 
 }

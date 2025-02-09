@@ -1,12 +1,13 @@
-import { Alert, Box, Chip, Dialog, DialogContent, Grid, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Chip, Dialog, DialogContent, Grid, IconButton, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import SecondaryButton from "../theme/SecondaryButton";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { calculateResultingZipRestrictions, CallbackHandler, CONSTANTS, isArrayEmpty, isArrayNotEmpty, isStringEmpty, isStringNotEmpty, useDisclosure } from "@runningdinner/shared";
 import { t } from "i18next";
 import { DialogTitleCloseable } from "../theme/DialogTitleCloseable";
 import { useState } from "react";
 import { debounce } from "lodash-es";
 import DialogActionsPanel from "../theme/DialogActionsPanel";
+import ClearIcon from '@mui/icons-material/Clear';
 
 export type ZipRestrictionsFormControlProps = {
   currentRegistrationType: string;
@@ -34,15 +35,15 @@ export function ZipRestrictionsFormControl({currentRegistrationType, currentZipR
   }
 
   const hasZipRestrictions = isStringNotEmpty(currentZipRestrictions);
-  const buttonLabel = hasZipRestrictions ? `${t("common:label_edit")}...` : t("Anmeldungen auf Postleitzahlen beschränken...");
+  const buttonLabel = hasZipRestrictions ? `${t("common:label_edit")}...` : t("common:zip_restrictions_add");
 
   return (
     <>
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ mt: 1, mb: 2 }}>
         <Stack direction="row" gap={1} alignItems="center">
           <Box>
-            { hasZipRestrictions && <Typography variant="body2">Anmeldung beschränkt auf Postleitzahlen: {currentZipRestrictions} </Typography> }
-            { !hasZipRestrictions && <Typography variant="body2">Anmeldung mit jeder Postleitzahl möglich</Typography> }
+            { hasZipRestrictions && <Typography variant="body2">{t("common:zip_restrictions_enabled")} <strong>{currentZipRestrictions}</strong></Typography> }
+            { !hasZipRestrictions && <Typography variant="body2">{t("common:zip_restrictions_disabled")}</Typography> }
           </Box>
           <Box>
             <SecondaryButton color={"primary"} 
@@ -69,7 +70,7 @@ type EditZipRestrictionsDialogProps = {
 function EditZipRestrictionsDialog({onCancel, onSave, currentZipRestrictions}: EditZipRestrictionsDialogProps) {
 
   const [zipRestrictions, setZipRestrictions] = useState(currentZipRestrictions);
-  const [resultingZipRestrictions, setResultingZipRestrictions] = useState<string[]>([]);
+  const [resultingZipRestrictions, setResultingZipRestrictions] = useState<string[]>(() => calculateResultingZipRestrictions(currentZipRestrictions).zipRestrictions);
   const [invalidZipRestrictions, setInvalidZipRestrictions] = useState<string[]>([]);
 
   const calculateResultingZipRestrictionsDebounced = debounce((value ) => {
@@ -81,9 +82,9 @@ function EditZipRestrictionsDialog({onCancel, onSave, currentZipRestrictions}: E
   }, 150);
 
 
-  function handleZipRestrictionsChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setZipRestrictions(event.target.value);
-    calculateResultingZipRestrictionsDebounced(event.target.value);
+  function handleZipRestrictionsChange(newVal: string) {
+    setZipRestrictions(newVal);
+    calculateResultingZipRestrictionsDebounced(newVal);
   }
 
   function handleSave() {
@@ -93,54 +94,75 @@ function EditZipRestrictionsDialog({onCancel, onSave, currentZipRestrictions}: E
     if (isArrayNotEmpty(calculationResult.invalidZips)) {
       setInvalidZipRestrictions(calculationResult.invalidZips);
     } else {
-      onSave(zipRestrictions);
+      // Remove trailing comma if present
+      const normalizedZipRestritions = isStringNotEmpty(zipRestrictions) && zipRestrictions.trim().endsWith(",") ? zipRestrictions.trim().slice(0, -1) : zipRestrictions.trim();
+      onSave(normalizedZipRestritions);
     }
   }
 
   const title = "Anmeldungen auf Postleitzahlen beschränken";
+  const hasZipRestrictions = isStringNotEmpty(currentZipRestrictions);
+
   return (
     <Dialog open={true} onClose={onCancel} aria-labelledby={title}>
       <DialogTitleCloseable onClose={onCancel}>{title}</DialogTitleCloseable>
       <DialogContent>
         <Box pt={2}>
-          <Alert severity="info" variant="outlined">
-            Deine Stadt ist groß und du willst nur Teilnehmer aus bestimmten Stadtteilen zulassen?<br/>
-            Dann kannst du hier die Anmeldung auf Postleitzahlen-Kreise einschränken.<br/>
-            Alle anderen Postleitzahlen werden bei der Anmeldung abgelehnt.
-          </Alert>
+
+          { !hasZipRestrictions &&
+            <Alert severity="info" variant="outlined">
+              <Trans i18nKey="common:zip_restrictions_add_info"/>
+            </Alert>
+          }
+
+          { hasZipRestrictions &&
+            <Alert severity="info" variant="outlined">
+              <Trans i18nKey="common:zip_restrictions_edit_info"/>
+            </Alert>
+          }
 
           <Box my={2}>
-            <TextField helperText={"Postleitzahlen können sowohl komma-separiert als auch als Reihe eingeben werden. Beispiel: 79098, 79100-79102, 79104"}
-                       label={"Erlaubte Postleitzahlen"}
-                       onChange={handleZipRestrictionsChange}
+            <TextField helperText={t("common:zip_restrictions_input_help")}
+                       label={t("zip_restrictions_input_label")}
+                       onChange={(evt) => handleZipRestrictionsChange(evt.target.value)}
                        value={zipRestrictions} 
+                       InputProps={{
+                        endAdornment: 
+                          <InputAdornment position="end">
+                            <IconButton size="small" onClick={() => handleZipRestrictionsChange("")}>
+                              <ClearIcon fontSize="small" />
+                            </IconButton>
+                          </InputAdornment>
+                       }}
                        fullWidth />
           </Box>
 
-          { isArrayNotEmpty(resultingZipRestrictions) && 
-            <Box>
-              <Typography variant="subtitle1">Vorschau</Typography>
-              <Grid container spacing={1} sx={{ pt: 1 }}>
-                {resultingZipRestrictions.map((zipRestriction, index) => 
-                  <Grid key={index} item>
-                    <Chip label={zipRestriction} variant="outlined" color="primary" />
-                  </Grid>
-                )} 
-              </Grid>
-            </Box>
-          }
-
+          <Box>
+            <Typography variant="subtitle1">{t("common:zip_restrictions_enabled")}</Typography>
+            <Grid container spacing={1} sx={{ pt: 1 }}>
+              {resultingZipRestrictions.map((zipRestriction, index) => 
+                <Grid key={index} item>
+                  <Chip label={zipRestriction} variant="outlined" color="primary" />
+                </Grid>
+              )} 
+              { isStringEmpty(zipRestrictions) && 
+                <Grid item>
+                  <Typography variant="body2">{t("common:zip_restrictions_disabled")}</Typography>
+                </Grid>
+              }
+            </Grid>
+          </Box>
+          
           {isArrayNotEmpty(invalidZipRestrictions) && 
             <Alert severity="error" variant="outlined" sx={{mt: 2}}>
-              Folgende Postleitzahlen-Eingaben sind ungültig: {invalidZipRestrictions.join(", ")}<br/>
-              Bitte korrigiere deine Eingabe.
+              <Trans i18nKey="common:zip_restrictions_invalid" values={{ invalidZipRestrictions: invalidZipRestrictions.join(", ") }} />
             </Alert>
           }
         </Box>
       </DialogContent>
       <DialogActionsPanel onOk={handleSave}
                           onCancel={onCancel} 
-                          okLabel={t("common:Übernehmen")} 
+                          okLabel={t("common:apply")} 
                           cancelLabel={t('common:cancel')} />
     </Dialog>
   )

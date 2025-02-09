@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.rest.BasicSettingsTO;
@@ -22,18 +23,8 @@ import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.common.service.ValidatorService;
-import org.runningdinner.core.AfterPartyLocation;
-import org.runningdinner.core.AssignableParticipantSizes;
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.MealClassSorter;
-import org.runningdinner.core.PublicSettings;
-import org.runningdinner.core.RegistrationType;
-import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.*;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
-import org.runningdinner.core.RunningDinnerConfig;
-import org.runningdinner.core.RunningDinnerInfo;
-import org.runningdinner.core.RunningDinnerPreference;
-import org.runningdinner.core.RunningDinnerPreferences;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.event.RunningDinnerSettingsUpdatedEvent;
 import org.runningdinner.event.publisher.EventPublisher;
@@ -170,13 +161,13 @@ public class RunningDinnerService implements ApplicationContextAware {
   }
 
   private static void copyBasicDetails(RunningDinnerInfo src, RunningDinner dest) {
-
     dest.setCity(src.getCity());
     dest.setZip(src.getZip());
     dest.setTitle(src.getTitle());
     dest.setDate(src.getDate());
     dest.setRegistrationType(src.getRegistrationType());
     dest.setLanguageCode(src.getLanguageCode());
+    dest.setZipRestrictions(src.getZipRestrictions());
   }
 
   @Transactional
@@ -339,10 +330,16 @@ public class RunningDinnerService implements ApplicationContextAware {
   }
   
   public static void validateRunningDinnerDate(LocalDate runningDinnerDate) {
-
     LocalDate now = LocalDate.now();
     if (runningDinnerDate.isBefore(now)) {
       throw new ValidationException(new IssueList(new Issue("date", "error_date_invalid", IssueType.VALIDATION)));
+    }
+  }
+
+  public static void validateZipRestrictions(String zipRestrictions) {
+    var result = ZipRestrictionCalculator.calculateResultingZipRestrictions(zipRestrictions);
+    if (CollectionUtils.isNotEmpty(result.getInvalidZips())) {
+      throw new ValidationException(new IssueList(new Issue("zipRestrictions", "error.zipRestrictions.invalid", IssueType.VALIDATION)));
     }
   }
   

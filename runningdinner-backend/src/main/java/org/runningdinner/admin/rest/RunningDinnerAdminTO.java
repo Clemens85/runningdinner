@@ -171,6 +171,11 @@ public class RunningDinnerAdminTO extends BaseTO implements RunningDinnerInfo, S
     return basicDetails.getLanguageCode();
   }
 
+  @Override
+  public String getZipRestrictions() {
+    return basicDetails.getZipRestrictions();
+  }
+
   public RunningDinnerSessionData getSessionData() {
 
     return sessionData;
