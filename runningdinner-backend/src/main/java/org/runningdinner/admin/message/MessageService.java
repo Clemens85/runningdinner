@@ -165,7 +165,8 @@ public class MessageService {
 
     return parentMessageJob;
   }
-  
+
+  @Transactional(readOnly = true)
   public List<PreviewMessage> getTeamPreview(@ValidateAdminId String adminId, TeamMessage teamMessage) {
 
     // Can of course be optimized to not load too much participants...:

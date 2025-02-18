@@ -341,7 +341,7 @@ public class MessageServiceTest {
     assertThat(previewMessage.getMessage()).contains(
       "Vegetarisch",
       "Vegan",
-      "Gutenfrei",
+      "Glutenfrei",
       "Fancy Wunsch"
     );
     assertThat(previewMessage.getMessage()).doesNotContain("Laktosefrei");

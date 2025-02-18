@@ -125,7 +125,6 @@ public class TeamArrangementMessageFormatter {
   }
 
   private List<MealSpecifics> getRelevantMealSpecifics(Team parentTeam) {
-    // TODO: Ensure we have loaded also guest teams before callin this method
     List<MealSpecifics> result = new ArrayList<>(parentTeam.getMealSpecificsOfGuestTeams());
     List<Participant> teamMembers = parentTeam.getTeamMembersOrdered();
     for (Participant teamMember : teamMembers) {
