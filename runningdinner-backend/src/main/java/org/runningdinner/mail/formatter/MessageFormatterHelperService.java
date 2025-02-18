@@ -28,7 +28,19 @@ public class MessageFormatterHelperService {
     this.messageSource = messageSource;
   }
 
-  public String formatMealSpecificsUnified(List<MealSpecifics> allGuestMealspecifics, RunningDinner runningDinner) {
+
+  public String formatMealSpecificsTeamMessagesUnified(List<MealSpecifics> allMealSpecifics, RunningDinner runningDinner) {
+    return formatMealSpecificsUnified(allMealSpecifics, "message.template.teams.mealspecifics", "message.template.teams.mealspecifics-note", runningDinner);
+  }
+
+  public String formatMealSpecificsDinnerRouteMessagesUnified(List<MealSpecifics> allGuestMealspecifics, RunningDinner runningDinner) {
+    return formatMealSpecificsUnified(allGuestMealspecifics, "message.template.dinnerroute.mealspecifics", "message.template.dinnerroute.mealspecifics-note", runningDinner);
+  }
+
+  private String formatMealSpecificsUnified(List<MealSpecifics> allGuestMealspecifics,
+                                            String mealSpecificsTemplate,
+                                            String mealSpecificsNoteTemplate,
+                                            RunningDinner runningDinner) {
 
     if (CollectionUtils.isEmpty(allGuestMealspecifics)) {
       return StringUtils.EMPTY;
@@ -45,14 +57,14 @@ public class MessageFormatterHelperService {
 
     String result = StringUtils.EMPTY;
     if (resultingMealSpecifics.isOneSelected()) {
-      result = messageSource.getMessage("message.template.dinnerroute.mealspecifics", null, locale);
+      result = messageSource.getMessage(mealSpecificsTemplate, null, locale);
       result = result.replaceAll(FormatterUtil.MEALSPECIFICS, formatMealSpecificItems(resultingMealSpecifics, locale));
     }
     if (StringUtils.isNotEmpty(mealSpecificsNotes)) {
       if (resultingMealSpecifics.isOneSelected()) {
         result += FormatterUtil.NEWLINE;
       }
-      String mealSepcificsNotesText = messageSource.getMessage("message.template.dinnerroute.mealspecifics-note", null,
+      String mealSepcificsNotesText = messageSource.getMessage(mealSpecificsNoteTemplate, null,
           locale);
       mealSepcificsNotesText = mealSepcificsNotesText.replaceAll(FormatterUtil.MEALSPECIFICS_NOTE, mealSpecificsNotes);
       result += mealSepcificsNotesText;
@@ -77,7 +89,7 @@ public class MessageFormatterHelperService {
     if (mealSpecifics.isGluten()) {
       result.append(translateMealSpecificItem("gluten", locale));
     }
-    if (result.length() > 0) {
+    if (!result.isEmpty()) {
       return result.substring(0, result.length() - 2);
     }
     return StringUtils.EMPTY;
@@ -104,7 +116,7 @@ public class MessageFormatterHelperService {
         .stream()
         .map(MealSpecifics::getMealSpecificsNote)
         .filter(StringUtils::isNotBlank)
-        .collect(Collectors.toList());
+        .toList();
 
     StringBuilder result = new StringBuilder();
     int cnt = 0;

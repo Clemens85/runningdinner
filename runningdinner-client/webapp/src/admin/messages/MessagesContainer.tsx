@@ -45,7 +45,7 @@ import { useAdminNavigation } from "../AdminNavigationHook";
 export function TeamMessages({runningDinner}: BaseRunningDinnerProps) {
 
   const {adminId} = runningDinner;
-  const templates = createMessageTemplates(['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}'], runningDinner);
+  const templates = createMessageTemplates(['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{host}', '{partner}', '{managehostlink}', '{mealspecifics}'], runningDinner);
 
   const dispatch = useAdminDispatch();
   useEffect(() => {

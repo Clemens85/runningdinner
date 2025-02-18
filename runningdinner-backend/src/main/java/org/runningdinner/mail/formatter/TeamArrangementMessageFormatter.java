@@ -2,6 +2,8 @@
 package org.runningdinner.mail.formatter;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -9,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
+import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
@@ -63,6 +66,10 @@ public class TeamArrangementMessageFormatter {
     
     Set<Participant> partners = CoreUtil.excludeFromSet(teamMember, parentTeam.getTeamMembers());
 
+    String relevantMealSpecifics = this.messageFormatterHelperService.formatMealSpecificsTeamMessagesUnified(getRelevantMealSpecifics(parentTeam),
+        runningDinner);
+    theMessage = theMessage.replaceAll(FormatterUtil.MEALSPECIFICS, relevantMealSpecifics);
+
     int cnt = 0;
     StringBuilder partnerInfo = new StringBuilder();
     for (Participant partner : partners) {
@@ -81,21 +88,23 @@ public class TeamArrangementMessageFormatter {
         .append(address).append(FormatterUtil.NEWLINE)
         .append(partnerMail).append(FormatterUtil.NEWLINE)
         .append(partnerMobile);
-      
-      if (partner.getMealSpecifics().isOneSelected()) {
-        partnerInfo.append(FormatterUtil.NEWLINE);
-        String mealsepcificsText = messageSource.getMessage("message.template.teampartner.mealspecifics", null, locale);
-        mealsepcificsText = mealsepcificsText.replaceAll(FormatterUtil.MEALSPECIFICS,
-            messageFormatterHelperService.formatMealSpecificItems(partner.getMealSpecifics(), locale));
-        partnerInfo.append(mealsepcificsText);
-      }
-      if (StringUtils.isNotEmpty(partner.getMealSpecifics().getMealSpecificsNote())) {
-        partnerInfo.append(FormatterUtil.NEWLINE);
-        String mealsepcificsNoteText = messageSource.getMessage("message.template.teampartner.mealspecifics-note", null, locale);
-        mealsepcificsNoteText = mealsepcificsNoteText.replaceAll(FormatterUtil.MEALSPECIFICS_NOTE, partner.getMealSpecifics().getMealSpecificsNote());
-        partnerInfo.append(mealsepcificsNoteText);
-      }
+
+//      if (partner.getMealSpecifics().isOneSelected()) {
+//        partnerInfo.append(FormatterUtil.NEWLINE);
+//        String mealsepcificsText = messageSource.getMessage("message.template.teampartner.mealspecifics", null, locale);
+//        mealsepcificsText = mealsepcificsText.replaceAll(FormatterUtil.MEALSPECIFICS,
+//            messageFormatterHelperService.formatMealSpecificItems(partner.getMealSpecifics(), locale));
+//        partnerInfo.append(mealsepcificsText);
+//      }
+//      if (StringUtils.isNotEmpty(partner.getMealSpecifics().getMealSpecificsNote())) {
+//        partnerInfo.append(FormatterUtil.NEWLINE);
+//        String mealsepcificsNoteText = messageSource.getMessage("message.template.teampartner.mealspecifics-note", null, locale);
+//        mealsepcificsNoteText = mealsepcificsNoteText.replaceAll(FormatterUtil.MEALSPECIFICS_NOTE, partner.getMealSpecifics().getMealSpecificsNote());
+//        partnerInfo.append(mealsepcificsNoteText);
+//      }
+
     }
+
     theMessage = theMessage.replaceFirst(FormatterUtil.PARTNER, partnerInfo.toString());
 
     Participant hostMember = parentTeam.getHostTeamMember();
@@ -113,6 +122,16 @@ public class TeamArrangementMessageFormatter {
     theMessage = theMessage.replaceAll(FormatterUtil.MANGE_HOST_LINK, manageHostLink);
 
     return theMessage;
+  }
+
+  private List<MealSpecifics> getRelevantMealSpecifics(Team parentTeam) {
+    // TODO: Ensure we have loaded also guest teams before callin this method
+    List<MealSpecifics> result = new ArrayList<>(parentTeam.getMealSpecificsOfGuestTeams());
+    List<Participant> teamMembers = parentTeam.getTeamMembersOrdered();
+    for (Participant teamMember : teamMembers) {
+      result.add(teamMember.getMealSpecifics());
+    }
+    return result;
   }
 
   public void setUrlGenerator(UrlGenerator urlGenerator) {

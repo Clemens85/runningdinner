@@ -314,6 +314,40 @@ public class MessageServiceTest {
   }
 
   @Test
+  public void testMealSpecificsAreCorrectFormattedInTeamMessage() {
+    teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+
+    TeamMeetingPlan firstTeam = getTeamMeetingPlanOfFirstTeam();
+    List<Team> guestTeams = firstTeam.getGuestTeams();
+
+    Team firstGuestTeam = guestTeams.get(0);
+    Participant guestParticipant = firstGuestTeam.getTeamMembersOrdered().get(0);
+    guestParticipant.setMealSpecifics(new MealSpecifics(false, false, true, true, "Fancy Wunsch"));
+    participantRepository.save(guestParticipant);
+
+    Participant hostTeamMember = firstTeam.getTeam().getHostTeamMember();
+    hostTeamMember.setMealSpecifics(new MealSpecifics(false, true, false, false, StringUtils.EMPTY));
+    participantRepository.save(hostTeamMember);
+
+    TeamMessage teamMessage = new TeamMessage();
+    teamMessage.setMessage("{mealspecifics}");
+    teamMessage.setSubject("Subject");
+    teamMessage.setHostMessagePartTemplate("Host");
+    teamMessage.setNonHostMessagePartTemplate("Non-Host");
+    teamMessage.setTeamSelection(TeamSelection.CUSTOM_SELECTION);
+    teamMessage.setCustomSelectedTeamIds(Collections.singletonList(firstTeam.getTeam().getId()));
+
+    PreviewMessage previewMessage = messageService.getTeamPreview(runningDinner.getAdminId(), teamMessage).get(0);
+    assertThat(previewMessage.getMessage()).contains(
+      "Vegetarisch",
+      "Vegan",
+      "Gutenfrei",
+      "Fancy Wunsch"
+    );
+    assertThat(previewMessage.getMessage()).doesNotContain("Laktosefrei");
+  }
+
+  @Test
   public void sendingQueuedMessagesByScheduler() {
     
     MessageJob messageJob = messageService.findMessageJobs(runningDinner.getAdminId(), MessageType.NEW_RUNNING_DINNER).get(0);
