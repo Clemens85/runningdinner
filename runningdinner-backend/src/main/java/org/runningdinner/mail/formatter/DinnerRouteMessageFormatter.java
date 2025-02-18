@@ -122,7 +122,6 @@ public class DinnerRouteMessageFormatter {
 
       if (++cnt < dinnerRouteSize) {
         plan.append(FormatterUtil.TWO_NEWLINES);
-        plan.append(FormatterUtil.NEWLINE);
       }
     }
 
