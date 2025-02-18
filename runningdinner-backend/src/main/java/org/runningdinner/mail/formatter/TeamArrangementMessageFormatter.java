@@ -68,8 +68,11 @@ public class TeamArrangementMessageFormatter {
 
     String relevantMealSpecifics = this.messageFormatterHelperService.formatMealSpecificsTeamMessagesUnified(getRelevantMealSpecifics(parentTeam),
         runningDinner);
-    theMessage = theMessage.replaceAll(FormatterUtil.MEALSPECIFICS, relevantMealSpecifics);
-
+    if (StringUtils.isEmpty(relevantMealSpecifics)) {
+      theMessage = theMessage.replaceAll("\n?" + FormatterUtil.MEALSPECIFICS + "\n?", StringUtils.EMPTY);
+    } else {
+      theMessage = theMessage.replaceAll(FormatterUtil.MEALSPECIFICS, relevantMealSpecifics);
+    }
     int cnt = 0;
     StringBuilder partnerInfo = new StringBuilder();
     for (Participant partner : partners) {
@@ -88,21 +91,6 @@ public class TeamArrangementMessageFormatter {
         .append(address).append(FormatterUtil.NEWLINE)
         .append(partnerMail).append(FormatterUtil.NEWLINE)
         .append(partnerMobile);
-
-//      if (partner.getMealSpecifics().isOneSelected()) {
-//        partnerInfo.append(FormatterUtil.NEWLINE);
-//        String mealsepcificsText = messageSource.getMessage("message.template.teampartner.mealspecifics", null, locale);
-//        mealsepcificsText = mealsepcificsText.replaceAll(FormatterUtil.MEALSPECIFICS,
-//            messageFormatterHelperService.formatMealSpecificItems(partner.getMealSpecifics(), locale));
-//        partnerInfo.append(mealsepcificsText);
-//      }
-//      if (StringUtils.isNotEmpty(partner.getMealSpecifics().getMealSpecificsNote())) {
-//        partnerInfo.append(FormatterUtil.NEWLINE);
-//        String mealsepcificsNoteText = messageSource.getMessage("message.template.teampartner.mealspecifics-note", null, locale);
-//        mealsepcificsNoteText = mealsepcificsNoteText.replaceAll(FormatterUtil.MEALSPECIFICS_NOTE, partner.getMealSpecifics().getMealSpecificsNote());
-//        partnerInfo.append(mealsepcificsNoteText);
-//      }
-
     }
 
     theMessage = theMessage.replaceFirst(FormatterUtil.PARTNER, partnerInfo.toString());
