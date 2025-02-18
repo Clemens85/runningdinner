@@ -45,27 +45,27 @@ public class DinnerRouteMessageFormatter {
 	}
 
   public String formatDinnerRouteMessage(final RunningDinner runningDinner, final Participant teamMember,
-      final Team parentTeam, final List<Team> dinnerRoute,
-      final DinnerRouteTextMessage dinnerRouteTextMessage) {
+    final Team parentTeam, final List<Team> dinnerRoute,
+    final DinnerRouteTextMessage dinnerRouteTextMessage) {
 
-      Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
-      DateTimeFormatter timeFormat = localizationProviderService.getTimeFormatterOfDinner(runningDinner);
+    Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
+    DateTimeFormatter timeFormat = localizationProviderService.getTimeFormatterOfDinner(runningDinner);
 
-      String hostsTemplate = dinnerRouteTextMessage.getHostsTemplate();
-      String selfTemplate = dinnerRouteTextMessage.getSelfTemplate();
-      String theMessage = dinnerRouteTextMessage.getMessage();
-      Assert.state(StringUtils.isNotEmpty(selfTemplate), "Self part template must not be empty!");
-      Assert.state(StringUtils.isNotEmpty(hostsTemplate), "Hosts part template must not be empty!");
-      Assert.state(StringUtils.isNotEmpty(theMessage), "Message template must not be empty!");
+    String hostsTemplate = dinnerRouteTextMessage.getHostsTemplate();
+    String selfTemplate = dinnerRouteTextMessage.getSelfTemplate();
+    String theMessage = dinnerRouteTextMessage.getMessage();
+    Assert.state(StringUtils.isNotEmpty(selfTemplate), "Self part template must not be empty!");
+    Assert.state(StringUtils.isNotEmpty(hostsTemplate), "Hosts part template must not be empty!");
+    Assert.state(StringUtils.isNotEmpty(theMessage), "Message template must not be empty!");
 
-      final String noTimeText = messageSource.getMessage("message.template.no.time", null, locale);
-      final String noMobileText = messageSource.getMessage("message.template.no.mobile", null, locale);
+    final String noTimeText = messageSource.getMessage("message.template.no.time", null, locale);
+    final String noMobileText = messageSource.getMessage("message.template.no.mobile", null, locale);
 
-      theMessage = theMessage.replaceAll(FormatterUtil.FIRSTNAME, teamMember.getName().getFirstnamePart());
-      theMessage = theMessage.replaceAll(FormatterUtil.LASTNAME, teamMember.getName().getLastname());
-      String routeLink = urlGenerator.constructPrivateDinnerRouteUrl(runningDinner.getSelfAdministrationId(),
-          parentTeam.getId(), teamMember.getId());
-      theMessage = theMessage.replaceAll(FormatterUtil.ROUTELINK, routeLink);
+    theMessage = theMessage.replaceAll(FormatterUtil.FIRSTNAME, teamMember.getName().getFirstnamePart());
+    theMessage = theMessage.replaceAll(FormatterUtil.LASTNAME, teamMember.getName().getLastname());
+    String routeLink = urlGenerator.constructPrivateDinnerRouteUrl(runningDinner.getSelfAdministrationId(),
+        parentTeam.getId(), teamMember.getId());
+    theMessage = theMessage.replaceAll(FormatterUtil.ROUTELINK, routeLink);
 
     theMessage = afterPartyLocationService.replaceAfterPartyLocationTemplate(theMessage, runningDinner);
 
@@ -130,7 +130,7 @@ public class DinnerRouteMessageFormatter {
 
       return theMessage;
 
-  }
+    }
 
     public String getMealSpecificsOfGuestTeams(Team parentTeam, RunningDinner runningDinner) {
       List<MealSpecifics> allGuestMealspecifics = parentTeam.getMealSpecificsOfGuestTeams();
@@ -141,7 +141,7 @@ public class DinnerRouteMessageFormatter {
 		this.urlGenerator = urlGenerator;
 	}
 
-	public void setMessageSource(MessageSource messageSource) {
+	  public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
