@@ -130,7 +130,7 @@ public class DinnerRouteMessageFormatter {
 
     return theMessage;
 
-  }
+    }
 
   public String getMealSpecificsOfGuestTeams(Team parentTeam, RunningDinner runningDinner) {
     List<MealSpecifics> allGuestMealspecifics = parentTeam.getMealSpecificsOfGuestTeams();
@@ -141,7 +141,7 @@ public class DinnerRouteMessageFormatter {
   this.urlGenerator = urlGenerator;
 }
 
-	public void setMessageSource(MessageSource messageSource) {
+	  public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
