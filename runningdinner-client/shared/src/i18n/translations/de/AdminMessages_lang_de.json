@@ -100,6 +100,8 @@
 	"label_participant_edit_success": "Teilnehmer erfolgreich bearbeitet!",
 	"latest_registrations": "Letzte Anmeldungen",
 
+	"legend": "Legende",
+
 	"mail_protocols": "Mail Protokolle",
 	"mails_message": "Nachricht",
 	"mails_participant_sendmessage_button": "Rundmail an Teilnehmer",
@@ -155,6 +157,20 @@
 	"messages_sending_pending": "Sendevorgang läuft noch",
 	"message_task_resend_success": "Nachricht erneut versandt!",
 	"message_tasks_no_selection": "Bitte wähle eine Nachricht aus um dessen Details zu sehen!",
+
+	"message_template_help_description": "Die verwendeten Platzhalter werden dynamisch vom System durch die entsprechenden Werte ersetzt. Damit kannst du personalisierte Nachrichten an deine Teilnehmer bzw. Teams versenden und sparst dir den mühseeligen Aufwand, jeden Teilnehmer bzw. jedes Team einzeln anzuschreiben:",
+	"message_template_help_firstname": "Vorname des Teilnehmers der Nachricht",
+	"message_template_help_lastname": "Nachname des Teilnehmers der Nachricht",
+	"message_template_help_meal": "Speise die das Team zubereitet",
+	"message_template_help_partner": "Name des Teampartners",
+	"message_template_help_mealtime": "Uhrzeit zu der die Speise eingenommen wird",
+	"message_template_help_mealspecifics": "Besondere Essens-Wünsche aller Gäste bzw. Team-Partner",
+	"message_template_help_host": "Gastgeber-Information für das Team (bei wem soll gekocht werden)",
+	"message_template_help_managehostlink": "Link zur Gastgeber-Verwaltung (das Team kann hiermit die Gastgeber-Einteilung selbst umändern)",
+	"message_template_help_route": "Komplette Route des Teams inkl. Gastgeber-Informationen (beachte die Blöcke weiter unten)",
+	"message_template_help_routelink": "Link zur Live-Ansicht der Dinner-Route",
+	"message_template_help_hostaddress": "Adresse des Gastgebers",
+	"message_template_help_mobilenumber": "Handy-Nr des Gastgebers",	
 
 	"meals_swap": "Speise tauschen",
 	"meals_swap_success": "Speisen erfolgreich getauscht",

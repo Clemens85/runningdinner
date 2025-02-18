@@ -1,10 +1,12 @@
 import React from "react";
-import {Box, Grid, Chip, useMediaQuery} from "@mui/material";
+import {Box, Grid, Chip, useMediaQuery, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
 import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import {useTranslation} from "react-i18next";
-import {isArrayEmpty} from "@runningdinner/shared";
+import {findEntityById, isArrayEmpty, useDisclosure} from "@runningdinner/shared";
 import {styled, Theme} from "@mui/material/styles";
+import LinkAction from "../../common/theme/LinkAction";
+import { ConfirmationDialog } from "../../common/theme/dialog/ConfirmationDialog";
 
 
 const MessageTemplateChip = styled(Chip)(({theme}) => ({
@@ -19,9 +21,11 @@ export interface MessageTemplatesProps {
 
 function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: MessageTemplatesProps) {
 
-  const {t} = useTranslation('admin');
+  const {t} = useTranslation(['admin', 'common']);
 
   const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
+
+  const {isOpen, open, close} = useDisclosure();
 
   if (isArrayEmpty(templates)) {
     return null;
@@ -34,21 +38,69 @@ function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: M
       </Grid>
   );
   return (
-    <Grid container alignItems={"center"} justifyContent={"flex-start"} sx={{ mb: 2 }}>
-      { smUpDevice &&
-        <Grid item>
-          <Box component={"span"} pr={1}>{t('mails_template_help')}: </Box>
-        </Grid> }
-      {messageTemplateNodes}
-      {showTemplatesHelpIcon &&
-        <Grid item>
-          <HelpIconTooltip title={<Paragraph i18n='admin:mails_template_help_description'/>} 
-                           sx={{ verticalAlign: "middle" }}
-                           placement='right'/>
-        </Grid>
+    <>
+      <Grid container alignItems={"center"} justifyContent={"flex-start"} sx={{ mb: 2 }}>
+        { smUpDevice &&
+          <Grid item>
+            <Box component={"span"} pr={1}>{t('admin:mails_template_help')}: </Box>
+          </Grid> }
+        {messageTemplateNodes}
+        {showTemplatesHelpIcon &&
+          <Grid item>
+            <HelpIconTooltip 
+              title={
+                <>
+                  <Paragraph i18n='admin:mails_template_help_description' />
+                  <Box sx={{ mt: 1}}>
+                    <LinkAction onClick={() => open()}><Paragraph i18n="common:more"></Paragraph></LinkAction>
+                  </Box>
+                </>
+              } 
+              sx={{ verticalAlign: "middle" }}
+              placement='right'/>
+          </Grid>
+        }
+      </Grid>
+      { isOpen && 
+        <ConfirmationDialog buttonConfirmText={t('common:ok')} 
+                            onClose={close} 
+                            dialogTitle={t("common:help")}
+                            dialogContent={<TemplateHelpLegend templates={templates} />} /> 
       }
-    </Grid>
+    </>
   );
+}
+
+function TemplateHelpLegend({templates}: Pick<MessageTemplatesProps, 'templates'>) {
+
+  const {t} = useTranslation(['admin']);
+
+  function getTemplateHelp(template: string): string {
+    if (template.length < 2) {
+      return "";
+    }
+    const templateWithoutBraces = template.substring(1, template.length - 1);
+    return t(`message_template_help_${templateWithoutBraces}`);
+  }
+
+  return (
+    <Box>
+      <Paragraph i18n='admin:message_template_help_description' />
+      <Divider sx={{ my: 2}}><strong>{t("admin:legend")}</strong></Divider>
+      <List dense>
+        { (templates || []).map((template) => 
+          <ListItem disablePadding key={template}>
+            <ListItemButton>
+              <ListItemIcon>
+                <MessageTemplateChip label={template} />
+              </ListItemIcon>
+              <ListItemText primary={<>{getTemplateHelp(template)}</>} sx={{ textAlign: "right" }}/>
+            </ListItemButton>
+          </ListItem>
+        )}
+      </List>
+    </Box>
+  )
 }
 
 

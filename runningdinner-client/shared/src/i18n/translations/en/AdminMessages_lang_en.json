@@ -98,6 +98,8 @@
 	"label_participant_edit_success": "Participant successfully saved!",
 	"latest_registrations": "Latest registrations",
 
+	"legend": "Legend",
+
 	"mail_protocols": "Mail Protocols",
 	"mails_message": "Message",
 	"mails_participant_sendmessage_button": "Send Participant Messages!",
@@ -153,6 +155,21 @@
 	"messages_sending_pending": "Sending still running",
 	"message_task_resend_success": "Message sent successfully!",
 	"message_tasks_no_selection": "Please select a message for viewing it's details!",
+	
+	"message_template_help_description": "The placeholders used are dynamically replaced by the system with the corresponding values. This allows you to send personalized messages to your participants or teams, saving you the tedious effort of writing to each participant or team individually:",
+	"message_template_help_firstname": "First name of the message participant",
+	"message_template_help_lastname": "Last name of the message participant",
+	"message_template_help_meal": "Meal that the team prepares",
+	"message_template_help_partner": "Name of the team partner",
+	"message_template_help_mealtime": "Time when the meal is taken",
+	"message_template_help_mealspecifics": "Special dietary requests of all guests or team partners",
+	"message_template_help_host": "Host information for the team (where the meal will be cooked)",
+	"message_template_help_managehostlink": "Link to host management (the team can change the host assignment themselves)",
+	"message_template_help_route": "Complete route of the team including host information (see blocks below)",
+	"message_template_help_routelink": "Link to the live view of the dinner route",
+	"message_template_help_hostaddress": "Address of the host",
+	"message_template_help_mobilenumber": "Mobile number of the host",
+	
 	"meals_swap": "Swap meals",
 	"meals_swap_success": "Meals successfully swapped",
 	"meals_swap_team": "Swap meal of {{team}}",
