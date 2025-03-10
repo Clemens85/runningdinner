@@ -139,7 +139,7 @@ jobs:
           aws-region: eu-central-1
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
 
-      - name: Get Cloudfront Distribution Id
+      - name: Deploy WebApp to S3 Bucket and invalidate Cloudfront Distribution
         run: |
           CONTENT_BUILD_DIR="runningdinner-client/webapp/dist"
           if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then

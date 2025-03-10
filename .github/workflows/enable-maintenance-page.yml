@@ -1,0 +1,53 @@
+name: Enable Maintenance Page
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy against'
+        type: environment
+        required: true
+
+jobs:
+
+  deploy_maintenancepage_s3:
+    permissions:
+      contents: read
+      id-token: write   
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Set AWS_ACCOUNT_ID to Env
+        run: |
+          echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
+        env:
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
+
+      - name: Deploy maintenance-page to S3 Bucket and invalidate Cloudfront Distribution
+        run: |
+          CONTENT_BUILD_DIR="runningdinner-client/maintenance-page"
+          if [ ! -d "$CONTENT_BUILD_DIR" ] || [ ! "$(ls -A $CONTENT_BUILD_DIR)" ]; then
+            echo "$CONTENT_BUILD_DIR does either not exist or has no files inside"
+            exit 1
+          fi
+
+          STAGE="${{ github.event.inputs.environment }}"
+          aws s3 sync "$CONTENT_BUILD_DIR/" "s3://runningdinner-web-${STAGE}" --delete --region eu-central-1
+
+          distributions=$(aws cloudfront list-distributions --query 'DistributionList.Items[*].{Id:Id}' --output text)
+          # Check if there is only one distribution
+          if [ $(echo "$distributions" | wc -l) -ne 1 ]; then
+            echo "Error: There are either no CloudFront distributions or multiple distributions in the account." >&2
+            exit 1
+          fi
+          # Get the distribution ID
+          distribution_id=$(echo "$distributions" | awk '{print $1}')
+          echo "Invalidating $distribution_id"
+          aws cloudfront create-invalidation --distribution-id $distribution_id --paths "/*"
