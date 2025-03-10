@@ -1,4 +1,4 @@
-name: Enable Maintenance Page
+name: Disable Maintenance Page
 
 on:
   workflow_dispatch:
