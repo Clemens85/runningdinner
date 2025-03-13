@@ -18,6 +18,8 @@ jobs:
     environment:
       name: ${{ github.event.inputs.environment }}
     steps:
+      - uses: actions/checkout@v4
+        name: Check-out repository
       - name: Set AWS_ACCOUNT_ID to Env
         run: |
           echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
