@@ -46,16 +46,10 @@ jobs:
           # echo "host.context.url=https://${SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
           echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
 
-
-      - name: Mvn java-version
-        run: |
-          echo "PRINTING MVN VERSION"
-          mvn -version
-
       - name: Build and Test
         run: |
           cd runningdinner-backend
-          ./mvnw package
+          mvn package
           java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted/
 
       - name: Publish Test Results
