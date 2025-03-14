@@ -39,8 +39,11 @@ public interface ParticipantRepository extends RunningDinnerRelatedRepository<Pa
   List<Participant> findByAdminIdAndTeamIdIsNotNullAndActivationDateIsNotNullOrderByParticipantNumber(String adminId);
 
   Participant findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(UUID teamPartnerWishOriginatorId, UUID participantId, String adminId);
-  
-  Slice<ParticipantRegistrationProjection> findRegistrationInfoSliceByAdminId(String adminId, Pageable pageable);
+
+  // Spring Boot 3.4.3 introduced a bug which prevented to use nullsFirst sort criteria in Pageable (-> ParticipantRegistrationsAggregationService)
+  @Query("SELECT p FROM Participant p WHERE p.adminId = :adminId ORDER BY p.activationDate DESC NULLS FIRST, p.createdAt DESC")
+  Slice<ParticipantRegistrationProjection> findRegistrationInfoSliceByAdminId(@Param("adminId") String adminId, Pageable pageable);
+//  Slice<ParticipantRegistrationProjection> findRegistrationInfoSliceByAdminId(String adminId, Pageable pageable);
   
 
 }

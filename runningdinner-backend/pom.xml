@@ -162,7 +162,7 @@
 		<dependency>
 		    <groupId>com.github.tomakehurst</groupId>
 		    <artifactId>wiremock</artifactId>
-		    <version>2.27.2</version>
+		    <version>3.0.0-beta-1</version>
 		    <scope>test</scope>
 		</dependency>
 		
@@ -189,13 +189,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-        
-   	<dependency>
-		<groupId>org.jsoup</groupId>
-		<artifactId>jsoup</artifactId>
-		<version>1.8.3</version>
-	</dependency>
-	
+
    	<dependency>
 		<groupId>net.logstash.logback</groupId>
 		<artifactId>logstash-logback-encoder</artifactId>
@@ -223,17 +217,17 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>5.2.5</version>
+			<version>5.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.5</version>
+			<version>5.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-scratchpad</artifactId>
-			<version>5.2.5</version>
+			<version>5.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -307,12 +301,10 @@
 		<plugin>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-maven-plugin</artifactId>
-				<!-- <version>${flyway.version}</version>-->
 		</plugin>
 		<plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-surefire-plugin</artifactId>
-				<!-- <version>2.22.1</version> -->
 			<configuration>
 				<useSystemClassLoader>false</useSystemClassLoader>
 			</configuration>
