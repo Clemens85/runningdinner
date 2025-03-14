@@ -32,8 +32,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
-          java-version: '17'
+          distribution: 'temurin'
+          java-version: '21'
           cache: 'maven'
 
       - name: Setup application-prod.properties # Not very nice, but sufficient for now
@@ -45,6 +45,12 @@ jobs:
           # echo "Using subdomain $SUBDOMAIN"
           # echo "host.context.url=https://${SUBDOMAIN}runyourdinner.eu" >> runningdinner-backend/src/main/resources/application-prod.properties
           echo "server.port=80" >> runningdinner-backend/src/main/resources/application-prod.properties
+
+
+      - name: Mvn java-version
+        run: |
+          echo "PRINTING MVN VERSION"
+          mvn -version
 
       - name: Build and Test
         run: |
