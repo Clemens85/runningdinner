@@ -82,7 +82,6 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
   protected Set<Participant> teamMembers = new HashSet<>();
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @BatchSize(size = 30)
   @JoinColumn(name = "mealClassId", nullable = false)
   protected MealClass mealClass;
 
