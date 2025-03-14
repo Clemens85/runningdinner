@@ -60,7 +60,7 @@ public class RunningDinnerCalculatorTest {
       assertNull(team.getMealClass());
 		}
 
-		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses(), NO_TEAMS_TO_KEEP);
+		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig, NO_TEAMS_TO_KEEP);
 
 		assertEquals(3, IterableUtils.countMatches(teams, obj -> {
       Team team = obj;
@@ -94,7 +94,7 @@ public class RunningDinnerCalculatorTest {
 		GeneratedTeamsResult generatedTeamsResult = new GeneratedTeamsResult();
 		generatedTeamsResult.setRegularTeams(teamList);
 		try {
-			runningDinnerCalculator.assignRandomMealClasses(generatedTeamsResult, Configurations.standardConfig.getMealClasses(), NO_TEAMS_TO_KEEP);
+			runningDinnerCalculator.assignRandomMealClasses(generatedTeamsResult, Configurations.standardConfig, NO_TEAMS_TO_KEEP);
 			fail("Should never reach here, because Exception should be thrown!");
 		}
 		catch (NoPossibleRunningDinnerException e) {
@@ -110,7 +110,7 @@ public class RunningDinnerCalculatorTest {
     assertFalse(teamsResult.hasNotAssignedParticipants());
 		assertEquals(9, teamsResult.getRegularTeams().size());
 
-		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses(), NO_TEAMS_TO_KEEP);
+		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig, NO_TEAMS_TO_KEEP);
 
 		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, Configurations.standardConfig);
 
@@ -204,7 +204,7 @@ public class RunningDinnerCalculatorTest {
     assertFalse(teamsResult.hasNotAssignedParticipants());
 		assertEquals(numberOfTeams, teamsResult.getRegularTeams().size());
 
-		runningDinnerCalculator.assignRandomMealClasses(teamsResult, config.getMealClasses(), NO_TEAMS_TO_KEEP);
+		runningDinnerCalculator.assignRandomMealClasses(teamsResult, config, NO_TEAMS_TO_KEEP);
 		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, config);
 		List<Team> teams = teamsResult.getRegularTeams();
 

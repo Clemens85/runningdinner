@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public class RunningDinnerCalculator {
 
-  private DinnerPlanGenerator dinnerPlanGenerator;
+  private final DinnerPlanGenerator dinnerPlanGenerator;
 
   public RunningDinnerCalculator() {
     this(new StaticTemplateDinnerPlanGenerator());
@@ -55,7 +55,6 @@ public class RunningDinnerCalculator {
 	 * @param runningDinnerConfig The options for the running dinner
 	 * @param participants All participants of the dinner
 	 * @param existingTeamsToKeep Can be null or empty. Pass only if you have some already existing teams and want to keep those when now re-generating teams (useful for waitinglist)
-	 * @return
 	 * @throws NoPossibleRunningDinnerException If there are too few participants
 	 */
 	public GeneratedTeamsResult generateTeams(final RunningDinnerConfig runningDinnerConfig,
@@ -141,10 +140,7 @@ public class RunningDinnerCalculator {
 	 * Returns a list with all participants that cannot be assigned into regular teams based upon the current dinner configuration.<br>
 	 * It all participants can successfully be assigned, then an empty list is returned.<br>
 	 * If not any participant can be assigned (e.g. too few participants) all passed participants are returned<br>
-	 * 
-	 * @param runningDinnerConfig
-	 * @param participants
-	 * @return
+	 *
 	 */
 	public List<Participant> calculateNotAssignableParticipants(final BasicRunningDinnerConfiguration runningDinnerConfig,
 			final List<Participant> participants) {
@@ -175,8 +171,6 @@ public class RunningDinnerCalculator {
 	 * 
 	 * @param allParticipants All participants that were given in for building a running dinner
 	 * @param generatedTeamsResult Is enriched with all participants that cannot be assigend to teams (if any).
-	 * @param runningDinnerConfig
-	 * @return
 	 * @throws IllegalArgumentException If there occurs computation errors when splitting the list (should never happen actually)
 	 */
 	private List<Participant> splitRegularAndIrregularParticipants(final List<Participant> allParticipants,
@@ -210,8 +204,7 @@ public class RunningDinnerCalculator {
 			final BasicRunningDinnerConfiguration runningDinnerConfig) throws NoPossibleRunningDinnerException {
 
 		int numberOfTeams = allParticipants.size() / runningDinnerConfig.getTeamSize();
-		TeamCombinationInfo teamCombinationInfo = runningDinnerConfig.generateTeamCombinationInfo(numberOfTeams);
-		return teamCombinationInfo;
+		return runningDinnerConfig.generateTeamCombinationInfo(numberOfTeams);
 	}
 
 	protected int calculateNumberOfNotAssignableParticipants(final List<Participant> allParticipants,
@@ -242,139 +235,143 @@ public class RunningDinnerCalculator {
 	 * Uses the passed mealClasses and assigns randomly each team one mealClass.
 	 * 
 	 * @param generatedTeams Contains all regular teams that shall be assigned random meals
-	 * @param mealClasses The Meals to be assigned
+	 * @param runningDinnerConfig Containing the Meals to be assigned
 	 * @param existingTeamsToKeep Optional parameter if there existed already teams before (which is the case for waitinglist regeneration scenarios). 
 	 * 														If passed then this method assignsthe same meals again to the teams that already existed.
 	 * @throws NoPossibleRunningDinnerException Thrown if number of meals and number of teams are incompatible
 	 */
 	public void assignRandomMealClasses(final GeneratedTeamsResult generatedTeams, 
-										final Collection<MealClass> mealClasses,
-										final List<TeamTO> existingTeamsToKeep) throws NoPossibleRunningDinnerException {
+																			final RunningDinnerConfig runningDinnerConfig,
+																			final List<TeamTO> existingTeamsToKeep) throws NoPossibleRunningDinnerException {
 
-      if (CollectionUtils.isEmpty(existingTeamsToKeep)) {
-        assignRandomMealClasses(generatedTeams.getRegularTeams(), mealClasses);
-        return;
-      }
+		final Collection<MealClass> mealClasses = runningDinnerConfig.getMealClasses();
 
-      // => Else: Keep meals for existing meals, but also assign random meals to new
-      // generated teams:
+		if (CollectionUtils.isEmpty(existingTeamsToKeep)) {
+			assignRandomMealClasses(generatedTeams.getRegularTeams(), mealClasses);
+			return;
+		}
 
-      // Copy the list of teams...
-      List<Team> regularTeamsListCopy = new ArrayList<>(generatedTeams.getRegularTeams());
+		// => Else: Keep meals for existing teams, but also assign random meals to new generated teams:
 
-      // ... And change the participants inside of this list
-      // Note: all these changes are still reflected in the original list
-      // (generatedTeams.regularTeams())!
-      
-      Set<Participant> allParticipantsOfGeneratedTeams = generatedTeams.getRegularTeams()
-                                                                          .stream()
-                                                                          .map(t -> t.getTeamMembers())
-                                                                          .flatMap(Set::stream)
-                                                                          .collect(Collectors.toSet());
+		// Copy the list of teams...
+		List<Team> regularTeamsListCopy = new ArrayList<>(generatedTeams.getRegularTeams());
 
-      for (TeamTO existingTeam : existingTeamsToKeep) {
-        // This whole logic works only if we have ensured that there exist no team with
-        // cancelled team member(s), which is currently the case (-> WaitingListService)
-        Team team = findTeamWithTeamNumber(regularTeamsListCopy, existingTeam.getTeamNumber());
-        MealClass mealClassToAssign = IdentifierUtil.filterListForIdMandatory(mealClasses, existingTeam.getMeal().getId());
-        team.setMealClass(mealClassToAssign);
-        
-        ensureSameTeamMembers(team, existingTeam, allParticipantsOfGeneratedTeams);
-        
-        regularTeamsListCopy.remove(team); // This removes the team only from our copied list, but not from the original list!
-      }
+		// ... And change the participants inside of this list
+		// Note: all these changes are still reflected in the original list (generatedTeams.regularTeams())!
+		Set<Participant> allParticipantsOfGeneratedTeams = generatedTeams.getRegularTeams()
+																																				.stream()
+																																				.map(Team::getTeamMembers)
+																																				.flatMap(Set::stream)
+																																				.collect(Collectors.toSet());
 
-      // regularTeamsListCopy should now contain only the new teams that did not exist before:
-      assignRandomMealClasses(regularTeamsListCopy, mealClasses);
+		for (TeamTO existingTeam : existingTeamsToKeep) {
+			// This whole logic works only if we have ensured that there exist no team with
+			// cancelled team member(s), which is currently the case (-> WaitingListService)
+			Team team = findTeamWithTeamNumber(regularTeamsListCopy, existingTeam.getTeamNumber());
+			MealClass mealClassToAssign = IdentifierUtil.filterListForIdMandatory(mealClasses, existingTeam.getMeal().getId());
+			team.setMealClass(mealClassToAssign);
+
+			ensureSameTeamMembers(team, existingTeam, allParticipantsOfGeneratedTeams);
+
+			// We need to assure that the maybe now change team-members of the team still have a hosting participant (this might have been changed)
+			setHostingParticipant(team, runningDinnerConfig);
+
+			regularTeamsListCopy.remove(team); // This removes the team only from our copied list, but not from the original list!
+		}
+
+		// regularTeamsListCopy should now contain only the new teams that did not exist before:
+		assignRandomMealClasses(regularTeamsListCopy, mealClasses);
 	}
 
-    private void ensureSameTeamMembers(Team currentTeam, TeamTO originalTeam, Set<Participant> allParticipantsOfGeneratedTeams) {
-      
-      Set<UUID> originalTeamMemberIds = IdentifierUtil.getIds(originalTeam.getTeamMembers());
-      Set<UUID> currentTeamMemberIds = IdentifierUtil.getIds(currentTeam.getTeamMembers());
-      if (CoreUtil.setsAreEqual(originalTeamMemberIds, currentTeamMemberIds)) {
-        return;
-      }
+	private void ensureSameTeamMembers(Team currentTeam, TeamTO originalTeam, Set<Participant> allParticipantsOfGeneratedTeams) {
 
-      Set<Participant> originalTeamMembers = IdentifierUtil.filterListForIds(allParticipantsOfGeneratedTeams, originalTeamMemberIds);
-      TeamAccessor.newAccessor(currentTeam).removeAllTeamMembers();
-      currentTeam.setTeamMembers(originalTeamMembers);
-      
-      Assert.state(currentTeam.getTeamMembersOrdered().size() == originalTeamMemberIds.size(), "Expected curren team " + currentTeam + " to contain team members " + originalTeamMemberIds + 
-                                                                                               " but contained " + currentTeam.getTeamMembersOrdered());
-    }
+		Set<UUID> originalTeamMemberIds = IdentifierUtil.getIds(originalTeam.getTeamMembers());
+		Set<UUID> currentTeamMemberIds = IdentifierUtil.getIds(currentTeam.getTeamMembers());
+		if (CoreUtil.setsAreEqual(originalTeamMemberIds, currentTeamMemberIds)) {
+			return;
+		}
+
+		Set<Participant> originalTeamMembers = IdentifierUtil.filterListForIds(allParticipantsOfGeneratedTeams, originalTeamMemberIds);
+		TeamAccessor.newAccessor(currentTeam).removeAllTeamMembers();
+		currentTeam.setTeamMembers(originalTeamMembers);
+
+		Assert.state(currentTeam.getTeamMembersOrdered().size() == originalTeamMemberIds.size(), "Expected curren team " + currentTeam + " to contain team members " + originalTeamMemberIds +
+																																														 " but contained " + currentTeam.getTeamMembersOrdered());
+	}
     
-    private void assignRandomMealClasses(final List<Team> regularTeams, final Collection<MealClass> mealClasses)
-        throws NoPossibleRunningDinnerException {
+	private void assignRandomMealClasses(final List<Team> regularTeams, final Collection<MealClass> mealClasses)
+			throws NoPossibleRunningDinnerException {
 
-      int numTeams = regularTeams.size();
-      int numMealClasses = mealClasses.size();
+		int numTeams = regularTeams.size();
+		int numMealClasses = mealClasses.size();
 
-      if (numTeams % numMealClasses != 0) {
-        throw new NoPossibleRunningDinnerException(
-            "Size of passed teams (" + numTeams + ") doesn't match expected size (" + numMealClasses + " x N)");
-      }
+		if (numTeams % numMealClasses != 0) {
+			throw new NoPossibleRunningDinnerException(
+					"Size of passed teams (" + numTeams + ") doesn't match expected size (" + numMealClasses + " x N)");
+		}
 
-      if (numMealClasses == 0) {
-        throw new NoPossibleRunningDinnerException("Need at least one mealClass for assigning mealClasses to teams");
-      }
+		if (numMealClasses == 0) {
+			throw new NoPossibleRunningDinnerException("Need at least one mealClass for assigning mealClasses to teams");
+		}
 
-      int segmentionSize = numTeams / numMealClasses;
+		int segmentionSize = numTeams / numMealClasses;
 
-      Collections.shuffle(regularTeams); // Randomize List
+		Collections.shuffle(regularTeams); // Randomize List
 
-      // Now, with the randomized list, we iterate this list, and assign one mealClass
-      // to the current iterating list-segment
-      // (e.g.: // [0..8] => APPETIZER, [9..17] => MAINCOURSE, [18..26] => DESSERT)
-      // for 18 teams and a segmentionSize of 3:
-      int startIndex = 0;
-      int endIndex = segmentionSize;
-      for (MealClass mealClassToAssign : mealClasses) {
-        for (int teamIndex = startIndex; teamIndex < endIndex; teamIndex++) {
-          Team team = regularTeams.get(teamIndex);
-          team.setMealClass(mealClassToAssign);
-        }
+		// Now, with the randomized list, we iterate this list, and assign one mealClass
+		// to the current iterating list-segment
+		// (e.g.: // [0..8] => APPETIZER, [9..17] => MAINCOURSE, [18..26] => DESSERT)
+		// for 18 teams and a segmentionSize of 3:
+		int startIndex = 0;
+		int endIndex = segmentionSize;
+		for (MealClass mealClassToAssign : mealClasses) {
+			for (int teamIndex = startIndex; teamIndex < endIndex; teamIndex++) {
+				Team team = regularTeams.get(teamIndex);
+				team.setMealClass(mealClassToAssign);
+			}
 
-        startIndex = endIndex;
-        endIndex = endIndex + segmentionSize;
-      }
+			startIndex = endIndex;
+			endIndex = endIndex + segmentionSize;
+		}
 
-      // Sort list by teamNumber as the list is currently passed in already sorted by
-      // teamNumber
-      Collections.sort(regularTeams);
-    }
+		// Sort list by teamNumber as the list is currently passed in already sorted by
+		// teamNumber
+		Collections.sort(regularTeams);
+	}
 
-    protected List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig,
-                                           final List<Participant> participantsToAssign,
-                                           final ParticipantListRandomizer participantListRandomizer) {
+	protected List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig,
+																				 final List<Participant> participantsToAssign,
+																				 final ParticipantListRandomizer participantListRandomizer) {
 
-      if (CoreUtil.isEmpty(participantsToAssign)) {
-        return new ArrayList<Team>(0);
-      }
+		if (CoreUtil.isEmpty(participantsToAssign)) {
+			return new ArrayList<>(0);
+		}
 
-      participantListRandomizer.shuffle(participantsToAssign);
+		participantListRandomizer.shuffle(participantsToAssign);
 
-      TeamDistributorHosting teamDistributorHosting = new TeamDistributorHosting(participantsToAssign,
-          runningDinnerConfig);
-      List<Team> teams = teamDistributorHosting.calculateTeams();
+		TeamDistributorHosting teamDistributorHosting = new TeamDistributorHosting(participantsToAssign,
+				runningDinnerConfig);
+		List<Team> teams = teamDistributorHosting.calculateTeams();
 
-      TeamDistributorGender teamDistributorGender = new TeamDistributorGender(teams, runningDinnerConfig);
-      teams = teamDistributorGender.calculateTeams();
+		TeamDistributorGender teamDistributorGender = new TeamDistributorGender(teams, runningDinnerConfig);
+		teams = teamDistributorGender.calculateTeams();
 
-      for (Team team : teams) {
-        setHostingParticipant(team, runningDinnerConfig);
-      }
+		setHostingParticipants(teams, runningDinnerConfig);
 
-      return teams;
-    }
+		return teams;
+	}
+
+	private void setHostingParticipants(List<Team> teams, RunningDinnerConfig runningDinnerConfig) {
+		for (Team team : teams) {
+			setHostingParticipant(team, runningDinnerConfig);
+		}
+	}
 
 	/**
 	 * Sets one participant in the team as the hosting participant.
 	 * This is done with some intelligence so it is firstly tried to set a participant as hosting participant if he has enough seats.<br>
 	 * As a fallback the first participant is just taken.
-	 * 
-	 * @param team
-	 * @param runningDinnerConfig
+	 *
 	 */
 	public void setHostingParticipant(Team team, RunningDinnerConfig runningDinnerConfig) {
 		Participant participantWithUnknownHostingStatus = null;
@@ -405,9 +402,6 @@ public class RunningDinnerCalculator {
 	 * Final (and main) method which assigns every regular team a VisitationPlan which indicats which teams are guests and hosts for every
 	 * regular team.
 	 *
-	 * @param generatedTeams
-	 * @param runningDinnerConfig
-	 * @throws NoPossibleRunningDinnerException
 	 * @throws IllegalArgumentException If some pre-condition is not met in the passed parameters
 	 */
 	public void generateDinnerExecutionPlan(final GeneratedTeamsResult generatedTeams, final RunningDinnerConfig runningDinnerConfig)

@@ -23,7 +23,7 @@ public class TeamRouteBuilderTest {
 		List<Participant> participants = ParticipantGenerator.generateParticipants(18);
 		RunningDinnerConfig config = Configurations.standardConfig;
 		GeneratedTeamsResult generatedTeams = calc.generateTeams(config, participants, Collections.emptyList(), Collections::shuffle);
-		calc.assignRandomMealClasses(generatedTeams, config.getMealClasses(), Collections.emptyList());
+		calc.assignRandomMealClasses(generatedTeams, config, Collections.emptyList());
 
 		List<Team> teams = generatedTeams.getRegularTeams();
 		assertEquals(9, teams.size());

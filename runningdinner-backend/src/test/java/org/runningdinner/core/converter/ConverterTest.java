@@ -184,7 +184,7 @@ public class ConverterTest {
 		RunningDinnerCalculator calculator = new RunningDinnerCalculator();
 		RunningDinnerConfig config = RunningDinnerConfig.newConfigurer().build();
 		GeneratedTeamsResult generatedTeams = calculator.generateTeams(config, participants, Collections.emptyList(), Collections::shuffle);
-		calculator.assignRandomMealClasses(generatedTeams, config.getMealClasses(), Collections.emptyList());
+		calculator.assignRandomMealClasses(generatedTeams, config, Collections.emptyList());
 
 		calculator.generateDinnerExecutionPlan(generatedTeams, config);
 

@@ -187,7 +187,7 @@ public class DinnerRouteMessageFormatterTest {
 		try {
 			RunningDinnerConfig runningDinnerConfig = runningDinner.getConfiguration();
 			GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(runningDinnerConfig, teamMembers, Collections.emptyList(), Collections::shuffle);
-			runningDinnerCalculator.assignRandomMealClasses(teamsResult, runningDinnerConfig.getMealClasses(), Collections.emptyList());
+			runningDinnerCalculator.assignRandomMealClasses(teamsResult, runningDinnerConfig, Collections.emptyList());
 			runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, runningDinnerConfig);
 			return teamsResult.getRegularTeams();
 		} catch (NoPossibleRunningDinnerException e) {

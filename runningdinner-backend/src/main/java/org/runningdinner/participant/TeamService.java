@@ -150,9 +150,6 @@ public class TeamService {
   /**
    * Randomly creates teams for the running dinner identified by the passed id.<br>
    * This method assumes that there exist no teams till now.
-   * 
-   * @param adminId
-   * @return
    */
   @Transactional(rollbackFor = { NoPossibleRunningDinnerException.class, RuntimeException.class })
   public TeamArrangementListTO createTeamAndVisitationPlans(@ValidateAdminId String adminId) {
@@ -186,7 +183,7 @@ public class TeamService {
     if (!generateAdditionalTeamsFromWaitingList) {
     	// Default case for only re-generate teams. 
     	// If teams are added from waitinglist (generateAdditionalTeamsFromWaitingList == true) ,then the waitinglist fires its own event instead.
-        emitTeamArrangementsDroppedEvent(runningDinner, teams, true); 
+      emitTeamArrangementsDroppedEvent(runningDinner, teams, true);
     }
     
     return newTeamArrangementList(teams, adminId);
@@ -200,11 +197,17 @@ public class TeamService {
     List<TeamTO> existingTeamInfosToRestore = Collections.emptyList();
     
     if (gatherTeamRestoreInformation) {
-        List<Team> existingTeams = findTeamArrangements(adminId, true);
-        existingTeamInfosToRestore = TeamTO.convertTeamList(existingTeams);
+      List<Team> existingTeams = findTeamArrangements(adminId, true);
+      existingTeamInfosToRestore = TeamTO.convertTeamList(existingTeams);
     }
-    
+
+    List<Participant> participants = participantService.findActiveParticipantsAssignedToTeam(adminId);
+    for (Participant p : participants) {
+      p.setTeam(null);
+      p.setHost(false);
+    }
     participantRepository.updateTeamReferenceAndHostToNull(adminId);
+
     teamRepository.deleteByAdminId(adminId);
     
     if (emitEvent) {
@@ -317,7 +320,7 @@ public class TeamService {
   												  final List<Participant> participants) throws NoPossibleRunningDinnerException {
 
     GeneratedTeamsResult generatedTeams = runningDinnerCalculator.generateTeams(runningDinnerConfig, participants, existingTeamsToKeep, Collections::shuffle);
-    runningDinnerCalculator.assignRandomMealClasses(generatedTeams, runningDinnerConfig.getMealClasses(), existingTeamsToKeep);
+    runningDinnerCalculator.assignRandomMealClasses(generatedTeams, runningDinnerConfig, existingTeamsToKeep);
     runningDinnerCalculator.generateDinnerExecutionPlan(generatedTeams, runningDinnerConfig);
     return generatedTeams;
   }
