@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -26,8 +26,8 @@ public abstract class AbstractEntity implements Serializable, Identifiable {
    * Primary Key identifier
    */
   @Id
-  @GeneratedValue(generator = "rfc4122-uuid")
-  @GenericGenerator(name = "rfc4122-uuid", strategy = "uuid2")
+  @GeneratedValue
+  @UuidGenerator
   protected UUID id;
 
   /**

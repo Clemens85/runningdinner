@@ -34,7 +34,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
@@ -168,7 +167,6 @@ public class ParticipantService {
    * @param adminId adminId of dinner
    * @param participantId id of participant to be updated
    * @param incomingParticipant data to be updated
-   * @return
    */
   @Transactional
   public Participant updateParticipant(@ValidateAdminId String adminId, UUID participantId, final ParticipantInputDataTO incomingParticipant) {
@@ -224,10 +222,7 @@ public class ParticipantService {
 
   /**
    * Adds a new participant to the running dinner identified by dinner admin id
-   * 
-   * @param adminId
-   * @param incomingParticipant
-   * @return
+   *
    */
   @Transactional
   public Participant addParticipant(@ValidateAdminId String adminId, ParticipantInputDataTO incomingParticipant) {
@@ -238,10 +233,7 @@ public class ParticipantService {
 
   /**
    * Adds a new participant to the passed running dinner
-   * 
-   * @param runningDinner
-   * @param incomingParticipant
-   * @return
+   *
    */
   @Transactional
   public Participant addParticipant(RunningDinner runningDinner, ParticipantInputDataTO incomingParticipant, boolean participantSubscription) {
@@ -549,21 +541,18 @@ public class ParticipantService {
   }
 
   private void putGeocodeEventToQueue(final Participant participant, final RunningDinner runningDinner) {
-    
     if (runningDinner.getRunningDinnerType() == RunningDinnerType.DEMO) {
       return;
     }
-    
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCompletion(int status) {
         if (status != TransactionSynchronization.STATUS_COMMITTED) {
           return;
         }
-        
         try {
           participantGeocodeEventPublisher.sendMessageToQueueAsync(participant);
-        } catch (Exception e) { 
+        } catch (Exception e) {
           LOGGER.error("Error while calling sendMessageToQueueAsync for {}", participant, e);
         }
       }

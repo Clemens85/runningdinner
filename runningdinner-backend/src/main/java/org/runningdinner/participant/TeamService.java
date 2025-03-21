@@ -12,6 +12,7 @@ import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
+import org.runningdinner.common.rest.BaseTO;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.*;
 import org.runningdinner.core.util.CoreUtil;
@@ -27,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
@@ -265,14 +265,14 @@ public class TeamService {
     } else {
       Set<UUID> existingTeamMemberIds = existingTeamInfosToRestore
                                           .stream()
-                                          .map(t -> t.getTeamMembers())
+                                          .map(TeamTO::getTeamMembers)
                                           .flatMap(List::stream)
-                                          .map(p -> p.getId())
+                                          .map(BaseTO::getId)
                                           .collect(Collectors.toSet());
       List<Participant> existingTeamMembers = allAvailableParticipants
                                                 .stream()
                                                 .filter(p -> existingTeamMemberIds.contains(p.getId()))
-                                                .collect(Collectors.toList());
+                                                .toList();
       result.addAll(existingTeamMembers);
     }
     
@@ -285,31 +285,25 @@ public class TeamService {
 
     List<TeamTO> teamTOs = teams
             .stream()
-            .map(team -> new TeamTO(team))
+            .map(TeamTO::new)
             .collect(Collectors.toList());
     
     return new TeamArrangementListTO(teamTOs, adminId);
   }
 
   protected void emitTeamsArrangedEvent(final RunningDinner dinner, final List<Team> teams) {
-
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyTeamsArranged(teams, dinner);
       }
     });
   }
   
   protected void emitTeamArrangementsDroppedEvent(final RunningDinner dinner, final List<Team> teams, boolean teamsRecreated) {
-
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyTeamArrangementsDropped(teams, dinner, teamsRecreated);
       }
     });
@@ -425,11 +419,9 @@ public class TeamService {
 
   protected void emitTeamMembersSwappedEvent(Participant firstParticipant, Participant secondParticipant, List<Team> parentTeams, RunningDinner runningDinner) {
 
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyTeamMembersSwappedEvent(firstParticipant, secondParticipant, parentTeams, runningDinner);
       }
     });
@@ -539,11 +531,9 @@ public class TeamService {
 
   protected void emitTeamsHostChangedByAdminEvent(List<Team> teams, RunningDinner runningDinner) {
 
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyTeamsHostChangedByAdminEvent(teams, runningDinner);
       }
     });
@@ -653,12 +643,9 @@ public class TeamService {
   }
 
   protected void emitTeamCancelledEvent(final TeamCancellationResult teamCancellationResult, final RunningDinner runningDinner) {
-
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyTeamCancelledEvent(teamCancellationResult, runningDinner);
       }
     });

@@ -1,19 +1,10 @@
 
 package org.runningdinner.admin;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import jakarta.persistence.EntityNotFoundException;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.rest.BasicSettingsTO;
 import org.runningdinner.common.Issue;
@@ -39,14 +30,19 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RunningDinnerService implements ApplicationContextAware {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(RunningDinnerService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RunningDinnerService.class);
 
   @Autowired
   private RunningDinnerRepository runningDinnerRepository;
@@ -93,9 +89,6 @@ public class RunningDinnerService implements ApplicationContextAware {
    * 
    * @param runningDinnerInfo Basic detail infos about the running dinner to create
    * @param runningDinnerConfig The options of the running dinner
-   * @param email
-   * @param runningDinnerType
-   * @return
    */
   @Transactional
   public RunningDinner createRunningDinner(RunningDinnerInfo runningDinnerInfo, RunningDinnerConfig runningDinnerConfig, String email, 
@@ -422,16 +415,6 @@ public class RunningDinnerService implements ApplicationContextAware {
     return urlGenerator.addPublicDinnerUrl(result);
   }
 
-  /**
-   * Generate a new UUID which can e.g. be used for a new running dinner administration
-   * 
-   * @return
-   */
-  public String generateNewAdminId() {
-
-    return idGenerator.generateAdminId();
-  }
-
   
   protected RunningDinner saveRunningDinner(RunningDinner dinnerToUpdate) {
     
@@ -439,58 +422,40 @@ public class RunningDinnerService implements ApplicationContextAware {
     return urlGenerator.addPublicDinnerUrl(result);
   }
   
-  protected void checkRunningDinnerExists(final String adminId) {
-
-    RunningDinner runningDinner = runningDinnerRepository.findByAdminId(adminId);
-    validatorService.checkRunningDinnerNotNull(runningDinner);
-  }
-  
 
   private void emitUpdateMealTimesEvent(RunningDinner dinner) {
-
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyMealTimesUpdated(dinner);
       }
     });
   }
   
   protected void emitRunningDinnerSettingsUpdatedEvent(RunningDinnerSettingsUpdatedEvent runningDinnerSettingsUpdatedEvent) {
-
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyRunningDinnerSettingsUpdated(runningDinnerSettingsUpdatedEvent);
       }
     });
   }
 
   private void emitNewRunningDinnerEvent(final RunningDinner result) {
-
     // Publish event only after transaction is successfully committed:
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyNewRunningDinner(result);
       }
     });
   }  
 
   private void emitRunningDinnerCancelledEvent(final RunningDinner result) {
-
     // Publish event only after transaction is successfully committed:
-    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-
         eventPublisher.notifyRunningDinnerCancelled(result);
       }
     });
@@ -505,9 +470,8 @@ public class RunningDinnerService implements ApplicationContextAware {
   }
   
   @Override
-  public void setApplicationContext(ApplicationContext applicationContext)
+  public void setApplicationContext(@NotNull ApplicationContext applicationContext)
     throws BeansException {
-
     this.applicationContext = applicationContext;
   }
 
