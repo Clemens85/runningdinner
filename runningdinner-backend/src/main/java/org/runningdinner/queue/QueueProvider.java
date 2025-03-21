@@ -1,9 +1,9 @@
 package org.runningdinner.queue;
 
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageResult;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
 public interface QueueProvider {
 
-  SendMessageResult sendMessage(SendMessageRequest messageRequest);
+  SendMessageResponse sendMessage(SendMessageRequest messageRequest);
 }

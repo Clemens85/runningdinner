@@ -1,28 +1,26 @@
 package org.runningdinner.queue;
 
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageResult;
-
 public class QueueProviderMockInMemory implements QueueProvider {
 
-  private List<SendMessageRequest> messageRequests = new ArrayList<>();
+  private final List<SendMessageRequest> messageRequests = new ArrayList<>();
 
   @Override
-  public SendMessageResult sendMessage(SendMessageRequest messageRequest) {
+  public SendMessageResponse sendMessage(SendMessageRequest messageRequest) {
     messageRequests.add(messageRequest);
-    return new SendMessageResult();
+    return SendMessageResponse.builder().build();
   }
 
   public List<SendMessageRequest> getMessageRequests() {
-
     return messageRequests;
   }
 
   public void clearMessageRequests() {
-
     this.messageRequests.clear();
   }
 }

@@ -2,39 +2,38 @@ package org.runningdinner.queue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.ListQueuesResponse;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.amazonaws.services.sqs.model.ListQueuesResult;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageResult;
+import java.net.URI;
 
 public class QueueProviderDev implements QueueProvider {
 
   private static final Logger LOG = LoggerFactory.getLogger(QueueProviderDev.class);
 
-  private AmazonSQS localSqsClient;
+  private final SqsClient localSqsClient;
 
   public QueueProviderDev(String endpoint) {
-    localSqsClient = newLocalSqsClient(endpoint);
+    this.localSqsClient = newLocalSqsClient(endpoint);
   }
 
   @Override
-  public SendMessageResult sendMessage(SendMessageRequest messageRequest) {
-
+  public SendMessageResponse sendMessage(SendMessageRequest messageRequest) {
     String localSqsUrl = getLocalSqsUrl();
     LOG.info("Using local SQS URL {}", localSqsUrl);
-    messageRequest.setQueueUrl(localSqsUrl);
-    return localSqsClient.sendMessage(messageRequest);
+    SendMessageRequest newRequest = messageRequest.toBuilder().queueUrl(localSqsUrl).build();
+    return localSqsClient.sendMessage(newRequest);
   }
 
   private String getLocalSqsUrl() {
 
-    ListQueuesResult listQueuesResult = localSqsClient.listQueues();
-    for (String queueUrl : listQueuesResult.getQueueUrls()) {
+    ListQueuesResponse listQueuesResult = localSqsClient.listQueues();
+    for (String queueUrl : listQueuesResult.queueUrls()) {
       if (queueUrl.endsWith("geocode")) {
         return queueUrl;
       }
@@ -42,39 +41,15 @@ public class QueueProviderDev implements QueueProvider {
     throw new IllegalStateException("Could not find local geocode sqs queue");
   }
 
-  private AmazonSQS newLocalSqsClient(String endpoint) {
-
+  private SqsClient newLocalSqsClient(String endpoint) {
+//    System.setProperty("aws.endpointUrlSqs", endpoint);
     String region = "eu-central-1";
     String accessKey = "x";
     String secretKey = "x";
-    return AmazonSQSClientBuilder.standard()
-            .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
-            .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, region))
+    return SqsClient.builder()
+            .region(Region.of(region))
+            .endpointOverride(URI.create(endpoint))
+            .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
             .build();
   }
 }
-
-//  private String localHttpServer = "http://localhost:3000";
-//  private String geocodecodeRelativeUrl = "/geocode/ADMIN_ID/participants/PARTICIPANT_ID";
-
-//  @Override
-//  public SendMessageResult sendMessage(SendMessageRequest messageRequest) {
-//
-//    Map<String, MessageAttributeValue> messageAttributes = messageRequest.getMessageAttributes();
-//    String adminId = messageAttributes.get("adminId").getStringValue();
-//    String participantId = messageAttributes.get("participantId").getStringValue();
-//
-//    String url = localHttpServer;
-//    url += geocodecodeRelativeUrl
-//             .replaceAll("ADMIN_ID", adminId)
-//             .replaceAll("PARTICIPANT_ID", participantId);
-//
-//    LOGGER.info("Overwriting configured SQS URL with local HTTP URL: {}", url);
-//
-//    try {
-//      restTemplate.getForEntity(new URI(url), ParticipantTO.class);
-//    } catch (URISyntaxException e) {
-//      throw new TechnicalException(e);
-//    }
-//
-//  }

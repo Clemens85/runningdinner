@@ -8,7 +8,7 @@
 	<version>2.0.0</version>
 
 	<name>runningdinner</name>
-	<description></description>
+	<description>Backend for Running Dinner</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -38,7 +38,19 @@
 		<flyway.placeholders.runningdinner-user-name>runningdinner</flyway.placeholders.runningdinner-user-name>
 		<flyway.placeholders.runningdinner-user-password>runningdinner</flyway.placeholders.runningdinner-user-password>
 	</properties>
-	
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>2.31.4</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 	
 		<dependency>
@@ -213,77 +225,67 @@
       <version>2.1.0</version>
     </dependency>
 
-		<!-- Excel parsing -->
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>5.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>5.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-scratchpad</artifactId>
-			<version>5.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml-schemas</artifactId>
-			<version>4.1.2</version>
-		</dependency>
-		<!--
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>openxml4j</artifactId>
-			<version>1.0-beta</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		-->
-		
-		<dependency>
-			<groupId>com.sendgrid</groupId>
-			<artifactId>sendgrid-java</artifactId>
-		</dependency>
+	<!-- Excel parsing -->
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi</artifactId>
+		<version>5.4.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi-ooxml</artifactId>
+		<version>5.4.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi-scratchpad</artifactId>
+		<version>5.4.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi-ooxml-schemas</artifactId>
+		<version>4.1.2</version>
+	</dependency>
 
-		<dependency>
-			<groupId>com.mailjet</groupId>
-			<artifactId>mailjet-client</artifactId>
-			<version>5.2.5</version>
-		</dependency>
+	<dependency>
+		<groupId>com.sendgrid</groupId>
+		<artifactId>sendgrid-java</artifactId>
+	</dependency>
 
-		<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/ses -->
-		<dependency>
-			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>ses</artifactId>
-			<version>2.29.10</version>
-		</dependency>
+	<dependency>
+		<groupId>com.mailjet</groupId>
+		<artifactId>mailjet-client</artifactId>
+		<version>5.2.5</version>
+	</dependency>
 
+	<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/ses -->
+	<dependency>
+		<groupId>software.amazon.awssdk</groupId>
+		<artifactId>ses</artifactId>
+	</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sqs -->
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-sqs</artifactId>
-			<version>1.11.683</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-        <dependency>
-              <groupId>org.apache.httpcomponents</groupId>
-              <artifactId>httpclient</artifactId>
-				<version>4.5.14</version>
-          </dependency>
+	<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/sqs -->
+	<dependency>
+		<groupId>software.amazon.awssdk</groupId>
+		<artifactId>sqs</artifactId>
+		<exclusions>
+			<exclusion>
+				<artifactId>commons-logging</artifactId>
+				<groupId>commons-logging</groupId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+
+	<dependency>
+		<groupId>software.amazon.awssdk</groupId>
+		<artifactId>apache-client</artifactId>
+	</dependency>
+
+<!--        <dependency>-->
+<!--		  <groupId>org.apache.httpcomponents</groupId>-->
+<!--		  <artifactId>httpclient</artifactId>-->
+<!--			<version>4.5.14</version>-->
+<!--	  	</dependency>-->
 
 	</dependencies>
 

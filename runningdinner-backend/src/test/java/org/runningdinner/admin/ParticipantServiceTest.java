@@ -1,8 +1,6 @@
 
 package org.runningdinner.admin;
 
-import com.amazonaws.services.sqs.model.MessageAttributeValue;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +19,8 @@ import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -98,7 +98,7 @@ public class ParticipantServiceTest {
     
     assertThat(participantList.getParticipants())
     	.extracting("teamId")
-    	.allMatch(t -> t != null);
+    	.allMatch(Objects::nonNull);
   
     assertParticipantListNumbers(participantList.getParticipantsWaitingList(), 19, 22);
     assertThat(participantList.getParticipantsWaitingList()).hasSize(4);
@@ -148,16 +148,16 @@ public class ParticipantServiceTest {
       .atMost(3, TimeUnit.SECONDS)
       .untilAsserted(() -> assertThat(queueProvider.getMessageRequests()).isNotEmpty());
 
-    List<Map<String, MessageAttributeValue>> allSentMessageEntries = queueProvider
-                                                                      .getMessageRequests()
-                                                                      .stream().map(SendMessageRequest::getMessageAttributes)
-                                                                      .collect(Collectors.toList());
+    List<Map<String, MessageAttributeValue>> allSentMessageEntries = queueProvider.getMessageRequests()
+                                                                      .stream()
+                                                                      .map(SendMessageRequest::messageAttributes)
+                                                                      .toList();
     
     Set<String> participantIdsInMessageEntries = allSentMessageEntries
                                                   .stream()
                                                   .map(entry -> entry.get("participantId"))
                                                   .filter(Objects::nonNull)
-                                                  .map(MessageAttributeValue::getStringValue)
+                                                  .map(MessageAttributeValue::stringValue)
                                                   .collect(Collectors.toSet());
     
     assertThat(participantIdsInMessageEntries).contains(firstParticipant.getId().toString());

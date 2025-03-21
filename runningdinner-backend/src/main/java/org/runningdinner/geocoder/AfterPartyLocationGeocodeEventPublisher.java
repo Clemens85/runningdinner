@@ -1,26 +1,29 @@
 package org.runningdinner.geocoder;
 
-import java.util.Map;
-
+import com.google.common.collect.ImmutableMap;
 import org.runningdinner.core.RunningDinner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 
-import com.amazonaws.services.sqs.model.MessageAttributeValue;
-import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 
 @Service
 public class AfterPartyLocationGeocodeEventPublisher extends AbstractEventToQueuePublisher<RunningDinner> {
-  
-  protected AfterPartyLocationGeocodeEventPublisher(@Value("${aws.sqs.afterpartylocation.url}") String queueUrl) {
-    super(queueUrl);
-  }
+
+  private final String senderUrl;
+
+  public AfterPartyLocationGeocodeEventPublisher(@Value("${aws.sqs.afterpartylocation.url}") String queueUrl,
+                                                 GeocodeEventPublishConfig geocodeEventPublishConfig) {
+    super(queueUrl, geocodeEventPublishConfig);
+    this.senderUrl = geocodeEventPublishConfig.getSenderUrl();
+	}
 
   @Override
   protected Map<String, MessageAttributeValue> newMessageAttributes(RunningDinner runningDinner) {
     Map<String, MessageAttributeValue> messageAttributes = ImmutableMap.<String, MessageAttributeValue> builder()
-        .put("adminId", new MessageAttributeValue().withStringValue(runningDinner.getAdminId()).withDataType("String"))
-        .put("senderUrl", new MessageAttributeValue().withStringValue(getSenderUrl()).withDataType("String"))
+        .put("adminId", MessageAttributeValue.builder().stringValue(runningDinner.getAdminId()).dataType("String").build())
+        .put("senderUrl", MessageAttributeValue.builder().stringValue(senderUrl).dataType("String").build())
         .build();
     return messageAttributes;
   }

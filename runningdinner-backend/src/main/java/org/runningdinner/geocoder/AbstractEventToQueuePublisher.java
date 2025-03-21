@@ -1,44 +1,32 @@
 package org.runningdinner.geocoder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.runningdinner.common.exception.TechnicalException;
+import org.runningdinner.queue.QueueProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.runningdinner.common.exception.TechnicalException;
-import org.runningdinner.queue.QueueProvider;
-import org.runningdinner.queue.QueueProviderFactoryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.amazonaws.services.sqs.model.MessageAttributeValue;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@Service
 public abstract class AbstractEventToQueuePublisher<T> {
   
   private static final Logger LOG = LoggerFactory.getLogger(AbstractEventToQueuePublisher.class);
 
-  private String queueUrl;
+  private final String queueUrl;
 
-  @Value("${host.context.url}")
-  private String senderUrl;
+  private final GeocodeEventPublishConfig geocodeEventPublishConfig;
 
-  @Autowired
-  private ObjectMapper objectMapper;
-
-  @Autowired
-  private QueueProviderFactoryService queueProviderFactoryService;
-
-  protected AbstractEventToQueuePublisher(String queueUrl) {
+  protected AbstractEventToQueuePublisher(String queueUrl, GeocodeEventPublishConfig geocodeEventPublishConfig) {
     this.queueUrl = queueUrl;
-  }
+		this.geocodeEventPublishConfig = geocodeEventPublishConfig;
+	}
 
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   @Async
@@ -49,7 +37,7 @@ public abstract class AbstractEventToQueuePublisher<T> {
     LOG.info("Sending message to sqs-url {}", queueUrl);
     try {
       SendMessageRequest messageRequest = newSendMessageRequest(obj);
-      QueueProvider queueProvider = queueProviderFactoryService.getQueueProvider();
+      QueueProvider queueProvider = geocodeEventPublishConfig.getQueueProviderFactoryService().getQueueProvider();
       queueProvider.sendMessage(messageRequest);
       result.complete(null);
     } catch (RuntimeException e) {
@@ -68,25 +56,21 @@ public abstract class AbstractEventToQueuePublisher<T> {
 
     Map<String, MessageAttributeValue> messageAttributes = newMessageAttributes(obj);
     String messageBody = newMessageBody(obj);
-    
-    return new SendMessageRequest()
-            .withQueueUrl(queueUrl)
-            .withMessageAttributes(messageAttributes)
-            .withMessageBody(messageBody);
+
+    return SendMessageRequest.builder()
+            .queueUrl(queueUrl)
+            .messageAttributes(messageAttributes)
+            .messageBody(messageBody)
+            .build();
   }
 
   protected String mapToJson(Object obj) {
 
     try {
-      return objectMapper.writeValueAsString(obj);
+      return geocodeEventPublishConfig.getObjectMapper().writeValueAsString(obj);
     } catch (JsonProcessingException e) {
       throw new TechnicalException(e);
     }
   }
 
-  protected String getSenderUrl() {
-    return senderUrl;
-  }
-  
-  
 }
