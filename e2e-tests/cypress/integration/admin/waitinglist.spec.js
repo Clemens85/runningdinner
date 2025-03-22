@@ -264,7 +264,9 @@ describe('waitinglist', () => {
 
   it('waitinglist dialog shows team generation hint when teams not yet generated', () => {
     navigateParticipantsList(adminId);
+    cy.wait(250);
     getOpenWaitingListButton().click({ force: true });
+    cy.wait(150);
     assertWaitingListTeamsNotGeneratedView();
     closeWaitingList();
     getOpenWaitingListButton().should("exist");
@@ -299,8 +301,10 @@ describe('waitinglist', () => {
     cy.log("Assert validation message is shown when too much participants are selected");
 
     selectParticipantForTeamAssignment(0,0);
-    selectParticipantForTeamAssignment(0,1);
-    selectParticipantForTeamAssignment(0,2);
+    selectParticipantForTeamAssignment(0,0);
+    selectParticipantForTeamAssignment(0,0);
+    selectParticipantForTeamAssignment(0,0);
+    cy.wait(150);
     assertWaitingListTooMuchParticipantsSelectedForAssignmentMessage();
     cy.log("Submit participants assignment. If this works, the validation before also worked");
     submitWaitingListTeamsParticipansAssignmentView();

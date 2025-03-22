@@ -31,6 +31,7 @@ export function selectParticipantForTeamAssignment(teamIndex, participantIndexFo
         .eq(participantIndexForTeam)
         .click({ force: true });
     });
+  cy.wait(150);
 }
 
 export function assertWaitingListDistributeToTeamsView(expectedNumParticipantsLeft) {
