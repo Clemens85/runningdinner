@@ -1,4 +1,4 @@
-FROM amazoncorretto:17-alpine-jdk
+FROM amazoncorretto:21-alpine-jdk
 ARG EXTRACTED=target/extracted
 ENV SPRING_PROFILES_ACTIVE=prod
 COPY ${EXTRACTED}/dependencies/ ./
