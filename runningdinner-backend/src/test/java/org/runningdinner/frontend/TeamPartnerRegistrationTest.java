@@ -532,7 +532,7 @@ public class TeamPartnerRegistrationTest {
   }
 
   @Test
-  public void updateOfChildParticipantUpdatesOnlyName() {
+  public void updateOfChildParticipantUpdatesOnlyBasicContactData() {
 
     var rootParticipant = registerParticipantsAsFixedTeam();
     Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), rootParticipant);
@@ -548,7 +548,7 @@ public class TeamPartnerRegistrationTest {
     childParticipant = participantService.findParticipantById(runningDinner.getAdminId(), childParticipant.getId());
 
     assertThat(childParticipant.getName().getFullnameFirstnameFirst()).isEqualTo("Neuer Name");
-    assertThat(childParticipant.getEmail()).isEqualTo("max@muster.de"); // Should not be changed
+    assertThat(childParticipant.getEmail()).isEqualTo("updated@email.de"); // => Can be changed
     assertThat(childParticipant.getNotes()).isNullOrEmpty(); // Should not be changed
     assertThat(childParticipant.getMealSpecifics()).isEqualTo(MealSpecifics.NONE); // Should not be changed
   }

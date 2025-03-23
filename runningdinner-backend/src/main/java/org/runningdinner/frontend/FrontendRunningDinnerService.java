@@ -1,13 +1,6 @@
 package org.runningdinner.frontend;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
+import com.google.common.collect.Sets;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerRepository;
 import org.runningdinner.admin.RunningDinnerService;
@@ -24,7 +17,6 @@ import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.ZipRestrictionCalculator;
-import org.runningdinner.core.ZipRestrictionCalculator.ZipRestrictionsCalculationResult;
 import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.participant.Participant;
@@ -42,7 +34,9 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import com.google.common.collect.Sets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class FrontendRunningDinnerService {
