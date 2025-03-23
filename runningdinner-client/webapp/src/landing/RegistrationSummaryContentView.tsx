@@ -14,7 +14,6 @@ import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import Paragraph from "../common/theme/typography/Paragraph";
 import DoneIcon from "@mui/icons-material/Done";
 import { Alert, AlertTitle } from '@mui/material';
-import React from "react";
 
 export function RegistrationSummaryContentView(registrationSummary: RegistrationSummary) {
 
