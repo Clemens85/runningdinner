@@ -217,6 +217,8 @@
 	"teampartner_registration_info_mealspecifics": "Falls dein Partner spezielle Essens-Wünsche hat, trage diese oben kombiniert mit deinen ein.",
 	"teampartner_registration_firstname": "Vorname deines Partners",
 	"teampartner_registration_lastname": "Nachname deines Partners",
+	"teampartner_registration_email": "Email deines Partners (optional)",
+	"teampartner_registration_mobilenumber": "Handy-Nr deines Partners (optional)",
 	"num_seats_teampartner_registration_invalid": "Um dich mit deinem Wunschpartner als fixes Kochteam anzumelden, benötigt ihr genügend Sitzplätze an der angegebenen Adresse (typischerweise mind. 6). <br /> Korrigiere bitte zunächst die Anzahl Plätze bzw. die Adresse bevor du hier fortfährst.",
 	"time": "Uhrzeit",
 	"title": "Titel",

@@ -95,6 +95,8 @@ export enum TeamPartnerOption {
 }
 
 export interface TeamPartnerWishRegistrationData extends ParticipantName {
+  email?: string;
+  mobileNumber?: string;
 }
 
 const EMPTY_PARTICIPANT: Participant = {

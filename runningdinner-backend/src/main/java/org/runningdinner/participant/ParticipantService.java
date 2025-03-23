@@ -180,28 +180,41 @@ public class ParticipantService {
     
     checkNoOtherParticipantHasEmail(existingParticipant, incomingParticipant.getEmail());
 
-    mapParticipantInputToParticipant(incomingParticipant, existingParticipant, runningDinner, false);
+    var syncSettings = SyncSettings.allWithOriginalData(existingParticipant.getEmail(), existingParticipant.getMobileNumber());
 
+    mapParticipantInputToParticipant(incomingParticipant, existingParticipant, runningDinner, false);
     Participant result = participantRepository.save(existingParticipant);
 
-    syncChangesToChildParticipant(adminId, result);
+    syncChangesToChildParticipant(adminId, result, syncSettings);
 
     putGeocodeEventToQueue(result, runningDinner);
 
     return result;
   }
 
-  private void syncChangesToChildParticipant(String adminId, Participant participant) {
-    if (!participant.isTeamPartnerWishRegistratonRoot()) {
+  private void syncChangesToChildParticipant(String adminId, Participant updatedParticipant, SyncSettings syncSettings) {
+    if (!updatedParticipant.isTeamPartnerWishRegistratonRoot()) {
       return;
     }
-    Participant childParticipant = findChildParticipantOfTeamPartnerRegistration(adminId, participant);
-    childParticipant.setAddress(participant.getAddress().createDetachedClone());
-    childParticipant.setMobileNumber(participant.getMobileNumber());
-    childParticipant.setGeocodingResult(new GeocodingResult(participant.getGeocodingResult()));
-    childParticipant.setEmail(participant.getEmail());
-    childParticipant.setMealSpecifics(participant.getMealSpecifics().createDetachedClone());
-    childParticipant.setNotes(participant.getNotes());
+
+    Participant childParticipant = findChildParticipantOfTeamPartnerRegistration(adminId, updatedParticipant);
+    childParticipant.setGeocodingResult(new GeocodingResult(updatedParticipant.getGeocodingResult()));
+    if (!syncSettings.isSyncOnlyGeocodeData()) {
+      childParticipant.setAddress(updatedParticipant.getAddress().createDetachedClone());
+      childParticipant.setMealSpecifics(updatedParticipant.getMealSpecifics().createDetachedClone());
+      childParticipant.setNotes(updatedParticipant.getNotes());
+
+      // If child participant has same email as the parent participant before update,
+      // then we sync this (maybe) changed email from parent participant.
+      // If the child participant had already a different email, then we won't sync, in order to keep it's own email
+      if (syncSettings.hasSameOriginalEmail(childParticipant.getEmail())) {
+        childParticipant.setEmail(updatedParticipant.getEmail());
+      }
+      if (syncSettings.hasSameOriginalMobileNumber(childParticipant.getMobileNumber())) {
+        childParticipant.setMobileNumber(updatedParticipant.getMobileNumber());
+      }
+    }
+
     participantRepository.save(childParticipant);
   }
 
@@ -216,7 +229,7 @@ public class ParticipantService {
     existingParticipant.setGeocodingResult(incomingGeocodingResult);
 
     var result = participantRepository.save(existingParticipant);
-    syncChangesToChildParticipant(adminId, result);
+    syncChangesToChildParticipant(adminId, result, SyncSettings.onlyGeocodeData());
     return result;
   }
 
@@ -351,16 +364,17 @@ public class ParticipantService {
     ParticipantName participantName = ParticipantName.newName()
       .withFirstname(incomingParticipant.getFirstnamePart())
       .andLastname(incomingParticipant.getLastname());
+
     dest.setName(participantName);
+    dest.setEmail(incomingParticipant.getEmail());
+    dest.setMobileNumber(incomingParticipant.getMobileNumber());
 
     if (dest.isTeamPartnerWishRegistratonChild()) {
-      // Children have currently only name as own data to be managed (all other fields are not used and/or are owned by root participant
+      // Children have currently only basic contact data to be managed (all other fields are not used and/or are owned by root participant
       return;
     }
 
     dest.setGender(incomingParticipant.getGender());
-
-    dest.setEmail(incomingParticipant.getEmail());
 
     dest.setNumSeats(incomingParticipant.getNumSeats());
 
@@ -374,7 +388,6 @@ public class ParticipantService {
     dest.setAddress(address);
 
     dest.setAge(incomingParticipant.getAgeNormalized());
-    dest.setMobileNumber(incomingParticipant.getMobileNumber());
 
     dest.setMealSpecifics(incomingParticipant.getMealSpecifics());
     dest.setNotes(incomingParticipant.getNotes());
@@ -527,7 +540,7 @@ public class ParticipantService {
     if (participants.size() > 1) {
       throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION))); 
     }
-    Participant participantWithSameEmail = participants.get(0);
+    Participant participantWithSameEmail = participants.getFirst();
     if (!participant.isTeamPartnerWishRegistrationChildOf(participantWithSameEmail)) {
       throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION)));
     }
@@ -587,15 +600,24 @@ public class ParticipantService {
     
     String firstnamePart = teamPartnerWishRegistrationData.getFirstnamePart();
     String lastname = teamPartnerWishRegistrationData.getLastname();
-    
+    String email = teamPartnerWishRegistrationData.getEmail();
+    String mobileNumber = teamPartnerWishRegistrationData.getMobileNumber();
+
     Participant teamPartnerWish = participant.createDetachedClone(false);
     teamPartnerWish.setHost(false); // Not needed, but just to be sure
     
-    teamPartnerWish.setName(ParticipantName.newName().withFirstname(firstnamePart).andLastname(lastname));
+    teamPartnerWish.setName(ParticipantName.newName().withFirstname(StringUtils.trim(firstnamePart)).andLastname(StringUtils.trim(lastname)));
     
     teamPartnerWish.setAge(Participant.UNDEFINED_AGE);
     teamPartnerWish.setNumSeats(0);
     teamPartnerWish.setGender(Gender.UNDEFINED);
+
+    if (StringUtils.isNotBlank(email)) {
+      teamPartnerWish.setEmail(email.trim());
+    }
+    if (StringUtils.isNotBlank(mobileNumber)) {
+      teamPartnerWish.setMobileNumber(mobileNumber.trim());
+    }
     
     setParticipantNumberAndRunningDinner(teamPartnerWish, participant.getRunningDinner());
     
@@ -604,5 +626,46 @@ public class ParticipantService {
     
     participantRepository.save(teamPartnerWish);
     return participantRepository.save(participant);
+  }
+
+  public static class SyncSettings {
+
+    private final String originalEmail;
+
+    private final String originalMobileNumber;
+
+    private final boolean syncOnlyGeocodeData;
+
+    private SyncSettings(String originalEmail, String originalMobileNumber, boolean syncOnlyGeocodeData) {
+      this.originalEmail = originalEmail;
+      this.originalMobileNumber = originalMobileNumber;
+      this.syncOnlyGeocodeData = syncOnlyGeocodeData;
+    }
+
+    public static SyncSettings onlyGeocodeData() {
+      return new SyncSettings(null, null, true);
+    }
+
+    public static SyncSettings allWithOriginalData(String originalEmail, String originalMobileNumber) {
+      return new SyncSettings(originalEmail, originalMobileNumber, false);
+    }
+
+    public boolean hasSameOriginalEmail(String email) {
+      if (StringUtils.isBlank(email)) {
+        return false;
+      }
+      return StringUtils.equalsIgnoreCase(StringUtils.trim(email), StringUtils.trim(originalEmail));
+    }
+
+    public boolean hasSameOriginalMobileNumber(String mobileNumber) {
+      if (StringUtils.isBlank(mobileNumber)) {
+        return false;
+      }
+      return StringUtils.equalsIgnoreCase(StringUtils.trim(mobileNumber), StringUtils.trim(originalMobileNumber));
+    }
+
+    public boolean isSyncOnlyGeocodeData() {
+      return syncOnlyGeocodeData;
+    }
   }
 }

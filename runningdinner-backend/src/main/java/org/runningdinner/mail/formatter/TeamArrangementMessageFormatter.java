@@ -1,12 +1,6 @@
 
 package org.runningdinner.mail.formatter;
 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.common.service.LocalizationProviderService;
@@ -20,6 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 @Component
 public class TeamArrangementMessageFormatter {
@@ -85,12 +85,14 @@ public class TeamArrangementMessageFormatter {
       String partnerMail = emailLabel + ": " + StringUtils.defaultIfEmpty(partner.getEmail(), noEmailText);
       String partnerMobile = mobileLabel + ": " + StringUtils.defaultIfEmpty(partner.getMobileNumber(), noMobileText);
 
+      partnerInfo.append(partnerName).append(FormatterUtil.NEWLINE);
+      // Root participant will always have same address as child participant => only send partner address if it's not a child registration
       String address = FormatterUtil.generateAddressString(partner);
-      partnerInfo
-        .append(partnerName).append(FormatterUtil.NEWLINE)
-        .append(address).append(FormatterUtil.NEWLINE)
-        .append(partnerMail).append(FormatterUtil.NEWLINE)
-        .append(partnerMobile);
+      if (!partner.isTeamPartnerWishRegistratonChild()) {
+        partnerInfo.append(address).append(FormatterUtil.NEWLINE);
+      }
+      partnerInfo.append(partnerMail).append(FormatterUtil.NEWLINE)
+                 .append(partnerMobile);
     }
 
     theMessage = theMessage.replaceFirst(FormatterUtil.PARTNER, partnerInfo.toString());

@@ -1,10 +1,5 @@
 package org.runningdinner.mail.formatter;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.common.service.LocalizationProviderService;
@@ -19,24 +14,29 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+
 @Component
 public class DinnerRouteMessageFormatter {
 
-  private UrlGenerator urlGenerator;
+  private final UrlGenerator urlGenerator;
 
-  private MessageSource messageSource;
+  private final MessageSource messageSource;
 
-  private LocalizationProviderService localizationProviderService;
+  private final LocalizationProviderService localizationProviderService;
 
-  private AfterPartyLocationService afterPartyLocationService;
+  private final AfterPartyLocationService afterPartyLocationService;
 
-	private MessageFormatterHelperService messageFormatterHelperService;
+	private final MessageFormatterHelperService messageFormatterHelperService;
 
 	public DinnerRouteMessageFormatter(UrlGenerator urlGenerator,
-	                                 MessageSource messageSource,
-	                                 LocalizationProviderService localizationProviderService,
-																	 MessageFormatterHelperService messageFormatterHelperService,
-	                                 AfterPartyLocationService afterPartyLocationService) {
+                                     MessageSource messageSource,
+                                     LocalizationProviderService localizationProviderService,
+                                     MessageFormatterHelperService messageFormatterHelperService,
+                                     AfterPartyLocationService afterPartyLocationService) {
     this.urlGenerator = urlGenerator;
     this.messageSource = messageSource;
     this.localizationProviderService = localizationProviderService;
@@ -135,13 +135,5 @@ public class DinnerRouteMessageFormatter {
     List<MealSpecifics> allGuestMealspecifics = parentTeam.getMealSpecificsOfGuestTeams();
     return messageFormatterHelperService.formatMealSpecificsDinnerRouteMessagesUnified(allGuestMealspecifics, runningDinner);
   }
-
-  public void setUrlGenerator(UrlGenerator urlGenerator) {
-  this.urlGenerator = urlGenerator;
-}
-
-	  public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
-	}
 
 }

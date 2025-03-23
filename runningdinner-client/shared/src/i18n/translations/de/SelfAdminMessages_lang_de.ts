@@ -28,7 +28,7 @@ const SelfAdminMessages_de: any = {
 
   invalid_url: "Der von dir aufgerufene Link scheint nicht (mehr) gültig zu sein. Wende dich im Zweifel an den Organistaor deines Events oder an <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />",
 
-  team_partner_wish_registration_change_teamhost_not_possible: "Da ihr euch als festes Koch-Team ngemeldet habt und nur eine Adresse angegeben habt, könnt ihr keinen Gastgeber-Wechsel vornehmen. " +
+  team_partner_wish_registration_change_teamhost_not_possible: "Da ihr euch als festes Koch-Team angemeldet habt und nur eine Adresse angegeben habt, könnt ihr keinen Gastgeber-Wechsel vornehmen. " +
     "Falls ihr eure Adresse anpassen wollt, meldet euch bitte beim Veranstalter des Events."
 
 };

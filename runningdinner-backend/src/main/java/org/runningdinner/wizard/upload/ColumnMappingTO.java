@@ -1,10 +1,10 @@
 package org.runningdinner.wizard.upload;
 
+import org.runningdinner.common.rest.SelectOptionTO;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.runningdinner.common.rest.SelectOptionTO;
 
 public class ColumnMappingTO implements Serializable {
 
@@ -51,7 +51,6 @@ public class ColumnMappingTO implements Serializable {
 	}
 
 	public static List<SelectOptionTO> getAllMappingOptions() {
-		// TODO: Read out message bundles
 		List<SelectOptionTO> result = new ArrayList<>();
 		result.add(new SelectOptionTO(NONE, "Keine Auswahl"));
 		result.add(new SelectOptionTO(FULLNAME, "Kompletter Name"));

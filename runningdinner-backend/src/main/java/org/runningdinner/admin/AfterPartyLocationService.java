@@ -1,9 +1,5 @@
 package org.runningdinner.admin;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.service.LocalizationProviderService;
@@ -21,18 +17,22 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 @Service
 public class AfterPartyLocationService {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(AfterPartyLocationService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AfterPartyLocationService.class);
   
-  private RunningDinnerService runningDinnerService;
+  private final RunningDinnerService runningDinnerService;
   
-  private AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
+  private final AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
 
-  private LocalizationProviderService localizationProviderService;
+  private final LocalizationProviderService localizationProviderService;
   
-  private MessageSource messageSource;
+  private final MessageSource messageSource;
   
   public AfterPartyLocationService(RunningDinnerService runningDinnerService,
       AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher,
@@ -47,9 +47,8 @@ public class AfterPartyLocationService {
   
   public static void validateAfterPartyLocation(AfterPartyLocation afterPartyLocation) {
     if (afterPartyLocation == null) {
-      return;
-    }
-    // Nothing todo so far...
+		}
+    // Nothing needs to be done in here
   }
   
   public void putGeocodeEventToQueue(final RunningDinner runningDinner) {

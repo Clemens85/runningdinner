@@ -1,4 +1,3 @@
-import React from 'react'
 import Grid from "@mui/material/Grid";
 import ParticipantGenderSelection from "./ParticipantGenderSelection";
 import {
@@ -7,12 +6,14 @@ import {
 import FormFieldset from "../../../common/theme/FormFieldset";
 import FormTextField from "../../../common/input/FormTextField";
 import {useTranslation} from "react-i18next";
+import { isStringNotEmpty } from "@runningdinner/shared";
+import { useFormContext } from "react-hook-form";
 
 export type PersonalDataSectionProps = {
-  showOnlyNameFields?: boolean;
+  isTeamPartnerWishChild?: boolean;
 };
 
-export function PersonalDataSection({showOnlyNameFields}: PersonalDataSectionProps) {
+export function PersonalDataSection({isTeamPartnerWishChild}: PersonalDataSectionProps) {
 
   const {t} = useTranslation('common');
 
@@ -22,6 +23,13 @@ export function PersonalDataSection({showOnlyNameFields}: PersonalDataSectionPro
   const mobileNr = t('mobile');
   const age = t('age');
 
+  const {watch} = useFormContext();
+  const emailValue = watch("email");
+  const mobileNumberValue = watch("mobileNumber");
+
+  const showEmailInput = isStringNotEmpty(emailValue) || !isTeamPartnerWishChild;
+  const showMobileNumberInput = isStringNotEmpty(mobileNumberValue) || !isTeamPartnerWishChild;
+
   return (
       <>
         <FormFieldset>{t('base_data')}</FormFieldset>
@@ -30,6 +38,7 @@ export function PersonalDataSection({showOnlyNameFields}: PersonalDataSectionPro
             <FormTextField name="firstnamePart"
                            label={firstname}
                            required
+                           autoFocus
                            variant="filled"
                            fullWidth/>
           </Grid>
@@ -40,22 +49,26 @@ export function PersonalDataSection({showOnlyNameFields}: PersonalDataSectionPro
                            name="lastname"
                            label={lastname}/>
           </Grid>
-          { !showOnlyNameFields &&
+          { showEmailInput && 
+            <Grid item xs={12} md={6}>
+              <FormTextField required={!isTeamPartnerWishChild}
+                             fullWidth
+                             variant="filled"
+                             name="email"
+                             label={email}
+                             type="email"/>
+            </Grid>
+          }
+          { showMobileNumberInput && 
+            <Grid item xs={12} md={6}>
+              <FormTextField name="mobileNumber"
+                              fullWidth
+                              variant="filled"
+                              label={mobileNr}/>
+            </Grid>
+          }
+          { !isTeamPartnerWishChild && 
             <>
-              <Grid item xs={12} md={6}>
-                <FormTextField required
-                               fullWidth
-                               variant="filled"
-                               name="email"
-                               label={email}
-                               type="email"/>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <FormTextField name="mobileNumber"
-                               fullWidth
-                               variant="filled"
-                               label={mobileNr}/>
-              </Grid>
               <Grid item xs={12} md={6}>
                 <ParticipantGenderSelection label={t('common:gender')} value="gender" />
               </Grid>

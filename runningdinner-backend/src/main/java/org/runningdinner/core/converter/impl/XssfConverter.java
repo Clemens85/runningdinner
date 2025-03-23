@@ -1,10 +1,6 @@
 package org.runningdinner.core.converter.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-
+import com.google.common.base.Optional;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.runningdinner.core.converter.ConversionException;
@@ -14,12 +10,14 @@ import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 
-import com.google.common.base.Optional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Entry point for parsing "new" XLSX excel files.<br>
  * 
- * TODO: XLSX parsing takes huge amount of memory when using the highlevel XSSF API.<br>
  * If this is an issue, it has to be changed to low-level event-driven parsing
  * 
  * @author Clemens Stich
@@ -68,7 +66,7 @@ public class XssfConverter extends AbstractExcelConverterHighLevel implements Fi
 
 	private XSSFSheet createNewSheet() {
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet sheet = workbook.createSheet("Teilnehmer"); // TODO: i18n
+		XSSFSheet sheet = workbook.createSheet("Teilnehmer");
 		return sheet;
 	}
 

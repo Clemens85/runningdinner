@@ -20,7 +20,7 @@ const FormTextFieldInternal = ({name, label, defaultValue, ...other}: FormTextFi
 
   const errorMessageObj = get(errors, name, undefined);
   if (errorMessageObj) {
-    helperText = errorMessageObj.message;
+    helperText = errorMessageObj.message as string;
     hasErrors = true;
   }
 
