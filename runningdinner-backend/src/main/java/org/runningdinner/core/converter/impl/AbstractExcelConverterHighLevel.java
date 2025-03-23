@@ -432,8 +432,6 @@ public class AbstractExcelConverterHighLevel {
 			if (cell.getCellType() == CellType.NUMERIC) {
 				if (DateUtil.isCellDateFormatted(cell)) {
 
-					// if (HSSFDateUtil.isCellDateFormatted(cell)) {
-					// TODO: XSSF <-> HSSF, but seems to work for both
 					HSSFDataFormatter formater = new HSSFDataFormatter();
 					result = formater.formatCellValue(cell);
 				}

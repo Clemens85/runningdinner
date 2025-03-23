@@ -37,7 +37,7 @@ public interface HasTeamPartnerWishOriginator extends Identifiable  {
   static<T extends HasTeamPartnerWishOriginator> List<T> filterRootPartners(List<T> list) {
     return list
             .stream()
-            .filter(r -> r.isTeamPartnerWishRegistratonRoot())
+            .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistratonRoot)
             .collect(Collectors.toList());
   }
 
