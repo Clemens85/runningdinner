@@ -7,7 +7,7 @@ import {
   LANDING_CREATE_RUNNING_DINNER_PATH, LANDING_NEWS_PATH, LANDING_START_PATH,
   RUNNING_DINNER_EVENTS_PATH
 } from "../common/mainnavigation/NavigationPaths";
-import { FameOnMePopup } from '../common/teaserpopup/FameOnMePopup';
+import { TeaserPopup } from '../common/teaserpopup';
 import { useIsDeviceMinWidth } from "../common/theme/CustomMediaQueryHook";
 import { GlobalNotificationBanner, GlobalNotificationBannerApp } from "../common/global-notification";
 
@@ -63,7 +63,7 @@ export default function LandingApp() {
                       donatePaddingRight={donateBtnPaddingRight}
                       navigationItems={navigationItems} />
       <LandingRoute />
-      <FameOnMePopup />
+      <TeaserPopup />
     </div>
   );
 

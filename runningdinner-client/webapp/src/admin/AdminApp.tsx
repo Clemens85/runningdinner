@@ -17,7 +17,7 @@ import "../timeline.css";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
-import { FameOnMePopup } from '../common/teaserpopup/FameOnMePopup';
+import { TeaserPopup } from '../common/teaserpopup';
 
 export default function AdminApp() {
 
@@ -55,7 +55,7 @@ function AdminAppPage({adminId}: BaseAdminIdProps) {
         <ProgressBar showLoadingProgress={showLoadingProgress} fetchError={fetchError} />
         <Container maxWidth={false}>
           <AdminRoute />
-          <FameOnMePopup />
+          <TeaserPopup />
         </Container>
       </div>
   );
