@@ -711,13 +711,26 @@ public class MessageService {
         .toList()
     );
 
+    // Filter out child participants that have same email as parent participant (=> no own message needed)
     var teamPartnerRegistrationChildren = result
       .stream()
       .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistratonChild)
       .toList();
 
-    // It is never possible to have team partner registration child without its root participant, hence we can safely remove them:
-    result.removeAll(teamPartnerRegistrationChildren);
+    List<T> childrenToRemove = new ArrayList<>();
+    for (T childParticipant : teamPartnerRegistrationChildren) {
+      T parent = result
+                  .stream()
+                  .filter(childParticipant::isTeamPartnerWishRegistrationChildOf)
+                  .findFirst()
+                  .orElse(null);
+
+      if (parent == null || StringUtils.equalsIgnoreCase(childParticipant.getEmail(), parent.getEmail())) {
+        childrenToRemove.add(childParticipant);
+      }
+    }
+
+    result.removeAll(childrenToRemove);
     return result;
   }
 

@@ -120,7 +120,7 @@ export default function ParticipantForm({participant, adminId, onParticipantSave
             </Grid>
 
             <Box mb={3} mt={3}>
-              <PersonalDataSection showOnlyNameFields={teamPartnerWishChild} />
+              <PersonalDataSection isTeamPartnerWishChild={teamPartnerWishChild} />
             </Box>
             { !teamPartnerWishChild &&
               <>

@@ -1,6 +1,7 @@
 
 package org.runningdinner.test.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.awaitility.Awaitility;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.message.MessageService;
@@ -129,16 +130,23 @@ public class TestHelperService {
   }
 
   public Participant registerParticipantsAsFixedTeam(RunningDinner runningDinner, String rootFullname, String rootEmail, String childFullname) {
+    return registerParticipantsAsFixedTeam(runningDinner, rootFullname, rootEmail, childFullname, null);
+  }
+
+  public Participant registerParticipantsAsFixedTeam(RunningDinner runningDinner, String rootFullname, String rootEmail, String childFullname, String childEmail) {
 
     ParticipantName childName = ParticipantName.newName().withCompleteNameString(childFullname);
 
     // Register (and activate) fixed team
     RegistrationDataTO registrationData = TestUtil.createRegistrationData(rootFullname, rootEmail, TestUtil.newAddress(), 6);
     registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData(childName.getFirstnamePart(), childName.getLastname()));
+    if (StringUtils.isNotBlank(childEmail)) {
+      registrationData.getTeamPartnerWishRegistrationData().setEmail(childEmail);
+    }
     frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
 
     Participant rootParticipant = participantService.findParticipantByEmail(runningDinner.getAdminId(), rootEmail)
-      .get(0);
+                                                        .getFirst();
     return participantService.updateParticipantSubscription(rootParticipant.getId(), LocalDateTime.now(), true, runningDinner);
   }
 
@@ -147,27 +155,23 @@ public class TestHelperService {
     RegistrationDataTO registrationData = TestUtil.createRegistrationData(fullname, email, TestUtil.newAddress(), 6);
     frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
 
-    Participant participant = participantService.findParticipantByEmail(runningDinner.getAdminId(), email).get(0);
+    Participant participant = participantService.findParticipantByEmail(runningDinner.getAdminId(), email).getFirst();
     return participantService.updateParticipantSubscription(participant.getId(), LocalDateTime.now(), true, runningDinner);
   }
 
-
   private RunningDinnerConfig getDefaultRunningDinnerConfig(LocalDate date) {
-
     return RunningDinnerConfig.newConfigurer().havingMeals(newDefaultMeals(date)).build();
   }
 
   public static List<MealClass> newDefaultMeals(LocalDate dinnerDate) {
-
     List<MealClass> result = new ArrayList<>();
-    result.add(new MealClass("Vorspeise", LocalDateTime.of(dinnerDate, LocalTime.of(19, 00))));
-    result.add(new MealClass("Hauptspeise", LocalDateTime.of(dinnerDate, LocalTime.of(21, 00))));
-    result.add(new MealClass("Nachspeise", LocalDateTime.of(dinnerDate, LocalTime.of(23, 00))));
+    result.add(new MealClass("Vorspeise", LocalDateTime.of(dinnerDate, LocalTime.of(19, 0))));
+    result.add(new MealClass("Hauptspeise", LocalDateTime.of(dinnerDate, LocalTime.of(21, 0))));
+    result.add(new MealClass("Nachspeise", LocalDateTime.of(dinnerDate, LocalTime.of(23, 0))));
     return result;
   }
 
   public void awaitMessageJobFinished(MessageJob messageJob) {
-    
     Awaitility
       .await()
       .atMost(MAX_AWAIT_SECONDS, TimeUnit.SECONDS)
@@ -175,14 +179,10 @@ public class TestHelperService {
   }
   
   private Callable<Boolean> messageJobIsFinished(MessageJob incomingMessageJob) {
-    
-    return new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-        MessageJob messageJob = messageService.findMessageJob(incomingMessageJob.getAdminId(), incomingMessageJob.getId());
-        return messageJob.getSendingStatus() == SendingStatus.SENDING_FINISHED;
-      }
-    };
+    return () -> {
+			MessageJob messageJob = messageService.findMessageJob(incomingMessageJob.getAdminId(), incomingMessageJob.getId());
+			return messageJob.getSendingStatus() == SendingStatus.SENDING_FINISHED;
+		};
   }
   
   private RunningDinner acknowledgeRunningDinner(RunningDinner runningDinner) {

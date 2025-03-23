@@ -8,6 +8,8 @@ import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
+import org.runningdinner.admin.message.team.TeamMessage;
+import org.runningdinner.admin.message.team.TeamSelection;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.Gender;
@@ -103,7 +105,7 @@ public class TeamPartnerRegistrationTest {
     
     participants = participantService.findParticipants(runningDinner.getAdminId(), false);
     assertThat(participants).hasSize(2);
-    Participant rootParticipant = participants.get(0); // Root participant comes always before child participant
+    Participant rootParticipant = participants.getFirst(); // Root participant comes always before child participant
     assertThat(rootParticipant.getEmail()).isEqualTo("max@muster.de");
     assertThat(rootParticipant.getParticipantNumber()).isEqualTo(1);
     
@@ -132,7 +134,7 @@ public class TeamPartnerRegistrationTest {
     // Check correlations are properly setup
     assertThat(rootParticipant.isTeamPartnerWishRegistratonRoot()).isTrue();
     assertThat(childParticipant.isTeamPartnerWishRegistratonRoot()).isFalse();
-    assertThat(childParticipant.isTeamPartnerWishRegistrationChildOf(rootParticipant));
+    assertThat(childParticipant.isTeamPartnerWishRegistrationChildOf(rootParticipant)).isTrue();
   }
 
   @Test
@@ -158,6 +160,53 @@ public class TeamPartnerRegistrationTest {
     SimpleMailMessage sentMsg = mailSenderInMemory.filterForMessageTo("max@muster.de");
     assertThat(sentMsg).isNotNull();
   }
+
+  @Test
+  public void messagesAreSentToChildIfEmailProvided() throws InterruptedException {
+    mailSenderInMemory.removeAllMessages();
+
+    testHelperService.registerParticipantsAsFixedTeam(runningDinner, "Max Mustermann", "max@muster.de",
+                                                      "Maria Musterfrau", "maria@muster.de");
+
+    // Ensure exactly one activation msg is sent (only for root participant) and clear sent messages
+    Thread.sleep(1000);
+    assertThat(mailSenderInMemory.getMessages()).hasSize(1);
+    assertThat(mailSenderInMemory.filterForMessageTo("maria@muster.de")).isNull();
+    mailSenderInMemory.removeAllMessages();
+
+    // Create 16 more participants (so that we now have 18 and generate teams)
+    List<Participant> otherParticipants = ParticipantGenerator.generateParticipants(16, 2);
+    createRunningDinnerWizardService.saveAndActivateParticipantsToDinner(runningDinner, otherParticipants);
+    teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+
+    Participant max = participantService.findParticipantByEmail(runningDinner.getAdminId(), "max@muster.de").getFirst();
+
+    TeamMessage teamMessage = new TeamMessage();
+    teamMessage.setSubject("subject");
+    teamMessage.setMessage("{firstname} {lastname} Partner: {partner}");
+    teamMessage.setHostMessagePartTemplate("host");
+    teamMessage.setNonHostMessagePartTemplate("non-host");
+    teamMessage.setTeamSelection(TeamSelection.CUSTOM_SELECTION);
+    teamMessage.setCustomSelectedTeamIds(List.of(max.getTeamId()));
+    MessageJob messageJob = messageService.sendTeamMessages(runningDinner.getAdminId(), teamMessage);
+    assertThat(messageJob).isNotNull();
+    testHelperService.awaitMessageJobFinished(messageJob);
+
+    Set<SimpleMailMessage> messages = mailSenderInMemory.getMessages();
+    assertThat(messages).hasSize(2);
+    SimpleMailMessage maxMsg = mailSenderInMemory.filterForMessageTo("max@muster.de");
+    SimpleMailMessage mariaMsg = mailSenderInMemory.filterForMessageTo("maria@muster.de");
+    assertThat(maxMsg).isNotNull();
+    assertThat(mariaMsg).isNotNull();
+
+    assertThat(maxMsg.getText()).startsWith("Max Mustermann");
+    assertThat(maxMsg.getText()).contains("Partner: Maria Musterfrau");
+    assertThat(maxMsg.getText()).doesNotContain("Musterstraße 1");
+
+    assertThat(mariaMsg.getText()).startsWith("Maria Musterfrau");
+    assertThat(mariaMsg.getText()).contains("Partner: Max Mustermann");
+    assertThat(mariaMsg.getText()).contains("Musterstraße 1");
+  }
   
   @Test
   public void validationForNotEnoughNumSeats() {
@@ -169,7 +218,7 @@ public class TeamPartnerRegistrationTest {
       frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
       Assertions.fail("Expected ValidationException to be thrown for not enough numSeats");
     } catch (ValidationException e) {
-      assertThat(e.getIssues().getIssues().get(0).getField()).isEqualTo("numSeats");
+      assertThat(e.getIssues().getIssues().getFirst().getField()).isEqualTo("numSeats");
     }
   }
   
@@ -209,7 +258,7 @@ public class TeamPartnerRegistrationTest {
       teamService.swapTeamMembers(runningDinner.getAdminId(), fixedTeamParticipants.get(1).getId(), otherTeam.getHostTeamMember().getId());
       Assertions.fail("Expected ValidationException to be thrown upon swap action");
     } catch (ValidationException e) {
-      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.TEAM_SWAP_VIOLATES_TEAM_PARTNER_WISH);
+      assertThat(e.getIssues().getIssues().getFirst().getMessage()).isEqualTo(IssueKeys.TEAM_SWAP_VIOLATES_TEAM_PARTNER_WISH);
     }
     
   }
@@ -254,7 +303,7 @@ public class TeamPartnerRegistrationTest {
     createRunningDinnerWizardService.saveAndActivateParticipantsToDinner(runningDinner, existingParticipants);
 
     TeamArrangementListTO teamGenerationResult = teamService.createTeamAndVisitationPlans(adminId);
-    UUID firstTeamId = teamGenerationResult.getTeams().get(0).getId();
+    UUID firstTeamId = teamGenerationResult.getTeams().getFirst().getId();
     
     Participant rootParticipant = registerParticipantsAsFixedTeam();
     Participant childParticipant = participantRepository.findByTeamPartnerWishOriginatorIdAndIdNotAndAdminId(rootParticipant.getTeamPartnerWishOriginatorId(), rootParticipant.getId(), adminId);
@@ -315,7 +364,7 @@ public class TeamPartnerRegistrationTest {
       teamService.cancelTeamMember(runningDinner.getAdminId(), fixedTeam.getId(), rootParticipantId);
       Assertions.fail("Cancelling of root participant in team should not be possible!");
     } catch (ValidationException e) {
-      
+      e.printStackTrace();
     }
   }
   
@@ -361,14 +410,14 @@ public class TeamPartnerRegistrationTest {
       waitingListService.assignParticipantsToExistingTeams(adminId, List.of(TestUtil.newTeamParticipantsAssignment(firstTeam, rootParticipant)));
       Assertions.fail("Expected ValidationExcpetion to be thrown");
     } catch (ValidationException e) {
-      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH);
+      assertThat(e.getIssues().getIssues().getFirst().getMessage()).isEqualTo(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH);
     }
     
     try {
       waitingListService.assignParticipantsToExistingTeams(adminId, List.of(TestUtil.newTeamParticipantsAssignment(firstTeam, childParticipant)));
       Assertions.fail("Expected ValidationExcpetion to be thrown");
     } catch (ValidationException e) {
-      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH);
+      assertThat(e.getIssues().getIssues().getFirst().getMessage()).isEqualTo(IssueKeys.INVALID_REPLACEMENT_PARTICIPANTS_INCONSISTENT_TEAMPARTNER_WISH);
     }
     
     teamService.cancelTeam(adminId, TestUtil.newCancellationWithoutReplacement(firstTeam));
@@ -402,7 +451,7 @@ public class TeamPartnerRegistrationTest {
 
     List<ParticipantTO> otherParticipantsForTeamGeneration = otherParticipants
                                                               .stream()
-                                                              .map(p -> new ParticipantTO(p))
+                                                              .map(ParticipantTO::new)
                                                               .collect(Collectors.toList());
     
     List<ParticipantTO> generateNewTeamsParticipantList = new ArrayList<>(otherParticipantsForTeamGeneration);
@@ -411,7 +460,7 @@ public class TeamPartnerRegistrationTest {
       waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
       Assertions.fail("Expected ValidationException");
     } catch (ValidationException e) {
-      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
+      assertThat(e.getIssues().getIssues().getFirst().getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
     }
     
     
@@ -421,7 +470,7 @@ public class TeamPartnerRegistrationTest {
       waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
       Assertions.fail("Expected ValidationException");
     } catch (ValidationException e) {
-      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
+      assertThat(e.getIssues().getIssues().getFirst().getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
     }
     
     // Register other fixed team:
@@ -435,7 +484,7 @@ public class TeamPartnerRegistrationTest {
       waitingListService.generateNewTeams(adminId, generateNewTeamsParticipantList);
       Assertions.fail("Expected ValidationException");
     } catch (ValidationException e) {
-      assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
+      assertThat(e.getIssues().getIssues().getFirst().getMessage()).isEqualTo(IssueKeys.INVALID_WAITINGLIST_TEAMGENERATION_INCONSISTENT_TEAMPARTNER_WISH);
     }
   
     
@@ -451,7 +500,7 @@ public class TeamPartnerRegistrationTest {
     assertThat(remainingParticipants).hasSize(3);
     assertThat(remainingParticipants)
       .extracting("teamPartnerWishOriginatorId")
-      .allMatch(teamPartnerWishOriginatorId -> teamPartnerWishOriginatorId == null);
+      .allMatch(Objects::isNull);
   }
   
   @Test
@@ -535,7 +584,7 @@ public class TeamPartnerRegistrationTest {
 
     var participants = participantService.findParticipants(runningDinner.getAdminId(), true);
     assertThat(participants).containsExactly(participant);
-    assertThat(participants.get(0).getActivationDate()).isEqualToIgnoringNanos(now);
+    assertThat(participants.getFirst().getActivationDate()).isEqualToIgnoringNanos(now);
 
     // Should not change anything
     participantService.updateParticipantSubscription(participant.getId(), LocalDateTime.now().minusDays(1), false, runningDinner);

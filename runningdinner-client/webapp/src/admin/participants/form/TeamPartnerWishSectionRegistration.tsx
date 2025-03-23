@@ -236,6 +236,7 @@ function TeamPartnerRegistrationFormInput() {
           <FormTextField required
                          defaultValue={""}
                          fullWidth
+                         autoFocus
                          variant="filled"
                          name="teamPartnerWishRegistrationData.firstnamePart"
                          label={t("common:teampartner_registration_firstname")} />
@@ -247,6 +248,20 @@ function TeamPartnerRegistrationFormInput() {
                          fullWidth
                          name="teamPartnerWishRegistrationData.lastname"
                          label={t("common:teampartner_registration_lastname")}/>
+        </Grid>        
+        <Grid item xs={12} md={6}>
+          <FormTextField defaultValue={""}
+                         variant="filled"
+                         fullWidth
+                         name="teamPartnerWishRegistrationData.email"
+                         type="email"
+                         label={t("common:teampartner_registration_email")}/>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <FormTextField name="teamPartnerWishRegistrationData.mobileNumber"
+                         fullWidth
+                         variant="filled"
+                         label={t("common:teampartner_registration_mobilenumber")}/>
         </Grid>
         <Grid item xs={12} sx={{py: 2}}>
           <Span><Trans i18nKey={"common:teampartner_registration_info_address"} /></Span>

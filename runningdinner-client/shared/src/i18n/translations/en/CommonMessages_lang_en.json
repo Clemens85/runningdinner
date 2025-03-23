@@ -217,6 +217,8 @@
 	"teampartner_registration_info_mealspecifics": "If your partner has special eating habits, enter them above combined with yours.",
 	"teampartner_registration_firstname": "Firstname of your partner",
 	"teampartner_registration_lastname": "Lastname of your partner",
+	"teampartner_registration_email": "Email of your partner (optional)",
+	"teampartner_registration_mobilenumber": "Mobile number of your partner (optional)",
 	"num_seats_teampartner_registration_invalid": "To register as a fixed cooking team with your desired partner, you need enough seats at the specified address (typically at least 6). <br /> Please correct the number of seats or the address before you continue.",
 	"time": "Time",
 	"title": "Title",
