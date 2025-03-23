@@ -2,8 +2,6 @@ package org.runningdinner.participant.rest;
 
 import jakarta.validation.Valid;
 import org.runningdinner.participant.*;
-import org.runningdinner.participant.rest.dinnerroute.DinnerRouteListTO;
-import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -134,22 +132,6 @@ public class TeamServiceRest {
     LOGGER.info("Team state after cancellation of teammember ({}): {}", participantId, result.toStringDetailed());
     
     return new TeamTO(result);
-  }
-
-  // TODO: Remove as moved to DinnerRouteServiceRest
-
-  @GetMapping("/runningdinner/{adminId}/team/{teamId}/dinnerroute")
-  public DinnerRouteTO findDinnerRoute(@PathVariable String adminId, @PathVariable UUID teamId) {
-
-    return dinnerRouteService.findDinnerRoute(adminId, teamId)
-                        .withMealSpecificsInHtmlFormat();
-  }
-
-  @GetMapping("/runningdinner/{adminId}/dinnerroutes")
-  public DinnerRouteListTO findAllDinnerRoutes(@PathVariable String adminId) {
-
-    var result = dinnerRouteService.findAllDinnerRoutes(adminId);
-    return new DinnerRouteListTO(result);
   }
 
   protected Map<UUID, UUID> convertToTeamHostMap(final List<TeamTO> teams) {
