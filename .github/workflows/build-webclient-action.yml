@@ -38,7 +38,7 @@ jobs:
         if: always()
         with:
           name: Test Results               # Name of the check run which will be created
-          path: reports/test-*.xml         # Path to test results
+          path: reports/*.xml              # Path to test results
           reporter: jest-junit             # Format of test results
 
       - name: Build webclient
