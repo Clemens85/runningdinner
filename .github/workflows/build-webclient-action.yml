@@ -26,8 +26,12 @@ jobs:
       - name: Install dependencies
         run: |
           cd runningdinner-client
-          ls -la
           pnpm i --frozen-lockfile
+
+      - name: Test
+        run: |
+          cd runningdinner-client
+          pnpm test
 
       - name: Build webclient
         run: |

@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo-test/webapp",
+  "name": "@runningdinner/webapp",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,7 +8,8 @@
     "build-tsc": "tsc && vite build",
     "build": "vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run --pass-with-no-tests"
   },
   "dependencies": {
     "react": "^18.0.2",
@@ -51,6 +52,9 @@
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
-    "typescript": "5.2.2"
+    "typescript": "5.2.2",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "jsdom": "^26.0.0"
   }
 }
