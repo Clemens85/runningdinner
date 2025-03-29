@@ -11,3 +11,4 @@ packages/**/build
 /webapp/public/favicon.ico.old
 /webapp/public/favicon.png.old
 start-dev-win.ps1
+reports/

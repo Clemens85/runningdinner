@@ -32,6 +32,14 @@ jobs:
         run: |
           cd runningdinner-client
           pnpm test
+  
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test Results               # Name of the check run which will be created
+          path: reports/test-*.xml         # Path to test results
+          reporter: jest-junit             # Format of test results
 
       - name: Build webclient
         run: |
