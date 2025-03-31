@@ -3,4 +3,5 @@
 RUDI-MZ.csv
 runningdinner-client/build-run-app.sh
 .vscode
+route-data/*.json
 
