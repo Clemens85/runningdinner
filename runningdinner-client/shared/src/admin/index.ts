@@ -20,3 +20,4 @@ export * from "./SettingsService";
 export * from "./PaymentOptionsService";
 export * from "./dashboard";
 export * from './dinnerroute';
+export * from './SupportApi';
