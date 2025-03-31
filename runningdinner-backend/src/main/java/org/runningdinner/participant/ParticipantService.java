@@ -1,11 +1,30 @@
 
 package org.runningdinner.participant;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
-import org.runningdinner.common.*;
+import org.runningdinner.common.Issue;
+import org.runningdinner.common.IssueKeys;
+import org.runningdinner.common.IssueList;
+import org.runningdinner.common.IssueType;
+import org.runningdinner.common.ResourceLoader;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.LocalizationProviderService;
@@ -20,13 +39,22 @@ import org.runningdinner.core.converter.ConverterFactory;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
 import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
-import org.runningdinner.core.converter.config.*;
+import org.runningdinner.core.converter.config.AddressColumnConfig;
+import org.runningdinner.core.converter.config.EmailColumnConfig;
+import org.runningdinner.core.converter.config.GenderColumnConfig;
+import org.runningdinner.core.converter.config.NameColumnConfig;
+import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
+import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
-import org.runningdinner.participant.rest.*;
+import org.runningdinner.participant.rest.MissingParticipantsInfo;
+import org.runningdinner.participant.rest.ParticipantInputDataTO;
+import org.runningdinner.participant.rest.ParticipantListActive;
+import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
+import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +64,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ParticipantService {
@@ -262,13 +283,21 @@ public class ParticipantService {
       participant.setActivationDate(LocalDateTime.now());
     }
       
+    // Only relevant for import scenarios where we might have valid geocoding
+    if (GeocodingResult.isValid(incomingParticipant.getGeocodingResult())) {
+    	participant.setGeocodingResult(incomingParticipant.getGeocodingResult());
+    }
+    
     Participant createdParticipant = participantRepository.save(participant);
     
     if (incomingParticipant.isTeamPartnerWishRegistrationDataProvided()) {
       createdParticipant = handleTeamPartnerWishRegistrationData(createdParticipant, incomingParticipant.getTeamPartnerWishRegistrationData());
     }
 
-    putGeocodeEventToQueue(createdParticipant, runningDinner);
+    // Only perform geocoding if not already provided (-> import scenarios)
+    if (!GeocodingResult.isValid(incomingParticipant.getGeocodingResult())) {
+      putGeocodeEventToQueue(createdParticipant, runningDinner);
+    }
 
     return createdParticipant;
   }

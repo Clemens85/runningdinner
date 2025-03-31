@@ -11,7 +11,8 @@ import {BrowserTitle} from "../common/mainnavigation/BrowserTitle";
 import {PaymentOptionsPage} from "./paymentoptions/PaymentOptionsPage";
 import { ParticipantsPage } from './participants/ParticipantsPage';
 import { HostLocationsPage } from "./hostlocations";
-import { MessagesLandingPage } from "./messages/landing/MessagesLandingPage";
+import { MessagesLandingPage } from "./messages/landing";
+import {SupportPage} from "./support/SupportPage.tsx";
 
 export default function AdminRoute() {
 
@@ -56,6 +57,8 @@ export default function AdminRoute() {
         <Route path={"messages/overview"} element={<MessagesLandingPage runningDinner={runningDinner} />} />
 
         <Route path={`paymentoptions`} element={<PaymentOptionsPage runningDinner={runningDinner} />} />
+
+        <Route path={`support-functions`} element={<SupportPage runningDinner={runningDinner} />} />
 
         <Route path={"*"} element={<Dashboard runningDinner={runningDinner} />} />
       </Routes>
