@@ -1,14 +1,11 @@
 package org.runningdinner.dinnerroute.distance;
 
-import org.junit.jupiter.api.Test;
-import org.runningdinner.dinnerroute.distance.DistanceCalculator;
-import org.runningdinner.dinnerroute.distance.DistanceEntry;
-import org.runningdinner.dinnerroute.distance.DistanceMatrix;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
+import org.junit.jupiter.api.Test;
 
 public class DistanceCalculatorTest {
 

@@ -13,6 +13,7 @@ import SoupKitchenIcon from '@mui/icons-material/SoupKitchen';
 import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 import IcecreamIcon from '@mui/icons-material/Icecream';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
+import React from "react";
 
 export const TeamCardDetailRow = styled('div')( {
   display: 'flex',
@@ -49,8 +50,8 @@ export function TeamCardDetails({hostTeamMember, meal, contactInfo, isCurrentTea
 
     return (
       <>
-        { contactInfoUnique.map((mobileNumber: string, index: number) => 
-            <>{index > 0 ? <span>, &nbsp;</span> : ""}<LinkExtern href={`tel:${mobileNumber}`} key={mobileNumber} title={mobileNumber}/></>)
+        { contactInfoUnique.map((mobileNumber: string, index: number) =>
+          <React.Fragment key={mobileNumber}>{index > 0 ? <span>, &nbsp;</span> : ""}<LinkExtern href={`tel:${mobileNumber}`} title={mobileNumber}/></React.Fragment>)
         }
       </>
     );
