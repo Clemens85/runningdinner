@@ -1,4 +1,4 @@
-package org.runningdinner.participant.rest.dinnerroute;
+package org.runningdinner.dinnerroute;
 
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.AfterPartyLocation;

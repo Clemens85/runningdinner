@@ -1,4 +1,4 @@
-package org.runningdinner.geocoder.distance;
+package org.runningdinner.dinnerroute.distance;
 
 import java.util.Objects;
 

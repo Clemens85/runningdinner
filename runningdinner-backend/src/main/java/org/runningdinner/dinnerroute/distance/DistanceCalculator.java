@@ -1,7 +1,6 @@
-package org.runningdinner.geocoder.distance;
+package org.runningdinner.dinnerroute.distance;
 
 import org.runningdinner.geocoder.GeocodingResult;
-import org.runningdinner.participant.rest.dinnerroute.GeocodedAddressEntity;
 
 import java.util.List;
 

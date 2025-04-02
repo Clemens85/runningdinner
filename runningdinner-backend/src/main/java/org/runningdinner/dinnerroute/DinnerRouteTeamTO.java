@@ -1,5 +1,5 @@
 
-package org.runningdinner.participant.rest.dinnerroute;
+package org.runningdinner.dinnerroute;
 
 import com.google.common.base.MoreObjects;
 

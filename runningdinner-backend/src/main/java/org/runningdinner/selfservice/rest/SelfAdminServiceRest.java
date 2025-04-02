@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import jakarta.validation.Valid;
 
+import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.rest.TeamTO;
-import org.runningdinner.participant.rest.dinnerroute.DinnerRouteTO;
 import org.runningdinner.selfservice.ChangeTeamHost;
 import org.runningdinner.selfservice.SelfAdminService;
 import org.runningdinner.selfservice.SelfAdminSessionDataTO;

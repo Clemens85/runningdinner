@@ -1,4 +1,4 @@
-package org.runningdinner.participant.rest.dinnerroute;
+package org.runningdinner.dinnerroute;
 
 public class DinnerRouteTeamWithDistanceTO extends DinnerRouteTeamTO {
 

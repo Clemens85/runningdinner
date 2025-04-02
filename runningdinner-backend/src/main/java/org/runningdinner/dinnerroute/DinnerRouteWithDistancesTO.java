@@ -1,4 +1,4 @@
-package org.runningdinner.participant.rest.dinnerroute;
+package org.runningdinner.dinnerroute;
 
 import java.util.List;
 

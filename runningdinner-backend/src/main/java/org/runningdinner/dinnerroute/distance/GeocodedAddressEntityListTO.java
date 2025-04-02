@@ -1,4 +1,4 @@
-package org.runningdinner.participant.rest.dinnerroute;
+package org.runningdinner.dinnerroute.distance;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

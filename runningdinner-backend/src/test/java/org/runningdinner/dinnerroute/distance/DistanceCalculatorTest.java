@@ -1,11 +1,9 @@
-package org.runningdinner.geocoder;
+package org.runningdinner.dinnerroute.distance;
 
 import org.junit.jupiter.api.Test;
-import org.runningdinner.geocoder.distance.DistanceCalculator;
-import org.runningdinner.geocoder.distance.DistanceEntry;
-import org.runningdinner.geocoder.distance.DistanceMatrix;
-import org.runningdinner.participant.rest.dinnerroute.GeocodedAddressEntity;
-import org.runningdinner.participant.rest.dinnerroute.GeocodedAddressEntityIdType;
+import org.runningdinner.dinnerroute.distance.DistanceCalculator;
+import org.runningdinner.dinnerroute.distance.DistanceEntry;
+import org.runningdinner.dinnerroute.distance.DistanceMatrix;
 
 import java.util.List;
 

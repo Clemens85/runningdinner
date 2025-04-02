@@ -1,4 +1,14 @@
-package org.runningdinner.participant;
+package org.runningdinner.dinnerroute;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
@@ -8,18 +18,21 @@ import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.util.LogSanitizer;
-import org.runningdinner.geocoder.distance.DistanceCalculator;
-import org.runningdinner.geocoder.distance.DistanceEntry;
-import org.runningdinner.geocoder.distance.DistanceMatrix;
+import org.runningdinner.dinnerroute.distance.DistanceCalculator;
+import org.runningdinner.dinnerroute.distance.DistanceEntry;
+import org.runningdinner.dinnerroute.distance.DistanceMatrix;
+import org.runningdinner.dinnerroute.distance.GeocodedAddressEntity;
+import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityIdType;
+import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
+import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamMeetingPlan;
+import org.runningdinner.participant.TeamService;
 import org.runningdinner.participant.rest.TeamTO;
-import org.runningdinner.participant.rest.dinnerroute.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
-import java.util.*;
 
 @Service
 public class DinnerRouteService {
