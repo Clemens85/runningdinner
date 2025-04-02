@@ -1,14 +1,20 @@
 package org.runningdinner.geocoder;
 
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.SafeHtml;
+
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
 
 @Embeddable
 public class GeocodingResult {
 
+	/**
+	 * -1 is actually valid for both lat and lng.
+	 * It is however extremely unrealistic that a person really has a geocoded address of (-1,-1), so we stick to this combination as being a not properly geocoded address.
+	 * A better solution would be to use the Double as datatype which can be null for a not geocoded address, but this yields into some migration effort
+	 */
 	private double lat = -1;
 
 	private double lng = -1;
@@ -75,9 +81,13 @@ public class GeocodingResult {
 	}
 
 	public static boolean isValid(GeocodingResult geocodingResult) {
-		return geocodingResult != null && geocodingResult.getLng() >= 0 && geocodingResult.getLat() >= 0;
+		return geocodingResult != null && isLngAndLatValid(geocodingResult.getLng(), geocodingResult.getLat());
 	}
 
+	private static boolean isLngAndLatValid(double lng, double lat) {
+		return lng != -1 && lat != -1;
+	}
+	
 	public enum GeocodingResultType {
 		EXACT,
 		NOT_EXACT,
