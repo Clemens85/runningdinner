@@ -40,11 +40,15 @@ export interface DinnerRouteTeamWithDistance extends DinnerRouteTeam {
 }
 export interface DinnerRouteWithDistances {
   teams: DinnerRouteTeamWithDistance[];
+  averageDistanceInMeters: number;
 }
 
 export interface DinnerRouteWithDistancesList {
   dinnerRoutes: DinnerRouteWithDistances[];
+  averageDistanceInMeters: number;
+  sumDistanceInMeters: number;
 }
+
 interface DistanceEntry {
   srcId: string;
   destId: string;
@@ -88,6 +92,15 @@ export type DinnerRouteMapData = {
   teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
   centerPosition: GeocodingResult;
   afterPartyLocationMapEntry?: AfterPartyLocationMapEntry
+};
+
+export type DinnerRouteOptimizationResult = {
+  id: string;
+  optimizedDinnerRoutes: DinnerRoute[];
+  optimizedDistances: DinnerRouteWithDistancesList;
+  optimizedTeamDistanceClusters: TeamDistanceClusterList;
+  averageDistanceInMetersBefore: number;
+  sumDistanceInMetersBefore: number;
 };
 
 export enum MealType  {

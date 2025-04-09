@@ -1,8 +1,8 @@
 package org.runningdinner.dinnerroute.distance;
 
-import org.runningdinner.geocoder.GeocodingResult;
-
 import java.util.List;
+
+import org.runningdinner.geocoder.GeocodingResult;
 
 public final class DistanceCalculator {
 //  private static final int EARTH_RADIUS = 6371;
@@ -32,7 +32,8 @@ public final class DistanceCalculator {
 //    return EARTH_RADIUS * c; // Distance in kilometers
 //  }
 
-  public static double calculateDistanceVincenty(GeocodedAddressEntity a, GeocodedAddressEntity b) {
+  
+  public static double calculateDistanceVincentyInMeters(GeocodedAddressEntity a, GeocodedAddressEntity b) {
 
     if (!GeocodingResult.isValid(a) || !GeocodingResult.isValid(b)) {
       return -1;
@@ -51,13 +52,18 @@ public final class DistanceCalculator {
       sinSigma = Math.sqrt((cosU2 * sinLambda) * (cosU2 * sinLambda) +
         (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda) *
           (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda));
-      if (sinSigma == 0) return 0;  // Co-incident points
+      if (sinSigma == 0) {
+				return 0;  // Co-incident points
+			}
       cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
       sigma = Math.atan2(sinSigma, cosSigma);
       sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
       cos2Alpha = 1 - sinAlpha * sinAlpha;
-      if (cos2Alpha == 0) cos2SigmaM = 0; // Equatorial line
-      else cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cos2Alpha;
+      if (cos2Alpha == 0) {
+				cos2SigmaM = 0; // Equatorial line
+			} else { // Equatorial line
+				cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cos2Alpha;
+			}
       C = F / 16 * cos2Alpha * (4 + F * (4 - 3 * cos2Alpha));
       lambdaP = lambda;
       lambda = L + (1 - C) * F * sinAlpha *
@@ -80,41 +86,44 @@ public final class DistanceCalculator {
           (-3 + 4 * cos2SigmaM * cos2SigmaM)));
 
     double s = B * A_ * (sigma - deltaSigma);
-    return s / 1000; // Distance in Kilometers
+    return s;
+  }
+  
+  
+  public static double calculateDistanceVincentyInKilometers(GeocodedAddressEntity a, GeocodedAddressEntity b) {
+  	double distanceInMeters = calculateDistanceVincentyInMeters(a, b);
+  	if (distanceInMeters < 0) {
+  		return distanceInMeters;
+  	}
+    return distanceInMeters / 1000; // Distance in Kilometers
   }
 
 
-  public static DistanceMatrix calculateDistanceMatrix(List<GeocodedAddressEntity> locations) {
+  public static DistanceMatrix calculateDistanceMatrix(List<? extends GeocodedAddressEntity> locations) {
     return calculateDistanceMatrix(locations, -1);
   }
 
-  public static DistanceMatrix calculateDistanceMatrix(List<GeocodedAddressEntity> locations, double maxRangeInMetersToInclude) {
+  public static DistanceMatrix calculateDistanceMatrix(List<? extends GeocodedAddressEntity> locations, double maxRangeInMetersToInclude) {
 
     DistanceMatrix result = new DistanceMatrix();
 
     int size = locations.size();
 
-    double maxRangeInKilometersToInclude = -1;
-    if (maxRangeInMetersToInclude >= 0) {
-      maxRangeInKilometersToInclude = maxRangeInMetersToInclude / 1000;
-    }
+//    double maxRangeInKilometersToInclude = -1;
+//    if (maxRangeInMetersToInclude >= 0) {
+//      maxRangeInKilometersToInclude = maxRangeInMetersToInclude / 1000;
+//    }
 
     for (int i = 0; i < size; i++) {
       for (int j = i; j < size; j++) {
         GeocodedAddressEntity a = locations.get(i);
         GeocodedAddressEntity b = locations.get(j);
         if (i != j) {
-          double distance = calculateDistanceVincenty(locations.get(i), locations.get(j));
-          if (maxRangeInKilometersToInclude < 0 || distance <= maxRangeInKilometersToInclude) {
+          double distance = calculateDistanceVincentyInMeters(locations.get(i), locations.get(j));
+          if (maxRangeInMetersToInclude < 0 || distance <= maxRangeInMetersToInclude) {
             result.addDistanceEntry(a, b, distance);
           }
         }
-//        if (i == j) {
-//          result.addDistanceEntry(a, b, 0);
-//        } else {
-//          double distance = calculateDistanceVincenty(locations.get(i), locations.get(j));
-//          result.addDistanceEntry(a, b, distance);
-//        }
       }
     }
     return result;

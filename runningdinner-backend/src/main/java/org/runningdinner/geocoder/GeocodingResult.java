@@ -35,6 +35,10 @@ public class GeocodingResult {
 	 * @param src
 	 */
 	public GeocodingResult(GeocodingResult src) {
+		this.copyGeocodeData(src);
+	}
+	
+	protected void copyGeocodeData(GeocodingResult src) {
 		this.lat = src.lat;
 		this.lng = src.lng;
 		this.formattedAddress = src.formattedAddress;

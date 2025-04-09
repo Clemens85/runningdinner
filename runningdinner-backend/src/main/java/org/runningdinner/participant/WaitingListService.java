@@ -1,5 +1,16 @@
 package org.runningdinner.participant;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
@@ -32,10 +43,6 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 @Service
 public class WaitingListService {
 
@@ -49,33 +56,28 @@ public class WaitingListService {
 
 	private final LocalizationProviderService localizationProviderService;
 
-	private final RunningDinnerCalculator runningDinnerCalculator;
-
 	private final TeamRepository teamRepository;
 
 	private final ActivityService activityService;
 
 	private final EventPublisher eventPublisher;
 
-    private final ParticipantRepository participantRepository;
+  private final ParticipantRepository participantRepository;
 
-    public WaitingListService(TeamService teamService,
-                              TeamRepository teamRepository,
-                              ParticipantRepository participantRepository,
-                              RunningDinnerService runningDinnerService,
-                              ParticipantService participantService,
-                              LocalizationProviderService localizationProviderService,
-                              RunningDinnerCalculator runningDinnerCalculator,
-                              ActivityService activityService,
-                              EventPublisher eventPublisher) {
-
+  public WaitingListService(TeamService teamService,
+                            TeamRepository teamRepository,
+                            ParticipantRepository participantRepository,
+                            RunningDinnerService runningDinnerService,
+                            ParticipantService participantService,
+                            LocalizationProviderService localizationProviderService,
+                            ActivityService activityService,
+                            EventPublisher eventPublisher) {
 		this.teamService = teamService;
 		this.teamRepository = teamRepository;
 		this.participantRepository = participantRepository;
 		this.runningDinnerService = runningDinnerService;
 		this.participantService = participantService;
 		this.localizationProviderService = localizationProviderService;
-		this.runningDinnerCalculator = runningDinnerCalculator;
 		this.activityService = activityService;
 		this.eventPublisher = eventPublisher;
 	}
@@ -255,7 +257,7 @@ public class WaitingListService {
           "Team " + teamId + " can not have more than " + teamSize + " members, but tried to set " + teamMembers);
 		
       team.setTeamMembers(new HashSet<>(teamMembers));
-      runningDinnerCalculator.setHostingParticipant(team, runningDinner.getConfiguration());
+      RunningDinnerCalculator.setHostingParticipant(team, runningDinner.getConfiguration());
       team.setStatus(team.getStatus() == TeamStatus.CANCELLED ? TeamStatus.REPLACED : TeamStatus.OK);
     
       Assert.notNull(team.getHostTeamMember(), "Expected " + team + " to have one host team member");

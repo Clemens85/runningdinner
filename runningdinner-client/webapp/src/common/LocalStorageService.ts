@@ -1,6 +1,9 @@
 export function getLocalStorageItem<T>(key: string): T | undefined {
   let item = localStorage.getItem(key);
-  return item ? JSON.parse(item) : item;
+  if (item) {
+    return JSON.parse(item);
+  }
+  return undefined;
 }
 
 export function setLocalStorageItem(key: string, value: unknown) {
@@ -16,6 +19,13 @@ export function getLocalStorageInAdminId<T>(key: string, adminId: string): T | u
 
 export function setLocalStorageInAdminId(key: string, value: unknown, adminId: string) {
   setLocalStorageItem(calculateKeyForAdminId(key, adminId), value);
+}
+
+export function deleteLocalStorageInAdminId(key: string, adminId: string) {
+  const itemKey = calculateKeyForAdminId(key, adminId);
+  if (localStorage.getItem(itemKey)) {
+    localStorage.removeItem(itemKey);
+  }
 }
 
 function calculateKeyForAdminId(key: string, adminId: string) {

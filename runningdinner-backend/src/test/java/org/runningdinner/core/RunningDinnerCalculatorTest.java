@@ -1,18 +1,29 @@
 package org.runningdinner.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.Test;
+import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.rest.TeamTO;
 import org.runningdinner.test.util.TestUtil;
-
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class RunningDinnerCalculatorTest {
 
@@ -112,7 +123,7 @@ public class RunningDinnerCalculatorTest {
 
 		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig, NO_TEAMS_TO_KEEP);
 
-		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, Configurations.standardConfig);
+		StaticTemplateDinnerPlanGenerator.generateDinnerExecutionPlan(teamsResult.getRegularTeams(), Configurations.standardConfig);
 
 		List<Team> teams = teamsResult.getRegularTeams();
 		for (Team team : teams) {
@@ -205,7 +216,7 @@ public class RunningDinnerCalculatorTest {
 		assertEquals(numberOfTeams, teamsResult.getRegularTeams().size());
 
 		runningDinnerCalculator.assignRandomMealClasses(teamsResult, config, NO_TEAMS_TO_KEEP);
-		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, config);
+		StaticTemplateDinnerPlanGenerator.generateDinnerExecutionPlan(teamsResult.getRegularTeams(), config);
 		List<Team> teams = teamsResult.getRegularTeams();
 
 		for (Team team : teams) {

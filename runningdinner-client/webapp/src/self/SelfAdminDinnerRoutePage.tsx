@@ -28,5 +28,5 @@ export default function SelfAdminDinnerRoutePage() {
   if (!dinnerRoute || meals?.length === 0) {
     return null;
   }
-  return <DinnerRouteView dinnerRoute={dinnerRoute} meals={meals} />;
+  return <DinnerRouteView dinnerRoute={dinnerRoute} meals={meals} adminId={selfAdminId} />;
 }

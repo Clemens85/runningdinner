@@ -1,21 +1,9 @@
 package org.runningdinner.core.converter;
 
-import com.google.common.collect.Collections2;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.runningdinner.core.*;
-import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
-import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
-import org.runningdinner.core.converter.config.EmailColumnConfig;
-import org.runningdinner.core.converter.config.GenderColumnConfig;
-import org.runningdinner.core.converter.config.MobileNumberColumnConfig;
-import org.runningdinner.core.converter.config.ParsingConfiguration;
-import org.runningdinner.core.test.helper.GenderPredicate;
-import org.runningdinner.core.util.CoreUtil;
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantAddress;
-import org.runningdinner.participant.ParticipantName;
-import org.runningdinner.participant.Team;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +11,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.runningdinner.core.Gender;
+import org.runningdinner.core.GeneratedTeamsResult;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
+import org.runningdinner.core.RunningDinnerCalculator;
+import org.runningdinner.core.RunningDinnerCalculatorTest;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
+import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
+import org.runningdinner.core.converter.config.EmailColumnConfig;
+import org.runningdinner.core.converter.config.GenderColumnConfig;
+import org.runningdinner.core.converter.config.MobileNumberColumnConfig;
+import org.runningdinner.core.converter.config.ParsingConfiguration;
+import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
+import org.runningdinner.core.test.helper.GenderPredicate;
+import org.runningdinner.core.util.CoreUtil;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantAddress;
+import org.runningdinner.participant.ParticipantName;
+import org.runningdinner.participant.Team;
+
+import com.google.common.collect.Collections2;
 
 public class ConverterTest {
 
@@ -186,7 +196,7 @@ public class ConverterTest {
 		GeneratedTeamsResult generatedTeams = calculator.generateTeams(config, participants, Collections.emptyList(), Collections::shuffle);
 		calculator.assignRandomMealClasses(generatedTeams, config, Collections.emptyList());
 
-		calculator.generateDinnerExecutionPlan(generatedTeams, config);
+		StaticTemplateDinnerPlanGenerator.generateDinnerExecutionPlan(generatedTeams.getRegularTeams(), config);
 
 		List<Team> teams = generatedTeams.getRegularTeams();
 		for (Team team : teams) {

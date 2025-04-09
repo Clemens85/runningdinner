@@ -1,22 +1,32 @@
 package org.runningdinner.core.dinnerplan;
 
-import org.runningdinner.core.GeneratedTeamsResult;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
+
 import org.runningdinner.core.MealClass;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.TeamCombinationInfo;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Team;
 
-import java.util.*;
-import java.util.Map.Entry;
+public final class StaticTemplateDinnerPlanGenerator {
+	
+	private StaticTemplateDinnerPlanGenerator() {
+		// NOP
+	}
 
-public class StaticTemplateDinnerPlanGenerator implements DinnerPlanGenerator {
+	public static void generateDinnerExecutionPlan(List<Team> teams, RunningDinnerConfig runningDinnerConfig) throws NoPossibleRunningDinnerException {
 
-	@Override
-	public void generateDinnerExecutionPlan(GeneratedTeamsResult generatedTeams, RunningDinnerConfig runningDinnerConfig) {
-
-		final List<Team> teams = generatedTeams.getRegularTeams();
-		final TeamCombinationInfo teamCombinationInfo = generatedTeams.getTeamCombinationInfo();
+		final TeamCombinationInfo teamCombinationInfo = TeamCombinationInfo.newInstance(runningDinnerConfig, teams.size()); 
 		final Collection<MealClass> mealClasses = runningDinnerConfig.getMealClasses();
 
 		final Map<Integer, Integer> teamSizeFactorizations = teamCombinationInfo.getTeamSizeFactorizations();
@@ -29,17 +39,18 @@ public class StaticTemplateDinnerPlanGenerator implements DinnerPlanGenerator {
 			Integer teamSegmentSize = teamSizeFactorizationEntry.getKey();
 			Integer numSegments = teamSizeFactorizationEntry.getValue();
 
-			if (numSegments.intValue() <= 0) {
+			if (numSegments <= 0) {
 				continue;
 			}
 
-			for (int i = 0; i < numSegments.intValue(); i++) {
-				int[][][] matrix = templateMatrix.getTemplateMatrix(teamSegmentSize.intValue());
+			for (int i = 0; i < numSegments; i++) {
+				int[][][] matrix = templateMatrix.getTemplateMatrix(teamSegmentSize);
 				buildVisitationPlansForTeamSegmentMatrix(matrix, teamsByMealMapping);
 			}
 
 		}
 	}
+	
 
 	/**
 	 * Gets a mapping for each meal with the teams that have to cook it. E.g.:<br>
@@ -49,7 +60,7 @@ public class StaticTemplateDinnerPlanGenerator implements DinnerPlanGenerator {
 	 * @param teams
 	 * @return
 	 */
-	protected Map<MealClass, Queue<Team>> getTeamsByMealMapping(List<Team> teams) {
+	protected static Map<MealClass, Queue<Team>> getTeamsByMealMapping(List<Team> teams) {
 		Map<MealClass, Queue<Team>> result = new HashMap<MealClass, Queue<Team>>();
 		for (Team team : teams) {
 			MealClass mealClass = team.getMealClass();
@@ -64,7 +75,7 @@ public class StaticTemplateDinnerPlanGenerator implements DinnerPlanGenerator {
 		return result;
 	}
 
-	protected void buildVisitationPlansForTeamSegmentMatrix(int[][][] matrix, Map<MealClass, Queue<Team>> teamsByMealMapping) {
+	protected static void buildVisitationPlansForTeamSegmentMatrix(int[][][] matrix, Map<MealClass, Queue<Team>> teamsByMealMapping) {
 
 		List<MealClass> mealClasses = new ArrayList<MealClass>(teamsByMealMapping.keySet());
 		CoreUtil.assertHasSize(mealClasses, matrix.length, "Expected number of mealclasses (" + mealClasses.size()
@@ -72,7 +83,7 @@ public class StaticTemplateDinnerPlanGenerator implements DinnerPlanGenerator {
 
 		Collections.shuffle(mealClasses); // Randomness is our friend :-)
 
-		// Get to know which blocks in the matrix represent the hosting sequzence of a meal:
+		// Get to know which blocks in the matrix represent the hosting sequence of a meal:
 		Map<Integer, MealClass> matrixHosterMealMapping = new HashMap<Integer, MealClass>();
 		for (int i = 0; i < matrix.length; i++) {
 			MealClass mealClass = mealClasses.get(i);

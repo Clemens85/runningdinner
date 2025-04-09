@@ -1,5 +1,5 @@
-import { BaseRunningDinnerProps, isQuerySucceeded, useCalculateTeamDistanceClusters, useFindAllDinnerRoutes } from "@runningdinner/shared";
-import { useRef } from "react";
+import { BaseRunningDinnerProps, isQuerySucceeded, isStringNotEmpty} from "@runningdinner/shared";
+import { useEffect, useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { APIProvider, Map} from "@vis.gl/react-google-maps";
 import { FetchProgressBar } from "../../common/FetchProgressBar";
@@ -9,6 +9,13 @@ import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from "./H
 import { BrowserTitle } from "../../common/mainnavigation/BrowserTitle";
 import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, DinnerRouteMapData, calculateDinnerRouteMapData, distinctDinnerRouteTeams, } from "@runningdinner/shared";
 import { DinnerRouteOverviewSettingsMinimizedButton, DinnerRouteOverviewSettingsView } from "./DinnerRouteOverviewSettingsView";
+import { useFindAllDinnerRoutes } from "./useFindAllDinnerRoutes";
+import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
+import { useIsRouteOptimization} from "./useIsRouteOptimization";
+import { RouteOptimizationPreviewBanner } from "./RouteOptimizationPreviewBanner";
+import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
+import { useShowRouteOptimizationSavedMessage } from "./useShowRouteOptimizationSavedMessage";
+import Paragraph from "../../common/theme/typography/Paragraph";
 
 export function HostLocationsPage({runningDinner}: BaseRunningDinnerProps) {
   return (
@@ -32,10 +39,13 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
 
   const afterPartyLocation = allDinnerRoutes.length > 0 ? allDinnerRoutes[0].afterPartyLocation : null;
 
-  const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(allDinnerRouteTeams, GOOGLE_MAPS_KEY);
+  const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(allDinnerRouteTeams, adminId, GOOGLE_MAPS_KEY);
   const geocodeAfterPartyQueryResult = useGetGeocodePositionOfAfterPartyLocation(afterPartyLocation, GOOGLE_MAPS_KEY);
 
   const teamsWithZeroDistanceResult = useCalculateTeamDistanceClusters(adminId, geocodePositionsQueryResult?.data || [], 0);
+
+  const optimizationId = useIsRouteOptimization();
+  const isOptimizationPreview = isStringNotEmpty(optimizationId);
 
   if (!isQuerySucceeded(geocodePositionsQueryResult) || !isQuerySucceeded(geocodeAfterPartyQueryResult) || !isQuerySucceeded(teamsWithZeroDistanceResult)) {
     return <FetchProgressBar {...geocodePositionsQueryResult} />;
@@ -55,6 +65,7 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
 
   return (
     <DinnerRouteOverviewContextProvider runningDinner={runningDinner}>
+      { isOptimizationPreview && <RouteOptimizationPreviewBanner adminId={adminId} optimizationId={optimizationId} /> }
       <HostLocationsView dinnerRouteMapData={dinnerRouteMapData} runningDinner={runningDinner} />
     </DinnerRouteOverviewContextProvider>
   );
@@ -66,6 +77,9 @@ type HostLocationsViewProps = {
 
 function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsViewProps) {
 
+  const {showRouteOptimizationSavedMessage, deleteRouteOptimizationSavedQueryParam} = useShowRouteOptimizationSavedMessage();
+  const {showSuccess} = useCustomSnackbar();
+
   const {dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry} = dinnerRouteMapData;
 
   const mapContainerRef = useRef(null);
@@ -75,6 +89,20 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
   const {hostFilterViewMinimized, settingsViewMinimized} = state;
 
   const filteredTeamConnectionPaths = filterTeamConnectionPaths(dinnerRouteMapData, state);
+
+  useEffect(() => {
+    if (showRouteOptimizationSavedMessage) {
+      showSuccess(
+        <div>
+          <Paragraph>Optimierte Dinner Routen wurden erfolgreich gespeichert.</Paragraph>
+          <Paragraph>Du kannst dein altes Browser-Tab schließen, du findest die neue, jetzt optimierte, Routen-Übersicht hier.</Paragraph>
+        </div>, {
+        autoHideDuration: 8000,
+        wrapInHtmlContainer: true
+      });
+      deleteRouteOptimizationSavedQueryParam();
+    }
+  }, [showRouteOptimizationSavedMessage]);
 
   return (
     <>

@@ -24,5 +24,4 @@ public interface BasicRunningDinnerConfiguration {
 	 */
 	int getTeamSize();
 	
-	TeamCombinationInfo generateTeamCombinationInfo(final int numberOfTeams) throws NoPossibleRunningDinnerException;
 }

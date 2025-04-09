@@ -1,4 +1,4 @@
-import { DinnerRoute, isQuerySucceeded, Meal } from "@runningdinner/shared";
+import { BaseAdminIdProps, DinnerRoute, isQuerySucceeded, Meal } from "@runningdinner/shared";
 import { useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "./useGetGeocodePositionsOfTeamHosts";
 import { FetchProgressBar } from "../FetchProgressBar";
 import { Map} from "@vis.gl/react-google-maps";
@@ -10,12 +10,12 @@ import { DinnerRouteMapData, DinnerRouteTeamMapEntry, calculateDinnerRouteMapDat
 
 type DinnerRouteMapViewProps = {
   dinnerRoute: DinnerRoute;
-  meals: Meal[]
-};
+  meals: Meal[],
+} & BaseAdminIdProps;
 
-export function DinnerRouteMapView({dinnerRoute, meals}: DinnerRouteMapViewProps) {
+export function DinnerRouteMapView({dinnerRoute, meals, adminId}: DinnerRouteMapViewProps) {
   
-  const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(dinnerRoute.teams, GOOGLE_MAPS_KEY);
+  const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(dinnerRoute.teams, adminId, GOOGLE_MAPS_KEY);
   const geocodeAfterPartyQueryResult = useGetGeocodePositionOfAfterPartyLocation(dinnerRoute.afterPartyLocation, GOOGLE_MAPS_KEY);
 
   if (!isQuerySucceeded(geocodePositionsQueryResult) || !isQuerySucceeded(geocodeAfterPartyQueryResult)) {

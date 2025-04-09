@@ -1,7 +1,9 @@
 import axios from "axios";
 import { BackendConfig } from "../../BackendConfig";
-import { DinnerRoute, GeocodedAddressEntityList, DinnerRouteList, TeamDistanceCluster, TeamDistanceClusterList, DinnerRouteWithDistances, DinnerRouteWithDistancesList } from "../../types";
-import { findEntityById, mapToGeocodedAddressEntityId } from "../..";
+import { DinnerRoute, GeocodedAddressEntityList, DinnerRouteList, TeamDistanceCluster, TeamDistanceClusterList, DinnerRouteWithDistances, DinnerRouteWithDistancesList, DinnerRouteOptimizationResult } from "../../types";
+import { findEntityById } from "../..";
+import { mapToGeocodedAddressEntityId } from "./GeocodeAddressUtils";
+
 
 export async function findDinnerRouteByAdminIdAndTeamIdAsync(adminId: string, teamId: string): Promise<DinnerRoute> {
   const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/teams/${teamId}`);
@@ -21,11 +23,12 @@ export async function calculateTeamDistanceClusters(adminId: string, addressEnti
   return response.data?.teamDistanceClusters || [];
 }
 
-export async function calculateRouteDistances(adminId: string, addressEntityList: GeocodedAddressEntityList): Promise<DinnerRouteWithDistances[]> {
+export async function calculateRouteDistances(adminId: string, addressEntityList: GeocodedAddressEntityList): Promise<DinnerRouteWithDistancesList> {
   const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/teams`);
   const response = await axios.put<DinnerRouteWithDistancesList>(url, addressEntityList);
-  const result = response.data?.dinnerRoutes || [];
-  return enrichDinnerRoutesWithGeocodingResults(result, addressEntityList);
+  const result = response.data;
+  enrichDinnerRoutesWithGeocodingResults(result.dinnerRoutes || [], addressEntityList);
+  return result;
 }
 
 function enrichDinnerRoutesWithGeocodingResults(dinnerRouteWithDistances: DinnerRouteWithDistances[], 
@@ -41,4 +44,15 @@ function enrichDinnerRoutesWithGeocodingResults(dinnerRouteWithDistances: Dinner
     }
   }
   return dinnerRouteWithDistances;
+}
+
+export async function calculateOptimizationClusters(adminId: string, addressEntityList: GeocodedAddressEntityList): Promise<DinnerRouteOptimizationResult> {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/optimization`);
+  const response = await axios.put<DinnerRouteOptimizationResult>(url, addressEntityList);
+  return response.data;
+}
+
+export async function saveNewDinnerRoutes(adminId: string, dinnerRouteList: DinnerRouteList): Promise<void> {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/teams`);
+  await axios.put(url, dinnerRouteList);
 }

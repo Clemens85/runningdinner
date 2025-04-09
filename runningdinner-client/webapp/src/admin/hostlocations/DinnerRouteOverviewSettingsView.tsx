@@ -1,7 +1,7 @@
 import { Box, Chip, CircularProgress, Divider, Fab, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, Switch, SxProps, Tooltip, Typography } from "@mui/material";
 import { TitleBar } from "./TitleBar";
 import { Trans, useTranslation } from "react-i18next";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData, DinnerRouteTeamWithDistance, useCalculateTeamDistanceClusters, useCalculateRouteDistances } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData, DinnerRouteTeamWithDistance, isStringNotEmpty } from "@runningdinner/shared";
 import { SmallTitle, Span } from "../../common/theme/typography/Tags";
 import { BaseAdminIdProps, TeamDistanceCluster } from "@runningdinner/shared";
 import { useState } from "react";
@@ -13,6 +13,11 @@ import { getTeamLabel, WarningAlert } from "../../common/dinnerroute";
 import { useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 import { ProgressBar } from "../../common/ProgressBar";
 import { useZoomToMarker } from "./useZoomToMarker";
+import { Stack } from "@mui/system";
+import { RouteOptimizationButton } from "./RouteOptimizationButton";
+import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
+import { useCalculateRouteDistances } from "./useCalculateRouteDistances";
+import { useIsRouteOptimization } from "./useIsRouteOptimization";
 
 type DinnerRouteOverviewSettingsViewProps = {
   dinnerRouteMapData: DinnerRouteMapData;
@@ -32,9 +37,11 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
 
   const {data: teamDistanceClusters, isPending: teamDistanceClustersLoading} = useCalculateTeamDistanceClusters(adminId, dinnerRouteMapEntries, distanceRange);
 
-  const {data: routeDistances} = useCalculateRouteDistances(adminId, dinnerRouteMapEntries);
+  const {data: routeDistancesList} = useCalculateRouteDistances(adminId, dinnerRouteMapEntries);
   
   const isMobileDevice = useIsMobileDevice();
+
+  const optimizationId = useIsRouteOptimization();
 
   const settingsPaperStyles: SxProps = {
     top: 80,
@@ -80,7 +87,9 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
           sx={settingsPaperStyles} 
           elevation={3}>
           
-        <TitleBar onToggleMinize={handleMinimizeView} title={t("common:settings")} />
+        <TitleBar onToggleMinize={handleMinimizeView} 
+                  title={t("common:settings")} 
+                  actionButtton={<RouteOptimizationButton adminId={adminId} dinnerRouteMapEntries={dinnerRouteMapEntries} routeDistancesList={routeDistancesList} />} />
 
         <Box p={2}>
 
@@ -92,6 +101,7 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
               <Slider aria-label={t("common:distance")}
                       value={distanceRange}
                       onChange={(_evt, newValue) => setDistanceRange(newValue as number)}
+                      disabled={isStringNotEmpty(optimizationId)}
                       getAriaValueText={() => `${distanceRange} m`}
                       step={50}
                       marks={[
@@ -148,12 +158,20 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
           <Divider sx={{ mb: 3, mt: 4 }}/>
 
           <Box>
-            <FormGroup>
-              <FormControlLabel 
-                control={<Switch onChange={evt => setShowRouteDistances(evt.target.checked)} checked={showRouteDistances} />} 
-                label={t("admin:dinner_route_distances_show")} />
-            </FormGroup>
-            { showRouteDistances && <RouteDistancesView routeDistances={routeDistances} /> }
+            <Stack direction={"row"} gap={1} alignItems={"center"}>
+              <FormGroup>
+                <FormControlLabel 
+                  control={<Switch onChange={evt => setShowRouteDistances(evt.target.checked)} checked={showRouteDistances} />} 
+                  label={t("admin:dinner_route_distances_show")} />
+              </FormGroup>
+              {showRouteDistances && routeDistancesList && 
+                <Box>
+                  <span><strong>&#8960;</strong>{Math.round(routeDistancesList.averageDistanceInMeters)} m</span>
+                  <span>&nbsp;&nbsp;<strong>&#8721;</strong>{Math.round(routeDistancesList.sumDistanceInMeters / 1000)} km</span>
+                </Box>
+              }
+            </Stack>
+            { showRouteDistances && <RouteDistancesView routeDistances={routeDistancesList?.dinnerRoutes} /> }
           </Box>
 
         </Box>
@@ -161,7 +179,6 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
     </>
   );
 }
-
 
 type RouteDistancesViewProps = {
   routeDistances: DinnerRouteWithDistances[] | undefined;
@@ -208,7 +225,7 @@ function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
                 <Grid item sx={{ my: 2 }}>
                   { team.status === TeamStatus.CANCELLED && <CancelledTeamMember /> }
                   { team.status !== TeamStatus.CANCELLED && team.currentTeam &&
-                    <Tooltip title={getTeamLabel(team, true)} placement="top-end">
+                    <Tooltip title={<>{getTeamLabel(team, true)}<br/>&#8960; {Math.round(routeDistance.averageDistanceInMeters)} m</>} placement="top-end">
                       <Chip label={`Team ${team.teamNumber}`} color={"primary"} variant={"filled"} 
                             onClick={() => handleClick(team)} />
                     </Tooltip>

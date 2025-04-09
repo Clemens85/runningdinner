@@ -10,6 +10,18 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.BatchSize;
+import org.runningdinner.core.FuzzyBoolean;
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.MealSpecifics;
+import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.RunningDinnerRelatedEntity;
+import org.runningdinner.core.util.CoreUtil;
+import org.springframework.util.Assert;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,18 +38,6 @@ import jakarta.persistence.NamedEntityGraphs;
 import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.hibernate.annotations.BatchSize;
-import org.runningdinner.core.FuzzyBoolean;
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.MealSpecifics;
-import org.runningdinner.core.RunningDinner;
-import org.runningdinner.core.RunningDinnerConfig;
-import org.runningdinner.core.RunningDinnerRelatedEntity;
-import org.runningdinner.core.util.CoreUtil;
-import org.springframework.util.Assert;
 
 /**
  * Represents a team of a running dinner.<br>
@@ -484,7 +484,7 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
     return 0;
   }
 
-  public Team createDetachedClone() {
+  public Team createDetachedClone(boolean includeGuestAndHostTeams) {
 
     Team result = new Team(getTeamNumber());
 
@@ -498,15 +498,18 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
           .collect(Collectors.toSet())
     );
 
-    result.guestTeams = guestTeams
+    if (includeGuestAndHostTeams) {
+      result.guestTeams = guestTeams
+                            .stream()
+                            .map(guest -> guest.createDetachedClone(false))
+                            .collect(Collectors.toSet());
+  
+      result.hostTeams = hostTeams
                           .stream()
-                          .map(Team::createDetachedClone)
+                          .map(host -> host.createDetachedClone(false))
                           .collect(Collectors.toSet());
-
-    result.hostTeams = hostTeams
-                        .stream()
-                        .map(Team::createDetachedClone)
-                        .collect(Collectors.toSet());
+    }
+    
     return result;
   }
 
@@ -515,4 +518,8 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
   	this.teamNumber = teamNumber;
   }
 
+  @Override
+	protected void setId(UUID id) {
+  	super.setId(id);
+  }
 }

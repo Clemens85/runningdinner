@@ -1,6 +1,17 @@
 package org.runningdinner.participant;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.activity.Activity;
@@ -14,7 +25,15 @@ import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.rest.BaseTO;
 import org.runningdinner.common.service.ValidatorService;
-import org.runningdinner.core.*;
+import org.runningdinner.core.FuzzyBoolean;
+import org.runningdinner.core.GeneratedTeamsResult;
+import org.runningdinner.core.IdentifierUtil;
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
+import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.RunningDinnerCalculator;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.event.MealsSwappedEvent;
 import org.runningdinner.event.publisher.EventPublisher;
@@ -31,8 +50,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class TeamService {
@@ -60,8 +78,7 @@ public class TeamService {
   @Autowired
   private RunningDinnerService runningDinnerService;
 
-  @Autowired
-  private RunningDinnerCalculator runningDinnerCalculator;
+  private final RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
   
   public List<Team> findTeamArrangements(@ValidateAdminId String adminId, boolean excludeCancelledTeams) {
 
@@ -219,8 +236,8 @@ public class TeamService {
   }
   
   private List<Team> createTeamsAndVisitationPlan(RunningDinner runningDinner, 
-  												  List<TeamTO> existingTeamInfosToRestore, 
-  												  List<Participant> newParticipantsToInclude) {
+  												  											List<TeamTO> existingTeamInfosToRestore, 
+  												  											List<Participant> newParticipantsToInclude) {
     
     List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
 
@@ -230,8 +247,7 @@ public class TeamService {
     LOGGER.info("Generating teams for {}", runningDinner);
     List<Team> regularTeams;
     try {
-      GeneratedTeamsResult result = generateTeamPlan(runningDinner.getConfiguration(), existingTeamInfosToRestore,
-          participants);
+      GeneratedTeamsResult result = generateTeamPlan(runningDinner.getConfiguration(), existingTeamInfosToRestore, participants);
       regularTeams = result.getRegularTeams();
     } catch (NoPossibleRunningDinnerException e) {
       throw new ValidationException(new IssueList(new Issue("dinner_not_possible", IssueType.VALIDATION)));
@@ -315,7 +331,7 @@ public class TeamService {
 
     GeneratedTeamsResult generatedTeams = runningDinnerCalculator.generateTeams(runningDinnerConfig, participants, existingTeamsToKeep, Collections::shuffle);
     runningDinnerCalculator.assignRandomMealClasses(generatedTeams, runningDinnerConfig, existingTeamsToKeep);
-    runningDinnerCalculator.generateDinnerExecutionPlan(generatedTeams, runningDinnerConfig);
+    StaticTemplateDinnerPlanGenerator.generateDinnerExecutionPlan(generatedTeams.getRegularTeams(), runningDinnerConfig);
     return generatedTeams;
   }
 
@@ -597,7 +613,7 @@ public class TeamService {
       checkReplacementNotDestroyingTeamPartnerRegistration(replacementParticipants);
       
       team.setTeamMembers(new HashSet<>(replacementParticipants));
-      runningDinnerCalculator.setHostingParticipant(team, runningDinner.getConfiguration());
+      RunningDinnerCalculator.setHostingParticipant(team, runningDinner.getConfiguration());
 
       team.setStatus(TeamStatus.REPLACED);
     } else {

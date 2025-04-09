@@ -1,23 +1,35 @@
 package org.runningdinner.dinnerroute;
 
-import jakarta.validation.Valid;
-
-import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
-import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
+
+import org.runningdinner.core.NoPossibleRunningDinnerException;
+import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
+import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationResult;
+import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
+import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/rest/dinnerrouteservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DinnerRouteServiceRest {
 
   private final DinnerRouteService dinnerRouteService;
+  
+  private final DinnerRouteOptimizationService dinnerRouteOptimizationService;
 
-  public DinnerRouteServiceRest(DinnerRouteService dinnerRouteService) {
+  public DinnerRouteServiceRest(DinnerRouteService dinnerRouteService, 
+  															DinnerRouteOptimizationService dinnerRouteOptimizationService) {
     this.dinnerRouteService = dinnerRouteService;
+		this.dinnerRouteOptimizationService = dinnerRouteOptimizationService;
   }
 
   @GetMapping("/runningdinner/{adminId}/teams/{teamId}")
@@ -34,20 +46,41 @@ public class DinnerRouteServiceRest {
   }
 
   @PutMapping("/runningdinner/{adminId}/distances/{range}/teams")
-  public TeamDistanceClusterListTO calculateTeamDistanceClusters(@PathVariable("adminId") String adminId,
+  public TeamNeighbourClusterListTO calculateTeamDistanceClusters(@PathVariable("adminId") String adminId,
                                                                  @PathVariable("range") Integer rangeInMeters,
                                                                  @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
 
     Assert.state(rangeInMeters >= 0, "range must be > 0");
-    List<TeamDistanceClusterTO> result = dinnerRouteService.calculateTeamDistanceClusters(adminId, addressEntityList.getAddressEntities(), rangeInMeters);
-    return new TeamDistanceClusterListTO(result);
+    List<TeamNeighbourCluster> result = dinnerRouteService.calculateTeamNeighbourClusters(adminId, addressEntityList.getAddressEntities(), rangeInMeters);
+    return new TeamNeighbourClusterListTO(result);
   }
 
   @PutMapping("/runningdinner/{adminId}/distances/teams")
-  public DinnerRouteWithDistancesListTO calculateRouteDistances(@PathVariable("adminId") String adminId,
-                                                                @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
+  public AllDinnerRoutesWithDistancesListTO calculateRouteDistances(@PathVariable("adminId") String adminId,
+                                                                	  @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
 
-    List<DinnerRouteWithDistancesTO> result = dinnerRouteService.calculateDinnerRouteDistances(adminId, addressEntityList);
-    return new DinnerRouteWithDistancesListTO(result);
+    return dinnerRouteService.calculateDinnerRouteDistances(adminId, addressEntityList);
+  }
+
+  @PutMapping("/runningdinner/{adminId}/distances/optimization")
+  public DinnerRouteOptimizationResult calculateOptimization(@PathVariable("adminId") String adminId,
+  												  			  												 @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
+  	try {
+			return dinnerRouteOptimizationService.calculateOptimization(adminId, addressEntityList);
+		} catch (NoPossibleRunningDinnerException e) {
+			throw new IllegalStateException(e);
+		}
+  }
+  
+  @PutMapping("/runningdinner/{adminId}/teams")
+  public void saveNewDinnerRoutes(@PathVariable("adminId") String adminId,
+  																@RequestBody @Valid DinnerRouteListTO dinnerRoutes) {
+  	dinnerRouteService.saveNewDinnerRoutes(adminId, dinnerRoutes);
+  }
+  
+  @GetMapping("/runningdinner/{adminId}/distances/optimization/check")
+  public void checkOptimizationPossible(@PathVariable("adminId") String adminId) {
+  	
+  	// TODO: Check if it may be possible
   }
 }
