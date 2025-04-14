@@ -122,7 +122,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
         title={t('common:filter')} 
         actionButtton={<ResetAllButton />}
         />
-      <Box sx={{ height: `${teamsFilterHeight}px`, padding: 3 }}>
+      <Box sx={{ height: `${teamsFilterHeight}px`, pt: 3, px: 3, pb: 1 }}>
         <Box pb={1}>
           <Span i18n="admin:hostlocations_team_filter" />
         </Box>
@@ -213,7 +213,7 @@ function TeamDisplayOptions() {
   }
 
   return (
-    <Box sx={{ pl: 3, mb: 3}}>
+    <Box sx={{ pl: 3 }}>
       <Box>
         <FormGroup>
           <FormControlLabel 
@@ -250,10 +250,12 @@ function FilterAfterPartyLocationCheckbox() {
   }
 
   return (
-    <Box pl={3}>
-      <FormControlLabel label={t('admin:dinner_route_show_after_party_location', {location: afterPartyLocation?.title})} sx={{ mt: -4 }} control={
-        <Checkbox color="primary" onChange={handleToggleExcludeAfterPartyLocation} checked={!excludeAfterPartyLocation} />
-      } />
+    <Box sx={{ pl: 3, mb: 1 }}>
+      <FormGroup>
+        <FormControlLabel 
+          control={<Switch onChange={handleToggleExcludeAfterPartyLocation} checked={!excludeAfterPartyLocation} />} 
+          label={t('admin:dinner_route_show_after_party_location', {location: afterPartyLocation?.title})} />
+      </FormGroup>
     </Box>
   );
 
