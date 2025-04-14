@@ -1,9 +1,9 @@
 import { Box, Chip, CircularProgress, Divider, Fab, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, Switch, SxProps, Tooltip, Typography } from "@mui/material";
 import { TitleBar } from "./TitleBar";
 import { Trans, useTranslation } from "react-i18next";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, enhanceTeamDistanceClusterWithDinnerRouteMapEntries, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData, DinnerRouteTeamWithDistance, isStringNotEmpty } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData, DinnerRouteTeamWithDistance, isStringNotEmpty } from "@runningdinner/shared";
 import { SmallTitle, Span } from "../../common/theme/typography/Tags";
-import { BaseAdminIdProps, TeamDistanceCluster } from "@runningdinner/shared";
+import { BaseAdminIdProps } from "@runningdinner/shared";
 import { useState } from "react";
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { Virtuoso } from "react-virtuoso";
@@ -119,7 +119,6 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
           <Box>
             { !teamDistanceClusters && <TeamDistanceClustersLoadingView /> } 
             { teamDistanceClusters && <TeamDistanceClusterView teamDistanceClusters={teamDistanceClusters} 
-                                                               dinnerRouteMapEntries={dinnerRouteMapEntries}
                                                                loading={teamDistanceClustersLoading}
                                                                distanceRange={distanceRange}/> }
           </Box>
@@ -267,12 +266,11 @@ function TeamDistanceClustersLoadingView() {
 }
 
 type TeamDistanceClusterViewProps = {
-  teamDistanceClusters: TeamDistanceCluster[];
-  dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
+  teamDistanceClusters: TeamDistanceClusterWithMapEntry[];
   distanceRange: number;
   loading?: boolean;
 };
-function TeamDistanceClusterView({teamDistanceClusters, dinnerRouteMapEntries, distanceRange, loading}: TeamDistanceClusterViewProps) {
+function TeamDistanceClusterView({teamDistanceClusters, distanceRange, loading}: TeamDistanceClusterViewProps) {
 
   const {t} = useTranslation('admin');
 
@@ -294,9 +292,7 @@ function TeamDistanceClusterView({teamDistanceClusters, dinnerRouteMapEntries, d
         <Virtuoso 
           data={teamDistanceClusters}
           itemContent={(_, cluster) => 
-            <Box sx={{ my: 2 }}>
-              <SingleTeamClusterView {...enhanceTeamDistanceClusterWithDinnerRouteMapEntries(cluster, dinnerRouteMapEntries)} />
-            </Box>
+            <Box sx={{ my: 2 }}><SingleTeamClusterView {...cluster} /></Box>
           }>
         </Virtuoso>
       </Box>

@@ -1,7 +1,7 @@
 import {
   BaseAdminIdProps,
-  buildMealTypeMappings,
   DinnerRoute,
+  DinnerRouteMapCalculator,
   DinnerRouteTeam,
   isAfterPartyLocationDefined,
   isStringNotEmpty,
@@ -28,7 +28,7 @@ export default function DinnerRouteView({dinnerRoute, meals, adminId}: DinnerRou
 
   const {mealSpecificsOfGuestTeams, teams, afterPartyLocation} = dinnerRoute;
 
-  const mealTypeMappings = buildMealTypeMappings(meals);
+  const mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(meals);
 
   const teamCardNodes = teams.map((team) =>
     <Grid item xs={12} md={4} key={team.teamNumber}>

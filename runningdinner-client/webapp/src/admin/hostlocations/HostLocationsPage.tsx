@@ -1,4 +1,4 @@
-import { BaseRunningDinnerProps, isQuerySucceeded, isStringNotEmpty} from "@runningdinner/shared";
+import { BaseRunningDinnerProps, DinnerRouteMapCalculator, isQuerySucceeded, isStringNotEmpty, TeamConnectionPath} from "@runningdinner/shared";
 import { useEffect, useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { APIProvider, Map} from "@vis.gl/react-google-maps";
@@ -7,7 +7,7 @@ import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../../common/maps";
 import { AfterPartyLocationMarker, TeamHostMarker, WarningAlert, useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "../../common/dinnerroute";
 import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from "./HostLocationsFilterView";
 import { BrowserTitle } from "../../common/mainnavigation/BrowserTitle";
-import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, DinnerRouteMapData, calculateDinnerRouteMapData, distinctDinnerRouteTeams, } from "@runningdinner/shared";
+import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, DinnerRouteMapData } from "@runningdinner/shared";
 import { DinnerRouteOverviewSettingsMinimizedButton, DinnerRouteOverviewSettingsView } from "./DinnerRouteOverviewSettingsView";
 import { useFindAllDinnerRoutes } from "./useFindAllDinnerRoutes";
 import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
@@ -35,7 +35,7 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
   const dinnerRoutesQueryResult = useFindAllDinnerRoutes(adminId);
   const allDinnerRoutes = dinnerRoutesQueryResult.data?.dinnerRoutes || [];
   let allDinnerRouteTeams = allDinnerRoutes.flatMap(dinnerRoute => dinnerRoute.teams);
-  allDinnerRouteTeams = distinctDinnerRouteTeams(allDinnerRouteTeams);
+  allDinnerRouteTeams = DinnerRouteMapCalculator.distinctDinnerRouteTeams(allDinnerRouteTeams);
 
   const afterPartyLocation = allDinnerRoutes.length > 0 ? allDinnerRoutes[0].afterPartyLocation : null;
 
@@ -51,13 +51,15 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
     return <FetchProgressBar {...geocodePositionsQueryResult} />;
   }
 
-  const dinnerRouteMapData = calculateDinnerRouteMapData({
+  const dinnerRouteMapCalculator = new DinnerRouteMapCalculator({
     allDinnerRoutes, 
     dinnerRouteTeamsWithGeocodes: geocodePositionsQueryResult.data, 
     afterPartyLocation: geocodeAfterPartyQueryResult.data!,
     teamClustersWithSameAddress: teamsWithZeroDistanceResult?.data || [],
-    meals: runningDinner.options.meals
+    meals: runningDinner.options.meals,
+    teamClusterMappings: dinnerRoutesQueryResult.data?.teamClusterMappings || {},
   });
+  const dinnerRouteMapData = dinnerRouteMapCalculator.calculateDinnerRouteMapData();
 
   if (dinnerRouteMapData.dinnerRouteMapEntries.length === 0) {
     return <WarningAlert teamsWithUnresolvedGeocodings={dinnerRouteMapData.teamsWithUnresolvedGeocodings} />;
@@ -86,7 +88,7 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
 
   const {state} = useDinnerRouteOverviewContext();
-  const {hostFilterViewMinimized, settingsViewMinimized} = state;
+  const {hostFilterViewMinimized, settingsViewMinimized, showTeamClusters, showTeamPaths} = state;
 
   const filteredTeamConnectionPaths = filterTeamConnectionPaths(dinnerRouteMapData, state);
 
@@ -113,12 +115,21 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
              mapId={GOOGLE_MAPS_ID}>
 
 
-          { filteredTeamConnectionPaths.map(path => <TeamConnectionPathLine key={path.teamNumber} {...path} />) }
+          { showTeamPaths && 
+            <>
+              { filteredTeamConnectionPaths.map(path => <TeamConnectionPathLine 
+                                                            key={path.teamNumber} 
+                                                            {...path} 
+                                                            useSecondaryClusterColor={showTeamClusters} />) 
+              }
+            </>
+          }
 
           { dinnerRouteMapEntries
               .map((team, index) => <TeamHostMarker key={team.teamNumber} 
                                                     team={team} 
                                                     isCurrentTeam={false}
+                                                    useSecondaryClusterColor={showTeamClusters}
                                                     teamLabel={`#${team.teamNumber}`}
                                                     zIndex={index}
                                                     scale={1.5} />) 
@@ -126,8 +137,7 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
 
           { afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} /> }
       
-          { !settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} 
-                                                                   dinnerRouteMapData={dinnerRouteMapData} /> }      
+          { !settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} dinnerRouteMapData={dinnerRouteMapData} /> }
           { settingsViewMinimized && <DinnerRouteOverviewSettingsMinimizedButton /> }      
 
           { !hostFilterViewMinimized && <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} /> }
@@ -139,7 +149,17 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
   )
 }
 
-function TeamConnectionPathLine({teamConnectionPaths}: DinnerRouteTeamMapEntry) {
+type TeamConnectionPathLineProps = {
+  teamConnectionPaths: TeamConnectionPath[];
+  useSecondaryClusterColor: boolean;
+};
+
+function TeamConnectionPathLine({teamConnectionPaths, useSecondaryClusterColor}: TeamConnectionPathLineProps) {
+
+  function getStrokeColor(path: TeamConnectionPath): string {
+    const secondaryClusterColor = isStringNotEmpty(path.secondaryClusterColor) ? path.secondaryClusterColor : path.color;
+    return useSecondaryClusterColor ? secondaryClusterColor : path.color;
+  }
 
   return (
     <>
@@ -156,7 +176,7 @@ function TeamConnectionPathLine({teamConnectionPaths}: DinnerRouteTeamMapEntry) 
               ]}
               strokeOpacity={1.0} 
               path={[ {lat: path.coordinates[0].lat!, lng: path.coordinates[0].lng!}, {lat: path.coordinates[1].lat!, lng: path.coordinates[1].lng!} ]}
-              strokeColor={path.color}/>
+              strokeColor={getStrokeColor(path)}/>
         )
       }
     </>

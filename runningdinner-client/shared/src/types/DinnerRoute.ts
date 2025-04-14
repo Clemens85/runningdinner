@@ -20,12 +20,11 @@ export interface DinnerRouteTeam {
   contactInfo: string[];
 }
 
-export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {
-
-}
+export interface DinnerRouteTeamHost extends Omit<Participant, "id"> { }
 
 export interface DinnerRouteList {
   dinnerRoutes: DinnerRoute[];
+  teamClusterMappings: Record<number, number[]>;
 }
 
 export interface GeocodedAddressEntityList {
@@ -68,12 +67,14 @@ export interface TeamDistanceClusterList {
 
 export type MapEntry = {
   color: string;
-  position: GeocodingResult
+  position: GeocodingResult;
+  secondaryClusterColor?: string;
 };
 
 export type TeamConnectionPath = {
   coordinates: GeocodingResult[];
   color: string;
+  secondaryClusterColor?: string;
   key: string;
   team: DinnerRouteTeam;
   toTeam?: DinnerRouteTeam;
@@ -88,15 +89,15 @@ export type AfterPartyLocationMapEntry = AfterPartyLocation & MapEntry;
 
 export type DinnerRouteMapData = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
-  // showWarnings?: boolean;
   teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
   centerPosition: GeocodingResult;
-  afterPartyLocationMapEntry?: AfterPartyLocationMapEntry
+  afterPartyLocationMapEntry?: AfterPartyLocationMapEntry;
+  teamClustersWithSameAddress: TeamDistanceClusterWithMapEntry[];
 };
 
 export type DinnerRouteOptimizationResult = {
   id: string;
-  optimizedDinnerRoutes: DinnerRoute[];
+  optimizedDinnerRouteList: DinnerRouteList;
   optimizedDistances: DinnerRouteWithDistancesList;
   optimizedTeamDistanceClusters: TeamDistanceClusterList;
   averageDistanceInMetersBefore: number;

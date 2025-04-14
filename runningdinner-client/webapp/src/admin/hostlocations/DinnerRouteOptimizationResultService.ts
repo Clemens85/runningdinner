@@ -1,4 +1,4 @@
-import { DinnerRouteOptimizationResult, DinnerRouteTeam, Participant, Team } from "@runningdinner/shared";
+import { DinnerRouteList, DinnerRouteOptimizationResult, DinnerRouteTeam, Participant, Team } from "@runningdinner/shared";
 import { deleteLocalStorageInAdminId, getLocalStorageInAdminId } from "../../common/LocalStorageService";
 
 export class DinnerRouteOptimizationResultService {
@@ -20,16 +20,18 @@ export class DinnerRouteOptimizationResultService {
     // All the following is a workaround for the fact that we serialize the date as string when putting into localstorage.
     // Due to we serialized the date as string when putting into localstorage, we need to cast it back to Date:
 
-    const allTeamsOfDinnerRoutes = optimizationResult.optimizedDinnerRoutes.map(dinnerRoute => dinnerRoute.teams).flat();
+    const allTeamsOfDinnerRoutes = optimizationResult.optimizedDinnerRouteList.dinnerRoutes.map(dinnerRoute => dinnerRoute.teams).flat();
     allTeamsOfDinnerRoutes.forEach(team => normalizeDinnerRouteTeam(team));
   
-    const allCurrentTeams = optimizationResult.optimizedDinnerRoutes.map(dinnerRoute => dinnerRoute.currentTeam);
+    const allCurrentTeams = optimizationResult.optimizedDinnerRouteList.dinnerRoutes.map(dinnerRoute => dinnerRoute.currentTeam);
     allCurrentTeams.forEach(team => normalizeTeam(team));
 
     const teamsDistanceTeams = optimizationResult.optimizedDistances.dinnerRoutes.map(dinnerRoute => dinnerRoute.teams).flat();
     teamsDistanceTeams.forEach(team => normalizeDinnerRouteTeam(team));
   
     optimizationResult.optimizedTeamDistanceClusters.teamDistanceClusters.map(tdc => tdc.teams).flat().forEach(team => normalizeTeam(team));
+
+    normalizeAfterPartyLocation(optimizationResult.optimizedDinnerRouteList);
   
     return optimizationResult;
   }
@@ -50,6 +52,10 @@ function normalizeParticipant(participant: Participant) {
   participant.activationDate = participant.activationDate ? new Date(participant.activationDate) : undefined
 }
 
-// function mapISODateStringToDate(dateString: string): Date {
-//   return parseISO(dateString);
-// }
+function normalizeAfterPartyLocation(dinnerRouteList: DinnerRouteList) {
+  dinnerRouteList.dinnerRoutes.forEach(dinnerRoute => {
+    if (dinnerRoute.afterPartyLocation && dinnerRoute.afterPartyLocation.time) {
+      dinnerRoute.afterPartyLocation.time = new Date(dinnerRoute.afterPartyLocation.time);
+    }
+  });
+}

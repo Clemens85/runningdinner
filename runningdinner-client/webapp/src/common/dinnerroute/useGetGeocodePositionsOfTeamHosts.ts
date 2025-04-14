@@ -27,7 +27,7 @@ async function doGetGeocodePositionsOfTeamHosts(getGeocodePositionsOfTeamHosts: 
                                                 optimizationId: string | null): Promise<DinnerRouteTeam[]> {
   if (isStringNotEmpty(optimizationId)) {
     const optimizationResult = DinnerRouteOptimizationResultService.findDinnerRouteOptimizationResult(optimizationId, adminId);
-    const dinnerRouteTeams = optimizationResult.optimizedDinnerRoutes
+    const dinnerRouteTeams = optimizationResult.optimizedDinnerRouteList.dinnerRoutes
                                                   .map(route => route.teams)
                                                   .flat();
     for (const dinnerRouteTeam of dinnerRouteTeams) {

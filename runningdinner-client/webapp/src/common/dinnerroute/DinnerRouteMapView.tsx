@@ -1,4 +1,4 @@
-import { BaseAdminIdProps, DinnerRoute, isQuerySucceeded, Meal } from "@runningdinner/shared";
+import { BaseAdminIdProps, DinnerRoute, DinnerRouteMapCalculator, isQuerySucceeded, Meal } from "@runningdinner/shared";
 import { useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "./useGetGeocodePositionsOfTeamHosts";
 import { FetchProgressBar } from "../FetchProgressBar";
 import { Map} from "@vis.gl/react-google-maps";
@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../hooks/DynamicFullscreenHeightHook";
 import { AfterPartyLocationMarker, CurrentPositionMarker, TeamHostMarker, WarningAlert } from "./DinnerRouteComponents";
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../maps";
-import { DinnerRouteMapData, DinnerRouteTeamMapEntry, calculateDinnerRouteMapData } from "@runningdinner/shared";
+import { DinnerRouteMapData, DinnerRouteTeamMapEntry } from "@runningdinner/shared";
 
 type DinnerRouteMapViewProps = {
   dinnerRoute: DinnerRoute;
@@ -23,13 +23,15 @@ export function DinnerRouteMapView({dinnerRoute, meals, adminId}: DinnerRouteMap
   }
 
 
-  const dinnerRouteMapData = calculateDinnerRouteMapData({
+  const dinnerRouteMapCalculator = new DinnerRouteMapCalculator({
     allDinnerRoutes: [dinnerRoute], 
     dinnerRouteTeamsWithGeocodes: geocodePositionsQueryResult.data, 
     afterPartyLocation: geocodeAfterPartyQueryResult.data!,
     teamClustersWithSameAddress: [],
     meals
-});
+  });
+
+  const dinnerRouteMapData = dinnerRouteMapCalculator.calculateDinnerRouteMapData();
 
   if (dinnerRouteMapData.dinnerRouteMapEntries.length === 0) {
     return <WarningAlert teamsWithUnresolvedGeocodings={dinnerRouteMapData.teamsWithUnresolvedGeocodings} />;

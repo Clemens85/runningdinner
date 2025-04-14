@@ -2,6 +2,7 @@ package org.runningdinner.dinnerroute.optimization;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.dinnerroute.AllDinnerRoutesWithDistancesListTO;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
+import org.runningdinner.dinnerroute.DinnerRouteListTO;
 import org.runningdinner.dinnerroute.DinnerRouteService;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.TeamNeighbourCluster;
@@ -92,7 +94,10 @@ public class DinnerRouteOptimizationService {
     																						.toList();
     List<TeamNeighbourCluster> teamNeighbourClusters = DinnerRouteService.mapToTeamNeighbourClusters(newDistanceMatrixDuplicatedAddresses, neighbourTeams);
     
-    return new DinnerRouteOptimizationResult(optimizationId, optimizedDinnerRoutes, optimizedDinnerRoutesWithDistances, new TeamNeighbourClusterListTO(teamNeighbourClusters));
+    Map<Integer, LinkedHashSet<Integer>> teamClusterMappings = DinnerRouteCalculator.reverseCalculateClustersOfTeams(optimizedDinnerRoutes);
+    DinnerRouteListTO optimizedDinnerRouteList = new DinnerRouteListTO(optimizedDinnerRoutes, teamClusterMappings);
+    
+    return new DinnerRouteOptimizationResult(optimizationId, optimizedDinnerRouteList, optimizedDinnerRoutesWithDistances, new TeamNeighbourClusterListTO(teamNeighbourClusters));
 	}
 
 	private List<TeamHostLocation> maptoTeamHostLocations(String adminId, GeocodedAddressEntityListTO addressEntityList) {

@@ -3,7 +3,9 @@ package org.runningdinner.dinnerroute;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -65,15 +67,16 @@ public class DinnerRouteService {
   	return new DinnerRouteCalculator(runningDinner, dinnerRouteMessageFormatter).buildDinnerRoute(teamMeetingPlan.getTeam());
   }
 
-  public List<DinnerRouteTO> findAllDinnerRoutes(@ValidateAdminId String adminId) {
+  public DinnerRouteListTO findAllDinnerRoutes(@ValidateAdminId String adminId) {
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 
-    List<DinnerRouteTO> result = new ArrayList<>();
+    List<DinnerRouteTO> dinnerRoutes = new ArrayList<>();
     List<Team> teams = teamService.findTeamArrangements(adminId, true);
     for (Team team : teams) {
-      result.add(findDinnerRoute(runningDinner, team.getId()));
+      dinnerRoutes.add(findDinnerRoute(runningDinner, team.getId()));
     }
-    return result;
+    Map<Integer, LinkedHashSet<Integer>> teamClusters = DinnerRouteCalculator.reverseCalculateClustersOfTeams(dinnerRoutes);
+    return new DinnerRouteListTO(dinnerRoutes, teamClusters);
   }
 
   public List<TeamNeighbourCluster> calculateTeamNeighbourClusters(@ValidateAdminId String adminId, List<GeocodedAddressEntity> addressEntities, double rangeInMeters) {
@@ -116,7 +119,7 @@ public class DinnerRouteService {
   }
 
   public AllDinnerRoutesWithDistancesListTO calculateDinnerRouteDistances(String adminId, GeocodedAddressEntityListTO addressEntityList) {
-    List<DinnerRouteTO> allDinnerRoutes = findAllDinnerRoutes(adminId);
+    List<DinnerRouteTO> allDinnerRoutes = findAllDinnerRoutes(adminId).getDinnerRoutes();
     DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(addressEntityList.getAddressEntities());
     return DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(allDinnerRoutes, distanceMatrix);
   }

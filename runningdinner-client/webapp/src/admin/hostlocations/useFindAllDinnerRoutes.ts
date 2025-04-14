@@ -18,9 +18,7 @@ export function useFindAllDinnerRoutes(adminId: string) {
 async function findAllDinnerRoutes(adminId: string, optimizationId: string | null): Promise<DinnerRouteList> {
   if (isStringNotEmpty(optimizationId)) {
     const optimizationResult = DinnerRouteOptimizationResultService.findDinnerRouteOptimizationResult(optimizationId, adminId);
-    return {
-      dinnerRoutes: optimizationResult.optimizedDinnerRoutes,
-    }
+    return optimizationResult.optimizedDinnerRouteList;
   }
   return findAllDinnerRoutesByAdminIdAsync(adminId);
 }

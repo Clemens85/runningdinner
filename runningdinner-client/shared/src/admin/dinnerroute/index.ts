@@ -1,4 +1,5 @@
 export * from './DinnerRouteService';
-export * from './DinnerRouteMapCalculationService';
+export * from './DinnerRouteMapCalculator';
+export * from './TeamDistanceClusterEnhancer';
 export * from './DinnerRouteOverviewContext';
 export * from './GeocodeAddressUtils';

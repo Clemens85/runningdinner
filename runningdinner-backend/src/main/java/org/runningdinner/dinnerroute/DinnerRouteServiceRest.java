@@ -40,9 +40,7 @@ public class DinnerRouteServiceRest {
 
   @GetMapping("/runningdinner/{adminId}/teams")
   public DinnerRouteListTO findAllDinnerRoutes(@PathVariable String adminId) {
-
-    var result = dinnerRouteService.findAllDinnerRoutes(adminId);
-    return new DinnerRouteListTO(result);
+    return dinnerRouteService.findAllDinnerRoutes(adminId);
   }
 
   @PutMapping("/runningdinner/{adminId}/distances/{range}/teams")

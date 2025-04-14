@@ -1,12 +1,19 @@
 package org.runningdinner.dinnerroute;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
+import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.core.util.LogSanitizer;
 import org.runningdinner.dinnerroute.distance.DistanceEntry;
 import org.runningdinner.dinnerroute.distance.DistanceMatrix;
@@ -17,6 +24,8 @@ import org.springframework.util.Assert;
 
 public class DinnerRouteCalculator {
 
+	private static final int MAX_ITERATIONS_OF_REVERSE_CLUSTERING = 200;
+	
 	private final RunningDinner runningDinner;
 	private final DinnerRouteMessageFormatter dinnerRouteMessageFormatter;
 
@@ -32,11 +41,6 @@ public class DinnerRouteCalculator {
 		List<Team> dinnerRoute = TeamRouteBuilder.generateDinnerRoute(team);
 
 		Team currentDinnerRouteTeam = team;
-//		if (team.isNew()) {
-//			currentDinnerRouteTeam = findTeamForTeamNumber(String.valueOf(team.getTeamNumber()), dinnerRoute);
-//		} else {
-//			currentDinnerRouteTeam = IdentifierUtil.filterListForIdMandatory(dinnerRoute, team.getId());
-//		}
 		
     String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(currentDinnerRouteTeam, runningDinner);
     
@@ -60,8 +64,6 @@ public class DinnerRouteCalculator {
       throw new TechnicalException("could not parse " + LogSanitizer.sanitize(src) + " as integer", e);
     }
   }
-
-
 	
 	public static AllDinnerRoutesWithDistancesListTO calculateDistancesForAllDinnerRoutes(List<DinnerRouteTO> allDinnerRoutes, DistanceMatrix distanceMatrix) {
 		
@@ -82,6 +84,78 @@ public class DinnerRouteCalculator {
     return resultList;
 	}
 	
+	public static Map<Integer, LinkedHashSet<Integer>> reverseCalculateClustersOfTeams(List<DinnerRouteTO> dinnerRoutes) {
+		
+		Map<Integer, LinkedHashSet<Integer>> clusterMapping = new HashMap<>();
+		
+		int currentCluster = 1;
+		
+		for (int i = 0; i < dinnerRoutes.size(); i++) {
+			
+			DinnerRouteTO dinnerRoute = dinnerRoutes.get(i);
+			if (isAlreadyContainedInCluster(dinnerRoute, clusterMapping)) {
+				continue;
+			}
+			
+			Deque<Integer> teamNumbersToVisit = new ArrayDeque<>(getTeamNumbersOfRoute(dinnerRoute));
+			
+			Integer currentTeamNumber = teamNumbersToVisit.poll();;
+			int iterationCounter = 0;
+			
+			while (currentTeamNumber != null && iterationCounter <= MAX_ITERATIONS_OF_REVERSE_CLUSTERING) {
+				LinkedHashSet<Integer> teamsOfCluster = clusterMapping.computeIfAbsent(currentCluster, key -> new LinkedHashSet<>());
+				teamsOfCluster.add(currentTeamNumber);
+				
+				for (int j = i +1; j < dinnerRoutes.size(); j++) {
+  				DinnerRouteTO nextDinnerRoute = dinnerRoutes.get(j);
+  				Set<Integer> teamNumbersOfNextRoute = getTeamNumbersOfRoute(nextDinnerRoute);
+  				if (teamNumbersOfNextRoute.contains(currentTeamNumber)) {
+  					addToTeamNumbersToVisit(teamNumbersToVisit, CoreUtil.excludeFromSet(currentTeamNumber, teamNumbersOfNextRoute), clusterMapping);
+  				}
+				}
+				
+				iterationCounter++;
+				
+				currentTeamNumber = teamNumbersToVisit.poll();
+			}
+			
+			Assert.state(iterationCounter <= MAX_ITERATIONS_OF_REVERSE_CLUSTERING, 
+									 "Exceeded max iterations when building cluster " + currentCluster + " for route with index " + i + ": " + dinnerRoute);
+			
+			currentCluster++;
+		}
+		
+		return clusterMapping;
+	}
+	
+	private static boolean isAlreadyContainedInCluster(DinnerRouteTO dinnerRoute, Map<Integer, LinkedHashSet<Integer>> clusterMapping) {
+		Set<Integer> allClusteredTeamNumbers = getTeamNumbersContainedInClusters(clusterMapping);
+		Set<Integer> teamNumbersOfRoute = getTeamNumbersOfRoute(dinnerRoute);
+		return allClusteredTeamNumbers.containsAll(teamNumbersOfRoute);
+	}
+	
+	private static Set<Integer> getTeamNumbersContainedInClusters(Map<Integer, LinkedHashSet<Integer>> clusterMapping) {
+		return clusterMapping.values()
+      				.stream()
+      				.flatMap(Set::stream)
+      				.collect(Collectors.toSet());
+	}
+
+	private static void addToTeamNumbersToVisit(Deque<Integer> teamNumbersToVisit, Set<Integer> nextTeamNumbersToVisit, Map<Integer, LinkedHashSet<Integer>> clusterMapping) {
+		Set<Integer> allClusteredTeamNumbers = getTeamNumbersContainedInClusters(clusterMapping);
+		for (Integer nextTeamNumberToVisit : nextTeamNumbersToVisit) {
+			if (!teamNumbersToVisit.contains(nextTeamNumberToVisit) && !allClusteredTeamNumbers.contains(nextTeamNumberToVisit)) {
+				teamNumbersToVisit.add(nextTeamNumberToVisit);
+			}
+		}
+	}
+	
+	private static Set<Integer> getTeamNumbersOfRoute(DinnerRouteTO dinnerRoute) {
+		return dinnerRoute.getTeams()
+                				.stream()
+                				.map(t -> t.getTeamNumber())
+                				.collect(Collectors.toSet());
+	}
 	
 	private static List<DinnerRouteTeamWithDistanceTO> calculateDistancesBetweenTeamsOnSingleRoute(DinnerRouteTO dinnerRoute, DistanceMatrix distanceMatrix) {
 

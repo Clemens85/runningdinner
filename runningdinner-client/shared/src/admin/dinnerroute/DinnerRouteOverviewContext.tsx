@@ -1,9 +1,9 @@
 import React from "react";
 import { cloneDeep, remove } from "lodash-es";
-import { buildMealTypeMappings } from "./DinnerRouteMapCalculationService";
 import { AfterPartyLocation, BaseEntity, BaseRunningDinnerProps, DinnerRouteMapData, DinnerRouteTeamMapEntry, Meal, MealType, Parent, TeamConnectionPath} from "../../types";
 import { isAfterPartyLocationDefined } from "../RunningDinnerService";
 import { findEntityById, isDefined, isSameEntity } from "../../Utils";
+import { DinnerRouteMapCalculator } from "./DinnerRouteMapCalculator";
 
 
 export type MealFilterOption = {
@@ -22,6 +22,8 @@ export type DinnerRouteOverviewState = {
   mealFilter: MealFilterOption;
   mealFilterOptions: MealFilterOption[];
   excludeAfterPartyLocation: boolean;
+  showTeamClusters: boolean;
+  showTeamPaths: boolean;
 
   meals: Meal[];
   mealTypeMappings: Record<string, MealType>;
@@ -40,7 +42,9 @@ const INITIAL_STATE_TEMPLATE: DinnerRouteOverviewState = {
   mealFilter: ALL_MEALS_OPTION,
   mealTypeMappings: {},
   meals: [],
-  scrollToTeamRequest: undefined
+  scrollToTeamRequest: undefined,
+  showTeamClusters: false,
+  showTeamPaths: true,
 };
 
 export enum DinnerRouteOverviewActionType {
@@ -50,7 +54,9 @@ export enum DinnerRouteOverviewActionType {
   TOGGLE_ACTIVE_TEAM,
   TOGGLE_EXCLUDE_AFTER_PARTY_LOCATION,
   SCROLL_TO_TEAM,
-  RESET
+  RESET,
+  TOGGLE_SHOW_TEAM_CLUSTERS,
+  TOGGLE_SHOW_TEAM_PATHS
 }
 
 type Action = {
@@ -70,7 +76,7 @@ function newInitialState(meals: Meal[], afterPartyLocation: AfterPartyLocation |
   result.meals = cloneDeep(meals);
 
   result.mealFilterOptions = buildMealFilterOptions(result.meals, result.afterPartyLocation, false);
-  result.mealTypeMappings = buildMealTypeMappings(result.meals);
+  result.mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(result.meals);
   result.mealFilter = ALL_MEALS_OPTION;
   result.scrollToTeamRequest = undefined;
 
@@ -208,6 +214,14 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
     }
     case DinnerRouteOverviewActionType.RESET: {
       return newInitialState(result.meals, result.afterPartyLocation);
+    }
+    case DinnerRouteOverviewActionType.TOGGLE_SHOW_TEAM_CLUSTERS: {
+      result.showTeamClusters = !result.showTeamClusters;
+      return result;
+    }
+    case DinnerRouteOverviewActionType.TOGGLE_SHOW_TEAM_PATHS: {
+      result.showTeamPaths = !result.showTeamPaths;
+      return result;
     }
   }
   // Should not reach this point
