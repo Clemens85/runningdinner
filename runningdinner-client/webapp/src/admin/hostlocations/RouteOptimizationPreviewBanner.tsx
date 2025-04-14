@@ -3,7 +3,7 @@ import { PrimaryButton } from "../../common/theme/PrimaryButton";
 import { Span } from "../../common/theme/typography/Tags";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import { useTranslation } from "react-i18next";
-import { BaseAdminIdProps, DinnerRouteOptimizationResult, saveNewDinnerRoutes, useDisclosure } from "@runningdinner/shared";
+import { BaseAdminIdProps, DinnerRouteDistanceUtil, DinnerRouteOptimizationResult, saveNewDinnerRoutes, useDisclosure } from "@runningdinner/shared";
 import { useMutation } from "@tanstack/react-query";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 import { useAdminNavigation } from "../AdminNavigationHook";
@@ -42,7 +42,7 @@ export function RouteOptimizationPreviewBanner({optimizationId, adminId}: RouteO
   });
 
   async function handleSave(optimizationResult: DinnerRouteOptimizationResult) {
-    await saveNewDinnerRoutes(adminId, { dinnerRoutes: optimizationResult.optimizedDinnerRoutes });
+    await saveNewDinnerRoutes(adminId, optimizationResult.optimizedDinnerRouteList);
     DinnerRouteOptimizationResultService.deleteDinnerRouteOptimizationResult(optimizationId, adminId);
   }
 
@@ -54,7 +54,7 @@ export function RouteOptimizationPreviewBanner({optimizationId, adminId}: RouteO
                 sx={{ width: '100%', opacity: 0.95, top: 0 }} 
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}> 
         <Alert icon={false} severity="info" sx={{ width: '98%' }} variant="filled" onClose={handleClose}>
-          <AlertTitle><Paragraph>Vorschau der Routen-Optimierung</Paragraph></AlertTitle>
+          <AlertTitle><Paragraph><strong>Vorschau der Routen-Optimierung</strong></Paragraph></AlertTitle>
           <Box sx={{ mt: -0.5 }}>
             <Stack direction="row" gap={1} alignItems="center" justifyContent={"space-between"} sx={{ width: '100%' }}>
               <Box>
@@ -85,13 +85,19 @@ type DistanceDiffInfoMessageProps = {
 }
 function DistanceDiffInfoMessage({optimizationResult}: DistanceDiffInfoMessageProps) {
 
-  const averageDistanceDiff = Math.floor(optimizationResult.averageDistanceInMetersBefore - optimizationResult.optimizedDistances.averageDistanceInMeters);
-  const sumDistanceDiff = Math.floor(optimizationResult.sumDistanceInMetersBefore - optimizationResult.optimizedDistances.sumDistanceInMeters);
+  const averageDistanceDiff = optimizationResult.averageDistanceInMetersBefore - optimizationResult.optimizedDistances.averageDistanceInMeters;
+  const sumDistanceDiff = optimizationResult.sumDistanceInMetersBefore - optimizationResult.optimizedDistances.sumDistanceInMeters;
   
+  if (averageDistanceDiff <= 0 || sumDistanceDiff <= 0) {
+    return (
+      <Span>Die neu berechneten Routen sind nicht kürzer als die alten. Du kannst die neu berechneten Routen dennoch speichern.</Span>
+    )
+  }
+
   return (
     <Span>
-      Mit den neu berechneten Routen werden <strong>{sumDistanceDiff} m</strong> Wegstrecke gespart. 
-      Die Ersparnis der Durchschnitts-Route pro Team liegt bei <strong>{averageDistanceDiff} m</strong>.
+      Mit den neu berechneten Routen werden insgesamt <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(sumDistanceDiff)}</strong> Wegstrecke gespart. 
+      Die durchschnittliche Ersparnis pro Team-Route liegt bei <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(averageDistanceDiff)}</strong>.
       Gefällt dir das Ergebnis? Dann kannst du die neuen Routen jetzt speichern.
     </Span>
   )

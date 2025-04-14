@@ -1,7 +1,7 @@
 import { Box, Chip, CircularProgress, Divider, Fab, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Paper, Select, SelectChangeEvent, Slider, styled, Switch, SxProps, Tooltip, Typography } from "@mui/material";
 import { TitleBar } from "./TitleBar";
 import { Trans, useTranslation } from "react-i18next";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData, DinnerRouteTeamWithDistance, isStringNotEmpty } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, Time, TeamDistanceClusterWithMapEntry, isSameEntity, ALL_MEALS_OPTION, isDefined, DinnerRouteWithDistances, TeamStatus, MealFilterOption, DinnerRouteMapData, DinnerRouteTeamWithDistance, isStringNotEmpty, DinnerRouteDistanceUtil } from "@runningdinner/shared";
 import { SmallTitle, Span } from "../../common/theme/typography/Tags";
 import { BaseAdminIdProps } from "@runningdinner/shared";
 import { useState } from "react";
@@ -165,8 +165,8 @@ export function DinnerRouteOverviewSettingsView({adminId, dinnerRouteMapData}: D
               </FormGroup>
               {showRouteDistances && routeDistancesList && 
                 <Box>
-                  <span><strong>&#8960;</strong>{Math.round(routeDistancesList.averageDistanceInMeters)} m</span>
-                  <span>&nbsp;&nbsp;<strong>&#8721;</strong>{Math.round(routeDistancesList.sumDistanceInMeters / 1000)} km</span>
+                  <span><strong>&#8960;</strong> {DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.averageDistanceInMeters)}</span>
+                  <span>&nbsp;&nbsp;<strong>&#8721;</strong> {DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.sumDistanceInMeters)}</span>
                 </Box>
               }
             </Stack>
@@ -224,7 +224,7 @@ function RouteDistancesView({routeDistances}: RouteDistancesViewProps) {
                 <Grid item sx={{ my: 2 }}>
                   { team.status === TeamStatus.CANCELLED && <CancelledTeamMember /> }
                   { team.status !== TeamStatus.CANCELLED && team.currentTeam &&
-                    <Tooltip title={<>{getTeamLabel(team, true)}<br/>&#8960; {Math.round(routeDistance.averageDistanceInMeters)} m</>} placement="top-end">
+                    <Tooltip title={<>{getTeamLabel(team, true)}<br/>&#8960; {DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistance.averageDistanceInMeters)}</>} placement="top-end">
                       <Chip label={`Team ${team.teamNumber}`} color={"primary"} variant={"filled"} 
                             onClick={() => handleClick(team)} />
                     </Tooltip>
