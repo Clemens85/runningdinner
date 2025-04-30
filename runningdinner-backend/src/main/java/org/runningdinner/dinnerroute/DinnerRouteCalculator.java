@@ -178,7 +178,7 @@ public class DinnerRouteCalculator {
       Double distance = distanceMatrixEntries.get(distanceEntry);
       DinnerRouteTeamWithDistanceTO dinnerRouteTeamWithDistanceTO = new DinnerRouteTeamWithDistanceTO(a, distance, isCurrentTeam);
       result.add(dinnerRouteTeamWithDistanceTO);
-      if (teamWithLargestDistance == null || (distance != null && distance > teamWithLargestDistance.getDistanceToNextTeam())) {
+      if (teamWithLargestDistance == null || isDistanceGreaterAsDistanceToNextTeam(distance, teamWithLargestDistance)) {
         teamWithLargestDistance = dinnerRouteTeamWithDistanceTO;
       }
     }
@@ -189,4 +189,11 @@ public class DinnerRouteCalculator {
 
     return result;
   }
+	
+	private static boolean isDistanceGreaterAsDistanceToNextTeam(Double distance, DinnerRouteTeamWithDistanceTO routeTeamDistance) {
+		if (distance == null || routeTeamDistance.getDistanceToNextTeam() == null) {
+			return false;
+		}
+		return distance > routeTeamDistance.getDistanceToNextTeam();
+	}
 }

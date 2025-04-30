@@ -24,7 +24,6 @@ import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamMeetingPlan;
-import org.runningdinner.participant.TeamRepository;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.participant.rest.TeamTO;
 import org.slf4j.Logger;
@@ -32,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import jakarta.validation.Valid;
 
 @Service
 public class DinnerRouteService {
@@ -46,13 +43,10 @@ public class DinnerRouteService {
 
   private final DinnerRouteMessageFormatter dinnerRouteMessageFormatter;
 
-	private final TeamRepository teamRepository;
-
-  public DinnerRouteService(RunningDinnerService runningDinnerService, TeamService teamService, DinnerRouteMessageFormatter dinnerRouteMessageFormatter, TeamRepository teamRepository) {
+  public DinnerRouteService(RunningDinnerService runningDinnerService, TeamService teamService, DinnerRouteMessageFormatter dinnerRouteMessageFormatter) {
     this.runningDinnerService = runningDinnerService;
     this.teamService = teamService;
     this.dinnerRouteMessageFormatter = dinnerRouteMessageFormatter;
-		this.teamRepository = teamRepository;
   }
 
   public DinnerRouteTO findDinnerRoute(@ValidateAdminId String adminId, UUID teamId) {
@@ -67,6 +61,7 @@ public class DinnerRouteService {
   	return new DinnerRouteCalculator(runningDinner, dinnerRouteMessageFormatter).buildDinnerRoute(teamMeetingPlan.getTeam());
   }
 
+  @Transactional(readOnly = true)
   public DinnerRouteListTO findAllDinnerRoutes(@ValidateAdminId String adminId) {
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 
@@ -124,32 +119,6 @@ public class DinnerRouteService {
     return DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(allDinnerRoutes, distanceMatrix);
   }
 
-
-	@Transactional
-	public void saveNewDinnerRoutes(String adminId, @Valid DinnerRouteListTO dinnerRouteList) {
-
-		List<Team> existingTeams = teamService.findTeamArrangements(adminId, false);
-		existingTeams.stream().forEach(Team::removeAllTeamReferences);
-		
-		List<DinnerRouteTO> dinnerRoutes = dinnerRouteList.getDinnerRoutes();
-		for (DinnerRouteTO dinnerRoute : dinnerRoutes) {
-			TeamTO currentTeamInRoute = dinnerRoute.getCurrentTeam();
-			
-			Team currentTeamToSave = DinnerRouteCalculator.findTeamForTeamNumber(String.valueOf(currentTeamInRoute.getTeamNumber()), existingTeams);
-			
-			List<DinnerRouteTeamTO> allTeamsOnRoute = dinnerRoute.getTeams();
-			List<Team> hostingTeamsOnRoute = allTeamsOnRoute.stream()
-																				.filter(hostingTeam -> hostingTeam.getTeamNumber() != currentTeamInRoute.getTeamNumber())
-																				.map(hostingTeam -> DinnerRouteCalculator.findTeamForTeamNumber(String.valueOf(hostingTeam.getTeamNumber()), existingTeams))
-																				.toList();
-			
-			for (Team hostingTeam : hostingTeamsOnRoute) {
-				currentTeamToSave.addHostTeam(hostingTeam);
-			}
-		}
-		
-		teamRepository.saveAll(existingTeams);
-	}
   
 }
 

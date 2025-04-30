@@ -73,7 +73,12 @@ public class DinnerRouteServiceRest {
   @PutMapping("/runningdinner/{adminId}/teams")
   public void saveNewDinnerRoutes(@PathVariable("adminId") String adminId,
   																@RequestBody @Valid DinnerRouteListTO dinnerRoutes) {
-  	dinnerRouteService.saveNewDinnerRoutes(adminId, dinnerRoutes);
+  	
+  	try {
+			dinnerRouteOptimizationService.saveNewDinnerRoutes(adminId, dinnerRoutes);
+		} catch (NoPossibleRunningDinnerException e) {
+			throw new IllegalStateException(e);
+		}
   }
   
   @GetMapping("/runningdinner/{adminId}/distances/optimization/check")

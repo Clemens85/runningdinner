@@ -149,7 +149,7 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
     teamMember.setTeam(null);
   }
   
-  protected void removeAllTeamMembers() {
+  public void removeAllTeamMembers() {
     
     for (Participant teamMember : teamMembers) {
       teamMember.setTeam(null);

@@ -1,6 +1,14 @@
 
 package org.runningdinner.test.util;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.StringUtils;
 import org.awaitility.Awaitility;
 import org.runningdinner.admin.RunningDinnerService;
@@ -8,8 +16,14 @@ import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.SendingStatus;
 import org.runningdinner.contract.Contract;
-import org.runningdinner.core.*;
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.ParticipantGenerator;
+import org.runningdinner.core.PublicSettings;
+import org.runningdinner.core.RegistrationType;
+import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.RunningDinnerInfo;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
@@ -23,14 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class TestHelperService {
@@ -122,6 +128,25 @@ public class TestHelperService {
     return acknowledgeRunningDinner(result);
   }
   
+  public RunningDinner createRunningDinnerTwoMealsWithParticipants(LocalDate date, int numParticipants, RegistrationType registrationType) {
+
+    Contract contract = CreateRunningDinnerInitializationService.createContract();
+    
+    RunningDinnerInfo info = TestUtil.newBasicDetails("RunningDinner", date, "Freiburg", registrationType);
+    List<Participant> participants = ParticipantGenerator.generateParticipants(numParticipants);
+    RunningDinner result;
+    if (registrationType.isClosed()) {
+      result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(
+        info, getDefaultRunningDinnerConfigTwoMeals(date), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, contract, null, participants);
+    } else {
+      PublicSettings publicSettings = new PublicSettings("Public Title", "Public Description", date.minusDays(2), false);
+      result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(
+        info, getDefaultRunningDinnerConfigTwoMeals(date), publicSettings, CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, contract,
+        null, participants);
+    }
+    return acknowledgeRunningDinner(result);
+  }
+  
   
   @Transactional
   public List<Participant> saveParticipants(List<Participant> participants) {
@@ -162,6 +187,15 @@ public class TestHelperService {
   private RunningDinnerConfig getDefaultRunningDinnerConfig(LocalDate date) {
     return RunningDinnerConfig.newConfigurer().havingMeals(newDefaultMeals(date)).build();
   }
+  
+
+  private RunningDinnerConfig getDefaultRunningDinnerConfigTwoMeals(LocalDate date) {
+  	List<MealClass> meals = newDefaultMeals(date);
+  	meals.removeLast(); // No Dessert
+    return RunningDinnerConfig.newConfigurer().havingMeals(meals).build();
+  }
+
+  
 
   public static List<MealClass> newDefaultMeals(LocalDate dinnerDate) {
     List<MealClass> result = new ArrayList<>();

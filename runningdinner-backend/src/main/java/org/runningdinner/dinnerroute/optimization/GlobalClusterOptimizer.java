@@ -1,7 +1,6 @@
 package org.runningdinner.dinnerroute.optimization;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -21,47 +20,55 @@ import smile.clustering.HierarchicalClustering;
 import smile.clustering.linkage.CompleteLinkage;
 
 
-// TODO 1) Currently we don't consider invalid geocodes in here!
-// TODO 2) Currently we also don't consider cancelled teams in here!
-// TODO 3) Check that we have not duplicated addresses (which might be very likely due to clustering) in take-method!
+// TODO Check that we have not duplicated addresses (which might be very likely due to clustering) in take-method!
 
-public class DinnerRouteOptimizer {
+public class GlobalClusterOptimizer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DinnerRouteOptimizer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalClusterOptimizer.class);
 	
 	private final RunningDinner runningDinner;
 
-	public DinnerRouteOptimizer(RunningDinner runningDinner) {
+	public GlobalClusterOptimizer(RunningDinner runningDinner) {
 		this.runningDinner = runningDinner;
 	}
 
-	public Map<Integer, List<List<TeamHostLocation>>> calculateOptimization(List<TeamHostLocation> teamHostLocations) {
+	public Map<Integer, List<List<TeamHostLocation>>> calculateOptimizedClusters(TeamHostLocationList teamHostLocationList) {
 		
 		Map<Integer, List<List<TeamHostLocation>>> result = new HashMap<>();
 		
-		TeamCombinationInfo teamCombinationInfo = newTeamCombinationInfo(teamHostLocations);
-		Map<Integer, List<TeamHostLocation>> labeledCluster = buildAgglomerativeCluster(teamHostLocations, teamCombinationInfo);
+		TeamCombinationInfo teamCombinationInfo = newTeamCombinationInfo(teamHostLocationList);
+		Map<Integer, List<TeamHostLocation>> labeledCluster = buildAgglomerativeCluster(teamHostLocationList, teamCombinationInfo);
 		
 		printCluster(labeledCluster);
 		
-		Collection<List<TeamHostLocation>> teamClusters = labeledCluster.values();
+		List<List<TeamHostLocation>> teamClusters = new ArrayList<>(labeledCluster.values());
 		
 		Map<Integer, Integer> teamSizeFactorizations = teamCombinationInfo.getTeamSizeFactorizations();
 		for (var entry : teamSizeFactorizations.entrySet()) {
 			Integer teamClusterSize = entry.getKey();
 			Integer numTeamClustersOfSize = entry.getValue();
 			for (int i = 0; i < numTeamClustersOfSize; i++) {
-				List<TeamHostLocation> matchedTeamCluster = teamClusters
-																											.stream()
-																											.filter(teamCluster -> teamCluster.size() == teamClusterSize)
-																											.findFirst()
-																											.orElseThrow(() -> new IllegalStateException("No matching teamCluster found for size " + teamClusterSize));
-				
+				List<TeamHostLocation> matchedTeamCluster = getAndRemoveMatchingTeamCluster(teamClusters, teamClusterSize);
 				List<List<TeamHostLocation>> clustersBySize = result.computeIfAbsent(teamClusterSize, key -> new ArrayList<>());
 				clustersBySize.add(matchedTeamCluster);
 			}
 		}
 		
+		return result;
+	}
+
+	private List<TeamHostLocation> getAndRemoveMatchingTeamCluster(List<List<TeamHostLocation>> teamClusters, Integer teamClusterSize) {
+		int resultIndex = 0;
+		List<TeamHostLocation> result = null;
+		for (var teamCluster : teamClusters) {
+			if (teamCluster.size() == teamClusterSize) {
+				result = teamCluster;
+				break;
+			}
+			resultIndex++;
+		}
+		Assert.notNull(result, "No matching teamCluster found for size " + teamClusterSize);
+		teamClusters.remove(resultIndex);
 		return result;
 	}
 
@@ -82,7 +89,7 @@ public class DinnerRouteOptimizer {
 	 * @param teamCombinationInfo
 	 * @return Clusters mapped by label number (starting with 1)
 	 */
-	private Map<Integer, List<TeamHostLocation>> buildAgglomerativeCluster(List<TeamHostLocation> incomingTeamLocations, TeamCombinationInfo teamCombinationInfo) {
+	private Map<Integer, List<TeamHostLocation>> buildAgglomerativeCluster(TeamHostLocationList teamHostLocationList, TeamCombinationInfo teamCombinationInfo) {
 		
 		Map<Integer, List<TeamHostLocation>> result = new LinkedHashMap<>();
 		
@@ -90,18 +97,21 @@ public class DinnerRouteOptimizer {
 		
 		int labelCounter = 1;
 		
-		List<TeamHostLocation> teamLocations = new ArrayList<>(incomingTeamLocations);
+		List<TeamHostLocation> teamLocationsValid = new ArrayList<>(teamHostLocationList.teamHostLocationsValid());
 		
-		LOGGER.info("Build clusters for {} teams with following cluster-sizes and the number of each cluster-size to build: {}", teamLocations.size(), numClustersByClusterSize);
+		LOGGER.info("Build clusters for {} valid teams with following cluster-sizes and the number of each cluster-size to build: {}", teamLocationsValid.size(), numClustersByClusterSize);
+		
+		RemainingTeamHosts remainingTeamHosts = new RemainingTeamHosts(teamHostLocationList, numClustersByClusterSize);
 		
 		for (var entry : numClustersByClusterSize.entrySet()) {
 			final int clusterSize = entry.getKey();
 			int numClustersToBuild = entry.getValue();
 			
 			for (int i = 0; i < numClustersToBuild; i++) {
-				List<TeamHostLocation> builtCluster = buildCluster(teamLocations, clusterSize);
+				remainingTeamHosts.nextCluster();
+				List<TeamHostLocation> builtCluster = buildCluster(teamLocationsValid, clusterSize, remainingTeamHosts);
 				result.put(labelCounter++, builtCluster);
-				teamLocations.removeAll(builtCluster);
+				teamLocationsValid.removeAll(builtCluster);
 			}
 		}
 		
@@ -110,12 +120,14 @@ public class DinnerRouteOptimizer {
 	}
 	
 	/**
-	 * 
+	 * Build one single cluster with size of clusterSize considering all passed teamHostLocations
 	 * @param teamLocations All team host locations to consider for building the cluster
 	 * @param clusterSize Can be something like 9, 12, 15 and specifies the size of the returned list (which is the cluster)
+	 * @param remainingTeamHosts Holds the needed info about team-hosts that cannot directly be used for clustering (cancelled teams and teams without geocodes), 
+	 * 												   but which also need to be included in the final clusters
 	 * @return The built cluster of team host locations
 	 */
-	private List<TeamHostLocation> buildCluster(List<TeamHostLocation> teamLocations, int clusterSize) {
+	private List<TeamHostLocation> buildCluster(List<TeamHostLocation> teamLocations, int clusterSize, RemainingTeamHosts remainingTeamHosts) {
 		
 		int maxPartitionSize = teamLocations.size() / clusterSize;
 		if (teamLocations.size() % clusterSize > 0) {
@@ -124,10 +136,9 @@ public class DinnerRouteOptimizer {
 		
 		LOGGER.info("Build single cluster with size {} for {} teams and with max partitions of {}", clusterSize, teamLocations.size(), maxPartitionSize);
 		
+		// We cannot use clustering if we have anyway only one cluster to build (Smile library will throw an exception when doing so):
 		if (maxPartitionSize == 1) {
-			// We cannot use clustering if we have anyway only one cluster to build (Smile library will throw an exception when doing so):
-			LOGGER.info("Max partition size is 1, hence no clustering is performed, just return the sublist of the inccoming teams with {} items", clusterSize);
-			return new ArrayList<>(teamLocations.subList(0, clusterSize));  
+			return buildLastClusterWithoutPartitioning(teamLocations, clusterSize, remainingTeamHosts);
 		}
 	
 		final LinkedHashSet<TeamHostLocation> result = new LinkedHashSet<>();
@@ -138,7 +149,7 @@ public class DinnerRouteOptimizer {
 		
 		for (int numPartitions = maxPartitionSize; numPartitions > 1; numPartitions--) {
 			int[] clusterLabels = cluster.partition(numPartitions);
-			List<List<TeamHostLocation>> clusterList = mapLabelsOrderedAsc(clusterLabels, teamLocations);
+			List<List<TeamHostLocation>> clusterList = mapLabelsOrderedbySizeAsc(clusterLabels, teamLocations);
 			
 			int remainingClusterSize = clusterSize - result.size();
 			
@@ -149,11 +160,10 @@ public class DinnerRouteOptimizer {
 			int bestSingleClusterIndex = -1; 
 			for (int i = 0; i < clusterList.size(); i++) {
 				List<TeamHostLocation> singleCluster = clusterList.get(i);
-				Map<MealClass, Integer> mealDistributionsCopy = new HashMap<>(mealDistributions);
 				LOGGER.info("Got single cluster at index {} with {} teams...", i, singleCluster.size());
 				if (singleCluster.size() >= remainingClusterSize) {
 					// The built cluster is big enough to be considered if it meets also the mealClass (and other) constraints
-					List<TeamHostLocation> locationsOfSingleClusterToTake = take(singleCluster, remainingClusterSize, mealDistributionsCopy);
+					List<TeamHostLocation> locationsOfSingleClusterToTake = take(singleCluster, remainingClusterSize, mealDistributions, remainingTeamHosts, true);
 					LOGGER.info("We could effectively use {} teams from single cluster for building the resulting cluster...", locationsOfSingleClusterToTake.size());
 					if (maxTakenTeamLocationsOfCluster == null || maxTakenTeamLocationsOfCluster.size() < locationsOfSingleClusterToTake.size()) {
 						maxTakenTeamLocationsOfCluster = locationsOfSingleClusterToTake;
@@ -164,15 +174,19 @@ public class DinnerRouteOptimizer {
 				}
 			}
 			
+			
 			// Step 2: Use the determined cluster if it fits completely to build the final cluster result 
 			if (maxTakenTeamLocationsOfCluster.size() >= remainingClusterSize && bestSingleClusterIndex >= 0) {
 				List<TeamHostLocation> bestSingleCluster = clusterList.get(bestSingleClusterIndex);
 				LOGGER.info("We can use cluster at index {} with {} effective teams to use, which should fit completely in our remaining cluster size of {}.", 
 										bestSingleClusterIndex, maxTakenTeamLocationsOfCluster.size(), remainingClusterSize);
-				result.addAll(take(bestSingleCluster, remainingClusterSize, mealDistributions));
+				
+				result.addAll(take(bestSingleCluster, remainingClusterSize, mealDistributions, remainingTeamHosts, false));
+				
 				Assert.state(result.size() == clusterSize, "Result-Size was " + result.size() + ", but expected to be equal to cluster size of " + clusterSize);
 				return getValidatedCluster(result, mealDistributions);
-			} else if (numPartitions > 2) {
+			}
+			else if (numPartitions > 2) {
 				// We can still enlarge the clusters to build, hence we just try it in the next iteration with a larger cluster
 				LOGGER.info("No built cluster fits completely into the remaining cluster size of {}. Try again in next iteration with bigger cluster", remainingClusterSize);
 				continue;
@@ -182,7 +196,7 @@ public class DinnerRouteOptimizer {
 			if (bestSingleClusterIndex >= 0) {
 				LOGGER.info("No optimal cluster found in last iteration. Use cluster at index {} with {} effective teams.", bestSingleClusterIndex, maxTakenTeamLocationsOfCluster.size());
 				List<TeamHostLocation> bestSingleCluster = clusterList.get(bestSingleClusterIndex);
-				result.addAll(take(bestSingleCluster, remainingClusterSize, mealDistributions));
+				result.addAll(take(bestSingleCluster, remainingClusterSize, mealDistributions, remainingTeamHosts, false));
 			}
 		}
 		
@@ -192,6 +206,19 @@ public class DinnerRouteOptimizer {
 		return getValidatedCluster(result, mealDistributions);
 	}
 	
+	private List<TeamHostLocation> buildLastClusterWithoutPartitioning(List<TeamHostLocation> teamLocations, int clusterSize, RemainingTeamHosts remainingTeamHosts) {
+		LOGGER.info("Max partition size is 1, hence no clustering is performed, just return the sublist of the inccoming teams with {} items", clusterSize);
+		ArrayList<TeamHostLocation> result = new ArrayList<>(teamLocations.subList(0, Math.min(clusterSize, teamLocations.size())));
+		if (result.size() == clusterSize) {
+			return result;
+		}
+		if (result.size() < clusterSize) {
+			result.addAll(remainingTeamHosts.getAllRemainingTeamHostLocations());
+		}
+		Assert.state(result.size() == clusterSize, "Expected result to have " + clusterSize + " entries, but had only " + result.size());
+		return result;
+	}
+	
 	/**
 	 * 
 	 * @param locationsOfCluster
@@ -199,15 +226,30 @@ public class DinnerRouteOptimizer {
 	 * @param mealDistributions
 	 * @return Returns the effective list of team host locations that can be used for building the team-cluster (might have a size of incoming clusterSize in an optimal scenario)
 	 */
-	private List<TeamHostLocation> take(List<TeamHostLocation> locationsOfCluster, int clusterSize, Map<MealClass, Integer> mealDistributions) {
+	private List<TeamHostLocation> take(List<TeamHostLocation> locationsOfCluster, 
+																		  int clusterSize, 
+																		  Map<MealClass, Integer> mealDistributions, 
+																		  RemainingTeamHosts remainingTeamHosts, 
+																		  boolean dryRun) {
+		
+		Map<MealClass, Integer> mealDistributionsToUse = dryRun ? new HashMap<>(mealDistributions) : mealDistributions;
+		RemainingTeamHosts remainingTeamHostsToUse = dryRun ? new RemainingTeamHosts(remainingTeamHosts) : remainingTeamHosts;
+		
 		 List<TeamHostLocation> result = new ArrayList<>();
 		 for (TeamHostLocation locationOfCluster : locationsOfCluster) {
 			 if (result.size() == clusterSize) {
 				 break;
 			 }
-			 if (canTake(locationOfCluster, mealDistributions)) {
+			 if (canTake(locationOfCluster, mealDistributionsToUse)) {
 				 result.add(locationOfCluster);
 			 }
+		 }
+		 
+		 if (result.size() >= clusterSize) {
+			 remainingTeamHostsToUse.swapTeamsInClusterWithTeamsToFillUp(result);
+		 } else {
+			 List<TeamHostLocation> teaHostLocationsForFillingUp = remainingTeamHostsToUse.takeForFillingUp(mealDistributionsToUse);
+			 result.addAll(teaHostLocationsForFillingUp);
 		 }
 		
 		 return result;
@@ -230,6 +272,7 @@ public class DinnerRouteOptimizer {
 		return false;
 	}
 	
+	// TODO: Consider also remainingTeamHosts in here
 	private void addReaminingMissingTeamsToResult(List<TeamHostLocation> teamHostLocations,
 																							 int incomingRemainingClusterSize, 
 																							 Map<MealClass, Integer> mealDistributions, 
@@ -270,7 +313,7 @@ public class DinnerRouteOptimizer {
     return clusterMap;
 	}
 	
-	private static List<List<TeamHostLocation>> mapLabelsOrderedAsc(int[] labels, List<TeamHostLocation> teamLocations) {
+	private static List<List<TeamHostLocation>> mapLabelsOrderedbySizeAsc(int[] labels, List<TeamHostLocation> teamLocations) {
 		Map<Integer, List<TeamHostLocation>> mappedLabels = mapLabels(labels, teamLocations);
 		
 		List<List<TeamHostLocation>> result = new ArrayList<>();
@@ -279,13 +322,14 @@ public class DinnerRouteOptimizer {
 		return result;
 	}
 	
-	private TeamCombinationInfo newTeamCombinationInfo(List<TeamHostLocation> teamHostLocations) {
+	private TeamCombinationInfo newTeamCombinationInfo(TeamHostLocationList teamHostLocationList) {
 		try {
-			return TeamCombinationInfo.newInstance(runningDinner.getConfiguration(), teamHostLocations.size());
+			return TeamCombinationInfo.newInstance(runningDinner.getConfiguration(), teamHostLocationList.getNeededTeamsSize());
 		} catch (NoPossibleRunningDinnerException e) {
 			throw new IllegalStateException(e); 			
 		}
 	}
+	
 
 }
 

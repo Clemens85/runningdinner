@@ -1,10 +1,13 @@
 package org.runningdinner.dinnerroute.optimization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.runningdinner.core.MealClass;
+import org.runningdinner.dinnerroute.DinnerRouteCalculator;
+import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.distance.DistanceCalculator;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
@@ -50,12 +53,22 @@ public class DinnerRouteOptimizationUtil {
 		
 		for (Team team : teams) {
 			Participant hostTeamMember = team.getHostTeamMember();
-			if (GeocodingResult.isValid(hostTeamMember.getGeocodingResult())) {
+			// hostTeamMember can be null in case of cancelled teams => hence nothing can be done
+			if (hostTeamMember == null || GeocodingResult.isValid(hostTeamMember.getGeocodingResult())) {
 				continue;
 			}
 			TeamHostLocation teamHostLocation = findTeamHostLocationForTeamNumber(String.valueOf(team.getTeamNumber()), teamHostLocations);
 			hostTeamMember.setGeocodingResult(new GeocodingResult(teamHostLocation));
 		}
+	}
+	
+	public static List<DinnerRouteTO> buildDinnerRoute(TeamHostLocationList teamHostLocationList, DinnerRouteCalculator dinnerRouteCalculator) {
+  	List<DinnerRouteTO> optimizedDinnerRoutes = new ArrayList<>();
+  	for (TeamHostLocation teamHostLocation : teamHostLocationList.getAllDinnerRouteTeamHostLocations()) {
+    	DinnerRouteTO dinnerRoute = dinnerRouteCalculator.buildDinnerRoute(teamHostLocation.getTeam());
+    	optimizedDinnerRoutes.add(dinnerRoute);
+  	}
+  	return optimizedDinnerRoutes;
 	}
 	
   private static TeamHostLocation findTeamHostLocationForTeamNumber(String teamNumberStr, List<TeamHostLocation> teamHostLocations) {
