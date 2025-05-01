@@ -27,7 +27,9 @@ public class TeamHostLocation extends GeocodedAddressEntity {
 	}
 
 	public TeamHostLocation copyWithHostLocationDataFrom(TeamHostLocation newHostLocationData) {
-		Team teamClone = this.team.createDetachedClone(false); // TODO We need to copy WITH guest/host data!!!
+		// We need to preserve guest / host teams due to they form the actual info about the dinner routes
+		Team teamClone = this.team.createDetachedClone(true);
+		TeamHostLocationService.preserveDatabaseIds(teamClone, this.team);
 		TeamHostLocation result = new TeamHostLocation(teamClone, newHostLocationData);
 		result.getTeam().removeAllTeamMembers();
 		result.getTeam().setTeamMembers(newHostLocationData.getTeam().getTeamMembers());

@@ -11,18 +11,20 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
+import org.runningdinner.dinnerroute.DinnerRouteListTO;
+import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Team;
-import org.runningdinner.participant.TeamMeetingPlan;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -39,20 +41,28 @@ public class LocalClusterOptimizerTest {
 	@Autowired
 	private DinnerRouteMessageFormatter routeMessageFormatter;
 
+	@Autowired
+	private DinnerRouteOptimizationService dinnerRouteOptimizationService;
+
 	@Test
-	public void calculateLocalClusterOptimizations_9() {
-		
-		List<Team> teams = setUpDefaultDinnerAndGenerateTeams(2 * 9);
-		
+	@Transactional
+	public void calculateLocalClusterOptimizations_9() throws NoPossibleRunningDinnerException {
+		var teams = setUpDefaultDinnerAndGenerateTeams(2 * 9);
 		TeamHostLocationList teamHostLocationList = generateTeamHostLocations(teams);
 		simulateGeocodesOutliers4(teamHostLocationList);
-		
+
 		LocalClusterOptimizationResult result = calculateLocalClusterOptimizations(teamHostLocationList);
 		assertThat(result.getAllTeamMemberChanges()).isNotEmpty();
 		assertThat(result.hasOptimizations()).isTrue();
+
+		List<DinnerRouteTO> optimizedRoutes = DinnerRouteOptimizationUtil.buildDinnerRoute(result.resultingTeamHostLocations(), getRouteCalculator());
+		DinnerRouteListTO optimizedRouteList = new DinnerRouteListTO(optimizedRoutes, toSingleTeamClusterMapping(result.resultingTeamHostLocations()));
+		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedRouteList, runningDinner, teams);
+		assertThat(true).isTrue();
 	}
 	
 	@Test
+	@Transactional
 	public void calculateLocalClusterOptimizationsWithoutChanges_9() {
 		
 		List<Team> teams = setUpDefaultDinnerAndGenerateTeams(2 * 9);
@@ -64,15 +74,15 @@ public class LocalClusterOptimizerTest {
 		assertThat(result.getAllTeamMemberChanges()).isEmpty();
 		assertThat(result.hasOptimizations()).isFalse();
 	}
-	
-	private void simulateSameGeocodes(TeamHostLocationList teamHostLocationList) {
+
+	static void simulateSameGeocodes(TeamHostLocationList teamHostLocationList) {
 		teamHostLocationList.teamHostLocationsValid().stream().forEach(thl -> GeocodeTestUtil.setGeocodeData(thl, 7.0, 7.0));
 	}
 
 	/**
 	 * Create some "outliers" which should yield into changes later
 	 */
-	private void simulateGeocodesOutliers4(TeamHostLocationList teamHostLocationList) {
+	static void simulateGeocodesOutliers4(TeamHostLocationList teamHostLocationList) {
 		List<TeamHostLocation> teamLocations = teamHostLocationList.teamHostLocationsValid();
 		GeocodeTestUtil.setGeocodeData(teamLocations.getFirst(), 177, 177);
 		GeocodeTestUtil.setGeocodeData(teamLocations.getLast(), 176, 176);
@@ -93,24 +103,26 @@ public class LocalClusterOptimizerTest {
     LocalDate dinnerDate = LocalDate.now().plusDays(7);
 		this.runningDinner = testHelperService.createOpenRunningDinnerWithParticipants(dinnerDate, numParticipants);
 		teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
-		List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
-		return teams.stream().map(t -> {
-	    TeamMeetingPlan teamMeetingPlan = teamService.findTeamMeetingPlan(runningDinner.getAdminId(), t.getId());
-	    return teamMeetingPlan.getTeam();
-		})
-		.toList();
-  }	
-	
-	private static Map<Integer, LinkedHashSet<Integer>> toSingleTeamClusterMapping(List<TeamHostLocation> allTeamHostLocations) {
+		return  teamService.findTeamArrangements(runningDinner.getAdminId(), false);
+  }
+
+	static Map<Integer, LinkedHashSet<Integer>> toSingleTeamClusterMapping(TeamHostLocationList teamHostLocationList) {
+		return toSingleTeamClusterMapping(teamHostLocationList.getAllTeamHostLocations());
+	}
+
+	static Map<Integer, LinkedHashSet<Integer>> toSingleTeamClusterMapping(List<TeamHostLocation> allTeamHostLocations) {
 		return Map.of(
 			1,
 			new LinkedHashSet<>(allTeamHostLocations.stream().map(thl -> thl.getTeam().getTeamNumber()).toList())	
 		);
 	}
+
+	private DinnerRouteCalculator getRouteCalculator() {
+		return new DinnerRouteCalculator(this.runningDinner, this.routeMessageFormatter);
+	}
 	
 	private LocalClusterOptimizationResult calculateLocalClusterOptimizations(TeamHostLocationList teamHostLocationList) {
-		DinnerRouteCalculator routeCalculator = new DinnerRouteCalculator(this.runningDinner, this.routeMessageFormatter);
-		LocalClusterOptimizer localClusterOptimizer = new LocalClusterOptimizer(routeCalculator, toSingleTeamClusterMapping(teamHostLocationList.getAllTeamHostLocations()));
+		LocalClusterOptimizer localClusterOptimizer = new LocalClusterOptimizer(getRouteCalculator(), toSingleTeamClusterMapping(teamHostLocationList.getAllTeamHostLocations()));
 		return localClusterOptimizer.calculateLocalClusterOptimizations(teamHostLocationList);
 	}
 	

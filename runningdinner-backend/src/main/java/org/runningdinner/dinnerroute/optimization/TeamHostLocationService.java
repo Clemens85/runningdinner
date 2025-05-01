@@ -44,7 +44,7 @@ public class TeamHostLocationService {
 	}
 	
 	 // We need IDs (as teams would be in database) later on for dinner route building
-	private static void preserveDatabaseIds(Team detachedTeamClone, Team originalTeam) {
+	static void preserveDatabaseIds(Team detachedTeamClone, Team originalTeam) {
 		List<Participant> originalParticipants = originalTeam.getTeamMembersOrdered();
 		TeamAccessor.newAccessor(detachedTeamClone)
 			.setId(originalTeam.getId())
