@@ -3,7 +3,7 @@ import { PrimaryButton } from "../../common/theme/PrimaryButton";
 import { Span } from "../../common/theme/typography/Tags";
 import Paragraph from "../../common/theme/typography/Paragraph";
 import { useTranslation } from "react-i18next";
-import { BaseAdminIdProps, DinnerRouteDistanceUtil, DinnerRouteOptimizationResult, saveNewDinnerRoutes, useDisclosure } from "@runningdinner/shared";
+import { BaseAdminIdProps, DinnerRouteDistanceUtil, DinnerRouteOptimizationResult, SaveDinnerRouteOptimizationRequest, saveNewDinnerRoutes, useDisclosure } from "@runningdinner/shared";
 import { useMutation } from "@tanstack/react-query";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 import { useAdminNavigation } from "../AdminNavigationHook";
@@ -42,7 +42,11 @@ export function RouteOptimizationPreviewBanner({optimizationId, adminId}: RouteO
   });
 
   async function handleSave(optimizationResult: DinnerRouteOptimizationResult) {
-    await saveNewDinnerRoutes(adminId, optimizationResult.optimizedDinnerRouteList);
+    const saveRequest: SaveDinnerRouteOptimizationRequest = {
+      optimizedDinnerRoutes: optimizationResult.optimizedDinnerRouteList.dinnerRoutes,
+      teamMemberChangesToPerform: optimizationResult.teamMemberChangesToPerform
+    }
+    await saveNewDinnerRoutes(adminId, saveRequest);
     DinnerRouteOptimizationResultService.deleteDinnerRouteOptimizationResult(optimizationId, adminId);
   }
 

@@ -7,6 +7,7 @@ import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationResult;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
+import org.runningdinner.dinnerroute.optimization.SaveDinnerRouteOptimizationRequest;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,10 +73,10 @@ public class DinnerRouteServiceRest {
   
   @PutMapping("/runningdinner/{adminId}/teams")
   public void saveNewDinnerRoutes(@PathVariable("adminId") String adminId,
-  																@RequestBody @Valid DinnerRouteListTO dinnerRoutes) {
+  																@RequestBody @Valid SaveDinnerRouteOptimizationRequest saveRequest) {
   	
   	try {
-			dinnerRouteOptimizationService.saveNewDinnerRoutes(adminId, dinnerRoutes);
+			dinnerRouteOptimizationService.saveNewDinnerRoutes(adminId, saveRequest);
 		} catch (NoPossibleRunningDinnerException e) {
 			throw new IllegalStateException(e);
 		}

@@ -57,8 +57,10 @@ public class LocalClusterOptimizerTest {
 
 		List<DinnerRouteTO> optimizedRoutes = DinnerRouteOptimizationUtil.buildDinnerRoute(result.resultingTeamHostLocations(), getRouteCalculator());
 		DinnerRouteListTO optimizedRouteList = new DinnerRouteListTO(optimizedRoutes, toSingleTeamClusterMapping(result.resultingTeamHostLocations()));
-		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedRouteList, runningDinner, teams);
+		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedRouteList.getDinnerRoutes(), runningDinner, teams);
 		assertThat(true).isTrue();
+
+		DinnerRouteOptimizationService.checkTeamMemberChangesConsistency(result.getAllTeamMemberChanges());
 	}
 	
 	@Test
@@ -73,6 +75,8 @@ public class LocalClusterOptimizerTest {
 		LocalClusterOptimizationResult result = calculateLocalClusterOptimizations(teamHostLocationList);
 		assertThat(result.getAllTeamMemberChanges()).isEmpty();
 		assertThat(result.hasOptimizations()).isFalse();
+
+		DinnerRouteOptimizationService.checkTeamMemberChangesConsistency(result.getAllTeamMemberChanges());
 	}
 
 	static void simulateSameGeocodes(TeamHostLocationList teamHostLocationList) {

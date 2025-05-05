@@ -63,7 +63,7 @@ public class DinnerRouteOptimizationServiceTest {
 		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), geocodedAddressEntityList);
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 		
-		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList, runningDinner, teams);
+		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
 		// All assertions are already performed in validate method
 		assertThat(true).isTrue();
 	}
@@ -84,7 +84,7 @@ public class DinnerRouteOptimizationServiceTest {
 		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), geocodedAddressEntityList);
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 		
-		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList, runningDinner, teams);
+		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
 		// All assertions are already performed in validate method
 		assertThat(true).isTrue();
 	}
@@ -110,7 +110,7 @@ public class DinnerRouteOptimizationServiceTest {
 		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), geocodedAddressEntityList);
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 
-		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList, runningDinner, teams);
+		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
 		// All assertions are already performed in validate method
 		assertThat(true).isTrue();
 	}
@@ -138,7 +138,7 @@ public class DinnerRouteOptimizationServiceTest {
 		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), geocodedAddressEntityList);
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 
-		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList, runningDinner, teams);
+		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
 		// All assertions are already performed in validate method
 		assertThat(true).isTrue();
 	}
@@ -165,7 +165,7 @@ public class DinnerRouteOptimizationServiceTest {
 		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), geocodedAddressEntityList);
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 
-		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList, runningDinner, teams);
+		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
 		// All assertions are already performed in validate method
 		assertThat(true).isTrue();
 		

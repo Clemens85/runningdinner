@@ -5,11 +5,14 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
@@ -28,6 +31,7 @@ import org.runningdinner.dinnerroute.distance.DistanceEntry;
 import org.runningdinner.dinnerroute.distance.DistanceMatrix;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
+import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamRepository;
 import org.runningdinner.participant.TeamService;
@@ -134,16 +138,18 @@ public class DinnerRouteOptimizationService {
 	
 
 	@Transactional
-	public void saveNewDinnerRoutes(String adminId, @Valid DinnerRouteListTO dinnerRouteList) throws NoPossibleRunningDinnerException {
+	public void saveNewDinnerRoutes(String adminId, @Valid SaveDinnerRouteOptimizationRequest saveRouteOptimizationsRequest) throws NoPossibleRunningDinnerException {
 
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 		
 		List<Team> existingTeams = teamService.findTeamArrangements(adminId, false);
-		existingTeams.stream().forEach(Team::removeAllTeamReferences);
+		existingTeams.forEach(Team::removeAllTeamReferences);
+
+		performTeamMemberChanges(saveRouteOptimizationsRequest.teamMemberChangesToPerform(), existingTeams);
+
+		List<DinnerRouteTO> dinnerRoutes = saveRouteOptimizationsRequest.optimizedDinnerRoutes();
+		validateOptimizedRoutes(dinnerRoutes, runningDinner, existingTeams);
 		
-		validateOptimizedRoutes(dinnerRouteList, runningDinner, existingTeams);
-		
-		List<DinnerRouteTO> dinnerRoutes = dinnerRouteList.getDinnerRoutes();
 		for (DinnerRouteTO dinnerRoute : dinnerRoutes) {
 			TeamTO currentTeamInRoute = dinnerRoute.getCurrentTeam();
 			
@@ -162,14 +168,55 @@ public class DinnerRouteOptimizationService {
 		
 		teamRepository.saveAll(existingTeams);
 	}
-	
 
-	public void validateOptimizedRoutes(DinnerRouteListTO dinnerRouteList, RunningDinner runningdinner, List<Team> existingTeams) throws NoPossibleRunningDinnerException {
+	private void performTeamMemberChanges(List<TeamMemberChange> teamMemberChanges, List<Team> existingTeams) {
+		if (CollectionUtils.isEmpty(teamMemberChanges)) {
+			return;
+		}
+
+		checkTeamMemberChangesConsistency(teamMemberChanges);
+
+		Map<UUID, Set<Participant>> teamMembersByTeamId = new HashMap<>();
+		existingTeams.forEach(team -> {
+			teamMembersByTeamId.put(team.getId(), team.getTeamMembers());
+		});
+
+		for (TeamMemberChange teamMemberChange : teamMemberChanges) {
+			Team currentTeam = IdentifierUtil.filterListForIdMandatory(existingTeams, teamMemberChange.currentTeamId());
+			currentTeam.removeAllTeamMembers();
+			currentTeam.setTeamMembers(teamMembersByTeamId.get(teamMemberChange.moveTeamMembersFromTeamId()));
+		}
+	}
+
+	static void checkTeamMemberChangesConsistency(List<TeamMemberChange> teamMemberChanges) {
+		if (CollectionUtils.isEmpty(teamMemberChanges)) {
+			return;
+		}
+		Assert.state(teamMemberChanges.size() % 2 == 0, "Team member changes must be even");
+		for (int i = 0; i < teamMemberChanges.size(); i++) {
+			var teamMemberChangeToCheck = teamMemberChanges.get(i);
+			boolean movingCounterPartFound = false;
+			boolean currentCounterPartFound = false;
+			for (int j = i  + 1; j < teamMemberChanges.size(); j++) {
+				var otherTeamMemberChange = teamMemberChanges.get(j);
+				if (Objects.equals(teamMemberChangeToCheck.moveTeamMembersFromTeamId(), otherTeamMemberChange.currentTeamId())) {
+					movingCounterPartFound = true;
+				}
+				if (Objects.equals(teamMemberChangeToCheck.currentTeamId(), otherTeamMemberChange.moveTeamMembersFromTeamId())) {
+					currentCounterPartFound = true;
+				}
+			}
+			Assert.isTrue(movingCounterPartFound, "TODO");
+			Assert.isTrue(currentCounterPartFound, "TODO");
+		}
+	}
+
+	public void validateOptimizedRoutes(List<DinnerRouteTO> dinnerRoutes, RunningDinner runningdinner, List<Team> existingTeams) throws NoPossibleRunningDinnerException {
 
 		List<Team> cancelledTeams = existingTeams.stream().filter(t -> t.getStatus() == TeamStatus.CANCELLED).toList();
 		long numTeamsWithRoutes = existingTeams.size() - cancelledTeams.size();
 		
-		checkNumRoutes(dinnerRouteList, numTeamsWithRoutes);
+		checkNumRoutes(dinnerRoutes, numTeamsWithRoutes);
 		RunningDinnerConfig configuration = runningdinner.getConfiguration();
 
 		int numMealClasses = configuration.getNumberOfMealClasses();
@@ -181,27 +228,26 @@ public class DinnerRouteOptimizationService {
 			expectedMealClassOccurrences.put(mealClass.getId(), expectedOccurrencesOfEachMeal - numCancelledTeamsWithSameMeal);
 		}
 		
-		checkRoutesConsistency(dinnerRouteList, numMealClasses, expectedMealClassOccurrences);
+		checkRoutesConsistency(dinnerRoutes, numMealClasses, expectedMealClassOccurrences);
 		
-		checkGuestOccurrencesPerTeam(dinnerRouteList, numMealClasses -1);
+		checkGuestOccurrencesPerTeam(dinnerRoutes, numMealClasses -1);
 	}
 	
-	protected static void checkGuestOccurrencesPerTeam(DinnerRouteListTO dinnerRouteList, int i) {
+	protected static void checkGuestOccurrencesPerTeam(List<DinnerRouteTO> dinnerRoutes, int i) {
 		// TODO Auto-generated method stub
-		
 	}
 
-	protected static void checkNumRoutes(DinnerRouteListTO dinnerRouteList, long expectedNumRoutes) {
-		int numRoutes = dinnerRouteList.getDinnerRoutes().size();
+	protected static void checkNumRoutes(List<DinnerRouteTO> dinnerRoutes, long expectedNumRoutes) {
+		int numRoutes = dinnerRoutes.size();
 		Assert.state(numRoutes == expectedNumRoutes, "Expected " + expectedNumRoutes + " routes, but was " + numRoutes);
 	}
 	
-	protected static void checkRoutesConsistency(DinnerRouteListTO dinnerRouteList, int expectedNumTeamsOnRoutes, Map<UUID, Long> expectedMealClassOccurrences) {
+	protected static void checkRoutesConsistency(List<DinnerRouteTO> dinnerRoutes, int expectedNumTeamsOnRoutes, Map<UUID, Long> expectedMealClassOccurrences) {
 		
 		Set<UUID> iteratedCurrentTeams = new HashSet<>();
 		Map<UUID, Long> mealClassOccurrences = new HashMap<>();
 		
-		for (var route : dinnerRouteList.getDinnerRoutes()) {
+		for (var route : dinnerRoutes) {
 			List<DinnerRouteTeamTO> teamsInRoute = route.getTeams();
 			int numTeamsInRoute = teamsInRoute.size();
 			Assert.state(numTeamsInRoute == expectedNumTeamsOnRoutes, 
@@ -222,7 +268,8 @@ public class DinnerRouteOptimizationService {
 		for (var entry : mealClassOccurrences.entrySet()) {
 			Long occurrences = entry.getValue();
 			Long expectedOccurrences = expectedMealClassOccurrences.get(entry.getKey());
-			Assert.state(occurrences == expectedOccurrences, "Expected " + expectedOccurrences + " occurrences for meal " + entry.getKey() + " but was " + occurrences);
+			Assert.state(Objects.equals(occurrences, expectedOccurrences),
+					"Expected " + expectedOccurrences + " occurrences for meal " + entry.getKey() + " but was " + occurrences);
 		}
 	}
 	
