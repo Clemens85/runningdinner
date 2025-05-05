@@ -153,7 +153,7 @@ public class DinnerRouteCalculator {
 	private static Set<Integer> getTeamNumbersOfRoute(DinnerRouteTO dinnerRoute) {
 		return dinnerRoute.getTeams()
                 				.stream()
-                				.map(t -> t.getTeamNumber())
+                				.map(DinnerRouteTeamTO::getTeamNumber)
                 				.collect(Collectors.toSet());
 	}
 	
