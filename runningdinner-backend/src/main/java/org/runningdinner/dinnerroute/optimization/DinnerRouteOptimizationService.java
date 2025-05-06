@@ -192,23 +192,16 @@ public class DinnerRouteOptimizationService {
 		if (CollectionUtils.isEmpty(teamMemberChanges)) {
 			return;
 		}
-		Assert.state(teamMemberChanges.size() % 2 == 0, "Team member changes must be even");
-		for (int i = 0; i < teamMemberChanges.size(); i++) {
-			var teamMemberChangeToCheck = teamMemberChanges.get(i);
-			boolean movingCounterPartFound = false;
-			boolean currentCounterPartFound = false;
-			for (int j = i  + 1; j < teamMemberChanges.size(); j++) {
-				var otherTeamMemberChange = teamMemberChanges.get(j);
-				if (Objects.equals(teamMemberChangeToCheck.moveTeamMembersFromTeamId(), otherTeamMemberChange.currentTeamId())) {
-					movingCounterPartFound = true;
-				}
-				if (Objects.equals(teamMemberChangeToCheck.currentTeamId(), otherTeamMemberChange.moveTeamMembersFromTeamId())) {
-					currentCounterPartFound = true;
-				}
-			}
-			Assert.isTrue(movingCounterPartFound, "TODO");
-			Assert.isTrue(currentCounterPartFound, "TODO");
-		}
+		
+		List<UUID> destTeamIds = teamMemberChanges.stream().map(change -> change.currentTeamId()).toList();
+		List<UUID> srcTeamIds = teamMemberChanges.stream().map(change -> change.moveTeamMembersFromTeamId()).toList();
+		
+		Set<UUID> destTeamIdsAsSet = new HashSet<>(destTeamIds);
+		Assert.isTrue(destTeamIdsAsSet.size() == destTeamIds.size(), "Expected moveTeamMembersFromTeamId to contain no duplicates, but did: " + destTeamIds);
+		Set<UUID> srcTeamIdsAsSet = new HashSet<>(destTeamIds);
+		Assert.isTrue(srcTeamIdsAsSet.size() == srcTeamIds.size(), "Expected currentTeamId to contain no duplicates, but did: " + srcTeamIds);
+		
+		Assert.isTrue(Objects.equals(srcTeamIdsAsSet, destTeamIdsAsSet), "Each team must be contained in both currentTeamId and moveTeamMembersFromTeamId, but was not: " + teamMemberChanges);
 	}
 
 	public void validateOptimizedRoutes(List<DinnerRouteTO> dinnerRoutes, RunningDinner runningdinner, List<Team> existingTeams) throws NoPossibleRunningDinnerException {
