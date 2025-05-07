@@ -10,10 +10,12 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.distance.DistanceCalculator;
 import org.runningdinner.dinnerroute.distance.DistanceMatrix;
+import org.runningdinner.participant.TeamStatus;
 
 public class LocalClusterOptimizer {
 	
@@ -35,11 +37,16 @@ public class LocalClusterOptimizer {
 			
 			TeamHostLocationList teamHostLocationsOfCluster = getTeamHostLocationsOfCluster(clusterNumber, teamHostLocationList);
 			
-			TeamHostLocationList optimizedLocationsOfCluster = calculateSingleLocalClusterOptimization(teamHostLocationsOfCluster);
+			TeamHostLocationList optimizedLocationsOfCluster = null;
+			if (CollectionUtils.isEmpty(teamHostLocationsOfCluster.cancelledTeams())) {
+				optimizedLocationsOfCluster = calculateSingleLocalClusterOptimization(teamHostLocationsOfCluster);
+			}
+
 			if (optimizedLocationsOfCluster == null) {
 				resultingTeamHostLocations.addAll(teamHostLocationsOfCluster.getAllTeamHostLocations());
 				continue;
 			}
+			
 			// else:
 			resultingTeamHostLocations.addAll(optimizedLocationsOfCluster.getAllTeamHostLocations());
 			
@@ -54,20 +61,6 @@ public class LocalClusterOptimizer {
 				teamMemberChangesInCluster.add(new TeamMemberChange(originalTeamHostLocation.getTeam().getId(), moveTeamMembersFromLocation.getTeam().getId()));
 			}
 			neededTeamMemberChangeActions.put(clusterNumber, teamMemberChangesInCluster);
-
-//			for (int i = 0; i < optimizedLocationsOfCluster.size(); i++) {
-//				TeamHostLocation currentLocation = teamHostLocationsOfCluster.get(i);
-//				TeamHostLocation optimizedLocation = optimizedLocationsOfCluster.get(i);
-//				
-//				if (Objects.equals(currentLocation, optimizedLocation)) {
-//					continue;
-//				}
-//				
-			// TODO: This logic might be needed later when persisting
-//				result.add(new TeamMemberChange(currentLocation.getTeam().getId(), optimizedLocation.getTeam().getId()));
-//				currentLocation.getTeam().removeAllTeamMembers();
-//				currentLocation.getTeam().setTeamMembers(teamMembersByTeamNumberId.get(optimizedLocation.getId()));
-//			}
 		}
 		
 		return new LocalClusterOptimizationResult(TeamHostLocationService.newTeamHostLocationList(resultingTeamHostLocations), neededTeamMemberChangeActions);
@@ -93,9 +86,12 @@ public class LocalClusterOptimizer {
 		TeamHostLocationList bestClusterVariant = null;
 		
 		List<List<TeamHostLocation>> allPossibleClusterVariants = cartesianProduct(allPermutations);
+		int cnt = 0;
 		for (var clusterVariantHostLocations : allPossibleClusterVariants) {
 			
 			TeamHostLocationList clusterVariant = TeamHostLocationService.newTeamHostLocationList(clusterVariantHostLocations);
+			
+			System.out.println("# " + (cnt++) + " Build Route for cluster-variant: " + clusterVariant);
 			
 			List<DinnerRouteTO> routesOfClusterVariant = DinnerRouteOptimizationUtil.buildDinnerRoute(clusterVariant, dinnerRouteCalculator);
 		  DistanceMatrix distanceMatrixOfClusterVariant = DistanceCalculator.calculateDistanceMatrix(clusterVariant.teamHostLocationsValid());
@@ -155,7 +151,7 @@ public class LocalClusterOptimizer {
 			for (int i = 0; i < permutationsAsReorderedList.size(); i++) {
 				TeamHostLocation originalTeamHostLocation = originalTeamLocationsOfMeal.get(i);
 				TeamHostLocation permutatedTeamHostLocation = permutationsAsReorderedList.get(i);
-				if (Objects.equals(originalTeamHostLocation, permutatedTeamHostLocation)) {
+				if (Objects.equals(originalTeamHostLocation, permutatedTeamHostLocation) || permutatedTeamHostLocation.getTeam().getStatus() == TeamStatus.CANCELLED) {
 					resultingPermutation.add(new TeamHostLocation(permutatedTeamHostLocation.getTeam(), permutatedTeamHostLocation));
 				} else {
 					resultingPermutation.add(originalTeamHostLocation.copyWithHostLocationDataFrom(permutatedTeamHostLocation));
@@ -173,55 +169,4 @@ public class LocalClusterOptimizer {
 		return TeamHostLocationService.newTeamHostLocationList(teamHostLocationsOfCluster);
 	}
 
-	
-//	private static double getSumDistance(double[][] dists) {
-//		double sum = 0;
-//		for (int i = 0; i < dists.length; i++) {
-//			for (int j = 0; j < dists.length; j++) {
-//				sum += dists[i][j];
-//			}
-//		}
-//		return sum;
-//	}
-//
-//	private static double getMaxDistance(double[][] dists) {
-//		double max = 0;
-//		for (double[] row : dists) {
-//			for (double d : row) {
-//				max = Math.max(max, d);
-//			}
-//		}
-//		return max;
-//	}
-//
-//	private static double[][] reMapDistances(double[][] original, List<TeamHostLocation> oldList, List<TeamHostLocation> newList) {
-//		int n = original.length;
-//		double[][] newDists = new double[n][n];
-//		for (int i = 0; i < n; i++) {
-//			int oldI = oldList.indexOf(newList.get(i));
-//			for (int j = 0; j < n; j++) {
-//				int oldJ = oldList.indexOf(newList.get(j));
-//				newDists[i][j] = original[oldI][oldJ];
-//			}
-//		}
-//		return newDists;
-//	}
-
-	//  private static List<List<TeamHostLocation>> permutations(List<TeamHostLocation> list) {
-//    List<List<TeamHostLocation>> result = new ArrayList<>();
-//    permute(list, 0, result);
-//    return result;
-//  }
-//
-//  private static void permute(List<TeamHostLocation> list, int start, List<List<TeamHostLocation>> result) {
-//		if (start == list.size() - 1) {
-//			result.add(new ArrayList<>(list));
-//			return;
-//		}
-//		for (int i = start; i < list.size(); i++) {
-//			Collections.swap(list, i, start);
-//			permute(list, start + 1, result);
-//			Collections.swap(list, i, start);
-//		}
-//  }
 }

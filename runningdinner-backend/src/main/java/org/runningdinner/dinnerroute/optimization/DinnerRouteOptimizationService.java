@@ -181,9 +181,14 @@ public class DinnerRouteOptimizationService {
 			teamMembersByTeamId.put(team.getId(), team.getTeamMembers());
 		});
 
+		// Important: First remove all team members (in order to avoid side effects when also setting them)....
 		for (TeamMemberChange teamMemberChange : teamMemberChanges) {
 			Team currentTeam = IdentifierUtil.filterListForIdMandatory(existingTeams, teamMemberChange.currentTeamId());
 			currentTeam.removeAllTeamMembers();
+		}
+		// ... Then set the new team members for each team
+		for (TeamMemberChange teamMemberChange : teamMemberChanges) {
+			Team currentTeam = IdentifierUtil.filterListForIdMandatory(existingTeams, teamMemberChange.currentTeamId());
 			currentTeam.setTeamMembers(teamMembersByTeamId.get(teamMemberChange.moveTeamMembersFromTeamId()));
 		}
 	}
