@@ -60,8 +60,6 @@ public class TeamHostLocationServiceTest {
 		
 	}
 	
-	// TODO: Add more tests
-	
   protected RunningDinner setUpDefaultDinner(int numParticipants) {
     LocalDate dinnerDate = LocalDate.now().plusDays(7);
     this.runningDinner = testHelperService.createOpenRunningDinnerWithParticipants(dinnerDate, numParticipants);

@@ -73,14 +73,18 @@ public class GlobalClusterOptimizer {
 	}
 
 	private void printCluster(Map<Integer, List<TeamHostLocation>> clusterMap) {
+		StringBuilder output = new StringBuilder();
+		
     int clusterId = 1;
     for (List<TeamHostLocation> cluster : clusterMap.values()) {
-      System.out.println("🔹 Cluster " + clusterId + ":");
+      LOGGER.info("*** CLUSTER {} ***: ", clusterId);
       for (TeamHostLocation teamLocation : cluster) {
-        System.out.println(teamLocation.getId() + " (" + teamLocation.getMeal().getLabel() +  ")");
-      }
+      	output.append(teamLocation.getId() + " (" + teamLocation.getMeal().getLabel() +  ")").append("\r\n");
+      }    
+      LOGGER.info(output.toString());
       clusterId++;
     }
+
 	}
 
 	/**
