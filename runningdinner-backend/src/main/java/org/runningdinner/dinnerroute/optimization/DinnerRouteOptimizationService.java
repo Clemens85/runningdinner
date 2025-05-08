@@ -79,8 +79,8 @@ public class DinnerRouteOptimizationService {
     TeamHostLocationList teamHostLocationList = teamHostLocationService.mapToTeamHostLocations(adminId, addressEntityList);
     
     // Step 1: Get optimized team clusters and re-generate dinner route plans (this happens all in-memory, we use detached Teams):
-    GlobalClusterOptimizer optimizer = new GlobalClusterOptimizer(runningDinner);
-  	Map<Integer, List<List<TeamHostLocation>>> optimizedTeamSegments = optimizer.calculateOptimizedClusters(teamHostLocationList);
+    GlobalClusterOptimizer globalOptimizer = new GlobalClusterOptimizer(runningDinner);
+  	Map<Integer, List<List<TeamHostLocation>>> optimizedTeamSegments = globalOptimizer.calculateOptimizedClusters(teamHostLocationList);
   	
   	List<TeamHostLocation> allTeamHostLocations = teamHostLocationList.getAllTeamHostLocations();
   	
@@ -93,12 +93,13 @@ public class DinnerRouteOptimizationService {
   		}
   	}
   	
-  	// Step 2: The wrapped teams in the teamHostLocation list contains now the re-generated dinner plans => convert them to DinnerRouteTO list:
+  	// Step 2a: The wrapped teams in the teamHostLocation list contains now the re-generated dinner plans => convert them to DinnerRouteTO list:
   	DinnerRouteCalculator dinnerRouteCalculator = new DinnerRouteCalculator(runningDinner, dinnerRouteMessageFormatter);
   	List<DinnerRouteTO> optimizedDinnerRoutes = DinnerRouteOptimizationUtil.buildDinnerRoute(teamHostLocationList, dinnerRouteCalculator);
   	
     Map<Integer, LinkedHashSet<Integer>> teamClusterMappings = DinnerRouteCalculator.reverseCalculateClustersOfTeams(optimizedDinnerRoutes);
     
+    // Step 2b: Try to optimize routes on local clusters (by swapping team-members of same meal, if reasonable):
     var localClusterOptimizationResult = new LocalClusterOptimizer(dinnerRouteCalculator, teamClusterMappings)
     																						.calculateLocalClusterOptimizations(teamHostLocationList);
     
@@ -227,14 +228,8 @@ public class DinnerRouteOptimizationService {
 		}
 		
 		checkRoutesConsistency(dinnerRoutes, numMealClasses, expectedMealClassOccurrences);
-		
-		checkGuestOccurrencesPerTeam(dinnerRoutes, numMealClasses -1);
 	}
 	
-	protected static void checkGuestOccurrencesPerTeam(List<DinnerRouteTO> dinnerRoutes, int i) {
-		// TODO Auto-generated method stub
-	}
-
 	protected static void checkNumRoutes(List<DinnerRouteTO> dinnerRoutes, long expectedNumRoutes) {
 		int numRoutes = dinnerRoutes.size();
 		Assert.state(numRoutes == expectedNumRoutes, "Expected " + expectedNumRoutes + " routes, but was " + numRoutes);

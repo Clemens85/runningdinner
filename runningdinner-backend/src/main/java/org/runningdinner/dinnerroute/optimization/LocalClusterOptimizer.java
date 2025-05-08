@@ -16,6 +16,7 @@ import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.distance.DistanceCalculator;
 import org.runningdinner.dinnerroute.distance.DistanceMatrix;
 import org.runningdinner.participant.TeamStatus;
+import org.springframework.util.Assert;
 
 public class LocalClusterOptimizer {
 	
@@ -63,6 +64,7 @@ public class LocalClusterOptimizer {
 			neededTeamMemberChangeActions.put(clusterNumber, teamMemberChangesInCluster);
 		}
 		
+		resultingTeamHostLocations.sort((a, b) -> Integer.compare(a.getTeamNumber(), b.getTeamNumber()));
 		return new LocalClusterOptimizationResult(TeamHostLocationService.newTeamHostLocationList(resultingTeamHostLocations), neededTeamMemberChangeActions);
 	}
 	
@@ -86,12 +88,9 @@ public class LocalClusterOptimizer {
 		TeamHostLocationList bestClusterVariant = null;
 		
 		List<List<TeamHostLocation>> allPossibleClusterVariants = cartesianProduct(allPermutations);
-		int cnt = 0;
 		for (var clusterVariantHostLocations : allPossibleClusterVariants) {
 			
 			TeamHostLocationList clusterVariant = TeamHostLocationService.newTeamHostLocationList(clusterVariantHostLocations);
-			
-			System.out.println("# " + (cnt++) + " Build Route for cluster-variant: " + clusterVariant);
 			
 			List<DinnerRouteTO> routesOfClusterVariant = DinnerRouteOptimizationUtil.buildDinnerRoute(clusterVariant, dinnerRouteCalculator);
 		  DistanceMatrix distanceMatrixOfClusterVariant = DistanceCalculator.calculateDistanceMatrix(clusterVariant.teamHostLocationsValid());
@@ -141,7 +140,10 @@ public class LocalClusterOptimizer {
 		}
 	}
 
-	public static List<List<TeamHostLocation>> buildPermutations(List<TeamHostLocation> originalTeamLocationsOfMeal) {
+	static List<List<TeamHostLocation>> buildPermutations(List<TeamHostLocation> originalTeamLocationsOfMeal) {
+		
+		Assert.state(originalTeamLocationsOfMeal.size() <= 8, "Building permutations only allowed for n <= 8, but was " + originalTeamLocationsOfMeal.size());
+		
 		List<List<TeamHostLocation>> allPermutationsAsReorderedList = new ArrayList<>();
 		permuteByReorderingList(new ArrayList<>(originalTeamLocationsOfMeal), 0, allPermutationsAsReorderedList);
 		
