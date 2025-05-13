@@ -56,7 +56,6 @@ public class DinnerRouteCalculator {
             .orElseThrow(() -> new IllegalStateException("Could not find team with teamMember " + teamNumber + " within teams " + teams));
   }
   
-
   public static int parseIntSafe(String src) {
     try {
       return Integer.parseInt(src);

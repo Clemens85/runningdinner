@@ -1,9 +1,8 @@
 import { uniqBy } from "lodash-es";
 import { isGeocodingResultValid } from "../../GeocoderHook";
-import { AfterPartyLocation, AfterPartyLocationMapEntry, DinnerRoute, DinnerRouteMapData, DinnerRouteTeam, DinnerRouteTeamMapEntry, GeocodingResult, Meal, MealType, Team, TeamConnectionPath, TeamDistanceCluster } from "../../types";
+import { AfterPartyLocation, AfterPartyLocationMapEntry, DinnerRoute, DinnerRouteMapData, DinnerRouteTeam, DinnerRouteTeamMapEntry, GeocodingResult, Meal, MealType, Team, TeamConnectionPath, TeamNeighbourCluster } from "../../types";
 import { isDefined, isStringNotEmpty, stringToColor } from "../../Utils";
 import { getFullname } from "../ParticipantService";
-import { TeamDistanceClusterEnhancer } from "./TeamDistanceClusterEnhancer";
 
 const clusterBackgroundColorsHighContrast: string[] = [
   '#FF0000',
@@ -56,7 +55,7 @@ export type DinnerRouteMapDataCalculationSettings = {
   /**
    * Provides the team-clusters that cook on the same addres (this may be reasonable to offset the markers on the map)
    */
-  teamClustersWithSameAddress: TeamDistanceCluster[];
+  teamClustersWithSameAddress: TeamNeighbourCluster[];
 
   /**
    * All meals of the running dinner event
@@ -180,14 +179,11 @@ export class DinnerRouteMapCalculator {
   
     this.addOffsetToMapEntriesWithSameAddress(dinnerRouteMapEntries);
 
-    const teamClustersWithSameAddress = TeamDistanceClusterEnhancer.enhanceTeamDistanceClustersWithDinnerRouteMapEntries(this.settings.teamClustersWithSameAddress, dinnerRouteMapEntries);
-
     return {
       dinnerRouteMapEntries,
       afterPartyLocationMapEntry: this.afterPartyLocationMapEntry,
       centerPosition: centerPosition || { lat: 0, lng: 0 },
-      teamsWithUnresolvedGeocodings,
-      teamClustersWithSameAddress: teamClustersWithSameAddress    
+      teamsWithUnresolvedGeocodings
      };
   }
 
@@ -201,7 +197,7 @@ export class DinnerRouteMapCalculator {
 
     const result = new Array<DinnerRouteTeamMapEntry>();
 
-    const currentTeamColor = this.calculateTeamColor(currentTeam, this.isSingleDinnerRouteView ? CURRENT_TEAM_COLOR_SINGLE_ROUTE_VIEW : undefined);
+    const currentTeamColor = DinnerRouteMapCalculator.calculateTeamColor(currentTeam, this.isSingleDinnerRouteView ? CURRENT_TEAM_COLOR_SINGLE_ROUTE_VIEW : undefined);
 
     const teamConnectionPaths = new Array<TeamConnectionPath>();
 
@@ -211,7 +207,7 @@ export class DinnerRouteMapCalculator {
       if (this.isSingleDinnerRouteView && DinnerRouteMapCalculator.isGuestTeam(team, currentTeam)) {
         // Case: Show complete dinner-route for only one team (we need also the positions of the other host teams in the result)
         result.push(
-          this.newDinnerRouteMapEntry(team, this.calculateTeamColor(team, GUEST_TEAM_COLOR_SINGLE_ROUTE_VIEW), team.geocodingResult!, [])
+          this.newDinnerRouteMapEntry(team, DinnerRouteMapCalculator.calculateTeamColor(team, GUEST_TEAM_COLOR_SINGLE_ROUTE_VIEW), team.geocodingResult!, [])
         );
       }
 
@@ -237,13 +233,13 @@ export class DinnerRouteMapCalculator {
   }
 
   private addOffsetToMapEntriesWithSameAddress(dinnerRouteMapEntries: DinnerRouteTeamMapEntry[]) {
-    this.settings.teamClustersWithSameAddress.forEach(cluster => {
-      const clusterEntries = dinnerRouteMapEntries.filter(entry => cluster.teams.some(team => team.teamNumber === entry.teamNumber));
-      if (clusterEntries.length === 0) {
+    this.settings.teamClustersWithSameAddress.forEach(neighbourCluster => {
+      const entriesWithinNeighbourCluster = dinnerRouteMapEntries.filter(entry => entry.teamNumber === neighbourCluster.a.teamNumber || entry.teamNumber === neighbourCluster.b.teamNumber);
+      if (entriesWithinNeighbourCluster.length === 0) {
         return;
       }
       let offset = 0;
-      clusterEntries.forEach(entry => {
+      entriesWithinNeighbourCluster.forEach(entry => {
         entry.position!.lat! += offset;
         entry.position!.lng! += offset;
         offset += 0.0002;
@@ -252,7 +248,7 @@ export class DinnerRouteMapCalculator {
   }
 
 
-  private calculateTeamColor(team: DinnerRouteTeam | Team, colorOverride?: string): string {
+  public static calculateTeamColor(team: DinnerRouteTeam | Team, colorOverride?: string): string {
     if (isStringNotEmpty(colorOverride)) {
       return colorOverride;
     }

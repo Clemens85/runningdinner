@@ -21,15 +21,15 @@ import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.dinnerroute.AllDinnerRoutesWithDistancesListTO;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
 import org.runningdinner.dinnerroute.DinnerRouteListTO;
-import org.runningdinner.dinnerroute.DinnerRouteService;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.DinnerRouteTeamTO;
-import org.runningdinner.dinnerroute.TeamNeighbourCluster;
-import org.runningdinner.dinnerroute.TeamNeighbourClusterListTO;
 import org.runningdinner.dinnerroute.distance.DistanceCalculator;
 import org.runningdinner.dinnerroute.distance.DistanceEntry;
 import org.runningdinner.dinnerroute.distance.DistanceMatrix;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
+import org.runningdinner.dinnerroute.neighbours.TeamNeighbourCluster;
+import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
+import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
@@ -126,7 +126,7 @@ public class DinnerRouteOptimizationService {
     																						.stream()
     																						.filter(t -> duplicatedTeamNumbers.contains(t.getTeamNumber()))
     																						.toList();
-    List<TeamNeighbourCluster> teamNeighbourClusters = DinnerRouteService.mapToTeamNeighbourClusters(newDistanceMatrixDuplicatedAddresses, neighbourTeams);
+    List<TeamNeighbourCluster> teamNeighbourClusters = TeamNeighbourClusterCalculationService.mapToTeamNeighbourClusters(newDistanceMatrixDuplicatedAddresses, neighbourTeams, teamHostLocationList.getAllTeamHostLocations());
     
     DinnerRouteListTO optimizedDinnerRouteList = new DinnerRouteListTO(optimizedDinnerRoutes, teamClusterMappings);
     

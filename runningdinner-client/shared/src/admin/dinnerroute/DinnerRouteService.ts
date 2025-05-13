@@ -4,8 +4,8 @@ import {
   DinnerRoute,
   GeocodedAddressEntityList,
   DinnerRouteList,
-  TeamDistanceCluster,
-  TeamDistanceClusterList,
+  TeamNeighbourCluster,
+  TeamNeighbourClusterList,
   DinnerRouteWithDistances,
   DinnerRouteWithDistancesList,
   DinnerRouteOptimizationResult,
@@ -34,28 +34,24 @@ export async function findAllDinnerRoutesByAdminIdAsync(
   return response.data;
 }
 
-export async function calculateTeamDistanceClusters(
+export async function calculateTeamNeighbourClusters(
   adminId: string,
   addressEntityList: GeocodedAddressEntityList,
   range: number
-): Promise<TeamDistanceCluster[]> {
-  const url = BackendConfig.buildUrl(
-    `/dinnerrouteservice/v1/runningdinner/${adminId}/distances/${range}/teams`
-  );
-  const response = await axios.put<TeamDistanceClusterList>(
+): Promise<TeamNeighbourCluster[]> {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/${range}/teams`);
+  const response = await axios.put<TeamNeighbourClusterList>(
     url,
     addressEntityList
   );
-  return response.data?.teamDistanceClusters || [];
+  return response.data?.teamNeighbourClusters || [];
 }
 
 export async function calculateRouteDistances(
   adminId: string,
   addressEntityList: GeocodedAddressEntityList
 ): Promise<DinnerRouteWithDistancesList> {
-  const url = BackendConfig.buildUrl(
-    `/dinnerrouteservice/v1/runningdinner/${adminId}/distances/teams`
-  );
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/teams`);
   const response = await axios.put<DinnerRouteWithDistancesList>(
     url,
     addressEntityList

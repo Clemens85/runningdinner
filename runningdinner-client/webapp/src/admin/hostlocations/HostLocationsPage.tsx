@@ -2,15 +2,15 @@ import { BaseRunningDinnerProps, DinnerRouteMapCalculator, isQuerySucceeded, isS
 import { useEffect, useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { APIProvider, Map} from "@vis.gl/react-google-maps";
-import { FetchProgressBar } from "../../common/FetchProgressBar";
+import {  FetchProgressBarMultipleQueries } from "../../common/FetchProgressBar";
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../../common/maps";
 import { AfterPartyLocationMarker, TeamHostMarker, WarningAlert, useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "../../common/dinnerroute";
 import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from "./HostLocationsFilterView";
 import { BrowserTitle } from "../../common/mainnavigation/BrowserTitle";
-import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, DinnerRouteMapData } from "@runningdinner/shared";
+import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteMapData } from "@runningdinner/shared";
 import { DinnerRouteOverviewSettingsMinimizedButton, DinnerRouteOverviewSettingsView } from "./DinnerRouteOverviewSettingsView";
 import { useFindAllDinnerRoutes } from "./useFindAllDinnerRoutes";
-import { useCalculateTeamDistanceClusters } from "./useCalculateTeamDistanceClusters";
+import { useCalculateTeamNeighbourClusters } from "./useCalculateTeamNeighbourClusters";
 import { useIsRouteOptimization} from "./useIsRouteOptimization";
 import { RouteOptimizationPreviewBanner } from "./RouteOptimizationPreviewBanner";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
@@ -42,20 +42,20 @@ function HostLocationsMapsPage({runningDinner}: BaseRunningDinnerProps) {
   const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(allDinnerRouteTeams, adminId, GOOGLE_MAPS_KEY);
   const geocodeAfterPartyQueryResult = useGetGeocodePositionOfAfterPartyLocation(afterPartyLocation, GOOGLE_MAPS_KEY);
 
-  const teamsWithZeroDistanceResult = useCalculateTeamDistanceClusters(adminId, geocodePositionsQueryResult?.data || [], 0);
+  const teamClustersWithSameAddress = useCalculateTeamNeighbourClusters(adminId, geocodePositionsQueryResult?.data || [], 0);
 
   const optimizationId = useIsRouteOptimization();
   const isOptimizationPreview = isStringNotEmpty(optimizationId);
 
-  if (!isQuerySucceeded(geocodePositionsQueryResult) || !isQuerySucceeded(geocodeAfterPartyQueryResult) || !isQuerySucceeded(teamsWithZeroDistanceResult)) {
-    return <FetchProgressBar {...geocodePositionsQueryResult} />;
+  if (!isQuerySucceeded(geocodePositionsQueryResult) || !isQuerySucceeded(geocodeAfterPartyQueryResult) || !isQuerySucceeded(teamClustersWithSameAddress)) {
+    return <FetchProgressBarMultipleQueries queries={[geocodePositionsQueryResult, teamClustersWithSameAddress, geocodeAfterPartyQueryResult]} />;
   }
 
   const dinnerRouteMapCalculator = new DinnerRouteMapCalculator({
     allDinnerRoutes, 
     dinnerRouteTeamsWithGeocodes: geocodePositionsQueryResult.data, 
     afterPartyLocation: geocodeAfterPartyQueryResult.data!,
-    teamClustersWithSameAddress: teamsWithZeroDistanceResult?.data || [],
+    teamClustersWithSameAddress: teamClustersWithSameAddress?.data || [],
     meals: runningDinner.options.meals,
     teamClusterMappings: dinnerRoutesQueryResult.data?.teamClusterMappings || {},
   });

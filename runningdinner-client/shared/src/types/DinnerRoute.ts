@@ -57,12 +57,13 @@ export interface DistanceMatrix {
   entries: Map<DistanceEntry, number>;
 }
 
-export interface TeamDistanceCluster {
-  teams: Team[];
+export interface TeamNeighbourCluster {
+  a: Team;
+  b: Team
   distance: number;
 }
-export interface TeamDistanceClusterList {
-  teamDistanceClusters: TeamDistanceCluster[];
+export interface TeamNeighbourClusterList {
+  teamNeighbourClusters: TeamNeighbourCluster[];
 }
 
 export type MapEntry = {
@@ -93,7 +94,6 @@ export type DinnerRouteMapData = {
   teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
   centerPosition: GeocodingResult;
   afterPartyLocationMapEntry?: AfterPartyLocationMapEntry;
-  teamClustersWithSameAddress: TeamDistanceClusterWithMapEntry[];
 };
 
 export type TeamMemberChange = {
@@ -105,7 +105,7 @@ export type DinnerRouteOptimizationResult = {
   id: string;
   optimizedDinnerRouteList: DinnerRouteList;
   optimizedDistances: DinnerRouteWithDistancesList;
-  optimizedTeamDistanceClusters: TeamDistanceClusterList;
+  optimizedTeamNeighbourClusters: TeamNeighbourClusterList;
   teamMemberChangesToPerform: TeamMemberChange[];
   averageDistanceInMetersBefore: number;
   sumDistanceInMetersBefore: number;
@@ -122,9 +122,9 @@ export enum MealType {
   DESSERT = "DESSERT",
 }
 
-export type TeamDistanceClusterWithMapEntry = {
+export type TeamNeighbourClusterWithMapEntry = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
-} & TeamDistanceCluster;
+} & TeamNeighbourCluster;
 
 export function isSameDinnerRouteTeam(
   a: DinnerRouteTeam | Team,

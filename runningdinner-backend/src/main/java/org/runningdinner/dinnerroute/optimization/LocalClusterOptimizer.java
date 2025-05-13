@@ -61,7 +61,9 @@ public class LocalClusterOptimizer {
 				var moveTeamMembersFromLocation = TeamHostLocation.findLocationWithEqualTeamMembers(originalTeamHostLocations, optimizedTeamHostLocation.getTeam().getTeamMembersOrdered()); 
 				teamMemberChangesInCluster.add(new TeamMemberChange(originalTeamHostLocation.getTeam().getId(), moveTeamMembersFromLocation.getTeam().getId()));
 			}
-			neededTeamMemberChangeActions.put(clusterNumber, teamMemberChangesInCluster);
+			if (!teamMemberChangesInCluster.isEmpty()) {
+				neededTeamMemberChangeActions.put(clusterNumber, teamMemberChangesInCluster);
+			}
 		}
 		
 		resultingTeamHostLocations.sort((a, b) -> Integer.compare(a.getTeamNumber(), b.getTeamNumber()));

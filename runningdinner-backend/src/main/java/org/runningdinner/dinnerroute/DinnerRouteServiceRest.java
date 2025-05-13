@@ -5,6 +5,9 @@ import java.util.UUID;
 
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
+import org.runningdinner.dinnerroute.neighbours.TeamNeighbourCluster;
+import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
+import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationResult;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
 import org.runningdinner.dinnerroute.optimization.SaveDinnerRouteOptimizationRequest;
@@ -27,10 +30,14 @@ public class DinnerRouteServiceRest {
   
   private final DinnerRouteOptimizationService dinnerRouteOptimizationService;
 
+	private final TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService;
+
   public DinnerRouteServiceRest(DinnerRouteService dinnerRouteService, 
-  															DinnerRouteOptimizationService dinnerRouteOptimizationService) {
+  															DinnerRouteOptimizationService dinnerRouteOptimizationService,
+  															TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService) {
     this.dinnerRouteService = dinnerRouteService;
 		this.dinnerRouteOptimizationService = dinnerRouteOptimizationService;
+		this.teamNeighbourClusterCalculationService = teamNeighbourClusterCalculationService;
   }
 
   @GetMapping("/runningdinner/{adminId}/teams/{teamId}")
@@ -45,12 +52,12 @@ public class DinnerRouteServiceRest {
   }
 
   @PutMapping("/runningdinner/{adminId}/distances/{range}/teams")
-  public TeamNeighbourClusterListTO calculateTeamDistanceClusters(@PathVariable("adminId") String adminId,
-                                                                 @PathVariable("range") Integer rangeInMeters,
-                                                                 @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
+  public TeamNeighbourClusterListTO calculateTeamNeighbourClusters(@PathVariable("adminId") String adminId,
+  																																 @PathVariable("range") Integer rangeInMeters,
+  																																 @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
 
     Assert.state(rangeInMeters >= 0, "range must be > 0");
-    List<TeamNeighbourCluster> result = dinnerRouteService.calculateTeamNeighbourClusters(adminId, addressEntityList.getAddressEntities(), rangeInMeters);
+    List<TeamNeighbourCluster> result = teamNeighbourClusterCalculationService.calculateTeamNeighbourClusters(adminId, addressEntityList.getAddressEntities(), rangeInMeters);
     return new TeamNeighbourClusterListTO(result);
   }
 

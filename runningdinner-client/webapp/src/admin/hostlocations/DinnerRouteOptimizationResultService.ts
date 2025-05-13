@@ -29,7 +29,7 @@ export class DinnerRouteOptimizationResultService {
     const teamsDistanceTeams = optimizationResult.optimizedDistances.dinnerRoutes.map(dinnerRoute => dinnerRoute.teams).flat();
     teamsDistanceTeams.forEach(team => normalizeDinnerRouteTeam(team));
   
-    optimizationResult.optimizedTeamDistanceClusters.teamDistanceClusters.map(tdc => tdc.teams).flat().forEach(team => normalizeTeam(team));
+    optimizationResult.optimizedTeamNeighbourClusters.teamNeighbourClusters.map(tnc => [tnc.a, tnc.b]).flat().forEach(team => normalizeTeam(team));
 
     normalizeAfterPartyLocation(optimizationResult.optimizedDinnerRouteList);
   
