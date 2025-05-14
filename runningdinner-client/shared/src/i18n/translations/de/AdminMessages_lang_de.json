@@ -89,6 +89,8 @@
 	"dinner_route_optimization_impact_low": "niedrig",
 	"dinner_route_optimization_impact_medium": "mittel",
 	"dinner_route_optimization_impact_high": "hoch",
+	"dinner_route_optimization_save_success_1": "Optimierte Dinner Routen wurden erfolgreich gespeichert.",	
+	"dinner_route_optimization_save_success_2": "Du kannst dein altes Browser-Tab schließen, du findest die neue, jetzt optimierte, Routen-Übersicht hier.",	
 	
 	"event_cancel_button": "Endgültig absagen",
 	"event_cancel_headline": "Running Dinner Event absagen",

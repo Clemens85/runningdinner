@@ -16,6 +16,7 @@ import { RouteOptimizationPreviewBanner } from "./RouteOptimizationPreviewBanner
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
 import { useShowRouteOptimizationSavedMessage } from "./useShowRouteOptimizationSavedMessage";
 import Paragraph from "../../common/theme/typography/Paragraph";
+import { Trans } from "react-i18next";
 
 export function HostLocationsPage({runningDinner}: BaseRunningDinnerProps) {
   return (
@@ -96,8 +97,8 @@ function HostLocationsView({dinnerRouteMapData, runningDinner}: HostLocationsVie
     if (showRouteOptimizationSavedMessage) {
       showSuccess(
         <div>
-          <Paragraph>Optimierte Dinner Routen wurden erfolgreich gespeichert.</Paragraph>
-          <Paragraph>Du kannst dein altes Browser-Tab schließen, du findest die neue, jetzt optimierte, Routen-Übersicht hier.</Paragraph>
+          <Paragraph><Trans i18nKey="admin:dinner_route_optimization_save_success_1"/></Paragraph>
+          <Paragraph><Trans i18nKey="admin:dinner_route_optimization_save_success_2"/></Paragraph>
         </div>, {
         autoHideDuration: 8000,
         wrapInHtmlContainer: true
