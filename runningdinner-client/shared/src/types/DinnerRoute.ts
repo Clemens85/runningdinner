@@ -151,3 +151,5 @@ export function getGeocodingResultsForTeamsAndAfterPartyLocation(
     (geocodedItem) => geocodedItem.geocodingResult
   );
 }
+
+export type OptimizationImpact = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';

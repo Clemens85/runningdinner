@@ -10,6 +10,7 @@ import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationS
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationResult;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
+import org.runningdinner.dinnerroute.optimization.OptimizationImpact;
 import org.runningdinner.dinnerroute.optimization.SaveDinnerRouteOptimizationRequest;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -89,9 +90,14 @@ public class DinnerRouteServiceRest {
 		}
   }
   
-  @GetMapping("/runningdinner/{adminId}/distances/optimization/check")
-  public void checkOptimizationPossible(@PathVariable("adminId") String adminId) {
+  @PutMapping("/runningdinner/{adminId}/distances/optimization/predict")
+  public OptimizationImpact predictOptimizationImpact(@PathVariable("adminId") String adminId,
+  																										@RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
   	
-  	// TODO: Check if it may be possible
+  	try {
+			return dinnerRouteOptimizationService.predictOptimizationImpact(adminId, addressEntityList);
+		} catch (NoPossibleRunningDinnerException e) {
+			throw new IllegalStateException(e);
+		}
   }
 }

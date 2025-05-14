@@ -1,5 +1,6 @@
 package org.runningdinner.dinnerroute.optimization;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -12,11 +13,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.TeamCombinationInfo;
 import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.dinnerroute.AllDinnerRoutesWithDistancesListTO;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
@@ -264,6 +267,24 @@ public class DinnerRouteOptimizationService {
 			Assert.state(Objects.equals(occurrences, expectedOccurrences),
 					"Expected " + expectedOccurrences + " occurrences for meal " + entry.getKey() + " but was " + occurrences);
 		}
+	}
+
+	public OptimizationImpact predictOptimizationImpact(@ValidateAdminId String adminId, 
+																										  @Valid GeocodedAddressEntityListTO addressEntityList) throws NoPossibleRunningDinnerException {
+
+		TeamHostLocationList teamHostLocations = teamHostLocationService.mapToTeamHostLocations(adminId, addressEntityList);
+		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+		int totalNumberOfTeams = teamHostLocations.getAllTeamHostLocations().size();
+		var teamCombinationInfo = TeamCombinationInfo.newInstance(runningDinner.getConfiguration(), totalNumberOfTeams);
+		
+		Collection<Integer> teamClusterSizes = teamCombinationInfo.getTeamSizeFactorizations().values();
+		int sumTeamClusters = teamClusterSizes.stream().mapToInt(Integer::intValue).sum();
+		
+		boolean hasInvalidTeams = teamHostLocations.teamHostLocationsValid().size() < totalNumberOfTeams;
+		if (sumTeamClusters <= 1) {
+			return hasInvalidTeams ? OptimizationImpact.NONE : OptimizationImpact.LOW;
+		} 
+		return (hasInvalidTeams || sumTeamClusters < 3) ? OptimizationImpact.MEDIUM : OptimizationImpact.HIGH;
 	}
 	
 }

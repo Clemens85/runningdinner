@@ -1,6 +1,6 @@
-import { Box, Button, Dialog, DialogContent } from "@mui/material";
-import { DinnerRouteTeamMapEntry, BaseAdminIdProps, buildAddressEntityList, calculateOptimizationClusters, useDisclosure, isStringNotEmpty, DinnerRouteWithDistancesList } from "@runningdinner/shared";
-import { useTranslation } from "react-i18next";
+import { Box, Button, Dialog, DialogContent, Typography } from "@mui/material";
+import { DinnerRouteTeamMapEntry, BaseAdminIdProps, buildAddressEntityList, calculateOptimizationClusters, useDisclosure, isStringNotEmpty, DinnerRouteWithDistancesList, OptimizationImpact } from "@runningdinner/shared";
+import { Trans, useTranslation } from "react-i18next";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import { DialogTitleCloseable } from "../../common/theme/DialogTitleCloseable";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
@@ -11,6 +11,8 @@ import { ProgressBar } from "../../common/ProgressBar";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { OPTIMIZATION_ID_QUERY_PARAM } from "../AdminNavigationHook";
 import { useIsRouteOptimization } from "./useIsRouteOptimization";
+import { usePredictOptimizationImpact } from "./usePredictOptimizationImpact";
+import { FetchProgressBar } from "../../common/FetchProgressBar";
 
 type RouteOptimizationButtonProps = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
@@ -20,7 +22,8 @@ type RouteOptimizationButtonProps = {
 export function RouteOptimizationButton(props: RouteOptimizationButtonProps) {
 
   const {isOpen, open, close} = useDisclosure();
-  
+  const {t} = useTranslation(["admin"]);
+
   const optimizationId = useIsRouteOptimization();
   if (isStringNotEmpty(optimizationId)) {
     return null;
@@ -29,7 +32,7 @@ export function RouteOptimizationButton(props: RouteOptimizationButtonProps) {
   return (
     <>
       <Button sx={{ mr: 1}} color="inherit" onClick={() => open()} size="small" variant="outlined">
-        Optimieren...
+        {t("admin:dinner_route_optimize_action")}
       </Button>
       <RouteOptimizationDialog onClose={close} isOpen={isOpen} {...props} />
     </>
@@ -47,10 +50,12 @@ function RouteOptimizationDialog({isOpen, onClose, adminId, dinnerRouteMapEntrie
   const {t} = useTranslation(["common", "admin"]);
   const {showError} = useCustomSnackbar();
 
+  const predictOptimizationQuery = usePredictOptimizationImpact(adminId, dinnerRouteMapEntries);
+
   const optimizeMutation = useMutation({
     mutationFn: () => calculateOptimization(),
     onError(error) {
-      showError("Leider konnte keine Optimierung deiner Dinner-Routen durchgeführt werden.");
+      showError(t("admin:dinner_route_optimize_error"));
       console.error("Error during optimization:", error);
     },
   });
@@ -72,15 +77,15 @@ function RouteOptimizationDialog({isOpen, onClose, adminId, dinnerRouteMapEntrie
     <Dialog onClose={onClose} open={!!isOpen} maxWidth={"md"} sx={{
         zIndex: 10002
       }}>
-      <DialogTitleCloseable onClose={onClose}>Dinner Routen optimieren</DialogTitleCloseable>
+      <DialogTitleCloseable onClose={onClose}>{t("admin:dinner_route_optimize_title")}</DialogTitleCloseable>
       <DialogContent>
+        <Paragraph><Trans i18nKey={"admin:dinner_route_optimize_description"} /></Paragraph>
+         <Box my={2}>
+            <FetchProgressBar {...predictOptimizationQuery} />
+            { predictOptimizationQuery.data && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data}/> }
+         </Box>
         <Paragraph>
-         Hier kannst du eine Neu-Berechnung der Dinner-Routen zur Optimierung der Laufwege durchführen.<br/><br/>
-         Es wird versucht, die Routen so zu optimieren, dass die Laufwege der Teams möglichst kurz sind. 
-         Das Ergebnis kannst du dir aschließend in einem neuen Browser-Tab anzeigen lassen und mit deinem jetzigen Stand vergleichen.
-        </Paragraph><br/>
-        <Paragraph>
-          <strong>{t("common:note")}</strong>: Deine aktuellen Dinner-Routen werden durch diese Aktion nicht verändert.
+          <strong>{t("common:note")}</strong>: <Trans i18nKey={"admin:dinner_route_optimize_note"} />
         </Paragraph>
 
         <Box my={2}>
@@ -88,7 +93,7 @@ function RouteOptimizationDialog({isOpen, onClose, adminId, dinnerRouteMapEntrie
           { optimizeMutation.isPending && <ProgressBar showLoadingProgress={true} /> }
           {optimizeMutation.data && 
             <Button onClick={onClose} color="primary" startIcon={<OpenInNewIcon />} href={optimizeMutation.data} target="_blank" rel="noopener noreferrer">
-              <Paragraph>Optimierte Routen-Vorschau öffnen...</Paragraph>
+              <Paragraph><Trans i18nKey={"admin:dinner_route_optimize_preview_open"} /></Paragraph>
             </Button>
           }
         </Box>
@@ -97,8 +102,41 @@ function RouteOptimizationDialog({isOpen, onClose, adminId, dinnerRouteMapEntrie
       <DialogActionsPanel onOk={() => optimizeMutation.mutate()}
                           okButtonDisabled={okButtonDisabled}
                           onCancel={onClose} 
-                          okLabel={t("Optimieren...")} 
+                          okLabel={t("admin:dinner_route_optimize_action")} 
                           cancelLabel={t('common:cancel')} />
     </Dialog>
+  )
+}
+
+type OptimizationImpactInfoProps = {
+  optimizationImpact: OptimizationImpact;
+};
+function OptimizationImpactInfo({optimizationImpact}: OptimizationImpactInfoProps) {
+  
+  const {t} = useTranslation(["admin"]);
+
+  if (!optimizationImpact || optimizationImpact === 'NONE') {
+    return <Typography variant="body1" color="error"><Trans i18nKey={"admin:dinner_route_optimize_prediction_no_impact"} /></Typography>
+  }
+  
+  let color = "default";
+  if (optimizationImpact === 'LOW') {
+    color = "warning.main";
+  } else if (optimizationImpact === 'HIGH') {
+    color = "success.main";
+  } else if (optimizationImpact === 'MEDIUM') {
+    color = "info.main";
+  }
+
+  const impactLabel = t('admin:dinner_route_optimization_impact_' + optimizationImpact.toLowerCase());
+
+  return (
+    <Typography variant="body1" component="div">
+      <Trans  i18nKey="admin:dinner_route_optimize_prediction_impact"
+              components={{
+                typography: <Typography variant="body1" component="span" color={color} />
+              }}
+              values={{ impact: impactLabel }} />
+    </Typography>
   )
 }

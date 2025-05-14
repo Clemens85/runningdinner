@@ -2,7 +2,7 @@ import { Alert, AlertTitle, Box, Snackbar, Stack } from "@mui/material";
 import { PrimaryButton } from "../../common/theme/PrimaryButton";
 import { Span } from "../../common/theme/typography/Tags";
 import Paragraph from "../../common/theme/typography/Paragraph";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { BaseAdminIdProps, DinnerRouteDistanceUtil, DinnerRouteOptimizationResult, SaveDinnerRouteOptimizationRequest, saveNewDinnerRoutes, useDisclosure } from "@runningdinner/shared";
 import { useMutation } from "@tanstack/react-query";
 import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
@@ -18,22 +18,21 @@ export function RouteOptimizationPreviewBanner({optimizationId, adminId}: RouteO
 
   const optimizationResult = DinnerRouteOptimizationResultService.findDinnerRouteOptimizationResult(optimizationId, adminId);
 
-  const {t} = useTranslation("common");
+  const {t} = useTranslation(["admin", "common"]);
   const {showError, showInfo} = useCustomSnackbar();
   const {navigateToHostLocations} = useAdminNavigation();
 
   const {isOpen, close} = useDisclosure(true);
 
   function handleClose() {
-    showInfo("Wenn du diese Anzeige wieder sehen willst, akktualisiere dieses Browser-Tab (bzw. drücke F5).");
+    showInfo(t("admin:dinner_route_optimize_preview_refresh"));
     close();
   }
 
   const saveRoutesMutation = useMutation({
     mutationFn: () => handleSave(optimizationResult),
     onError: (error: Error) => {
-      showError("Leider konnte die Optimierung deiner Dinner-Routen nicht gespeichert werden. " + 
-                "Bitte kehre zur originalen Routen-Übersicht zurück und führe eine neue Optimierung durch.");
+      showError(t("admin:dinner_route_optimize_preview_save_error"));
       console.error("Error during optimization:", error);
     },
     onSuccess: () => {
@@ -58,15 +57,12 @@ export function RouteOptimizationPreviewBanner({optimizationId, adminId}: RouteO
                 sx={{ width: '100%', opacity: 0.95, top: 0 }} 
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}> 
         <Alert icon={false} severity="info" sx={{ width: '98%' }} variant="filled" onClose={handleClose}>
-          <AlertTitle><Paragraph><strong>Vorschau der Routen-Optimierung</strong></Paragraph></AlertTitle>
+          <AlertTitle><Paragraph><strong><Trans i18nKey="admin:dinner_route_optimize_preview_title" /></strong></Paragraph></AlertTitle>
           <Box sx={{ mt: -0.5 }}>
             <Stack direction="row" gap={1} alignItems="center" justifyContent={"space-between"} sx={{ width: '100%' }}>
               <Box>
                 { showDistanceDiffInfo && <DistanceDiffInfoMessage optimizationResult={optimizationResult} /> }
-                { !showDistanceDiffInfo && 
-                  <Span>Du kannst die neu berechneten Routen mit denen in deinem alten Browser-Tab vergleichen. Gefällt dir das Ergebnis? Dann kannst du die neuen Routen jetzt speichern.</Span>
-                }
-
+                { !showDistanceDiffInfo && <Span><Trans i18nKey="admin:dinner_route_optimize_preview_diff_generic" /></Span> }
               </Box>
               <Box>
                 <PrimaryButton size="small" disabled={saveRoutesMutation.isPending} onClick={() => saveRoutesMutation.mutate()}>{t("common:save")}...</PrimaryButton>
@@ -94,15 +90,15 @@ function DistanceDiffInfoMessage({optimizationResult}: DistanceDiffInfoMessagePr
   
   if (averageDistanceDiff <= 0 || sumDistanceDiff <= 0) {
     return (
-      <Span>Die neu berechneten Routen sind nicht kürzer als die alten. Du kannst die neu berechneten Routen dennoch speichern.</Span>
+      <Span><Trans i18nKey={"admin:dinner_route_optimize_preview_diff_negative"} /></Span>
     )
   }
 
   return (
     <Span>
-      Mit den neu berechneten Routen werden insgesamt <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(sumDistanceDiff)}</strong> Wegstrecke gespart. 
-      Die durchschnittliche Ersparnis pro Team-Route liegt bei <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(averageDistanceDiff)}</strong>.
-      Gefällt dir das Ergebnis? Dann kannst du die neuen Routen jetzt speichern.
+      <Trans i18nKey="admin:dinner_route_optimize_preview_diff_positive_info_sum" values={{ distance: DinnerRouteDistanceUtil.getDistancePrettyFormatted(sumDistanceDiff) }} />{' '} 
+      <Trans i18nKey="admin:dinner_route_optimize_preview_diff_positive_info_average" values={{ distance: DinnerRouteDistanceUtil.getDistancePrettyFormatted(averageDistanceDiff) }} />{' '}
+      <Trans i18nKey="admin:dinner_route_optimize_preview_diff_positive_save"/>
     </Span>
   )
 }

@@ -218,14 +218,14 @@ function TeamDisplayOptions() {
         <FormGroup>
           <FormControlLabel 
             control={<Switch onChange={evt => onToggleShowTeamClusters(evt.target.checked)} checked={state.showTeamClusters} />} 
-            label={t("Team-Cluster Sicht")} />
+            label={t("admin:hostlocations_team_cluster_view_enable")} />
         </FormGroup>
       </Box>
       <Box>
         <FormGroup>
           <FormControlLabel 
             control={<Switch onChange={evt => onToggleShowTeamPaths(evt.target.checked)} checked={state.showTeamPaths} />} 
-            label={t("Zeige Team-Laufwege")} />
+            label={t("admin:hostlocations_team_connections_enable")} />
         </FormGroup>
       </Box>
     </Box>
