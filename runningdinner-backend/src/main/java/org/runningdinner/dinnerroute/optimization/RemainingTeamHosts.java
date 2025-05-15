@@ -156,6 +156,9 @@ public class RemainingTeamHosts {
 		return result;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "RemainingTeamHosts: Current cluster number = " + currentClusterNumber;
+	}
 	
 }

@@ -206,7 +206,7 @@ public class GlobalClusterOptimizer {
 		
 		int remainingClusterSize = clusterSize - result.size();
 		LOGGER.warn("There are still {} teams left for reaching the desired cluster size of {}. We fill them just with arbitrary teams that were not used so far.", remainingClusterSize, clusterSize);
-		addReaminingMissingTeamsToResult(teamLocations, remainingClusterSize, mealDistributions, result);
+		addReaminingMissingTeamsToResult(teamLocations, remainingClusterSize, mealDistributions, remainingTeamHosts, result);
 		return getValidatedCluster(result, mealDistributions);
 	}
 	
@@ -276,10 +276,10 @@ public class GlobalClusterOptimizer {
 		return false;
 	}
 	
-	// TODO: Consider also remainingTeamHosts in here
 	private void addReaminingMissingTeamsToResult(List<TeamHostLocation> teamHostLocations,
 																							 int incomingRemainingClusterSize, 
 																							 Map<MealClass, Integer> mealDistributions, 
+																							 RemainingTeamHosts remainingTeamHosts,
 																							 LinkedHashSet<TeamHostLocation> result) {
 		
 		int remainingClusterSize = incomingRemainingClusterSize;
@@ -295,6 +295,14 @@ public class GlobalClusterOptimizer {
 				result.add(teamHostLocation);
 				remainingClusterSize--;
 			}
+		}
+		
+		if (remainingClusterSize > 0) {
+			List<TeamHostLocation> cancelledOrInvalidTeamsToFillup = remainingTeamHosts.takeForFillingUp(mealDistributions);
+			Assert.state(cancelledOrInvalidTeamsToFillup.size() <= remainingClusterSize, "Took to much reamaining cancelled / invalid teams (Size: " + cancelledOrInvalidTeamsToFillup.size() + ")" + 
+																																									" from " + remainingTeamHosts + ". (Needed size was:" + remainingClusterSize + ")");
+			result.addAll(cancelledOrInvalidTeamsToFillup);
+			remainingClusterSize -= cancelledOrInvalidTeamsToFillup.size();
 		}
 
 		Assert.state(remainingClusterSize <= 0, "There are still " + remainingClusterSize + " teams left for building the final cluster. " +
@@ -334,25 +342,4 @@ public class GlobalClusterOptimizer {
 		}
 	}
 	
-
 }
-
-
-//public static void main(String[] args) {
-//List<GeocodedAddressEntity> teamLocationList = new ArrayList<>();
-//teamLocationList.add(newGeocodedAddressEntity("Team 1", 48.8566, 2.3522)); // Paris
-//teamLocationList.add(newGeocodedAddressEntity("Team 2", 51.5074, -0.1278)); // London
-//teamLocationList.add(newGeocodedAddressEntity("Team 3", 52.5200, 13.4050)); // Berlin
-//teamLocationList.add(newGeocodedAddressEntity("Team 4", 40.7128, -74.0060)); // New York
-//var result = mapTeamLocationsToDistanceMatrix(teamLocationList);
-//printDistanceMatrix(result);
-//}
-//
-//static GeocodedAddressEntity newGeocodedAddressEntity(String id, double lat, double lng) {
-//GeocodedAddressEntity result = new GeocodedAddressEntity();
-//result.setId(id);
-//result.setLat(lat);
-//result.setLng(lng);
-//return result;
-//}
-//
