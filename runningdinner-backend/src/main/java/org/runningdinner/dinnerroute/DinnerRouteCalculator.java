@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
 
 public class DinnerRouteCalculator {
 
-	private static final int MAX_ITERATIONS_OF_REVERSE_CLUSTERING = 200;
+	private static final int MAX_ITERATIONS_OF_REVERSE_CLUSTERING = 300;
 	
 	private final RunningDinner runningDinner;
 	private final DinnerRouteMessageFormatter dinnerRouteMessageFormatter;
