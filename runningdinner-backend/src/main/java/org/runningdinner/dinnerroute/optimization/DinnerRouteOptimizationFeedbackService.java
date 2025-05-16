@@ -19,11 +19,15 @@ public class DinnerRouteOptimizationFeedbackService {
   private final FeedbackService feedbackService;
   
   private final String receiver;
+
+	private final boolean sendFeedback;
   
 
-  public DinnerRouteOptimizationFeedbackService(FeedbackService feedbackService, @Value("${contact.mail}") String receiver) {
-		super();
+  public DinnerRouteOptimizationFeedbackService(FeedbackService feedbackService,
+  																							@Value("${route.optimization.send.feedback:true}") boolean sendFeedback,
+  																							@Value("${contact.mail}") String receiver) {
 		this.feedbackService = feedbackService;
+		this.sendFeedback = sendFeedback;
 		this.receiver = receiver;
 	}
 
@@ -31,6 +35,10 @@ public class DinnerRouteOptimizationFeedbackService {
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void sendOptimizationFeedbackAsync(String adminId, DinnerRouteOptimizationResult result, Double incomingCurrentSumDistanceInMeters, Double incomingCurrentAverageDistanceInMeters) {
   	
+		if (!sendFeedback) {
+			return;
+		}
+		
   	DinnerRouteListTO optimizedDinnerRouteList = result.optimizedDinnerRouteList();
   	List<TeamMemberChange> teamMemberChangesToPerform = result.teamMemberChangesToPerform();
   	
