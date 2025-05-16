@@ -71,33 +71,19 @@ public class DinnerRouteServiceRest {
 
   @PutMapping("/runningdinner/{adminId}/distances/optimization")
   public DinnerRouteOptimizationResult calculateOptimization(@PathVariable("adminId") String adminId,
-  												  			  												 @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
-  	try {
-			return dinnerRouteOptimizationService.calculateOptimization(adminId, addressEntityList);
-		} catch (NoPossibleRunningDinnerException e) {
-			throw new IllegalStateException(e);
-		}
+  												  			  												 @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) throws NoPossibleRunningDinnerException {
+		return dinnerRouteOptimizationService.calculateOptimization(adminId, addressEntityList);
   }
   
   @PutMapping("/runningdinner/{adminId}/teams")
   public void saveNewDinnerRoutes(@PathVariable("adminId") String adminId,
-  																@RequestBody @Valid SaveDinnerRouteOptimizationRequest saveRequest) {
-  	
-  	try {
-			dinnerRouteOptimizationService.saveNewDinnerRoutes(adminId, saveRequest);
-		} catch (NoPossibleRunningDinnerException e) {
-			throw new IllegalStateException(e);
-		}
+  																@RequestBody @Valid SaveDinnerRouteOptimizationRequest saveRequest) throws NoPossibleRunningDinnerException {
+		dinnerRouteOptimizationService.saveNewDinnerRoutes(adminId, saveRequest);
   }
   
   @PutMapping("/runningdinner/{adminId}/distances/optimization/predict")
   public OptimizationImpact predictOptimizationImpact(@PathVariable("adminId") String adminId,
-  																										@RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
-  	
-  	try {
-			return dinnerRouteOptimizationService.predictOptimizationImpact(adminId, addressEntityList);
-		} catch (NoPossibleRunningDinnerException e) {
-			throw new IllegalStateException(e);
-		}
+  																										@RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) throws NoPossibleRunningDinnerException {
+		return dinnerRouteOptimizationService.predictOptimizationImpact(adminId, addressEntityList);
   }
 }
