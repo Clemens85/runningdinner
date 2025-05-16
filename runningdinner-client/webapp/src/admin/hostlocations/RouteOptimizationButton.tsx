@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogContent, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, Tooltip, Typography } from "@mui/material";
 import { DinnerRouteTeamMapEntry, BaseAdminIdProps, buildAddressEntityList, calculateOptimizationClusters, useDisclosure, isStringNotEmpty, DinnerRouteWithDistancesList, OptimizationImpact, CalculateDinnerRouteOptimizationRequest } from "@runningdinner/shared";
 import { Trans, useTranslation } from "react-i18next";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
@@ -31,9 +31,11 @@ export function RouteOptimizationButton(props: RouteOptimizationButtonProps) {
 
   return (
     <>
-      <Button sx={{ mr: 1}} color="inherit" onClick={() => open()} size="small" variant="outlined">
-        {t("admin:dinner_route_optimize_action")}
-      </Button>
+      <Tooltip title={"Aktuell nicht verfügbar"}>
+        <Button sx={{ mr: 1}} color="inherit" onClick={() => open()} size="small" variant="outlined" disabled={true}>
+          {t("admin:dinner_route_optimize_action")}
+        </Button>
+      </Tooltip>
       <RouteOptimizationDialog onClose={close} isOpen={isOpen} {...props} />
     </>
   )
