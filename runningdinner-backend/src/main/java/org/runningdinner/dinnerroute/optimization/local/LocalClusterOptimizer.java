@@ -1,4 +1,4 @@
-package org.runningdinner.dinnerroute.optimization;
+package org.runningdinner.dinnerroute.optimization.local;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,10 +11,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.runningdinner.dinnerroute.AllDinnerRoutesWithDistancesListTO;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.distance.DistanceCalculator;
 import org.runningdinner.dinnerroute.distance.DistanceMatrix;
+import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationUtil;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocation;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationList;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationService;
 import org.runningdinner.participant.TeamStatus;
 import org.springframework.util.Assert;
 
@@ -86,20 +91,16 @@ public class LocalClusterOptimizer {
 			allPermutations.add(permutationsByMeal);
 		}
 
-		double bestSumDistanceInMeters = originalRoutesWithDistances.sumDistanceInMeters() != null ? originalRoutesWithDistances.sumDistanceInMeters() : Double.MAX_VALUE;
-		TeamHostLocationList bestClusterVariant = null;
-		
+		LocalClusterOptimizationStrategy minimizeStrategy = getOptimizationStrategy(originalRoutesWithDistances); 
+
 		List<List<TeamHostLocation>> allPossibleClusterVariants = cartesianProduct(allPermutations);
+		TeamHostLocationList bestClusterVariant = null;
 		for (var clusterVariantHostLocations : allPossibleClusterVariants) {
-			
 			TeamHostLocationList clusterVariant = TeamHostLocationService.newTeamHostLocationList(clusterVariantHostLocations);
-			
 			List<DinnerRouteTO> routesOfClusterVariant = DinnerRouteOptimizationUtil.buildDinnerRoute(clusterVariant, dinnerRouteCalculator);
 		  DistanceMatrix distanceMatrixOfClusterVariant = DistanceCalculator.calculateDistanceMatrix(clusterVariant.teamHostLocationsValid());
 			var routesWithDistancesOfClusterVariant = DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(routesOfClusterVariant, distanceMatrixOfClusterVariant);
-			Double sumDistanceInMeters = routesWithDistancesOfClusterVariant.sumDistanceInMeters();
-			if (sumDistanceInMeters != null && sumDistanceInMeters < bestSumDistanceInMeters) {
-				bestSumDistanceInMeters = sumDistanceInMeters;
+			if (minimizeStrategy.isNewMinimum(routesWithDistancesOfClusterVariant)) {
 				bestClusterVariant = clusterVariant;
 			}
 		}
@@ -107,6 +108,11 @@ public class LocalClusterOptimizer {
 	}
 	
 	
+	private LocalClusterOptimizationStrategy getOptimizationStrategy(AllDinnerRoutesWithDistancesListTO originalRoutesWithDistances) {
+		return new LocalClusterOptimizationMinimizeSum().init(originalRoutesWithDistances);
+//		return new LocalClusterOptimizationMinimizeMax().init(originalRoutesWithDistances);
+	}
+
 	public static List<List<TeamHostLocation>> cartesianProduct(List<List<List<TeamHostLocation>>> groups) {
 		List<List<TeamHostLocation>> result = new ArrayList<>();
 		cartesianProductRecursive(groups, 0, new ArrayList<>(), result);

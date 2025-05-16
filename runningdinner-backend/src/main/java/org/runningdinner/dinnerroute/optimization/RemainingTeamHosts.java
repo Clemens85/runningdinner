@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.runningdinner.core.MealClass;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocation;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationList;
 
 public class RemainingTeamHosts {
 

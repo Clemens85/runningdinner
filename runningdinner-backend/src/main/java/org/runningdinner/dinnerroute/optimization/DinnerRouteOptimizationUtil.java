@@ -9,6 +9,8 @@ import org.runningdinner.core.MealClass;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.distance.DistanceCalculator;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocation;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationList;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;

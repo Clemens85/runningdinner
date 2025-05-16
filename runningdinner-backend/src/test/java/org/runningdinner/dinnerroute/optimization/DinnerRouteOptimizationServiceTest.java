@@ -21,6 +21,7 @@ import org.runningdinner.dinnerroute.DinnerRouteService;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntity;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
+import org.runningdinner.dinnerroute.optimization.local.TeamMemberChange;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamService;

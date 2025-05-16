@@ -1,9 +1,11 @@
-package org.runningdinner.dinnerroute.optimization;
+package org.runningdinner.dinnerroute.optimization.local;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationList;
 
 public record LocalClusterOptimizationResult(TeamHostLocationList resultingTeamHostLocations, Map<Integer, List<TeamMemberChange>> teamMemberChangeActions) {
 	

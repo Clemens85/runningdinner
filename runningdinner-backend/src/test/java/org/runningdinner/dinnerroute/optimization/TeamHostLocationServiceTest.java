@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocation;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationService;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.core.util.LogSanitizer;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
@@ -17,6 +16,7 @@ import org.runningdinner.dinnerroute.distance.DistanceEntry;
 import org.runningdinner.dinnerroute.distance.DistanceMatrix;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntity;
 import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityIdType;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationService;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamService;
@@ -65,7 +65,7 @@ public class TeamNeighbourClusterCalculationService {
   		if (GeocodingResult.isValid(team.getHostTeamMember().getGeocodingResult())) {
   			continue;
   		}
-  		GeocodedAddressEntity matchedAddressEntity = findGeocodedAddressEntity(team, addressEntities);
+  		GeocodedAddressEntity matchedAddressEntity = TeamHostLocationService.findGeocodedAddressEntityMandatory(team, addressEntities);
   		team.getHostTeamMember().setGeocodingResult(matchedAddressEntity);
   	}
 	}
@@ -90,19 +90,6 @@ public class TeamNeighbourClusterCalculationService {
         teamNumbers.add(DinnerRouteCalculator.parseIntSafe(entry.destId()));
       });
     return teamService.findTeamsWithMembersOrderedByTeamNumbers(adminId, teamNumbers);
-  }
-	
-  public static GeocodedAddressEntity findGeocodedAddressEntity(TeamTO team, List<? extends GeocodedAddressEntity> addressEntities) {
-    return addressEntities
-            .stream()
-            .filter(a -> isEqualTeam(team, a))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Could not find team " + team + " within addressEntities " + addressEntities));
-  }
-
-  private static boolean isEqualTeam(TeamTO team, GeocodedAddressEntity addressEntity) {
-  	return (addressEntity.getIdType() == GeocodedAddressEntityIdType.TEAM_NR && StringUtils.equals(addressEntity.getId(), String.valueOf(team.getTeamNumber()))) ||
-  				 (addressEntity.getIdType() == GeocodedAddressEntityIdType.TEAM_ID && StringUtils.equals(addressEntity.getId(), team.getId().toString())); 
   }
 	
 }

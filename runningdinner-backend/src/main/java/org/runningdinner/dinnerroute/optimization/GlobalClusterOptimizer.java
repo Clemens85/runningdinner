@@ -12,6 +12,8 @@ import org.runningdinner.core.MealClass;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.TeamCombinationInfo;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocation;
+import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -180,7 +182,7 @@ public class GlobalClusterOptimizer {
 			
 			
 			// Step 2: Use the determined cluster if it fits completely to build the final cluster result 
-			if (maxTakenTeamLocationsOfCluster.size() >= remainingClusterSize && bestSingleClusterIndex >= 0) {
+			if (maxTakenTeamLocationsOfCluster != null && maxTakenTeamLocationsOfCluster.size() >= remainingClusterSize && bestSingleClusterIndex >= 0) {
 				List<TeamHostLocation> bestSingleCluster = clusterList.get(bestSingleClusterIndex);
 				LOGGER.info("We can use cluster at index {} with {} effective teams to use, which should fit completely in our remaining cluster size of {}.", 
 										bestSingleClusterIndex, maxTakenTeamLocationsOfCluster.size(), remainingClusterSize);

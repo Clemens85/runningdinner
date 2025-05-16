@@ -1,4 +1,4 @@
-package org.runningdinner.dinnerroute.optimization;
+package org.runningdinner.dinnerroute.optimization.local;
 
 import java.util.UUID;
 

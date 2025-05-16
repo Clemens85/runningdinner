@@ -1,4 +1,4 @@
-package org.runningdinner.dinnerroute.optimization;
+package org.runningdinner.dinnerroute.teamhostlocation;
 
 import java.util.List;
 import java.util.Objects;
