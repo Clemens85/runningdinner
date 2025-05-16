@@ -34,11 +34,11 @@ public class DinnerRouteOptimizationFeedbackService {
   	DinnerRouteListTO optimizedDinnerRouteList = result.optimizedDinnerRouteList();
   	List<TeamMemberChange> teamMemberChangesToPerform = result.teamMemberChangesToPerform();
   	
-		double currentSumDistanceInMeters = incomingCurrentSumDistanceInMeters == null ? 0.0 : incomingCurrentSumDistanceInMeters;
-		double currentAverageDistanceInMeters = incomingCurrentAverageDistanceInMeters == null ? 0.0 : incomingCurrentAverageDistanceInMeters;
+		double currentSumDistanceInMeters = incomingCurrentSumDistanceInMeters == null ? -1 : incomingCurrentSumDistanceInMeters;
+		double currentAverageDistanceInMeters = incomingCurrentAverageDistanceInMeters == null ? -1 : incomingCurrentAverageDistanceInMeters;
 
-  	Double sumNew = result.optimizedDistances().sumDistanceInMeters() == null ? 0.0 : result.optimizedDistances().sumDistanceInMeters();
-  	Double averageNew = result.optimizedDistances().averageDistanceInMeters() == null ? 0.0 : result.optimizedDistances().averageDistanceInMeters();
+  	Double sumNew = result.optimizedDistances().sumDistanceInMeters() == null ? -1 : result.optimizedDistances().sumDistanceInMeters();
+  	Double averageNew = result.optimizedDistances().averageDistanceInMeters() == null ? -1 : result.optimizedDistances().averageDistanceInMeters();
 		String newMetrics = "Sum of all distances: %.2f m, Average of all distances: %.2f m".formatted(sumNew, averageNew);
    	String currentMetrics = "Sum of all distances: %.2f m, Average of all distances: %.2f m".formatted(currentSumDistanceInMeters, currentAverageDistanceInMeters);
      	
@@ -60,11 +60,9 @@ public class DinnerRouteOptimizationFeedbackService {
   	feedback.setSenderEmail(receiver);
 		feedback.setMessage(message);
   	feedback.setPageName("/hostlocations");
-  	feedback.setSenderIp("127.0.0.1");
+  	feedback.setSenderIp("SYSTEM_GENERATED");
   	feedback.setAdminId(adminId);
 		feedbackService.createFeedback(feedback);
 	}
   
 }
-
-	
