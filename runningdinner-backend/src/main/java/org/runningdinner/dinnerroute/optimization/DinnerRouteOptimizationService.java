@@ -45,6 +45,8 @@ import org.runningdinner.participant.TeamRepository;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.participant.TeamStatus;
 import org.runningdinner.participant.rest.TeamTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -53,6 +55,8 @@ import jakarta.validation.Valid;
 
 @Service
 public class DinnerRouteOptimizationService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(DinnerRouteOptimizationService.class);
 	
   private final RunningDinnerService runningDinnerService;
   
@@ -64,22 +68,28 @@ public class DinnerRouteOptimizationService {
 
 	private final TeamRepository teamRepository;
 
+	private final DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService;
+
 	public DinnerRouteOptimizationService(RunningDinnerService runningDinnerService, 
 																			  TeamHostLocationService teamHostLocationService, 
 																			  TeamService teamService,
 																			  TeamRepository teamRepository,
-																			  DinnerRouteMessageFormatter dinnerRouteMessageFormatter) {
+																			  DinnerRouteMessageFormatter dinnerRouteMessageFormatter,
+																			  DinnerRouteOptimizationFeedbackService  dinnerRouteOptimizationFeedbackService) {
 		this.runningDinnerService = runningDinnerService;
 		this.teamHostLocationService = teamHostLocationService;
 		this.teamService = teamService;
 		this.teamRepository = teamRepository;
 		this.dinnerRouteMessageFormatter = dinnerRouteMessageFormatter;
+		this.dinnerRouteOptimizationFeedbackService = dinnerRouteOptimizationFeedbackService;
 	}
 
 	@Transactional(readOnly = true)
 	public DinnerRouteOptimizationResult calculateOptimization(String adminId, 
-																														 @Valid GeocodedAddressEntityListTO addressEntityList) throws NoPossibleRunningDinnerException {
+																														 @Valid CalculateDinnerRouteOptimizationRequest calculateRequest) throws NoPossibleRunningDinnerException {
     
+		GeocodedAddressEntityListTO addressEntityList = calculateRequest.addressEntityList();
+		
 		String optimizationId = UUID.randomUUID().toString().split("-")[0];
 		
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
@@ -138,11 +148,19 @@ public class DinnerRouteOptimizationService {
     
     DinnerRouteListTO optimizedDinnerRouteList = new DinnerRouteListTO(optimizedDinnerRoutes, teamClusterMappings);
     
-    return new DinnerRouteOptimizationResult(optimizationId, 
-    																				 optimizedDinnerRouteList, 
-    																				 localClusterOptimizationResult.getAllTeamMemberChanges(),
-    																				 optimizedDinnerRoutesWithDistances,
-    																				 new TeamNeighbourClusterListTO(teamNeighbourClusters));
+    var result = new DinnerRouteOptimizationResult(optimizationId, 
+    																							 optimizedDinnerRouteList, 
+    																							 localClusterOptimizationResult.getAllTeamMemberChanges(),
+    																							 optimizedDinnerRoutesWithDistances,
+    																							 new TeamNeighbourClusterListTO(teamNeighbourClusters));
+    
+    try {
+    	dinnerRouteOptimizationFeedbackService.sendOptimizationFeedbackAsync(adminId, result, calculateRequest.currentSumDistanceInMeters(), calculateRequest.currentAverageDistanceInMeters());
+    } catch (Exception e) {
+    	LOGGER.error("Could not call sendOptimizationFeedbackAsync", e);
+    }
+    
+    return result;
 	}
 	
 
