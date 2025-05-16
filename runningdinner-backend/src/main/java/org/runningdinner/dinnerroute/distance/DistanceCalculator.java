@@ -89,16 +89,6 @@ public final class DistanceCalculator {
     return s;
   }
   
-  
-  public static double calculateDistanceVincentyInKilometers(GeocodedAddressEntity a, GeocodedAddressEntity b) {
-  	double distanceInMeters = calculateDistanceVincentyInMeters(a, b);
-  	if (distanceInMeters < 0) {
-  		return distanceInMeters;
-  	}
-    return distanceInMeters / 1000; // Distance in Kilometers
-  }
-
-
   public static DistanceMatrix calculateDistanceMatrix(List<? extends GeocodedAddressEntity> locations) {
     return calculateDistanceMatrix(locations, -1);
   }
@@ -108,11 +98,6 @@ public final class DistanceCalculator {
     DistanceMatrix result = new DistanceMatrix();
 
     int size = locations.size();
-
-//    double maxRangeInKilometersToInclude = -1;
-//    if (maxRangeInMetersToInclude >= 0) {
-//      maxRangeInKilometersToInclude = maxRangeInMetersToInclude / 1000;
-//    }
 
     for (int i = 0; i < size; i++) {
       for (int j = i; j < size; j++) {

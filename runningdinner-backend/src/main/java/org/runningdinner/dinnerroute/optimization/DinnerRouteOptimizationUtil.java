@@ -42,7 +42,7 @@ public class DinnerRouteOptimizationUtil {
 	
 	public static Map<MealClass, Integer> calculateMealsDistributionForClusterSize(List<MealClass> mealClasses, int teamClusterSize) {
 		int sumPerEachMealClass = teamClusterSize / mealClasses.size();
-		Assert.state(teamClusterSize % mealClasses.size() == 0, "TODO");
+		Assert.state(teamClusterSize % mealClasses.size() == 0, "teamClusterSize " + teamClusterSize + " must be dividable by num meals " + mealClasses.size() + " but was not");
 		
 		Map<MealClass, Integer> result = new HashMap<>();
 		for (MealClass mealClass : mealClasses) {

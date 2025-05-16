@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, DialogContent, Typography } from "@mui/material";
-import { DinnerRouteTeamMapEntry, BaseAdminIdProps, buildAddressEntityList, calculateOptimizationClusters, useDisclosure, isStringNotEmpty, DinnerRouteWithDistancesList, OptimizationImpact } from "@runningdinner/shared";
+import { DinnerRouteTeamMapEntry, BaseAdminIdProps, buildAddressEntityList, calculateOptimizationClusters, useDisclosure, isStringNotEmpty, DinnerRouteWithDistancesList, OptimizationImpact, CalculateDinnerRouteOptimizationRequest } from "@runningdinner/shared";
 import { Trans, useTranslation } from "react-i18next";
 import DialogActionsPanel from "../../common/theme/DialogActionsPanel";
 import { DialogTitleCloseable } from "../../common/theme/DialogTitleCloseable";
@@ -63,7 +63,12 @@ function RouteOptimizationDialog({isOpen, onClose, adminId, dinnerRouteMapEntrie
 
   async function calculateOptimization() {
     const addressEntityList = buildAddressEntityList(dinnerRouteMapEntries);
-    const optimizationResult = await calculateOptimizationClusters(adminId, addressEntityList);
+    const calculateRequest: CalculateDinnerRouteOptimizationRequest = {
+      addressEntityList,
+      currentAverageDistanceInMeters: routeDistancesList?.averageDistanceInMeters || -1,
+      currentSumDistanceInMeters: routeDistancesList?.sumDistanceInMeters || -1,
+    };
+    const optimizationResult = await calculateOptimizationClusters(adminId, calculateRequest);
     optimizationResult.averageDistanceInMetersBefore = routeDistancesList?.averageDistanceInMeters || 0;
     optimizationResult.sumDistanceInMetersBefore = routeDistancesList?.sumDistanceInMeters || 0;
     setLocalStorageInAdminId(optimizationResult.id, optimizationResult, adminId);

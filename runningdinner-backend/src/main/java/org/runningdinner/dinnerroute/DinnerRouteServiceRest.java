@@ -8,6 +8,7 @@ import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourCluster;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
+import org.runningdinner.dinnerroute.optimization.CalculateDinnerRouteOptimizationRequest;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationResult;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
 import org.runningdinner.dinnerroute.optimization.OptimizationImpact;
@@ -71,8 +72,8 @@ public class DinnerRouteServiceRest {
 
   @PutMapping("/runningdinner/{adminId}/distances/optimization")
   public DinnerRouteOptimizationResult calculateOptimization(@PathVariable("adminId") String adminId,
-  												  			  												 @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) throws NoPossibleRunningDinnerException {
-		return dinnerRouteOptimizationService.calculateOptimization(adminId, addressEntityList);
+  												  			 @RequestBody @Valid CalculateDinnerRouteOptimizationRequest calculateRequest) throws NoPossibleRunningDinnerException {
+    return dinnerRouteOptimizationService.calculateOptimization(adminId, calculateRequest);
   }
   
   @PutMapping("/runningdinner/{adminId}/teams")

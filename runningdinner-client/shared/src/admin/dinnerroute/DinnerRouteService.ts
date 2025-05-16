@@ -9,8 +9,11 @@ import {
   DinnerRouteWithDistances,
   DinnerRouteWithDistancesList,
   DinnerRouteOptimizationResult,
+  CalculateDinnerRouteOptimizationRequest,
+  OptimizationImpact,
+  SaveDinnerRouteOptimizationRequest
 } from "../../types";
-import { findEntityById, OptimizationImpact, SaveDinnerRouteOptimizationRequest } from "../..";
+import { findEntityById  } from "../..";
 import { mapToGeocodedAddressEntityId } from "./GeocodeAddressUtils";
 
 export async function findDinnerRouteByAdminIdAndTeamIdAsync(
@@ -83,11 +86,11 @@ function enrichDinnerRoutesWithGeocodingResults(
   return dinnerRouteWithDistances;
 }
 
-export async function calculateOptimizationClusters(adminId: string, addressEntityList: GeocodedAddressEntityList): Promise<DinnerRouteOptimizationResult> {
+export async function calculateOptimizationClusters(adminId: string, calculateRequest: CalculateDinnerRouteOptimizationRequest): Promise<DinnerRouteOptimizationResult> {
   const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/optimization`);
   const response = await axios.put<DinnerRouteOptimizationResult>(
     url,
-    addressEntityList
+    calculateRequest
   );
   return response.data;
 }

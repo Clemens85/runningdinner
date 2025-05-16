@@ -116,6 +116,12 @@ export type SaveDinnerRouteOptimizationRequest = {
   teamMemberChangesToPerform: TeamMemberChange[];
 };
 
+export type CalculateDinnerRouteOptimizationRequest = {
+  addressEntityList: GeocodedAddressEntityList;
+  currentSumDistanceInMeters: number;
+  currentAverageDistanceInMeters: number;
+};
+
 export enum MealType {
   APPETIZER = "APPETIZER",
   MAIN_COURSE = "MAIN_COURSE",
