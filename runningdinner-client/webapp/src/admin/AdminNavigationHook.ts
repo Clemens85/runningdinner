@@ -13,6 +13,9 @@ export const SELECTED_TEAM_IDS_QUERY_PARAM = "selectedTeamIds";
 export const MESSAGE_SUBTYPE_QUERY_PARAM = "messageSubType";
 export const SENT_FROM_MESSAGE_TYPE_QUERY_PARAM = "sentFrom";
 
+export const OPTIMIZATION_ID_QUERY_PARAM = "optmizationId";
+export const SHOW_ROUTE_OPTIMIZATION_SAVED_MESSAGE_QUERY_PARAM = "showRouteOptimizationSavedMessage";
+
 function generateTeamPath(adminId: string, teamId?: string) {
   return `/admin/${adminId}/teams/${isStringNotEmpty(teamId) ? teamId : ""}`;
 }
@@ -143,6 +146,16 @@ export function useAdminNavigation() {
     return `/admin/${adminId}/hostlocations`;
   }
 
+  function navigateToHostLocations(adminId: string, showOptimizationSuccessMessage?: boolean) {
+    const url = generateHostLocationsPath(adminId);
+    if (!showOptimizationSuccessMessage) {
+      navigate(url);
+      return;
+    }
+    navigate(`${url}?${SHOW_ROUTE_OPTIMIZATION_SAVED_MESSAGE_QUERY_PARAM}=true`, { replace: true });
+  }
+
+
   return {
     generateTeamPath,
     generateDropTeamsPath,
@@ -161,5 +174,6 @@ export function useAdminNavigation() {
     navigateToMessagesLandingPage,
     generateDinnerRouteMessagesPath,
     generateHostLocationsPath,
+    navigateToHostLocations
   };
 }

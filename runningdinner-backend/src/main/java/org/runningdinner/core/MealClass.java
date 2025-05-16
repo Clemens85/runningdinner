@@ -1,6 +1,9 @@
 
 package org.runningdinner.core;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -10,7 +13,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 /**
  * Represents a meal-type in a running diner like e.g. dessert.
@@ -102,6 +104,12 @@ public final class MealClass extends AbstractEntity {
   public String toString() {
 
     return label;
+  }
+  
+
+  @Override
+	protected void setId(UUID id) {
+  	super.setId(id);
   }
 
   // Convenience methods for standalone scenario

@@ -22,18 +22,18 @@ public class DistanceCalculatorTest {
   @Test
   public void calculateDistances() {
 
-    double d1 = DistanceCalculator.calculateDistanceVincenty(johannVonWeerth9, loerracherStr20);
+    double d1 = DistanceCalculator.calculateDistanceVincentyInMeters(johannVonWeerth9, loerracherStr20);
 
-    double d2 = DistanceCalculator.calculateDistanceVincenty(breikeweg24, schwarzwaldStr193);
+    double d2 = DistanceCalculator.calculateDistanceVincentyInMeters(breikeweg24, schwarzwaldStr193);
 
     assertThat(d1).isLessThan(d2);
 
-    double d3 = DistanceCalculator.calculateDistanceVincenty(johannVonWeerth9, schwarzwaldStr193);
+    double d3 = DistanceCalculator.calculateDistanceVincentyInMeters(johannVonWeerth9, schwarzwaldStr193);
 
     assertThat(d1).isLessThan(d3);
     assertThat(d3).isLessThan(d2);
 
-    double d4 = DistanceCalculator.calculateDistanceVincenty(sundgauAllee31, jesuitenSchloss1);
+    double d4 = DistanceCalculator.calculateDistanceVincentyInMeters(sundgauAllee31, jesuitenSchloss1);
     assertThat(d1).isLessThan(d4);
     assertThat(d3).isLessThan(d4);
     assertThat(d4).isLessThan(d2);
@@ -41,14 +41,14 @@ public class DistanceCalculatorTest {
 
   @Test
   public void calculateDistanceSameCoordinates() {
-    double d = DistanceCalculator.calculateDistanceVincenty(sundgauAllee31, sundgauAllee31);
+    double d = DistanceCalculator.calculateDistanceVincentyInMeters(sundgauAllee31, sundgauAllee31);
     assertThat(d).isZero();
   }
 
   @Test
   public void calculateDistanceNeighbourCoordinates() {
-    double d = DistanceCalculator.calculateDistanceVincenty(eisenbahnStr49, eisenbahnStr45);
-    assertThat(d).isCloseTo(0.0, within(0.037));
+    double d = DistanceCalculator.calculateDistanceVincentyInMeters(eisenbahnStr49, eisenbahnStr45);
+    assertThat(d).isCloseTo(30.99, within(0.01));
   }
 
   @Test
@@ -76,16 +76,16 @@ public class DistanceCalculatorTest {
     assertThat(distanceMatrix.getEntries()).hasSize(6);
 
     Double distance = distanceMatrix.getEntries().get(new DistanceEntry(johannVonWeerth9.getId(), loerracherStr20.getId()));
-    assertThat(distance).isBetween(1d, 3d);
+    assertThat(distance).isBetween(1000d, 3000d);
     assertThat(distanceMatrix.getEntries().get(new DistanceEntry(loerracherStr20.getId(), johannVonWeerth9.getId()))).isEqualTo(distance);
 
     assertThat(distanceMatrix.getEntries().get(new DistanceEntry(loerracherStr20.getId(), loerracherStr20.getId()))).isNull();
 
     distance = distanceMatrix.getEntries().get(new DistanceEntry(johannVonWeerth9.getId(), schwarzwaldStr193.getId()));
-    assertThat(distance).isBetween(4d, 5d);
+    assertThat(distance).isBetween(4000d, 5000d);
 
     distance = distanceMatrix.getEntries().get(new DistanceEntry(loerracherStr20.getId(), schwarzwaldStr193.getId()));
-    assertThat(distance).isBetween(5d, 7d);
+    assertThat(distance).isBetween(5000d, 7000d);
   }
 
   static GeocodedAddressEntity newHost(String id, double lat, double lng) {

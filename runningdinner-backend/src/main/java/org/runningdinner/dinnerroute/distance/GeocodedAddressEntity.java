@@ -1,8 +1,11 @@
 package org.runningdinner.dinnerroute.distance;
 
+import java.util.Objects;
+
+import org.runningdinner.geocoder.GeocodingResult;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.runningdinner.geocoder.GeocodingResult;
 
 public class GeocodedAddressEntity extends GeocodingResult {
 
@@ -26,5 +29,32 @@ public class GeocodedAddressEntity extends GeocodingResult {
 
   public void setIdType(GeocodedAddressEntityIdType idType) {
     this.idType = idType;
+  }
+
+  
+  
+  @Override
+	public int hashCode() {
+		return Objects.hash(id, idType);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		GeocodedAddressEntity other = (GeocodedAddressEntity) obj;
+		return Objects.equals(id, other.id) && idType == other.idType;
+	}
+
+	@Override
+	public String toString() {
+  	return "ID " + id + " " + super.toString();
   }
 }

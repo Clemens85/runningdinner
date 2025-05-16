@@ -1,11 +1,11 @@
-import {Box, Button, Checkbox, Fab, FormControlLabel, Paper, styled, SxProps } from "@mui/material";
+import {Box, Button, Checkbox, Fab, FormControlLabel, FormGroup, Paper, styled, Switch, SxProps } from "@mui/material";
 import { Span } from "../../common/theme/typography/Tags";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { useEffect, useRef } from "react";
 import { useDynamicFullscreenHeight } from "../../common/hooks/DynamicFullscreenHeightHook";
 import { useIsBigDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, getHostTeamsOfDinnerRouteMapEntry, isAfterPartyLocationDefined } from "@runningdinner/shared";
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, DinnerRouteTeamMapEntry, isAfterPartyLocationDefined, DinnerRouteMapCalculator } from "@runningdinner/shared";
 import { TitleBar } from "./TitleBar";
 import { useTranslation } from "react-i18next";
 import { getTeamLabel } from "../../common/dinnerroute";
@@ -122,7 +122,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
         title={t('common:filter')} 
         actionButtton={<ResetAllButton />}
         />
-      <Box sx={{ height: `${teamsFilterHeight}px`, padding: 3 }}>
+      <Box sx={{ height: `${teamsFilterHeight}px`, pt: 3, px: 3, pb: 1 }}>
         <Box pb={1}>
           <Span i18n="admin:hostlocations_team_filter" />
         </Box>
@@ -135,6 +135,7 @@ export function HostLocationsFilterView({dinnerRouteMapEntries}: HostLocationsFi
           )}>
         </Virtuoso>
       </Box>
+      <TeamDisplayOptions />
       <FilterAfterPartyLocationCheckbox />
     </Paper>
   );
@@ -157,7 +158,7 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
 
   const {handleZoomTo} = useZoomToMarker();
 
-  const hostTeams = getHostTeamsOfDinnerRouteMapEntry(team); 
+  const hostTeams = DinnerRouteMapCalculator.getHostTeamsOfDinnerRouteMapEntry(team); 
 
   function handleChange() {
     dispatch({
@@ -191,6 +192,46 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
   )
 }
 
+
+function TeamDisplayOptions() {
+
+  const {t} = useTranslation('admin');
+  const {dispatch, state} = useDinnerRouteOverviewContext();
+
+  function onToggleShowTeamClusters(showTeamClusters: boolean) {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_SHOW_TEAM_CLUSTERS,
+      payload: showTeamClusters
+    });
+  }
+
+  function onToggleShowTeamPaths(showTeamPaths: boolean) {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_SHOW_TEAM_PATHS,
+      payload: showTeamPaths
+    });
+  }
+
+  return (
+    <Box sx={{ pl: 3 }}>
+      <Box>
+        <FormGroup>
+          <FormControlLabel 
+            control={<Switch onChange={evt => onToggleShowTeamClusters(evt.target.checked)} checked={state.showTeamClusters} />} 
+            label={t("admin:hostlocations_team_cluster_view_enable")} />
+        </FormGroup>
+      </Box>
+      <Box>
+        <FormGroup>
+          <FormControlLabel 
+            control={<Switch onChange={evt => onToggleShowTeamPaths(evt.target.checked)} checked={state.showTeamPaths} />} 
+            label={t("admin:hostlocations_team_connections_enable")} />
+        </FormGroup>
+      </Box>
+    </Box>
+  )
+}
+
 function FilterAfterPartyLocationCheckbox() {
 
   const {dispatch, state} = useDinnerRouteOverviewContext();
@@ -209,10 +250,12 @@ function FilterAfterPartyLocationCheckbox() {
   }
 
   return (
-    <Box pl={3}>
-      <FormControlLabel label={t('admin:dinner_route_show_after_party_location', {location: afterPartyLocation?.title})} sx={{ mt: -4 }} control={
-        <Checkbox color="primary" onChange={handleToggleExcludeAfterPartyLocation} checked={!excludeAfterPartyLocation} />
-      } />
+    <Box sx={{ pl: 3, mb: 1 }}>
+      <FormGroup>
+        <FormControlLabel 
+          control={<Switch onChange={handleToggleExcludeAfterPartyLocation} checked={!excludeAfterPartyLocation} />} 
+          label={t('admin:dinner_route_show_after_party_location', {location: afterPartyLocation?.title})} />
+      </FormGroup>
     </Box>
   );
 

@@ -8,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.runningdinner.participant.Participant;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -17,8 +19,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
-
-import org.runningdinner.participant.Participant;
 
 /**
  * Contains the options for a running dinner (e.g. which meals to cook, size of the teams, ...)
@@ -163,19 +163,6 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
   public void setTeamPartnerWishDisabled(boolean teamPartnerWishDisabled) {
   
     this.teamPartnerWishDisabled = teamPartnerWishDisabled;
-  }
-
-  /**
-   * Generates the TeamCombinationInfo object for the passed number of teams.
-   * 
-   * @param numberOfTeams
-   * @return
-   * @throws NoPossibleRunningDinnerException
-   */
-  @Override
-  public TeamCombinationInfo generateTeamCombinationInfo(final int numberOfTeams) throws NoPossibleRunningDinnerException {
-
-    return new TeamCombinationInfo(numberOfTeams, getNumberOfMealClasses());
   }
 
   /**

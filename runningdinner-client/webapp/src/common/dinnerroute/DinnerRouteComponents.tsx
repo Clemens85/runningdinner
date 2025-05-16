@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/system";
-import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteTeam, Fullname, MealType, TeamNr, Time, getFullname, isArrayEmpty, isArrayNotEmpty, isDarkColor, isStringNotEmpty, useDisclosure } from "@runningdinner/shared";
+import { AfterPartyLocation, AfterPartyLocationHeadline, DinnerRouteMapCalculator, DinnerRouteTeam, Fullname, MealType, TeamNr, Time, getFullname, isArrayEmpty, isArrayNotEmpty, isDarkColor, isStringNotEmpty, useDisclosure } from "@runningdinner/shared";
 import { SmallTitle, Span, Subtitle } from "../theme/typography/Tags";
 import { uniq } from "lodash-es";
 import LinkExtern from "../theme/LinkExtern";
@@ -8,7 +8,7 @@ import { Alert, AlertTitle } from "@mui/material";
 import { useGeoPosition } from "../hooks/GeoPositionHook";
 import { AdvancedMarker, InfoWindow,  useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
-import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry, getMarkerLabel } from "@runningdinner/shared";
+import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry } from "@runningdinner/shared";
 import SoupKitchenIcon from '@mui/icons-material/SoupKitchen';
 import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 import IcecreamIcon from '@mui/icons-material/Icecream';
@@ -191,6 +191,7 @@ type TeamHostMarkerProps = {
   team: DinnerRouteTeamMapEntry;
   isCurrentTeam: boolean;
   teamLabel: string;
+  useSecondaryClusterColor?: boolean;
   scale?: number;
   zIndex?: number;
 };
@@ -232,12 +233,14 @@ export function getAfterPartyLocationIcon(fontSize: number = 16) {
   return <LocalBarIcon sx={{ fontSize }} />;
 }
 
-export function TeamHostMarker({team, isCurrentTeam, zIndex = 1}: TeamHostMarkerProps) {
+export function TeamHostMarker({team, isCurrentTeam, useSecondaryClusterColor, zIndex = 1}: TeamHostMarkerProps) {
   
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [open, setOpen] = useState(false);
 
   // const glyphColor = isDarkColor(team.color) ? '#fff' : '#000';
+
+  const secondaryClusterColor = isStringNotEmpty(team.secondaryClusterColor) ? team.secondaryClusterColor : team.color;
 
   return (
     <>
@@ -249,32 +252,11 @@ export function TeamHostMarker({team, isCurrentTeam, zIndex = 1}: TeamHostMarker
         position={{ lat: team.position.lat!, lng: team.position.lng! }}> 
 
           {/* @ts-ignore */}
-          <MapEntryPin teamColor={team.color}>
+          <MapEntryPin teamColor={useSecondaryClusterColor ? secondaryClusterColor : team.color}>
             <>{getMealTypeIcon(team.mealType)}</>  
-            {getMarkerLabel(`#${team.teamNumber}`)}
+            {DinnerRouteMapCalculator.getMarkerLabel(`#${team.teamNumber}`)}
           </MapEntryPin>
 
-          {/* <Box sx={{ 
-            backgroundColor: team.color, 
-            borderColor: '#000', 
-            color: glyphColor,
-            borderRadius: '8px',
-            py: 1,
-            px: 1
-          }}>
-            <>{getMealTypeIcon(team.mealType)}</>  
-            {getMarkerLabel(`#${team.teamNumber}`)}
-          </Box> */}
-
-        {/* <Pin 
-          scale={scale}
-          background={team.color}
-          glyphColor={glyphColor}
-          borderColor={'#000'}>
-            <span>
-              <center>{getMarkerLabel(team.meal.label)}</center> <center>{teamLabel}</center>
-            </span>
-          </Pin> */}
       </AdvancedMarker>
       {open && (
         <InfoWindow
@@ -305,15 +287,9 @@ export function AfterPartyLocationMarker(afterPartyLocationMapEntry: AfterPartyL
           {/* @ts-ignore */}
           <MapEntryPin teamColor={color}>
             {getAfterPartyLocationIcon()}
-            {getMarkerLabel(title)}
+            {DinnerRouteMapCalculator.getMarkerLabel(title)}
           </MapEntryPin>
 
-        {/* <Pin 
-          scale={1.3}
-          background={color}
-          borderColor={'#000'}>
-            <span><center>{getMarkerLabel(title)}</center></span>
-          </Pin> */}
       </AdvancedMarker>
       {open && (
         <InfoWindow

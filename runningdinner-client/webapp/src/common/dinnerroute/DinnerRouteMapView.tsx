@@ -1,4 +1,4 @@
-import { DinnerRoute, isQuerySucceeded, Meal } from "@runningdinner/shared";
+import { BaseAdminIdProps, DinnerRoute, DinnerRouteMapCalculator, isQuerySucceeded, Meal } from "@runningdinner/shared";
 import { useGetGeocodePositionOfAfterPartyLocation, useGetGeocodePositionsOfTeamHosts } from "./useGetGeocodePositionsOfTeamHosts";
 import { FetchProgressBar } from "../FetchProgressBar";
 import { Map} from "@vis.gl/react-google-maps";
@@ -6,16 +6,16 @@ import { useRef } from "react";
 import { useDynamicFullscreenHeight } from "../hooks/DynamicFullscreenHeightHook";
 import { AfterPartyLocationMarker, CurrentPositionMarker, TeamHostMarker, WarningAlert } from "./DinnerRouteComponents";
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from "../maps";
-import { DinnerRouteMapData, DinnerRouteTeamMapEntry, calculateDinnerRouteMapData } from "@runningdinner/shared";
+import { DinnerRouteMapData, DinnerRouteTeamMapEntry } from "@runningdinner/shared";
 
 type DinnerRouteMapViewProps = {
   dinnerRoute: DinnerRoute;
-  meals: Meal[]
-};
+  meals: Meal[],
+} & BaseAdminIdProps;
 
-export function DinnerRouteMapView({dinnerRoute, meals}: DinnerRouteMapViewProps) {
+export function DinnerRouteMapView({dinnerRoute, meals, adminId}: DinnerRouteMapViewProps) {
   
-  const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(dinnerRoute.teams, GOOGLE_MAPS_KEY);
+  const geocodePositionsQueryResult = useGetGeocodePositionsOfTeamHosts(dinnerRoute.teams, adminId, GOOGLE_MAPS_KEY);
   const geocodeAfterPartyQueryResult = useGetGeocodePositionOfAfterPartyLocation(dinnerRoute.afterPartyLocation, GOOGLE_MAPS_KEY);
 
   if (!isQuerySucceeded(geocodePositionsQueryResult) || !isQuerySucceeded(geocodeAfterPartyQueryResult)) {
@@ -23,13 +23,15 @@ export function DinnerRouteMapView({dinnerRoute, meals}: DinnerRouteMapViewProps
   }
 
 
-  const dinnerRouteMapData = calculateDinnerRouteMapData({
+  const dinnerRouteMapCalculator = new DinnerRouteMapCalculator({
     allDinnerRoutes: [dinnerRoute], 
     dinnerRouteTeamsWithGeocodes: geocodePositionsQueryResult.data, 
     afterPartyLocation: geocodeAfterPartyQueryResult.data!,
     teamClustersWithSameAddress: [],
     meals
-});
+  });
+
+  const dinnerRouteMapData = dinnerRouteMapCalculator.calculateDinnerRouteMapData();
 
   if (dinnerRouteMapData.dinnerRouteMapEntries.length === 0) {
     return <WarningAlert teamsWithUnresolvedGeocodings={dinnerRouteMapData.teamsWithUnresolvedGeocodings} />;

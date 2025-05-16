@@ -1,13 +1,21 @@
 package org.runningdinner.common.rest;
 
+import java.util.List;
+import java.util.Locale;
+
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
-import org.runningdinner.common.exception.*;
+import org.runningdinner.common.exception.DinnerNotAcknowledgedException;
+import org.runningdinner.common.exception.DinnerNotFoundException;
+import org.runningdinner.common.exception.InvalidUuidException;
+import org.runningdinner.common.exception.TechnicalException;
+import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.InvalidAddressException;
 import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +32,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Locale;
 
 @ControllerAdvice
 public class GlobalExceptionMapper {
@@ -124,6 +130,16 @@ public class GlobalExceptionMapper {
 		LOGGER.error("Unexpected error", ex);
 		String message = messages.getMessage("error.general", null, locale);
 		return new IssueList(new Issue(message, IssueType.TECHNICAL));
+	}
+	
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(value = { NoPossibleRunningDinnerException.class })
+	@ResponseBody
+	IssueList mapNoPossibleRunningDinnerException(final Exception ex) {
+		String message = "Es gibt ein Problem mit deine Running Dinner Konfiguraion. Bitte lade dein Browser-Fenster neu und versuche es erneut!";
+		LOGGER.error(ex.getMessage(), ex);
+		return new IssueList(new Issue(message, IssueType.BAD_REQUEST));
 	}
 
 }

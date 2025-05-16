@@ -2,11 +2,20 @@
 package org.runningdinner.event.publisher;
 
 import java.util.List;
-import java.util.Set;
 
-import org.runningdinner.core.MealClass;
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.event.*;
+import org.runningdinner.event.MealTimesUpdatedEvent;
+import org.runningdinner.event.MealsSwappedEvent;
+import org.runningdinner.event.NewParticipantSubscribedEvent;
+import org.runningdinner.event.NewRunningDinnerEvent;
+import org.runningdinner.event.ParticipantNumbersSwappedEvent;
+import org.runningdinner.event.RunningDinnerCancelledEvent;
+import org.runningdinner.event.RunningDinnerSettingsUpdatedEvent;
+import org.runningdinner.event.TeamArrangementsDroppedEvent;
+import org.runningdinner.event.TeamCancelledEvent;
+import org.runningdinner.event.TeamMembersSwappedEvent;
+import org.runningdinner.event.TeamsArrangedEvent;
+import org.runningdinner.event.TeamsHostChangedEvent;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamCancellationResult;

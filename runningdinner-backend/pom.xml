@@ -281,6 +281,14 @@
 		<artifactId>apache-client</artifactId>
 	</dependency>
 
+	<!-- https://mvnrepository.com/artifact/com.github.haifengl/smile-core -->
+	<dependency>
+	    <groupId>com.github.haifengl</groupId>
+	    <artifactId>smile-core</artifactId>
+	    <version>4.3.0</version>
+	</dependency>
+	
+
 <!--        <dependency>-->
 <!--		  <groupId>org.apache.httpcomponents</groupId>-->
 <!--		  <artifactId>httpclient</artifactId>-->

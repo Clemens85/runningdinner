@@ -1,6 +1,7 @@
 import {
-  buildMealTypeMappings,
+  BaseAdminIdProps,
   DinnerRoute,
+  DinnerRouteMapCalculator,
   DinnerRouteTeam,
   isAfterPartyLocationDefined,
   isStringNotEmpty,
@@ -18,16 +19,16 @@ import { DinnerRouteMapView } from './DinnerRouteMapView';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { GOOGLE_MAPS_KEY } from '../maps';
 
-export interface DinnerRouteProps {
+export interface DinnerRouteProps extends BaseAdminIdProps {
   dinnerRoute: DinnerRoute,
   meals: Meal[]
 }
 
-export default function DinnerRouteView({dinnerRoute, meals}: DinnerRouteProps) {
+export default function DinnerRouteView({dinnerRoute, meals, adminId}: DinnerRouteProps) {
 
   const {mealSpecificsOfGuestTeams, teams, afterPartyLocation} = dinnerRoute;
 
-  const mealTypeMappings = buildMealTypeMappings(meals);
+  const mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(meals);
 
   const teamCardNodes = teams.map((team) =>
     <Grid item xs={12} md={4} key={team.teamNumber}>
@@ -58,7 +59,7 @@ export default function DinnerRouteView({dinnerRoute, meals}: DinnerRouteProps) 
           }
           <Grid item xs={12} sx={{ mb: 2 }}>
             <APIProvider apiKey={GOOGLE_MAPS_KEY}>
-              <DinnerRouteMapView dinnerRoute={dinnerRoute} meals={meals} />
+              <DinnerRouteMapView dinnerRoute={dinnerRoute} meals={meals} adminId={adminId} />
             </APIProvider>
           </Grid>
         </Grid>

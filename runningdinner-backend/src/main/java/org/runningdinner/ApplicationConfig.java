@@ -1,16 +1,14 @@
 package org.runningdinner;
 
-import ch.qos.logback.classic.helpers.MDCInsertingServletFilter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
-import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.TimeZone;
+
+import javax.sql.DataSource;
+
 import org.owasp.AntiSamyFilter;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.impl.DefaultIdGenerator;
-import org.runningdinner.core.RunningDinnerCalculator;
-import org.runningdinner.core.dinnerplan.DinnerPlanGenerator;
-import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.springframework.boot.SpringApplication;
@@ -28,10 +26,12 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
-import javax.sql.DataSource;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.TimeZone;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import ch.qos.logback.classic.helpers.MDCInsertingServletFilter;
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "org.runningdinner", "org.payment.paypal" })
@@ -72,18 +72,6 @@ public class ApplicationConfig /*extends WebMvcConfigurerAdapter*/ {
   public IdGenerator uuidGenerator() {
 
     return new DefaultIdGenerator();
-  }
-
-  @Bean
-  public RunningDinnerCalculator runningDinnerCalculator() {
-
-    return new RunningDinnerCalculator(dinnerPlanGenerator());
-  }
-
-  @Bean
-  public DinnerPlanGenerator dinnerPlanGenerator() {
-
-    return new StaticTemplateDinnerPlanGenerator();
   }
 
   @Bean
