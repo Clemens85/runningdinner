@@ -67,7 +67,7 @@ public class GeocodeResponseHandler {
 		String entityId = getStringAttribute(messageAttributes, "entityId");
 		String entityType = getStringAttribute(messageAttributes, "entityType");
 		
-		GeocodeResponseBody body = objectMapper.readValue(message.body(), GeocodeResponseBody.class);
+		GeocodeResponseBody body = StringUtils.isNotEmpty(message.body()) ? objectMapper.readValue(message.body(), GeocodeResponseBody.class) : null;
 		
 		return new GeocodeResponse(body, adminId, entityId, entityType);
 	}
