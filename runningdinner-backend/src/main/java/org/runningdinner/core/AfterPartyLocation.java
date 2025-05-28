@@ -9,7 +9,6 @@ import org.runningdinner.geocoder.GeocodingResult;
 import com.google.common.base.MoreObjects;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -53,12 +52,11 @@ public class AfterPartyLocation implements BaseAddress {
   private String addressRemarks;
   
   @Embedded
-  @AttributeOverrides({
-    @AttributeOverride(name = "lat", column = @Column(name = "afterPartyLocationLat", length = 64)),
-    @AttributeOverride(name = "lng", column = @Column(name = "afterPartyLocationLng", length = 64)),
-    @AttributeOverride(name = "formattedAddress", column = @Column(name = "afterPartyLocationFormattedAddress", length = 512)),
-    @AttributeOverride(name = "resultType", column = @Column(name = "afterPartyLocationResultType", length = 32))
-  })
+  @AttributeOverride(name = "lat", column = @Column(name = "afterPartyLocationLat", length = 64))
+  @AttributeOverride(name = "lng", column = @Column(name = "afterPartyLocationLng", length = 64))
+  @AttributeOverride(name = "formattedAddress", column = @Column(name = "afterPartyLocationFormattedAddress", length = 512))
+  @AttributeOverride(name = "resultType", column = @Column(name = "afterPartyLocationResultType", length = 32))
+  @AttributeOverride(name = "syncStatus", column = @Column(name = "afterPartyLocationSyncStatus"))
   private GeocodingResult geocodingResult = new GeocodingResult();
   
   @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
