@@ -129,7 +129,7 @@ public class GeocodeResponseHandlerTest {
 		assertThat(participant.getGeocodingResult().getLat()).isEqualByComparingTo(-1d);
 		assertThat(participant.getGeocodingResult().getLng()).isEqualByComparingTo(-1d);
 		assertThat(participant.getGeocodingResult().getResultType()).isEqualTo(GeocodingResultType.NONE);
-  	assertThat(participant.getGeocodingResult().getSyncStatus()).isEqualTo(GeocodingSyncStatus.UNSYNCHRONIZED);
+  	assertThat(participant.getGeocodingResult().getSyncStatus()).isEqualTo(GeocodingSyncStatus.SYNCHRONIZED);
 		
 		assertThat(queueProvider.getMessageRequests()).isEmpty();
 	}
