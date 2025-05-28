@@ -1,9 +1,11 @@
 
 package org.runningdinner;
 
-import org.runningdinner.mail.MailProvider;
+import org.runningdinner.mail.MailSenderLimit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class MailConfig {
@@ -26,15 +28,27 @@ public class MailConfig {
   @Value("${mail.smtp.starttls.enable}")
   private String enableStartTls;
 
-  @Value("${sendgrid.api.key}")
+  @Value("${mail.smtp.enabled:false}")
+  private String smtpEnabled;
+  
+  @Value("${mail.sendgrid.api.key}")
   private String sendGridApiKey;
 
-  @Value("${mailjet.api.key.public}")
+  @Value("${mail.sendgrid.api.enabled:true}")
+  private boolean sendGridApiEnabled;
+  
+  @Value("${mail.mailjet.api.key.public}")
   private String mailJetApiKeyPublic;
 
-  @Value("${mailjet.api.key.private}")
+  @Value("${mail.mailjet.api.key.private}")
   private String mailJetApiKeyPrivate;
+  
+  @Value("${mail.mailjet.api.enabled:true}")
+  private boolean mailJetApiEnabled;
 
+  @Value("${mail.aws.ses.enabled:true}")
+  private boolean awsSesEnabled;
+  
   @Value("${mail.replyto}")
   private String defaultReplyTo;
 
@@ -43,9 +57,9 @@ public class MailConfig {
   
   @Value("${mail.html}")
   private boolean htmlEmail;
-
-  @Value("${mail.provider.active}")
-  private MailProvider activeMailProvider;
+  
+  @Autowired
+  private Environment environment;
 
   public String getHost() {
 
@@ -99,10 +113,6 @@ public class MailConfig {
     return htmlEmail;
   }
 
-  public MailProvider getActiveMailProvider() {
-    return activeMailProvider;
-  }
-
   public String getMailJetApiKeyPublic() {
     return mailJetApiKeyPublic;
   }
@@ -110,4 +120,31 @@ public class MailConfig {
   public String getMailJetApiKeyPrivate() {
     return mailJetApiKeyPrivate;
   }
+
+	public String getSmtpEnabled() {
+		return smtpEnabled;
+	}
+
+	public boolean isSendGridApiEnabled() {
+		return sendGridApiEnabled;
+	}
+
+	public boolean isMailJetApiEnabled() {
+		return mailJetApiEnabled;
+	}
+
+	public boolean isAwsSesEnabled() {
+		return awsSesEnabled;
+	}
+  
+	public MailSenderLimit getSendGridApiLimits() {
+		return getMailSenderLimitFromConfig("mail.sendgrid.api");
+	}
+	
+	private MailSenderLimit getMailSenderLimitFromConfig(String configPrefix) {
+		Integer dailyLimit = environment.getProperty(configPrefix + ".limit.daily", Integer.class, -1);
+		Integer monthlyLimit = environment.getProperty(configPrefix + ".limit.monthly", Integer.class, -1);
+		return new MailSenderLimit(dailyLimit, monthlyLimit)
+	}
+  
 }

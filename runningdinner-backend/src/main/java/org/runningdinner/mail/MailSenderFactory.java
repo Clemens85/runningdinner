@@ -1,12 +1,15 @@
 package org.runningdinner.mail;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
 import org.runningdinner.core.util.EnvUtilService;
 import org.runningdinner.mail.mailjet.MailJetWrapper;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
+import org.runningdinner.mail.pool.PoolableMailSender;
 import org.runningdinner.mail.sendgrid.SendGridMailWrapper;
 import org.runningdinner.mail.ses.AwsSesWrapper;
 import org.slf4j.Logger;
@@ -16,7 +19,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import java.util.Properties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class MailSenderFactory {
@@ -42,41 +47,43 @@ public class MailSenderFactory {
     return mailSender;
   }
   
-  @PostConstruct
-  protected void initMailSender() {
+  public List<PoolableMailSender> getConfiguredMailSenders() {
 
-    if (envUtilService.isProfileActive("junit") || mailConfig.getActiveMailProvider() == MailProvider.MOCK) {
+  	List<PoolableMailSender> result = new ArrayList<>();
+  	
+    if (envUtilService.isProfileActive("junit")) {
       LOGGER.info("*** Using mocked In-Memory MailSender ***");
-      mailSender = new MailSenderMockInMemory();
-      return;
+      result.add(new MailSenderMockInMemory());
+      return result;
     }
 
-    if (mailConfig.getActiveMailProvider() == MailProvider.SENDGRID_API) {
+    if (mailConfig.isSendGridApiEnabled()) {
       LOGGER.info("*** Using SendGrid MailSender ***");
       mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKey(), objectMapper, mailConfig.isHtmlEmail());
-      return;
+      result.add(new PoolableMailSender(MailProvider.SENDGRID_API, mailSender, mailConfig.getSendGridApiLimits()));
     }
 
-    if (mailConfig.getActiveMailProvider() == MailProvider.AWS_SES_API) {
+    if (mailConfig.isAwsSesEnabled()) {
       LOGGER.info("*** Using AWS SES MailSender with accessKey {} ***", StringUtils.substring(mailConfig.getUsername(), 0, 5));
       mailSender = new AwsSesWrapper(mailConfig.getUsername(), mailConfig.getPassword(), mailConfig.isHtmlEmail());
       return;
     }
 
-    if (mailConfig.getActiveMailProvider() == MailProvider.MAILJET_API) {
+    if (mailConfig.isMailJetApiEnabled()) {
       LOGGER.info("*** Using MailJet MailSender with public API Key {} ***", StringUtils.substring(mailConfig.getMailJetApiKeyPublic(), 0, 5));
       mailSender = new MailJetWrapper(mailConfig.getMailJetApiKeyPublic(), mailConfig.getMailJetApiKeyPrivate(), mailConfig.isHtmlEmail());
       return;
     }
 
-    if (mailConfig.getActiveMailProvider() == MailProvider.SMTP) {
+    if (1 == 0) { // TODO
       LOGGER.info("*** Using SMTP MailSender with SMTP Host {} and username {} ***",
                   mailConfig.getHost(), StringUtils.substring(mailConfig.getUsername(), 0, 5));
       mailSender = newJavaSmtpMailSender();
       return;
     }
 
-    throw new IllegalStateException("MailSender not properly initialized. ActiveMailProvider was " + mailConfig.getActiveMailProvider());
+    // TODO: Check result has at least one
+    return result;
   }
   
   private MailSender newJavaSmtpMailSender() {

@@ -67,12 +67,15 @@ public class MessageTask extends RunningDinnerRelatedEntity {
     @AttributeOverride(name = "replyTo", column = @Column(nullable = false))
   })
   private Message message = new Message();
+  
+  @Column(nullable = false)
+  private String sender;
 
   protected MessageTask() {
     super();
   }
 
-  public MessageTask(MessageJob parentJob, RunningDinner runningDinner) {
+  public MessageTask(MessageJob parentJob, RunningDinner runningDinner, String sender) {
     super(runningDinner);
     this.setParentJob(parentJob);
     this.sendingStatus = SendingStatus.QUEUED;
@@ -85,7 +88,7 @@ public class MessageTask extends RunningDinnerRelatedEntity {
    * @param message
    * @return
    */
-  public static MessageTask newVirtualMessageTask(String recipientEmail, Message message) {
+  public static MessageTask newVirtualMessageTask(String recipientEmail, Message message, String sender) {
     
     MessageTask result = new MessageTask();
     result.setMessage(message);
@@ -169,7 +172,15 @@ public class MessageTask extends RunningDinnerRelatedEntity {
     this.message = message;
   }
   
-  @Override
+  public String getSender() {
+		return sender;
+	}
+
+	public void setSender(String sender) {
+		this.sender = sender;
+	}
+
+	@Override
   public String toString() {
     
     return MoreObjects
