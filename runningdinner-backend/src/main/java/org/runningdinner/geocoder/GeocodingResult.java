@@ -20,7 +20,7 @@ public class GeocodingResult {
 	private double lng = -1;
 
 	@Enumerated(EnumType.STRING)
-	private GeocodingResultType resultType;
+	private GeocodingResultType resultType = GeocodingResultType.NONE;
 
 	@Length(max = 512)
 	@SafeHtml
