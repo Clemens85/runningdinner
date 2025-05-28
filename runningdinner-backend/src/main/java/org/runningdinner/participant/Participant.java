@@ -102,6 +102,7 @@ public class Participant extends RunningDinnerRelatedEntity
   private UUID teamPartnerWishOriginatorId;
 
   @Embedded
+  @AttributeOverride(name = "syncStatus", column = @Column(name = "geocodingResultSyncStatus"))
   private GeocodingResult geocodingResult = new GeocodingResult();
 
   public Participant() {

@@ -1,17 +1,23 @@
 package org.runningdinner.core;
 
-import com.google.common.base.MoreObjects;
+import java.time.LocalDateTime;
+
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.geocoder.GeocodingResult;
 
-import jakarta.persistence.*;
+import com.google.common.base.MoreObjects;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Embeddable
-public class AfterPartyLocation {
+public class AfterPartyLocation implements BaseAddress {
 
   @SafeHtml
   @NotBlank
@@ -59,7 +65,8 @@ public class AfterPartyLocation {
   @NotNull
   private LocalDateTime time;
 
-  public String getStreet() {
+  @Override
+	public String getStreet() {
     return street;
   }
 
@@ -67,7 +74,8 @@ public class AfterPartyLocation {
     this.street = street;
   }
 
-  public String getStreetNr() {
+  @Override
+	public String getStreetNr() {
     return streetNr;
   }
 
@@ -75,7 +83,8 @@ public class AfterPartyLocation {
     this.streetNr = streetNr;
   }
 
-  public String getZip() {
+  @Override
+	public String getZip() {
     return zip;
   }
 
@@ -83,7 +92,8 @@ public class AfterPartyLocation {
     this.zip = zip;
   }
 
-  public String getCityName() {
+  @Override
+	public String getCityName() {
     return cityName;
   }
 

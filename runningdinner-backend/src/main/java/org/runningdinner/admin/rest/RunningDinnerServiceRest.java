@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import jakarta.validation.Valid;
-
 import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.admin.ReSendRunningDinnerCreatedMessage;
 import org.runningdinner.admin.ReSendRunningDinnerCreatedMessageService;
@@ -21,7 +19,6 @@ import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.runningdinner.wizard.PublicSettingsTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +26,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/rest/runningdinnerservice/v1/runningdinner", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -99,7 +104,7 @@ public class RunningDinnerServiceRest {
                                                               Locale locale) {
 
     RunningDinner updatedRunningDinner = afterPartyLocationService.updateAfterPartyLocationGeocode(adminId, geocodingResult);
-    return mapRunningDinnerAdminTO(updatedRunningDinner, locale);
+    return updatedRunningDinner != null ? mapRunningDinnerAdminTO(updatedRunningDinner, locale) : null;
   }
   
   @DeleteMapping(value = "/{adminId}/afterpartylocation")
@@ -132,7 +137,7 @@ public class RunningDinnerServiceRest {
   public ResponseEntity<?> addExampleParticipants(@PathVariable String adminId) {
  
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-    List<Participant> participants = ParticipantService.newParticipantsFromDemoXls();
+    List<Participant> participants = createRunningDinnerWizardService.readDemoParticipants();
     runningDinner = createRunningDinnerWizardService.saveParticipantsToDinner(runningDinner, participants);
     
     try {

@@ -32,7 +32,7 @@ import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.core.util.DateTimeUtil;
-import org.runningdinner.geocoder.AfterPartyLocationGeocodeEventPublisher;
+import org.runningdinner.geocoder.request.GeocodeRequestEventPublisher;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.Participant;
@@ -60,7 +60,7 @@ public class DinnerRouteMessageFormatterTest {
   private MessageFormatterHelperService messageFormatterHelperService;
 
   @Mock
-  private AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
+  private GeocodeRequestEventPublisher geocodeRequestEventPublisher;
 
   private final RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
 
@@ -81,11 +81,9 @@ public class DinnerRouteMessageFormatterTest {
     Mockito.when(messageSource.getMessage(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn("N/A");
 
-    this.afterPartyLocationService = new AfterPartyLocationService(runningDinnerService,
-        afterPartyLocationGeocodeEventPublisher, localizationProviderService, messageSource);
+    this.afterPartyLocationService = new AfterPartyLocationService(runningDinnerService, geocodeRequestEventPublisher, localizationProviderService, messageSource);
 
-    this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService,
-        messageFormatterHelperService, afterPartyLocationService);
+    this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService, messageFormatterHelperService, afterPartyLocationService);
   }
 
 	@AfterEach

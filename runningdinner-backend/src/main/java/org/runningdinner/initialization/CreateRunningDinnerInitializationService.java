@@ -19,7 +19,6 @@ import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +67,8 @@ public class CreateRunningDinnerInitializationService {
     
     RunningDinnerConfig runningDinnerConfig = RunningDinnerConfig.newConfigurer().havingMeals(newDefaultMeals(dinnerDate)).build();
    
-    List<Participant> participants = ParticipantService.newParticipantsFromDemoXls(); 
+    List<Participant> participants = createRunningDinnerWizardService.readDemoParticipants();
+    
     Contract contract = CreateRunningDinnerInitializationService.createContract();
     RunningDinner result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(runningDinnerInfo, runningDinnerConfig, DEFAULT_DINNER_CREATION_ADDRESS, 
                                                                                                 RunningDinnerType.STANDARD, contract, null, participants);

@@ -25,6 +25,9 @@ public class GeocodingResult {
 	@Length(max = 512)
 	@SafeHtml
 	private String formattedAddress;
+	
+	@Enumerated(EnumType.STRING)
+	private GeocodingSyncStatus syncStatus = GeocodingSyncStatus.UNSYNCHRONIZED;
 
 	public GeocodingResult() {
 		// Default ctor
@@ -43,6 +46,7 @@ public class GeocodingResult {
 		this.lng = src.lng;
 		this.formattedAddress = src.formattedAddress;
 		this.resultType = src.resultType;
+		this.syncStatus = src.syncStatus;
 	}
 
 	public double getLat() {
@@ -78,6 +82,14 @@ public class GeocodingResult {
 	public void setFormattedAddress(String formattedAddress) {
 		this.formattedAddress = formattedAddress;
 	}
+	
+	public GeocodingSyncStatus getSyncStatus() {
+		return syncStatus;
+	}
+
+	public void setSyncStatus(GeocodingSyncStatus syncStatus) {
+		this.syncStatus = syncStatus;
+	}
 
 	@Override
 	public String toString() {
@@ -97,4 +109,11 @@ public class GeocodingResult {
 		NOT_EXACT,
 		NONE
 	}
+	
+	public enum GeocodingSyncStatus {
+		SYNCHRONIZED,
+		UNSYNCHRONIZED
+	}
+
+	
 }

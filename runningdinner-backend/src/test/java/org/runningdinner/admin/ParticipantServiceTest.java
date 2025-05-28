@@ -1,38 +1,29 @@
 
 package org.runningdinner.admin;
 
-import org.awaitility.Awaitility;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.common.exception.ValidationException;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.participant.rest.ParticipantListActive;
 import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
-import org.runningdinner.queue.QueueProviderFactoryService;
-import org.runningdinner.queue.QueueProviderMockInMemory;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -51,19 +42,12 @@ public class ParticipantServiceTest {
   @Autowired
   private TestHelperService testHelperService;
   
-  @Autowired
-  private QueueProviderFactoryService queueProviderFactoryService;
-  
   private RunningDinner runningDinner;
-
-  private QueueProviderMockInMemory queueProvider;
 
   @BeforeEach
   public void setUp() {
 
     this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, TOTAL_NUMBER_OF_PARTICIPANTS);
-    this.queueProvider = (QueueProviderMockInMemory) queueProviderFactoryService.getQueueProvider();
-    this.queueProvider.clearMessageRequests();
   }
 
   @Test
@@ -131,45 +115,12 @@ public class ParticipantServiceTest {
     assertThat(result.getAge()).isEqualTo(25);
   }
   
-  @Test
-  public void geocodeEventIsPublishedOnUpdate() throws NoPossibleRunningDinnerException {
-   
-    // Create teams for verifying that lazy loading of team in participant does not throw error
-    teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
-    
-    List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
-    Participant firstParticipant = participants.get(0);
-    
-    firstParticipant.getAddress().setStreet("New Street");
-    testHelperService.updateParticipant(firstParticipant);
-    
-    Awaitility
-      .await()
-      .atMost(3, TimeUnit.SECONDS)
-      .untilAsserted(() -> assertThat(queueProvider.getMessageRequests()).isNotEmpty());
-
-    List<Map<String, MessageAttributeValue>> allSentMessageEntries = queueProvider.getMessageRequests()
-                                                                      .stream()
-                                                                      .map(SendMessageRequest::messageAttributes)
-                                                                      .toList();
-    
-    Set<String> participantIdsInMessageEntries = allSentMessageEntries
-                                                  .stream()
-                                                  .map(entry -> entry.get("participantId"))
-                                                  .filter(Objects::nonNull)
-                                                  .map(MessageAttributeValue::stringValue)
-                                                  .collect(Collectors.toSet());
-    
-    assertThat(participantIdsInMessageEntries).contains(firstParticipant.getId().toString());
-  }
 
   private void assertParticipantListNumbers(List<ParticipantWithListNumberTO> resultList, int expectedStartNumber, int expectedEndNumber) {
 
     List<Integer> expectedParticipantNumbers = IntStream.rangeClosed(expectedStartNumber, expectedEndNumber).boxed().collect(Collectors.toList());
     assertThat(resultList).extracting("participantNumber", Integer.class).containsExactlyElementsOf(expectedParticipantNumbers);
     assertThat(resultList).extracting("listNumber", Integer.class).containsExactlyElementsOf(expectedParticipantNumbers);
-
-    
   }
 
 

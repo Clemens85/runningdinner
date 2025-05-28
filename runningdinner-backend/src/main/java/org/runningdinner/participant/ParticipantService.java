@@ -2,7 +2,6 @@
 package org.runningdinner.participant;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,8 +23,6 @@ import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
-import org.runningdinner.common.ResourceLoader;
-import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.ValidatorService;
@@ -34,20 +31,14 @@ import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
-import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConverterFactory;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
 import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
-import org.runningdinner.core.converter.config.AddressColumnConfig;
-import org.runningdinner.core.converter.config.EmailColumnConfig;
-import org.runningdinner.core.converter.config.GenderColumnConfig;
-import org.runningdinner.core.converter.config.NameColumnConfig;
-import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.geocoder.GeocodingResult;
-import org.runningdinner.geocoder.ParticipantGeocodeEventPublisher;
+import org.runningdinner.geocoder.request.GeocodeRequestEventPublisher;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerService;
 import org.runningdinner.participant.rest.MissingParticipantsInfo;
@@ -58,7 +49,6 @@ import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -67,6 +57,7 @@ import org.springframework.util.Assert;
 
 @Service
 public class ParticipantService {
+
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantService.class);
 
@@ -83,13 +74,14 @@ public class ParticipantService {
   private TeamPartnerWishStateHandlerService teamPartnerWishStateHandlerService;
 
   @Autowired
-  private ParticipantGeocodeEventPublisher participantGeocodeEventPublisher;
-
+  private GeocodeRequestEventPublisher geocodeRequestEventPublisher;
+  
   @Autowired
   private MessageFormatterHelperService messageFormatterHelperService;
 
   @Autowired
   private LocalizationProviderService localizationProviderService;
+
 
   public Participant findParticipantById(@ValidateAdminId String adminId, UUID participantId) {
 
@@ -245,10 +237,12 @@ public class ParticipantService {
     LOGGER.info("Update geocode of participant {}", participantId);
 
     Participant existingParticipant = participantRepository.findByIdAndAdminId(participantId, adminId);
-    validatorService.checkEntityNotNull(existingParticipant, "Could not load participant " + participantId + " for dinner " + adminId);
+    if (existingParticipant == null) {
+    	LOGGER.warn("Could not load participant {} for dinner {}. This may happen if the participant was deleted.", participantId, adminId);
+    	return null;
+    }
 
     existingParticipant.setGeocodingResult(incomingGeocodingResult);
-
     var result = participantRepository.save(existingParticipant);
     syncChangesToChildParticipant(adminId, result, SyncSettings.onlyGeocodeData());
     return result;
@@ -314,7 +308,7 @@ public class ParticipantService {
     Assert.state(!(incomingParticipantData.isTeamPartnerWishInvitationEmailAddressProvided() && incomingParticipantData.isTeamPartnerWishRegistrationDataProvided()), 
         "Both teamPartnerWishInvitationEmailAddress and teamPartnerWishRegistrationData is provided by client, only one is allowed!");
     
-    copyFields(incomingParticipantData, dest);
+    copyFieldsFromInputToParticipant(incomingParticipantData, dest);
     
     if (incomingParticipantData.isTeamPartnerWishRegistrationDataProvided()) {
       if (runningDinner.getConfiguration().canHost(dest) != FuzzyBoolean.TRUE) {
@@ -388,7 +382,7 @@ public class ParticipantService {
     return result;
   }
 
-  protected void copyFields(ParticipantInputDataTO incomingParticipant, Participant dest) {
+  public static void copyFieldsFromInputToParticipant(ParticipantInputDataTO incomingParticipant, Participant dest) {
 
     ParticipantName participantName = ParticipantName.newName()
       .withFirstname(incomingParticipant.getFirstnamePart())
@@ -496,26 +490,6 @@ public class ParticipantService {
     }
   }
   
-  public static List<Participant> newParticipantsFromDemoXls() {
-    
-    NameColumnConfig nameColumnConfig = NameColumnConfig.createForOneColumn(0);
-    AddressColumnConfig addressColumnConfig = AddressColumnConfig.newBuilder().withStreetAndStreetNrColumn(1).buildWithZipAndCityColumn(2);
-    NumberOfSeatsColumnConfig numberSeatsColumnConfig = NumberOfSeatsColumnConfig.newNumericSeatsColumnConfig(3);
-    ParsingConfiguration parsingConfiguration = new ParsingConfiguration(nameColumnConfig, addressColumnConfig, numberSeatsColumnConfig);
-    parsingConfiguration.setEmailColumnConfig(EmailColumnConfig.createEmailColumnConfig(4));
-    parsingConfiguration.setGenderColumnConfig(GenderColumnConfig.createGenderColumn(5));
-    parsingConfiguration.setStartRow(1);
-
-    FileConverter fileConverter = ConverterFactory.newFileConverter(parsingConfiguration, INPUT_FILE_TYPE.HSSF);
-    
-    Resource demoResource = ResourceLoader.getResource("files/demo.xls");
-    try (InputStream inputStream = demoResource.getInputStream()) {
-      return fileConverter.parseParticipants(inputStream);
-    } catch (IOException | ConversionException e) {
-      throw new TechnicalException(e);
-    }
-  }
-  
   public static List<Participant> filterParticipantsAssignedIntoTeams(List<Participant> participants) {
   	
     return participants
@@ -583,9 +557,6 @@ public class ParticipantService {
   }
 
   private void putGeocodeEventToQueue(final Participant participant, final RunningDinner runningDinner) {
-    if (runningDinner.getRunningDinnerType() == RunningDinnerType.DEMO) {
-      return;
-    }
     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCompletion(int status) {
@@ -593,7 +564,7 @@ public class ParticipantService {
           return;
         }
         try {
-          participantGeocodeEventPublisher.sendMessageToQueueAsync(participant);
+        	geocodeRequestEventPublisher.sendParticipantGeocodingRequestAsync(participant);
         } catch (Exception e) {
           LOGGER.error("Error while calling sendMessageToQueueAsync for {}", participant, e);
         }

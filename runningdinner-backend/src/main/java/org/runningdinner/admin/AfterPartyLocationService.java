@@ -1,14 +1,18 @@
 package org.runningdinner.admin;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.check.ValidateAdminId;
+import org.runningdinner.common.exception.DinnerNotFoundException;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.event.RunningDinnerSettingsUpdatedEvent;
-import org.runningdinner.geocoder.AfterPartyLocationGeocodeEventPublisher;
 import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.geocoder.request.GeocodeRequestEventPublisher;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.participant.ParticipantAddress;
 import org.slf4j.Logger;
@@ -17,10 +21,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
 @Service
 public class AfterPartyLocationService {
 
@@ -28,36 +28,33 @@ public class AfterPartyLocationService {
   
   private final RunningDinnerService runningDinnerService;
   
-  private final AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
-
   private final LocalizationProviderService localizationProviderService;
+  
+  private final GeocodeRequestEventPublisher geocodeRequestEventPublisher;
   
   private final MessageSource messageSource;
   
   public AfterPartyLocationService(RunningDinnerService runningDinnerService,
-      AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher,
-      LocalizationProviderService localizationProviderService,
-      MessageSource messageSource) {
+  																 GeocodeRequestEventPublisher geocodeRequestEventPublisher,
+  																 LocalizationProviderService localizationProviderService,
+  																 MessageSource messageSource) {
     
     this.runningDinnerService = runningDinnerService;
-    this.afterPartyLocationGeocodeEventPublisher = afterPartyLocationGeocodeEventPublisher;
+    this.geocodeRequestEventPublisher = geocodeRequestEventPublisher;
     this.localizationProviderService = localizationProviderService;
     this.messageSource = messageSource;
   }
   
   public static void validateAfterPartyLocation(AfterPartyLocation afterPartyLocation) {
-    if (afterPartyLocation == null) {
-		}
     // Nothing needs to be done in here
   }
   
   public void putGeocodeEventToQueue(final RunningDinner runningDinner) {
-    
-    if (runningDinner.getRunningDinnerType() == RunningDinnerType.DEMO || runningDinner.getAfterPartyLocation().isEmpty()) {
+    if (runningDinner.getAfterPartyLocation().isEmpty()) {
       return;
     }
     try {
-      afterPartyLocationGeocodeEventPublisher.sendMessageToQueueAsync(runningDinner);
+    	geocodeRequestEventPublisher.sendAfterPartyLocationGeocodingRequestAsync(runningDinner);
     } catch (Exception e) { 
       LOGGER.error("Error while calling sendMessageToQueueAsync for {}", runningDinner, e);
     }
@@ -68,9 +65,14 @@ public class AfterPartyLocationService {
 
     LOGGER.info("Update geocode of after party location of running dinner {}", adminId);
 
-    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    RunningDinner runningDinner = null;
+    try {
+    	runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    } catch (DinnerNotFoundException e) {
+    	LOGGER.warn("Could not find runningdinner for {} when trying to update geocode location. This may happen for already deleted dinners", adminId);
+    }
     
-    if (runningDinner.getAfterPartyLocation().isEmpty()) {
+    if (runningDinner == null || runningDinner.getAfterPartyLocation().isEmpty()) {
       return runningDinner;
     }
     

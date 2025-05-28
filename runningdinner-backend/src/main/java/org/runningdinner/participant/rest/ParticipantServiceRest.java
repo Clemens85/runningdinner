@@ -1,5 +1,13 @@
 package org.runningdinner.participant.rest;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.rest.RunningDinnerRelatedIdListTO;
@@ -16,13 +24,18 @@ import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInf
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
 
 @RestController
 @RequestMapping("/rest/participantservice/v1")
@@ -80,7 +93,7 @@ public class ParticipantServiceRest {
       @RequestBody GeocodingResult geocodingResult) {
 
     Participant participant = participantService.updateParticipantGeocode(adminId, participantId, geocodingResult);
-    return new ParticipantTO(participant);
+    return participant != null ? new ParticipantTO(participant) : null; 
   }
   
   @PutMapping("/runningdinner/{adminId}/participant/{participantId}/activate")
