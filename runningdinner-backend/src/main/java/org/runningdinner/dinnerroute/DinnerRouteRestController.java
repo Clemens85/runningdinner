@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.runningdinner.core.NoPossibleRunningDinnerException;
-import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourCluster;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
@@ -26,7 +25,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/rest/dinnerrouteservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DinnerRouteServiceRest {
+public class DinnerRouteRestController {
 
   private final DinnerRouteService dinnerRouteService;
   
@@ -34,7 +33,7 @@ public class DinnerRouteServiceRest {
 
 	private final TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService;
 
-  public DinnerRouteServiceRest(DinnerRouteService dinnerRouteService, 
+  public DinnerRouteRestController(DinnerRouteService dinnerRouteService, 
   															DinnerRouteOptimizationService dinnerRouteOptimizationService,
   															TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService) {
     this.dinnerRouteService = dinnerRouteService;
@@ -53,26 +52,24 @@ public class DinnerRouteServiceRest {
     return dinnerRouteService.findAllDinnerRoutes(adminId);
   }
 
-  @PutMapping("/runningdinner/{adminId}/distances/{range}/teams")
+  @GetMapping("/runningdinner/{adminId}/distances/{range}/teams")
   public TeamNeighbourClusterListTO calculateTeamNeighbourClusters(@PathVariable("adminId") String adminId,
-  																																 @PathVariable("range") Integer rangeInMeters,
-  																																 @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
+  																																 @PathVariable("range") Integer rangeInMeters) {
 
     Assert.state(rangeInMeters >= 0, "range must be > 0");
-    List<TeamNeighbourCluster> result = teamNeighbourClusterCalculationService.calculateTeamNeighbourClusters(adminId, addressEntityList.getAddressEntities(), rangeInMeters);
+    List<TeamNeighbourCluster> result = teamNeighbourClusterCalculationService.calculateTeamNeighbourClusters(adminId, rangeInMeters);
     return new TeamNeighbourClusterListTO(result);
   }
 
-  @PutMapping("/runningdinner/{adminId}/distances/teams")
-  public AllDinnerRoutesWithDistancesListTO calculateRouteDistances(@PathVariable("adminId") String adminId,
-                                                                	  @RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) {
+  @GetMapping("/runningdinner/{adminId}/distances/teams")
+  public AllDinnerRoutesWithDistancesListTO calculateRouteDistances(@PathVariable("adminId") String adminId) {
 
-    return dinnerRouteService.calculateDinnerRouteDistances(adminId, addressEntityList);
+    return dinnerRouteService.calculateDinnerRouteDistances(adminId);
   }
 
   @PutMapping("/runningdinner/{adminId}/distances/optimization")
   public DinnerRouteOptimizationResult calculateOptimization(@PathVariable("adminId") String adminId,
-  												  			 @RequestBody @Valid CalculateDinnerRouteOptimizationRequest calculateRequest) throws NoPossibleRunningDinnerException {
+												  			 														 @RequestBody @Valid CalculateDinnerRouteOptimizationRequest calculateRequest) throws NoPossibleRunningDinnerException {
     return dinnerRouteOptimizationService.calculateOptimization(adminId, calculateRequest);
   }
   
@@ -82,9 +79,8 @@ public class DinnerRouteServiceRest {
 		dinnerRouteOptimizationService.saveNewDinnerRoutes(adminId, saveRequest);
   }
   
-  @PutMapping("/runningdinner/{adminId}/distances/optimization/predict")
-  public OptimizationImpact predictOptimizationImpact(@PathVariable("adminId") String adminId,
-  																										@RequestBody @Valid GeocodedAddressEntityListTO addressEntityList) throws NoPossibleRunningDinnerException {
-		return dinnerRouteOptimizationService.predictOptimizationImpact(adminId, addressEntityList);
+  @GetMapping("/runningdinner/{adminId}/distances/optimization/predict")
+  public OptimizationImpact predictOptimizationImpact(@PathVariable("adminId") String adminId) throws NoPossibleRunningDinnerException {
+		return dinnerRouteOptimizationService.predictOptimizationImpact(adminId);
   }
 }

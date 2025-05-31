@@ -21,15 +21,12 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.TeamCombinationInfo;
 import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
+import org.runningdinner.core.util.NumberUtil;
 import org.runningdinner.dinnerroute.AllDinnerRoutesWithDistancesListTO;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
 import org.runningdinner.dinnerroute.DinnerRouteListTO;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.DinnerRouteTeamTO;
-import org.runningdinner.dinnerroute.distance.DistanceCalculator;
-import org.runningdinner.dinnerroute.distance.DistanceEntry;
-import org.runningdinner.dinnerroute.distance.DistanceMatrix;
-import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourCluster;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
@@ -55,7 +52,7 @@ import jakarta.validation.Valid;
 
 @Service
 public class DinnerRouteOptimizationService {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(DinnerRouteOptimizationService.class);
 	
   private final RunningDinnerService runningDinnerService;
@@ -69,44 +66,44 @@ public class DinnerRouteOptimizationService {
 	private final TeamRepository teamRepository;
 
 	private final DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService;
+	
+  private final TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService;
 
 	public DinnerRouteOptimizationService(RunningDinnerService runningDinnerService, 
 																			  TeamHostLocationService teamHostLocationService, 
 																			  TeamService teamService,
 																			  TeamRepository teamRepository,
 																			  DinnerRouteMessageFormatter dinnerRouteMessageFormatter,
-																			  DinnerRouteOptimizationFeedbackService  dinnerRouteOptimizationFeedbackService) {
+																			  DinnerRouteOptimizationFeedbackService  dinnerRouteOptimizationFeedbackService, 
+																			  TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService) {
+		
 		this.runningDinnerService = runningDinnerService;
 		this.teamHostLocationService = teamHostLocationService;
 		this.teamService = teamService;
 		this.teamRepository = teamRepository;
 		this.dinnerRouteMessageFormatter = dinnerRouteMessageFormatter;
 		this.dinnerRouteOptimizationFeedbackService = dinnerRouteOptimizationFeedbackService;
+		this.teamNeighbourClusterCalculationService = teamNeighbourClusterCalculationService;
 	}
 
 	@Transactional(readOnly = true)
 	public DinnerRouteOptimizationResult calculateOptimization(String adminId, 
 																														 @Valid CalculateDinnerRouteOptimizationRequest calculateRequest) throws NoPossibleRunningDinnerException {
     
-		GeocodedAddressEntityListTO addressEntityList = calculateRequest.addressEntityList();
-		
 		String optimizationId = UUID.randomUUID().toString().split("-")[0];
 		
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 
-    TeamHostLocationList teamHostLocationList = teamHostLocationService.mapToTeamHostLocations(adminId, addressEntityList);
+    TeamHostLocationList teamHostLocationList = teamHostLocationService.findTeamHostLocations(adminId);
     
     // Step 1: Get optimized team clusters and re-generate dinner route plans (this happens all in-memory, we use detached Teams):
     GlobalClusterOptimizer globalOptimizer = new GlobalClusterOptimizer(runningDinner);
   	Map<Integer, List<List<TeamHostLocation>>> optimizedTeamSegments = globalOptimizer.calculateOptimizedClusters(teamHostLocationList);
   	
-  	List<TeamHostLocation> allTeamHostLocations = teamHostLocationList.getAllTeamHostLocations();
-  	
   	for (var entry : optimizedTeamSegments.entrySet()) {
   		List<List<TeamHostLocation>> teamClustersByClusterSize = entry.getValue();
   		for (List<TeamHostLocation> teamCluster : teamClustersByClusterSize) {
   			List<Team> wrappedTeams = TeamHostLocation.mapToTeams(teamCluster);
-  			DinnerRouteOptimizationUtil.addMissingGeocodesToTeams(wrappedTeams, allTeamHostLocations);
 				StaticTemplateDinnerPlanGenerator.generateDinnerExecutionPlan(wrappedTeams, runningDinner.getConfiguration());
   		}
   	}
@@ -130,23 +127,26 @@ public class DinnerRouteOptimizationService {
   	List<TeamHostLocation> teamHostLocationsValid = teamHostLocationList.teamHostLocationsValid();
   	
   	// Step 3a): Re-calculate distances of all dinner routes
-    DistanceMatrix newDistanceMatrix = DistanceCalculator.calculateDistanceMatrix(teamHostLocationsValid);
-    AllDinnerRoutesWithDistancesListTO optimizedDinnerRoutesWithDistances = DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(optimizedDinnerRoutes, newDistanceMatrix);
+//    DistanceMatrix newDistanceMatrix = DistanceCalculator.calculateDistanceMatrix(teamHostLocationsValid);
+    AllDinnerRoutesWithDistancesListTO optimizedDinnerRoutesWithDistances = DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(optimizedDinnerRoutes);
 
     // Step 3b): Re-calculate cluster with teams that are located on same address:
-    DistanceMatrix newDistanceMatrixDuplicatedAddresses = DistanceCalculator.calculateDistanceMatrix(teamHostLocationsValid, 0);
-    Set<DistanceEntry> duplicatedDistanceEntries = newDistanceMatrixDuplicatedAddresses.getEntries().keySet();
-    Set<Integer> duplicatedTeamNumbers = new HashSet<>();
-		duplicatedDistanceEntries.stream().forEach(entry -> duplicatedTeamNumbers.add(DinnerRouteCalculator.parseIntSafe(entry.srcId())));
-		duplicatedDistanceEntries.stream().forEach(entry -> duplicatedTeamNumbers.add(DinnerRouteCalculator.parseIntSafe(entry.destId())));
+    List<Team> allWrappedTeams = teamHostLocationsValid.stream().map(TeamHostLocation::getTeam).toList();
+    List<TeamNeighbourCluster> teamNeighbourClusters = teamNeighbourClusterCalculationService.calculateTeamNeighbourClusters(adminId, allWrappedTeams, 0);
     
-    List<Team> neighbourTeams = TeamHostLocation.mapToTeams(teamHostLocationsValid)
-    																						.stream()
-    																						.filter(t -> duplicatedTeamNumbers.contains(t.getTeamNumber()))
-    																						.toList();
-    List<TeamNeighbourCluster> teamNeighbourClusters = TeamNeighbourClusterCalculationService.mapToTeamNeighbourClusters(newDistanceMatrixDuplicatedAddresses, neighbourTeams, teamHostLocationList.getAllTeamHostLocations());
+//    DistanceMatrix newDistanceMatrixDuplicatedAddresses = DistanceCalculator.calculateDistanceMatrix(teamHostLocationsValid, 0);
+//    Set<DistanceEntry> duplicatedDistanceEntries = newDistanceMatrixDuplicatedAddresses.getEntries().keySet();
+//    Set<Integer> duplicatedTeamNumbers = new HashSet<>();
+//		duplicatedDistanceEntries.stream().forEach(entry -> duplicatedTeamNumbers.add(DinnerRouteCalculator.parseIntSafe(entry.srcId())));
+//		duplicatedDistanceEntries.stream().forEach(entry -> duplicatedTeamNumbers.add(DinnerRouteCalculator.parseIntSafe(entry.destId())));
+//    
+//    List<Team> neighbourTeams = TeamHostLocation.mapToTeams(teamHostLocationsValid)
+//    																						.stream()
+//    																						.filter(t -> duplicatedTeamNumbers.contains(t.getTeamNumber()))
+//    																						.toList();
+//    List<TeamNeighbourCluster> teamNeighbourClusters = TeamNeighbourClusterCalculationService.mapToTeamNeighbourClusters(newDistanceMatrixDuplicatedAddresses, neighbourTeams, teamHostLocationList.getAllTeamHostLocations());
     
-    DinnerRouteListTO optimizedDinnerRouteList = new DinnerRouteListTO(optimizedDinnerRoutes, teamClusterMappings);
+    DinnerRouteListTO optimizedDinnerRouteList = new DinnerRouteListTO(optimizedDinnerRoutes, teamClusterMappings, new TeamNeighbourClusterListTO(teamNeighbourClusters));
     
     var result = new DinnerRouteOptimizationResult(optimizationId, 
     																							 optimizedDinnerRouteList, 
@@ -180,12 +180,12 @@ public class DinnerRouteOptimizationService {
 		for (DinnerRouteTO dinnerRoute : dinnerRoutes) {
 			TeamTO currentTeamInRoute = dinnerRoute.getCurrentTeam();
 			
-			Team currentTeamToSave = DinnerRouteCalculator.findTeamForTeamNumber(String.valueOf(currentTeamInRoute.getTeamNumber()), existingTeams);
+			Team currentTeamToSave = findTeamForTeamNumber(String.valueOf(currentTeamInRoute.getTeamNumber()), existingTeams);
 			
 			List<DinnerRouteTeamTO> allTeamsOnRoute = dinnerRoute.getTeams();
 			List<Team> hostingTeamsOnRoute = allTeamsOnRoute.stream()
 																				.filter(hostingTeam -> hostingTeam.getTeamNumber() != currentTeamInRoute.getTeamNumber())
-																				.map(hostingTeam -> DinnerRouteCalculator.findTeamForTeamNumber(String.valueOf(hostingTeam.getTeamNumber()), existingTeams))
+																				.map(hostingTeam -> findTeamForTeamNumber(String.valueOf(hostingTeam.getTeamNumber()), existingTeams))
 																				.toList();
 			
 			for (Team hostingTeam : hostingTeamsOnRoute) {
@@ -195,6 +195,16 @@ public class DinnerRouteOptimizationService {
 		
 		teamRepository.saveAll(existingTeams);
 	}
+	
+  private static Team findTeamForTeamNumber(String teamNumberStr, List<Team> teams) {
+    int teamNumber = NumberUtil.parseIntSafe(teamNumberStr);
+    return teams
+            .stream()
+            .filter(t -> t.getTeamNumber() == teamNumber)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Could not find team with teamMember " + teamNumber + " within teams " + teams));
+  }
+	
 
 	private void performTeamMemberChanges(List<TeamMemberChange> teamMemberChanges, List<Team> existingTeams) {
 		if (CollectionUtils.isEmpty(teamMemberChanges)) {
@@ -292,10 +302,9 @@ public class DinnerRouteOptimizationService {
 		}
 	}
 
-	public OptimizationImpact predictOptimizationImpact(@ValidateAdminId String adminId, 
-																										  @Valid GeocodedAddressEntityListTO addressEntityList) throws NoPossibleRunningDinnerException {
+	public OptimizationImpact predictOptimizationImpact(@ValidateAdminId String adminId) throws NoPossibleRunningDinnerException {
 
-		TeamHostLocationList teamHostLocations = teamHostLocationService.mapToTeamHostLocations(adminId, addressEntityList);
+		TeamHostLocationList teamHostLocations = teamHostLocationService.findTeamHostLocations(adminId);
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 		int totalNumberOfTeams = teamHostLocations.getAllTeamHostLocations().size();
 		var teamCombinationInfo = TeamCombinationInfo.newInstance(runningDinner.getConfiguration(), totalNumberOfTeams);

@@ -60,9 +60,6 @@ importers:
       react-dom:
         specifier: ^18.0.2
         version: 18.3.1(react@18.3.1)
-      react-geocode:
-        specifier: 0.2.3
-        version: 0.2.3
       react-hook-form:
         specifier: 7.46.1
         version: 7.46.1(react@18.3.1)
@@ -100,9 +97,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.7
         version: 18.2.7
-      '@types/react-geocode':
-        specifier: 0.2.1
-        version: 0.2.1
       '@types/react-redux':
         specifier: 7.1.26
         version: 7.1.26
@@ -1000,9 +994,6 @@ packages:
 
   '@types/react-dom@18.2.7':
     resolution: {integrity: sha512-GRaAEriuT4zp9N4p1i8BDBYmEyfo+xQ3yHjJU4eiK5NDa1RmUZG+unZABUTK4/Ox/M+GaHwb6Ow8rUITrtjszA==}
-
-  '@types/react-geocode@0.2.1':
-    resolution: {integrity: sha512-iZAvDCFNYc3jZqB/MoPkOE/Gc0AzrBkCjpQnVpRKrDB6v8k6i4Cp+fpV7y3MLg13zasovTpuguo25nkVc31fcA==}
 
   '@types/react-redux@7.1.26':
     resolution: {integrity: sha512-UKPo7Cm7rswYU6PH6CmTNCRv5NYF3HrgKuHEYTK8g/3czYLrUux50gQ2pkxc9c7ZpQZi+PNhgmI8oNIRoiVIxg==}
@@ -3089,8 +3080,6 @@ snapshots:
   '@types/react-dom@18.2.7':
     dependencies:
       '@types/react': 18.2.22
-
-  '@types/react-geocode@0.2.1': {}
 
   '@types/react-redux@7.1.26':
     dependencies:

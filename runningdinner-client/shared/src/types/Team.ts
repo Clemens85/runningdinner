@@ -1,22 +1,26 @@
-import {Meal} from "./RunningDinner";
-import {Participant, TeamPartnerOption} from "./Participant";
-import {BaseEntity} from "./Base";
-import {isArrayEmpty, isStringNotEmpty} from "../Utils";
-import {isTeamPartnerWishRegistration} from "../admin";
+import { Meal } from './RunningDinner';
+import { Participant, TeamPartnerOption } from './Participant';
+import { BaseEntity } from './Base';
+import { isArrayEmpty, isStringNotEmpty } from '../Utils';
+import { isTeamPartnerWishRegistration } from '../admin';
 
 export enum TeamStatus {
-  OK = "OK",
-  CANCELLED = "CANCELLED",
-  REPLACED = "REPLACED"
+  OK = 'OK',
+  CANCELLED = 'CANCELLED',
+  REPLACED = 'REPLACED',
 }
 
-export interface Team extends BaseEntity {
+export type BaseTeam = {
   teamNumber: number;
   status: TeamStatus;
-  teamMembers: Array<Participant>;
   meal: Meal;
+};
+
+export type Team = {
+  teamMembers: Array<Participant>;
   hostTeamMember: Participant;
-}
+} & BaseEntity &
+  BaseTeam;
 
 export interface TeamArrangementList {
   teams: Array<Team>;
@@ -62,20 +66,20 @@ export function getTeamPartnerOptionOfTeam(team: Team): TeamPartnerOption {
 }
 
 export function hasAllTeamMembersSameTeamPartnerWish(team: Team, optionToCheck: TeamPartnerOption): boolean {
-  if (optionToCheck === TeamPartnerOption.NONE || isArrayEmpty(team.teamMembers) || team.teamMembers.length  <= 1) {
+  if (optionToCheck === TeamPartnerOption.NONE || isArrayEmpty(team.teamMembers) || team.teamMembers.length <= 1) {
     return false;
   }
-  const valuesToCheck = team.teamMembers.map(p => {
+  const valuesToCheck = team.teamMembers.map((p) => {
     if (optionToCheck === TeamPartnerOption.INVITATION) {
-      let invitationArr = [p.teamPartnerWishEmail || "", p.email || ""];
-      invitationArr = invitationArr.map(email => email.toLowerCase().trim());
+      let invitationArr = [p.teamPartnerWishEmail || '', p.email || ''];
+      invitationArr = invitationArr.map((email) => email.toLowerCase().trim());
       invitationArr.sort();
-      return invitationArr.join("-");
+      return invitationArr.join('-');
     } else if (optionToCheck === TeamPartnerOption.REGISTRATION) {
-      return p.teamPartnerWishOriginatorId || "";
+      return p.teamPartnerWishOriginatorId || '';
     }
-    return "";
+    return '';
   });
-  const allSame = valuesToCheck.every(val => val === valuesToCheck[0] && isStringNotEmpty(val));
+  const allSame = valuesToCheck.every((val) => val === valuesToCheck[0] && isStringNotEmpty(val));
   return allSame;
 }

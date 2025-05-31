@@ -1,38 +1,31 @@
-import { buildAddressEntityIdsQueryKey, buildAddressEntityList, calculateTeamNeighbourClusters, DinnerRouteTeam, DinnerRouteTeamMapEntry, GeocodedAddressEntityList, isStringNotEmpty, TeamNeighbourCluster } from "@runningdinner/shared";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useIsRouteOptimization } from "./useIsRouteOptimization";
-import { DinnerRouteOptimizationResultService } from "./DinnerRouteOptimizationResultService";
+import { calculateTeamNeighbourClusters, isStringNotEmpty, TeamNeighbourCluster } from '@runningdinner/shared';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useIsRouteOptimization } from './useIsRouteOptimization';
+import { DinnerRouteOptimizationResultService } from './DinnerRouteOptimizationResultService';
 
-export function useCalculateTeamNeighbourClusters(adminId: string, dinnerRouteMapEntries: DinnerRouteTeamMapEntry[] | DinnerRouteTeam[], range: number) {
+export function queryCalculateTeamDistanceClustersKey(adminId: string, range: number, optimizationId: string | null) {
+  return ['calculateTeamNeighbourClusters', adminId, range, optimizationId];
+}
 
+export function useCalculateTeamNeighbourClusters(adminId: string, range: number) {
   const optimizationId = useIsRouteOptimization();
-
-  const addressEntityList = buildAddressEntityList(dinnerRouteMapEntries);
-  const addressEntityIds = buildAddressEntityIdsQueryKey(addressEntityList);
 
   return useQuery({
     placeholderData: keepPreviousData,
-    queryFn: () => doCalculateTeamNeighbourClusters(adminId, addressEntityList, range, optimizationId),
-    queryKey: ['calculateTeamDistanceClusters', adminId, addressEntityIds, range, optimizationId],
-    enabled: range >= 0 && addressEntityList.addressEntities?.length > 0
+    queryFn: () => doCalculateTeamNeighbourClusters(adminId, range, optimizationId),
+    queryKey: queryCalculateTeamDistanceClustersKey(adminId, range, optimizationId),
+    enabled: range >= 0,
   });
 }
 
-
-async function doCalculateTeamNeighbourClusters(adminId: string, 
-                                                addressEntityList: GeocodedAddressEntityList, 
-                                                range: number, 
-                                                optimizationId: string | null): Promise<TeamNeighbourCluster[]> {
-
+async function doCalculateTeamNeighbourClusters(adminId: string, range: number, optimizationId: string | null): Promise<TeamNeighbourCluster[]> {
   let result: TeamNeighbourCluster[];
 
   if (isStringNotEmpty(optimizationId)) {
     const optimizationResult = DinnerRouteOptimizationResultService.findDinnerRouteOptimizationResult(optimizationId, adminId);
     result = optimizationResult.optimizedTeamNeighbourClusters.teamNeighbourClusters;
   } else {
-    result = await calculateTeamNeighbourClusters(adminId, addressEntityList, range);
+    result = await calculateTeamNeighbourClusters(adminId, range);
   }
   return result;
 }
-
-

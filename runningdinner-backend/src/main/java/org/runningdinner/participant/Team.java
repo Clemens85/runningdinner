@@ -20,6 +20,8 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
 import org.runningdinner.core.util.CoreUtil;
+import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.geocoder.HasGeocodingResult;
 import org.springframework.util.Assert;
 
 import jakarta.persistence.CascadeType;
@@ -66,7 +68,7 @@ import jakarta.persistence.OrderBy;
                    })
    })
 })
-public class Team extends RunningDinnerRelatedEntity implements Comparable<Team> {
+public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>, HasGeocodingResult {
 
   private static final long serialVersionUID = -2808246041848437912L;
 
@@ -522,4 +524,9 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
 	protected void setId(UUID id) {
   	super.setId(id);
   }
+
+	@Override
+	public GeocodingResult getGeocodingResult() {
+		return this.getHostTeamMember() != null ? this.getHostTeamMember().getGeocodingResult() : null;
+	}
 }

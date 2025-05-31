@@ -34,6 +34,13 @@ public class GlobalClusterOptimizer {
 		this.runningDinner = runningDinner;
 	}
 
+	/**
+	 * Returns optimized clusters for the passed teamHostLocationList.<br/>
+	 * Each key in the result represents the size of the team-cluster (e.g. 9, 12, 15) meaning the team-size that is put into this cluster.
+	 * The value of the result contains the actual clusters that fits into the team-cluster size, so we can have e.g. two lists for a team-cluster-size of 9 
+	 * @param teamHostLocationList
+	 * @return
+	 */
 	public Map<Integer, List<List<TeamHostLocation>>> calculateOptimizedClusters(TeamHostLocationList teamHostLocationList) {
 		
 		Map<Integer, List<List<TeamHostLocation>>> result = new HashMap<>();
