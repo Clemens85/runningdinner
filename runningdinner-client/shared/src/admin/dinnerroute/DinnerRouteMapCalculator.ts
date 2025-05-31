@@ -1,8 +1,23 @@
-import { uniqBy } from "lodash-es";
-import { isGeocodingResultValid } from "../../GeocoderHook";
-import { AfterPartyLocation, AfterPartyLocationMapEntry, DinnerRoute, DinnerRouteMapData, DinnerRouteTeam, DinnerRouteTeamMapEntry, GeocodingResult, Meal, MealType, Team, TeamConnectionPath, TeamNeighbourCluster } from "../../types";
-import { isDefined, isStringNotEmpty, stringToColor } from "../../Utils";
-import { getFullname } from "../ParticipantService";
+import { uniqBy } from 'lodash-es';
+import { isGeocodingResultValid } from '../../GeocodeUtil';
+import {
+  AfterPartyLocation,
+  AfterPartyLocationMapEntry,
+  BaseTeam,
+  DinnerRoute,
+  DinnerRouteMapData,
+  DinnerRouteTeam,
+  DinnerRouteTeamMapEntry,
+  GeocodingResult,
+  isSameDinnerRouteTeam,
+  Meal,
+  MealType,
+  Team,
+  TeamConnectionPath,
+  TeamNeighbourCluster,
+} from '../../types';
+import { isStringNotEmpty, stringToColor } from '../../Utils';
+import { getFullname } from '../ParticipantService';
 
 const clusterBackgroundColorsHighContrast: string[] = [
   '#FF0000',
@@ -35,7 +50,7 @@ export type DinnerRouteMapDataCalculationSettings = {
   /**
    * The dinner routes for which to claculate the map data
    */
-  allDinnerRoutes: DinnerRoute[], 
+  allDinnerRoutes: DinnerRoute[];
 
   /**
    * Provides team segment clusters (teams that form one sub-dinner,  e.g. with 9 or 12 teams)
@@ -43,14 +58,9 @@ export type DinnerRouteMapDataCalculationSettings = {
   teamClusterMappings?: Record<number, number[]>;
 
   /**
-   * The resolved geocodes for all teams within the dinner routes
-   */
-  dinnerRouteTeamsWithGeocodes: DinnerRouteTeam[] | undefined, 
-
-  /**
    * After Party Location (if used)
    */
-  afterPartyLocation: AfterPartyLocation | null,
+  afterPartyLocation: AfterPartyLocation | null | undefined;
 
   /**
    * Provides the team-clusters that cook on the same addres (this may be reasonable to offset the markers on the map)
@@ -61,17 +71,14 @@ export type DinnerRouteMapDataCalculationSettings = {
    * All meals of the running dinner event
    */
   meals: Meal[];
-}
+};
 
 const AFTER_PARTY_LOCATION_COLOR = '#999';
 const CURRENT_TEAM_COLOR_SINGLE_ROUTE_VIEW = '#2e7d32';
 const GUEST_TEAM_COLOR_SINGLE_ROUTE_VIEW = '#999';
 
 export class DinnerRouteMapCalculator {
-
-  private readonly settings: DinnerRouteMapDataCalculationSettings
-
-  private readonly dinnerRouteTeamsWithGeocodes: DinnerRouteTeam[];
+  private readonly settings: DinnerRouteMapDataCalculationSettings;
 
   private readonly isSingleDinnerRouteView: boolean;
 
@@ -79,47 +86,41 @@ export class DinnerRouteMapCalculator {
 
   private readonly afterPartyLocationMapEntry: AfterPartyLocationMapEntry | undefined;
 
-  private readonly secondaryClusterColorMappings: Record<number, string> = {}; 
+  private readonly secondaryClusterColorMappings: Record<number, string> = {};
 
   constructor(settings: DinnerRouteMapDataCalculationSettings) {
     this.settings = settings;
-    const {allDinnerRoutes, meals, afterPartyLocation, teamClusterMappings } = settings;
-  
-    this.dinnerRouteTeamsWithGeocodes = (settings.dinnerRouteTeamsWithGeocodes || []).filter(team => isGeocodingResultValid(team.geocodingResult));
+    const { allDinnerRoutes, meals, afterPartyLocation, teamClusterMappings } = settings;
+
     this.isSingleDinnerRouteView = allDinnerRoutes.length === 1;
     this.mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(meals);
 
-    this.afterPartyLocationMapEntry = isGeocodingResultValid(afterPartyLocation?.geocodingResult) ? 
-        { ...afterPartyLocation,
-          position: afterPartyLocation.geocodingResult!,
-          color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor()
-        } 
-        : undefined;
+    this.afterPartyLocationMapEntry = isGeocodingResultValid(afterPartyLocation?.geocodingResult)
+      ? { ...afterPartyLocation, position: afterPartyLocation.geocodingResult!, color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor() }
+      : undefined;
 
     // Build color mappings for team clusters
     let clusterColorIndex = 0;
     if (teamClusterMappings) {
-      Object.keys(teamClusterMappings).forEach(key => {
+      Object.keys(teamClusterMappings).forEach((key) => {
         const teamNumbersOfCluster = teamClusterMappings[Number(key)];
         const clusterColor = clusterBackgroundColorsHighContrast[clusterColorIndex % clusterBackgroundColorsHighContrast.length];
         clusterColorIndex++;
-        teamNumbersOfCluster.forEach(teamNumber => {
+        teamNumbersOfCluster.forEach((teamNumber) => {
           this.secondaryClusterColorMappings[teamNumber] = clusterColor;
-        }); 
+        });
       });
     }
   }
-
 
   public static getMarkerLabel(str: string) {
     return str.substring(0, Math.min(3, str.length));
   }
 
   public static getHostTeamsOfDinnerRouteMapEntry(dinnerRouteMapEntry: DinnerRouteTeamMapEntry): DinnerRouteTeam[] {
-  
     const result = new Array<DinnerRouteTeam>();
-    const teamConnectionPaths = dinnerRouteMapEntry.teamConnectionPaths.filter(tcp => tcp.team);
-  
+    const teamConnectionPaths = dinnerRouteMapEntry.teamConnectionPaths.filter((tcp) => tcp.team);
+
     for (let i = 0; i < teamConnectionPaths.length; i++) {
       const teamConnectionPath = teamConnectionPaths[i];
       if (teamConnectionPath.team.teamNumber !== dinnerRouteMapEntry.teamNumber) {
@@ -129,13 +130,13 @@ export class DinnerRouteMapCalculator {
         result.push(teamConnectionPath.toTeam);
       }
     }
-    return uniqBy(result, "teamNumber");
+    return uniqBy(result, 'teamNumber');
   }
 
   public static distinctDinnerRouteTeams(allDinnerRouteTeams: DinnerRouteTeam[]): DinnerRouteTeam[] {
-    return allDinnerRouteTeams.filter((team, index, self) => index === self.findIndex(t => t.teamNumber === team.teamNumber));
+    return allDinnerRouteTeams.filter((team, index, self) => index === self.findIndex((t) => t.teamNumber === team.teamNumber));
   }
-  
+
   public static buildMealTypeMappings(meals: Meal[]): Record<string, MealType> {
     const result: Record<string, MealType> = {};
     for (let i = 0; i < meals.length; i++) {
@@ -143,7 +144,7 @@ export class DinnerRouteMapCalculator {
         result[meals[i].id!] = MealType.APPETIZER;
       } else if (i == 2) {
         result[meals[i].id!] = MealType.DESSERT;
-      } else { 
+      } else {
         result[meals[i].id!] = MealType.MAIN_COURSE;
       }
     }
@@ -151,47 +152,46 @@ export class DinnerRouteMapCalculator {
   }
 
   public calculateDinnerRouteMapData(): DinnerRouteMapData {
+    const { allDinnerRoutes } = this.settings;
 
-    const {allDinnerRoutes} = this.settings;
-  
     const dinnerRouteMapEntries = new Array<DinnerRouteTeamMapEntry>();
     let centerPosition;
     const teamsWithUnresolvedGeocodings = new Array<DinnerRouteTeam>();
-  
+
     for (let i = 0; i < allDinnerRoutes.length; i++) {
       const dinnerRoute = allDinnerRoutes[i];
-  
+
       const entriesForRoute = this.calculateDinnerRouteMapEntry(dinnerRoute);
       if (entriesForRoute.length === 0) {
-        teamsWithUnresolvedGeocodings.push(...dinnerRoute.teams.filter(team => dinnerRoute.currentTeam.teamNumber === team.teamNumber));
+        teamsWithUnresolvedGeocodings.push(...dinnerRoute.teams.filter((team) => dinnerRoute.currentTeam.teamNumber === team.teamNumber));
         continue;
       } else if (this.isSingleDinnerRouteView && dinnerRouteMapEntries.length < dinnerRoute.teams.length) {
         // Get DinnerRoute Teams that are not contained in dinnerRouteMapEntries
-        const teamsWithoutDinnerRouteMapEntry = dinnerRoute.teams.filter(team => !entriesForRoute.some(entry => entry.teamNumber === team.teamNumber));
+        const teamsWithoutDinnerRouteMapEntry = dinnerRoute.teams.filter((team) => !entriesForRoute.some((entry) => entry.teamNumber === team.teamNumber));
         teamsWithUnresolvedGeocodings.push(...teamsWithoutDinnerRouteMapEntry);
       }
-      entriesForRoute.forEach(entry => dinnerRouteMapEntries.push(entry));
-  
-      if (!centerPosition) { // Position of current team
-        centerPosition = entriesForRoute[entriesForRoute.length -1].position;
+      entriesForRoute.forEach((entry) => dinnerRouteMapEntries.push(entry));
+
+      if (!centerPosition) {
+        // Position of current team
+        centerPosition = entriesForRoute[entriesForRoute.length - 1].position;
       }
     }
-  
+
     this.addOffsetToMapEntriesWithSameAddress(dinnerRouteMapEntries);
 
     return {
       dinnerRouteMapEntries,
       afterPartyLocationMapEntry: this.afterPartyLocationMapEntry,
       centerPosition: centerPosition || { lat: 0, lng: 0 },
-      teamsWithUnresolvedGeocodings
-     };
+      teamsWithUnresolvedGeocodings,
+    };
   }
 
   private calculateDinnerRouteMapEntry(dinnerRoute: DinnerRoute): DinnerRouteTeamMapEntry[] {
-
-    const dinnerRouteTeams = this.getDinnerRouteTeamsWithGeocode(dinnerRoute);
-    const currentTeam = this.findDinnerRouteTeamByNumber(dinnerRoute.currentTeam.teamNumber);
-    if (!currentTeam) {
+    const { currentTeam } = dinnerRoute;
+    if (!isGeocodingResultValid(DinnerRouteMapCalculator.getGeocodingResult(currentTeam))) {
+      // No geocoding result for current team, so we cannot calculate the map entries
       return [];
     }
 
@@ -201,23 +201,22 @@ export class DinnerRouteMapCalculator {
 
     const teamConnectionPaths = new Array<TeamConnectionPath>();
 
-    for (let i = 0; i < dinnerRouteTeams.length; i++) {
-      const team = dinnerRouteTeams[i];
+    for (let i = 0; i < dinnerRoute.teams.length; i++) {
+      const team = dinnerRoute.teams[i];
 
       if (this.isSingleDinnerRouteView && DinnerRouteMapCalculator.isGuestTeam(team, currentTeam)) {
         // Case: Show complete dinner-route for only one team (we need also the positions of the other host teams in the result)
-        result.push(
-          this.newDinnerRouteMapEntry(team, DinnerRouteMapCalculator.calculateTeamColor(team, GUEST_TEAM_COLOR_SINGLE_ROUTE_VIEW), team.geocodingResult!, [])
-        );
+        result.push(this.newDinnerRouteMapEntry(team, DinnerRouteMapCalculator.calculateTeamColor(team, GUEST_TEAM_COLOR_SINGLE_ROUTE_VIEW), []));
       }
 
-      if (i + 1 < dinnerRouteTeams.length) {
-        const teamConnectionPath = DinnerRouteMapCalculator.newTeamConnectionPath(team, currentTeamColor, dinnerRouteTeams[i + 1]);
+      if (i + 1 < dinnerRoute.teams.length) {
+        const teamConnectionPath = DinnerRouteMapCalculator.newTeamConnectionPath(team, currentTeamColor, dinnerRoute.teams[i + 1]);
         teamConnectionPath.secondaryClusterColor = this.secondaryClusterColorMappings[currentTeam.teamNumber];
         teamConnectionPaths.push(teamConnectionPath);
       } else if (this.afterPartyLocationMapEntry) {
+        const teamGeocodingResult = DinnerRouteMapCalculator.getGeocodingResult(team);
         teamConnectionPaths.push({
-          coordinates: [team.geocodingResult!, this.afterPartyLocationMapEntry.position],
+          coordinates: [teamGeocodingResult!, this.afterPartyLocationMapEntry.position],
           color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor(),
           key: `${currentTeam.teamNumber}-afterparty`,
           team,
@@ -225,7 +224,11 @@ export class DinnerRouteMapCalculator {
       }
     }
 
-    const dinnerRouteMapEntry = this.newDinnerRouteMapEntry(currentTeam, currentTeamColor, currentTeam.geocodingResult!, teamConnectionPaths);
+    const currentDinnerRouteTeam = dinnerRoute.teams.find((team) => isSameDinnerRouteTeam(team, currentTeam));
+    if (!currentDinnerRouteTeam) {
+      throw new Error(`Current team ${currentTeam.teamNumber} not found in dinner route teams: ${JSON.stringify(dinnerRoute.teams)}`);
+    }
+    const dinnerRouteMapEntry = this.newDinnerRouteMapEntry(currentDinnerRouteTeam, currentTeamColor, teamConnectionPaths);
     dinnerRouteMapEntry.secondaryClusterColor = this.secondaryClusterColorMappings[currentTeam.teamNumber];
     result.push(dinnerRouteMapEntry);
 
@@ -233,13 +236,15 @@ export class DinnerRouteMapCalculator {
   }
 
   private addOffsetToMapEntriesWithSameAddress(dinnerRouteMapEntries: DinnerRouteTeamMapEntry[]) {
-    this.settings.teamClustersWithSameAddress.forEach(neighbourCluster => {
-      const entriesWithinNeighbourCluster = dinnerRouteMapEntries.filter(entry => entry.teamNumber === neighbourCluster.a.teamNumber || entry.teamNumber === neighbourCluster.b.teamNumber);
+    this.settings.teamClustersWithSameAddress.forEach((neighbourCluster) => {
+      const entriesWithinNeighbourCluster = dinnerRouteMapEntries.filter(
+        (entry) => entry.teamNumber === neighbourCluster.a.teamNumber || entry.teamNumber === neighbourCluster.b.teamNumber,
+      );
       if (entriesWithinNeighbourCluster.length === 0) {
         return;
       }
       let offset = 0;
-      entriesWithinNeighbourCluster.forEach(entry => {
+      entriesWithinNeighbourCluster.forEach((entry) => {
         entry.position!.lat! += offset;
         entry.position!.lng! += offset;
         offset += 0.0002;
@@ -247,62 +252,47 @@ export class DinnerRouteMapCalculator {
     });
   }
 
-
   public static calculateTeamColor(team: DinnerRouteTeam | Team, colorOverride?: string): string {
     if (isStringNotEmpty(colorOverride)) {
       return colorOverride;
     }
     return stringToColor(`${getFullname(team.hostTeamMember)}${team.teamNumber}`);
   }
-  
+
   private static calculatAfterPartyLocationColor(): string {
     return AFTER_PARTY_LOCATION_COLOR;
   }
-  
-  private static isGuestTeam(team: DinnerRouteTeam, currentTeam: DinnerRouteTeam): boolean {
+
+  private static isGuestTeam(team: BaseTeam, currentTeam: BaseTeam): boolean {
     return currentTeam.teamNumber !== team.teamNumber;
   }
 
-  private static newTeamConnectionPath(team: DinnerRouteTeam, 
-                                       color: string,
-                                       nextTeam: DinnerRouteTeam): TeamConnectionPath {
-
-    const coordinates: GeocodingResult[] = [team.geocodingResult!, nextTeam.geocodingResult!];
+  private static newTeamConnectionPath(team: DinnerRouteTeam, color: string, nextTeam: DinnerRouteTeam): TeamConnectionPath {
+    const coordinates: GeocodingResult[] = [DinnerRouteMapCalculator.getGeocodingResult(team)!, DinnerRouteMapCalculator.getGeocodingResult(nextTeam)!];
     const key = `${team.teamNumber}-${nextTeam.teamNumber}`;
-
     return {
       coordinates,
       color,
       key,
       team,
-      toTeam: nextTeam
+      toTeam: nextTeam,
     };
   }
 
-  private newDinnerRouteMapEntry(team: DinnerRouteTeam, 
-                                color: string, 
-                                position: GeocodingResult,
-                                teamConnectionPaths: TeamConnectionPath[]): DinnerRouteTeamMapEntry {
+  public static getGeocodingResult(team: DinnerRouteTeam | Team): GeocodingResult | undefined {
+    return team.hostTeamMember?.geocodingResult;
+  }
+
+  private newDinnerRouteMapEntry(team: DinnerRouteTeam, color: string, teamConnectionPaths: TeamConnectionPath[]): DinnerRouteTeamMapEntry {
+    const position = DinnerRouteMapCalculator.getGeocodingResult(team)!;
     return {
       ...team,
       color,
       position,
       teamConnectionPaths,
-      mealType: this.mealTypeMappings[team.meal.id!]
+      mealType: this.mealTypeMappings[team.meal.id!],
     };
   }
-
-  private getDinnerRouteTeamsWithGeocode(dinnerRoute: DinnerRoute): DinnerRouteTeam[] {
-    const result = dinnerRoute.teams.map(t => this.findDinnerRouteTeamByNumber(t.teamNumber))
-                                    .filter(t => isDefined(t));
-    // @ts-ignore                                
-    return result || [];
-  }
-  
-  private findDinnerRouteTeamByNumber(teamNumber: number) {
-    return this.dinnerRouteTeamsWithGeocodes.find(team => team.teamNumber === teamNumber);
-  }
-
 }
 
 // function mapMealTypeToColor(mealType: MealType | undefined): string {

@@ -14,8 +14,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.dinnerroute.AllDinnerRoutesWithDistancesListTO;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
-import org.runningdinner.dinnerroute.distance.DistanceCalculator;
-import org.runningdinner.dinnerroute.distance.DistanceMatrix;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationUtil;
 import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocation;
 import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationList;
@@ -76,10 +74,9 @@ public class LocalClusterOptimizer {
 	}
 	
 	private TeamHostLocationList calculateSingleLocalClusterOptimization(TeamHostLocationList teamHostLocationsOfCluster) {
-
+		
 		List<DinnerRouteTO> originalRoutesOfCluster = DinnerRouteOptimizationUtil.buildDinnerRoute(teamHostLocationsOfCluster, dinnerRouteCalculator);
-		DistanceMatrix originalDistanceMatrix = DistanceCalculator.calculateDistanceMatrix(teamHostLocationsOfCluster.getAllDinnerRouteTeamHostLocations());
-		var originalRoutesWithDistances = DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(originalRoutesOfCluster, originalDistanceMatrix);
+		AllDinnerRoutesWithDistancesListTO originalRoutesWithDistances = DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(originalRoutesOfCluster);
 		
 		Map<UUID, List<TeamHostLocation>> locationsByMeal = teamHostLocationsOfCluster.getAllTeamHostLocations()
 																													.stream()
@@ -94,12 +91,13 @@ public class LocalClusterOptimizer {
 		LocalClusterOptimizationStrategy minimizeStrategy = getOptimizationStrategy(originalRoutesWithDistances); 
 
 		List<List<TeamHostLocation>> allPossibleClusterVariants = cartesianProduct(allPermutations);
+		
 		TeamHostLocationList bestClusterVariant = null;
 		for (var clusterVariantHostLocations : allPossibleClusterVariants) {
 			TeamHostLocationList clusterVariant = TeamHostLocationService.newTeamHostLocationList(clusterVariantHostLocations);
 			List<DinnerRouteTO> routesOfClusterVariant = DinnerRouteOptimizationUtil.buildDinnerRoute(clusterVariant, dinnerRouteCalculator);
-		  DistanceMatrix distanceMatrixOfClusterVariant = DistanceCalculator.calculateDistanceMatrix(clusterVariant.teamHostLocationsValid());
-			var routesWithDistancesOfClusterVariant = DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(routesOfClusterVariant, distanceMatrixOfClusterVariant);
+			
+			var routesWithDistancesOfClusterVariant = DinnerRouteCalculator.calculateDistancesForAllDinnerRoutes(routesOfClusterVariant);
 			if (minimizeStrategy.isNewMinimum(routesWithDistancesOfClusterVariant)) {
 				bestClusterVariant = clusterVariant;
 			}
@@ -162,7 +160,7 @@ public class LocalClusterOptimizer {
 				TeamHostLocation originalTeamHostLocation = originalTeamLocationsOfMeal.get(i);
 				TeamHostLocation permutatedTeamHostLocation = permutationsAsReorderedList.get(i);
 				if (Objects.equals(originalTeamHostLocation, permutatedTeamHostLocation) || permutatedTeamHostLocation.getTeam().getStatus() == TeamStatus.CANCELLED) {
-					resultingPermutation.add(new TeamHostLocation(permutatedTeamHostLocation.getTeam(), permutatedTeamHostLocation));
+					resultingPermutation.add(new TeamHostLocation(permutatedTeamHostLocation.getTeam()));
 				} else {
 					resultingPermutation.add(originalTeamHostLocation.copyWithHostLocationDataFrom(permutatedTeamHostLocation));
 				}

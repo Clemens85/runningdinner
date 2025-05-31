@@ -10,16 +10,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.util.CoreUtil;
-import org.runningdinner.core.util.LogSanitizer;
-import org.runningdinner.dinnerroute.distance.DistanceEntry;
+import org.runningdinner.dinnerroute.distance.DistanceCalculator;
 import org.runningdinner.dinnerroute.distance.DistanceMatrix;
 import org.runningdinner.dinnerroute.distance.DistanceUtil;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Team;
+import org.runningdinner.participant.rest.TeamTO;
 import org.springframework.util.Assert;
 
 public class DinnerRouteCalculator {
@@ -47,24 +46,10 @@ public class DinnerRouteCalculator {
     return DinnerRouteTO.newInstance(team.getId(), dinnerRoute, mealSpecificsOfGuestTeams, runningDinner.getAfterPartyLocation());
 	}
 	
-  public static Team findTeamForTeamNumber(String teamNumberStr, List<Team> teams) {
-    int teamNumber = parseIntSafe(teamNumberStr);
-    return teams
-            .stream()
-            .filter(t -> t.getTeamNumber() == teamNumber)
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Could not find team with teamMember " + teamNumber + " within teams " + teams));
-  }
-  
-  public static int parseIntSafe(String src) {
-    try {
-      return Integer.parseInt(src);
-    } catch (NumberFormatException e) {
-      throw new TechnicalException("could not parse " + LogSanitizer.sanitize(src) + " as integer", e);
-    }
-  }
-	
-	public static AllDinnerRoutesWithDistancesListTO calculateDistancesForAllDinnerRoutes(List<DinnerRouteTO> allDinnerRoutes, DistanceMatrix distanceMatrix) {
+	public static AllDinnerRoutesWithDistancesListTO calculateDistancesForAllDinnerRoutes(List<DinnerRouteTO> allDinnerRoutes) {
+		
+		List<TeamTO> locations = allDinnerRoutes.stream().map(route -> route.getCurrentTeam()).toList();
+		DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(locations);
 		
     List<DinnerRouteWithDistancesTO> distancesForAllRoutes = new ArrayList<>();
     
@@ -161,8 +146,6 @@ public class DinnerRouteCalculator {
     List<DinnerRouteTeamTO> dinnerRouteTeams = dinnerRoute.getTeams();
     List<DinnerRouteTeamWithDistanceTO> result = new ArrayList<>(dinnerRouteTeams.size());
 
-    Map<DistanceEntry, Double> distanceMatrixEntries = distanceMatrix.getEntries();
-
     DinnerRouteTeamWithDistanceTO teamWithLargestDistance = null;
 
     for (int i = 0; i < dinnerRouteTeams.size(); i++) {
@@ -173,8 +156,9 @@ public class DinnerRouteCalculator {
         break;
       }
       DinnerRouteTeamTO b = dinnerRouteTeams.get(i + 1);
-      DistanceEntry distanceEntry = new DistanceEntry(String.valueOf(a.getTeamNumber()), String.valueOf(b.getTeamNumber()));
-      Double distance = distanceMatrixEntries.get(distanceEntry);
+      
+      Double distance = distanceMatrix.getDistance(a, b);
+      
       DinnerRouteTeamWithDistanceTO dinnerRouteTeamWithDistanceTO = new DinnerRouteTeamWithDistanceTO(a, distance, isCurrentTeam);
       result.add(dinnerRouteTeamWithDistanceTO);
       if (teamWithLargestDistance == null || isDistanceGreaterAsDistanceToNextTeam(distance, teamWithLargestDistance)) {

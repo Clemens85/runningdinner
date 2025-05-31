@@ -101,9 +101,8 @@ public class GeocodeRequestEventPublisher {
 	}
   
   String mapToJson(BaseAddress obj) {
-  	var request = new GeocodeRequestBody(obj.getStreet(), obj.getStreetNr(), obj.getCityName(), obj.getZip());
     try {
-      return objectMapper.writeValueAsString(request);
+      return objectMapper.writeValueAsString( new GeocodeRequestBody(obj));
     } catch (JsonProcessingException e) {
       throw new TechnicalException(e);
     }
