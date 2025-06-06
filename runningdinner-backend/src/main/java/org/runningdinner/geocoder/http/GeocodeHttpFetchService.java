@@ -4,8 +4,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.runningdinner.geocoder.GeocodeEntityType;
-import org.runningdinner.geocoder.response.GeocodeResponse;
+import org.runningdinner.geocoder.base.GeocodeResponse;
 import org.runningdinner.participant.Participant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -14,6 +16,8 @@ import org.springframework.web.client.RestClient;
 
 @Service
 public class GeocodeHttpFetchService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(GeocodeHttpFetchService.class);
 	
 	private final RestClient restClient;
 	
@@ -26,6 +30,7 @@ public class GeocodeHttpFetchService {
 	
 	public List<GeocodeResponse> fetchGeocodesForParticipants(String adminId, List<Participant> participants) {
 		
+		LOGGER.info("Fetching geocodes for participants {} by using URL {} in runningdinner {}", participants, restEndpoint, adminId);
 		
 		List<HttpGeocodeRequestLine> requestLines = participants.stream() //
 																									.map(participant -> new HttpGeocodeRequestLine(participant.getAddress(), participant.getId().toString(), GeocodeEntityType.PARTICIPANT)) //

@@ -1,27 +1,27 @@
-package org.runningdinner.geocoder.request;
+package org.runningdinner.geocoder.base;
 
 import java.util.Objects;
 
 import org.runningdinner.core.BaseAddress;
 
-public class GeocodeRequestBody {
+public class GeocodeRequestBaseBody {
 
   private String street;
   private String streetNr;
   private String cityName;
   private String zip;
 
-  protected GeocodeRequestBody() {
+  protected GeocodeRequestBaseBody() {
   }
 
-  public GeocodeRequestBody(String street, String streetNr, String cityName, String zip) {
+  public GeocodeRequestBaseBody(String street, String streetNr, String cityName, String zip) {
     this.street = street;
     this.streetNr = streetNr;
     this.cityName = cityName;
     this.zip = zip;
   }
 
-	public GeocodeRequestBody(BaseAddress baseAddress) {
+	public GeocodeRequestBaseBody(BaseAddress baseAddress) {
 		this(baseAddress.getStreet(), baseAddress.getStreetNr(), baseAddress.getCityName(), baseAddress.getZip());
 	}
   
@@ -62,10 +62,10 @@ public class GeocodeRequestBody {
     if (this == o) {
 			return true;
 		}
-    if (!(o instanceof GeocodeRequestBody)) {
+    if (!(o instanceof GeocodeRequestBaseBody)) {
 			return false;
 		}
-    GeocodeRequestBody that = (GeocodeRequestBody) o;
+    GeocodeRequestBaseBody that = (GeocodeRequestBaseBody) o;
     return Objects.equals(street, that.street) &&
          	 Objects.equals(streetNr, that.streetNr) &&
          	 Objects.equals(cityName, that.cityName) &&

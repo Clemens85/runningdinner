@@ -1,4 +1,4 @@
-package org.runningdinner.geocoder.response;
+package org.runningdinner.geocoder.base;
 
 import java.util.UUID;
 
@@ -40,12 +40,12 @@ public class GeocodeResponsePersistenceService {
 	
 	protected static GeocodingResult extractSynchronizedGeocodingResult(GeocodeResponse response) {
 		GeocodingResult geocodingResult = null;
-		if (response.body() == null || response.body().geocodingResult() == null) {
+		if (response.geocodingResult() == null) {
 			LOGGER.warn("Received empty geocode respone {}, treating this as unresolvable address", response);
 			// Create empty result (= not resolved, which is yielded below by setting sync-status to SYNCHRONIZED
 			geocodingResult = new GeocodingResult();
 		} else {
-			geocodingResult = response.body().geocodingResult();
+			geocodingResult = response.geocodingResult();
 		}
 		
 		geocodingResult.setSyncStatus(GeocodingSyncStatus.SYNCHRONIZED);

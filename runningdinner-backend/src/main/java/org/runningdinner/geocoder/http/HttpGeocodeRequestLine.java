@@ -2,9 +2,9 @@ package org.runningdinner.geocoder.http;
 
 import org.runningdinner.core.BaseAddress;
 import org.runningdinner.geocoder.GeocodeEntityType;
-import org.runningdinner.geocoder.request.GeocodeRequestBody;
+import org.runningdinner.geocoder.base.GeocodeRequestBaseBody;
 
-public class HttpGeocodeRequestLine extends GeocodeRequestBody {
+public class HttpGeocodeRequestLine extends GeocodeRequestBaseBody {
 	
 	private String entityId;
 	

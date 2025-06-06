@@ -8,6 +8,7 @@ import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.BaseAddress;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.geocoder.GeocodeEntityType;
+import org.runningdinner.geocoder.base.GeocodeRequestBaseBody;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.queue.QueueProvider;
 import org.slf4j.Logger;
@@ -102,7 +103,7 @@ public class GeocodeRequestEventPublisher {
   
   String mapToJson(BaseAddress obj) {
     try {
-      return objectMapper.writeValueAsString( new GeocodeRequestBody(obj));
+      return objectMapper.writeValueAsString( new GeocodeRequestBaseBody(obj));
     } catch (JsonProcessingException e) {
       throw new TechnicalException(e);
     }

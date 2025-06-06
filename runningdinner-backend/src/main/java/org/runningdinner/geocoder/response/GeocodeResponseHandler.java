@@ -3,6 +3,8 @@ package org.runningdinner.geocoder.response;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.geocoder.base.GeocodeResponse;
+import org.runningdinner.geocoder.base.GeocodeResponsePersistenceService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,9 +37,9 @@ public class GeocodeResponseHandler {
 		String entityId = getStringAttribute(messageAttributes, "entityId");
 		String entityType = getStringAttribute(messageAttributes, "entityType");
 		
-		GeocodeResponseBody body = StringUtils.isNotEmpty(message.body()) ? objectMapper.readValue(message.body(), GeocodeResponseBody.class) : null;
+		GeocodeSqsResponseBody body = StringUtils.isNotEmpty(message.body()) ? objectMapper.readValue(message.body(), GeocodeSqsResponseBody.class) : null;
 		
-		return new GeocodeResponse(body, adminId, entityId, entityType);
+		return new GeocodeResponse(body != null ? body.geocodingResult() : null, adminId, entityId, entityType);
 	}
 	
 	private static String getStringAttribute(Map<String, MessageAttributeValue> messageAttributes, String attributeName) {

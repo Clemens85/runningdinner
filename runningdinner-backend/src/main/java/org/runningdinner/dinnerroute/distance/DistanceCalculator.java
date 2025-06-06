@@ -65,22 +65,27 @@ public class DistanceCalculator {
 		return s;
 	}
 
-	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations) {
-		return calculateDistanceMatrix(locations, -1);
+	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations, boolean removeInvalidGeocodings) {
+		return calculateDistanceMatrix(locations, -1, removeInvalidGeocodings);
 	}
 
-	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations, double maxRangeInMetersToInclude) {
+	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations, double maxRangeInMetersToInclude, boolean removeInvalidGeocodings) {
 
+		List<? extends HasGeocodingResult> locationsToUse = locations
+																													.stream()
+																													.filter(loc -> GeocodingResult.isValid(loc.getGeocodingResult()))
+																													.toList();
+		
 		DistanceMatrix result = new DistanceMatrix();
 
-		int size = locations.size();
+		int size = locationsToUse.size();
 
 		for (int i = 0; i < size; i++) {
 			for (int j = i; j < size; j++) {
-				HasGeocodingResult a = locations.get(i);
-				HasGeocodingResult b = locations.get(j);
+				HasGeocodingResult a = locationsToUse.get(i);
+				HasGeocodingResult b = locationsToUse.get(j);
 				if (i != j) {
-					double distance = calculateDistanceVincentyInMeters(locations.get(i), locations.get(j));
+					double distance = calculateDistanceVincentyInMeters(a, b);
 					if (maxRangeInMetersToInclude < 0 || distance <= maxRangeInMetersToInclude) {
 						result.addDistanceEntry(a, b, distance);
 					}

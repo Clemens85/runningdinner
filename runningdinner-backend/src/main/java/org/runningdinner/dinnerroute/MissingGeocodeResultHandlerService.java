@@ -1,13 +1,17 @@
 package org.runningdinner.dinnerroute;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.GeocodingResult.GeocodingSyncStatus;
+import org.runningdinner.geocoder.base.GeocodeResponse;
+import org.runningdinner.geocoder.base.GeocodeResponsePersistenceService;
 import org.runningdinner.geocoder.http.GeocodeHttpFetchService;
-import org.runningdinner.geocoder.response.GeocodeResponse;
-import org.runningdinner.geocoder.response.GeocodeResponsePersistenceService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamStatus;
@@ -28,25 +32,25 @@ public class MissingGeocodeResultHandlerService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public int fetchAndPersistMissingGeocodeResults(String adminId, List<Team> teams) {
+	public Map<UUID, GeocodingResult> fetchAndPersistMissingGeocodeResults(String adminId, List<Team> teams) {
 		
 		List<Team> unsychnronizedTeams = teams.stream().filter(t -> isUnsynchronized(t)).toList();
 		List<Participant> teamHosts = unsychnronizedTeams.stream().map(Team::getHostTeamMember).toList();
 		
 		if (teamHosts.isEmpty()) {
-			return 0;
+			return Collections.emptyMap();
 		}
 		
+		Map<UUID, GeocodingResult>  result = new HashMap<>();
 		List<GeocodeResponse> geocodesForTeamHosts = geocodeHttpFetchService.fetchGeocodesForParticipants(adminId, teamHosts);
-		int numPersistedTeamHosts = 0;
 		for (var teamHost : teamHosts) {
 			GeocodeResponse matchingGeocodeResponse = findGeocodeResponse(geocodesForTeamHosts, teamHost);
 			if (matchingGeocodeResponse != null) {
 				geocodeResponsePersistenceService.persistGeocodeResponse(matchingGeocodeResponse);
-				numPersistedTeamHosts++;
+				result.put(UUID.fromString(matchingGeocodeResponse.entityId()), matchingGeocodeResponse.geocodingResult());
 			}
 		}
-		return numPersistedTeamHosts;
+		return result;
 	}
 	
 	private static GeocodeResponse findGeocodeResponse(List<GeocodeResponse> geocodesForTeamHosts, Participant teamHost) {
