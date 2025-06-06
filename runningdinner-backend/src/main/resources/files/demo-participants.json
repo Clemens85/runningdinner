@@ -30,7 +30,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Tullastraße 61, 79108 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 1
     },
     {
       "id": "3ce83dc5-0241-4b79-bb3b-cb374527f735",
@@ -62,7 +63,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Lörracher Str. 20, 79115 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 2
     },
     {
       "id": "11205bf3-3164-42ae-8aec-7031f0c18f64",
@@ -94,7 +96,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Schlossbergring 1, 79098 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 3
     },
     {
       "id": "06161127-da26-4d96-83f8-7270c6583caa",
@@ -126,7 +129,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Sundgauallee 31, 79114 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 4
     },
     {
       "id": "45b84713-a492-44dc-99ee-e9524d201daa",
@@ -158,7 +162,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Hinterkirchstraße 1, 79108 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 5
     },
     {
       "id": "e0c34182-2e22-4bd2-8bba-6cc18b99e524",
@@ -190,7 +195,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Eisenbahnstraße 45, 79098 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 6
     },
     {
       "id": "d0185847-9500-4466-9eb8-9ce6aff560a5",
@@ -222,7 +228,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Schauinslandstraße 49, 79100 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 7
     },
     {
       "id": "400a576a-fe35-43f9-84f3-151bccb568d5",
@@ -254,7 +261,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Johann-von-Weerth-Straße 9, 79100 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 8
     },
     {
       "id": "c44c4acc-6f6c-4650-9013-be0361227e9a",
@@ -286,7 +294,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Mundenhof 37, 79111 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 9
     },
     {
       "id": "ff88566f-47ec-4d06-96e3-b77aedfa1ab6",
@@ -318,7 +327,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Kaiser-Joseph-Straße 147/153, 79098 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 10
     },
     {
       "id": "8e707510-79b7-4297-a1bd-a4ff59d91c28",
@@ -350,7 +360,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Alfred-Döblin-Platz 1, 79100 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 11
     },
     {
       "id": "0be6e37f-d9ec-4a6e-be37-d7559a36cb40",
@@ -382,7 +393,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Jesuitenschloß 1, 79249 Merzhausen, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 12
     },
     {
       "id": "c189338e-f4e0-46bf-9c44-0458c30b09e1",
@@ -414,7 +426,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Breikeweg 24, 79112 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 13
     },
     {
       "id": "bc3e7815-a538-49a5-9639-c03e828dadd1",
@@ -446,7 +459,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Heinrich-von-Stephan-Straße 8, 79100 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 14
     },
     {
       "id": "22b5f0f8-ec23-4eab-bbd2-317c127cf822",
@@ -478,7 +492,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Schwarzwaldstraße 193, 79117 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 15
     },
     {
       "id": "8fab35f1-3a8a-482d-91ad-07ea8b0ada30",
@@ -510,7 +525,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Littenweilerstraße 20, 79117 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 16
     },
     {
       "id": "844b47db-c451-4ad5-8157-bf5157333418",
@@ -542,7 +558,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Munzinger Str. 1, 79111 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 17
     },
     {
       "id": "fc101224-8123-416c-9300-5d8337730bb0",
@@ -574,7 +591,8 @@
         "resultType": "EXACT",
         "formattedAddress": "Leopoldring 13, 79098 Freiburg im Breisgau, Germany",
         "syncStatus": "SYNCHRONIZED"
-      }
+      },
+      "participantNumber": 18
     }
   ]
 }

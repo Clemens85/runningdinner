@@ -1,19 +1,19 @@
 package org.runningdinner.participant.rest;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.common.rest.BaseTO;
+import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.geocoder.HasGeocodingResult;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamStatus;
 
-public class TeamTO extends BaseTO implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+public class TeamTO extends BaseTO implements HasGeocodingResult {
 
 	private int teamNumber;
 
@@ -94,6 +94,12 @@ public class TeamTO extends BaseTO implements Serializable {
 			result.add(new TeamTO(t));
 		}
 		return result;
+	}
+
+	@Override
+	@JsonIgnore
+	public GeocodingResult getGeocodingResult() {
+		return this.hostTeamMember != null ? this.hostTeamMember.getGeocodingResult() : null;
 	}
 
 }

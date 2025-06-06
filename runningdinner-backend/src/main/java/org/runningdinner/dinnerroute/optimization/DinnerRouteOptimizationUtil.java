@@ -11,12 +11,7 @@ import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.distance.DistanceCalculator;
 import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocation;
 import org.runningdinner.dinnerroute.teamhostlocation.TeamHostLocationList;
-import org.runningdinner.geocoder.GeocodingResult;
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.Team;
 import org.springframework.util.Assert;
-
-import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
 
 public class DinnerRouteOptimizationUtil {
 
@@ -51,19 +46,6 @@ public class DinnerRouteOptimizationUtil {
 		return result;
 	}
 	
-	public static void addMissingGeocodesToTeams(List<Team> teams, List<TeamHostLocation> teamHostLocations) {
-		
-		for (Team team : teams) {
-			Participant hostTeamMember = team.getHostTeamMember();
-			// hostTeamMember can be null in case of cancelled teams => hence nothing can be done
-			if (hostTeamMember == null || GeocodingResult.isValid(hostTeamMember.getGeocodingResult())) {
-				continue;
-			}
-			TeamHostLocation teamHostLocation = findTeamHostLocationForTeamNumber(String.valueOf(team.getTeamNumber()), teamHostLocations);
-			hostTeamMember.setGeocodingResult(new GeocodingResult(teamHostLocation));
-		}
-	}
-	
 	public static List<DinnerRouteTO> buildDinnerRoute(TeamHostLocationList teamHostLocationList, DinnerRouteCalculator dinnerRouteCalculator) {
   	List<DinnerRouteTO> optimizedDinnerRoutes = new ArrayList<>();
   	for (TeamHostLocation teamHostLocation : teamHostLocationList.getAllDinnerRouteTeamHostLocations()) {
@@ -73,12 +55,5 @@ public class DinnerRouteOptimizationUtil {
   	return optimizedDinnerRoutes;
 	}
 	
-  private static TeamHostLocation findTeamHostLocationForTeamNumber(String teamNumberStr, List<TeamHostLocation> teamHostLocations) {
-    return teamHostLocations
-            .stream()
-            .filter(teamHostLocation -> StringUtils.equals(teamHostLocation.getId(), teamNumberStr))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Could not find teamHostLocation with teamNumber " + teamNumberStr + " within teams " + teamHostLocations));
-  }
 
 }

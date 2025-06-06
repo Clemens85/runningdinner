@@ -5,6 +5,8 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import org.runningdinner.common.exception.TechnicalException;
+
 public final class NumberUtil {
 
   private NumberUtil() {
@@ -18,4 +20,13 @@ public final class NumberUtil {
     numberInstance.setMaximumFractionDigits(2);
     return numberInstance.format(moneyAmount);
   }
+  
+  public static int parseIntSafe(String src) {
+    try {
+      return Integer.parseInt(src);
+    } catch (NumberFormatException e) {
+      throw new TechnicalException("could not parse " + LogSanitizer.sanitize(src) + " as integer", e);
+    }
+  }
+  
 }

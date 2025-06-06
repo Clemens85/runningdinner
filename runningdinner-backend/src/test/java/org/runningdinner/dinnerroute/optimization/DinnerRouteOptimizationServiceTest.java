@@ -19,13 +19,12 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.dinnerroute.DinnerRouteListTO;
 import org.runningdinner.dinnerroute.DinnerRouteService;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
-import org.runningdinner.dinnerroute.distance.GeocodedAddressEntity;
-import org.runningdinner.dinnerroute.distance.GeocodedAddressEntityListTO;
 import org.runningdinner.dinnerroute.optimization.local.TeamMemberChange;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
+import org.runningdinner.test.util.TestGeocodeHelperService;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +46,17 @@ public class DinnerRouteOptimizationServiceTest {
 	@Autowired
 	private TestHelperService testHelperService;
 	
+	@Autowired
+	private TestGeocodeHelperService testGeocodeHelperService;
+	
 	private RunningDinner runningDinner;
 	
 	@Test
 	public void calculateOptimizationDefault() throws NoPossibleRunningDinnerException {
 		setUpDefaultDinner(2 * 27);
 		teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+		
+		testGeocodeHelperService.fillAllTeamsWithTeamNumberGeocodes(runningDinner.getAdminId());
 		
 		List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
 		Set<UUID> teamIds = teams.stream().map(Team::getId).collect(Collectors.toSet());
@@ -62,9 +66,7 @@ public class DinnerRouteOptimizationServiceTest {
 		// Just some assertion before
 		assertAllDinnerRoutes(27);
 		
-		GeocodedAddressEntityListTO geocodedAddressEntityList = GeocodeTestUtil.mapToGeocodedAddressEntityList(teams);
-		
-		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest(geocodedAddressEntityList));
+		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest());
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 		
 		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
@@ -77,15 +79,15 @@ public class DinnerRouteOptimizationServiceTest {
 		
 		setUpDefaultDinnerTwoMeals(2 * 12);
 		teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+
+		testGeocodeHelperService.fillAllTeamsWithTeamNumberGeocodes(runningDinner.getAdminId());
 		
 		List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
 		Set<UUID> teamIds = teams.stream().map(Team::getId).collect(Collectors.toSet());
 
 		assertThat(teamIds).hasSize(12);
 		
-		GeocodedAddressEntityListTO geocodedAddressEntityList = GeocodeTestUtil.mapToGeocodedAddressEntityList(teams);
-		
-		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest(geocodedAddressEntityList));
+		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest());
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 		
 		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
@@ -97,6 +99,8 @@ public class DinnerRouteOptimizationServiceTest {
 	public void calculateOptimizationWithOneCancelledTeam() throws NoPossibleRunningDinnerException {
 		setUpDefaultDinner(2 * 12);
 		teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+
+		testGeocodeHelperService.fillAllTeamsWithTeamNumberGeocodes(runningDinner.getAdminId());
 		
 		List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
 		Set<UUID> teamIds = teams.stream().map(Team::getId).collect(Collectors.toSet());
@@ -110,8 +114,7 @@ public class DinnerRouteOptimizationServiceTest {
 		// Reload
 		teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
 		
-		GeocodedAddressEntityListTO geocodedAddressEntityList = GeocodeTestUtil.mapToGeocodedAddressEntityList(teams);
-		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest(geocodedAddressEntityList));
+		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest());
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 
 		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
@@ -123,6 +126,8 @@ public class DinnerRouteOptimizationServiceTest {
 	public void calculateOptimizationWithTwoCancelledTeams() throws NoPossibleRunningDinnerException {
 		setUpDefaultDinner(2 * 27);
 		teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+
+		testGeocodeHelperService.fillAllTeamsWithTeamNumberGeocodes(runningDinner.getAdminId());
 		
 		List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
 		Set<UUID> teamIds = teams.stream().map(Team::getId).collect(Collectors.toSet());
@@ -138,8 +143,7 @@ public class DinnerRouteOptimizationServiceTest {
 		// Reload
 		teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
 		
-		GeocodedAddressEntityListTO geocodedAddressEntityList = GeocodeTestUtil.mapToGeocodedAddressEntityList(teams);
-		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest(geocodedAddressEntityList));
+		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest());
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 
 		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
@@ -152,21 +156,20 @@ public class DinnerRouteOptimizationServiceTest {
 		setUpDefaultDinner(2 * 27);
 		teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
 		
+		testGeocodeHelperService.fillAllTeamsWithTeamNumberGeocodes(runningDinner.getAdminId());
+		
 		List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), false);
 		Set<UUID> teamIds = teams.stream().map(Team::getId).collect(Collectors.toSet());
 		assertThat(teamIds).hasSize(27);
 		
 		assertAllDinnerRoutes(27);
 		
-		GeocodedAddressEntityListTO geocodedAddressEntityList = GeocodeTestUtil.mapToGeocodedAddressEntityList(teams);
-		GeocodedAddressEntity firstTeam = geocodedAddressEntityList.getAddressEntities().getFirst();
-		GeocodedAddressEntity lastTeam = geocodedAddressEntityList.getAddressEntities().getLast();
-		GeocodeTestUtil.setGeocodeDataInvalid(firstTeam);
-		GeocodeTestUtil.setGeocodeDataInvalid(lastTeam);
-		int firstTeamNumber = Integer.parseInt(firstTeam.getId());
-		int lastTeamNumber = Integer.parseInt(lastTeam.getId());
+		testGeocodeHelperService.fillTeamsWithInvalidGeocodes(runningDinner.getAdminId(), List.of(teams.getFirst(), teams.getLast()));
+
+		int firstTeamNumber = teams.getFirst().getTeamNumber(); 
+		int lastTeamNumber = teams.getLast().getTeamNumber();
 		
-		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest(geocodedAddressEntityList));
+		DinnerRouteOptimizationResult optimizationResult = dinnerRouteOptimizationService.calculateOptimization(runningDinner.getAdminId(), newCalculateOptimizationRequest());
 		DinnerRouteListTO optimizedDinnerRouteList = optimizationResult.optimizedDinnerRouteList();
 
 		dinnerRouteOptimizationService.validateOptimizedRoutes(optimizedDinnerRouteList.getDinnerRoutes(), runningDinner, teams);
@@ -261,7 +264,7 @@ public class DinnerRouteOptimizationServiceTest {
     return this.runningDinner;
   }
   
-  static CalculateDinnerRouteOptimizationRequest newCalculateOptimizationRequest(GeocodedAddressEntityListTO geocodedAddressEntityList) {
-  	return new CalculateDinnerRouteOptimizationRequest(geocodedAddressEntityList, 0.0, 0.0);
+  static CalculateDinnerRouteOptimizationRequest newCalculateOptimizationRequest() {
+  	return new CalculateDinnerRouteOptimizationRequest(0.0, 0.0);
   }
 }

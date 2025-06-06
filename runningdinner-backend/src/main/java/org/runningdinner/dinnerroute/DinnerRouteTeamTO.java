@@ -1,20 +1,22 @@
 
 package org.runningdinner.dinnerroute;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
+import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.geocoder.HasGeocodingResult;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamStatus;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 
-public class DinnerRouteTeamTO {
+public class DinnerRouteTeamTO implements HasGeocodingResult {
 
   private int teamNumber;
 
@@ -112,4 +114,16 @@ public class DinnerRouteTeamTO {
             .addValue(rawTeam)
             .toString();
   }
+
+	@Override
+	@JsonIgnore
+	public UUID getId() {
+		return rawTeam != null ? rawTeam.getId() : null; 
+	}
+
+	@Override
+	@JsonIgnore
+	public GeocodingResult getGeocodingResult() {
+		return this.getHostTeamMember() != null ? this.getHostTeamMember().getGeocodingResult() : null;
+	}
 }
