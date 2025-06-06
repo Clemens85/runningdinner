@@ -13,6 +13,10 @@ import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
+import org.runningdinner.mail.MailProvider;
+import org.runningdinner.mail.MailSenderPoolService;
+import org.runningdinner.mail.mock.MailSenderMockInMemory;
+import org.runningdinner.mail.pool.PoolableMailSender;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantName;
 import org.runningdinner.participant.ParticipantRepository;
@@ -54,6 +58,9 @@ public class TestHelperService {
 
   @Autowired
   private FrontendRunningDinnerService frontendRunningDinnerService;
+
+  @Autowired
+  private MailSenderPoolService mailSenderPoolService;
 
   public RunningDinner createClosedRunningDinner(LocalDate date, String email) {
 
@@ -199,5 +206,9 @@ public class TestHelperService {
     
     return participantService.updateParticipant(p.getAdminId(), p.getId(), new ParticipantInputDataTO(p));
   }
-  
+
+  public MailSenderMockInMemory getMockedMailSender() {
+    PoolableMailSender result = mailSenderPoolService.getMailSenderByKey(MailProvider.MOCK.toString());
+    return (MailSenderMockInMemory) result.getMailSender();
+  }
 }

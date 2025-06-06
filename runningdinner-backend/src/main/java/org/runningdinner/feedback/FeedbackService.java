@@ -126,8 +126,8 @@ public class FeedbackService {
     content.append("Content: ").append(FormatterUtil.NEWLINE).append(feedback.getMessage());
     
     Message message = new Message(subject, content.toString(), feedback.getSenderEmail());
-    
-    return MessageTask.newVirtualMessageTask(adminEmail, message);
+
+    return mailService.newVirtualMessageTask(adminEmail, message);
   }
 
 }

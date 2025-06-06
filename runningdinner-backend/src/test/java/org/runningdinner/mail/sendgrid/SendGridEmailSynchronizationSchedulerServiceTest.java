@@ -81,8 +81,7 @@ public class SendGridEmailSynchronizationSchedulerServiceTest {
   public void setUp() throws NoPossibleRunningDinnerException {
 
     mockitoMocksInstance = MockitoAnnotations.openMocks(this);
-
-    MailSenderMockInMemory mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
+    var mailSenderInMemory = testHelperService.getMockedMailSender();
     mailSenderInMemory.setUp();
     this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
     

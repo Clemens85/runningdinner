@@ -27,8 +27,6 @@ import com.google.common.base.MoreObjects;
 @Entity
 public class MessageTask extends RunningDinnerRelatedEntity {
 
-  private static final long serialVersionUID = 1L;
-
   @ManyToOne(optional = false)
   @JoinColumn(nullable = false, name = "parentJobId", updatable = false, insertable = false)
   @JsonIgnore
@@ -79,20 +77,19 @@ public class MessageTask extends RunningDinnerRelatedEntity {
     super(runningDinner);
     this.setParentJob(parentJob);
     this.sendingStatus = SendingStatus.QUEUED;
+    this.sender = sender;
   }
 
   /**
    * Provides the means for sending a message directly to recipient without being dependent of a running dinner instance or database.
-   * 
-   * @param recipientEmail
-   * @param message
-   * @return
+   *
    */
   public static MessageTask newVirtualMessageTask(String recipientEmail, Message message, String sender) {
     
     MessageTask result = new MessageTask();
     result.setMessage(message);
     result.setRecipientEmail(recipientEmail);
+    result.setSender(sender);
     return result;
   }
   

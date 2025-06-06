@@ -6,11 +6,11 @@ import org.springframework.mail.MailSender;
 
 public class PoolableMailSender {
 	
-	private MailProvider key;
+	private final MailProvider key;
 
-	private MailSender mailSender;
+	private final MailSender mailSender;
 	
-	private MailSenderLimit mailSenderLimit;
+	private final MailSenderLimit mailSenderLimit;
 	
 	public PoolableMailSender(MailProvider key, MailSender mailSender, MailSenderLimit mailSenderLimit) {
 		this.key = key;
@@ -28,6 +28,14 @@ public class PoolableMailSender {
 
 	public MailSenderLimit getMailSenderLimit() {
 		return mailSenderLimit;
+	}
+
+	public boolean hasDailyLimit() {
+		return mailSenderLimit != null && mailSenderLimit.getDailyLimit() > 0;
+	}
+
+	public boolean hasMonthlyLimit() {
+		return mailSenderLimit != null && mailSenderLimit.getMonthlyLimit() > 0;
 	}
 	
 }

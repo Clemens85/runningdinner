@@ -77,8 +77,7 @@ public class MessageAbuseSuspicionTest {
   
   @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
-
-    this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
+    this.mailSenderInMemory = testHelperService.getMockedMailSender();
     this.mailSenderInMemory.setUp();
     this.mailSenderInMemory.addIgnoreRecipientEmail(CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
     this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, TOTAL_NUMBER_OF_PARTICIPANTS);

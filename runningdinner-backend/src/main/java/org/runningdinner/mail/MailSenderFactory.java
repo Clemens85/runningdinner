@@ -21,8 +21,6 @@ import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.annotation.PostConstruct;
-
 @Component
 public class MailSenderFactory {
 
@@ -34,55 +32,54 @@ public class MailSenderFactory {
   
   private final ObjectMapper objectMapper; // Maybe needed later on for sendgrid
 
-  private MailSender mailSender;
-
   public MailSenderFactory(ObjectMapper objectMapper, EnvUtilService envUtilService, MailConfig mailConfig) {
     this.objectMapper = objectMapper;
     this.envUtilService = envUtilService;
     this.mailConfig = mailConfig;
   }
 
-  public MailSender getMailSender() {
-    Assert.notNull(mailSender, "Mailsender was not properly initialized");
-    return mailSender;
-  }
-  
   public List<PoolableMailSender> getConfiguredMailSenders() {
 
   	List<PoolableMailSender> result = new ArrayList<>();
   	
     if (envUtilService.isProfileActive("junit")) {
       LOGGER.info("*** Using mocked In-Memory MailSender ***");
-      result.add(new MailSenderMockInMemory());
+      var mailSender = new MailSenderMockInMemory();
+      result.add(new PoolableMailSender(MailProvider.MOCK, mailSender, new MailSenderLimit(-1, -1))); // No limits for mock
       return result;
     }
 
     if (mailConfig.isSendGridApiEnabled()) {
       LOGGER.info("*** Using SendGrid MailSender ***");
-      mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKey(), objectMapper, mailConfig.isHtmlEmail());
+      var mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKey(), objectMapper, mailConfig.isHtmlEmail());
       result.add(new PoolableMailSender(MailProvider.SENDGRID_API, mailSender, mailConfig.getSendGridApiLimits()));
+    } else {
+      LOGGER.warn("*** SendGrid MailSender is disabled ***");
     }
 
     if (mailConfig.isAwsSesEnabled()) {
       LOGGER.info("*** Using AWS SES MailSender with accessKey {} ***", StringUtils.substring(mailConfig.getUsername(), 0, 5));
-      mailSender = new AwsSesWrapper(mailConfig.getUsername(), mailConfig.getPassword(), mailConfig.isHtmlEmail());
-      return;
+      var mailSender = new AwsSesWrapper(mailConfig.getUsername(), mailConfig.getPassword(), mailConfig.isHtmlEmail());
+      result.add(new PoolableMailSender(MailProvider.AWS_SES_API, mailSender, mailConfig.getAwsSesApiLimits()));
+    } else {
+      LOGGER.warn("*** AWS SES MailSender is disabled ***");
     }
 
     if (mailConfig.isMailJetApiEnabled()) {
       LOGGER.info("*** Using MailJet MailSender with public API Key {} ***", StringUtils.substring(mailConfig.getMailJetApiKeyPublic(), 0, 5));
-      mailSender = new MailJetWrapper(mailConfig.getMailJetApiKeyPublic(), mailConfig.getMailJetApiKeyPrivate(), mailConfig.isHtmlEmail());
-      return;
+      var mailSender = new MailJetWrapper(mailConfig.getMailJetApiKeyPublic(), mailConfig.getMailJetApiKeyPrivate(), mailConfig.isHtmlEmail());
+      result.add(new PoolableMailSender(MailProvider.MAILJET_API, mailSender, mailConfig.getMailJetApiLimits()));
+    } else {
+      LOGGER.warn("*** MailJet MailSender is disabled ***");
     }
 
-    if (1 == 0) { // TODO
-      LOGGER.info("*** Using SMTP MailSender with SMTP Host {} and username {} ***",
-                  mailConfig.getHost(), StringUtils.substring(mailConfig.getUsername(), 0, 5));
-      mailSender = newJavaSmtpMailSender();
-      return;
+    if (mailConfig.isPlainSmtpMailServerEnabled()) {
+      LOGGER.info("*** Using SMTP MailSender with SMTP Host {} and username {} without limits ***", mailConfig.getHost(), StringUtils.substring(mailConfig.getUsername(), 0, 5));
+      var mailSender = newJavaSmtpMailSender();
+      result.add(new PoolableMailSender(MailProvider.SMTP, mailSender, new MailSenderLimit(-1, -1))); // No limits for plain SMTP
     }
 
-    // TODO: Check result has at least one
+    Assert.state(!result.isEmpty(), "No MailSender configured. Please check your application properties or environment variables for mail configuration.");
     return result;
   }
   

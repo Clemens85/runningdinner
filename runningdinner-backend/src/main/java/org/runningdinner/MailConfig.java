@@ -140,11 +140,22 @@ public class MailConfig {
 	public MailSenderLimit getSendGridApiLimits() {
 		return getMailSenderLimitFromConfig("mail.sendgrid.api");
 	}
-	
+
+  public MailSenderLimit getAwsSesApiLimits() {
+    return getMailSenderLimitFromConfig("mail.aws.ses");
+  }
+
+  public MailSenderLimit getMailJetApiLimits() {
+    return getMailSenderLimitFromConfig("mail.mailjet.api");
+  }
+
 	private MailSenderLimit getMailSenderLimitFromConfig(String configPrefix) {
 		Integer dailyLimit = environment.getProperty(configPrefix + ".limit.daily", Integer.class, -1);
 		Integer monthlyLimit = environment.getProperty(configPrefix + ".limit.monthly", Integer.class, -1);
-		return new MailSenderLimit(dailyLimit, monthlyLimit)
+		return new MailSenderLimit(dailyLimit, monthlyLimit);
 	}
-  
+
+  public boolean isPlainSmtpMailServerEnabled() {
+    return false;
+  }
 }

@@ -2,9 +2,9 @@ package org.runningdinner.mail;
 
 public class MailSenderLimit {
 
-	private int dailyLimit;
+	private final int dailyLimit;
 	
-	private int monthlyLimit;
+	private final int monthlyLimit;
 	
 	public MailSenderLimit(int dailyLimit, int monthlyLimit) {
 		this.dailyLimit = dailyLimit;

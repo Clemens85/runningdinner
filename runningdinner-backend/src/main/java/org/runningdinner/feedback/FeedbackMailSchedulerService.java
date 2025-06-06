@@ -20,7 +20,7 @@ public class FeedbackMailSchedulerService {
   private FeedbackService feedbackService;
 
   @Value("${deliver.feedback.mail.scheduler.enabled:true}")
-  private boolean schedulerEnabled = true;
+  private final boolean schedulerEnabled = true;
   
   /**
    * Perform job each 15 minutes

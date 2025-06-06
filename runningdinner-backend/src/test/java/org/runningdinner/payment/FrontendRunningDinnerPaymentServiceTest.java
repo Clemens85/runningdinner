@@ -81,7 +81,7 @@ public class FrontendRunningDinnerPaymentServiceTest {
     publicDinnerId = runningDinner.getPublicSettings().getPublicId();
     adminId = runningDinner.getAdminId();
 
-    this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
+    this.mailSenderInMemory = testHelperService.getMockedMailSender();
     this.mailSenderInMemory.setUp();
     this.mailSenderInMemory.addIgnoreRecipientEmail(CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
     

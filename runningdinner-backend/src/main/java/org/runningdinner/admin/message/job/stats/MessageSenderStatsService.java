@@ -16,9 +16,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class MessageSenderStatsService {
 
-	private MessageTaskRepository messageTaskRepository;
-	
-	public MessageSenderStats getStatsBySender(LocalDate now) {
+	private final MessageTaskRepository messageTaskRepository;
+
+  public MessageSenderStatsService(MessageTaskRepository messageTaskRepository) {
+    this.messageTaskRepository = messageTaskRepository;
+  }
+
+  public MessageSenderStats getStatsBySender(LocalDate now) {
 		
 		LocalDateTime startOfMonth = now.atStartOfDay().withDayOfMonth(1);
 		LocalDateTime endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);

@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 
 public class MessageTaskBySenderCount {
 	
-	private long count;
+	private final long count;
 	
-	private String sender;
+	private final String sender;
 	
-	private LocalDateTime sendingStartTime;
+	private final LocalDateTime sendingStartTime;
 
 	public MessageTaskBySenderCount(long count, String sender, LocalDateTime sendingStartTime) {
 		this.count = count;

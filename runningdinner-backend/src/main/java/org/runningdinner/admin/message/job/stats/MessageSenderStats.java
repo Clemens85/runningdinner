@@ -4,9 +4,9 @@ import java.util.Map;
 
 public class MessageSenderStats {
 
-	private Map<String, Integer> sentTasksOfDay;
+	private final Map<String, Integer> sentTasksOfDay;
 	
-	private Map<String, Integer> sentTasksOfMonth;
+	private final Map<String, Integer> sentTasksOfMonth;
 
 	public MessageSenderStats(Map<String, Integer> sentTasksOfDay, Map<String, Integer> sentTasksOfMonth) {
 		super();

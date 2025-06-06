@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
@@ -31,10 +32,10 @@ public class MailSenderMockInMemory implements MailSender {
 
   protected Set<String> failingRecipientEmails = new HashSet<>();
 
-  private static Logger LOGGER = LoggerFactory.getLogger(MailSenderMockInMemory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MailSenderMockInMemory.class);
 
   @Override
-  public void send(SimpleMailMessage simpleMessage) throws MailException {
+  public void send(@NotNull SimpleMailMessage simpleMessage) throws MailException {
 
     this.send(
       new SimpleMailMessage[] {
@@ -43,7 +44,7 @@ public class MailSenderMockInMemory implements MailSender {
   }
 
   @Override
-  public void send(SimpleMailMessage... simpleMessages) throws MailException {
+  public void send(@NotNull SimpleMailMessage... simpleMessages) throws MailException {
 
     if (simpleMessages == null) {
       LOGGER.warn("No messages passed!");

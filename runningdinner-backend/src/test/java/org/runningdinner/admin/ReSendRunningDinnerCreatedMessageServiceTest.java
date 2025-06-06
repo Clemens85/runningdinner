@@ -61,8 +61,7 @@ public class ReSendRunningDinnerCreatedMessageServiceTest {
   @BeforeEach
   public void setUp() {
     this.runningDinnerNotAcknowledged = testHelperService.createPublicRunningDinner(LocalDate.now().plusDays(7), 2, RegistrationType.PUBLIC, false);
-    
-    this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
+    this.mailSenderInMemory = testHelperService.getMockedMailSender();
     this.mailSenderInMemory.setUp();
   }
   
