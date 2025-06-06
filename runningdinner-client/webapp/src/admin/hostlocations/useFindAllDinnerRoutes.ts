@@ -2,7 +2,7 @@ import { DinnerRouteList, findAllDinnerRoutesByAdminIdAsync, isStringNotEmpty } 
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useIsRouteOptimization } from './useIsRouteOptimization';
 import { DinnerRouteOptimizationResultService } from './DinnerRouteOptimizationResultService';
-import { queryCalculateTeamDistanceClustersKey } from './useCalculateTeamNeighbourClusters';
+// import { queryCalculateTeamDistanceClustersKey } from './useCalculateTeamNeighbourClusters';
 
 export function useFindAllDinnerRoutes(adminId: string) {
   const optimizationId = useIsRouteOptimization();
@@ -13,8 +13,9 @@ export function useFindAllDinnerRoutes(adminId: string) {
     queryFn: async () => {
       const allDinnerRoutes = await findAllDinnerRoutes(adminId, optimizationId);
       // Refer also to https://tkdodo.eu/blog/seeding-the-query-cache
-      const queryKey = queryCalculateTeamDistanceClustersKey(adminId, 0, optimizationId);
-      queryClient.setQueryData(queryKey, allDinnerRoutes.teamNeighbourClustersSameAddress?.teamNeighbourClusters || []);
+      // TODO: Somehow this loading improvement does not work welll with the optimizationId case, so we do not use it for now...
+      // const queryKey = queryCalculateTeamDistanceClustersKey(adminId, 0, optimizationId);
+      // queryClient.setQueryData(queryKey, allDinnerRoutes.teamNeighbourClustersSameAddress?.teamNeighbourClusters || []);
       return allDinnerRoutes;
     },
     queryKey: ['findAllDinnerRoutesByAdminId', adminId, optimizationId],

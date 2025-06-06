@@ -165,7 +165,7 @@ export class DinnerRouteMapCalculator {
       if (entriesForRoute.length === 0) {
         teamsWithUnresolvedGeocodings.push(...dinnerRoute.teams.filter((team) => dinnerRoute.currentTeam.teamNumber === team.teamNumber));
         continue;
-      } else if (this.isSingleDinnerRouteView && dinnerRouteMapEntries.length < dinnerRoute.teams.length) {
+      } else if (this.isSingleDinnerRouteView && entriesForRoute.length < dinnerRoute.teams.length) {
         // Get DinnerRoute Teams that are not contained in dinnerRouteMapEntries
         const teamsWithoutDinnerRouteMapEntry = dinnerRoute.teams.filter((team) => !entriesForRoute.some((entry) => entry.teamNumber === team.teamNumber));
         teamsWithUnresolvedGeocodings.push(...teamsWithoutDinnerRouteMapEntry);
@@ -190,7 +190,7 @@ export class DinnerRouteMapCalculator {
 
   private calculateDinnerRouteMapEntry(dinnerRoute: DinnerRoute): DinnerRouteTeamMapEntry[] {
     const { currentTeam } = dinnerRoute;
-    if (!isGeocodingResultValid(DinnerRouteMapCalculator.getGeocodingResult(currentTeam))) {
+    if (!isGeocodingResultValid(DinnerRouteMapCalculator.getGeocodingResult(currentTeam)) && !this.isSingleDinnerRouteView) {
       // No geocoding result for current team, so we cannot calculate the map entries
       return [];
     }
@@ -212,15 +212,16 @@ export class DinnerRouteMapCalculator {
       if (i + 1 < dinnerRoute.teams.length) {
         const teamConnectionPath = DinnerRouteMapCalculator.newTeamConnectionPath(team, currentTeamColor, dinnerRoute.teams[i + 1]);
         teamConnectionPath.secondaryClusterColor = this.secondaryClusterColorMappings[currentTeam.teamNumber];
-        teamConnectionPaths.push(teamConnectionPath);
+        DinnerRouteMapCalculator.addTeamConnectionPathIfValid(teamConnectionPath, teamConnectionPaths);
       } else if (this.afterPartyLocationMapEntry) {
         const teamGeocodingResult = DinnerRouteMapCalculator.getGeocodingResult(team);
-        teamConnectionPaths.push({
+        const teamToAfterPartyLocationConnectionPath: TeamConnectionPath = {
           coordinates: [teamGeocodingResult!, this.afterPartyLocationMapEntry.position],
           color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor(),
           key: `${currentTeam.teamNumber}-afterparty`,
           team,
-        });
+        };
+        DinnerRouteMapCalculator.addTeamConnectionPathIfValid(teamToAfterPartyLocationConnectionPath, teamConnectionPaths);
       }
     }
 
@@ -232,7 +233,7 @@ export class DinnerRouteMapCalculator {
     dinnerRouteMapEntry.secondaryClusterColor = this.secondaryClusterColorMappings[currentTeam.teamNumber];
     result.push(dinnerRouteMapEntry);
 
-    return result;
+    return result.filter((entry) => isGeocodingResultValid(entry.position!));
   }
 
   private addOffsetToMapEntriesWithSameAddress(dinnerRouteMapEntries: DinnerRouteTeamMapEntry[]) {
@@ -292,6 +293,12 @@ export class DinnerRouteMapCalculator {
       teamConnectionPaths,
       mealType: this.mealTypeMappings[team.meal.id!],
     };
+  }
+
+  private static addTeamConnectionPathIfValid(teamConnectionPath: TeamConnectionPath, teamConnectionPaths: Array<TeamConnectionPath>) {
+    if (teamConnectionPath.coordinates.length === 2 && isGeocodingResultValid(teamConnectionPath.coordinates[0]) && isGeocodingResultValid(teamConnectionPath.coordinates[1])) {
+      teamConnectionPaths.push(teamConnectionPath);
+    }
   }
 }
 
