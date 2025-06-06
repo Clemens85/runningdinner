@@ -224,10 +224,12 @@ public class CreateRunningDinnerWizardService {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		int participantNumber = 1;
   	for (ParticipantInputDataTO participantInput : participantInputDataListTO.participants()) {
     	Participant participant = new Participant();
   		ParticipantService.copyFieldsFromInputToParticipant(participantInput, participant);
   		participant.setGeocodingResult(participantInput.getGeocodingResult());
+  		participant.setParticipantNumber(participantNumber++);
   		result.add(participant);
   	}
   	return result;
