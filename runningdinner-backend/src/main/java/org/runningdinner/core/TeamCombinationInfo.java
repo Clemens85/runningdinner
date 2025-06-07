@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.runningdinner.participant.Participant;
+
 /**
  * Simple helper object for saving information about combining teams
  * 
@@ -33,6 +35,15 @@ public class TeamCombinationInfo {
 		this.numberOfTeams = numberOfPossibleTeams - numRemaindingTeams;
 
 		this.numMeals = numMeals;
+	}
+	
+	public static TeamCombinationInfo newInstance(BasicRunningDinnerConfiguration runningDinnerConfig, List<Participant> allParticipants) throws NoPossibleRunningDinnerException {
+		int numberOfTeams = allParticipants.size() / runningDinnerConfig.getTeamSize();
+		return newInstance(runningDinnerConfig, numberOfTeams);
+	}	
+	
+	public static TeamCombinationInfo newInstance(BasicRunningDinnerConfiguration runningDinnerConfig, int numberOfTeams) throws NoPossibleRunningDinnerException {
+		return new TeamCombinationInfo(numberOfTeams, runningDinnerConfig.getNumberOfMealClasses());
 	}
 
 	/**

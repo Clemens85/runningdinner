@@ -1,4 +1,4 @@
-import { GeocodingResult, isDefined } from "@runningdinner/shared";
+import { GeocodingResult, isDefined, isGeocodingResultValid } from "@runningdinner/shared";
 import { useMap } from "@vis.gl/react-google-maps";
 
 export function useZoomToMarker() {
@@ -13,6 +13,9 @@ export function useZoomToMarker() {
         return;
       }
       if (!mapRef) {
+        return;
+      }
+      if (!isGeocodingResultValid(geocodingResult)) {
         return;
       }
       mapRef.panTo({lat, lng});

@@ -1,8 +1,7 @@
-import {AfterPartyLocation, Meal} from "./RunningDinner";
-import {Team, TeamStatus} from "./Team";
-import {Participant} from "./Participant";
-import {BaseEntity, GeocodingResult, HasGeocoding} from "./Base";
-import {filterForValidGeocdingResults} from "../GeocoderHook";
+import { AfterPartyLocation } from './RunningDinner';
+import { BaseTeam, Team } from './Team';
+import { Participant } from './Participant';
+import { GeocodingResult } from './Base';
 
 export interface DinnerRoute {
   currentTeam: Team;
@@ -11,27 +10,18 @@ export interface DinnerRoute {
   afterPartyLocation?: AfterPartyLocation;
 }
 
-export interface DinnerRouteTeam {
-  teamNumber: number;
-  status: TeamStatus;
-  meal: Meal;
+export type DinnerRouteTeam = {
   hostTeamMember: DinnerRouteTeamHost;
-  geocodingResult?: GeocodingResult;
   contactInfo: string[];
-}
+} & BaseTeam;
 
-export interface DinnerRouteTeamHost extends Omit<Participant, "id"> {
-
-}
+export interface DinnerRouteTeamHost extends Omit<Participant, 'id'> {}
 
 export interface DinnerRouteList {
   dinnerRoutes: DinnerRoute[];
+  teamClusterMappings: Record<number, number[]>;
+  teamNeighbourClustersSameAddress: TeamNeighbourClusterList;
 }
-
-export interface GeocodedAddressEntityList {
-  addressEntities: GeocodedAddressEntity[];
-}
-export interface GeocodedAddressEntity extends GeocodingResult, BaseEntity { }
 
 export interface DinnerRouteTeamWithDistance extends DinnerRouteTeam {
   distanceToNextTeam: number;
@@ -40,11 +30,15 @@ export interface DinnerRouteTeamWithDistance extends DinnerRouteTeam {
 }
 export interface DinnerRouteWithDistances {
   teams: DinnerRouteTeamWithDistance[];
+  averageDistanceInMeters: number;
 }
 
 export interface DinnerRouteWithDistancesList {
   dinnerRoutes: DinnerRouteWithDistances[];
+  averageDistanceInMeters: number;
+  sumDistanceInMeters: number;
 }
+
 interface DistanceEntry {
   srcId: string;
   destId: string;
@@ -54,22 +48,25 @@ export interface DistanceMatrix {
   entries: Map<DistanceEntry, number>;
 }
 
-export interface TeamDistanceCluster {
-  teams: Team[];
+export interface TeamNeighbourCluster {
+  a: Team;
+  b: Team;
   distance: number;
 }
-export interface TeamDistanceClusterList {
-  teamDistanceClusters: TeamDistanceCluster[];
+export interface TeamNeighbourClusterList {
+  teamNeighbourClusters: TeamNeighbourCluster[];
 }
 
 export type MapEntry = {
   color: string;
-  position: GeocodingResult
+  position: GeocodingResult;
+  secondaryClusterColor?: string;
 };
 
 export type TeamConnectionPath = {
   coordinates: GeocodingResult[];
   color: string;
+  secondaryClusterColor?: string;
   key: string;
   team: DinnerRouteTeam;
   toTeam?: DinnerRouteTeam;
@@ -78,41 +75,59 @@ export type TeamConnectionPath = {
 export type DinnerRouteTeamMapEntry = {
   teamConnectionPaths: TeamConnectionPath[];
   mealType: MealType;
-} & DinnerRouteTeam & MapEntry;
+} & DinnerRouteTeam &
+  MapEntry;
 
 export type AfterPartyLocationMapEntry = AfterPartyLocation & MapEntry;
 
 export type DinnerRouteMapData = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
-  // showWarnings?: boolean;
   teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
   centerPosition: GeocodingResult;
-  afterPartyLocationMapEntry?: AfterPartyLocationMapEntry
+  afterPartyLocationMapEntry?: AfterPartyLocationMapEntry;
 };
 
-export enum MealType  {
-  APPETIZER = "APPETIZER",
-  MAIN_COURSE = "MAIN_COURSE",
-  DESSERT = "DESSERT"
+export type TeamMemberChange = {
+  currentTeamId: string;
+  moveTeamMembersFromTeamId: string;
+};
+
+export type DinnerRouteOptimizationResult = {
+  id: string;
+  optimizedDinnerRouteList: DinnerRouteList;
+  optimizedDistances: DinnerRouteWithDistancesList;
+  optimizedTeamNeighbourClusters: TeamNeighbourClusterList;
+  teamMemberChangesToPerform: TeamMemberChange[];
+  averageDistanceInMetersBefore: number;
+  sumDistanceInMetersBefore: number;
+};
+
+export type SaveDinnerRouteOptimizationRequest = {
+  optimizedDinnerRoutes: DinnerRoute[];
+  teamMemberChangesToPerform: TeamMemberChange[];
+};
+
+export type CalculateDinnerRouteOptimizationRequest = {
+  currentSumDistanceInMeters: number;
+  currentAverageDistanceInMeters: number;
+};
+
+export enum MealType {
+  APPETIZER = 'APPETIZER',
+  MAIN_COURSE = 'MAIN_COURSE',
+  DESSERT = 'DESSERT',
 }
 
-export type TeamDistanceClusterWithMapEntry = {
+export type TeamNeighbourClusterWithMapEntry = {
   dinnerRouteMapEntries: DinnerRouteTeamMapEntry[];
-} & TeamDistanceCluster;
+} & TeamNeighbourCluster;
 
 export function isSameDinnerRouteTeam(a: DinnerRouteTeam | Team, b: DinnerRouteTeam | Team) {
- return a.teamNumber === b.teamNumber;
+  return a.teamNumber === b.teamNumber;
 }
 
 export function isDinnerRouteTeam(item: DinnerRouteTeam | AfterPartyLocation): item is DinnerRouteTeam {
   return (item as DinnerRouteTeam).teamNumber !== undefined;
 }
 
-export function getGeocodingResultsForTeamsAndAfterPartyLocation(dinnerRouteTeams: DinnerRouteTeam[], afterPartyLocation?: AfterPartyLocation) {
-  const geocodedItems: HasGeocoding[] = [... dinnerRouteTeams];
-  if (afterPartyLocation) {
-    geocodedItems.push(afterPartyLocation);
-  }
-  return filterForValidGeocdingResults(geocodedItems)
-          .map(geocodedItem => geocodedItem.geocodingResult);
-}
+export type OptimizationImpact = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';

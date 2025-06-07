@@ -19,8 +19,6 @@ public class GeneratedTeamsResult {
 
   private List<Participant> notAssignedParticipants;
 
-  private TeamCombinationInfo teamCombinationInfo;
-
   /**
    * Returns the teams that could be generated during the calculation of a running dinner.
    * 
@@ -48,15 +46,6 @@ public class GeneratedTeamsResult {
     return notAssignedParticipants;
   }
 
-  /**
-   * Returns some basic info about how teams can be assigned based on the current running dinner settings
-   * 
-   * @return
-   */
-  public TeamCombinationInfo getTeamCombinationInfo() {
-
-    return teamCombinationInfo;
-  }
 
   /**
    * True if not all participants could be assigend into teams
@@ -76,11 +65,6 @@ public class GeneratedTeamsResult {
   void setNotAssignedParticipants(List<Participant> notAssignedMembers) {
 
     this.notAssignedParticipants = notAssignedMembers;
-  }
-
-  void setTeamCombinationInfo(TeamCombinationInfo teamCombinationInfo) {
-
-    this.teamCombinationInfo = teamCombinationInfo;
   }
 
 }

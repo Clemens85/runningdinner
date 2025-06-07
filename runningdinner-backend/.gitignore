@@ -31,3 +31,5 @@
 /infrastructure/local/.env
 /infrastructure/local/volume/
 /src/main/resources/application-paypal_sandbox.properties
+application-aws_dev.properties
+

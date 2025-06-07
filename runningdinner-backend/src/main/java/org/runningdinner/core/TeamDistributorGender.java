@@ -1,6 +1,12 @@
 package org.runningdinner.core;
 
-import com.google.common.base.MoreObjects;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
@@ -8,8 +14,7 @@ import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.google.common.base.MoreObjects;
 
 public class TeamDistributorGender {
 
@@ -87,8 +92,8 @@ public class TeamDistributorGender {
       
       for (Participant matchingTeamMember : matchingTeamMembers) {
         
-        Team teamCandidateClone = teamCandidate.createDetachedClone();
-        Team unbalancedTeamClone = unbalancedTeam.createDetachedClone();
+        Team teamCandidateClone = teamCandidate.createDetachedClone(true);
+        Team unbalancedTeamClone = unbalancedTeam.createDetachedClone(true);
 
         LOGGER.info("Simulating swap of {} in team {} with {} in team {}", teamMemberOfUnbalancedTeam, unbalancedTeamClone, matchingTeamMember, teamCandidateClone);
         

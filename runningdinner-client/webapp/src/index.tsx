@@ -1,4 +1,3 @@
-import React from 'react';
 import App from "./App";
 import CssBaseline from "@mui/material/CssBaseline";
 import {SnackbarProvider} from "notistack";

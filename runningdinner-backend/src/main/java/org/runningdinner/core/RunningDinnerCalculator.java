@@ -10,8 +10,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.runningdinner.core.dinnerplan.DinnerPlanGenerator;
-import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
@@ -31,16 +29,6 @@ import org.springframework.util.Assert;
  */
 public class RunningDinnerCalculator {
 
-  private final DinnerPlanGenerator dinnerPlanGenerator;
-
-  public RunningDinnerCalculator() {
-    this(new StaticTemplateDinnerPlanGenerator());
-  }
-
-  public RunningDinnerCalculator(DinnerPlanGenerator dinnerPlanGenerator) {
-    this.dinnerPlanGenerator = dinnerPlanGenerator;
-  }
-
 	/**
 	 * Main entry point for calculation of a running dinner.<br>
 	 * Based upon the passed participants and the dinner-options (e.g. team size, number of meals, ...) there is tried to assign each
@@ -58,9 +46,9 @@ public class RunningDinnerCalculator {
 	 * @throws NoPossibleRunningDinnerException If there are too few participants
 	 */
 	public GeneratedTeamsResult generateTeams(final RunningDinnerConfig runningDinnerConfig,
-                                              final List<Participant> participants,
-                                              final List<TeamTO> existingTeamsToKeep,
-                                              final ParticipantListRandomizer participantListRandomizer) throws NoPossibleRunningDinnerException {
+                                            final List<Participant> participants,
+                                            final List<TeamTO> existingTeamsToKeep,
+                                            final ParticipantListRandomizer participantListRandomizer) throws NoPossibleRunningDinnerException {
 
       int teamSize = runningDinnerConfig.getTeamSize();
       int numParticipants = participants.size();
@@ -69,13 +57,11 @@ public class RunningDinnerCalculator {
         throw new NoPossibleRunningDinnerException("There must be more participants as a team's size");
       }
 
-      TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);
+//      TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);
 
       GeneratedTeamsResult result = new GeneratedTeamsResult();
-      result.setTeamCombinationInfo(teamCombinationInfo);
 
-      List<Participant> participantsToAssign = splitRegularAndIrregularParticipants(participants, result,
-          runningDinnerConfig);
+      List<Participant> participantsToAssign = splitRegularAndIrregularParticipants(participants, result, runningDinnerConfig);
 
       List<Team> regularTeams;
 
@@ -145,7 +131,7 @@ public class RunningDinnerCalculator {
 	public List<Participant> calculateNotAssignableParticipants(final BasicRunningDinnerConfiguration runningDinnerConfig,
 			final List<Participant> participants) {
 		try {
-			TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);
+			TeamCombinationInfo teamCombinationInfo = TeamCombinationInfo.newInstance(runningDinnerConfig, participants); 
 			int numOfNotAssignableParticipants = calculateNumberOfNotAssignableParticipants(participants, teamCombinationInfo,
 					runningDinnerConfig);
 			if (numOfNotAssignableParticipants <= 0) {
@@ -171,12 +157,13 @@ public class RunningDinnerCalculator {
 	 * 
 	 * @param allParticipants All participants that were given in for building a running dinner
 	 * @param generatedTeamsResult Is enriched with all participants that cannot be assigend to teams (if any).
+	 * @throws NoPossibleRunningDinnerException 
 	 * @throws IllegalArgumentException If there occurs computation errors when splitting the list (should never happen actually)
 	 */
 	private List<Participant> splitRegularAndIrregularParticipants(final List<Participant> allParticipants,
-			final GeneratedTeamsResult generatedTeamsResult, final RunningDinnerConfig runningDinnerConfig) {
+			final GeneratedTeamsResult generatedTeamsResult, final RunningDinnerConfig runningDinnerConfig) throws NoPossibleRunningDinnerException {
 
-		TeamCombinationInfo teamCombinationInfo = generatedTeamsResult.getTeamCombinationInfo();
+		TeamCombinationInfo teamCombinationInfo = TeamCombinationInfo.newInstance(runningDinnerConfig, allParticipants); 
 
 		// This will be the count of participants that cannot be assigned and must therefore be substracted from the participant-list before
 		// building teams:
@@ -200,12 +187,6 @@ public class RunningDinnerCalculator {
 		}
 	}
 
-	protected TeamCombinationInfo generateTeamCombinationInfo(final List<Participant> allParticipants,
-			final BasicRunningDinnerConfiguration runningDinnerConfig) throws NoPossibleRunningDinnerException {
-
-		int numberOfTeams = allParticipants.size() / runningDinnerConfig.getTeamSize();
-		return runningDinnerConfig.generateTeamCombinationInfo(numberOfTeams);
-	}
 
 	protected int calculateNumberOfNotAssignableParticipants(final List<Participant> allParticipants,
 			final TeamCombinationInfo teamCombinationInfo, final BasicRunningDinnerConfiguration runningDinnerConfig) {
@@ -373,7 +354,7 @@ public class RunningDinnerCalculator {
 	 * As a fallback the first participant is just taken.
 	 *
 	 */
-	public void setHostingParticipant(Team team, RunningDinnerConfig runningDinnerConfig) {
+	public static void setHostingParticipant(Team team, RunningDinnerConfig runningDinnerConfig) {
 		Participant participantWithUnknownHostingStatus = null;
 
 		for (Participant teamMember : team.getTeamMembers()) {
@@ -396,18 +377,6 @@ public class RunningDinnerCalculator {
 		// Last fallback, just pick up the first matching participant:
 		Participant firstTeamMember = team.getTeamMembers().iterator().next();
 		firstTeamMember.setHost(true);
-	}
-
-	/**
-	 * Final (and main) method which assigns every regular team a VisitationPlan which indicats which teams are guests and hosts for every
-	 * regular team.
-	 *
-	 * @throws IllegalArgumentException If some pre-condition is not met in the passed parameters
-	 */
-	public void generateDinnerExecutionPlan(final GeneratedTeamsResult generatedTeams, final RunningDinnerConfig runningDinnerConfig)
-			throws NoPossibleRunningDinnerException {
-
-		dinnerPlanGenerator.generateDinnerExecutionPlan(generatedTeams, runningDinnerConfig);
 	}
 
 	public interface ParticipantListRandomizer {

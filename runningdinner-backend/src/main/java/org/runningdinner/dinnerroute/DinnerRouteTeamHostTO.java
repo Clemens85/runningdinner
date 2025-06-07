@@ -122,7 +122,7 @@ public class DinnerRouteTeamHostTO {
     this.addressRemarks = addressRemarks;
   }
 
-  public GeocodingResult getGeocodingResult() {
+	public GeocodingResult getGeocodingResult() {
     return geocodingResult;
   }
 

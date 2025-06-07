@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.SafeHtml;
+import org.runningdinner.core.BaseAddress;
 import org.runningdinner.core.InvalidAddressException;
 import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
 
@@ -17,7 +18,7 @@ import jakarta.persistence.Embeddable;
  * 
  */
 @Embeddable
-public class ParticipantAddress {
+public class ParticipantAddress implements BaseAddress {
 
   @SafeHtml
   private String street;
@@ -190,6 +191,7 @@ public class ParticipantAddress {
 
 	}
 
+	@Override
 	public String getStreet() {
 		return street;
 	}
@@ -202,6 +204,7 @@ public class ParticipantAddress {
 		this.street = StringUtils.trim(street);
 	}
 
+	@Override
 	public String getStreetNr() {
 		return streetNr;
 	}
@@ -210,6 +213,7 @@ public class ParticipantAddress {
 		this.streetNr = StringUtils.trim(streetNr);
 	}
 
+	@Override
 	public String getZip() {
 		return zip;
 	}
@@ -226,6 +230,7 @@ public class ParticipantAddress {
 	  return formatZipWithCity(zip, cityName);
 	}
 
+	@Override
 	public String getCityName() {
 		return cityName;
 	}

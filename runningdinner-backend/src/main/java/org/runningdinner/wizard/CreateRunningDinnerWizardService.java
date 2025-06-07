@@ -1,6 +1,8 @@
 
 package org.runningdinner.wizard;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import org.runningdinner.admin.rest.RunningDinnerAdminTO;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
+import org.runningdinner.common.ResourceLoader;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.contract.Contract;
 import org.runningdinner.contract.ContractService;
@@ -25,35 +28,42 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.RunningDinnerInfo;
+import org.runningdinner.dataimport.ParticipantInputDataListTO;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantRepository;
 import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class CreateRunningDinnerWizardService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CreateRunningDinnerWizardService.class);
 
-  @Value("${upload.application.tmpdir}")
-  private String uploadTmpDir;
+  private final RunningDinnerService runningDinnerService;
+  
+  private final ContractService contractService;
+  
+  private final ParticipantRepository participantRepository;
+  
+  private final ObjectMapper objectMapper;
+  
+  public CreateRunningDinnerWizardService(RunningDinnerService runningDinnerService, ContractService contractService,
+			ParticipantRepository participantRepository, ObjectMapper objectMapper) {
+		this.runningDinnerService = runningDinnerService;
+		this.contractService = contractService;
+		this.participantRepository = participantRepository;
+		this.objectMapper = objectMapper;
+	}
 
-  @Autowired
-  private RunningDinnerService runningDinnerService;
-  
-  @Autowired
-  private ContractService contractService;
-  
-  @Autowired
-  private ParticipantRepository participantRepository;
-  
-  @Transactional
+	@Transactional
   public RunningDinner createRunningDinner(RunningDinnerAdminTO runningDinnerTO) {
     
     validateRunningDinnerTO(runningDinnerTO);
@@ -66,7 +76,7 @@ public class CreateRunningDinnerWizardService {
 
     List<Participant> demoParticipants = Collections.emptyList();
     if (runningDinnerType == RunningDinnerType.DEMO) {
-      demoParticipants = ParticipantService.newParticipantsFromDemoXls();
+    	demoParticipants = readDemoParticipants();
     }
 
     RunningDinner result;
@@ -197,6 +207,32 @@ public class CreateRunningDinnerWizardService {
     }
     
     AfterPartyLocationService.validateAfterPartyLocation(runningDinnerAdminTO.getAfterPartyLocation());
+  }
+  
+  protected ParticipantInputDataListTO readDemoParticipantsToInputDataList() throws IOException {
+    Resource demoResource = ResourceLoader.getResource("files/demo-participants.json");
+    try (InputStream inputStream = demoResource.getInputStream()) {
+    	return objectMapper.readValue(inputStream, ParticipantInputDataListTO.class);
+    }
+  }
+  
+  public List<Participant> readDemoParticipants() {
+  	List<Participant> result = new ArrayList<>();
+  	ParticipantInputDataListTO participantInputDataListTO;
+		try {
+			participantInputDataListTO = this.readDemoParticipantsToInputDataList();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		int participantNumber = 1;
+  	for (ParticipantInputDataTO participantInput : participantInputDataListTO.participants()) {
+    	Participant participant = new Participant();
+  		ParticipantService.copyFieldsFromInputToParticipant(participantInput, participant);
+  		participant.setGeocodingResult(participantInput.getGeocodingResult());
+  		participant.setParticipantNumber(participantNumber++);
+  		result.add(participant);
+  	}
+  	return result;
   }
 
 }

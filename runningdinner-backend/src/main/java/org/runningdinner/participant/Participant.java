@@ -1,9 +1,9 @@
 
 package org.runningdinner.participant;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.MealSpecifics;
@@ -12,8 +12,20 @@ import org.runningdinner.core.RunningDinnerRelatedEntity;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.HasGeocodingResult;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
+
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 /**
  * Represents a participant of a running dinner.<br>
@@ -90,6 +102,7 @@ public class Participant extends RunningDinnerRelatedEntity
   private UUID teamPartnerWishOriginatorId;
 
   @Embedded
+  @AttributeOverride(name = "syncStatus", column = @Column(name = "geocodingResultSyncStatus"))
   private GeocodingResult geocodingResult = new GeocodingResult();
 
   public Participant() {
@@ -419,4 +432,9 @@ public class Participant extends RunningDinnerRelatedEntity
     return result;
   }
 
+  @Override
+	protected void setId(UUID id) {
+  	super.setId(id);
+  }
+  
 }

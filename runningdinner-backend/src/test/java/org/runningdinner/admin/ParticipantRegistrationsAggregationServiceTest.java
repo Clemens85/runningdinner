@@ -1,5 +1,12 @@
 package org.runningdinner.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.core.IdentifierUtil;
@@ -10,20 +17,11 @@ import org.runningdinner.participant.ParticipantRegistrationsAggregationService;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInfo;
 import org.runningdinner.participant.registrationinfo.ParticipantRegistrationInfoList;
-import org.runningdinner.queue.QueueProviderFactoryService;
-import org.runningdinner.queue.QueueProviderMockInMemory;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -41,13 +39,9 @@ public class ParticipantRegistrationsAggregationServiceTest {
   private TestHelperService testHelperService;
 
   @Autowired
-  private QueueProviderFactoryService queueProviderFactoryService;
-
-  @Autowired
   private CreateRunningDinnerWizardService createRunningDinnerWizardService;
 
   private RunningDinner runningDinner;
-  private QueueProviderMockInMemory queueProvider;
 
   @Test
   public void findWithTeamPartnerRegistrations() {
@@ -198,8 +192,6 @@ public class ParticipantRegistrationsAggregationServiceTest {
   private void setUpRunningDinner(int numberOfParticipants) {
 
     this.runningDinner = testHelperService.createOpenRunningDinnerWithParticipants(DINNER_DATE, numberOfParticipants);
-    this.queueProvider = (QueueProviderMockInMemory) queueProviderFactoryService.getQueueProvider();
-    this.queueProvider.clearMessageRequests();
   }
 
   private Participant removeActivation(Participant participant) {

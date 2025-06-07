@@ -1,17 +1,17 @@
 package org.runningdinner.dinnerroute;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.rest.TeamTO;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class DinnerRouteTO implements Serializable {
 
@@ -80,5 +80,9 @@ public class DinnerRouteTO implements Serializable {
            .collect(Collectors.toList());
   }
   
+  @Override
+	public String toString() {
+  	return currentTeam.toString();
+  }
   
 }

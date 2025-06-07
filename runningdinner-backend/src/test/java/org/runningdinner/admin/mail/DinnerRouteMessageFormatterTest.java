@@ -1,5 +1,13 @@
 package org.runningdinner.admin.mail;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.UUID;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,21 +21,23 @@ import org.runningdinner.admin.message.team.TeamSelection;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
-import org.runningdinner.core.*;
+import org.runningdinner.core.GeneratedTeamsResult;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
+import org.runningdinner.core.ParticipantGenerator;
+import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
+import org.runningdinner.core.RunningDinnerCalculator;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.test.helper.Configurations;
 import org.runningdinner.core.util.DateTimeUtil;
-import org.runningdinner.geocoder.AfterPartyLocationGeocodeEventPublisher;
+import org.runningdinner.geocoder.request.GeocodeRequestEventPublisher;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.springframework.context.MessageSource;
-
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class DinnerRouteMessageFormatterTest {
 
@@ -50,7 +60,7 @@ public class DinnerRouteMessageFormatterTest {
   private MessageFormatterHelperService messageFormatterHelperService;
 
   @Mock
-  private AfterPartyLocationGeocodeEventPublisher afterPartyLocationGeocodeEventPublisher;
+  private GeocodeRequestEventPublisher geocodeRequestEventPublisher;
 
   private final RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
 
@@ -71,11 +81,9 @@ public class DinnerRouteMessageFormatterTest {
     Mockito.when(messageSource.getMessage(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn("N/A");
 
-    this.afterPartyLocationService = new AfterPartyLocationService(runningDinnerService,
-        afterPartyLocationGeocodeEventPublisher, localizationProviderService, messageSource);
+    this.afterPartyLocationService = new AfterPartyLocationService(runningDinnerService, geocodeRequestEventPublisher, localizationProviderService, messageSource);
 
-    this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService,
-        messageFormatterHelperService, afterPartyLocationService);
+    this.formatter = new DinnerRouteMessageFormatter(urlGenerator, messageSource, localizationProviderService, messageFormatterHelperService, afterPartyLocationService);
   }
 
 	@AfterEach
@@ -188,7 +196,7 @@ public class DinnerRouteMessageFormatterTest {
 			RunningDinnerConfig runningDinnerConfig = runningDinner.getConfiguration();
 			GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(runningDinnerConfig, teamMembers, Collections.emptyList(), Collections::shuffle);
 			runningDinnerCalculator.assignRandomMealClasses(teamsResult, runningDinnerConfig, Collections.emptyList());
-			runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, runningDinnerConfig);
+			StaticTemplateDinnerPlanGenerator.generateDinnerExecutionPlan(teamsResult.getRegularTeams(), runningDinnerConfig);
 			return teamsResult.getRegularTeams();
 		} catch (NoPossibleRunningDinnerException e) {
 			throw new TechnicalException(e);

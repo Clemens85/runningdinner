@@ -12,22 +12,25 @@ export interface DialogActionsPanelProps extends DefaultDialogCancelButtonProps 
   okLabel: React.ReactNode;
   danger?: boolean;
   padding?: number;
+  okButtonDisabled?: boolean;
 }
 
-const DialogActionsPanel = ({onOk, okLabel, danger = false, onCancel, cancelLabel, padding = 2}: DialogActionsPanelProps) => {
+const DialogActionsPanel = ({onOk, okLabel, danger = false, onCancel, cancelLabel, okButtonDisabled, padding = 2}: DialogActionsPanelProps) => {
 
   const theme = useTheme();
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
   const fullWidthProps = isMobileDevice ? commonStyles.fullWidth : {};
   
+  const diableOkButton = !!okButtonDisabled;
+
   return (
       <DialogActions>
         <Box sx={{ ...fullWidthProps, p: padding }}>
           <SecondaryButton onClick={onCancel} sx={fullWidthProps} data-testid="dialog-cancel">{cancelLabel}</SecondaryButton>
-          { danger ? <PrimaryDangerButtonAsync onClick={onOk} size={"medium"} sx={fullWidthProps} data-testid="dialog-submit">
+          { danger ? <PrimaryDangerButtonAsync disabled={diableOkButton} onClick={onOk} size={"medium"} sx={fullWidthProps} data-testid="dialog-submit">
                         {okLabel}
                       </PrimaryDangerButtonAsync>
-                    : <PrimarySuccessButtonAsync onClick={onOk} size={"medium"} sx={fullWidthProps} data-testid="dialog-submit">
+                    : <PrimarySuccessButtonAsync disabled={diableOkButton} onClick={onOk} size={"medium"} sx={fullWidthProps} data-testid="dialog-submit">
                         {okLabel}
                       </PrimarySuccessButtonAsync> }
         </Box>

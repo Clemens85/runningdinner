@@ -4,16 +4,15 @@ package org.runningdinner.wizard;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.SafeHtml;
+import org.runningdinner.core.PublicSettings;
+import org.runningdinner.mail.formatter.FormatterUtil;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
-import org.runningdinner.core.PublicSettings;
-import org.runningdinner.mail.formatter.FormatterUtil;
 
 public class PublicSettingsTO implements Serializable {
 
