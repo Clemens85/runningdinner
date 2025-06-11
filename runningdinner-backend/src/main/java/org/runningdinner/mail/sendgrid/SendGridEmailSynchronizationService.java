@@ -1,12 +1,6 @@
 package org.runningdinner.mail.sendgrid;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class SendGridEmailSynchronizationService {
@@ -44,8 +39,8 @@ public class SendGridEmailSynchronizationService {
   @PostConstruct
   protected void initializeSendGridMailWrapper() {
     
-    if (StringUtils.isNotEmpty(mailConfig.getSendGridApiKey())) {
-      this.sendGridMailWrapper = new SendGridMailWrapper(mailConfig.getSendGridApiKey(), objectMapper, mailConfig.isHtmlEmail());
+    if (mailConfig.isSendGridApiEnabled()) {
+      this.sendGridMailWrapper = new SendGridMailWrapper(mailConfig.getSendGridApiKeyMandatory(), objectMapper, mailConfig.isHtmlEmail());
     }
   }
 

@@ -6,49 +6,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 @Configuration
 public class MailConfig {
 
-  @Value("${mail.smtp.host}")
-  private String host;
+	@Value("${mail.sendgrid.api.enabled}")
+	private boolean sendGridApiEnabled;
 
-  @Value("${mail.smtp.port}")
-  private int port;
+	@Value("${mail.mailjet.api.enabled}")
+	private boolean mailJetApiEnabled;
 
-  @Value("${mail.smtp.username}")
-  private String username;
+	@Value("${mail.aws.ses.enabled}")
+	private boolean awsSesEnabled;
 
-  @Value("${mail.smtp.password}")
-  private String password;
+	@Value("${mail.smtp.enabled}")
+	private boolean smtpEnabled;
 
-  @Value("${mail.smtp.auth}")
-  private String useAuth;
-
-  @Value("${mail.smtp.starttls.enable}")
-  private String enableStartTls;
-
-  @Value("${mail.smtp.enabled:false}")
-  private String smtpEnabled;
-  
-  @Value("${mail.sendgrid.api.key}")
+	@Value("${mail.sendgrid.api.key:}")
   private String sendGridApiKey;
 
-  @Value("${mail.sendgrid.api.enabled:true}")
-  private boolean sendGridApiEnabled;
-  
-  @Value("${mail.mailjet.api.key.public}")
+  @Value("${mail.mailjet.api.key.public:}")
   private String mailJetApiKeyPublic;
 
-  @Value("${mail.mailjet.api.key.private}")
+  @Value("${mail.mailjet.api.key.private:}")
   private String mailJetApiKeyPrivate;
-  
-  @Value("${mail.mailjet.api.enabled:true}")
-  private boolean mailJetApiEnabled;
 
-  @Value("${mail.aws.ses.enabled:true}")
-  private boolean awsSesEnabled;
-  
+	@Value("${mail.smtp.host}")
+	private String host;
+
+	@Value("${mail.smtp.port}")
+	private int port;
+
+	@Value("${mail.smtp.username:}")
+	private String username;
+
+	@Value("${mail.smtp.password:}")
+	private String password;
+
+	@Value("${mail.smtp.auth}")
+	private String useAuth;
+
+	@Value("${mail.smtp.starttls.enable}")
+	private String enableStartTls;
+
   @Value("${mail.replyto}")
   private String defaultReplyTo;
 
@@ -71,13 +72,13 @@ public class MailConfig {
     return port;
   }
 
-  public String getUsername() {
-
+  public String getUsernameMandatory() {
+		Assert.hasText(username, "mail.smtp.username must be set when enabling SMTP");
     return username;
   }
 
-  public String getPassword() {
-
+  public String getPasswordMandatory() {
+		Assert.hasText(password, "mail.smtp.password must be set when enabling SMTP");
     return password;
   }
 
@@ -91,39 +92,32 @@ public class MailConfig {
     return enableStartTls;
   }
 
-  public String getSendGridApiKey() {
-
+  public String getSendGridApiKeyMandatory() {
+		Assert.hasText(sendGridApiKey, "mail.sendgrid.api.key must be set when enabling SendGrid API");
     return sendGridApiKey;
   }
 
-  
   public String getDefaultReplyTo() {
-  
     return defaultReplyTo;
   }
 
-  
   public String getDefaultFrom() {
-  
     return defaultFrom;
   }
 
   public boolean isHtmlEmail() {
-  
     return htmlEmail;
   }
 
-  public String getMailJetApiKeyPublic() {
+  public String getMailJetApiKeyPublicMandatory() {
+		Assert.hasText(mailJetApiKeyPublic, "mail.mailjet.api.key.public must be set when enabling MailJet API");
     return mailJetApiKeyPublic;
   }
 
-  public String getMailJetApiKeyPrivate() {
-    return mailJetApiKeyPrivate;
+  public String getMailJetApiKeyPrivateMandatory() {
+		Assert.hasText(mailJetApiKeyPrivate, "mail.mailjet.api.key.private must be set when enabling MailJet API");
+		return mailJetApiKeyPrivate;
   }
-
-	public String getSmtpEnabled() {
-		return smtpEnabled;
-	}
 
 	public boolean isSendGridApiEnabled() {
 		return sendGridApiEnabled;
@@ -135,6 +129,10 @@ public class MailConfig {
 
 	public boolean isAwsSesEnabled() {
 		return awsSesEnabled;
+	}
+
+	public boolean isPlainSmtpMailServerEnabled() {
+		return smtpEnabled;
 	}
   
 	public MailSenderLimit getSendGridApiLimits() {
@@ -155,7 +153,4 @@ public class MailConfig {
 		return new MailSenderLimit(dailyLimit, monthlyLimit);
 	}
 
-  public boolean isPlainSmtpMailServerEnabled() {
-    return false;
-  }
 }
