@@ -6,5 +6,5 @@ public interface MessageTaskSenderInfo {
 
 	String getSender();
 
-	LocalDateTime getSendingStartTime();
+	LocalDateTime getCreatedAt();
 }

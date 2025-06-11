@@ -1,7 +1,7 @@
 
 package org.runningdinner;
 
-import org.runningdinner.mail.MailSenderLimit;
+import org.runningdinner.mail.pool.MailSenderLimit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

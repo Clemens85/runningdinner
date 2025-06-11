@@ -1,7 +1,6 @@
 package org.runningdinner.mail.pool;
 
 import org.runningdinner.mail.MailProvider;
-import org.runningdinner.mail.MailSenderLimit;
 import org.springframework.mail.MailSender;
 
 public class PoolableMailSender {

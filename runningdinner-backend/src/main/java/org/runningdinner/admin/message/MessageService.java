@@ -536,7 +536,6 @@ public class MessageService {
         MessageTask messageTask = result.get(cnt++);
         messageTask.setMessage(new Message(teamMessage.getSubject(), text, replyTo));
         messageTask.setRecipientEmail(getRecipientEmail(teamMember));
-        result.add(messageTask);
       }
     }
     return distinctMessageTasksByRecipient(result);
@@ -560,7 +559,6 @@ public class MessageService {
         MessageTask messageTask = result.get(cnt++);
         messageTask.setMessage(new Message(dinnerRouteMessage.getSubject(), text, replyTo));
         messageTask.setRecipientEmail(getRecipientEmail(teamMember));
-        result.add(messageTask);
       }
     }
     return distinctMessageTasksByRecipient(result);

@@ -1,10 +1,6 @@
 
 package org.runningdinner.mail;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.IntStream;
-
 import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
@@ -13,6 +9,7 @@ import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.mail.formatter.FormatterUtil;
+import org.runningdinner.mail.pool.MailSenderPoolService;
 import org.runningdinner.mail.pool.PoolableMailSender;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailSender;
@@ -22,6 +19,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 public class MailService {

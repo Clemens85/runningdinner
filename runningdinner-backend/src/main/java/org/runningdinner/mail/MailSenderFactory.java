@@ -6,6 +6,7 @@ import org.runningdinner.MailConfig;
 import org.runningdinner.core.util.EnvUtilService;
 import org.runningdinner.mail.mailjet.MailJetWrapper;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
+import org.runningdinner.mail.pool.MailSenderLimit;
 import org.runningdinner.mail.pool.PoolableMailSender;
 import org.runningdinner.mail.sendgrid.SendGridMailWrapper;
 import org.runningdinner.mail.ses.AwsSesWrapper;

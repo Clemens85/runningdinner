@@ -54,13 +54,14 @@ public interface MessageTaskRepository extends RunningDinnerRelatedRepository<Me
 
   List<MessageTask> findBySendingStatusAndModifiedAtBeforeOrderByModifiedAtAscParentJobId(SendingStatus sendingStatus, LocalDateTime lastModifiedDateBefore);
 
-	List<MessageTaskSenderInfo> findSenderInfosBySendingStartTimeBetween(@Param("startOfMonth") LocalDateTime startOfMonth, @Param("endOfMonth") LocalDateTime endOfMonth);
+  @Query("""
+    SELECT mt.sender AS sender, mt.createdAt AS createdAt
+    FROM MessageTask mt
+    WHERE mt.createdAt BETWEEN :startOfMonth AND :endOfMonth
+  """)
+  List<MessageTaskSenderInfo> findSenderInfosByCreatedAtBetween(
+          @Param("startOfMonth") LocalDateTime startOfMonth,
+          @Param("endOfMonth") LocalDateTime endOfMonth
+  );
 
-//  @Query("""
-//			SELECT new org.runningdinner.admin.message.job.stats.MessageTaskBySenderCount(mt.sender, mt.sendingStartTime)
-//			FROM MessageTask mt
-//			WHERE mt.sendingStartTime >= :startOfMonth AND mt.sendingStartTime <= :endOfMonth
-//			""")
-//  List<MessageTaskBySenderCount> findMessageTaskBySenderCounts(@Param("startOfMonth") LocalDateTime startOfMonth,
-//  																														 @Param("endOfMonth") LocalDateTime endOfMonth);
 }

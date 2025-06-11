@@ -41,13 +41,13 @@ public class MessageSenderStatsService {
 	private Map<String, List<MessageTaskSenderInfo>> findSenderInfosInCurrentMonth(LocalDate now) {
 		LocalDateTime startOfMonth = now.atStartOfDay().withDayOfMonth(1);
 		LocalDateTime endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
-		List<MessageTaskSenderInfo> senderInfos = messageTaskRepository.findSenderInfosBySendingStartTimeBetween(startOfMonth, endOfMonth);
+		List<MessageTaskSenderInfo> senderInfos = messageTaskRepository.findSenderInfosByCreatedAtBetween(startOfMonth, endOfMonth);
 		return groupBySender(senderInfos);
 	}
 
 	private boolean isCurrentDay(MessageTaskSenderInfo senderInfo, LocalDate now) {
-		LocalDate sendingStartDay = senderInfo.getSendingStartTime().toLocalDate();
-		return Objects.equals(sendingStartDay, now);
+		LocalDate createdAt = senderInfo.getCreatedAt().toLocalDate();
+		return Objects.equals(createdAt, now);
 	}
 
 	private Map<String, List<MessageTaskSenderInfo>> groupBySender(List<MessageTaskSenderInfo> senderInfos) {

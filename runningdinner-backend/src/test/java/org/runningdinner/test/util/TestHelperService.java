@@ -1,14 +1,6 @@
 
 package org.runningdinner.test.util;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.StringUtils;
 import org.awaitility.Awaitility;
 import org.runningdinner.admin.RunningDinnerService;
@@ -16,20 +8,14 @@ import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.SendingStatus;
 import org.runningdinner.contract.Contract;
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.ParticipantGenerator;
-import org.runningdinner.core.PublicSettings;
-import org.runningdinner.core.RegistrationType;
-import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.*;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
-import org.runningdinner.core.RunningDinnerConfig;
-import org.runningdinner.core.RunningDinnerInfo;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailProvider;
-import org.runningdinner.mail.MailSenderPoolService;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
+import org.runningdinner.mail.pool.MailSenderPoolService;
 import org.runningdinner.mail.pool.PoolableMailSender;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantName;
@@ -41,6 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class TestHelperService {
