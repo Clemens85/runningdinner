@@ -1,45 +1,18 @@
 
 package org.runningdinner.participant;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
-import org.runningdinner.core.FuzzyBoolean;
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.MealSpecifics;
-import org.runningdinner.core.RunningDinner;
-import org.runningdinner.core.RunningDinnerConfig;
-import org.runningdinner.core.RunningDinnerRelatedEntity;
+import org.runningdinner.core.*;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.HasGeocodingResult;
 import org.springframework.util.Assert;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedAttributeNode;
-import jakarta.persistence.NamedEntityGraph;
-import jakarta.persistence.NamedEntityGraphs;
-import jakarta.persistence.NamedSubgraph;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a team of a running dinner.<br>
@@ -128,15 +101,24 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
   }
 
   /**
-   * Returns all participans that are members of this team
+   * Returns all participants that are members of this team
    * 
-   * @return
    */
   public Set<Participant> getTeamMembers() {
 
     return new HashSet<>(teamMembers);
   }
-  
+
+
+  /**
+   * Returns all participants that are members of this team excluding the passed participant
+   */
+  public Set<Participant> getTeamMembersExcluding(Participant participant) {
+    var result = getTeamMembers();
+    result.removeIf(p -> p.equals(participant));
+    return result;
+  }
+
   public List<Participant> getTeamMembersOrdered() {
     
     List<Participant> result = new ArrayList<>(teamMembers);
@@ -231,25 +213,6 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
     throw new IllegalStateException("Found no host team member for team-nr " + teamNumber + " (" + id + ")");
   }
 
-  /**
-   * Checks whether the participant denoted by the passed participantKey is a member of this team
-   * 
-   * @param participantId
-   * @return
-   */
-  public boolean isParticipantTeamMember(final UUID participantId) {
-
-    if (CoreUtil.isEmpty(teamMembers)) {
-      return false;
-    }
-    for (Participant p : teamMembers) {
-      if (p.isSameId(participantId)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   public Participant getTeamMemberByParticipantId(final UUID participantId) {
 
     if (CoreUtil.isEmpty(teamMembers)) {
@@ -320,38 +283,6 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
   }
 
   /**
-   * Returns true if this team has at least one hosting reference to a team that must cook the passed meal.
-   * 
-   * @param mealClass
-   * @return
-   */
-  public boolean containsHostReferenceWithSameMealClass(MealClass mealClass) {
-
-    for (Team hostTeam : hostTeams) {
-      if (mealClass.equals(hostTeam.getMealClass())) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Returns true if this team has at least one guest reference to a team that must cook itself the passed meal.
-   * 
-   * @param mealClass
-   * @return
-   */
-  public boolean containsGuestReferenceWithSameMealClass(MealClass mealClass) {
-
-    for (Team guestTeam : guestTeams) {
-      if (mealClass.equals(guestTeam.getMealClass())) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Adds the passed team as a host team for this team.<br>
    * This method acts transitive, thus this team is also added as a guest-team to the passed hostTeam.
    * 
@@ -390,16 +321,14 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
                                               .filter(t -> t.getStatus() != TeamStatus.CANCELLED)
                                               .map(Team::getTeamMembersOrdered)
                                               .flatMap(List::stream)
-                                              .collect(Collectors.toList());
+                                              .toList();
 
-    List<MealSpecifics> result = guestParticipants
-                                  .stream()
-                                  .filter(Participant::hasMealSpecifics)
-                                  .map(Participant::getMealSpecifics)
-                                  .distinct()
-                                  .collect(Collectors.toList());
-
-    return result;
+		return guestParticipants
+              .stream()
+              .filter(Participant::hasMealSpecifics)
+              .map(Participant::getMealSpecifics)
+              .distinct()
+              .collect(Collectors.toList());
   }
 
   /**
@@ -457,13 +386,13 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
   public String toString() {
 
     // Be careful: Only valid if mealClass is loaded. We load it however all time in our queries.
-    String mealClassStr = mealClass != null ? " - " + mealClass.toString() : "";
+    String mealClassStr = mealClass != null ? " - " + mealClass : "";
     return teamNumber + mealClassStr;
   }
   
   public String toStringDetailed() {
   	String teamMembersInfo = teamMembers != null ? getTeamMembersOrdered().toString() : "teamMembers not loaded";
-  	return toString() + ": " + teamMembersInfo;
+  	return this + ": " + teamMembersInfo;
   }
   
   public static String toStringDetailed(Collection<Team> teams) {

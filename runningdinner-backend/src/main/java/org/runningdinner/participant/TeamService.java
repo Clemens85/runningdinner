@@ -1,17 +1,6 @@
 package org.runningdinner.participant;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.activity.Activity;
@@ -25,14 +14,7 @@ import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.rest.BaseTO;
 import org.runningdinner.common.service.ValidatorService;
-import org.runningdinner.core.FuzzyBoolean;
-import org.runningdinner.core.GeneratedTeamsResult;
-import org.runningdinner.core.IdentifierUtil;
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
-import org.runningdinner.core.RunningDinner;
-import org.runningdinner.core.RunningDinnerCalculator;
-import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.*;
 import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.event.MealsSwappedEvent;
@@ -50,7 +32,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamService {
@@ -393,10 +376,21 @@ public class TeamService {
     LOGGER.debug("Assign participant {} to new parent team {}", firstParticipant, teamOfSecondParticipant);
     teamOfSecondParticipant.addTeamMember(firstParticipant);
 
+    List<Participant> updatedParticipants = participantRepository.saveAll(teamOfFirstParticipant.getTeamMembers());
+    assertHasOneHost(updatedParticipants, firstParticipantId, secondParticipantId);
+    updatedParticipants = participantRepository.saveAll(teamOfSecondParticipant.getTeamMembers());
+    assertHasOneHost(updatedParticipants, firstParticipantId, secondParticipantId);
+
     emitTeamMembersSwappedEvent(firstParticipant, secondParticipant, parentTeams, runningDinner);
 
     return parentTeams;
   }
+
+  private static void assertHasOneHost(List<Participant> updatedParticipants, UUID firstParticipantId, UUID secondParticipantId) {
+    var hasOneHost = updatedParticipants.stream().anyMatch(Participant::isHost);
+    Assert.state(hasOneHost, "Expected " + updatedParticipants + " to have at least one host when swapping " + firstParticipantId + " with " + secondParticipantId);
+  }
+
   @Transactional
   public List<Team> swapMeals(@ValidateAdminId String adminId, UUID firstTeamId, UUID secondTeamId) {
 
@@ -468,8 +462,14 @@ public class TeamService {
    */
   protected void checkHostingForTeam(Team team, Participant newParticipant, RunningDinnerConfig configuration) {
 
+    List<Participant> existingTeamMembers = new ArrayList<>(team.getTeamMembersExcluding(newParticipant));
+    if (CollectionUtils.isEmpty(existingTeamMembers)) {
+      newParticipant.setHost(true); // This is anyway the only possibility
+      return;
+    }
+
     // 1) Check whether team has member that is already host and has enough seats for hosting (if so, we won't change anything inside this team):
-    for (Participant remainingTeamMember : team.getTeamMembers()) {
+    for (Participant remainingTeamMember : existingTeamMembers) {
       if (remainingTeamMember.isHost() && FuzzyBoolean.TRUE == configuration.canHost(remainingTeamMember)) {
         newParticipant.setHost(false);
         return;
@@ -478,15 +478,15 @@ public class TeamService {
     
     // 2) Check whether new participant was host in other team and has enough seats for hosting (if so, this participant will be the new host for the team):
     if (newParticipant.isHost() && FuzzyBoolean.TRUE == configuration.canHost(newParticipant)) {
-      for (Participant p : team.getTeamMembers()) {
-        p.setHost(false);
+      for (Participant remainingTeamMember : existingTeamMembers) {
+        remainingTeamMember.setHost(false);
       }
       newParticipant.setHost(true);
       return;
     }
     
-    // 3a) Determine best participant for being host:
-    Set<Participant> participants = new HashSet<>(team.getTeamMembers());
+    // 3a) Determine the best participant for being host:
+    Set<Participant> participants = new HashSet<>(existingTeamMembers);
     participants.add(newParticipant);
 
     Participant bestHostingCandidate = null;
