@@ -2,33 +2,29 @@ package org.runningdinner.admin.message.job.stats;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.message.MessageService;
-import org.runningdinner.admin.message.job.*;
+import org.runningdinner.admin.message.job.MessageJob;
+import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.admin.message.job.MessageTaskRepository;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
-import org.runningdinner.core.AbstractEntity;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.mail.MailProvider;
-import org.runningdinner.mail.MailSenderFactory;
-import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
+import org.runningdinner.test.util.TestMessageTaskHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,15 +49,10 @@ public class MessageSenderStatsServiceTest {
 	private TestHelperService testHelperService;
 
 	@Autowired
-	private MailSenderFactory mailSenderFactory;
-
-	@Autowired
-	private MessageJobRepository messageJobRepository;
-
-	@Autowired
 	private MessageSenderStatsService messageSenderStatsService;
 
-	private MailSenderMockInMemory mailSenderInMemory;
+	@Autowired
+	private TestMessageTaskHelperService testMessageTaskHelperService;
 
 	private RunningDinner runningDinner;
 
@@ -69,10 +60,8 @@ public class MessageSenderStatsServiceTest {
 
 	@BeforeEach
 	public void setUp() throws NoPossibleRunningDinnerException {
-		this.mailSenderInMemory = testHelperService.getMockedMailSender();
-		this.mailSenderInMemory.setUp();
 		this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, TOTAL_NUMBER_OF_PARTICIPANTS);
-		awaitAllMessageTasksSent();
+		this.testMessageTaskHelperService.awaitAllMessageTasksSent();
 		this.messageTaskRepository.deleteAll();
 	}
 
@@ -86,12 +75,7 @@ public class MessageSenderStatsServiceTest {
 
 		assertThat(this.messageTaskRepository.count()).isZero();
 
-		ParticipantMessage participantMessage = new ParticipantMessage();
-		participantMessage.setMessage("Message");
-		participantMessage.setSubject("Subject");
-		participantMessage.setParticipantSelection(ParticipantSelection.ALL);
-		MessageJob messageJob = messageService.sendParticipantMessages(runningDinner.getAdminId(), participantMessage);
-		assertThat(messageJob).isNotNull();
+		sendParticipantMessages();
 
 		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
 		assertThat(allMessageTasks).hasSize(22);
@@ -108,30 +92,58 @@ public class MessageSenderStatsServiceTest {
 		assertThat(statsBySender.getSentTasksOfMonth()).containsOnlyKeys(MOCK);
 		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(22);
 		assertThat(statsBySender.getSentTasksOfDay(MOCK)).isEqualTo(22);
+
+		LocalDateTime previousMonth = now.minusMonths(1).minusDays(1).atStartOfDay();
+		var messageTasksLastMonth = List.of(allMessageTasks.get(0), allMessageTasks.get(1));
+		messageTasksLastMonth = testMessageTaskHelperService.updateMessageTaskSentDates(messageTasksLastMonth, previousMonth);
+		assertThat(messageTasksLastMonth.getFirst().getCreatedAt()).isEqualToIgnoringNanos(previousMonth);
+
+		statsBySender = messageSenderStatsService.getStatsBySender(now);
+		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(20);
+		assertThat(statsBySender.getSentTasksOfDay(MOCK)).isEqualTo(20);
+
+		int otherDayInMonth = now.getDayOfMonth() == 15 ? 16 : 15;
+		statsBySender = messageSenderStatsService.getStatsBySender(now.withDayOfMonth(otherDayInMonth));
+		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(20);
+		assertThat(statsBySender.getSentTasksOfDay(MOCK)).isEqualTo(0);
+
+		statsBySender = messageSenderStatsService.getStatsBySender(previousMonth.toLocalDate());
+		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(2);
+		assertThat(statsBySender.getSentTasksOfDay(MOCK)).isEqualTo(2);
 	}
 
-	public void awaitAllMessageTasksSent() {
-		LocalDateTime now = LocalDateTime.now();
-		Awaitility
-			.await()
-			.atMost(5, TimeUnit.SECONDS)
-			.until(areAllMessageTasksSent(now));
+	@Test
+	public void statsForTwoMailProviders() {
+
+		LocalDate now = LocalDate.now();
+
+		List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
+		assertThat(participants).hasSize(22);
+
+		assertThat(this.messageTaskRepository.count()).isZero();
+
+		sendParticipantMessages();
+
+		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
+
+		var messageTasksMailJet = List.of(allMessageTasks.get(0), allMessageTasks.get(1), allMessageTasks.get(2), allMessageTasks.get(3));
+		testMessageTaskHelperService.updateMessageTaskSenders(messageTasksMailJet, MailProvider.MAILJET_API);
+
+		MessageSenderStats statsBySender = messageSenderStatsService.getStatsBySender(now);
+		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(18);
+		assertThat(statsBySender.getSentTasksOfDay(MOCK)).isEqualTo(18);
+		assertThat(statsBySender.getSentTasksOfMonth(MailProvider.MAILJET_API.toString())).isEqualTo(4);
+		assertThat(statsBySender.getSentTasksOfDay(MailProvider.MAILJET_API.toString())).isEqualTo(4);
 	}
 
-	private Callable<Boolean> areAllMessageTasksSent(LocalDateTime startOfAwaiting) {
-		return () -> {
-			List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
-			List<MessageTask> notSentMessageTasks = allMessageTasks.stream().filter(mt -> mt.getSendingStatus() != SendingStatus.SENDING_FINISHED).toList();
-			if (notSentMessageTasks.isEmpty()) {
-				return true;
-			}
-			// if most recent modified message task was not modified after 4 seconds after start of awaiting return true
-			MessageTask mostRecentMessageTask = notSentMessageTasks.stream()
-																															.max(Comparator.comparing(AbstractEntity::getModifiedAt))
-																															.orElseThrow(() -> new IllegalStateException("No message tasks found"));
-			LocalDateTime mostRecentModifiedAt = mostRecentMessageTask.getModifiedAt();
-			return mostRecentModifiedAt.plusSeconds(3).isBefore(startOfAwaiting);
-		};
+	private void sendParticipantMessages() {
+		ParticipantMessage participantMessage = new ParticipantMessage();
+		participantMessage.setMessage("Message");
+		participantMessage.setSubject("Subject");
+		participantMessage.setParticipantSelection(ParticipantSelection.ALL);
+		MessageJob messageJob = messageService.sendParticipantMessages(runningDinner.getAdminId(), participantMessage);
+		assertThat(messageJob).isNotNull();
 	}
+
 
 }

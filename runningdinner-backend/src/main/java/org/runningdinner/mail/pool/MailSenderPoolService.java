@@ -14,6 +14,9 @@ import org.springframework.util.Assert;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 public class MailSenderPoolService {
@@ -34,6 +37,7 @@ public class MailSenderPoolService {
   @PostConstruct
 	protected void initMailSenders() {
 		this.mailSenderPool = mailSenderFactory.getConfiguredMailSenders();
+		Assert.state(CollectionUtils.isNotEmpty(mailSenderPool), "Must have at least one configured mailsender");
 	}
 	
 	public PoolableMailSender getMailSenderToUse(LocalDate now, int numMessageTasksToSend) {
@@ -44,11 +48,52 @@ public class MailSenderPoolService {
 	
 	private PoolableMailSender getBestFittingSender(List<PoolableMailSender> matchingMailSenders) {
 		if (CollectionUtils.isEmpty(matchingMailSenders)) {
-			LOGGER.error("Could not find any matching mail sender to use, so fallback to the first configured one");
-			return mailSenderPool.getFirst();
+			LOGGER.error("Could not find any matching mail sender to use, so use fallback");
+			return getFallback();
 		}
-		// TODO Improve Implementation
-		return matchingMailSenders.getFirst();
+
+		if (matchingMailSenders.size() == 1) {
+			return matchingMailSenders.getFirst();
+		}
+
+		PoolableMailSender result = getMailSenderWithHighestPriority(matchingMailSenders);
+		if (result == null) {
+			// Randomly select one of the matching mail senders
+			int randomIndex = ThreadLocalRandom.current().nextInt(matchingMailSenders.size());
+			result = matchingMailSenders.get(randomIndex);
+		}
+		return result;
+	}
+
+	public static PoolableMailSender getMailSenderWithHighestPriority(List<PoolableMailSender> matchingMailSenders) {
+
+		Set<Integer> priorities = matchingMailSenders
+																	.stream()
+																	.map(PoolableMailSender::getPriority)
+																	.map(priority -> priority < 0 ? 0 : priority)
+																	.collect(Collectors.toSet());
+		if (priorities.size() < 2) {
+			return null;
+		}
+
+		PoolableMailSender result = null;
+		for (PoolableMailSender matchingMailSender : matchingMailSenders) {
+			if (matchingMailSender.getPriority() > 0 && result == null) {
+				result = matchingMailSender;
+				continue;
+			}
+			if (result != null && matchingMailSender.getPriority() > result.getPriority()) {
+				result = matchingMailSender;
+			}
+		}
+		return result;
+	}
+
+	private PoolableMailSender getFallback() {
+		return mailSenderPool.stream()
+						.filter(PoolableMailSender::isFallback)
+						.findFirst()
+						.orElse(mailSenderPool.getFirst());
 	}
 
 	protected List<PoolableMailSender> getMatchingMailSenders(LocalDate now, int numMessageTasksToSend) {
@@ -60,13 +105,13 @@ public class MailSenderPoolService {
 		for (PoolableMailSender poolableMailSender : mailSenderPool) {
 			if (poolableMailSender.hasDailyLimit()) {
 				int sentTasksOfDay = stats.getSentTasksOfDay(poolableMailSender.getKey().toString());
-				if (sentTasksOfDay + numMessageTasksToSend > poolableMailSender.getMailSenderLimit().getDailyLimit()) {
+				if (sentTasksOfDay + numMessageTasksToSend > poolableMailSender.getMailSenderLimit().dailyLimit()) {
 					continue;
 				}
 			}
 			if (poolableMailSender.hasMonthlyLimit()) {
 				int sentTasksOfMonth = stats.getSentTasksOfMonth(poolableMailSender.getKey().toString());
-				if (sentTasksOfMonth + numMessageTasksToSend > poolableMailSender.getMailSenderLimit().getMonthlyLimit()) {
+				if (sentTasksOfMonth + numMessageTasksToSend > poolableMailSender.getMailSenderLimit().monthlyLimit()) {
 					continue;
 				}	
 			}

@@ -1,13 +1,13 @@
 package org.runningdinner.test.util;
 
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.web.WebAppConfiguration;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
@@ -20,7 +20,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
     "route.optimization.send.feedback=false",
     "aws.sqs.geocode.request.url=geocode-request-junit",
     "aws.sqs.geocode.response.url=geocode-response-junit",
-    "geocode.response.scheduler.enabled=false"
+    "geocode.response.scheduler.enabled=false",
+    "mail.smtp.enabled=false"
   }
 )
 @WebAppConfiguration

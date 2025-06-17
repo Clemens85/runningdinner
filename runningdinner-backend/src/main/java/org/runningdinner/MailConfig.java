@@ -1,6 +1,6 @@
-
 package org.runningdinner;
 
+import org.runningdinner.mail.pool.MailSenderConfig;
 import org.runningdinner.mail.pool.MailSenderLimit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +10,11 @@ import org.springframework.util.Assert;
 
 @Configuration
 public class MailConfig {
+
+	public static final String MAIL_JET_CONFIG_PREFIX = "mail.mailjet.api";
+	public static final String SEND_GRID_CONFIG_PREFIX = "mail.sendgrid.api";
+	public static final String AWS_SES_CONFIG_PREFIX = "mail.aws.ses";
+	public static final String SMTP_CONFIG_PREFIX = "mail.smtp";
 
 	@Value("${mail.sendgrid.api.enabled}")
 	private boolean sendGridApiEnabled;
@@ -134,23 +139,27 @@ public class MailConfig {
 	public boolean isPlainSmtpMailServerEnabled() {
 		return smtpEnabled;
 	}
-  
-	public MailSenderLimit getSendGridApiLimits() {
-		return getMailSenderLimitFromConfig("mail.sendgrid.api");
+
+	public MailSenderConfig getMailSenderConfigForPrefix(String configPrefix) {
+		MailSenderLimit limits = getMailSenderLimitFromConfig(configPrefix);
+		int priority = getMailSenderPriorityFromConfig(configPrefix);
+		boolean fallback = getMailSenderFallbackFromConfig(configPrefix);
+		return new MailSenderConfig(limits, priority, fallback);
 	}
-
-  public MailSenderLimit getAwsSesApiLimits() {
-    return getMailSenderLimitFromConfig("mail.aws.ses");
-  }
-
-  public MailSenderLimit getMailJetApiLimits() {
-    return getMailSenderLimitFromConfig("mail.mailjet.api");
-  }
 
 	private MailSenderLimit getMailSenderLimitFromConfig(String configPrefix) {
 		Integer dailyLimit = environment.getProperty(configPrefix + ".limit.daily", Integer.class, -1);
 		Integer monthlyLimit = environment.getProperty(configPrefix + ".limit.monthly", Integer.class, -1);
 		return new MailSenderLimit(dailyLimit, monthlyLimit);
 	}
+
+	private int getMailSenderPriorityFromConfig(String configPrefix) {
+		return environment.getProperty(configPrefix + ".priority", Integer.class, 0);
+	}
+
+	private boolean getMailSenderFallbackFromConfig(String configPrefix) {
+		return environment.getProperty(configPrefix + ".fallback", Boolean.class, false);
+	}
+
 
 }

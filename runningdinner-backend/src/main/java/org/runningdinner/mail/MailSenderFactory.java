@@ -6,7 +6,6 @@ import org.runningdinner.MailConfig;
 import org.runningdinner.core.util.EnvUtilService;
 import org.runningdinner.mail.mailjet.MailJetWrapper;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
-import org.runningdinner.mail.pool.MailSenderLimit;
 import org.runningdinner.mail.pool.PoolableMailSender;
 import org.runningdinner.mail.sendgrid.SendGridMailWrapper;
 import org.runningdinner.mail.ses.AwsSesWrapper;
@@ -41,18 +40,18 @@ public class MailSenderFactory {
   public List<PoolableMailSender> getConfiguredMailSenders() {
 
   	List<PoolableMailSender> result = new ArrayList<>();
-  	
     if (envUtilService.isProfileActive("junit")) {
       LOGGER.info("*** Using mocked In-Memory MailSender ***");
       var mailSender = new MailSenderMockInMemory();
-      result.add(new PoolableMailSender(MailProvider.MOCK, mailSender, new MailSenderLimit(-1, -1))); // No limits for mock
-      return result;
+      var junitConfig = mailConfig.getMailSenderConfigForPrefix("mail.junit");
+      result.add(new PoolableMailSender(MailProvider.MOCK, mailSender, junitConfig));
     }
 
     if (mailConfig.isSendGridApiEnabled()) {
       LOGGER.info("*** Using SendGrid MailSender ***");
       var mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKeyMandatory(), objectMapper, mailConfig.isHtmlEmail());
-      result.add(new PoolableMailSender(MailProvider.SENDGRID_API, mailSender, mailConfig.getSendGridApiLimits()));
+      var sendGridConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.SEND_GRID_CONFIG_PREFIX);
+      result.add(new PoolableMailSender(MailProvider.SENDGRID_API, mailSender, sendGridConfig));
     } else {
       LOGGER.warn("*** SendGrid MailSender is disabled ***");
     }
@@ -60,7 +59,8 @@ public class MailSenderFactory {
     if (mailConfig.isAwsSesEnabled()) {
       LOGGER.info("*** Using AWS SES MailSender with accessKey {} ***", StringUtils.substring(mailConfig.getUsernameMandatory(), 0, 5));
       var mailSender = new AwsSesWrapper(mailConfig.getUsernameMandatory(), mailConfig.getPasswordMandatory(), mailConfig.isHtmlEmail());
-      result.add(new PoolableMailSender(MailProvider.AWS_SES_API, mailSender, mailConfig.getAwsSesApiLimits()));
+      var awsSesConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.AWS_SES_CONFIG_PREFIX);
+      result.add(new PoolableMailSender(MailProvider.AWS_SES_API, mailSender, awsSesConfig));
     } else {
       LOGGER.warn("*** AWS SES MailSender is disabled ***");
     }
@@ -68,7 +68,8 @@ public class MailSenderFactory {
     if (mailConfig.isMailJetApiEnabled()) {
       LOGGER.info("*** Using MailJet MailSender with public API Key {} ***", StringUtils.substring(mailConfig.getMailJetApiKeyPublicMandatory(), 0, 5));
       var mailSender = new MailJetWrapper(mailConfig.getMailJetApiKeyPublicMandatory(), mailConfig.getMailJetApiKeyPrivateMandatory(), mailConfig.isHtmlEmail());
-      result.add(new PoolableMailSender(MailProvider.MAILJET_API, mailSender, mailConfig.getMailJetApiLimits()));
+      var mailJetConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.MAIL_JET_CONFIG_PREFIX);
+      result.add(new PoolableMailSender(MailProvider.MAILJET_API, mailSender, mailJetConfig));
     } else {
       LOGGER.warn("*** MailJet MailSender is disabled ***");
     }
@@ -76,7 +77,8 @@ public class MailSenderFactory {
     if (mailConfig.isPlainSmtpMailServerEnabled()) {
       LOGGER.info("*** Using SMTP MailSender with SMTP Host {} and username {} without limits ***", mailConfig.getHost(), StringUtils.substring(mailConfig.getUsernameMandatory(), 0, 5));
       var mailSender = newJavaSmtpMailSender();
-      result.add(new PoolableMailSender(MailProvider.SMTP, mailSender, new MailSenderLimit(-1, -1))); // No limits for plain SMTP
+      var smtpConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.SMTP_CONFIG_PREFIX);
+      result.add(new PoolableMailSender(MailProvider.SMTP, mailSender, smtpConfig));
     }
 
     Assert.state(!result.isEmpty(), "No MailSender configured. Please check your application properties or environment variables for mail configuration.");
