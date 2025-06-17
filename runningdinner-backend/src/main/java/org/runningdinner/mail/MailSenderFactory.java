@@ -48,37 +48,37 @@ public class MailSenderFactory {
     }
 
     if (mailConfig.isSendGridApiEnabled()) {
-      LOGGER.info("*** Using SendGrid MailSender ***");
       var mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKeyMandatory(), objectMapper, mailConfig.isHtmlEmail());
       var sendGridConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.SEND_GRID_CONFIG_PREFIX);
       result.add(new PoolableMailSender(MailProvider.SENDGRID_API, mailSender, sendGridConfig));
+      LOGGER.info("*** Using SendGrid MailSender with settings {} ***", sendGridConfig);
     } else {
       LOGGER.warn("*** SendGrid MailSender is disabled ***");
     }
 
     if (mailConfig.isAwsSesEnabled()) {
-      LOGGER.info("*** Using AWS SES MailSender with accessKey {} ***", StringUtils.substring(mailConfig.getUsernameMandatory(), 0, 5));
       var mailSender = new AwsSesWrapper(mailConfig.getUsernameMandatory(), mailConfig.getPasswordMandatory(), mailConfig.isHtmlEmail());
       var awsSesConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.AWS_SES_CONFIG_PREFIX);
       result.add(new PoolableMailSender(MailProvider.AWS_SES_API, mailSender, awsSesConfig));
+      LOGGER.info("*** Using AWS SES MailSender with accessKey {} and settings {} ***", shortened(mailConfig.getUsernameMandatory()), awsSesConfig);
     } else {
       LOGGER.warn("*** AWS SES MailSender is disabled ***");
     }
 
     if (mailConfig.isMailJetApiEnabled()) {
-      LOGGER.info("*** Using MailJet MailSender with public API Key {} ***", StringUtils.substring(mailConfig.getMailJetApiKeyPublicMandatory(), 0, 5));
       var mailSender = new MailJetWrapper(mailConfig.getMailJetApiKeyPublicMandatory(), mailConfig.getMailJetApiKeyPrivateMandatory(), mailConfig.isHtmlEmail());
       var mailJetConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.MAIL_JET_CONFIG_PREFIX);
       result.add(new PoolableMailSender(MailProvider.MAILJET_API, mailSender, mailJetConfig));
+      LOGGER.info("*** Using MailJet MailSender with public API Key {} and settings {} ***", shortened(mailConfig.getMailJetApiKeyPublicMandatory()), mailJetConfig);
     } else {
       LOGGER.warn("*** MailJet MailSender is disabled ***");
     }
 
     if (mailConfig.isPlainSmtpMailServerEnabled()) {
-      LOGGER.info("*** Using SMTP MailSender with SMTP Host {} and username {} without limits ***", mailConfig.getHost(), StringUtils.substring(mailConfig.getUsernameMandatory(), 0, 5));
       var mailSender = newJavaSmtpMailSender();
       var smtpConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.SMTP_CONFIG_PREFIX);
       result.add(new PoolableMailSender(MailProvider.SMTP, mailSender, smtpConfig));
+      LOGGER.info("*** Using SMTP MailSender with SMTP Host {} and username {} with settings {} ***", mailConfig.getHost(), shortened(mailConfig.getUsernameMandatory()), smtpConfig);
     }
 
     Assert.state(!result.isEmpty(), "No MailSender configured. Please check your application properties or environment variables for mail configuration.");
@@ -102,5 +102,8 @@ public class MailSenderFactory {
     return result;
   }
 
+  private static String shortened(String str) {
+    return StringUtils.substring(str, 0, 5);
+  }
   
 }
