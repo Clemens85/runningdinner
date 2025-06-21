@@ -127,13 +127,13 @@ public class MessageSenderStatsServiceTest {
 		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
 
 		var messageTasksMailJet = List.of(allMessageTasks.get(0), allMessageTasks.get(1), allMessageTasks.get(2), allMessageTasks.get(3));
-		testMessageTaskHelperService.updateMessageTaskSenders(messageTasksMailJet, MailProvider.MAILJET_API);
+		testMessageTaskHelperService.updateMessageTaskSenders(messageTasksMailJet, MailProvider.MAILJET);
 
 		MessageSenderStats statsBySender = messageSenderStatsService.getStatsBySender(now);
 		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(18);
 		assertThat(statsBySender.getSentTasksOfDay(MOCK)).isEqualTo(18);
-		assertThat(statsBySender.getSentTasksOfMonth(MailProvider.MAILJET_API.toString())).isEqualTo(4);
-		assertThat(statsBySender.getSentTasksOfDay(MailProvider.MAILJET_API.toString())).isEqualTo(4);
+		assertThat(statsBySender.getSentTasksOfMonth(MailProvider.MAILJET.toString())).isEqualTo(4);
+		assertThat(statsBySender.getSentTasksOfDay(MailProvider.MAILJET.toString())).isEqualTo(4);
 	}
 
 	private void sendParticipantMessages() {

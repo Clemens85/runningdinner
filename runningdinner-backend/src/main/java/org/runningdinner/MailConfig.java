@@ -11,36 +11,36 @@ import org.springframework.util.Assert;
 @Configuration
 public class MailConfig {
 
-	public static final String MAIL_JET_CONFIG_PREFIX = "mail.mailjet.api";
+	public static final String MAIL_JET_CONFIG_PREFIX = "mail.mailjet";
 	public static final String SEND_GRID_CONFIG_PREFIX = "mail.sendgrid.api";
-	public static final String AWS_SES_CONFIG_PREFIX = "mail.aws.ses";
+	public static final String AWS_SES_CONFIG_PREFIX = "mail.awsses";
 	public static final String SMTP_CONFIG_PREFIX = "mail.smtp";
 
 	@Value("${mail.sendgrid.api.enabled}")
 	private boolean sendGridApiEnabled;
 
-	@Value("${mail.mailjet.api.enabled}")
+	@Value("${mail.mailjet.enabled}")
 	private boolean mailJetApiEnabled;
 
-	@Value("${mail.aws.ses.enabled}")
+	@Value("${mail.awsses.enabled}")
 	private boolean awsSesEnabled;
 
 	@Value("${mail.smtp.enabled}")
 	private boolean smtpEnabled;
 
-	@Value("${mail.aws.ses.username:}")
+	@Value("${mail.awsses.username:}")
 	private String awsSesUsername;
 
-	@Value("${mail.aws.ses.password:}")
+	@Value("${mail.awsses.password:}")
 	private String awsSesPassword;
 
 	@Value("${mail.sendgrid.api.key:}")
   private String sendGridApiKey;
 
-  @Value("${mail.mailjet.api.key.public:}")
+  @Value("${mail.mailjet.key.public:}")
   private String mailJetApiKeyPublic;
 
-  @Value("${mail.mailjet.api.key.private:}")
+  @Value("${mail.mailjet.key.private:}")
   private String mailJetApiKeyPrivate;
 
 	@Value("${mail.smtp.host}")
@@ -110,22 +110,22 @@ public class MailConfig {
   }
 
   public String getMailJetApiKeyPublicMandatory() {
-		Assert.hasText(mailJetApiKeyPublic, "mail.mailjet.api.key.public must be set when enabling MailJet API");
+		Assert.hasText(mailJetApiKeyPublic, "mail.mailjet.key.public must be set when enabling MailJet API");
     return mailJetApiKeyPublic;
   }
 
   public String getMailJetApiKeyPrivateMandatory() {
-		Assert.hasText(mailJetApiKeyPrivate, "mail.mailjet.api.key.private must be set when enabling MailJet API");
+		Assert.hasText(mailJetApiKeyPrivate, "mail.mailjet.key.private must be set when enabling MailJet API");
 		return mailJetApiKeyPrivate;
   }
 
 	public String getAwsSesUsernameMandatory() {
-		Assert.hasText(awsSesUsername, "mail.aws.ses.username must be set when enabling AWS SES");
+		Assert.hasText(awsSesUsername, "mail.awsses.username must be set when enabling AWS SES");
 		return awsSesUsername;
 	}
 
 	public String getAwsSesPasswordMandatory() {
-		Assert.hasText(awsSesPassword, "mail.aws.ses.password must be set when enabling AWS SES");
+		Assert.hasText(awsSesPassword, "mail.awsses.password must be set when enabling AWS SES");
 		return awsSesPassword;
 	}
 

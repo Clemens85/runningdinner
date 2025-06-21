@@ -36,11 +36,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
 @TestPropertySource(properties = {
-	"mail.aws.ses.enabled=true",
-	"mail.aws.ses.username=username",
-	"mail.aws.ses.password=password",
-	"mail.aws.ses.limit.monthly=4",
-	"mail.aws.ses.fallback=true",
+	"mail.awsses.enabled=true",
+	"mail.awsses.username=username",
+	"mail.awsses.password=password",
+	"mail.awsses.limit.monthly=4",
+	"mail.awsses.fallback=true",
 	"mail.junit.limit.monthly=2",
 	"mail.junit.limit.daily=1",
 	"mail.junit.priority=10"
@@ -80,7 +80,7 @@ public class MailSenderPoolServiceTest {
 		LocalDate now = LocalDate.now();
 
 		PoolableMailSender result = mailSenderPoolService.getMailSenderToUse(now, 3);
-		assertThat(result.getKey()).isEqualTo(MailProvider.AWS_SES_API);
+		assertThat(result.getKey()).isEqualTo(MailProvider.AWS_SES);
 		assertThat(result.getMailSender()).isNotNull();
 		assertThat(result.getMailSenderLimit()).isEqualTo(new MailSenderLimit(-1, 4));
 
@@ -90,23 +90,23 @@ public class MailSenderPoolServiceTest {
 
 		// This is not fitting, just use the fallback in our list
 		result = mailSenderPoolService.getMailSenderToUse(now, 20);
-		assertThat(result.getKey()).isEqualTo(MailProvider.AWS_SES_API);
+		assertThat(result.getKey()).isEqualTo(MailProvider.AWS_SES);
 	}
 
 	@Test
 	public void getMailSenderWithHighestPriority() {
 		List<PoolableMailSender> matchingMailSenders = new ArrayList<>(List.of(
-				newPoolableMailSenderMock(MailProvider.AWS_SES_API, -1, 4, 0, false),
+				newPoolableMailSenderMock(MailProvider.AWS_SES, -1, 4, 0, false),
 				newPoolableMailSenderMock(MailProvider.MOCK, -1, 2, -1, false)
 		));
 
 		var result = MailSenderPoolService.getMailSenderWithHighestPriority(matchingMailSenders);
 		assertThat(result).isNull();
 
-		matchingMailSenders.add(newPoolableMailSenderMock(MailProvider.MAILJET_API, -1, 4, 5, true));
+		matchingMailSenders.add(newPoolableMailSenderMock(MailProvider.MAILJET, -1, 4, 5, true));
 		result = MailSenderPoolService.getMailSenderWithHighestPriority(matchingMailSenders);
 		assertThat(result).isNotNull();
-		assertThat(result.getKey()).isEqualTo(MailProvider.MAILJET_API);
+		assertThat(result.getKey()).isEqualTo(MailProvider.MAILJET);
 	}
 
 	@Test
@@ -127,13 +127,13 @@ public class MailSenderPoolServiceTest {
 		// Next 4 messages are sent with SES due to MOCK is exhausted
 		messageTasks = findParticipantSubscriptionMessageTasks(runningDinner.getAdminId());
 		assertThat(messageTasks).hasSize(4);
-		assertThat(messageTasks).allMatch(mt -> mt.getSender().equals(MailProvider.AWS_SES_API.toString()));
+		assertThat(messageTasks).allMatch(mt -> mt.getSender().equals(MailProvider.AWS_SES.toString()));
 
 		addParticipants(runningDinner, 1, 4);
 		// The 6th message is sent with SES due to it is configured as fallback (actually no one fits any longer)
 		messageTasks = findParticipantSubscriptionMessageTasks(runningDinner.getAdminId());
 		assertThat(messageTasks).hasSize(5);
-		assertThat(messageTasks).allMatch(mt -> mt.getSender().equals(MailProvider.AWS_SES_API.toString()));
+		assertThat(messageTasks).allMatch(mt -> mt.getSender().equals(MailProvider.AWS_SES.toString()));
 
 		// We simulate that the first message was sent two days before, so we should be able to use one MOCK message again (daily <-> monthly limit)
 		testMessageTaskHelperService.updateMessageTaskSentDates(List.of(firstSentMessageTask), LocalDateTime.now().minusDays(2));
@@ -142,7 +142,7 @@ public class MailSenderPoolServiceTest {
 		messageTasks = findParticipantSubscriptionMessageTasks(runningDinner.getAdminId());
 		assertThat(messageTasks).hasSize(6);
 		Set<MailProvider> senders = messageTasks.stream().map(MessageTask::getSender).map(MailProvider::valueOf).collect(Collectors.toSet());
-		assertThat(senders).containsExactlyInAnyOrder(MailProvider.AWS_SES_API, MailProvider.MOCK);
+		assertThat(senders).containsExactlyInAnyOrder(MailProvider.AWS_SES, MailProvider.MOCK);
 
 		MessageTask lastMessageTask = messageTasks.stream().filter(mt -> mt.getSender().equals(MailProvider.MOCK.toString())).findFirst().orElseThrow();
 		testHelperService.awaitMessageJobFinished(lastMessageTask.getParentJob());

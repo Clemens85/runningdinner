@@ -8,7 +8,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageSenderStatsService {
@@ -51,10 +55,8 @@ public class MessageSenderStatsService {
 	}
 
 	private Map<String, List<MessageTaskSenderInfo>> groupBySender(List<MessageTaskSenderInfo> senderInfos) {
-		Map<String, List<MessageTaskSenderInfo>> result = new HashMap<>();
-		for (MessageTaskSenderInfo senderInfo : senderInfos) {
-			result.computeIfAbsent(senderInfo.getSender(), k -> new ArrayList<>()).add(senderInfo);
-		}
-		return result;
+		return senderInfos
+							.stream()
+							.collect(Collectors.groupingBy(MessageTaskSenderInfo::getSender));
 	}
 }

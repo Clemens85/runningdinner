@@ -50,7 +50,7 @@ public class MailSenderFactory {
     if (mailConfig.isSendGridApiEnabled()) {
       var mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKeyMandatory(), objectMapper, mailConfig.isHtmlEmail());
       var sendGridConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.SEND_GRID_CONFIG_PREFIX);
-      result.add(new PoolableMailSender(MailProvider.SENDGRID_API, mailSender, sendGridConfig));
+      result.add(new PoolableMailSender(MailProvider.SENDGRID, mailSender, sendGridConfig));
       LOGGER.info("*** Using SendGrid MailSender with settings {} ***", sendGridConfig);
     } else {
       LOGGER.warn("*** SendGrid MailSender is disabled ***");
@@ -59,7 +59,7 @@ public class MailSenderFactory {
     if (mailConfig.isAwsSesEnabled()) {
       var mailSender = new AwsSesWrapper(mailConfig.getAwsSesUsernameMandatory(), mailConfig.getAwsSesPasswordMandatory(), mailConfig.isHtmlEmail());
       var awsSesConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.AWS_SES_CONFIG_PREFIX);
-      result.add(new PoolableMailSender(MailProvider.AWS_SES_API, mailSender, awsSesConfig));
+      result.add(new PoolableMailSender(MailProvider.AWS_SES, mailSender, awsSesConfig));
       LOGGER.info("*** Using AWS SES MailSender with accessKey {} and settings {} ***", shortened(mailConfig.getAwsSesUsernameMandatory()), awsSesConfig);
     } else {
       LOGGER.warn("*** AWS SES MailSender is disabled ***");
@@ -68,7 +68,7 @@ public class MailSenderFactory {
     if (mailConfig.isMailJetApiEnabled()) {
       var mailSender = new MailJetWrapper(mailConfig.getMailJetApiKeyPublicMandatory(), mailConfig.getMailJetApiKeyPrivateMandatory(), mailConfig.isHtmlEmail());
       var mailJetConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.MAIL_JET_CONFIG_PREFIX);
-      result.add(new PoolableMailSender(MailProvider.MAILJET_API, mailSender, mailJetConfig));
+      result.add(new PoolableMailSender(MailProvider.MAILJET, mailSender, mailJetConfig));
       LOGGER.info("*** Using MailJet MailSender with public API Key {} and settings {} ***", shortened(mailConfig.getMailJetApiKeyPublicMandatory()), mailJetConfig);
     } else {
       LOGGER.warn("*** MailJet MailSender is disabled ***");
