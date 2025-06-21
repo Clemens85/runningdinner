@@ -39,18 +39,18 @@ public class MailService {
   public void sendMessage(MessageTask messageTask) {
 
     checkEmailValid(messageTask);
+    PoolableMailSender poolableMailSender = getMailSenderForTask(messageTask);
+    MailSender mailSenderToUse = poolableMailSender.getMailSender();
 
     SimpleMailMessage simpleMailMessage = messageTask.getMessage().toSimpleMailMessage();
     simpleMailMessage.setTo(messageTask.getRecipientEmail());
-    simpleMailMessage.setFrom(mailConfig.getDefaultFrom());
+    simpleMailMessage.setFrom(poolableMailSender.getFromAddress());
     
     if (mailConfig.isHtmlEmail()) {
       String text = simpleMailMessage.getText();
       text = FormatterUtil.getHtmlFormattedMessage(text);
       simpleMailMessage.setText(text);
     }
-
-    MailSender mailSenderToUse = getMailSenderForTask(messageTask);
 
     if (mailSenderToUse instanceof JavaMailSender javaMailSender) {
       MimeMessagePreparator preparator = prepareMessage(simpleMailMessage);
@@ -105,15 +105,15 @@ public class MailService {
 
   /**
    * Default behavior: Return the application-configured mailSender.<br>
-   * In future it may also return a self-configured mailSender from User (hence some settings of running-dinner must be considered)
-   * @return
+   * In future, it may also return a self-configured mailSender from User (hence some settings of running-dinner must be considered)
+   * @return MailSender that shall be used
    */
-  protected MailSender getMailSenderForTask(MessageTask messageTsak) {
-    String sender = messageTsak.getSender();
+  protected PoolableMailSender getMailSenderForTask(MessageTask messageTask) {
+    String sender = messageTask.getSender();
     Assert.hasText(sender, "Sender must not be empty");
     PoolableMailSender result = mailSenderPoolService.getMailSenderByKey(sender);
     Assert.notNull(result, "No MailSender found for key: " + sender);
-    return result.getMailSender();
+    return result;
   }
 }
 

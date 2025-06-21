@@ -11,18 +11,21 @@ public class PoolableMailSender {
 	
 	private final MailSenderLimit mailSenderLimit;
 
+	private final String fromAddress;
+
 	private final int priority;
 
 	private final boolean fallback;
 	
 	public PoolableMailSender(MailProvider key, MailSender mailSender, MailSenderConfig config) {
-		this(key, mailSender, config.limit(), config.priority(), config.fallback());
+		this(key, mailSender, config.limit(), config.fromAddress(), config.priority(), config.fallback());
 	}
 
-	public PoolableMailSender(MailProvider key, MailSender mailSender, MailSenderLimit mailSenderLimit, int priority, boolean fallback) {
+	public PoolableMailSender(MailProvider key, MailSender mailSender, MailSenderLimit mailSenderLimit, String fromAddress, int priority, boolean fallback) {
 		this.key = key;
 		this.mailSender = mailSender;
 		this.mailSenderLimit = mailSenderLimit;
+		this.fromAddress = fromAddress;
 		this.priority = priority;
 		this.fallback = fallback;
 	}
@@ -53,6 +56,10 @@ public class PoolableMailSender {
 
 	public boolean isFallback() {
 		return fallback;
+	}
+
+	public String getFromAddress() {
+		return fromAddress;
 	}
 
 	@Override

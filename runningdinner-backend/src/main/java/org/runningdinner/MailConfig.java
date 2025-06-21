@@ -28,6 +28,12 @@ public class MailConfig {
 	@Value("${mail.smtp.enabled}")
 	private boolean smtpEnabled;
 
+	@Value("${mail.aws.ses.username:}")
+	private String awsSesUsername;
+
+	@Value("${mail.aws.ses.password:}")
+	private String awsSesPassword;
+
 	@Value("${mail.sendgrid.api.key:}")
   private String sendGridApiKey;
 
@@ -54,16 +60,13 @@ public class MailConfig {
 
 	@Value("${mail.smtp.starttls.enable}")
 	private String enableStartTls;
-
-  @Value("${mail.replyto}")
-  private String defaultReplyTo;
-
-  @Value("${mail.from}")
-  private String defaultFrom;
   
   @Value("${mail.html}")
   private boolean htmlEmail;
-  
+
+	@Value("${contact.mail}")
+	private String contactMailAddress;
+
   @Autowired
   private Environment environment;
 
@@ -102,14 +105,6 @@ public class MailConfig {
     return sendGridApiKey;
   }
 
-  public String getDefaultReplyTo() {
-    return defaultReplyTo;
-  }
-
-  public String getDefaultFrom() {
-    return defaultFrom;
-  }
-
   public boolean isHtmlEmail() {
     return htmlEmail;
   }
@@ -123,6 +118,16 @@ public class MailConfig {
 		Assert.hasText(mailJetApiKeyPrivate, "mail.mailjet.api.key.private must be set when enabling MailJet API");
 		return mailJetApiKeyPrivate;
   }
+
+	public String getAwsSesUsernameMandatory() {
+		Assert.hasText(awsSesUsername, "mail.aws.ses.username must be set when enabling AWS SES");
+		return awsSesUsername;
+	}
+
+	public String getAwsSesPasswordMandatory() {
+		Assert.hasText(awsSesPassword, "mail.aws.ses.password must be set when enabling AWS SES");
+		return awsSesPassword;
+	}
 
 	public boolean isSendGridApiEnabled() {
 		return sendGridApiEnabled;
@@ -144,7 +149,8 @@ public class MailConfig {
 		MailSenderLimit limits = getMailSenderLimitFromConfig(configPrefix);
 		int priority = getMailSenderPriorityFromConfig(configPrefix);
 		boolean fallback = getMailSenderFallbackFromConfig(configPrefix);
-		return new MailSenderConfig(limits, priority, fallback);
+		String fromAddress = getMailSenderFromConfigMandatory(configPrefix);
+		return new MailSenderConfig(limits, fromAddress, priority, fallback);
 	}
 
 	private MailSenderLimit getMailSenderLimitFromConfig(String configPrefix) {
@@ -161,5 +167,11 @@ public class MailConfig {
 		return environment.getProperty(configPrefix + ".fallback", Boolean.class, false);
 	}
 
+	private String getMailSenderFromConfigMandatory(String configPrefix) {
+		return environment.getRequiredProperty(configPrefix + ".from");
+	}
 
+	public String getContactMailAddress() {
+		return contactMailAddress;
+	}
 }

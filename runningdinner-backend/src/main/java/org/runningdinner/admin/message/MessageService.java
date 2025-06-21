@@ -26,6 +26,7 @@ import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
+import org.runningdinner.mail.MailProvider;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.formatter.*;
 import org.runningdinner.mail.sendgrid.SuppressedEmail;
@@ -150,7 +151,7 @@ public class MessageService {
     return messageJob;
   }
   
-  public MessageJob sendParticipantMessagesSelf(@ValidateAdminId String adminId, ParticipantMessage participantMessage) {
+  public MessageJob sendParticipantMessagesSelf(@ValidateAdminId String adminId, ParticipantMessage participantMessage, MailProvider mailProviderToUse) {
     
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     
@@ -160,6 +161,13 @@ public class MessageService {
     Assert.state(participants.size() == 1, "Expected exactly one participant for sending mail to dinner owner but found " + participants.size());
     
     List<MessageTask> messageTasks = newParticipantMessageTasks(runningDinner, participants, participantMessage, parentMessageJob);
+
+    if (mailProviderToUse != null) {
+      // Overwrite from client for being able to test individual MailProviders
+      LOGGER.info("Overwriting MailProvider for {} with {}", messageTasks, mailProviderToUse);
+      messageTasks.forEach(mt -> mt.setSender(mailProviderToUse.toString()));
+    }
+
     sendMessageTasksSelf(messageTasks, runningDinner);
 
     return parentMessageJob;
@@ -265,7 +273,7 @@ public class MessageService {
     MessageJob parentMessageJob = new MessageJob(MessageType.RUNNING_DINNER_DELETION_WARN_MESSAGE, runningDinner);
 
     MessageTask messageTask = mailService.newSingleMessageTask(parentMessageJob, runningDinner);
-    messageTask.setMessage(new Message(runningDinnerCreatedMessage.getSubject(), runningDinnerCreatedMessage.getMessage(), mailConfig.getDefaultFrom()));
+    messageTask.setMessage(new Message(runningDinnerCreatedMessage.getSubject(), runningDinnerCreatedMessage.getMessage(), mailConfig.getContactMailAddress()));
     messageTask.setRecipientEmail(runningDinner.getEmail());
     mailService.sendMessage(messageTask);
     return parentMessageJob;
@@ -277,7 +285,7 @@ public class MessageService {
     MessageJob result = messageJobRepository.save(messageJob);
 
     MessageTask messageTask = mailService.newSingleMessageTask(result, newRunningDinnerMessage.getRunningDinner());
-    messageTask.setMessage(new Message(newRunningDinnerMessage.getSubject(), newRunningDinnerMessage.getMessage(), mailConfig.getDefaultFrom()));
+    messageTask.setMessage(new Message(newRunningDinnerMessage.getSubject(), newRunningDinnerMessage.getMessage(), mailConfig.getContactMailAddress()));
     messageTask.setRecipientEmail(newRunningDinnerMessage.getRunningDinner().getEmail());
       
     return saveMessageJob(result, Collections.singletonList(messageTask));
@@ -300,7 +308,7 @@ public class MessageService {
     MessageJob result = messageJobRepository.save(messageJob);
 
     MessageTask messageTask = mailService.newSingleMessageTask(result, runningDinner);
-    messageTask.setMessage(new Message(message.getSubject(), message.getMessage(), mailConfig.getDefaultFrom()));
+    messageTask.setMessage(new Message(message.getSubject(), message.getMessage(), mailConfig.getContactMailAddress()));
     messageTask.setRecipientEmail(subscribedParticipant.getEmail());
       
     return saveMessageJob(result, Collections.singletonList(messageTask));

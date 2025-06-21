@@ -41,10 +41,10 @@ public class MailSenderFactory {
 
   	List<PoolableMailSender> result = new ArrayList<>();
     if (envUtilService.isProfileActive("junit")) {
-      LOGGER.info("*** Using mocked In-Memory MailSender ***");
       var mailSender = new MailSenderMockInMemory();
       var junitConfig = mailConfig.getMailSenderConfigForPrefix("mail.junit");
       result.add(new PoolableMailSender(MailProvider.MOCK, mailSender, junitConfig));
+      LOGGER.info("*** Using mocked In-Memory MailSender with settings {} ***", junitConfig);
     }
 
     if (mailConfig.isSendGridApiEnabled()) {
@@ -57,10 +57,10 @@ public class MailSenderFactory {
     }
 
     if (mailConfig.isAwsSesEnabled()) {
-      var mailSender = new AwsSesWrapper(mailConfig.getUsernameMandatory(), mailConfig.getPasswordMandatory(), mailConfig.isHtmlEmail());
+      var mailSender = new AwsSesWrapper(mailConfig.getAwsSesUsernameMandatory(), mailConfig.getAwsSesPasswordMandatory(), mailConfig.isHtmlEmail());
       var awsSesConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.AWS_SES_CONFIG_PREFIX);
       result.add(new PoolableMailSender(MailProvider.AWS_SES_API, mailSender, awsSesConfig));
-      LOGGER.info("*** Using AWS SES MailSender with accessKey {} and settings {} ***", shortened(mailConfig.getUsernameMandatory()), awsSesConfig);
+      LOGGER.info("*** Using AWS SES MailSender with accessKey {} and settings {} ***", shortened(mailConfig.getAwsSesUsernameMandatory()), awsSesConfig);
     } else {
       LOGGER.warn("*** AWS SES MailSender is disabled ***");
     }

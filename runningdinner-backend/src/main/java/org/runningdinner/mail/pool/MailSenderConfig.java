@@ -1,9 +1,9 @@
 package org.runningdinner.mail.pool;
 
-public record MailSenderConfig(MailSenderLimit limit, int priority, boolean fallback) {
+public record MailSenderConfig(MailSenderLimit limit, String fromAddress, int priority, boolean fallback) {
 
-	public MailSenderConfig(int dailyLimit, int monthlyLimit, int priority, boolean fallback) {
-		this(new MailSenderLimit(dailyLimit, monthlyLimit), priority, fallback);
+	public MailSenderConfig(int dailyLimit, int monthlyLimit, String fromAddress, int priority, boolean fallback) {
+		this(new MailSenderLimit(dailyLimit, monthlyLimit), fromAddress, priority, fallback);
 	}
 
 	public boolean hasDailyLimit() {

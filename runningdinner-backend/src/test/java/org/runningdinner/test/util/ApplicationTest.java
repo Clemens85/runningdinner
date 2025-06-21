@@ -21,7 +21,8 @@ import java.lang.annotation.Target;
     "aws.sqs.geocode.request.url=geocode-request-junit",
     "aws.sqs.geocode.response.url=geocode-response-junit",
     "geocode.response.scheduler.enabled=false",
-    "mail.smtp.enabled=false"
+    "mail.smtp.enabled=false",
+    "mail.junit.from=dev@runyourdinner.eu"
   }
 )
 @WebAppConfiguration

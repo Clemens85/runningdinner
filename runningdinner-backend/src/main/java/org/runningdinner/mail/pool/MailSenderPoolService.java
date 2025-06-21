@@ -13,6 +13,7 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,7 +40,11 @@ public class MailSenderPoolService {
 		this.mailSenderPool = mailSenderFactory.getConfiguredMailSenders();
 		Assert.state(CollectionUtils.isNotEmpty(mailSenderPool), "Must have at least one configured mailsender");
 	}
-	
+
+	public List<PoolableMailSender> getAllConfiguredMailSenders() {
+		return Collections.unmodifiableList(this.mailSenderPool);
+	}
+
 	public PoolableMailSender getMailSenderToUse(LocalDate now, int numMessageTasksToSend) {
 		Assert.notEmpty(this.mailSenderPool, "Mail sender pool must not be empty");
 		List<PoolableMailSender> matchingMailSenders = getMatchingMailSenders(now, numMessageTasksToSend);
@@ -122,9 +127,17 @@ public class MailSenderPoolService {
 	}
 
 	public PoolableMailSender getMailSenderByKey(String sender) {
-		return this.mailSenderPool.stream()
+		PoolableMailSender result = this.mailSenderPool.stream()
 						.filter(mailSender -> StringUtils.equals(mailSender.getKey().toString(), sender))
 						.findFirst()
-						.orElseThrow(() -> new IllegalArgumentException("No mail sender found for key: " + sender));
+						.orElse(null);
+
+		if (result == null) {
+			LOGGER.error("No mail sender found for key {}. Recalculating new one...", sender);
+			result = this.getMailSenderToUse(LocalDate.now(), 1);
+			Assert.notNull(result, "No mail sender found after all, this should never happen...");
+			LOGGER.info("Using now {} instead of {}", result.getKey(), sender);
+		}
+		return result;
 	}
 }

@@ -1,13 +1,8 @@
 package org.runningdinner.feedback;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.MailConfig;
 import org.runningdinner.admin.RunningDinnerRepository;
 import org.runningdinner.admin.message.job.Message;
 import org.runningdinner.admin.message.job.MessageTask;
@@ -19,7 +14,6 @@ import org.runningdinner.feedback.Feedback.DeliveryState;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,6 +21,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FeedbackService {
@@ -46,9 +46,9 @@ public class FeedbackService {
   
   @Autowired
   private MailService mailService;
-  
-  @Value("${contact.mail}")
-  private String adminEmail;
+
+  @Autowired
+  private MailConfig mailConfig;
 
   @Transactional
   public Feedback createFeedback(Feedback feedback) {
@@ -108,7 +108,7 @@ public class FeedbackService {
   
   private MessageTask newMessageTaskInMemory(Feedback feedback) {
 
-    Assert.notNull(adminEmail, "adminEmail must be configured for sending feedback as email");
+    Assert.notNull(mailConfig.getContactMailAddress(), "adminEmail must be configured for sending feedback as email");
     
     String subject = "Feedback received from " + feedback.getSenderEmail();
     
@@ -127,7 +127,7 @@ public class FeedbackService {
     
     Message message = new Message(subject, content.toString(), feedback.getSenderEmail());
 
-    return mailService.newVirtualMessageTask(adminEmail, message);
+    return mailService.newVirtualMessageTask(mailConfig.getContactMailAddress(), message);
   }
 
 }

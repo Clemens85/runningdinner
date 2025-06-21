@@ -37,6 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ApplicationTest
 @TestPropertySource(properties = {
 	"mail.aws.ses.enabled=true",
+	"mail.aws.ses.username=username",
+	"mail.aws.ses.password=password",
 	"mail.aws.ses.limit.monthly=4",
 	"mail.aws.ses.fallback=true",
 	"mail.junit.limit.monthly=2",
@@ -94,14 +96,14 @@ public class MailSenderPoolServiceTest {
 	@Test
 	public void getMailSenderWithHighestPriority() {
 		List<PoolableMailSender> matchingMailSenders = new ArrayList<>(List.of(
-				new PoolableMailSender(MailProvider.AWS_SES_API, null, new MailSenderLimit(-1, 4), 0, false),
-				new PoolableMailSender(MailProvider.MOCK, null, new MailSenderLimit(-1, 2), -1, false)
+				newPoolableMailSenderMock(MailProvider.AWS_SES_API, -1, 4, 0, false),
+				newPoolableMailSenderMock(MailProvider.MOCK, -1, 2, -1, false)
 		));
 
 		var result = MailSenderPoolService.getMailSenderWithHighestPriority(matchingMailSenders);
 		assertThat(result).isNull();
 
-		matchingMailSenders.add(new PoolableMailSender(MailProvider.MAILJET_API, null, new MailSenderLimit(-1, 4), 5, true));
+		matchingMailSenders.add(newPoolableMailSenderMock(MailProvider.MAILJET_API, -1, 4, 5, true));
 		result = MailSenderPoolService.getMailSenderWithHighestPriority(matchingMailSenders);
 		assertThat(result).isNotNull();
 		assertThat(result.getKey()).isEqualTo(MailProvider.MAILJET_API);
@@ -160,6 +162,10 @@ public class MailSenderPoolServiceTest {
 			Participant participant = participantService.addParticipant(runningDinner, new ParticipantInputDataTO(p), true);
 			eventPublisher.notifyNewParticipant(participant, runningDinner);
 		});
+	}
+
+	private PoolableMailSender newPoolableMailSenderMock(MailProvider mailProvider, int dailyLimit, int monthlyLimit, int priority, boolean fallback) {
+		return new PoolableMailSender(mailProvider, null, new MailSenderLimit(dailyLimit, monthlyLimit), "foo@bar.de", priority, fallback);
 	}
 
 }

@@ -1,17 +1,12 @@
 package org.runningdinner.common.rest;
 
-import java.util.List;
-import java.util.Locale;
-
+import jakarta.persistence.EntityNotFoundException;
+import org.runningdinner.MailConfig;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
-import org.runningdinner.common.exception.DinnerNotAcknowledgedException;
-import org.runningdinner.common.exception.DinnerNotFoundException;
-import org.runningdinner.common.exception.InvalidUuidException;
-import org.runningdinner.common.exception.TechnicalException;
-import org.runningdinner.common.exception.ValidationException;
+import org.runningdinner.common.exception.*;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.InvalidAddressException;
 import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
@@ -20,7 +15,6 @@ import org.runningdinner.mail.formatter.FormatterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -31,7 +25,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.Locale;
 
 @ControllerAdvice
 public class GlobalExceptionMapper {
@@ -44,8 +39,8 @@ public class GlobalExceptionMapper {
   @Autowired
   private MessageSource messages;
 
-  @Value("${contact.mail}")
-  private String adminEmail;
+	@Autowired
+  private MailConfig mailConfig;
 
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(DinnerNotFoundException.class)
@@ -62,7 +57,7 @@ public class GlobalExceptionMapper {
   IssueList mapDinnerNotAcknowledgedException(final Locale locale, final Exception ex) {
 
 	  String message = messages.getMessage("error.dinner.acknowledge.required", null, locale);
-	  message = message.replaceAll(FormatterUtil.EMAIL, adminEmail);
+	  message = message.replaceAll(FormatterUtil.EMAIL, mailConfig.getContactMailAddress());
 	  LOGGER.error(ex.getMessage(), ex);
 	  return new IssueList(new Issue(message, IssueType.BAD_REQUEST));
   }
