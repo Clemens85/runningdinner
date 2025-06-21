@@ -1,5 +1,6 @@
 package org.runningdinner.admin.message.rest;
 
+import jakarta.validation.Valid;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.PreviewMessage;
@@ -12,6 +13,7 @@ import org.runningdinner.admin.message.job.MessageType;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.team.TeamMessage;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.mail.MailProvider;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.mail.formatter.SimpleTextMessage;
 import org.runningdinner.participant.Participant;
@@ -22,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,14 +59,15 @@ public class MessageServiceRest {
   
   @PutMapping("/runningdinner/{adminId}/mails/participant")
   public MessageJob sendParticipantMails(@PathVariable String adminId, 
-                                         @RequestParam(required=false, defaultValue="false") boolean sendToDinnerOwner, 
+                                         @RequestParam(required=false, defaultValue="false") boolean sendToDinnerOwner,
+                                         @RequestParam(required=false, name = "mailProviderToUse") MailProvider mailProviderToUse,
                                          @RequestBody @Valid ParticipantMessage participantMessage) {
 
     MessageJob messageJob;
     if (!sendToDinnerOwner) {
       messageJob = messageService.sendParticipantMessages(adminId, participantMessage);
     } else {
-      messageJob = messageService.sendParticipantMessagesSelf(adminId, participantMessage);
+      messageJob = messageService.sendParticipantMessagesSelf(adminId, participantMessage, mailProviderToUse);
     }
 
     return messageJob;

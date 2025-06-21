@@ -47,8 +47,7 @@ public class FeedbackServiceTest {
   
   @BeforeEach
   public void setUp() {
-
-    this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
+    this.mailSenderInMemory = testHelperService.getMockedMailSender();
     this.mailSenderInMemory.setUp();
   }
   

@@ -1,5 +1,6 @@
 package org.runningdinner.admin.message.job;
 
+import org.runningdinner.admin.message.job.stats.MessageTaskSenderInfo;
 import org.runningdinner.core.RunningDinnerRelatedRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,5 +53,15 @@ public interface MessageTaskRepository extends RunningDinnerRelatedRepository<Me
   long countByAdminIdAndParentJobIdAndSendingResultDelieveryFailed(String adminId, UUID parentJobId, boolean delieveryFailed);
 
   List<MessageTask> findBySendingStatusAndModifiedAtBeforeOrderByModifiedAtAscParentJobId(SendingStatus sendingStatus, LocalDateTime lastModifiedDateBefore);
-  
+
+  @Query("""
+    SELECT mt.sender AS sender, mt.createdAt AS createdAt
+    FROM MessageTask mt
+    WHERE mt.createdAt BETWEEN :startOfMonth AND :endOfMonth
+  """)
+  List<MessageTaskSenderInfo> findSenderInfosByCreatedAtBetween(
+          @Param("startOfMonth") LocalDateTime startOfMonth,
+          @Param("endOfMonth") LocalDateTime endOfMonth
+  );
+
 }

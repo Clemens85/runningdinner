@@ -32,6 +32,7 @@ public class MailJetWrapper implements MailSender {
           .put(Emailv31.Message.FROM, from(simpleMessage.getFrom()))
           .put(Emailv31.Message.TO, to(simpleMessage.getTo()[0]))
           .put(Emailv31.Message.SUBJECT, simpleMessage.getSubject())
+          .put(Emailv31.Message.REPLYTO, from(simpleMessage.getReplyTo()))
           .put(htmlEmail ? Emailv31.Message.HTMLPART : Emailv31.Message.TEXTPART, simpleMessage.getText())
         ));
 
@@ -45,7 +46,7 @@ public class MailJetWrapper implements MailSender {
     }
 
     if (responseStatus != 200 && responseStatus != 201) {
-      throw new TechnicalException("MailJet response was not success, it was " + response);
+      throw new TechnicalException("Mail response was not successful, it was " + response.getRawResponseContent());
     }
   }
 

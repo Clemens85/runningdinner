@@ -1,12 +1,6 @@
 package org.runningdinner.admin.message.processor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageTask;
@@ -17,7 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageTaskSchedulerService {
@@ -25,7 +24,7 @@ public class MessageTaskSchedulerService {
   private static final Logger LOGGER = LoggerFactory.getLogger(MessageTaskSchedulerService.class);
   
   @Value("${send.queued.messagetasks.scheduler.enabled:true}")
-  private boolean schedulerEnabled = true;
+  private final boolean schedulerEnabled = true;
   
   @Autowired
   private MessageService messageService;
@@ -73,7 +72,7 @@ public class MessageTaskSchedulerService {
         return;
       }
       
-      UUID parentJobId = queuedMessageTasks.get(0).getParentJobId();
+      UUID parentJobId = queuedMessageTasks.getFirst().getParentJobId();
       
       for (MessageTask queuedMessageTask : queuedMessageTasks) {
         LOGGER.info("Trying to send queued task {}", queuedMessageTask);

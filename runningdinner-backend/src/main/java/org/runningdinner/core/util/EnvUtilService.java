@@ -1,10 +1,10 @@
 package org.runningdinner.core.util;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 @Component
 public class EnvUtilService {
@@ -19,5 +19,9 @@ public class EnvUtilService {
   
   public String getConfigProperty(String key) {
     return environment.getProperty(key);
+  }
+
+  public String getConfigProperty(String key, String fallback) {
+    return environment.getProperty(key, fallback);
   }
 }

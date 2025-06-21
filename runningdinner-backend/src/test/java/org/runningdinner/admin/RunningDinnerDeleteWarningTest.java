@@ -56,7 +56,7 @@ public class RunningDinnerDeleteWarningTest {
   @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
     this.runningDinner = testHelperService.createClosedRunningDinner(DATE_2024_06_30.toLocalDate(), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
-    this.mailSenderInMemory = (MailSenderMockInMemory) mailSenderFactory.getMailSender(); // Test uses always this implementation
+    this.mailSenderInMemory = testHelperService.getMockedMailSender();
     this.mailSenderInMemory.setUp();
     this.adminUrl = urlGenerator.constructAdministrationUrl(runningDinner.getAdminId());
   }

@@ -1,9 +1,5 @@
 package org.runningdinner.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.runningdinner.core.RegistrationType;
@@ -18,7 +14,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
+        "deliver.feedback.mail.scheduler.enabled=false",
+        "delete.runninginnder.instances.scheduler.enabled=false",
+        "send.queued.messagetasks.scheduler.enabled=false",
+        "sendgrid.sync.sent.mails=false",
+        "route.optimization.send.feedback=false",
+        "aws.sqs.geocode.request.url=geocode-request-junit",
+        "aws.sqs.geocode.response.url=geocode-response-junit",
+        "geocode.response.scheduler.enabled=false",
+        "mail.smtp.enabled=false",
+        "mail.junit.from=dev@runyourdinner.eu"
+})
 @ActiveProfiles({"dev", "junit"})
 public class XssInjectionPreventionTest {
 
@@ -27,8 +38,7 @@ public class XssInjectionPreventionTest {
   @Value("${local.server.port}")
   private int port;
 
-//  @Value("${server.contextPath}")
-  private String contextPath = StringUtils.EMPTY;
+  private final String contextPath = StringUtils.EMPTY;
   
   @Autowired
   private TestRestTemplate restTemplate;
