@@ -7,6 +7,8 @@ import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.SendingStatus;
+import org.runningdinner.admin.message.participant.ParticipantMessage;
+import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.contract.Contract;
 import org.runningdinner.core.*;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
@@ -35,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Service
 public class TestHelperService {
@@ -238,5 +242,14 @@ public class TestHelperService {
   public MailSenderMockInMemory getMockedMailSender() {
     PoolableMailSender result = mailSenderPoolService.getMailSenderByKey(MailProvider.MOCK.toString());
     return (MailSenderMockInMemory) result.getMailSender();
+  }
+
+  public void sendMessagesToAllParticipants(RunningDinner runningDinner) {
+    ParticipantMessage participantMessage = new ParticipantMessage();
+    participantMessage.setMessage("Message");
+    participantMessage.setSubject("Subject");
+    participantMessage.setParticipantSelection(ParticipantSelection.ALL);
+    MessageJob messageJob = messageService.sendParticipantMessages(runningDinner.getAdminId(), participantMessage);
+    assertThat(messageJob).isNotNull();
   }
 }

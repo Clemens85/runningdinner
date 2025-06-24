@@ -6,11 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.admin.message.MessageService;
-import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.admin.message.job.MessageTaskRepository;
-import org.runningdinner.admin.message.participant.ParticipantMessage;
-import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.mail.MailProvider;
@@ -75,7 +72,7 @@ public class MessageSenderStatsServiceTest {
 
 		assertThat(this.messageTaskRepository.count()).isZero();
 
-		sendParticipantMessages();
+		testHelperService.sendMessagesToAllParticipants(runningDinner);
 
 		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
 		assertThat(allMessageTasks).hasSize(22);
@@ -122,7 +119,7 @@ public class MessageSenderStatsServiceTest {
 
 		assertThat(this.messageTaskRepository.count()).isZero();
 
-		sendParticipantMessages();
+		testHelperService.sendMessagesToAllParticipants(runningDinner);
 
 		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
 
@@ -136,14 +133,6 @@ public class MessageSenderStatsServiceTest {
 		assertThat(statsBySender.getSentTasksOfDay(MailProvider.MAILJET.toString())).isEqualTo(4);
 	}
 
-	private void sendParticipantMessages() {
-		ParticipantMessage participantMessage = new ParticipantMessage();
-		participantMessage.setMessage("Message");
-		participantMessage.setSubject("Subject");
-		participantMessage.setParticipantSelection(ParticipantSelection.ALL);
-		MessageJob messageJob = messageService.sendParticipantMessages(runningDinner.getAdminId(), participantMessage);
-		assertThat(messageJob).isNotNull();
-	}
 
 
 }
