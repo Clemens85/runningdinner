@@ -63,14 +63,14 @@ public class MailSenderPoolServiceTest {
 	private ParticipantService participantService;
 
 	@Autowired
-	EventPublisher eventPublisher;
+	private EventPublisher eventPublisher;
 
 	private MailSenderMockInMemory mailSenderInMemory;
 
 	@BeforeEach
 	public void setUp() {
 		this.testMessageTaskHelperService.awaitAllMessageTasksSent();
-		this.messageTaskRepository.deleteAll();
+		this.testMessageTaskHelperService.clearHistoricalMessageTasks();
 		this.mailSenderInMemory = testHelperService.getMockedMailSender();
 		this.mailSenderInMemory.setUp();
 	}

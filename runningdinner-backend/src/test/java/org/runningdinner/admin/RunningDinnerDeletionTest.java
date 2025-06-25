@@ -27,6 +27,7 @@ import org.runningdinner.participant.TeamRepository;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
+import org.runningdinner.test.util.TestMessageTaskHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wizard.PublicSettingsTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class RunningDinnerDeletionTest {
 
   @Autowired
   private TestHelperService testHelperService;
+
+  @Autowired
+  private TestMessageTaskHelperService testMessageTaskHelperService;
 
   @Autowired
   private TeamService teamService;
@@ -91,7 +95,7 @@ public class RunningDinnerDeletionTest {
   public void setUp() throws NoPossibleRunningDinnerException {
     runningDinner = testHelperService.createClosedRunningDinner(DINNER_DATE.toLocalDate(), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
     teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
-    messageSenderHistoryRepository.deleteAll();
+    testMessageTaskHelperService.clearHistoricalMessageTasks();
   }
 
   @Test

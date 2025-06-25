@@ -67,8 +67,7 @@ public class MessageSenderStatsServiceTest {
 	public void setUp() throws NoPossibleRunningDinnerException {
 		this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, TOTAL_NUMBER_OF_PARTICIPANTS);
 		this.testMessageTaskHelperService.awaitAllMessageTasksSent();
-		this.messageTaskRepository.deleteAll();
-		this.messageSenderHistoryRepository.deleteAll();
+		this.testMessageTaskHelperService.clearHistoricalMessageTasks();
 	}
 
 	@Test

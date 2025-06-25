@@ -4,6 +4,7 @@ import org.awaitility.Awaitility;
 import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.admin.message.job.MessageTaskRepository;
 import org.runningdinner.admin.message.job.SendingStatus;
+import org.runningdinner.admin.message.job.stats.MessageSenderHistoryRepository;
 import org.runningdinner.core.AbstractEntity;
 import org.runningdinner.mail.MailProvider;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,9 +24,12 @@ public class TestMessageTaskHelperService {
 
 	private final JdbcTemplate jdbcTemplate;
 
-	public TestMessageTaskHelperService(MessageTaskRepository messageTaskRepository, DataSource dataSource) {
+	private final MessageSenderHistoryRepository messageSenderHistoryRepository;
+
+	public TestMessageTaskHelperService(MessageTaskRepository messageTaskRepository, DataSource dataSource, MessageSenderHistoryRepository messageSenderHistoryRepository) {
 		this.messageTaskRepository = messageTaskRepository;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.messageSenderHistoryRepository = messageSenderHistoryRepository;
 	}
 
 	public void awaitAllMessageTasksSent() {
@@ -68,4 +72,8 @@ public class TestMessageTaskHelperService {
 		return messageTaskRepository.findAllById(messageTasksLastMonth.stream().map(MessageTask::getId).toList());
 	}
 
+	public void clearHistoricalMessageTasks() {
+		messageSenderHistoryRepository.deleteAll();
+		messageTaskRepository.deleteAll();
+	}
 }
