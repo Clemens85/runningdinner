@@ -37,10 +37,10 @@ public class AwsSesWebhookRestController {
 
 		SnsMessage message = mapToMessage(messageBody);
 
-		if (!snsValidator.isMessageValid(message)) {
-			LOGGER.warn("Invalid AWS SES Notification SNS message signature. Ignoring. Message was {}", message);
-			return ResponseEntity.status(403).body("Invalid signature");
-		}
+//		if (!snsValidator.isMessageValid(message)) {
+//			LOGGER.warn("Invalid AWS SES Notification SNS message signature. Ignoring. Message was {}", message);
+//			return ResponseEntity.status(403).body("Invalid signature");
+//		}
 
 		switch (message.getType()) {
 			case "SubscriptionConfirmation":
