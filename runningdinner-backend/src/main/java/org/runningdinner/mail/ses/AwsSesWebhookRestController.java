@@ -1,5 +1,8 @@
 package org.runningdinner.mail.ses;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.aws.SnsMessage;
 import org.runningdinner.common.aws.SnsValidator;
 import org.slf4j.Logger;
@@ -20,13 +23,19 @@ public class AwsSesWebhookRestController {
 
 	private final AwsSesEmailSynchronizationService awsSesEmailSynchronizationService;
 
-	public AwsSesWebhookRestController(AwsSesEmailSynchronizationService awsSesEmailSynchronizationService) {
+	private final ObjectMapper objectMapper;
+
+	public AwsSesWebhookRestController(AwsSesEmailSynchronizationService awsSesEmailSynchronizationService, ObjectMapper objectMapper) {
 		this.awsSesEmailSynchronizationService = awsSesEmailSynchronizationService;
+		this.objectMapper = objectMapper;
 	}
 
-	@PostMapping
-	public ResponseEntity<String> handleNotification(@RequestBody SnsMessage message) {
-		LOGGER.info("Received AWS SES SNS message: {}", message.getType());
+	@PostMapping(consumes = {"application/json", "text/plain" })
+	public ResponseEntity<String> handleNotification(@RequestBody String messageBody) {
+
+		LOGGER.info("Received AWS SES SNS message: {} ...", StringUtils.substring(messageBody, 0, 128));
+
+		SnsMessage message = mapToMessage(messageBody);
 
 		if (!snsValidator.isMessageValid(message)) {
 			LOGGER.warn("Invalid AWS SES Notification SNS message signature. Ignoring. Message was {}", message);
@@ -50,6 +59,14 @@ public class AwsSesWebhookRestController {
 		}
 
 		return ResponseEntity.ok("OK");
+	}
+
+	private SnsMessage mapToMessage(String messageBody) {
+		try {
+			return objectMapper.readValue(messageBody, SnsMessage.class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
