@@ -10,6 +10,7 @@ import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.message.dinner.RunningDinnerRelatedMessage;
 import org.runningdinner.admin.message.dinnerroute.DinnerRouteMessage;
 import org.runningdinner.admin.message.job.*;
+import org.runningdinner.admin.message.job.stats.MessageSenderHistoryService;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.admin.message.processor.MessageJobProcessorHelperService;
@@ -93,6 +94,9 @@ public class MessageService {
   
   @Autowired
   private MailService mailService;
+
+  @Autowired
+  private MessageSenderHistoryService messageSenderHistoryService;
   
   @Transactional
   public MessageJob createParticipantMessagesJob(@ValidateAdminId String adminId, ParticipantMessage participantMessage) {
@@ -276,6 +280,7 @@ public class MessageService {
     messageTask.setMessage(new Message(runningDinnerCreatedMessage.getSubject(), runningDinnerCreatedMessage.getMessage(), mailConfig.getContactMailAddress()));
     messageTask.setRecipientEmail(runningDinner.getEmail());
     mailService.sendMessage(messageTask);
+    messageSenderHistoryService.saveMessageSenderHistorySafe(List.of(messageTask));
     return parentMessageJob;
   }
 
@@ -464,6 +469,7 @@ public class MessageService {
     
     messageTask.setSendingStartTime(LocalDateTime.now());
     mailService.sendMessage(messageTask); // If exception occurs whole transaction will be rollbacked
+    messageSenderHistoryService.saveMessageSenderHistorySafe(List.of(messageTask));
     messageTask.setSendingEndTime(LocalDateTime.now());
     messageTask.setSendingStatus(SendingStatus.SENDING_FINISHED);
    
@@ -701,6 +707,7 @@ public class MessageService {
     for (MessageTask messageTask : messageTasks) {
       messageTask.setRecipientEmail(runningDinner.getEmail());
       mailService.sendMessage(messageTask);
+      messageSenderHistoryService.saveMessageSenderHistorySafe(List.of(messageTask));
     }
   }
   

@@ -8,10 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,9 +16,12 @@ public class MessageSenderStatsService {
 
 	private final MessageTaskRepository messageTaskRepository;
 
-  public MessageSenderStatsService(MessageTaskRepository messageTaskRepository) {
+	private final MessageSenderHistoryRepository messageSenderHistoryRepository;
+
+  public MessageSenderStatsService(MessageTaskRepository messageTaskRepository, MessageSenderHistoryRepository messageSenderHistoryRepository) {
     this.messageTaskRepository = messageTaskRepository;
-  }
+		this.messageSenderHistoryRepository = messageSenderHistoryRepository;
+	}
 
   public MessageSenderStats getStatsBySender(LocalDate now) {
 
@@ -45,7 +45,15 @@ public class MessageSenderStatsService {
 	private Map<String, List<MessageTaskSenderInfo>> findSenderInfosInCurrentMonth(LocalDate now) {
 		LocalDateTime startOfMonth = now.atStartOfDay().withDayOfMonth(1);
 		LocalDateTime endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
-		List<MessageTaskSenderInfo> senderInfos = messageTaskRepository.findSenderInfosByCreatedAtBetween(startOfMonth, endOfMonth);
+
+		List<MessageTaskSenderInfo> senderInfos = new ArrayList<>(messageTaskRepository.findSenderInfosByCreatedAtBetween(startOfMonth, endOfMonth));
+
+		List<MessageSenderHistory> messageSenderHistory = messageSenderHistoryRepository.findAllBySendingDateBetween(startOfMonth, endOfMonth);
+		messageSenderHistory
+			.stream()
+			.map(MessageTaskSenderInfoHistoryWrapper::new)
+			.forEach(senderInfos::add);
+
 		return groupBySender(senderInfos);
 	}
 
@@ -58,5 +66,24 @@ public class MessageSenderStatsService {
 		return senderInfos
 							.stream()
 							.collect(Collectors.groupingBy(MessageTaskSenderInfo::getSender));
+	}
+
+	static final class MessageTaskSenderInfoHistoryWrapper implements MessageTaskSenderInfo {
+
+		private final MessageSenderHistory delegate;
+
+		MessageTaskSenderInfoHistoryWrapper(MessageSenderHistory delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public String getSender() {
+			return delegate.getSender();
+		}
+
+		@Override
+		public LocalDateTime getCreatedAt() {
+			return delegate.getSendingDate();
+		}
 	}
 }

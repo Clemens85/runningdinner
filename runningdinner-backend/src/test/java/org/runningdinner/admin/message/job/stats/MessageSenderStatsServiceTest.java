@@ -10,6 +10,8 @@ import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.admin.message.job.MessageTaskRepository;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.feedback.Feedback;
+import org.runningdinner.feedback.FeedbackService;
 import org.runningdinner.mail.MailProvider;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
@@ -43,13 +45,19 @@ public class MessageSenderStatsServiceTest {
 	private MessageTaskRepository messageTaskRepository;
 
 	@Autowired
-	private TestHelperService testHelperService;
-
-	@Autowired
 	private MessageSenderStatsService messageSenderStatsService;
 
 	@Autowired
+	private TestHelperService testHelperService;
+
+	@Autowired
+	private MessageSenderHistoryRepository messageSenderHistoryRepository;
+
+	@Autowired
 	private TestMessageTaskHelperService testMessageTaskHelperService;
+
+	@Autowired
+	private FeedbackService feedbackService;
 
 	private RunningDinner runningDinner;
 
@@ -60,6 +68,7 @@ public class MessageSenderStatsServiceTest {
 		this.runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, TOTAL_NUMBER_OF_PARTICIPANTS);
 		this.testMessageTaskHelperService.awaitAllMessageTasksSent();
 		this.messageTaskRepository.deleteAll();
+		this.messageSenderHistoryRepository.deleteAll();
 	}
 
 	@Test
@@ -133,6 +142,48 @@ public class MessageSenderStatsServiceTest {
 		assertThat(statsBySender.getSentTasksOfDay(MailProvider.MAILJET.toString())).isEqualTo(4);
 	}
 
+	@Test
+	public void statsWithHistory() {
 
+		LocalDate now = LocalDate.now();
+
+		List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
+		assertThat(participants).hasSize(22);
+
+		assertThat(this.messageTaskRepository.count()).isZero();
+
+		testHelperService.sendMessagesToAllParticipants(runningDinner);
+		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
+
+		var messageTasksMailJet = List.of(allMessageTasks.get(0), allMessageTasks.get(1), allMessageTasks.get(2), allMessageTasks.get(3));
+		testMessageTaskHelperService.updateMessageTaskSenders(messageTasksMailJet, MailProvider.MAILJET);
+
+		MessageSenderStats statsBySender = messageSenderStatsService.getStatsBySender(now);
+		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(18);
+		assertThat(statsBySender.getSentTasksOfDay(MOCK)).isEqualTo(18);
+		assertThat(statsBySender.getSentTasksOfMonth(MailProvider.MAILJET.toString())).isEqualTo(4);
+		assertThat(statsBySender.getSentTasksOfDay(MailProvider.MAILJET.toString())).isEqualTo(4);
+
+		Feedback feedback = feedbackService.createFeedback(newFeedback());
+		feedbackService.deliverFeedbackInNewTransaction(feedback);
+		statsBySender = messageSenderStatsService.getStatsBySender(now);
+		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(19); // +1 Feedback
+		assertThat(statsBySender.getSentTasksOfDay(MOCK)).isEqualTo(19); // +1 Feedback
+		assertThat(statsBySender.getSentTasksOfMonth(MailProvider.MAILJET.toString())).isEqualTo(4);
+		assertThat(statsBySender.getSentTasksOfDay(MailProvider.MAILJET.toString())).isEqualTo(4);
+
+		List<MessageSenderHistory> senderHistoryEntities = messageSenderHistoryRepository
+																													.findAllBySendingDateBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now().plusSeconds(1));
+		assertThat(senderHistoryEntities).hasSize(1);
+		assertThat(senderHistoryEntities.getFirst().getAmount()).isOne();
+	}
+
+	private static Feedback newFeedback() {
+		Feedback feedback = new Feedback();
+		feedback.setMessage("Foo");
+		feedback.setSenderEmail("feedback@example.com");
+		feedback.setSenderIp("127.0.0.1");
+		return feedback;
+	}
 
 }

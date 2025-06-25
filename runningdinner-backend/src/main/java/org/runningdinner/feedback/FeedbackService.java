@@ -6,6 +6,7 @@ import org.runningdinner.MailConfig;
 import org.runningdinner.admin.RunningDinnerRepository;
 import org.runningdinner.admin.message.job.Message;
 import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.admin.message.job.stats.MessageSenderHistoryService;
 import org.runningdinner.common.AlertLogger;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.ValidatorService;
@@ -50,6 +51,9 @@ public class FeedbackService {
   @Autowired
   private MailConfig mailConfig;
 
+  @Autowired
+  private MessageSenderHistoryService messageSenderHistoryService;
+
   @Transactional
   public Feedback createFeedback(Feedback feedback) {
 
@@ -72,12 +76,14 @@ public class FeedbackService {
     Optional<Feedback> feedbackOptional = feedbackRepository.findById(incomingFeedback.getId());
     Assert.state(feedbackOptional.isPresent(), "Could not find feedback for " + incomingFeedback);
     Feedback feedback = feedbackOptional.get();
-    Assert.state(feedback.getDeliveryState() == DeliveryState.NOT_DELIVERED, "Can only be called for not devliered feedback, but " + feedback + " was already delivered");
-    
-    mailService.sendMessage(newMessageTaskInMemory(feedback));
-    
+    Assert.state(feedback.getDeliveryState() == DeliveryState.NOT_DELIVERED, "Can only be called for not delivered feedback, but " + feedback + " was already delivered");
+
+    MessageTask messageTask = newMessageTaskInMemory(feedback);
+    mailService.sendMessage(messageTask);
+
+    messageSenderHistoryService.saveMessageSenderHistorySafe(List.of(messageTask));
+
     feedback.setDeliveryState(DeliveryState.DELIVERED);
-    
     return feedbackRepository.save(feedback);
   }
   
@@ -92,8 +98,8 @@ public class FeedbackService {
       return;
     }
     
-    Feedback lastCreatedFeedback = lastCreatedFeedbacks.get(0);
-    Feedback firstCreatedFeedback = lastCreatedFeedbacks.get(lastCreatedFeedbacks.size() - 1);
+    Feedback lastCreatedFeedback = lastCreatedFeedbacks.getFirst();
+    Feedback firstCreatedFeedback = lastCreatedFeedbacks.getLast();
     
     LocalDateTime lastCreatedAt = lastCreatedFeedback.getCreatedAt();
     LocalDateTime firstCreatedAt = firstCreatedFeedback.getCreatedAt();
