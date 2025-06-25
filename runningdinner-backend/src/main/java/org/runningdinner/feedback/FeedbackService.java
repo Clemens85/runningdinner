@@ -1,16 +1,12 @@
 package org.runningdinner.feedback;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.MailConfig;
 import org.runningdinner.admin.RunningDinnerRepository;
 import org.runningdinner.admin.message.job.Message;
 import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.admin.message.job.stats.MessageSenderHistoryService;
 import org.runningdinner.common.AlertLogger;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.ValidatorService;
@@ -19,7 +15,6 @@ import org.runningdinner.feedback.Feedback.DeliveryState;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,6 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FeedbackService {
@@ -46,9 +47,12 @@ public class FeedbackService {
   
   @Autowired
   private MailService mailService;
-  
-  @Value("${contact.mail}")
-  private String adminEmail;
+
+  @Autowired
+  private MailConfig mailConfig;
+
+  @Autowired
+  private MessageSenderHistoryService messageSenderHistoryService;
 
   @Transactional
   public Feedback createFeedback(Feedback feedback) {
@@ -72,12 +76,14 @@ public class FeedbackService {
     Optional<Feedback> feedbackOptional = feedbackRepository.findById(incomingFeedback.getId());
     Assert.state(feedbackOptional.isPresent(), "Could not find feedback for " + incomingFeedback);
     Feedback feedback = feedbackOptional.get();
-    Assert.state(feedback.getDeliveryState() == DeliveryState.NOT_DELIVERED, "Can only be called for not devliered feedback, but " + feedback + " was already delivered");
-    
-    mailService.sendMessage(newMessageTaskInMemory(feedback));
-    
+    Assert.state(feedback.getDeliveryState() == DeliveryState.NOT_DELIVERED, "Can only be called for not delivered feedback, but " + feedback + " was already delivered");
+
+    MessageTask messageTask = newMessageTaskInMemory(feedback);
+    mailService.sendMessage(messageTask);
+
+    messageSenderHistoryService.saveMessageSenderHistorySafe(List.of(messageTask));
+
     feedback.setDeliveryState(DeliveryState.DELIVERED);
-    
     return feedbackRepository.save(feedback);
   }
   
@@ -92,8 +98,8 @@ public class FeedbackService {
       return;
     }
     
-    Feedback lastCreatedFeedback = lastCreatedFeedbacks.get(0);
-    Feedback firstCreatedFeedback = lastCreatedFeedbacks.get(lastCreatedFeedbacks.size() - 1);
+    Feedback lastCreatedFeedback = lastCreatedFeedbacks.getFirst();
+    Feedback firstCreatedFeedback = lastCreatedFeedbacks.getLast();
     
     LocalDateTime lastCreatedAt = lastCreatedFeedback.getCreatedAt();
     LocalDateTime firstCreatedAt = firstCreatedFeedback.getCreatedAt();
@@ -108,7 +114,7 @@ public class FeedbackService {
   
   private MessageTask newMessageTaskInMemory(Feedback feedback) {
 
-    Assert.notNull(adminEmail, "adminEmail must be configured for sending feedback as email");
+    Assert.notNull(mailConfig.getContactMailAddress(), "adminEmail must be configured for sending feedback as email");
     
     String subject = "Feedback received from " + feedback.getSenderEmail();
     
@@ -126,8 +132,8 @@ public class FeedbackService {
     content.append("Content: ").append(FormatterUtil.NEWLINE).append(feedback.getMessage());
     
     Message message = new Message(subject, content.toString(), feedback.getSenderEmail());
-    
-    return MessageTask.newVirtualMessageTask(adminEmail, message);
+
+    return mailService.newVirtualMessageTask(mailConfig.getContactMailAddress(), message);
   }
 
 }

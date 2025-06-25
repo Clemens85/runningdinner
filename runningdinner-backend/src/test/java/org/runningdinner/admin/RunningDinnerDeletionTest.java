@@ -7,6 +7,9 @@ import org.runningdinner.admin.activity.Activity;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.deleted.DeletedRunningDinner;
 import org.runningdinner.admin.deleted.DeletedRunningDinnerRepository;
+import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.admin.message.job.MessageTaskRepository;
+import org.runningdinner.admin.message.job.stats.MessageSenderHistoryRepository;
 import org.runningdinner.admin.rest.BasicSettingsTO;
 import org.runningdinner.contract.Contract;
 import org.runningdinner.contract.ContractService;
@@ -24,6 +27,7 @@ import org.runningdinner.participant.TeamRepository;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
+import org.runningdinner.test.util.TestMessageTaskHelperService;
 import org.runningdinner.test.util.TestUtil;
 import org.runningdinner.wizard.PublicSettingsTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +49,9 @@ public class RunningDinnerDeletionTest {
 
   @Autowired
   private TestHelperService testHelperService;
+
+  @Autowired
+  private TestMessageTaskHelperService testMessageTaskHelperService;
 
   @Autowired
   private TeamService teamService;
@@ -76,13 +83,19 @@ public class RunningDinnerDeletionTest {
   @Autowired
   private FrontendRunningDinnerService frontendRunningDinnerService;
 
+  @Autowired
+  private MessageTaskRepository messageTaskRepository;
+
+  @Autowired
+  private MessageSenderHistoryRepository messageSenderHistoryRepository;
+
   private RunningDinner runningDinner;
 
   @BeforeEach
   public void setUp() throws NoPossibleRunningDinnerException {
-
     runningDinner = testHelperService.createClosedRunningDinner(DINNER_DATE.toLocalDate(), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
     teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+    testMessageTaskHelperService.clearHistoricalMessageTasks();
   }
 
   @Test
@@ -172,9 +185,16 @@ public class RunningDinnerDeletionTest {
     assertThat(participants).hasSize(20);
     assertThat(participants.get(18).getTeamPartnerWishOriginatorId()).isNotNull();
     assertThat(participants.get(19).getTeamPartnerWishOriginatorId()).isNotNull();
-    
+
+    // Verify that existed MessageTask entities get later on copied to the history version
+    List<MessageTask> messageTasksToBeDeleted = messageTaskRepository.findByAdminId(runningDinner.getAdminId());
+    assertThat(messageTasksToBeDeleted).isNotEmpty();
+    assertThat(messageSenderHistoryRepository.count()).isZero();
+
     LocalDateTime now = DINNER_DATE.plusDays(6);
     deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);
+
+    assertThat(messageSenderHistoryRepository.count()).isEqualTo(messageTasksToBeDeleted.size());
     
     assertNoRunningDinnerEntities();
   }

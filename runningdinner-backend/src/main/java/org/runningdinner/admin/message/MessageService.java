@@ -10,6 +10,7 @@ import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.message.dinner.RunningDinnerRelatedMessage;
 import org.runningdinner.admin.message.dinnerroute.DinnerRouteMessage;
 import org.runningdinner.admin.message.job.*;
+import org.runningdinner.admin.message.job.stats.MessageSenderHistoryService;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.admin.message.processor.MessageJobProcessorHelperService;
@@ -26,6 +27,7 @@ import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
+import org.runningdinner.mail.MailProvider;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.formatter.*;
 import org.runningdinner.mail.sendgrid.SuppressedEmail;
@@ -92,6 +94,9 @@ public class MessageService {
   
   @Autowired
   private MailService mailService;
+
+  @Autowired
+  private MessageSenderHistoryService messageSenderHistoryService;
   
   @Transactional
   public MessageJob createParticipantMessagesJob(@ValidateAdminId String adminId, ParticipantMessage participantMessage) {
@@ -117,16 +122,15 @@ public class MessageService {
 
     List<Participant> recipients = getRecipients(participants);
 
-    List<MessageTask> result = recipients
-                                .stream()
-                                .map(p -> {
-                                  MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
-                                  String text = participantMessageFormatter.formatParticipantMessage(runningDinner, p, participantMessage);
-                                  messageTask.setMessage(new Message(participantMessage.getSubject(), text, replyTo));
-                                  messageTask.setRecipientEmail(getRecipientEmail(p));
-                                  return messageTask;
-                                })
-                                .collect(Collectors.toList());
+    List<MessageTask> result = mailService.newMessageTasks(parentMessageJob, runningDinner, recipients.size());
+
+    for (int i = 0; i < recipients.size(); i++) {
+      Participant p = recipients.get(i);
+      String text = participantMessageFormatter.formatParticipantMessage(runningDinner, p, participantMessage);
+      MessageTask messageTask = result.get(i);
+      messageTask.setMessage(new Message(participantMessage.getSubject(), text, replyTo));
+      messageTask.setRecipientEmail(getRecipientEmail(p));
+    }
     
     return distinctMessageTasksByRecipient(result);
   }
@@ -137,7 +141,7 @@ public class MessageService {
     
     // Can of course be optimized to not load too much participants...:
     List<Participant> participants = getParticipants(adminId, participantMessage);
-    Participant participant = participants.get(0);
+    Participant participant = participants.getFirst();
     Assert.state(participants.size() == 1, "Expected exactly one participant for preview but found " + participants.size());
     String message = participantMessageFormatter.formatParticipantMessage(runningDinner, participant, participantMessage);
     return Collections.singletonList(new PreviewMessage(participant.getId(), message));
@@ -151,7 +155,7 @@ public class MessageService {
     return messageJob;
   }
   
-  public MessageJob sendParticipantMessagesSelf(@ValidateAdminId String adminId, ParticipantMessage participantMessage) {
+  public MessageJob sendParticipantMessagesSelf(@ValidateAdminId String adminId, ParticipantMessage participantMessage, MailProvider mailProviderToUse) {
     
     RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
     
@@ -161,6 +165,13 @@ public class MessageService {
     Assert.state(participants.size() == 1, "Expected exactly one participant for sending mail to dinner owner but found " + participants.size());
     
     List<MessageTask> messageTasks = newParticipantMessageTasks(runningDinner, participants, participantMessage, parentMessageJob);
+
+    if (mailProviderToUse != null) {
+      // Overwrite from client for being able to test individual MailProviders
+      LOGGER.info("Overwriting MailProvider for {} with {}", messageTasks, mailProviderToUse);
+      messageTasks.forEach(mt -> mt.setSender(mailProviderToUse.toString()));
+    }
+
     sendMessageTasksSelf(messageTasks, runningDinner);
 
     return parentMessageJob;
@@ -171,7 +182,7 @@ public class MessageService {
 
     // Can of course be optimized to not load too much participants...:
     List<Team> teams = getTeams(adminId, teamMessage);
-    final Team team = teams.get(0);
+    final Team team = teams.getFirst();
     Assert.state(teams.size() == 1, "Expected exactly one team for preview but found " + teams.size());
     
     final RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
@@ -211,7 +222,7 @@ public class MessageService {
 
     // Can of course be optimized to not load too much participants...:
     List<Team> teams = getTeams(adminId, dinnerRouteMessage);
-    final Team team = teams.get(0);
+    final Team team = teams.getFirst();
     Assert.state(teams.size() == 1, "Expected exactly one team for preview but found " + teams.size());
     
     final List<Team> dinnerRoute = TeamRouteBuilder.generateDinnerRoute(team);
@@ -265,10 +276,11 @@ public class MessageService {
 
     MessageJob parentMessageJob = new MessageJob(MessageType.RUNNING_DINNER_DELETION_WARN_MESSAGE, runningDinner);
 
-    MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
-    messageTask.setMessage(new Message(runningDinnerCreatedMessage.getSubject(), runningDinnerCreatedMessage.getMessage(), mailConfig.getDefaultFrom()));
+    MessageTask messageTask = mailService.newSingleMessageTask(parentMessageJob, runningDinner);
+    messageTask.setMessage(new Message(runningDinnerCreatedMessage.getSubject(), runningDinnerCreatedMessage.getMessage(), mailConfig.getContactMailAddress()));
     messageTask.setRecipientEmail(runningDinner.getEmail());
     mailService.sendMessage(messageTask);
+    messageSenderHistoryService.saveMessageSenderHistorySafe(List.of(messageTask));
     return parentMessageJob;
   }
 
@@ -277,8 +289,8 @@ public class MessageService {
     MessageJob messageJob = new MessageJob(MessageType.NEW_RUNNING_DINNER, newRunningDinnerMessage.getRunningDinner());
     MessageJob result = messageJobRepository.save(messageJob);
 
-    MessageTask messageTask = new MessageTask(result, newRunningDinnerMessage.getRunningDinner());
-    messageTask.setMessage(new Message(newRunningDinnerMessage.getSubject(), newRunningDinnerMessage.getMessage(), mailConfig.getDefaultFrom()));
+    MessageTask messageTask = mailService.newSingleMessageTask(result, newRunningDinnerMessage.getRunningDinner());
+    messageTask.setMessage(new Message(newRunningDinnerMessage.getSubject(), newRunningDinnerMessage.getMessage(), mailConfig.getContactMailAddress()));
     messageTask.setRecipientEmail(newRunningDinnerMessage.getRunningDinner().getEmail());
       
     return saveMessageJob(result, Collections.singletonList(messageTask));
@@ -300,8 +312,8 @@ public class MessageService {
     MessageJob messageJob = new MessageJob(MessageType.PARTICIPANT_SUBSCRIPTION_ACTIVATION, runningDinner);
     MessageJob result = messageJobRepository.save(messageJob);
 
-    MessageTask messageTask = new MessageTask(result, runningDinner);
-    messageTask.setMessage(new Message(message.getSubject(), message.getMessage(), mailConfig.getDefaultFrom()));
+    MessageTask messageTask = mailService.newSingleMessageTask(result, runningDinner);
+    messageTask.setMessage(new Message(message.getSubject(), message.getMessage(), mailConfig.getContactMailAddress()));
     messageTask.setRecipientEmail(subscribedParticipant.getEmail());
       
     return saveMessageJob(result, Collections.singletonList(messageTask));
@@ -323,7 +335,7 @@ public class MessageService {
     MessageJob messageJob = new MessageJob(MessageType.TEAM_PARTNER_WISH, runningDinner);
     MessageJob result = messageJobRepository.save(messageJob);
 
-    MessageTask messageTask = new MessageTask(result, runningDinner);
+    MessageTask messageTask = mailService.newSingleMessageTask(result, runningDinner);
     messageTask.setMessage(new Message(message.getSubject(), message.getMessage(), fromEmail));
     messageTask.setRecipientEmail(recipientEmail);
     
@@ -357,7 +369,7 @@ public class MessageService {
       }
       // TODO: Das sollte ausserhalb dieses Services liegen!!!
       
-      MessageTask messageTask = new MessageTask(result, runningDinner);
+      MessageTask messageTask = mailService.newSingleMessageTask(result, runningDinner);
       String content = "Persönliche Nachricht: " + comment;
       messageTask.setMessage(new Message("Gastgeber geändert", content, replyTo)); // TODO: Subjekt + Template für Body
       messageTask.setRecipientEmail(getRecipientEmail(teamMember));
@@ -400,7 +412,7 @@ public class MessageService {
     List<MessageType> parentJobMessageTypes = getEndUserMessageTypes();
     Set<String> lowerCasedRecipientEmails = recipientEmails
                                               .stream()
-                                              .map(recipientEmail -> StringUtils.lowerCase(recipientEmail))
+                                              .map(StringUtils::lowerCase)
                                               .filter(Objects::nonNull)
                                               .collect(Collectors.toSet());
     
@@ -457,6 +469,7 @@ public class MessageService {
     
     messageTask.setSendingStartTime(LocalDateTime.now());
     mailService.sendMessage(messageTask); // If exception occurs whole transaction will be rollbacked
+    messageSenderHistoryService.saveMessageSenderHistorySafe(List.of(messageTask));
     messageTask.setSendingEndTime(LocalDateTime.now());
     messageTask.setSendingStatus(SendingStatus.SENDING_FINISHED);
    
@@ -520,18 +533,23 @@ public class MessageService {
   private List<MessageTask> newTeamMessageTasks(RunningDinner runningDinner, List<Team> teams, TeamMessage teamMessage, MessageJob parentMessageJob) {
     
     final String replyTo = runningDinner.getEmail();
-    
-    List<MessageTask> result = new ArrayList<>();
+
+    int totalMessageCount = teams.stream()
+                                          .mapToInt(team -> getRecipientsOfTeam(team).size())
+                                          .sum();
+
+    List<MessageTask> result = mailService.newMessageTasks(parentMessageJob, runningDinner, totalMessageCount);
+
+    int cnt = 0;
     for (Team team : teams) {
 
       var teamMembers = getRecipientsOfTeam(team);
 
       for (Participant teamMember : teamMembers) {
         String text = teamArrangementMessageFormatter.formatTeamMemberMessage(runningDinner, teamMember, team, teamMessage);
-        MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
+        MessageTask messageTask = result.get(cnt++);
         messageTask.setMessage(new Message(teamMessage.getSubject(), text, replyTo));
         messageTask.setRecipientEmail(getRecipientEmail(teamMember));
-        result.add(messageTask);
       }
     }
     return distinctMessageTasksByRecipient(result);
@@ -540,19 +558,21 @@ public class MessageService {
   private List<MessageTask> newDinnerRouteMessageTasks(RunningDinner runningDinner, List<Team> teams, DinnerRouteMessage dinnerRouteMessage, MessageJob parentMessageJob) {
     
     final String replyTo = runningDinner.getEmail();
-    
-    List<MessageTask> result = new ArrayList<>();
+
+    int totalMessageCount = teams.stream()
+        .mapToInt(team -> getRecipientsOfTeam(team).size())
+        .sum();
+    List<MessageTask> result = mailService.newMessageTasks(parentMessageJob, runningDinner, totalMessageCount);
+
+    int cnt = 0;
     for (Team team : teams) {
-
       var teamMembers = getRecipientsOfTeam(team);
-
       for (Participant teamMember : teamMembers) {
         List<Team> dinnerRoute = TeamRouteBuilder.generateDinnerRoute(team);
         String text = dinnerRouteMessageFormatter.formatDinnerRouteMessage(runningDinner, teamMember, team, dinnerRoute, dinnerRouteMessage);
-        MessageTask messageTask = new MessageTask(parentMessageJob, runningDinner);
+        MessageTask messageTask = result.get(cnt++);
         messageTask.setMessage(new Message(dinnerRouteMessage.getSubject(), text, replyTo));
         messageTask.setRecipientEmail(getRecipientEmail(teamMember));
-        result.add(messageTask);
       }
     }
     return distinctMessageTasksByRecipient(result);
@@ -687,6 +707,7 @@ public class MessageService {
     for (MessageTask messageTask : messageTasks) {
       messageTask.setRecipientEmail(runningDinner.getEmail());
       mailService.sendMessage(messageTask);
+      messageSenderHistoryService.saveMessageSenderHistorySafe(List.of(messageTask));
     }
   }
   

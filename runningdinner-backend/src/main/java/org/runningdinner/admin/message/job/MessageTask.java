@@ -27,8 +27,6 @@ import com.google.common.base.MoreObjects;
 @Entity
 public class MessageTask extends RunningDinnerRelatedEntity {
 
-  private static final long serialVersionUID = 1L;
-
   @ManyToOne(optional = false)
   @JoinColumn(nullable = false, name = "parentJobId", updatable = false, insertable = false)
   @JsonIgnore
@@ -67,29 +65,31 @@ public class MessageTask extends RunningDinnerRelatedEntity {
     @AttributeOverride(name = "replyTo", column = @Column(nullable = false))
   })
   private Message message = new Message();
+  
+  @Column(nullable = false)
+  private String sender;
 
   protected MessageTask() {
     super();
   }
 
-  public MessageTask(MessageJob parentJob, RunningDinner runningDinner) {
+  public MessageTask(MessageJob parentJob, RunningDinner runningDinner, String sender) {
     super(runningDinner);
     this.setParentJob(parentJob);
     this.sendingStatus = SendingStatus.QUEUED;
+    this.sender = sender;
   }
 
   /**
    * Provides the means for sending a message directly to recipient without being dependent of a running dinner instance or database.
-   * 
-   * @param recipientEmail
-   * @param message
-   * @return
+   *
    */
-  public static MessageTask newVirtualMessageTask(String recipientEmail, Message message) {
+  public static MessageTask newVirtualMessageTask(String recipientEmail, Message message, String sender) {
     
     MessageTask result = new MessageTask();
     result.setMessage(message);
     result.setRecipientEmail(recipientEmail);
+    result.setSender(sender);
     return result;
   }
   
@@ -169,7 +169,15 @@ public class MessageTask extends RunningDinnerRelatedEntity {
     this.message = message;
   }
   
-  @Override
+  public String getSender() {
+		return sender;
+	}
+
+	public void setSender(String sender) {
+		this.sender = sender;
+	}
+
+	@Override
   public String toString() {
     
     return MoreObjects

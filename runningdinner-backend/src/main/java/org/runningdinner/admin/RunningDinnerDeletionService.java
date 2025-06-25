@@ -5,8 +5,10 @@ import org.runningdinner.admin.deleted.DeletedRunningDinner;
 import org.runningdinner.admin.deleted.DeletedRunningDinnerRepository;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJobRepository;
+import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.admin.message.job.MessageTaskRepository;
 import org.runningdinner.admin.message.job.MessageType;
+import org.runningdinner.admin.message.job.stats.MessageSenderHistoryService;
 import org.runningdinner.contract.ContractService;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerPreferences;
@@ -72,12 +74,17 @@ public class RunningDinnerDeletionService {
 
   @Autowired
   private RunningDinnerService runningDinnerService;
+
+  @Autowired
+  private MessageSenderHistoryService messageSenderHistoryService;
   
   @Transactional
   public void deleteRunningDinner(final RunningDinner runningDinner) {
     
     DeletedRunningDinner deletedRunningDinner = saveDeletedRunningDinner(runningDinner);
-    
+
+    copyExistingMessageTasksToHistory(runningDinner);
+
     messageTaskRepository.deleteByAdminId(runningDinner.getAdminId());
     
     messageJobRepository.deleteByAdminId(runningDinner.getAdminId());
@@ -115,8 +122,12 @@ public class RunningDinnerDeletionService {
     // This removes automatically also all mealclass-entities:
     runningDinnerRepository.delete(runningDinner);
   }
-  
-  
+
+  private void copyExistingMessageTasksToHistory(RunningDinner runningDinner) {
+    List<MessageTask> messageTasks = messageTaskRepository.findByAdminId(runningDinner.getAdminId());
+    messageSenderHistoryService.saveMessageSenderHistorySafe(messageTasks);
+  }
+
   private DeletedRunningDinner saveDeletedRunningDinner(RunningDinner runningDinner) {
 
     DeletedRunningDinner deletedRunningDinner = new DeletedRunningDinner(runningDinner);

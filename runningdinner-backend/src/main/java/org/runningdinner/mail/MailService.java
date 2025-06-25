@@ -4,9 +4,13 @@ package org.runningdinner.mail;
 import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
+import org.runningdinner.admin.message.job.Message;
+import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.core.RunningDinner;
 import org.runningdinner.mail.formatter.FormatterUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.runningdinner.mail.pool.MailSenderPoolService;
+import org.runningdinner.mail.pool.PoolableMailSender;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,23 +18,33 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 public class MailService {
 
-  @Autowired
-  private MailSenderFactory mailSenderFactory;
-  
-  @Autowired
-  private MailConfig mailConfig;
-  
+  private final MailConfig mailConfig;
+
+  private final MailSenderPoolService mailSenderPoolService;
+
+  public MailService(MailConfig mailConfig, MailSenderPoolService mailSenderPoolService) {
+    this.mailConfig = mailConfig;
+    this.mailSenderPoolService = mailSenderPoolService;
+  }
+
   public void sendMessage(MessageTask messageTask) {
 
     checkEmailValid(messageTask);
+    PoolableMailSender poolableMailSender = getMailSenderForTask(messageTask);
+    MailSender mailSenderToUse = poolableMailSender.getMailSender();
 
     SimpleMailMessage simpleMailMessage = messageTask.getMessage().toSimpleMailMessage();
     simpleMailMessage.setTo(messageTask.getRecipientEmail());
-    simpleMailMessage.setFrom(mailConfig.getDefaultFrom());
+    simpleMailMessage.setFrom(poolableMailSender.getFromAddress());
     
     if (mailConfig.isHtmlEmail()) {
       String text = simpleMailMessage.getText();
@@ -38,14 +52,30 @@ public class MailService {
       simpleMailMessage.setText(text);
     }
 
-    MailSender mailSenderToUse = getMailSender();
-
     if (mailSenderToUse instanceof JavaMailSender javaMailSender) {
       MimeMessagePreparator preparator = prepareMessage(simpleMailMessage);
       javaMailSender.send(preparator);
     } else {
       mailSenderToUse.send(simpleMailMessage);
     }
+  }
+
+  public List<MessageTask> newMessageTasks(MessageJob parentMessageJob, RunningDinner runningDinner, int numMessageTasks) {
+    PoolableMailSender mailSenderToUse = mailSenderPoolService.getMailSenderToUse(LocalDate.now(), numMessageTasks);
+    String mailProviderKey = mailSenderToUse.getKey().toString();
+    return IntStream.range(0, numMessageTasks)
+              .mapToObj((i) -> new MessageTask(parentMessageJob, runningDinner, mailProviderKey))
+              .toList();
+  }
+
+  public MessageTask newSingleMessageTask(MessageJob parentMessageJob, RunningDinner runningDinner) {
+    return newMessageTasks(parentMessageJob, runningDinner, 1).getFirst();
+  }
+
+  public MessageTask newVirtualMessageTask(String recipientEmail, Message message) {
+    PoolableMailSender mailSenderToUse = mailSenderPoolService.getMailSenderToUse(LocalDate.now(), 1);
+    String mailProviderKey = mailSenderToUse.getKey().toString();
+    return MessageTask.newVirtualMessageTask(recipientEmail, message, mailProviderKey);
   }
 
   private MimeMessagePreparator prepareMessage(final SimpleMailMessage simpleMailMessage) {
@@ -75,12 +105,15 @@ public class MailService {
 
   /**
    * Default behavior: Return the application-configured mailSender.<br>
-   * In future it may also return a self-configured mailSender from User (hence some settings of running-dinner must be considered)
-   * @return
+   * In future, it may also return a self-configured mailSender from User (hence some settings of running-dinner must be considered)
+   * @return MailSender that shall be used
    */
-  protected MailSender getMailSender() {
-
-    return mailSenderFactory.getMailSender();
+  protected PoolableMailSender getMailSenderForTask(MessageTask messageTask) {
+    String sender = messageTask.getSender();
+    Assert.hasText(sender, "Sender must not be empty");
+    PoolableMailSender result = mailSenderPoolService.getMailSenderByKey(sender);
+    Assert.notNull(result, "No MailSender found for key: " + sender);
+    return result;
   }
 }
 
