@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/ses/notifications")
+@RequestMapping("/rest/ses/notifications")
 public class AwsSesWebhookRestController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AwsSesWebhookRestController.class);
