@@ -54,11 +54,36 @@ public class AwsSesEmailSynchronizationService {
       case "Delivery":
         handleDelivery(notification);
         break;
+      case "Reject":
+        handleReject(notification);
+        break;
       default:
         LOGGER.warn("Unhandled SES notification type: {}", type);
         return false;
     }
     return true;
+  }
+
+  private void handleReject(AwsSesNotification notification) {
+    AwsSesNotification.Reject reject = notification.getReject();
+    if (reject == null) {
+      LOGGER.warn("Received Reject notification without reject details: {}", notification);
+      return;
+    }
+
+    List<String> recipients = notification.getMail() != null ? notification.getMail().getDestination() : Collections.emptyList();
+    recipients = recipients == null ? Collections.emptyList() : recipients;
+
+    LOGGER.info("AWS SES Reject for {}: {}", reject.getReason(), recipients);
+    var messageTasks = findCorrelatedMessageTasks(notification.getMail(), recipients);
+    if (CollectionUtils.isEmpty(messageTasks)) {
+      LOGGER.warn("No MessageTasks found for rejected recipients: {}", recipients);
+      return;
+    }
+
+    LOGGER.info("Handling reject for {} recipients: {}", recipients.size(), recipients);
+    var suppressedEmailMap = mapToSuppressedEmails(recipients, reject, notification.getMail().getSourceIp());
+    updateMessageTaskSendingResults(messageTasks, suppressedEmailMap);
   }
 
   private void handleBounce(AwsSesNotification notification) {
@@ -182,6 +207,22 @@ public class AwsSesEmailSynchronizationService {
     }
     return result;
   }
+
+  private static Map<String, SuppressedEmail> mapToSuppressedEmails(List<String> recipients, AwsSesNotification.Reject reject, String source) {
+    FailureType failureType = FailureType.INVALID_EMAIL;
+    Map<String, SuppressedEmail> result = new HashMap<>();
+    for (var recipient : recipients) {
+      SuppressedEmail suppressedEmail = new SuppressedEmail();
+      suppressedEmail.setEmail(normalizeEmailAddress(recipient));
+      suppressedEmail.setIp(source);
+      suppressedEmail.setFailureType(failureType);
+      suppressedEmail.setCreated(DateTimeUtil.toUnixTimestamp(LocalDateTime.now()));
+      suppressedEmail.setReason(reject.getReason());
+      result.put(suppressedEmail.getEmail(), suppressedEmail);
+    }
+    return result;
+  }
+
 
   private static Optional<FailureType> mapComplaintToFailureType(AwsSesNotification.Complaint complaint) {
     String complaintFeedbackType = complaint.getComplaintFeedbackType();

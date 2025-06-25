@@ -9,6 +9,7 @@ public class AwsSesNotification {
 	private Bounce bounce;
 	private Complaint complaint;
 	private Delivery delivery;
+	private Reject reject;
 
 	public String getNotificationType() {
 		return notificationType;
@@ -48,6 +49,14 @@ public class AwsSesNotification {
 
 	public void setDelivery(Delivery delivery) {
 		this.delivery = delivery;
+	}
+
+	public Reject getReject() {
+		return reject;
+	}
+
+	public void setReject(Reject reject) {
+		this.reject = reject;
 	}
 
 	public static class Mail {
@@ -237,6 +246,18 @@ public class AwsSesNotification {
 
 		public void setEmailAddress(String emailAddress) {
 			this.emailAddress = emailAddress;
+		}
+	}
+
+	public static class Reject {
+		private String reason;
+
+		public String getReason() {
+			return reason;
+		}
+
+		public void setReason(String reason) {
+			this.reason = reason;
 		}
 	}
 
