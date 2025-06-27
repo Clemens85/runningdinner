@@ -1,6 +1,7 @@
 package org.runningdinner.mail.mailjet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,20 +39,35 @@ public class MailJetSynchronizationService {
 	public boolean handleMailJetNotification(String messageBody) {
 		LOGGER.info("Received MailJet notification: {} ...", messageBody.substring(0, Math.min(128, messageBody.length())));
 
-		MailJetNotification mailJetNotification = mapToNotification(messageBody);
-		if (mailJetNotification == null) {
+		List<MailJetNotification> mailJetNotifications = mapToNotificationList(messageBody);
+		if (CollectionUtils.isEmpty(mailJetNotifications)) {
 			return false;
 		}
 
-		String event = StringUtils.lowerCase(mailJetNotification.getEvent());
+		boolean result = true;
+		for (MailJetNotification mailJetNotification : mailJetNotifications) {
+			if (!handleSingleNotification(mailJetNotification)) {
+				result = false;
+			}
+		}
+		return result;
+	}
+
+	private boolean handleSingleNotification(MailJetNotification notification) {
+		if (notification == null) {
+			LOGGER.warn("Received null MailJet notification");
+			return false;
+		}
+
+		String event = StringUtils.lowerCase(notification.getEvent());
 		switch (event) {
 			case "bounce":
 			case "spam":
 			case "blocked":
-				handleBounce(mailJetNotification);
+				handleBounce(notification);
 				break;
 			case "sent":
-				handleDelivery(mailJetNotification);
+				handleDelivery(notification);
 				break;
 			default:
 				LOGGER.warn("Unhandled MailJet notification event: {}", event);
@@ -125,9 +141,9 @@ public class MailJetSynchronizationService {
 						.toList();
 	}
 
-	private MailJetNotification mapToNotification(String messageBody) {
+	private List<MailJetNotification> mapToNotificationList(String messageBody) {
 		try {
-			return objectMapper.readValue(messageBody, MailJetNotification.class);
+			return objectMapper.readValue(messageBody, new TypeReference<List<MailJetNotification>>() {});
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}

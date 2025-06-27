@@ -24,7 +24,7 @@ public class MailJetWebhookRestController {
 
 	@PostMapping(consumes = {"application/json", "text/plain" })
 	public ResponseEntity<String> handleEvent(@RequestBody String jsonPayload,
-																				 @RequestParam(value="webhookToken", required = false) String webhookToken)  {
+																				 		@RequestParam(value="webhookToken", required = false) String webhookToken)  {
 
 		LOGGER.info("Received MailJet message with token {} and message: {} ...",
 								StringUtils.substring(webhookToken, 0, 2), StringUtils.substring(jsonPayload, 0, 128));
