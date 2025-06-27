@@ -7,7 +7,7 @@ public final class MailJetExamples {
 	}
 
 	public static final String DELIVERY = """
-					{
+					[{
 					  "event": "sent",
 					  "time": 1433333949,
 					  "MessageID": 19421777835146490,
@@ -20,11 +20,11 @@ public final class MailJetExamples {
 					  "smtp_reply": "sent (250 2.0.0 OK 1433333948 fa5si855896wjc.199 - gsmtp)",
 					  "CustomID": "helloworld",
 					  "Payload": ""
-					}
+					}]
 					""";
 
 	public static final String BOUNCE = """
-					{
+					[{
 					   "event": "bounce",
 					   "time": 1433333949,
 					   "MessageID": 13792286917004336,
@@ -40,11 +40,11 @@ public final class MailJetExamples {
 					   "error_related_to": "recipient",
 					   "error": "user unknown",
 					   "comment": "Host or domain name not found. Name service error for name=lbjsnrftlsiuvbsren.com type=A: Host not found"
-					}
+					}]
 					""";
 
 	public static final String SPAM = """
-					{
+					[{
 					  "event": "spam",
 					  "time": 1433333949,
 					  "MessageID": 13792286917004336,
@@ -56,6 +56,6 @@ public final class MailJetExamples {
 					  "CustomID": "helloworld",
 					  "Payload": "",
 					  "source": "JMRPP"
-					}
+					}]
 		""";
 }
