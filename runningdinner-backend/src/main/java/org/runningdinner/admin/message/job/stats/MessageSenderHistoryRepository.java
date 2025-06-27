@@ -12,4 +12,7 @@ public interface MessageSenderHistoryRepository extends JpaRepository<MessageSen
 
   @Query("SELECT m FROM MessageSenderHistory m WHERE m.sendingDate >= :from AND m.sendingDate <= :to ORDER BY m.sendingDate DESC")
   List<MessageSenderHistory> findAllBySendingDateBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
+  @Query("SELECT m FROM MessageSenderHistory m WHERE m.sendingDate < :cutoffDate ORDER BY m.sendingDate DESC")
+  List<MessageSenderHistory> findMessageSenderHistoryBefore(@Param("cutoffDate") LocalDateTime cutoffDate);
 }
