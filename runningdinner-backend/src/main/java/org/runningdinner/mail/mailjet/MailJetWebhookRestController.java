@@ -7,8 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Refer to <a href="https://dev.mailjet.com/email/guides/webhooks/">Webhook guide MailJet</a>
+ * Webhook URLs are manually configured in the MailJet Web UI (Account -> Event notifications).
+ *
+ */
 @RestController
-@RequestMapping("/rest//mailjet/notifications")
+@RequestMapping("/rest/mailjet/notifications")
 public class MailJetWebhookRestController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailJetWebhookRestController.class);
