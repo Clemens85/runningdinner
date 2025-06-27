@@ -1,4 +1,4 @@
-package org.runningdinner.mail.ses;
+package org.runningdinner.mail.mailjet;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +10,6 @@ import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.mail.MailProvider;
-import org.runningdinner.mail.MailUtil;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.rest.ParticipantInputDataTO;
@@ -28,13 +27,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
-
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
-public class AwsSesEmailSynchronizationServiceTest {
+public class MailJetSynchronizationServiceTest  {
 
 	@Autowired
-	private AwsSesEmailSynchronizationService awsSesEmailSynchronizationService;
+	private MailJetSynchronizationService mailJetSynchronizationService;
 
 	@Autowired
 	private TestMessageTaskHelperService testMessageTaskHelperService;
@@ -50,17 +48,16 @@ public class AwsSesEmailSynchronizationServiceTest {
 
 	@Autowired
 	EventPublisher eventPublisher;
+
 	@Test
 	public void successfulDeliveryIsPassedThrough() {
-		assertThat(awsSesEmailSynchronizationService.handleSesNotification(AwsSesNotificationExamples.DELIVERY)).isTrue();
+		assertThat(mailJetSynchronizationService.handleMailJetNotification(MailJetExamples.DELIVERY)).isTrue();
 	}
 
 	@Test
 	public void permanentBounce() {
-		// Our notification example contains an entry created (and bounced) at: 2016-01-27T14:59:38.237Z
-		LocalDateTime sendingStartTime = MailUtil.parseIsoTimestampToLocalDateTime("2016-01-27T14:59:38.237Z");
-		assertThat(sendingStartTime.getHour()).isEqualTo(15); // German is UTC + 1
-		assertThat(sendingStartTime.getDayOfMonth()).isEqualTo(27);
+		// Our notification example contains an entry created (and bounced) at: June 2015 at 14.19.09 (German time)
+		LocalDateTime sendingStartTime = LocalDateTime.of(2015, 6, 3, 14, 19, 9, 0);
 
 		// Simulate MessageTask
 		RunningDinner runningDinner = testHelperService.createPublicRunningDinner(LocalDate.now().plusDays(7), 1);
@@ -69,32 +66,30 @@ public class AwsSesEmailSynchronizationServiceTest {
 		MessageTask messageTask = findParticipantMessageTask(runningDinner);
 		testHelperService.awaitMessageJobFinished(messageTask.getParentJob());
 
-		// Simulate MessageTask was sent in past with date X and with AWS_SES
-		testMessageTaskHelperService.updateMessageTaskSenders(List.of(messageTask), MailProvider.AWS_SES);
+		// Simulate MessageTask was sent in past with date X and with MAILJET
+		testMessageTaskHelperService.updateMessageTaskSenders(List.of(messageTask), MailProvider.MAILJET);
 		testMessageTaskHelperService.updateMessageTaskSentDates(List.of(messageTask), sendingStartTime);
 
 		// Ensure we have the proper test base now:
 		messageTask = findParticipantMessageTask(runningDinner);
-		assertThat(messageTask.getSender()).isEqualTo(MailProvider.AWS_SES.toString());
+		assertThat(messageTask.getSender()).isEqualTo(MailProvider.MAILJET.toString());
 		assertThat(messageTask.getSendingStartTime()).isCloseTo(sendingStartTime, within(10, ChronoUnit.SECONDS));
 
-		assertThat(awsSesEmailSynchronizationService.handleSesNotification(AwsSesNotificationExamples.BOUNCE)).isTrue();
+		assertThat(mailJetSynchronizationService.handleMailJetNotification(MailJetExamples.BOUNCE)).isTrue();
 
 		// Verify MessageTask was updated appropriately
 		messageTask = findParticipantMessageTask(runningDinner);
 		assertThat(messageTask.getSendingResult().isDelieveryFailed()).isTrue();
-		assertThat(messageTask.getSendingResult().getFailureType()).isEqualTo(FailureType.BLOCKED);
+		assertThat(messageTask.getSendingResult().getFailureType()).isEqualTo(FailureType.BOUNCE);
 		assertThat(messageTask.getSendingResult().getFailureMessage())
-						.contains("Permanent")
-						.contains("General")
-						.contains("smtp; 550");
+						.contains("Host or domain name not found");
 		assertThat(messageTask.getSendingResult().getDelieveryFailedDate()).isCloseTo(sendingStartTime, within(10, ChronoUnit.SECONDS));
 	}
 
 	@Test
 	public void complaint() {
-		// Our notification example contains an entry created (and bounced) at: 2016-01-27T14:59:38.237Z
-		LocalDateTime sendingStartTime = MailUtil.parseIsoTimestampToLocalDateTime("2016-01-27T14:59:38.237Z");
+		// Our notification example contains an entry created (and bounced) at: June 2015 at 14.19.09 (German time)
+		LocalDateTime sendingStartTime = LocalDateTime.of(2015, 6, 3, 14, 19, 9, 0);
 
 		// Simulate MessageTask
 		RunningDinner runningDinner = testHelperService.createPublicRunningDinner(LocalDate.now().plusDays(7), 1);
@@ -103,22 +98,22 @@ public class AwsSesEmailSynchronizationServiceTest {
 		MessageTask messageTask = findParticipantMessageTask(runningDinner);
 		testHelperService.awaitMessageJobFinished(messageTask.getParentJob());
 
-		// Simulate MessageTask was sent in past with date X and with AWS_SES
-		testMessageTaskHelperService.updateMessageTaskSenders(List.of(messageTask), MailProvider.AWS_SES);
+		// Simulate MessageTask was sent in past with date X and with MAILJET
+		testMessageTaskHelperService.updateMessageTaskSenders(List.of(messageTask), MailProvider.MAILJET);
 		testMessageTaskHelperService.updateMessageTaskSentDates(List.of(messageTask), sendingStartTime);
 
 		// Ensure we have the proper test base now:
 		messageTask = findParticipantMessageTask(runningDinner);
-		assertThat(messageTask.getSender()).isEqualTo(MailProvider.AWS_SES.toString());
+		assertThat(messageTask.getSender()).isEqualTo(MailProvider.MAILJET.toString());
 		assertThat(messageTask.getSendingStartTime()).isCloseTo(sendingStartTime, within(10, ChronoUnit.SECONDS));
 
-		assertThat(awsSesEmailSynchronizationService.handleSesNotification(AwsSesNotificationExamples.COMPLAINT)).isTrue();
+		assertThat(mailJetSynchronizationService.handleMailJetNotification(MailJetExamples.SPAM)).isTrue();
 
 		// Verify MessageTask was updated appropriately
 		messageTask = findParticipantMessageTask(runningDinner);
 		assertThat(messageTask.getSendingResult().isDelieveryFailed()).isTrue();
 		assertThat(messageTask.getSendingResult().getFailureType()).isEqualTo(FailureType.SPAM);
-		assertThat(messageTask.getSendingResult().getFailureMessage()).contains("abuse");
+		assertThat(messageTask.getSendingResult().getFailureMessage()).contains("spam");
 		assertThat(messageTask.getSendingResult().getDelieveryFailedDate()).isCloseTo(sendingStartTime, within(10, ChronoUnit.SECONDS));
 	}
 

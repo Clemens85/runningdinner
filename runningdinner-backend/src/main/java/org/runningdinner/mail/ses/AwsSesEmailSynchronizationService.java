@@ -9,17 +9,13 @@ import org.runningdinner.admin.message.job.FailureType;
 import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.mail.MailProvider;
+import org.runningdinner.mail.MailUtil;
 import org.runningdinner.mail.sendgrid.SuppressedEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -144,7 +140,7 @@ public class AwsSesEmailSynchronizationService {
 
     if (StringUtils.equals("Permanent", bounceType)) {
       if (StringUtils.equals("General", bounceSubType) || StringUtils.contains(bounceSubType, "Suppress")) {
-        return FailureType.SPAM;
+        return FailureType.BLOCKED;
       }
       return FailureType.INVALID_EMAIL;
     } else if (StringUtils.equals("Transient", bounceType)) {
@@ -154,9 +150,9 @@ public class AwsSesEmailSynchronizationService {
   }
 
   private List<MessageTask> findCorrelatedMessageTasks(AwsSesNotification.Mail mail, List<String> recipientEmailAddresses) {
-    LocalDateTime emailSentTime = parseIsoTimestampToLocalDateTime(mail.getTimestamp());
+    LocalDateTime emailSentTime = MailUtil.parseIsoTimestampToLocalDateTime(mail.getTimestamp());
     LocalDateTime fromTime = emailSentTime.minusHours(2); // Give some offset so that we should for sure get the corresponding MessageTask
-    Set<String> normalizedEmailAddresses = recipientEmailAddresses.stream().map(AwsSesEmailSynchronizationService::normalizeEmailAddress).collect(Collectors.toSet());
+    Set<String> normalizedEmailAddresses = recipientEmailAddresses.stream().map(MailUtil::normalizeEmailAddress).collect(Collectors.toSet());
 		var result = messageService.findNonFailedEndUserMessageTasksByRecipientsStartingFrom(normalizedEmailAddresses, fromTime);
     return result
             .stream()
@@ -166,7 +162,7 @@ public class AwsSesEmailSynchronizationService {
 
   private void updateMessageTaskSendingResults(List<MessageTask> messageTasks, Map<String, SuppressedEmail> suppressedEmailMap) {
     for (var messageTask : messageTasks) {
-      SuppressedEmail suppressedEmail = suppressedEmailMap.get(normalizeEmailAddress(messageTask.getRecipientEmail()));
+      SuppressedEmail suppressedEmail = suppressedEmailMap.get(MailUtil.normalizeEmailAddress(messageTask.getRecipientEmail()));
       if (suppressedEmail == null) {
         LOGGER.warn("Could not find suppressed email for message task {} with recipient email {}", messageTask.getId(), messageTask.getRecipientEmail());
         continue;
@@ -180,10 +176,10 @@ public class AwsSesEmailSynchronizationService {
     Map<String, SuppressedEmail> result = new HashMap<>();
     for (var recipient : recipients) {
       SuppressedEmail suppressedEmail = new SuppressedEmail();
-      suppressedEmail.setEmail(normalizeEmailAddress(recipient.getEmailAddress()));
+      suppressedEmail.setEmail(MailUtil.normalizeEmailAddress(recipient.getEmailAddress()));
       suppressedEmail.setIp(source);
       suppressedEmail.setFailureType(failureType);
-      suppressedEmail.setCreated(parseIsoTimestampToUnixTimestamp(bounce.getTimestamp()));
+      suppressedEmail.setCreated(MailUtil.parseIsoTimestampToUnixTimestamp(bounce.getTimestamp()));
       suppressedEmail.setReason(getReason(bounce, recipient));
       result.put(suppressedEmail.getEmail(), suppressedEmail);
     }
@@ -198,10 +194,10 @@ public class AwsSesEmailSynchronizationService {
         continue;
       }
       SuppressedEmail suppressedEmail = new SuppressedEmail();
-      suppressedEmail.setEmail(normalizeEmailAddress(recipient.getEmailAddress()));
+      suppressedEmail.setEmail(MailUtil.normalizeEmailAddress(recipient.getEmailAddress()));
       suppressedEmail.setIp(source);
       suppressedEmail.setFailureType(failureType.get());
-      suppressedEmail.setCreated(parseIsoTimestampToUnixTimestamp(complaint.getTimestamp()));
+      suppressedEmail.setCreated(MailUtil.parseIsoTimestampToUnixTimestamp(complaint.getTimestamp()));
       suppressedEmail.setReason(complaint.getComplaintFeedbackType());
       result.put(suppressedEmail.getEmail(), suppressedEmail);
     }
@@ -213,7 +209,7 @@ public class AwsSesEmailSynchronizationService {
     Map<String, SuppressedEmail> result = new HashMap<>();
     for (var recipient : recipients) {
       SuppressedEmail suppressedEmail = new SuppressedEmail();
-      suppressedEmail.setEmail(normalizeEmailAddress(recipient));
+      suppressedEmail.setEmail(MailUtil.normalizeEmailAddress(recipient));
       suppressedEmail.setIp(source);
       suppressedEmail.setFailureType(failureType);
       suppressedEmail.setCreated(DateTimeUtil.toUnixTimestamp(LocalDateTime.now()));
@@ -229,7 +225,7 @@ public class AwsSesEmailSynchronizationService {
     if (StringUtils.equals("not-spam", complaintFeedbackType)) {
       return Optional.empty();
     }
-    return Optional.of(FailureType.BLOCKED);
+    return Optional.of(FailureType.SPAM);
   }
 
   private static String getReason(AwsSesNotification.Bounce bounce, AwsSesNotification.BouncedRecipient recipient) {
@@ -248,47 +244,17 @@ public class AwsSesEmailSynchronizationService {
     return result;
   }
 
-  private static String normalizeEmailAddress(String email) {
-    return StringUtils.trim(StringUtils.lowerCase(email));
-  }
-
-  private static long parseIsoTimestampToUnixTimestamp(String isoTimestamp) {
-    try {
-      // Parse directly as Instant if it's properly formatted
-      Instant instant = Instant.parse(isoTimestamp);
-      return instant.getEpochSecond();
-    } catch (DateTimeParseException e1) {
-      // Fallback: parse using a formatter if needed
-      try {
-        ZonedDateTime zdt = ZonedDateTime.parse(isoTimestamp, DateTimeFormatter.ISO_DATE_TIME);
-        return zdt.toEpochSecond();
-      } catch (Exception e2) {
-        return new Date().toInstant().getEpochSecond();
-      }
-    }
-  }
-
-  static LocalDateTime parseIsoTimestampToLocalDateTime(String isoString) {
-    try {
-      ZoneId localTimeZone = DateTimeUtil.getTimeZoneForEuropeBerlin();
-      Instant instant = Instant.parse(isoString);
-      return LocalDateTime.ofInstant(instant, localTimeZone);
-    } catch (DateTimeParseException e) {
-      throw new IllegalArgumentException("Invalid ISO 8601 timestamp: " + isoString, e);
-    }
-  }
-
   private Optional<AwsSesNotification> parseMessageJsonPayloadSafe(String jsonPayload) {
-		try {
+    try {
       AwsSesNotification notification = objectMapper.readValue(jsonPayload, AwsSesNotification.class);
       if (notification != null && StringUtils.isNotEmpty(notification.getNotificationType())) {
         return Optional.of(notification);
       }
       LOGGER.error("Parsed notification is null or has no notification type: {}", jsonPayload);
       return Optional.empty();
-		} catch (JsonProcessingException e) {
+    } catch (JsonProcessingException e) {
       LOGGER.error("Failed to parse JSON payload: {}", jsonPayload, e);
       return Optional.empty();
-		}
+    }
   }
 }
