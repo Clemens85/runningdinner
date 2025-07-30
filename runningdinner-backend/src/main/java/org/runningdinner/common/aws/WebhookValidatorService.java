@@ -1,4 +1,4 @@
-package org.runningdinner.mail;
+package org.runningdinner.common.aws;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MailWebhookValidatorService {
+public class WebhookValidatorService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MailWebhookValidatorService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebhookValidatorService.class);
 
 	private final String configuredWebhookToken;
 
-	public MailWebhookValidatorService(@Value("${mail.webhook.token:}") String configuredWebhookToken) {
+	public WebhookValidatorService(@Value("${mail.webhook.token:}") String configuredWebhookToken) {
 		this.configuredWebhookToken = configuredWebhookToken;
 	}
 

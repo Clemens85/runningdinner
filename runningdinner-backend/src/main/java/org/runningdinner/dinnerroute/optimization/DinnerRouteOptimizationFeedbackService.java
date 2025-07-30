@@ -2,7 +2,6 @@ package org.runningdinner.dinnerroute.optimization;
 
 import org.runningdinner.MailConfig;
 import org.runningdinner.dinnerroute.DinnerRouteListTO;
-import org.runningdinner.dinnerroute.optimization.local.TeamMemberChange;
 import org.runningdinner.feedback.Feedback;
 import org.runningdinner.feedback.FeedbackService;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +9,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
@@ -41,8 +38,7 @@ public class DinnerRouteOptimizationFeedbackService {
 		}
 		
   	DinnerRouteListTO optimizedDinnerRouteList = result.optimizedDinnerRouteList();
-  	List<TeamMemberChange> teamMemberChangesToPerform = result.teamMemberChangesToPerform();
-  	
+
 		double currentSumDistanceInMeters = incomingCurrentSumDistanceInMeters == null ? -1 : incomingCurrentSumDistanceInMeters;
 		double currentAverageDistanceInMeters = incomingCurrentAverageDistanceInMeters == null ? -1 : incomingCurrentAverageDistanceInMeters;
 
@@ -55,15 +51,13 @@ public class DinnerRouteOptimizationFeedbackService {
 						Route Optimization calculated for %s routes.
 						New route metrics are: %s
 						Current route metrics are: %s
-						Proposed Team member changes: %s
 						Admin-ID: %s
 						""".formatted(
-						String.valueOf(optimizedDinnerRouteList.getDinnerRoutes().size()),
-						newMetrics,
-						currentMetrics,
-						String.valueOf(teamMemberChangesToPerform.size()),
-						adminId
-		);
+							String.valueOf(optimizedDinnerRouteList.getDinnerRoutes().size()),
+							newMetrics,
+							currentMetrics,
+							adminId
+						);
   	
   	Feedback feedback = new Feedback();
   	feedback.setSenderEmail(receiver);

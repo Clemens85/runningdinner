@@ -1,11 +1,10 @@
 package org.runningdinner.geocoder;
 
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
-
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.SafeHtml;
 
 @Embeddable
 public class GeocodingResult {
@@ -41,6 +40,14 @@ public class GeocodingResult {
 		this.copyGeocodeData(src);
 	}
 	
+	public static GeocodingResult newInstance(double lat, double lng, GeocodingResultType resultType) {
+		GeocodingResult result = new GeocodingResult();
+		result.setLat(lat);
+		result.setLng(lng);
+		result.setResultType(resultType);
+		return result;
+	}
+
 	protected void copyGeocodeData(GeocodingResult src) {
 		this.lat = src.lat;
 		this.lng = src.lng;
