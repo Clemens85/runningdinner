@@ -67,12 +67,12 @@ public class DinnerRouteOptimizationUtil {
 		}
 
 		// Step 2: Calculate center and spread of valid coordinates
-		double centerLat = validTeams.stream().mapToDouble(TeamReference::lat).average().orElse(0.0);
-		double centerLng = validTeams.stream().mapToDouble(TeamReference::lng).average().orElse(0.0);
+		double centerLat = validTeams.stream().mapToDouble(t -> t.geocodingResult().getLat()).average().orElse(0.0);
+		double centerLng = validTeams.stream().mapToDouble(t -> t.geocodingResult().getLng()).average().orElse(0.0);
 
 		// Calculate standard deviation to determine appropriate jitter radius
-		double latStdDev = calculateStandardDeviation(validTeams.stream().mapToDouble(TeamReference::lat).toArray());
-		double lngStdDev = calculateStandardDeviation(validTeams.stream().mapToDouble(TeamReference::lng).toArray());
+		double latStdDev = calculateStandardDeviation(validTeams.stream().mapToDouble(t -> t.geocodingResult().getLat()).toArray());
+		double lngStdDev = calculateStandardDeviation(validTeams.stream().mapToDouble(t -> t.geocodingResult().getLng()).toArray());
 
 		// Use 1.5 times the standard deviation as jitter radius to ensure good distribution
 		double jitterRadiusLat = Math.max(latStdDev * 1.5, 0.01); // Minimum 0.01 degrees (~1km)

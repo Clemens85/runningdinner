@@ -17,7 +17,7 @@ public class S3ClientProviderService {
 	private S3Client s3Client;
 
 	public S3ClientProviderService(EnvUtilService envUtilService,
-																 @Value("${bucket.TODO:bucket}") String applicationBucket) {
+																 @Value("${aws.s3.app.bucket}") String applicationBucket) {
 		this.awsProfile = envUtilService.getConfigProperty("aws.profile");
 		this.applicationBucket = applicationBucket;
 	}

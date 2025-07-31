@@ -17,7 +17,12 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OptimizationInstanceService {
@@ -29,7 +34,7 @@ public class OptimizationInstanceService {
 	private final String bucketName;
 	private final S3Client s3Client;
 
-	public OptimizationInstanceService(@Value("${max.running.TODO:120}") int maxRunningTimeBeforeTimeoutSeconds, // TODO
+	public OptimizationInstanceService(@Value("${route.optimization.instance.timeout.seconds}") int maxRunningTimeBeforeTimeoutSeconds,
 																		 S3ClientProviderService s3ClientProviderService,
 																		 ObjectMapper objectMapper) {
 		this.maxRunningTimeBeforeTimeoutSeconds = maxRunningTimeBeforeTimeoutSeconds;
@@ -75,25 +80,25 @@ public class OptimizationInstanceService {
 		}
 	}
 
-	private void mapInstanceToJsonAndAddMetadataEntry(OptimizationInstance existingInstance, Map<String, String> metadata)  {
+	protected void mapInstanceToJsonAndAddMetadataEntry(OptimizationInstance optimizationInstance, Map<String, String> metadata)  {
 		try {
-			String instanceAsJsonStr = objectMapper.writeValueAsString(existingInstance);
-			String createdAtFormatted = OptimizationInstance.DATE_TINE_FORMAT.format(existingInstance.getCreatedAt());
+			String instanceAsJsonStr = objectMapper.writeValueAsString(optimizationInstance);
+			String createdAtFormatted = OptimizationInstance.DATE_TINE_FORMAT.format(optimizationInstance.getCreatedAt());
 			String metadataKey = String.format("%s%s", OptimizationInstance.REQUEST_FILE_PREFIX, createdAtFormatted);
 			metadata.put(metadataKey, instanceAsJsonStr);
 		} catch (JsonProcessingException e) {
-			LOGGER.error("Error while mapping OptimizationInstance to JSON: {}. Instance will be ignored", existingInstance, e);
+			LOGGER.error("Error while mapping OptimizationInstance to JSON: {}. Instance will be ignored", optimizationInstance, e);
 		}
 	}
 
-	private List<OptimizationInstance> mapMetadataToInstances(Map<String, String> metadata) {
+	protected List<OptimizationInstance> mapMetadataToInstances(Map<String, String> metadata) {
 		List<OptimizationInstance> result = new ArrayList<>();
 
 		if (metadata == null || metadata.isEmpty()) {
 			return Collections.emptyList();
 		}
 		for (String key : metadata.keySet()) {
-			if (!StringUtils.startsWith(OptimizationInstance.REQUEST_FILE_PREFIX, key)) {
+			if (!StringUtils.startsWith(key, OptimizationInstance.REQUEST_FILE_PREFIX)) {
 				continue;
 			}
 			String value = metadata.get(key);
@@ -115,16 +120,23 @@ public class OptimizationInstanceService {
 		var now = LocalDateTime.now();
 		List<OptimizationInstance> result = new ArrayList<>();
 		for (var instance : instances) {
-			if (instance.getStatus() != OptimizationInstanceStatus.RUNNING || instance.getCreatedAt() == null) {
-				result.add(instance);
-			}
-			if (instance.getCreatedAt().plusSeconds(maxRunningTimeBeforeTimeoutSeconds).isBefore(now)) {
+			if (hasRunningInstanceTimeout(instance, now)) {
 				LOGGER.warn("Setting optimization instance {} to TIMEOUT due to it exceeded max running time of {} seconds", instance, maxRunningTimeBeforeTimeoutSeconds);
 				result.add(new OptimizationInstance(instance.getOptimizationId(), instance.getCreatedAt(), OptimizationInstanceStatus.TIMEOUT));
+				continue;
 			}
+			result.add(instance);
 		}
 		result.sort(Comparator.comparing(OptimizationInstance::getCreatedAt).reversed());
 		return result;
+	}
+
+	private boolean hasRunningInstanceTimeout(OptimizationInstance instance, LocalDateTime now) {
+		if (instance.getCreatedAt() == null) {
+			return false;
+		}
+		return instance.getStatus() == OptimizationInstanceStatus.RUNNING &&
+					 instance.getCreatedAt().plusSeconds(maxRunningTimeBeforeTimeoutSeconds).isBefore(now);
 	}
 
 	private void createInitialLockFile(String lockFileKey) {

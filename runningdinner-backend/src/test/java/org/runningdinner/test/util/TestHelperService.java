@@ -10,8 +10,14 @@ import org.runningdinner.admin.message.job.SendingStatus;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.contract.Contract;
-import org.runningdinner.core.*;
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.ParticipantGenerator;
+import org.runningdinner.core.PublicSettings;
+import org.runningdinner.core.RegistrationType;
+import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.RunningDinnerInfo;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
@@ -112,6 +118,24 @@ public class TestHelperService {
   public RunningDinner createOpenRunningDinnerWithParticipants(LocalDate date, int numParticipants) {
 
     return createRunningDinnerWithParticipants(date, numParticipants, RegistrationType.OPEN);
+  }
+
+  public RunningDinner createRunningDinnerWithParticipants(LocalDate date, List<Participant> participants, RegistrationType registrationType) {
+
+    Contract contract = CreateRunningDinnerInitializationService.createContract();
+
+    RunningDinnerInfo info = TestUtil.newBasicDetails("RunningDinner", date, "Freiburg", registrationType);
+    RunningDinner result;
+    if (registrationType.isClosed()) {
+      result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(
+              info, getDefaultRunningDinnerConfig(date), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, contract, null, participants);
+    } else {
+      PublicSettings publicSettings = new PublicSettings("Public Title", "Public Description", date.minusDays(2), false);
+      result = createRunningDinnerWizardService.createRunningDinnerWithParticipants(
+              info, getDefaultRunningDinnerConfig(date), publicSettings, CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, contract,
+              null, participants);
+    }
+    return acknowledgeRunningDinner(result);
   }
   
   private RunningDinner createRunningDinnerWithParticipants(LocalDate date, int numParticipants, RegistrationType registrationType) {

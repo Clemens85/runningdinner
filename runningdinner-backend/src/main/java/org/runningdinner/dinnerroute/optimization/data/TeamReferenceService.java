@@ -100,9 +100,7 @@ public class TeamReferenceService {
 						currentTeam.getId(),
 						mealReference,
 						currentTeam.getStatus(),
-						geocodingResult.getLat(),
-						geocodingResult.getLng(),
-						geocodingResult.getResultType(),
+						geocodingResult,
 						clusterNumber,
 						teamsOnRoute
 		);

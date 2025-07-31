@@ -29,4 +29,8 @@ public final class SnsUtil {
 			LOGGER.error("Error confirming subscription", e);
 		}
 	}
+
+	public static boolean isNotificationWithPayload(SnsMessage message) {
+		return message != null && message.getType() != null && message.getType().equals("Notification");
+	}
 }

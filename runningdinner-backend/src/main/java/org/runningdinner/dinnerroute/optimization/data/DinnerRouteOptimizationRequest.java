@@ -18,18 +18,22 @@ public class DinnerRouteOptimizationRequest {
 
 	private Map<Integer, LinkedHashSet<Integer>> clusterSizes;
 
+	private RouteOptimizationSettings optimizationSettings;
+
 	public DinnerRouteOptimizationRequest(String adminId,
 																				String optimizationId,
 																				List<MealReference> meals,
 																				List<TeamReference> dinnerRoutes,
 																				double[][] distanceMatrix,
-																				Map<Integer, LinkedHashSet<Integer>> clusterSizes) {
+																				Map<Integer, LinkedHashSet<Integer>> clusterSizes,
+																				RouteOptimizationSettings optimizationSettings) {
 		this.adminId = adminId;
 		this.optimizationId = optimizationId;
 		this.meals = meals;
 		this.dinnerRoutes = dinnerRoutes;
 		this.distanceMatrix = distanceMatrix;
 		this.clusterSizes = clusterSizes;
+		this.optimizationSettings = optimizationSettings;
 	}
 
 	protected DinnerRouteOptimizationRequest() {
@@ -73,5 +77,13 @@ public class DinnerRouteOptimizationRequest {
 	}
 	public Map<Integer, LinkedHashSet<Integer>> getClusterSizes() {
 		return clusterSizes;
+	}
+
+	public RouteOptimizationSettings getOptimizationSettings() {
+		return optimizationSettings;
+	}
+
+	public void setOptimizationSettings(RouteOptimizationSettings optimizationSettings) {
+		this.optimizationSettings = optimizationSettings;
 	}
 }

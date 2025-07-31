@@ -5,11 +5,11 @@ import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourCluster;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
-import org.runningdinner.dinnerroute.optimization.CalculateDinnerRouteOptimizationRequest;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationResult;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
 import org.runningdinner.dinnerroute.optimization.OptimizationImpact;
 import org.runningdinner.dinnerroute.optimization.TooManyOptimizationRequestsException;
+import org.runningdinner.dinnerroute.optimization.data.RouteOptimizationSettings;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,9 +69,9 @@ public class DinnerRouteRestController {
 
   @PostMapping("/runningdinner/{adminId}/distances/optimization")
   public String createNewOptimizationInstance(@PathVariable("adminId") String adminId,
-												  			 					    @RequestBody @Valid CalculateDinnerRouteOptimizationRequest calculateRequest) throws TooManyOptimizationRequestsException {
+												  			 					    @RequestBody @Valid RouteOptimizationSettings optimizationSettings) throws TooManyOptimizationRequestsException {
 
-		var publishedEvent = dinnerRouteOptimizationService.publishOptimizationEvent(adminId, calculateRequest);
+		var publishedEvent = dinnerRouteOptimizationService.publishOptimizationEvent(adminId, optimizationSettings);
 		return """
 						{ "optimizationId": "%s" }
 						""".formatted(publishedEvent.getOptimizationId());

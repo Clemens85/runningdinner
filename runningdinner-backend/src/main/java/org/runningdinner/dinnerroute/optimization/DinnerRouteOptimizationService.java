@@ -23,6 +23,7 @@ import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
 import org.runningdinner.dinnerroute.optimization.data.DinnerRouteOptimizationRequest;
 import org.runningdinner.dinnerroute.optimization.data.MealReference;
 import org.runningdinner.dinnerroute.optimization.data.OptimizationDataProvider;
+import org.runningdinner.dinnerroute.optimization.data.RouteOptimizationSettings;
 import org.runningdinner.dinnerroute.optimization.data.TeamReference;
 import org.runningdinner.dinnerroute.optimization.data.TeamReferenceResultList;
 import org.runningdinner.dinnerroute.optimization.data.TeamReferenceService;
@@ -84,7 +85,8 @@ public class DinnerRouteOptimizationService {
 																				OptimizationDataProvider optimizationDataProvider,
 																				TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService,
 																				DinnerRouteMessageFormatter dinnerRouteMessageFormatter,
-																				TeamReferenceService teamReferenceService, DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService) {
+																				TeamReferenceService teamReferenceService,
+																				DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService) {
 
 		this.runningDinnerService = runningDinnerService;
 		this.dinnerRouteService = dinnerRouteService;
@@ -99,7 +101,7 @@ public class DinnerRouteOptimizationService {
 	}
 
 	public DinnerRouteOptimizationRequest publishOptimizationEvent(@ValidateAdminId String adminId,
-																																 @Valid CalculateDinnerRouteOptimizationRequest calculateRequest) throws TooManyOptimizationRequestsException {
+																																 @Valid RouteOptimizationSettings optimizationSettings) throws TooManyOptimizationRequestsException {
 
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 
@@ -117,7 +119,8 @@ public class DinnerRouteOptimizationService {
 				meals,
 				teamReferenceResultList.teamReferences(),
 				distanceMatrix,
-				teamReferenceResultList.dinnerRouteList().getTeamClusterMappings()
+				teamReferenceResultList.dinnerRouteList().getTeamClusterMappings(),
+				optimizationSettings
 		);
 
 		publishRequest(finalRequest);
@@ -155,7 +158,7 @@ public class DinnerRouteOptimizationService {
 															})
 															.toList();
 
-		applyOptimizedRoutesToTeams(adminId, optimizationId, teamClones);
+		var originalOptimizationSettings = applyOptimizedRoutesToTeams(adminId, optimizationId, teamClones);
 
 		DinnerRouteCalculator dinnerRouteCalculator = new DinnerRouteCalculator(runningDinner, dinnerRouteMessageFormatter);
 		List<DinnerRouteTO> optimizedDinnerRoutes = DinnerRouteOptimizationUtil.buildDinnerRoute(teamClones, dinnerRouteCalculator);
@@ -172,7 +175,8 @@ public class DinnerRouteOptimizationService {
 																									 new TeamNeighbourClusterListTO(teamNeighbourClusters));
 
 		try {
-			dinnerRouteOptimizationFeedbackService.sendOptimizationFeedbackAsync(adminId, result, calculateRequest.currentSumDistanceInMeters(), calculateRequest.currentAverageDistanceInMeters());
+			dinnerRouteOptimizationFeedbackService.sendOptimizationFeedbackAsync(adminId,
+							result, originalOptimizationSettings.currentSumDistanceInMeters(), originalOptimizationSettings.currentAverageDistanceInMeters());
 		} catch (Exception e) {
 			LOGGER.error("Could not call sendOptimizationFeedbackAsync", e);
 		}
@@ -180,7 +184,7 @@ public class DinnerRouteOptimizationService {
 		return result;
 	}
 
-	private void applyOptimizedRoutesToTeams(String adminId, String optimizationId, List<Team> teams) {
+	private RouteOptimizationSettings applyOptimizedRoutesToTeams(String adminId, String optimizationId, List<Team> teams) {
 
 		teams.forEach(Team::removeAllTeamReferences);
 		var response = readOptimizedResponse(adminId, optimizationId);
@@ -203,6 +207,8 @@ public class DinnerRouteOptimizationService {
 															.forEach(existingTeam::addHostTeam);
 			}
 		}
+
+		return response.getOptimizationSettings();
 	}
 
 	public OptimizationImpact predictOptimizationImpact(@ValidateAdminId String adminId) throws NoPossibleRunningDinnerException {

@@ -15,24 +15,20 @@ public record TeamReference(@JsonProperty int teamNumber,
 														@JsonProperty UUID teamId,
 														@JsonProperty MealReference meal,
 														@JsonProperty TeamStatus status,
-														@JsonProperty double lat,
-														@JsonProperty double lng,
-														@JsonProperty GeocodingResult.GeocodingResultType geocodingResult,
+														@JsonProperty GeocodingResult geocodingResult,
 														@JsonProperty int clusterNumber,
 														@JsonProperty List<TeamReference> teamsOnRoute) implements HasGeocodingResult {
 
 	@JsonIgnore
 	public TeamReference cloneTeamReference(GeocodingResult geocodingResultOverwrite) {
 		TeamReference src = this;
-		GeocodingResult geocodingResult = geocodingResultOverwrite != null ? geocodingResultOverwrite : src.getGeocodingResult();
+		GeocodingResult geocodingResultToSet = geocodingResultOverwrite != null ? geocodingResultOverwrite : src.geocodingResult();
 		return new TeamReference(
 			src.teamNumber(),
 			src.teamId(),
 			src.meal(),
 			src.status(),
-			geocodingResult.getLat(),
-			geocodingResult.getLng(),
-			geocodingResult.getResultType(),
+			geocodingResultToSet,
 			src.clusterNumber(),
 			src.teamsOnRoute()
 		);
@@ -47,8 +43,6 @@ public record TeamReference(@JsonProperty int teamNumber,
 			src.teamId(),
 			src.meal(),
 			src.status(),
-			src.lat(),
-			src.lng(),
 			src.geocodingResult(),
 			src.clusterNumber(),
 			teamsOnRoute
@@ -82,7 +76,7 @@ public record TeamReference(@JsonProperty int teamNumber,
 	@JsonIgnore
 	@Override
 	public GeocodingResult getGeocodingResult() {
-		return GeocodingResult.newInstance(lat(), lng(), geocodingResult());
+		return geocodingResult();
 	}
 
 	@JsonIgnore

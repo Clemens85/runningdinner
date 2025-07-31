@@ -1,5 +1,7 @@
 package org.runningdinner.geocoder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,17 +16,22 @@ public class GeocodingResult {
 	 * It is however extremely unrealistic that a person really has a geocoded address of (-1,-1), so we stick to this combination as being a not properly geocoded address.
 	 * A better solution would be to use the Double as datatype which can be null for a not geocoded address, but this yields into some migration effort
 	 */
+	@JsonProperty
 	private double lat = -1;
 
+	@JsonProperty
 	private double lng = -1;
 
+	@JsonProperty
 	@Enumerated(EnumType.STRING)
 	private GeocodingResultType resultType = GeocodingResultType.NONE;
 
 	@Length(max = 512)
 	@SafeHtml
+	@JsonIgnore
 	private String formattedAddress;
-	
+
+	@JsonProperty
 	@Enumerated(EnumType.STRING)
 	private GeocodingSyncStatus syncStatus = GeocodingSyncStatus.UNSYNCHRONIZED;
 

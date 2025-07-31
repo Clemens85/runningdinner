@@ -1,12 +1,10 @@
 package org.runningdinner.dinnerroute.optimization.notification;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.aws.SnsMessage;
 import org.runningdinner.common.aws.SnsMessageMapperService;
+import org.runningdinner.common.aws.SnsUtil;
 import org.runningdinner.common.aws.WebhookValidatorService;
-import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -35,19 +33,15 @@ public class DinnerRouteOptimizationNotificationRestController {
 
 	private final WebhookValidatorService webhookValidatorService;
 
-	private final DinnerRouteOptimizationService dinnerRouteOptimizationService;
-
-	private final ObjectMapper objectMapper;
+	private final DinnerRouteOptimizationNotificationService dinnerRouteOptimizationNotificationService;
 
 	private final SnsMessageMapperService snsMessageMapperService;
 
 	public DinnerRouteOptimizationNotificationRestController(WebhookValidatorService webhookValidatorService,
-																													 DinnerRouteOptimizationService dinnerRouteOptimizationService,
-																													 ObjectMapper objectMapper,
+																													 DinnerRouteOptimizationNotificationService dinnerRouteOptimizationNotificationService,
 																													 SnsMessageMapperService snsMessageMapperService) {
 		this.webhookValidatorService = webhookValidatorService;
-		this.dinnerRouteOptimizationService = dinnerRouteOptimizationService;
-		this.objectMapper = objectMapper;
+		this.dinnerRouteOptimizationNotificationService = dinnerRouteOptimizationNotificationService;
 		this.snsMessageMapperService = snsMessageMapperService;
 	}
 
@@ -88,25 +82,22 @@ public class DinnerRouteOptimizationNotificationRestController {
 		}
 
 		SnsMessage snsMessage = snsMessageMapperService.mapToMessageWithAutoConfirm(jsonPayload);
-		if (!snsMessage.getType().equals("Notification")) {
+		if (!SnsUtil.isNotificationWithPayload(snsMessage)) {
 			LOGGER.warn("Unknown SNS message type: {} for {}", snsMessage.getType(), snsMessage.getTopicArn());
 			return ResponseEntity.ok().build();
 		}
 
-		String messagePayload = snsMessage.getMessage();
-		OptimizationFinishedEvent optimizationFinishedEvent = parsePayload(messagePayload);
+		OptimizationFinishedEvent optimizationFinishedEvent = dinnerRouteOptimizationNotificationService.mapOptimizedFinishedEventFromJson(snsMessage.getMessage());
+
 		String emitterKey = emitterKey(optimizationFinishedEvent.getAdminId(), optimizationFinishedEvent.getOptimizationId());
 		SseEmitter emitter = emitters.get(emitterKey);
 		if (emitter != null) {
 			try {
-
 				if (StringUtils.isNotEmpty(optimizationFinishedEvent.getErrorMessage())) {
 					emitter.completeWithError(new IllegalStateException(optimizationFinishedEvent.getErrorMessage()));
 					return ResponseEntity.ok().build();
 				}
-
-				var optimizationResponse = dinnerRouteOptimizationService.previewOptimizedDinnerRoutes(optimizationFinishedEvent.getAdminId(), optimizationFinishedEvent.getOptimizationId());
-				String payloadToEmitAsJson = objectMapper.writeValueAsString(optimizationResponse);
+				String payloadToEmitAsJson = dinnerRouteOptimizationNotificationService.findOptimizedDinnerRoutesPreviewAsJson(optimizationFinishedEvent);
 				emitter.send(SseEmitter.event().data(payloadToEmitAsJson));
 				emitter.complete();
 			} catch (IOException e) {
@@ -117,14 +108,6 @@ public class DinnerRouteOptimizationNotificationRestController {
 			}
 		}
 		return ResponseEntity.ok().build();
-	}
-
-	private OptimizationFinishedEvent parsePayload(String payload) {
-		try {
-			return objectMapper.readValue(payload, OptimizationFinishedEvent.class);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private static String emitterKey(String adminId, String optimizationId) {
