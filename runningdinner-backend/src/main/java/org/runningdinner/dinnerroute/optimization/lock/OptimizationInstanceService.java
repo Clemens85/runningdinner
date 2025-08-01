@@ -64,7 +64,11 @@ public class OptimizationInstanceService {
 							.key(key)
 							.build();
 			var response = s3Client.headObject(headObjectRequest);
+
+			// TODO Automatically set RUNNING instances to FINISHED if response file is there
+
 			return mapMetadataToInstances(response.metadata());
+
 		} catch (NoSuchKeyException e) {
 			// If the lock file does not exist, it means no optimization is running
 			createInitialLockFile(key);
@@ -72,6 +76,7 @@ public class OptimizationInstanceService {
 		}
 	}
 
+	// TODO Add test for logic in here
 	public void setOptimizationFinished(String adminId, String optimizationId, OptimizationInstanceStatus status) {
 		String key = OptimizationDataUtil.buildLockFilePath(adminId);
 
