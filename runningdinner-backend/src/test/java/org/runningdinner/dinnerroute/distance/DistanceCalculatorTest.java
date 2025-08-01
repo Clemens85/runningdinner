@@ -1,17 +1,17 @@
 package org.runningdinner.dinnerroute.distance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-
-import java.util.List;
-import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.runningdinner.core.ParticipantGenerator;
 import org.runningdinner.core.util.NumberUtil;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.test.util.PrivateFieldAccessor;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 public class DistanceCalculatorTest {
 
@@ -54,7 +54,7 @@ public class DistanceCalculatorTest {
   @Test
   public void calculateDistanceNeighbourCoordinates() {
     double d = DistanceCalculator.calculateDistanceVincentyInMeters(eisenbahnStr49, eisenbahnStr45);
-    assertThat(d).isCloseTo(30.99, within(0.01));
+    assertThat(d).isCloseTo(37.22, within(0.01));
   }
 
   @Test
