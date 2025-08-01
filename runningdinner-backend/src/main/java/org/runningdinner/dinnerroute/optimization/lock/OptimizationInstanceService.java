@@ -52,15 +52,7 @@ public class OptimizationInstanceService {
 		}
 		mapInstanceToJsonAndAddMetadataEntry(new OptimizationInstance(optimizationId, LocalDateTime.now(), OptimizationInstanceStatus.RUNNING), metadata);
 
-		PutObjectRequest putObjectRequest = PutObjectRequest
-						.builder()
-						.bucket(bucketName)
-						.key(key)
-						.metadata(metadata)
-						.contentType(MediaType.APPLICATION_JSON_VALUE)
-						.build();
-
-		s3Client.putObject(putObjectRequest, RequestBody.empty());
+		performPutObject(key, metadata);
 	}
 
 	public List<OptimizationInstance> getOptimizationRequestInstances(String adminId) {
@@ -78,6 +70,34 @@ public class OptimizationInstanceService {
 			createInitialLockFile(key);
 			return Collections.emptyList();
 		}
+	}
+
+	public void setOptimizationFinished(String adminId, String optimizationId, OptimizationInstanceStatus status) {
+		String key = OptimizationDataUtil.buildLockFilePath(adminId);
+
+		List<OptimizationInstance> existingInstances = getOptimizationRequestInstances(adminId);
+		OptimizationInstance foundInstance = existingInstances
+																					.stream()
+																					.filter(instance -> StringUtils.equals(instance.getOptimizationId(), optimizationId))
+																					.findFirst()
+																					.orElse(null);
+
+		if (foundInstance == null) {
+			LOGGER.error("No existing optimization instance found for adminId {} and optimizationId {}. Cannot set status to {}", adminId, optimizationId, status);
+			return;
+		}
+
+		foundInstance.setStatus(status);
+
+		List<OptimizationInstance> resultingInstances = new ArrayList<>(
+			existingInstances.stream().filter(instance -> !instance.equals(foundInstance)).toList()
+		);
+		resultingInstances.add(foundInstance);
+
+		Map<String, String> metadata = new HashMap<>();
+		resultingInstances.forEach(instance -> mapInstanceToJsonAndAddMetadataEntry(instance, metadata));
+
+		performPutObject(key, metadata);
 	}
 
 	protected void mapInstanceToJsonAndAddMetadataEntry(OptimizationInstance optimizationInstance, Map<String, String> metadata)  {
@@ -140,13 +160,14 @@ public class OptimizationInstanceService {
 	}
 
 	private void createInitialLockFile(String lockFileKey) {
+		performPutObject(lockFileKey, Collections.emptyMap());
+	}
 
-		Map<String, String> metadata = new HashMap<>();
-
+	private void performPutObject(String key, Map<String, String> metadata) {
 		PutObjectRequest putObjectRequest = PutObjectRequest
 						.builder()
 						.bucket(bucketName)
-						.key(lockFileKey)
+						.key(key)
 						.metadata(metadata)
 						.contentType(MediaType.APPLICATION_JSON_VALUE)
 						.build();

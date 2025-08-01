@@ -2,12 +2,17 @@ package org.runningdinner.dinnerroute.optimization;
 
 import org.runningdinner.common.ResourceLoader;
 import org.runningdinner.dinnerroute.optimization.data.OptimizationDataProvider;
+import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class TestOptimizationDataProvider implements OptimizationDataProvider {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestOptimizationDataProvider.class);
 
 	private String requestData;
 
@@ -31,6 +36,11 @@ public class TestOptimizationDataProvider implements OptimizationDataProvider {
 	@Override
 	public void writeRequestData(String adminId, String optimizationId, String requestJsonString) throws TooManyOptimizationRequestsException {
 		this.requestData = requestJsonString;
+	}
+
+	@Override
+	public void setOptimizationFinished(String adminId, String optimizationId, OptimizationInstanceStatus status) {
+		LOGGER.info("Optimization finished for adminId: {}, optimizationId: {}, status: {}", adminId, optimizationId, status);
 	}
 
 	public String getRequestData() {

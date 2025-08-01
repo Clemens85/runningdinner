@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class OptimizationInstance {
 
@@ -64,5 +65,23 @@ public class OptimizationInstance {
 
 	public OptimizationInstanceStatus getStatus() {
 		return status;
+	}
+
+	public void setStatus(OptimizationInstanceStatus status) {
+		this.status = status;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		OptimizationInstance that = (OptimizationInstance) o;
+		return Objects.equals(getOptimizationId(), that.getOptimizationId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getOptimizationId());
 	}
 }

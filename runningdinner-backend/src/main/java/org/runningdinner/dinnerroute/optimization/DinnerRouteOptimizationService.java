@@ -244,8 +244,8 @@ public class DinnerRouteOptimizationService {
 		String responseJson = optimizationDataProvider.readResponseData(adminId, optimizationId);
 		try {
 			JsonNode rootNode = objectMapper.readTree(responseJson);
-			if (rootNode.has("error")) {
-				String errorMessage = rootNode.get("error").asText();
+			if (rootNode.has("errorMessage")) {
+				String errorMessage = rootNode.get("errorMessage").asText();
 				LOGGER.error("Error in optimization response for adminId: {} and optimizationId: {}: {}", adminId, optimizationId, errorMessage);
 				throw new IllegalStateException("Error in optimization response: " + errorMessage);
 			}

@@ -71,6 +71,12 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 		s3Client.putObject(putObjectRequest, RequestBody.fromString(requestJsonString));
 	}
 
+	@Override
+	public void setOptimizationFinished(String adminId, String optimizationId, OptimizationInstanceStatus status) {
+		optimizationInstanceService.setOptimizationFinished(adminId, optimizationId, status);
+	}
+
+
 	private boolean isExceedingMaxRunningInstances(List<OptimizationInstance> instances) {
 		long runningInstances = instances
 															.stream()

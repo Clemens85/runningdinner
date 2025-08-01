@@ -100,6 +100,7 @@ public class DinnerRouteOptimizationNotificationRestController {
 				String payloadToEmitAsJson = dinnerRouteOptimizationNotificationService.findOptimizedDinnerRoutesPreviewAsJson(optimizationFinishedEvent);
 				emitter.send(SseEmitter.event().data(payloadToEmitAsJson));
 				emitter.complete();
+				dinnerRouteOptimizationNotificationService.markOptimizationFinishedEventAsProcessed(optimizationFinishedEvent);
 			} catch (IOException e) {
 				LOGGER.error("Error while sending SSE event for adminId {} and optimizationId {}", optimizationFinishedEvent.getAdminId(), optimizationFinishedEvent.getOptimizationId(), e);
 				emitter.completeWithError(e);
