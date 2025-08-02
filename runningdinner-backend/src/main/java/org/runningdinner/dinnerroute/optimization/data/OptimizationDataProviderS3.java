@@ -5,7 +5,9 @@ import org.runningdinner.dinnerroute.optimization.TooManyOptimizationRequestsExc
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstance;
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceService;
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
-import org.springframework.context.annotation.Profile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -19,9 +21,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Activate OptimizationDataProviderS3 always,
+ * only deactivate it if route.optimization.dataprovider.s3.enabled is set explicitly to false.
+ */
 @Service
-@Profile("!dev")
+@ConditionalOnProperty(name = "route.optimization.dataprovider.s3.enabled", havingValue = "true", matchIfMissing = true)
 public class OptimizationDataProviderS3 implements OptimizationDataProvider {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(OptimizationDataProviderS3.class);
 
 	private final OptimizationInstanceService optimizationInstanceService;
 	private final String bucketName;
@@ -32,6 +40,7 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 		this.optimizationInstanceService = optimizationInstanceService;
 		this.bucketName = s3ClientProviderService.getApplicationBucket();
 		this.s3Client = s3ClientProviderService.getS3Client();
+		LOGGER.info("Using S3-based OptimizationDataProvider with bucket: {}", bucketName);
 	}
 
 	public String readResponseData(String adminId, String optimizationId) {
