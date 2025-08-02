@@ -39,7 +39,7 @@ public class OptimizationInstanceService {
 																		 ObjectMapper objectMapper) {
 		this.maxRunningTimeBeforeTimeoutSeconds = maxRunningTimeBeforeTimeoutSeconds;
 		this.objectMapper = objectMapper;
-		this.bucketName = s3ClientProviderService.getApplicationBucket();
+		this.bucketName = s3ClientProviderService.getRouteOptimizationBucket();
 		this.s3Client = s3ClientProviderService.getS3Client();
 	}
 

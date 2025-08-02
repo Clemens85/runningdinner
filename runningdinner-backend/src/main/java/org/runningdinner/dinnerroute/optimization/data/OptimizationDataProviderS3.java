@@ -38,7 +38,7 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 	public OptimizationDataProviderS3(OptimizationInstanceService optimizationInstanceService,
 																		S3ClientProviderService s3ClientProviderService) {
 		this.optimizationInstanceService = optimizationInstanceService;
-		this.bucketName = s3ClientProviderService.getApplicationBucket();
+		this.bucketName = s3ClientProviderService.getRouteOptimizationBucket();
 		this.s3Client = s3ClientProviderService.getS3Client();
 		LOGGER.info("Using S3-based OptimizationDataProvider with bucket: {}", bucketName);
 	}

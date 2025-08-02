@@ -12,14 +12,14 @@ import software.amazon.awssdk.services.s3.S3Client;
 public class S3ClientProviderService {
 
 	private final String awsProfile;
-	private final String applicationBucket;
+	private final String routeOptimizationBucket;
 
 	private S3Client s3Client;
 
 	public S3ClientProviderService(EnvUtilService envUtilService,
-																 @Value("${aws.s3.app.bucket}") String applicationBucket) {
+																 @Value("${aws.s3.route.optimization.bucket}") String routeOptimizationBucket) {
 		this.awsProfile = envUtilService.getConfigProperty("aws.profile");
-		this.applicationBucket = applicationBucket;
+		this.routeOptimizationBucket = routeOptimizationBucket;
 	}
 
 	@PostConstruct
@@ -38,7 +38,7 @@ public class S3ClientProviderService {
 		return s3Client;
 	}
 
-	public String getApplicationBucket() {
-		return applicationBucket;
+	public String getRouteOptimizationBucket() {
+		return routeOptimizationBucket;
 	}
 }
