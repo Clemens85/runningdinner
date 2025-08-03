@@ -64,7 +64,7 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
 
   function handleTriggerOptimizationError(error: unknown) {
     if (error && isAxiosError(error) && error.response && error.response.status === 429) {
-      setErrorMessage('admin:Aktuell gibt es zu viele Routen-Optimierungs-Anfragen. Du kannst es in ca. 3 Minuten erneut versuchen.');
+      setErrorMessage('admin:dinner_route_optimization_rate_limit');
     } else {
       setErrorMessage('admin:dinner_route_optimize_error');
     }

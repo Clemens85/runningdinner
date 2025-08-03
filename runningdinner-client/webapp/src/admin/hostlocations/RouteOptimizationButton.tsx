@@ -84,14 +84,13 @@ function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistancesList 
       <DialogContent>
         <Paragraph>
           <Trans i18nKey={'admin:dinner_route_optimize_description'} />
+          <br />
+          <Trans i18nKey={'admin:dinner_route_optimize_note'} />
         </Paragraph>
         <Box my={2}>
           <FetchProgressBar {...predictOptimizationQuery} />
-          {predictOptimizationQuery.data && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
+          {predictOptimizationQuery.data && !previewUrl && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
         </Box>
-        <Paragraph>
-          <strong>{t('common:note')}</strong>: <Trans i18nKey={'admin:dinner_route_optimize_note'} />
-        </Paragraph>
 
         <Box my={2}>
           {!routeDistancesList && <ProgressBar showLoadingProgress={true} />}
@@ -126,7 +125,7 @@ function OptimizationProgressBar() {
     <Box flexDirection="column" alignItems="center" gap={2}>
       <ProgressBar showLoadingProgress={true} />
       <Typography variant="body1" color="textSecondary" align="center" sx={{ mt: 2 }}>
-        {t('Routen werden optimiert, das kann 1-2 Minuten dauern. Bitte schließe dieses Fenster nicht!')}
+        {t('admin:dinner_route_optimization_running')}
       </Typography>
     </Box>
   );
