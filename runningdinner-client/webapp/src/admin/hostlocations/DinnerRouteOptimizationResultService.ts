@@ -1,4 +1,4 @@
-import { deserializeResponseData, DinnerRouteOptimizationResult } from '@runningdinner/shared';
+import { DinnerRouteOptimizationResult } from '@runningdinner/shared';
 import { deleteLocalStorageByPrefix, deleteLocalStorageInAdminId, getLocalStorageInAdminId, setLocalStorageInAdminId } from '../../common/LocalStorageService';
 
 export class DinnerRouteOptimizationResultService {
@@ -8,7 +8,8 @@ export class DinnerRouteOptimizationResultService {
     if (!optimizationResult) {
       throw new Error(`Dinner routes not found in local storage for optimizationId: ${optimizationId} and adminId: ${adminId}`);
     }
-    return DinnerRouteOptimizationResultService.normalizeDinnerRouteOptimizationResult(optimizationResult);
+    return optimizationResult;
+    // return DinnerRouteOptimizationResultService.normalizeDinnerRouteOptimizationResult(optimizationResult);
   }
 
   public static saveDinnerRouteOptimizationResult(optimizationResult: DinnerRouteOptimizationResult, adminId: string) {
@@ -27,11 +28,11 @@ export class DinnerRouteOptimizationResultService {
     return `route_optimization_${optimizationId}`;
   }
 
-  private static normalizeDinnerRouteOptimizationResult(optimizationResult: DinnerRouteOptimizationResult): DinnerRouteOptimizationResult {
-    // We might retrieve our optimizationResult by means of SSE (which bypasses HttpInterceptorConfig due to it's no REST call)
-    // => Hence we need to manually deserialize response data here
-    return deserializeResponseData(optimizationResult);
-  }
+  // private static normalizeDinnerRouteOptimizationResult(optimizationResult: DinnerRouteOptimizationResult): DinnerRouteOptimizationResult {
+  //   // We might retrieve our optimizationResult by means of SSE (which bypasses HttpInterceptorConfig due to it's no REST call)
+  //   // => Hence we need to manually deserialize response data here
+  //   return deserializeResponseData(optimizationResult);
+  // }
 }
 
 // private static normalizeDinnerRouteOptimizationResult(optimizationResult: DinnerRouteOptimizationResult): DinnerRouteOptimizationResult {

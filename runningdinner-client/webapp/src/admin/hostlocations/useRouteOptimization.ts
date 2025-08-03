@@ -22,12 +22,12 @@ function buildPreviewUrl(optimizationId: string) {
 }
 
 function setOptimizationResultToLocalStorage(
-  optimizationResult: DinnerRouteOptimizationResult,
-  originalOptimizationRequest: CalculateDinnerRouteOptimizationRequest,
   adminId: string,
+  optimizationResult: DinnerRouteOptimizationResult,
+  originalOptimizationRequest: CalculateDinnerRouteOptimizationRequest | null,
 ): string {
-  optimizationResult.averageDistanceInMetersBefore = originalOptimizationRequest.currentAverageDistanceInMeters;
-  optimizationResult.sumDistanceInMetersBefore = originalOptimizationRequest.currentSumDistanceInMeters;
+  optimizationResult.averageDistanceInMetersBefore = originalOptimizationRequest?.currentAverageDistanceInMeters || -1;
+  optimizationResult.sumDistanceInMetersBefore = originalOptimizationRequest?.currentSumDistanceInMeters || -1;
   DinnerRouteOptimizationResultService.saveDinnerRouteOptimizationResult(optimizationResult, adminId);
   return buildPreviewUrl(optimizationResult.id);
 }
@@ -72,25 +72,6 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     resetOptimizationRequest();
   }
 
-  function handleEventSourceError(err: Event | any) {
-    setTimeout(async () => {
-      clearEventSource();
-      if (!previewUrl) {
-        try {
-          // Fallback, try to fetch optimization result directly (which might work)
-          const routeOptimizationResult = await findRouteOptimizationPreview(adminId, currentOptimizationId || '');
-          setOptimizationResultToLocalStorage(routeOptimizationResult, optimizationRequest!, adminId);
-          return; // When reaching here our fallback worked and we have a preview URL
-        } catch (innerErr) {
-          // No error handling here, we are already in error scenario and this error might be expected
-        }
-        setErrorMessage('admin:dinner_route_optimize_error');
-        console.error('Route optimization SSE seems to be timed out:', err);
-        resetOptimizationRequest();
-      }
-    }, 250);
-  }
-
   async function triggerCalculateOptimization(incomingOptimizationRequest: CalculateDinnerRouteOptimizationRequest) {
     setOptimizationRequest(incomingOptimizationRequest);
     resetOptimizationResponse();
@@ -104,20 +85,14 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     }
   }
 
-  function applyOptimizationResponse(event: MessageEvent<any>, originalOptimizationRequest: CalculateDinnerRouteOptimizationRequest): string | null {
-    console.log(`Received optimization update: ${event.data}`);
-    try {
-      const optimizationResult = JSON.parse(event.data) as DinnerRouteOptimizationResult;
-      return setOptimizationResultToLocalStorage(optimizationResult, originalOptimizationRequest, adminId);
-    } catch (error) {
-      console.error('Error parsing optimization result:', error);
-      setErrorMessage('admin:dinner_route_optimize_error');
-      return null;
-    }
+  function applyOptimizationResponse(optimizationResult: DinnerRouteOptimizationResult) {
+    const url = setOptimizationResultToLocalStorage(adminId, optimizationResult, optimizationRequest);
+    resetOptimizationRequest();
+    setPreviewUrl(url);
+    clearEventSource();
   }
 
   // --- Polling (as fallback for SSE) --- //
-
   const isOptimizationCalculationRunning = !!adminId && !!currentOptimizationId && !!optimizationRequest && !previewUrl;
   useEffect(() => {
     if (!pollingStarted && isOptimizationCalculationRunning) {
@@ -143,10 +118,9 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     refetchIntervalInBackground: true,
     retry: MAX_POLLING_ATTEMPTS,
   });
-  // Handle polling result and errors
   useEffect(() => {
     if (polledResult && polledResult.id && optimizationRequest) {
-      const url = setOptimizationResultToLocalStorage(polledResult, optimizationRequest, adminId);
+      const url = setOptimizationResultToLocalStorage(adminId, polledResult, optimizationRequest);
       resetOptimizationRequest();
       setPreviewUrl(url);
       clearEventSource();
@@ -155,6 +129,29 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
   // --- End of Polling (SSE fallback) ---
 
   // --- SSE EventSource for real-time updates --- //
+  async function fetchOptimizationPreviewOnEventMessage() {
+    try {
+      // Try to fetch optimization result directly (which might work)
+      const routeOptimizationResult = await findRouteOptimizationPreview(adminId, currentOptimizationId || '');
+      applyOptimizationResponse(routeOptimizationResult);
+    } catch (err) {
+      setErrorMessage('admin:dinner_route_optimize_error');
+      console.error('Route optimization SSE seems to be timed out:', err);
+      resetOptimizationRequest();
+    }
+  }
+
+  function handleEventSourceError(err: Event | any) {
+    setTimeout(async () => {
+      console.error('Route optimization SSE seems to be timed out:', err);
+      clearEventSource();
+      if (!previewUrl) {
+        // Fallback, try to fetch optimization result directly (which might work)
+        fetchOptimizationPreviewOnEventMessage();
+      }
+    }, 250);
+  }
+
   useEffect(() => {
     if (isStringEmpty(currentOptimizationId) || isStringEmpty(adminId) || !optimizationRequest) {
       return;
@@ -166,11 +163,8 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     const eventSource = new EventSource(buildOptimizationNotificationSubscriptionUrl(adminId, currentOptimizationId!));
     eventSourceRef.current = eventSource;
 
-    eventSource.onmessage = (event) => {
-      const previewUrlResult = applyOptimizationResponse(event, optimizationRequest!);
-      clearEventSource();
-      resetOptimizationRequest();
-      setPreviewUrl(previewUrlResult);
+    eventSource.onmessage = (_event) => {
+      fetchOptimizationPreviewOnEventMessage();
     };
     eventSource.onerror = (err) => {
       handleEventSourceError(err);

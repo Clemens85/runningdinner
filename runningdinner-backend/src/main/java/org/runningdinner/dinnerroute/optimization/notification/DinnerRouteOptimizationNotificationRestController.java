@@ -93,14 +93,9 @@ public class DinnerRouteOptimizationNotificationRestController {
 		SseEmitter emitter = emitters.get(emitterKey);
 		if (emitter != null) {
 			try {
-				if (StringUtils.isNotEmpty(optimizationFinishedEvent.getErrorMessage())) {
-					dinnerRouteOptimizationNotificationService.markOptimizationFinishedEventAsProcessed(optimizationFinishedEvent);
-					emitter.completeWithError(new IllegalStateException(optimizationFinishedEvent.getErrorMessage()));
-					return ResponseEntity.ok().build();
-				}
-				String payloadToEmitAsJson = dinnerRouteOptimizationNotificationService.findOptimizedDinnerRoutesPreviewAsJson(optimizationFinishedEvent);
+				String resultJsonPayload = dinnerRouteOptimizationNotificationService.mapOptimizedFinishedEventToJson(optimizationFinishedEvent);
 				dinnerRouteOptimizationNotificationService.markOptimizationFinishedEventAsProcessed(optimizationFinishedEvent);
-				emitter.send(SseEmitter.event().data(payloadToEmitAsJson));
+				emitter.send(SseEmitter.event().data(resultJsonPayload));
 				emitter.complete();
 			} catch (IOException e) {
 				LOGGER.error("Error while sending SSE event for adminId {} and optimizationId {}", optimizationFinishedEvent.getAdminId(), optimizationFinishedEvent.getOptimizationId(), e);
