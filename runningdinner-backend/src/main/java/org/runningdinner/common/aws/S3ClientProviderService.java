@@ -5,8 +5,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.util.EnvUtilService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Service
 public class S3ClientProviderService {
@@ -40,5 +49,42 @@ public class S3ClientProviderService {
 
 	public String getRouteOptimizationBucket() {
 		return routeOptimizationBucket;
+	}
+
+	public boolean isFileExisting(String bucketName, String key) {
+		try {
+			// Fetch the metadata for the lock file using a HeadObjectRequest
+			HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+							.bucket(bucketName) // Replace with your actual bucket name
+							.key(key)
+							.build();
+			s3Client.headObject(headObjectRequest);
+			return true;
+		} catch (NoSuchKeyException e) {
+			// Expected exception if the file does not exist
+			return false;
+		}
+	}
+
+	public String readFileContentToString(String bucketName, String key) throws IOException {
+		GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+						.bucket(bucketName)
+						.key(key)
+						.build();
+
+		try (var inputStream = s3Client.getObject(getObjectRequest)) {
+			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+		}
+	}
+
+	public void writeStringToFile(String bucketName, String key, String fileContent, String contentType, Map<String, String> metadata) {
+		PutObjectRequest putObjectRequest = PutObjectRequest
+						.builder()
+						.bucket(bucketName)
+						.key(key)
+						.metadata(metadata)
+						.contentType(contentType)
+						.build();
+		s3Client.putObject(putObjectRequest, RequestBody.fromString(fileContent));
 	}
 }

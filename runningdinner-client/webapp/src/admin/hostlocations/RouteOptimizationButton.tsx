@@ -54,7 +54,7 @@ function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistancesList 
   const { t } = useTranslation(['common', 'admin']);
 
   const predictOptimizationQuery = usePredictOptimizationImpact(adminId);
-  const { isPending, triggerCalculateOptimization, previewUrl, errorMessage } = useRouteOptimization({ adminId });
+  const { isPending, triggerCalculateOptimization, previewUrl, errorMessage, resetAll } = useRouteOptimization({ adminId });
 
   async function handleTriggerCalculationOptimization() {
     const calculateRequest: CalculateDinnerRouteOptimizationRequest = {
@@ -64,18 +64,23 @@ function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistancesList 
     triggerCalculateOptimization(calculateRequest);
   }
 
-  const okButtonDisabled = isPending() || !routeDistancesList;
+  const okButtonDisabled = isPending() || !routeDistancesList || isStringNotEmpty(previewUrl);
+
+  function handleClose() {
+    resetAll();
+    onClose();
+  }
 
   return (
     <Dialog
-      onClose={onClose}
+      onClose={handleClose}
       open={!!isOpen}
       maxWidth={'md'}
       sx={{
         zIndex: 10002,
       }}
     >
-      <DialogTitleCloseable onClose={onClose}>{t('admin:dinner_route_optimize_title')}</DialogTitleCloseable>
+      <DialogTitleCloseable onClose={handleClose}>{t('admin:dinner_route_optimize_title')}</DialogTitleCloseable>
       <DialogContent>
         <Paragraph>
           <Trans i18nKey={'admin:dinner_route_optimize_description'} />
@@ -93,18 +98,22 @@ function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistancesList 
           {isPending() && <OptimizationProgressBar />}
           {errorMessage && <ErrorAlert errorMessage={errorMessage} />}
           {previewUrl && (
-            <Button onClick={onClose} color="primary" startIcon={<OpenInNewIcon />} href={previewUrl} target="_blank" rel="noopener noreferrer">
-              <Paragraph>
-                <Trans i18nKey={'admin:dinner_route_optimize_preview_open'} />
-              </Paragraph>
-            </Button>
+            <Box sx={{ textAlign: 'center', mb: -4 }}>
+              <Button onClick={handleClose} color="primary" startIcon={<OpenInNewIcon />} href={previewUrl} target="_blank" rel="noopener noreferrer">
+                <Paragraph>
+                  <strong>
+                    <Trans i18nKey={'admin:dinner_route_optimize_preview_open'} />
+                  </strong>
+                </Paragraph>
+              </Button>
+            </Box>
           )}
         </Box>
       </DialogContent>
       <DialogActionsPanel
         onOk={handleTriggerCalculationOptimization}
         okButtonDisabled={okButtonDisabled}
-        onCancel={onClose}
+        onCancel={handleClose}
         okLabel={t('admin:dinner_route_optimize_action')}
         cancelLabel={t('common:cancel')}
       />

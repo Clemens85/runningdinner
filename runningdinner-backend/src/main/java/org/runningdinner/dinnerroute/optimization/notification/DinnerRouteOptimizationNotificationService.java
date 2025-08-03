@@ -2,7 +2,6 @@ package org.runningdinner.dinnerroute.optimization.notification;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
 import org.runningdinner.dinnerroute.optimization.data.OptimizationDataProvider;
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
@@ -42,9 +41,7 @@ public class DinnerRouteOptimizationNotificationService {
 
 	public void markOptimizationFinishedEventAsProcessed(OptimizationFinishedEvent optimizationFinishedEvent) {
 		try {
-			OptimizationInstanceStatus status = StringUtils.isBlank(optimizationFinishedEvent.getErrorMessage()) ?
-							OptimizationInstanceStatus.SUCCEEDED : OptimizationInstanceStatus.FAILED;
-			this.optimizationDataProvider.setOptimizationFinished(optimizationFinishedEvent.getAdminId(), optimizationFinishedEvent.getOptimizationId(), status);
+			this.optimizationDataProvider.setOptimizationFinished(optimizationFinishedEvent.getAdminId(), optimizationFinishedEvent.getOptimizationId(), OptimizationInstanceStatus.FINISHED);
 		} catch (Exception e) {
 			LOGGER.error("Failed to mark optimization finished for adminId {} and optimizationId {}",
 										optimizationFinishedEvent.getAdminId(), optimizationFinishedEvent.getOptimizationId(), e);

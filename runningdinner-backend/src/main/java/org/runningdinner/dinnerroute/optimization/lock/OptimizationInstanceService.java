@@ -45,7 +45,7 @@ public class OptimizationInstanceService {
 
 	public void addRequestInstanceToLockFile(String adminId, String optimizationId, List<OptimizationInstance> existingInstances) {
 		String key = OptimizationDataUtil.buildLockFilePath(adminId);
-
+		LOGGER.info("Adding optimization request instance for adminId: {}, optimizationId: {} to S3 with key: {}", adminId, optimizationId, key);
 		Map<String, String> metadata = new HashMap<>();
 		for (var existingInstance : existingInstances) {
 			mapInstanceToJsonAndAddMetadataEntry(existingInstance, metadata);
@@ -57,6 +57,7 @@ public class OptimizationInstanceService {
 
 	public List<OptimizationInstance> getOptimizationRequestInstances(String adminId) {
 		String key = OptimizationDataUtil.buildLockFilePath(adminId);
+		LOGGER.info("Fetching optimization request instances for adminId: {} from S3 with key: {}", adminId, key);
 		try {
 			// Fetch the metadata for the lock file using a HeadObjectRequest
 			HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
@@ -64,11 +65,7 @@ public class OptimizationInstanceService {
 							.key(key)
 							.build();
 			var response = s3Client.headObject(headObjectRequest);
-
-			// TODO Automatically set RUNNING instances to FINISHED if response file is there
-
 			return mapMetadataToInstances(response.metadata());
-
 		} catch (NoSuchKeyException e) {
 			// If the lock file does not exist, it means no optimization is running
 			createInitialLockFile(key);
@@ -76,10 +73,9 @@ public class OptimizationInstanceService {
 		}
 	}
 
-	// TODO Add test for logic in here
 	public void setOptimizationFinished(String adminId, String optimizationId, OptimizationInstanceStatus status) {
 		String key = OptimizationDataUtil.buildLockFilePath(adminId);
-
+		LOGGER.info("Setting optimization instance status for adminId: {}, optimizationId: {}, status: {}. Lock file key: {}", adminId, optimizationId, status, key);
 		List<OptimizationInstance> existingInstances = getOptimizationRequestInstances(adminId);
 		OptimizationInstance foundInstance = existingInstances
 																					.stream()
@@ -102,6 +98,7 @@ public class OptimizationInstanceService {
 		Map<String, String> metadata = new HashMap<>();
 		resultingInstances.forEach(instance -> mapInstanceToJsonAndAddMetadataEntry(instance, metadata));
 
+		LOGGER.info("Updating lock file with new optimization instance metadata for adminId: {}, optimizationId: {}, status: {}. Lock file key: {}", adminId, optimizationId, status, key);
 		performPutObject(key, metadata);
 	}
 

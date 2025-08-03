@@ -10,16 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Activate OptimizationDataProviderS3 always,
@@ -33,25 +27,20 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 
 	private final OptimizationInstanceService optimizationInstanceService;
 	private final String bucketName;
-	private final S3Client s3Client;
+	private final S3ClientProviderService s3ClientProviderService;
 
 	public OptimizationDataProviderS3(OptimizationInstanceService optimizationInstanceService,
 																		S3ClientProviderService s3ClientProviderService) {
 		this.optimizationInstanceService = optimizationInstanceService;
 		this.bucketName = s3ClientProviderService.getRouteOptimizationBucket();
-		this.s3Client = s3ClientProviderService.getS3Client();
+		this.s3ClientProviderService = s3ClientProviderService;
 		LOGGER.info("Using S3-based OptimizationDataProvider with bucket: {}", bucketName);
 	}
 
 	public String readResponseData(String adminId, String optimizationId) {
 		String key = OptimizationDataUtil.buildResponseFilePath(adminId, optimizationId);
-		GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-																					.bucket(bucketName)
-																					.key(key)
-																					.build();
-
-		try (var inputStream = s3Client.getObject(getObjectRequest)) {
-			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+		try {
+			return s3ClientProviderService.readFileContentToString(bucketName, key);
 		} catch (IOException e) {
 			String errorMsg = "Failed to read from %s/%s for adminId %s and optimizationId %s".formatted(bucketName, key, adminId, optimizationId);
 			throw new RuntimeException(errorMsg, e);
@@ -59,25 +48,17 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 	}
 
 	public void writeRequestData(String adminId, String optimizationId, String requestJsonString) throws TooManyOptimizationRequestsException {
-		List<OptimizationInstance> existingRequests = optimizationInstanceService.getOptimizationRequestInstances(adminId);
-		if (isExceedingMaxRunningInstances(existingRequests)) {
+		List<OptimizationInstance> existingInstances = optimizationInstanceService.getOptimizationRequestInstances(adminId);
+		// Set those instances to FINISHED which have a response file already existing...
+		markInstancesFinishedForExistingResponseFiles(existingInstances, adminId);
+		if (isExceedingMaxRunningInstances(existingInstances)) {
 			throw new TooManyOptimizationRequestsException("Cannot write request data: More than one optimization request is already running for adminId: " + adminId);
 		}
+		// When writing metadata, our updated instances will be added to the lock file (-> thus we have an updated lock file calculated from existing response files)
+		optimizationInstanceService.addRequestInstanceToLockFile(adminId, optimizationId, existingInstances);
 
 		String key = OptimizationDataUtil.buildRequestFilePath(adminId, optimizationId);
-
-		Map<String, String> metadata = new HashMap<>();
-
-		PutObjectRequest putObjectRequest = PutObjectRequest
-																					.builder()
-																					.bucket(bucketName)
-																					.key(key)
-																					.metadata(metadata)
-																					.contentType(MediaType.APPLICATION_JSON_VALUE)
-																					.build();
-
-		optimizationInstanceService.addRequestInstanceToLockFile(adminId, optimizationId, existingRequests);
-		s3Client.putObject(putObjectRequest, RequestBody.fromString(requestJsonString));
+		s3ClientProviderService.writeStringToFile(bucketName, key, requestJsonString, MediaType.APPLICATION_JSON_VALUE, Collections.emptyMap());
 	}
 
 	@Override
@@ -85,13 +66,33 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 		optimizationInstanceService.setOptimizationFinished(adminId, optimizationId, status);
 	}
 
-
 	private boolean isExceedingMaxRunningInstances(List<OptimizationInstance> instances) {
 		long runningInstances = instances
 															.stream()
 															.filter(i -> i.getStatus() == OptimizationInstanceStatus.RUNNING)
 															.count();
 		return runningInstances >= 2;
+	}
+
+
+	private void markInstancesFinishedForExistingResponseFiles(List<OptimizationInstance> instances, String adminId) {
+		var runningInstances = instances.stream().filter(r -> r.getStatus() == OptimizationInstanceStatus.RUNNING).toList();
+		for (var runningInstance : runningInstances) {
+			if (isResponseFileExisting(adminId, runningInstance)) {
+				runningInstance.setStatus(OptimizationInstanceStatus.FINISHED);
+			}
+		}
+	}
+
+	private boolean isResponseFileExisting(String adminId, OptimizationInstance instance) {
+		String optimizationId = instance.getOptimizationId();
+		String key = OptimizationDataUtil.buildResponseFilePath(adminId, optimizationId);
+		try {
+			return s3ClientProviderService.isFileExisting(bucketName, key);
+		} catch (Exception e) {
+			LOGGER.error("Error checking existence of response file {} in bucket {}: {}", key, bucketName, e.getMessage());
+			return false;
+		}
 	}
 
 }

@@ -7,10 +7,14 @@ import {
   findRouteOptimizationPreview,
   isStringEmpty,
 } from '@runningdinner/shared';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { OPTIMIZATION_ID_QUERY_PARAM } from '../AdminNavigationHook';
 import { isAxiosError } from 'axios';
 import { DinnerRouteOptimizationResultService } from './DinnerRouteOptimizationResultService';
+import { useQuery } from '@tanstack/react-query';
+
+const POLLING_INTERVAL = 5000; // 5 seconds
+const MAX_POLLING_ATTEMPTS = 1 + 9; // initial + 9 retries
 
 function buildPreviewUrl(optimizationId: string) {
   const url = window.location.href;
@@ -36,15 +40,26 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [pollingStarted, setPollingStarted] = useState(false);
+
+  const eventSourceRef = useRef<EventSource | null>(null);
+
   function resetOptimizationRequest() {
     setCurrentOptimizationId(null);
     setOptimizationRequest(null);
-    setPreviewUrl(null);
+    setPollingStarted(false);
   }
 
   function resetOptimizationResponse() {
     setErrorMessage(null);
     setPreviewUrl(null);
+  }
+
+  function clearEventSource() {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
   }
 
   function handleTriggerOptimizationError(error: unknown) {
@@ -57,9 +72,9 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     resetOptimizationRequest();
   }
 
-  function handleEventSourceError(err: Event | any, eventSource: EventSource) {
+  function handleEventSourceError(err: Event | any) {
     setTimeout(async () => {
-      eventSource.close();
+      clearEventSource();
       if (!previewUrl) {
         try {
           // Fallback, try to fetch optimization result directly (which might work)
@@ -101,27 +116,77 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     }
   }
 
+  // --- Polling (as fallback for SSE) --- //
+
+  const isOptimizationCalculationRunning = !!adminId && !!currentOptimizationId && !!optimizationRequest && !previewUrl;
+  useEffect(() => {
+    if (!pollingStarted && isOptimizationCalculationRunning) {
+      const timer = setTimeout(() => setPollingStarted(true), POLLING_INTERVAL);
+      return () => clearTimeout(timer);
+    }
+  }, [isOptimizationCalculationRunning, pollingStarted]);
+
+  const { data: polledResult } = useQuery({
+    queryKey: ['optimizationPreview', adminId, currentOptimizationId],
+    queryFn: async () => {
+      if (!adminId || !currentOptimizationId) {
+        throw new Error('Missing adminId or optimizationId');
+      }
+      try {
+        return await findRouteOptimizationPreview(adminId, currentOptimizationId);
+      } catch (error) {
+        return null; // We expect error responses here, so we return null to continue polling
+      }
+    },
+    enabled: isOptimizationCalculationRunning && pollingStarted,
+    refetchInterval: POLLING_INTERVAL,
+    refetchIntervalInBackground: true,
+    retry: MAX_POLLING_ATTEMPTS,
+  });
+  // Handle polling result and errors
+  useEffect(() => {
+    if (polledResult && polledResult.id && optimizationRequest) {
+      const url = setOptimizationResultToLocalStorage(polledResult, optimizationRequest, adminId);
+      resetOptimizationRequest();
+      setPreviewUrl(url);
+      clearEventSource();
+    }
+  }, [polledResult, optimizationRequest, adminId]);
+  // --- End of Polling (SSE fallback) ---
+
+  // --- SSE EventSource for real-time updates --- //
   useEffect(() => {
     if (isStringEmpty(currentOptimizationId) || isStringEmpty(adminId) || !optimizationRequest) {
       return;
     }
+    // Close any previous EventSource before creating a new one
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
     const eventSource = new EventSource(buildOptimizationNotificationSubscriptionUrl(adminId, currentOptimizationId!));
+    eventSourceRef.current = eventSource;
+
     eventSource.onmessage = (event) => {
       const previewUrlResult = applyOptimizationResponse(event, optimizationRequest!);
-      eventSource.close();
+      clearEventSource();
       resetOptimizationRequest();
       setPreviewUrl(previewUrlResult);
     };
     eventSource.onerror = (err) => {
-      handleEventSourceError(err, eventSource);
+      handleEventSourceError(err);
     };
     return () => {
-      eventSource.close();
+      clearEventSource();
     };
   }, [currentOptimizationId, adminId, optimizationRequest]);
+  // --- End of SSE EventSource --- //
 
   return {
     isPending: () => optimizationRequest !== null,
+    resetAll: () => {
+      resetOptimizationRequest();
+      resetOptimizationResponse();
+    },
     previewUrl,
     triggerCalculateOptimization,
     errorMessage,
