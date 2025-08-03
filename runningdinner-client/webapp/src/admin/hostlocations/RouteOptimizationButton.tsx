@@ -64,7 +64,7 @@ function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistancesList 
     triggerCalculateOptimization(calculateRequest);
   }
 
-  const okButtonDisabled = isPending() || !routeDistancesList || isStringNotEmpty(previewUrl);
+  const okButtonDisabled = isPending() || !routeDistancesList || isStringNotEmpty(previewUrl) || predictOptimizationQuery.data === 'NONE';
 
   function handleClose() {
     resetAll();
@@ -151,11 +151,7 @@ function OptimizationImpactInfo({ optimizationImpact }: OptimizationImpactInfoPr
   const { t } = useTranslation(['admin']);
 
   if (!optimizationImpact || optimizationImpact === 'NONE') {
-    return (
-      <Typography variant="body1" color="error">
-        <Trans i18nKey={'admin:dinner_route_optimize_prediction_no_impact'} />
-      </Typography>
-    );
+    return <ErrorAlert errorMessage="admin:dinner_route_optimize_prediction_no_impact" />;
   }
 
   let color = 'default';
