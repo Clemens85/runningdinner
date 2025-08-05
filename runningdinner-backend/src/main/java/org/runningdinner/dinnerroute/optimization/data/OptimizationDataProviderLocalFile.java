@@ -30,16 +30,24 @@ public class OptimizationDataProviderLocalFile implements OptimizationDataProvid
 
 	@Override
 	public String readResponseData(String adminId, String optimizationId) {
-
-		String responseFilePath = OptimizationDataUtil.buildResponseFilePath(adminId, optimizationId);
-		responseFilePath = DEST_FOLDER + "/" + responseFilePath;
-		File responseFile = new File(responseFilePath);
-
+		File responseFile = getResponseFile(adminId, optimizationId);
 		try {
 			return FileUtils.readFileToString(responseFile, "UTF-8");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private File getResponseFile(String adminId, String optimizationId) {
+		String responseFilePath = OptimizationDataUtil.buildResponseFilePath(adminId, optimizationId);
+		responseFilePath = DEST_FOLDER + "/" + responseFilePath;
+		return new File(responseFilePath);
+	}
+
+	@Override
+	public boolean hasResponseData(String adminId, String optimizationId) {
+		File responseFile = getResponseFile(adminId, optimizationId);
+		return responseFile.exists();
 	}
 
 	@Override

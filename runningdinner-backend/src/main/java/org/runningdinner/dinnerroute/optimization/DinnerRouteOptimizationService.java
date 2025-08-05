@@ -27,6 +27,8 @@ import org.runningdinner.dinnerroute.optimization.data.RouteOptimizationSettings
 import org.runningdinner.dinnerroute.optimization.data.TeamReference;
 import org.runningdinner.dinnerroute.optimization.data.TeamReferenceResultList;
 import org.runningdinner.dinnerroute.optimization.data.TeamReferenceService;
+import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstance;
+import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
@@ -320,4 +322,8 @@ public class DinnerRouteOptimizationService {
 						.setTeamMemberIds(originalParticipants);
 	}
 
+	public OptimizationInstance findOptimizationInstanceStatus(@ValidateAdminId String adminId, String optimizationId) {
+		boolean hasResponseData = optimizationDataProvider.hasResponseData(adminId, optimizationId);
+		return new OptimizationInstance(optimizationId, null, hasResponseData ? OptimizationInstanceStatus.FINISHED : OptimizationInstanceStatus.RUNNING);
+	}
 }

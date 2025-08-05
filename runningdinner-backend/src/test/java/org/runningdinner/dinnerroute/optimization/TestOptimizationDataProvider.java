@@ -1,5 +1,6 @@
 package org.runningdinner.dinnerroute.optimization;
 
+import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.ResourceLoader;
 import org.runningdinner.dinnerroute.optimization.data.OptimizationDataProvider;
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
@@ -31,6 +32,11 @@ public class TestOptimizationDataProvider implements OptimizationDataProvider {
 		responseData = responseData.replaceAll("__ADMIN_ID__", adminId);
 		responseData = responseData.replaceAll("__OPTIMIZATION_ID__", optimizationId);
 		return responseData;
+	}
+
+	@Override
+	public boolean hasResponseData(String adminId, String optimizationId) {
+		return StringUtils.isNotEmpty(requestData); // Dummy implementation for testing
 	}
 
 	@Override

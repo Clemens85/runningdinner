@@ -47,6 +47,11 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 		}
 	}
 
+	@Override
+	public boolean hasResponseData(String adminId, String optimizationId) {
+		return s3ClientProviderService.isFileExisting(bucketName, OptimizationDataUtil.buildResponseFilePath(adminId, optimizationId));
+	}
+
 	public void writeRequestData(String adminId, String optimizationId, String requestJsonString) throws TooManyOptimizationRequestsException {
 		List<OptimizationInstance> existingInstances = optimizationInstanceService.getOptimizationRequestInstances(adminId);
 		// Set those instances to FINISHED which have a response file already existing...

@@ -10,6 +10,8 @@ import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService
 import org.runningdinner.dinnerroute.optimization.OptimizationImpact;
 import org.runningdinner.dinnerroute.optimization.TooManyOptimizationRequestsException;
 import org.runningdinner.dinnerroute.optimization.data.RouteOptimizationSettings;
+import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstance;
+import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,27 +70,34 @@ public class DinnerRouteRestController {
     return dinnerRouteService.calculateDinnerRouteDistances(adminId);
   }
 
-  @PostMapping("/runningdinner/{adminId}/distances/optimization")
-  public String createNewOptimizationInstance(@PathVariable("adminId") String adminId,
-												  			 					    @RequestBody @Valid RouteOptimizationSettings optimizationSettings) throws TooManyOptimizationRequestsException {
+  @PostMapping("/runningdinner/{adminId}/optimization")
+  public OptimizationInstance createNewOptimizationInstance(@PathVariable("adminId") String adminId,
+												  			 					    						  @RequestBody @Valid RouteOptimizationSettings optimizationSettings) throws TooManyOptimizationRequestsException {
 
 		var publishedEvent = dinnerRouteOptimizationService.publishOptimizationEvent(adminId, optimizationSettings);
-		return """
-						{ "optimizationId": "%s" }
-						""".formatted(publishedEvent.getOptimizationId());
+		return new OptimizationInstance(
+			publishedEvent.getOptimizationId(),
+			LocalDateTime.now(), // Not exactly correct, but sufficient for the purpose of this API
+			OptimizationInstanceStatus.RUNNING
+		);
   }
 
-	@GetMapping("/runningdinner/{adminId}/distances/optimization/{optimizationId}")
+	@GetMapping("/runningdinner/{adminId}/optimization/{optimizationId}/preview")
 	public DinnerRouteOptimizationResult previewOptimizedDinnerRoutes(@PathVariable("adminId") String adminId, @PathVariable("optimizationId")  String optimizationId) throws NoPossibleRunningDinnerException {
 		return dinnerRouteOptimizationService.previewOptimizedDinnerRoutes(adminId, optimizationId);
 	}
 
-	@PutMapping("/runningdinner/{adminId}/distances/optimization/{optimizationId}")
-	public DinnerRouteListTO applyOptimizedDinnerRoutes(@PathVariable("adminId") String adminId, @PathVariable("optimizationId")  String optimizationId) throws NoPossibleRunningDinnerException {
+	@GetMapping("/runningdinner/{adminId}/optimization/{optimizationId}/status")
+	public OptimizationInstance findOptimizationInstanceStatus(@PathVariable("adminId") String adminId, @PathVariable("optimizationId") String optimizationId) {
+		return dinnerRouteOptimizationService.findOptimizationInstanceStatus(adminId, optimizationId);
+	}
+
+	@PutMapping("/runningdinner/{adminId}/optimization/{optimizationId}")
+	public DinnerRouteListTO applyOptimizedDinnerRoutes(@PathVariable("adminId") String adminId, @PathVariable("optimizationId") String optimizationId) throws NoPossibleRunningDinnerException {
 		return dinnerRouteOptimizationService.applyOptimizedDinnerRoutes(adminId, optimizationId);
 	}
   
-  @GetMapping("/runningdinner/{adminId}/distances/optimization/predict")
+  @GetMapping("/runningdinner/{adminId}/optimization/predict")
   public OptimizationImpact predictOptimizationImpact(@PathVariable("adminId") String adminId) throws NoPossibleRunningDinnerException {
 		return dinnerRouteOptimizationService.predictOptimizationImpact(adminId);
   }

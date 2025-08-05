@@ -101,6 +101,11 @@ export type DinnerRouteOptimizationResult = {
   sumDistanceInMetersBefore: number;
 };
 
+export type DinnerRouteOptimizationStatus = {
+  optimizationId: string;
+  status: 'RUNNING' | 'FINISHED' | 'TIMEOUT';
+};
+
 export type CalculateDinnerRouteOptimizationRequest = {
   currentSumDistanceInMeters: number;
   currentAverageDistanceInMeters: number;

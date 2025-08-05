@@ -10,6 +10,7 @@ import {
   OptimizationImpact,
   CalculateDinnerRouteOptimizationResponse,
   DinnerRouteOptimizationResult,
+  DinnerRouteOptimizationStatus,
 } from '../../types';
 
 export async function findDinnerRouteByAdminIdAndTeamIdAsync(adminId: string, teamId: string): Promise<DinnerRoute> {
@@ -41,14 +42,21 @@ export async function createRouteOptimizationCalculation(
   adminId: string,
   calculateRequest: CalculateDinnerRouteOptimizationRequest,
 ): Promise<CalculateDinnerRouteOptimizationResponse> {
-  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/optimization`);
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization`);
   const response = await axios.post<CalculateDinnerRouteOptimizationResponse>(url, calculateRequest);
   return response.data;
 }
 
 export async function findRouteOptimizationPreview(adminId: string, optimizationId: string): Promise<DinnerRouteOptimizationResult> {
-  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/optimization/${optimizationId}`);
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/${optimizationId}/preview`);
   const response = await axios.get<DinnerRouteOptimizationResult>(url);
+  const result = response.data;
+  return result;
+}
+
+export async function findRouteOptimizationStatus(adminId: string, optimizationId: string): Promise<DinnerRouteOptimizationStatus> {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/${optimizationId}/status`);
+  const response = await axios.get<DinnerRouteOptimizationStatus>(url);
   const result = response.data;
   return result;
 }
@@ -58,12 +66,12 @@ export function buildOptimizationNotificationSubscriptionUrl(adminId: string, op
 }
 
 export async function saveOptimizedDinnerRoutes(adminId: string, optimizationId: string): Promise<void> {
-  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/optimization/${optimizationId}`);
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/${optimizationId}`);
   await axios.put(url);
 }
 
 export async function predictOptimizationImpact(adminId: string): Promise<OptimizationImpact> {
-  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/optimization/predict`);
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/predict`);
   const response = await axios.get<OptimizationImpact>(url);
   return response.data;
 }

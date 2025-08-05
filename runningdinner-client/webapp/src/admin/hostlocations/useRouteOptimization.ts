@@ -5,6 +5,7 @@ import {
   createRouteOptimizationCalculation,
   DinnerRouteOptimizationResult,
   findRouteOptimizationPreview,
+  findRouteOptimizationStatus,
   isStringEmpty,
 } from '@runningdinner/shared';
 import { useEffect, useRef, useState } from 'react';
@@ -92,44 +93,7 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     clearEventSource();
   }
 
-  // --- Polling (as fallback for SSE) --- //
-  const isOptimizationCalculationRunning = !!adminId && !!currentOptimizationId && !!optimizationRequest && !previewUrl;
-  useEffect(() => {
-    if (!pollingStarted && isOptimizationCalculationRunning) {
-      const timer = setTimeout(() => setPollingStarted(true), POLLING_INTERVAL);
-      return () => clearTimeout(timer);
-    }
-  }, [isOptimizationCalculationRunning, pollingStarted]);
-
-  const { data: polledResult } = useQuery({
-    queryKey: ['optimizationPreview', adminId, currentOptimizationId],
-    queryFn: async () => {
-      if (!adminId || !currentOptimizationId) {
-        throw new Error('Missing adminId or optimizationId');
-      }
-      try {
-        return await findRouteOptimizationPreview(adminId, currentOptimizationId);
-      } catch (error) {
-        return null; // We expect error responses here, so we return null to continue polling
-      }
-    },
-    enabled: isOptimizationCalculationRunning && pollingStarted,
-    refetchInterval: POLLING_INTERVAL,
-    refetchIntervalInBackground: true,
-    retry: MAX_POLLING_ATTEMPTS,
-  });
-  useEffect(() => {
-    if (polledResult && polledResult.id && optimizationRequest) {
-      const url = setOptimizationResultToLocalStorage(adminId, polledResult, optimizationRequest);
-      resetOptimizationRequest();
-      setPreviewUrl(url);
-      clearEventSource();
-    }
-  }, [polledResult, optimizationRequest, adminId]);
-  // --- End of Polling (SSE fallback) ---
-
-  // --- SSE EventSource for real-time updates --- //
-  async function fetchOptimizationPreviewOnEventMessage() {
+  async function fetchOptimizationPreviewOnOptimizationFinished() {
     try {
       // Try to fetch optimization result directly (which might work)
       const routeOptimizationResult = await findRouteOptimizationPreview(adminId, currentOptimizationId || '');
@@ -141,13 +105,47 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     }
   }
 
+  // --- Polling (as fallback for SSE) --- //
+  const isOptimizationCalculationRunning = !!adminId && !!currentOptimizationId && !!optimizationRequest && !previewUrl;
+  useEffect(() => {
+    if (!pollingStarted && isOptimizationCalculationRunning) {
+      const timer = setTimeout(() => setPollingStarted(true), POLLING_INTERVAL);
+      return () => clearTimeout(timer);
+    }
+  }, [isOptimizationCalculationRunning, pollingStarted]);
+
+  const { data: optimizationInstanceStatus } = useQuery({
+    queryKey: ['findRouteOptimizationStatus', adminId, currentOptimizationId],
+    queryFn: async () => {
+      if (!adminId || !currentOptimizationId) {
+        throw new Error('Missing adminId or optimizationId');
+      }
+      try {
+        return await findRouteOptimizationStatus(adminId, currentOptimizationId);
+      } catch (error) {
+        return null; // Prevent immediate refetch on error
+      }
+    },
+    enabled: isOptimizationCalculationRunning && pollingStarted,
+    refetchInterval: POLLING_INTERVAL,
+    refetchIntervalInBackground: true,
+    retry: MAX_POLLING_ATTEMPTS,
+  });
+  useEffect(() => {
+    if ((optimizationInstanceStatus?.status === 'FINISHED' || optimizationInstanceStatus?.status === 'TIMEOUT') && optimizationRequest) {
+      fetchOptimizationPreviewOnOptimizationFinished();
+    }
+  }, [optimizationInstanceStatus, optimizationRequest, adminId]);
+  // --- End of Polling (SSE fallback) ---
+
+  // --- SSE EventSource for real-time updates --- //
   function handleEventSourceError(err: Event | any) {
     setTimeout(async () => {
       console.error('Route optimization SSE seems to be timed out:', err);
       clearEventSource();
       if (!previewUrl) {
         // Fallback, try to fetch optimization result directly (which might work)
-        fetchOptimizationPreviewOnEventMessage();
+        fetchOptimizationPreviewOnOptimizationFinished();
       }
     }, 250);
   }
@@ -164,7 +162,7 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     eventSourceRef.current = eventSource;
 
     eventSource.onmessage = (_event) => {
-      fetchOptimizationPreviewOnEventMessage();
+      fetchOptimizationPreviewOnOptimizationFinished();
     };
     eventSource.onerror = (err) => {
       handleEventSourceError(err);
