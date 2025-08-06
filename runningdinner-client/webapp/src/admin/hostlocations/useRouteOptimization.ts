@@ -14,7 +14,7 @@ import { isAxiosError } from 'axios';
 import { DinnerRouteOptimizationResultService } from './DinnerRouteOptimizationResultService';
 import { useQuery } from '@tanstack/react-query';
 
-const POLLING_INTERVAL = 5000; // 5 seconds
+const POLLING_INTERVAL = 12000; // 12 seconds
 const MAX_POLLING_ATTEMPTS = 1 + 9; // initial + 9 retries
 
 function buildPreviewUrl(optimizationId: string) {
