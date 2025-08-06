@@ -7,6 +7,7 @@ import org.runningdinner.common.aws.SnsUtil;
 import org.runningdinner.common.aws.WebhookValidatorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +47,7 @@ public class DinnerRouteOptimizationNotificationRestController {
 	}
 
 	@GetMapping(value = "/runningdinner/{adminId}/{optimizationId}/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public SseEmitter subscribe(@PathVariable String adminId, @PathVariable String optimizationId) {
+	public ResponseEntity<SseEmitter> subscribe(@PathVariable String adminId, @PathVariable String optimizationId) {
 		SseEmitter emitter = new SseEmitter(TIMEOUT); // no timeout
 		String emitterKey = emitterKey(adminId, optimizationId);
 		emitters.put(emitterKey, emitter);
@@ -65,7 +66,10 @@ public class DinnerRouteOptimizationNotificationRestController {
 			emitters.remove(emitterKey);
 		});
 
-		return emitter;
+		return ResponseEntity.ok()
+						.header(HttpHeaders.CACHE_CONTROL, "no-cache")
+						.header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_EVENT_STREAM_VALUE)
+						.body(emitter);
 	}
 
 	// Called by SNS (via Lambda or direct HTTP) when optimization is finished (SNS only supports text/plain when sending requests)
