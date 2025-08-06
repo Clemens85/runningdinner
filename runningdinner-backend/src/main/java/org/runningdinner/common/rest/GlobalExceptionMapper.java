@@ -153,7 +153,7 @@ public class GlobalExceptionMapper {
 
 	@ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
 	@ExceptionHandler(TooManyOptimizationRequestsException.class)
-	IssueList mapNoPossibleRunningDinnerException(final TooManyOptimizationRequestsException ex) {
+	IssueList mapTooManyOptimizationRequestsException(final TooManyOptimizationRequestsException ex) {
 		LOGGER.error(ex.getMessage(), ex);
 		return new IssueList(new Issue(ex.getMessage(), IssueType.BAD_REQUEST));
 	}

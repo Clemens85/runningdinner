@@ -55,7 +55,7 @@ public class S3ClientProviderService {
 		try {
 			// Fetch the metadata for the lock file using a HeadObjectRequest
 			HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-							.bucket(bucketName) // Replace with your actual bucket name
+							.bucket(bucketName)
 							.key(key)
 							.build();
 			s3Client.headObject(headObjectRequest);
