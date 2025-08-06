@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@RequestMapping("/rest/sse/v1/dinnerroute/optimization")
+@RequestMapping("/sse/dinnerrouteservice/v1")
 public class DinnerRouteOptimizationNotificationRestController {
 
 	private static final long TIMEOUT = 180 * 1000L; // 3 Minutes

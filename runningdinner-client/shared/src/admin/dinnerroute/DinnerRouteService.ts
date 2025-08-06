@@ -62,7 +62,9 @@ export async function findRouteOptimizationStatus(adminId: string, optimizationI
 }
 
 export function buildOptimizationNotificationSubscriptionUrl(adminId: string, optimizationId: string): string {
-  return BackendConfig.buildUrl(`/sse/v1/dinnerroute/optimization/runningdinner/${adminId}/${optimizationId}/subscribe`);
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/${optimizationId}/subscribe`);
+  const result = url.replace('/rest/', '/sse/'); // Adjust URL for SSE
+  return result;
 }
 
 export async function saveOptimizedDinnerRoutes(adminId: string, optimizationId: string): Promise<void> {
