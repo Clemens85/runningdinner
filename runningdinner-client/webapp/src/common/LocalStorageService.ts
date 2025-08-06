@@ -1,7 +1,7 @@
 export function getLocalStorageItem<T>(key: string): T | undefined {
   let item = localStorage.getItem(key);
   if (item) {
-    return JSON.parse(item);
+    return JSON.parse(item, dateReviver);
   }
   return undefined;
 }
@@ -28,6 +28,28 @@ export function deleteLocalStorageInAdminId(key: string, adminId: string) {
   }
 }
 
+export function deleteLocalStorageByPrefix(prefix: string) {
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith(prefix)) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach((key) => localStorage.removeItem(key));
+}
+
 function calculateKeyForAdminId(key: string, adminId: string) {
   return `${key}_${adminId}`;
+}
+
+function dateReviver(_key: string, value: any) {
+  // Check if value is a string and matches ISO date format
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(value)) {
+    const date = new Date(value);
+    if (!isNaN(date.getTime())) {
+      return date;
+    }
+  }
+  return value;
 }

@@ -1,27 +1,30 @@
 package org.runningdinner.dinnerroute;
 
-import java.util.List;
-import java.util.UUID;
-
+import jakarta.validation.Valid;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourCluster;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
-import org.runningdinner.dinnerroute.optimization.CalculateDinnerRouteOptimizationRequest;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationResult;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
 import org.runningdinner.dinnerroute.optimization.OptimizationImpact;
-import org.runningdinner.dinnerroute.optimization.SaveDinnerRouteOptimizationRequest;
+import org.runningdinner.dinnerroute.optimization.TooManyOptimizationRequestsException;
+import org.runningdinner.dinnerroute.optimization.data.RouteOptimizationSettings;
+import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstance;
+import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/rest/dinnerrouteservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,13 +36,13 @@ public class DinnerRouteRestController {
 
 	private final TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService;
 
-  public DinnerRouteRestController(DinnerRouteService dinnerRouteService, 
-  															DinnerRouteOptimizationService dinnerRouteOptimizationService,
-  															TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService) {
+  public DinnerRouteRestController(DinnerRouteService dinnerRouteService,
+																	 DinnerRouteOptimizationService dinnerRouteOptimizationService,
+																	 TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService) {
     this.dinnerRouteService = dinnerRouteService;
 		this.dinnerRouteOptimizationService = dinnerRouteOptimizationService;
 		this.teamNeighbourClusterCalculationService = teamNeighbourClusterCalculationService;
-  }
+	}
 
   @GetMapping("/runningdinner/{adminId}/teams/{teamId}")
   public DinnerRouteTO findDinnerRoute(@PathVariable String adminId, @PathVariable UUID teamId) {
@@ -67,19 +70,34 @@ public class DinnerRouteRestController {
     return dinnerRouteService.calculateDinnerRouteDistances(adminId);
   }
 
-  @PutMapping("/runningdinner/{adminId}/distances/optimization")
-  public DinnerRouteOptimizationResult calculateOptimization(@PathVariable("adminId") String adminId,
-												  			 														 @RequestBody @Valid CalculateDinnerRouteOptimizationRequest calculateRequest) throws NoPossibleRunningDinnerException {
-    return dinnerRouteOptimizationService.calculateOptimization(adminId, calculateRequest);
+  @PostMapping("/runningdinner/{adminId}/optimization")
+  public OptimizationInstance createNewOptimizationInstance(@PathVariable("adminId") String adminId,
+												  			 					    						  @RequestBody @Valid RouteOptimizationSettings optimizationSettings) throws TooManyOptimizationRequestsException {
+
+		var publishedEvent = dinnerRouteOptimizationService.publishOptimizationEvent(adminId, optimizationSettings);
+		return new OptimizationInstance(
+			publishedEvent.getOptimizationId(),
+			LocalDateTime.now(), // Not exactly correct, but sufficient for the purpose of this API
+			OptimizationInstanceStatus.RUNNING
+		);
   }
+
+	@GetMapping("/runningdinner/{adminId}/optimization/{optimizationId}/preview")
+	public DinnerRouteOptimizationResult previewOptimizedDinnerRoutes(@PathVariable("adminId") String adminId, @PathVariable("optimizationId")  String optimizationId) throws NoPossibleRunningDinnerException {
+		return dinnerRouteOptimizationService.previewOptimizedDinnerRoutes(adminId, optimizationId);
+	}
+
+	@GetMapping("/runningdinner/{adminId}/optimization/{optimizationId}/status")
+	public OptimizationInstance findOptimizationInstanceStatus(@PathVariable("adminId") String adminId, @PathVariable("optimizationId") String optimizationId) {
+		return dinnerRouteOptimizationService.findOptimizationInstanceStatus(adminId, optimizationId);
+	}
+
+	@PutMapping("/runningdinner/{adminId}/optimization/{optimizationId}")
+	public DinnerRouteListTO applyOptimizedDinnerRoutes(@PathVariable("adminId") String adminId, @PathVariable("optimizationId") String optimizationId) throws NoPossibleRunningDinnerException {
+		return dinnerRouteOptimizationService.applyOptimizedDinnerRoutes(adminId, optimizationId);
+	}
   
-  @PutMapping("/runningdinner/{adminId}/teams")
-  public void saveNewDinnerRoutes(@PathVariable("adminId") String adminId,
-  																@RequestBody @Valid SaveDinnerRouteOptimizationRequest saveRequest) throws NoPossibleRunningDinnerException {
-		dinnerRouteOptimizationService.saveNewDinnerRoutes(adminId, saveRequest);
-  }
-  
-  @GetMapping("/runningdinner/{adminId}/distances/optimization/predict")
+  @GetMapping("/runningdinner/{adminId}/optimization/predict")
   public OptimizationImpact predictOptimizationImpact(@PathVariable("adminId") String adminId) throws NoPossibleRunningDinnerException {
 		return dinnerRouteOptimizationService.predictOptimizationImpact(adminId);
   }

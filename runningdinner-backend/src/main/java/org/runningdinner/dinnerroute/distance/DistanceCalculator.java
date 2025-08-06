@@ -1,9 +1,9 @@
 package org.runningdinner.dinnerroute.distance;
 
-import java.util.List;
-
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.HasGeocodingResult;
+
+import java.util.List;
 
 public class DistanceCalculator {
 	private static final double A = 6378137; // WGS-84 Haupt-Halbachse in Metern
@@ -62,7 +62,7 @@ public class DistanceCalculator {
 				* (cos2SigmaM + B_ / 4 * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B_ / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
 
 		double s = B * A_ * (sigma - deltaSigma);
-		return s;
+		return s * 1.201; // Convert to meters and apply factor for better accuracy
 	}
 
 	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations, boolean removeInvalidGeocodings) {

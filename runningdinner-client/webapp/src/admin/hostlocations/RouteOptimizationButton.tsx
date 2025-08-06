@@ -1,7 +1,6 @@
-import { Box, Button, Dialog, DialogContent, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Dialog, DialogContent, Tooltip, Typography } from '@mui/material';
 import {
   BaseAdminIdProps,
-  calculateOptimizationClusters,
   useDisclosure,
   isStringNotEmpty,
   DinnerRouteWithDistancesList,
@@ -11,16 +10,15 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
 import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
-import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
-import { setLocalStorageInAdminId } from '../../common/LocalStorageService';
 import Paragraph from '../../common/theme/typography/Paragraph';
-import { useMutation } from '@tanstack/react-query';
 import { ProgressBar } from '../../common/ProgressBar';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { OPTIMIZATION_ID_QUERY_PARAM } from '../AdminNavigationHook';
 import { useIsRouteOptimization } from './useIsRouteOptimization';
 import { usePredictOptimizationImpact } from './usePredictOptimizationImpact';
 import { FetchProgressBar } from '../../common/FetchProgressBar';
+import { useRouteOptimization } from './useRouteOptimization';
+import { t } from 'i18next';
+import { Span } from '../../common/theme/typography/Tags';
 
 type RouteOptimizationButtonProps = {
   routeDistancesList: DinnerRouteWithDistancesList | undefined;
@@ -38,7 +36,7 @@ export function RouteOptimizationButton(props: RouteOptimizationButtonProps) {
   return (
     <>
       <Tooltip title={'Aktuell nicht verfügbar'}>
-        <Button sx={{ mr: 1 }} color="inherit" onClick={() => open()} size="small" variant="outlined" disabled={true}>
+        <Button sx={{ mr: 1 }} color="inherit" onClick={() => open()} size="small" variant="outlined" disabled={false}>
           {t('admin:dinner_route_optimize_action')}
         </Button>
       </Tooltip>
@@ -54,75 +52,95 @@ type RouteOptimizationDialogProps = {
 
 function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistancesList }: RouteOptimizationDialogProps) {
   const { t } = useTranslation(['common', 'admin']);
-  const { showError } = useCustomSnackbar();
 
   const predictOptimizationQuery = usePredictOptimizationImpact(adminId);
+  const { isPending, triggerCalculateOptimization, previewUrl, errorMessage, resetAll } = useRouteOptimization({ adminId });
 
-  const optimizeMutation = useMutation({
-    mutationFn: () => calculateOptimization(),
-    onError(error) {
-      showError(t('admin:dinner_route_optimize_error'));
-      console.error('Error during optimization:', error);
-    },
-  });
-
-  async function calculateOptimization() {
+  async function handleTriggerCalculationOptimization() {
     const calculateRequest: CalculateDinnerRouteOptimizationRequest = {
       currentAverageDistanceInMeters: routeDistancesList?.averageDistanceInMeters || -1,
       currentSumDistanceInMeters: routeDistancesList?.sumDistanceInMeters || -1,
     };
-    const optimizationResult = await calculateOptimizationClusters(adminId, calculateRequest);
-    optimizationResult.averageDistanceInMetersBefore = routeDistancesList?.averageDistanceInMeters || 0;
-    optimizationResult.sumDistanceInMetersBefore = routeDistancesList?.sumDistanceInMeters || 0;
-    setLocalStorageInAdminId(optimizationResult.id, optimizationResult, adminId);
-    const url = window.location.href;
-    return `${url}?${OPTIMIZATION_ID_QUERY_PARAM}=${optimizationResult.id}`;
+    triggerCalculateOptimization(calculateRequest);
   }
 
-  const okButtonDisabled = optimizeMutation.isPending || !routeDistancesList;
+  const okButtonDisabled = isPending() || !routeDistancesList || isStringNotEmpty(previewUrl) || predictOptimizationQuery.data === 'NONE';
+
+  function handleClose() {
+    resetAll();
+    onClose();
+  }
 
   return (
     <Dialog
-      onClose={onClose}
+      onClose={handleClose}
       open={!!isOpen}
       maxWidth={'md'}
       sx={{
         zIndex: 10002,
       }}
     >
-      <DialogTitleCloseable onClose={onClose}>{t('admin:dinner_route_optimize_title')}</DialogTitleCloseable>
+      <DialogTitleCloseable onClose={handleClose}>{t('admin:dinner_route_optimize_title')}</DialogTitleCloseable>
       <DialogContent>
         <Paragraph>
           <Trans i18nKey={'admin:dinner_route_optimize_description'} />
+          <br />
+          <Trans i18nKey={'admin:dinner_route_optimize_note'} />
         </Paragraph>
         <Box my={2}>
           <FetchProgressBar {...predictOptimizationQuery} />
-          {predictOptimizationQuery.data && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
+          {predictOptimizationQuery.data && !previewUrl && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
         </Box>
-        <Paragraph>
-          <strong>{t('common:note')}</strong>: <Trans i18nKey={'admin:dinner_route_optimize_note'} />
-        </Paragraph>
 
         <Box my={2}>
           {!routeDistancesList && <ProgressBar showLoadingProgress={true} />}
-          {optimizeMutation.isPending && <ProgressBar showLoadingProgress={true} />}
-          {optimizeMutation.data && (
-            <Button onClick={onClose} color="primary" startIcon={<OpenInNewIcon />} href={optimizeMutation.data} target="_blank" rel="noopener noreferrer">
-              <Paragraph>
-                <Trans i18nKey={'admin:dinner_route_optimize_preview_open'} />
-              </Paragraph>
-            </Button>
+          {isPending() && <OptimizationProgressBar />}
+          {errorMessage && <ErrorAlert errorMessage={errorMessage} />}
+          {previewUrl && (
+            <Box sx={{ textAlign: 'center', mb: -4 }}>
+              <Button onClick={handleClose} color="primary" startIcon={<OpenInNewIcon />} href={previewUrl} target="_blank" rel="noopener noreferrer">
+                <Paragraph>
+                  <strong>
+                    <Trans i18nKey={'admin:dinner_route_optimize_preview_open'} />
+                  </strong>
+                </Paragraph>
+              </Button>
+            </Box>
           )}
         </Box>
       </DialogContent>
       <DialogActionsPanel
-        onOk={() => optimizeMutation.mutate()}
+        onOk={handleTriggerCalculationOptimization}
         okButtonDisabled={okButtonDisabled}
-        onCancel={onClose}
+        onCancel={handleClose}
         okLabel={t('admin:dinner_route_optimize_action')}
         cancelLabel={t('common:cancel')}
       />
     </Dialog>
+  );
+}
+
+function OptimizationProgressBar() {
+  return (
+    <Box flexDirection="column" alignItems="center" gap={2}>
+      <ProgressBar showLoadingProgress={true} />
+      <Typography variant="body1" color="textSecondary" align="center" sx={{ mt: 2 }}>
+        {t('admin:dinner_route_optimization_running')}
+      </Typography>
+    </Box>
+  );
+}
+
+type ErrorAlertProps = {
+  errorMessage: string;
+};
+function ErrorAlert({ errorMessage }: ErrorAlertProps) {
+  return (
+    <Box my={2}>
+      <Alert severity="error" variant="outlined">
+        <Span i18n={errorMessage} />
+      </Alert>
+    </Box>
   );
 }
 
@@ -133,11 +151,7 @@ function OptimizationImpactInfo({ optimizationImpact }: OptimizationImpactInfoPr
   const { t } = useTranslation(['admin']);
 
   if (!optimizationImpact || optimizationImpact === 'NONE') {
-    return (
-      <Typography variant="body1" color="error">
-        <Trans i18nKey={'admin:dinner_route_optimize_prediction_no_impact'} />
-      </Typography>
-    );
+    return <ErrorAlert errorMessage="admin:dinner_route_optimize_prediction_no_impact" />;
   }
 
   let color = 'default';

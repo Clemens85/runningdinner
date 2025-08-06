@@ -97,19 +97,22 @@ export type DinnerRouteOptimizationResult = {
   optimizedDinnerRouteList: DinnerRouteList;
   optimizedDistances: DinnerRouteWithDistancesList;
   optimizedTeamNeighbourClusters: TeamNeighbourClusterList;
-  teamMemberChangesToPerform: TeamMemberChange[];
   averageDistanceInMetersBefore: number;
   sumDistanceInMetersBefore: number;
 };
 
-export type SaveDinnerRouteOptimizationRequest = {
-  optimizedDinnerRoutes: DinnerRoute[];
-  teamMemberChangesToPerform: TeamMemberChange[];
+export type DinnerRouteOptimizationStatus = {
+  optimizationId: string;
+  status: 'RUNNING' | 'FINISHED' | 'TIMEOUT';
 };
 
 export type CalculateDinnerRouteOptimizationRequest = {
   currentSumDistanceInMeters: number;
   currentAverageDistanceInMeters: number;
+};
+
+export type CalculateDinnerRouteOptimizationResponse = {
+  optimizationId: string;
 };
 
 export enum MealType {

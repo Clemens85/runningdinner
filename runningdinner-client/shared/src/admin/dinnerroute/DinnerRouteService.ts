@@ -6,10 +6,11 @@ import {
   TeamNeighbourCluster,
   TeamNeighbourClusterList,
   DinnerRouteWithDistancesList,
-  DinnerRouteOptimizationResult,
   CalculateDinnerRouteOptimizationRequest,
   OptimizationImpact,
-  SaveDinnerRouteOptimizationRequest,
+  CalculateDinnerRouteOptimizationResponse,
+  DinnerRouteOptimizationResult,
+  DinnerRouteOptimizationStatus,
 } from '../../types';
 
 export async function findDinnerRouteByAdminIdAndTeamIdAsync(adminId: string, teamId: string): Promise<DinnerRoute> {
@@ -37,19 +38,42 @@ export async function calculateRouteDistances(adminId: string): Promise<DinnerRo
   return result;
 }
 
-export async function calculateOptimizationClusters(adminId: string, calculateRequest: CalculateDinnerRouteOptimizationRequest): Promise<DinnerRouteOptimizationResult> {
-  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/optimization`);
-  const response = await axios.put<DinnerRouteOptimizationResult>(url, calculateRequest);
+export async function createRouteOptimizationCalculation(
+  adminId: string,
+  calculateRequest: CalculateDinnerRouteOptimizationRequest,
+): Promise<CalculateDinnerRouteOptimizationResponse> {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization`);
+  const response = await axios.post<CalculateDinnerRouteOptimizationResponse>(url, calculateRequest);
   return response.data;
 }
 
-export async function saveNewDinnerRoutes(adminId: string, saveRequest: SaveDinnerRouteOptimizationRequest): Promise<void> {
-  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/teams`);
-  await axios.put(url, saveRequest);
+export async function findRouteOptimizationPreview(adminId: string, optimizationId: string): Promise<DinnerRouteOptimizationResult> {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/${optimizationId}/preview`);
+  const response = await axios.get<DinnerRouteOptimizationResult>(url);
+  const result = response.data;
+  return result;
+}
+
+export async function findRouteOptimizationStatus(adminId: string, optimizationId: string): Promise<DinnerRouteOptimizationStatus> {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/${optimizationId}/status`);
+  const response = await axios.get<DinnerRouteOptimizationStatus>(url);
+  const result = response.data;
+  return result;
+}
+
+export function buildOptimizationNotificationSubscriptionUrl(adminId: string, optimizationId: string): string {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/${optimizationId}/subscribe`);
+  const result = url.replace('/rest/', '/sse/'); // Adjust URL for SSE
+  return result;
+}
+
+export async function saveOptimizedDinnerRoutes(adminId: string, optimizationId: string): Promise<void> {
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/${optimizationId}`);
+  await axios.put(url);
 }
 
 export async function predictOptimizationImpact(adminId: string): Promise<OptimizationImpact> {
-  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/distances/optimization/predict`);
+  const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/predict`);
   const response = await axios.get<OptimizationImpact>(url);
   return response.data;
 }

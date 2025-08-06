@@ -6,17 +6,23 @@ import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
 import org.runningdinner.common.IssueType;
-import org.runningdinner.common.exception.*;
+import org.runningdinner.common.exception.DinnerNotAcknowledgedException;
+import org.runningdinner.common.exception.DinnerNotFoundException;
+import org.runningdinner.common.exception.InvalidUuidException;
+import org.runningdinner.common.exception.TechnicalException;
+import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.ValidatorService;
 import org.runningdinner.core.InvalidAddressException;
 import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
+import org.runningdinner.dinnerroute.optimization.TooManyOptimizationRequestsException;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,6 +30,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
 import java.util.List;
 import java.util.Locale;
@@ -135,6 +142,20 @@ public class GlobalExceptionMapper {
 		String message = "Es gibt ein Problem mit deine Running Dinner Konfiguraion. Bitte lade dein Browser-Fenster neu und versuche es erneut!";
 		LOGGER.error(ex.getMessage(), ex);
 		return new IssueList(new Issue(message, IssueType.BAD_REQUEST));
+	}
+
+	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+	@ExceptionHandler(AsyncRequestTimeoutException.class)
+	public ResponseEntity<Void> handleAsyncRequestTimeoutException(AsyncRequestTimeoutException ex) {
+		LOGGER.error("AsyncRequestTimeoutException occurred. This can happen on SSE when no data is sent within specified timeout.", ex);
+		return ResponseEntity.status(503).build();
+	}
+
+	@ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+	@ExceptionHandler(TooManyOptimizationRequestsException.class)
+	IssueList mapTooManyOptimizationRequestsException(final TooManyOptimizationRequestsException ex) {
+		LOGGER.error(ex.getMessage(), ex);
+		return new IssueList(new Issue(ex.getMessage(), IssueType.BAD_REQUEST));
 	}
 
 }

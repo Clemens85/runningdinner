@@ -1,11 +1,15 @@
 package org.runningdinner.mail.mailjet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.runningdinner.mail.MailWebhookValidatorService;
+import org.runningdinner.common.aws.WebhookValidatorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Refer to <a href="https://dev.mailjet.com/email/guides/webhooks/">Webhook guide MailJet</a>
@@ -20,9 +24,9 @@ public class MailJetWebhookRestController {
 
 	private final MailJetSynchronizationService mailJetSynchronizationService;
 
-	private final MailWebhookValidatorService mailWebhookValidator;
+	private final WebhookValidatorService mailWebhookValidator;
 
-	public MailJetWebhookRestController(MailJetSynchronizationService mailJetSynchronizationService, MailWebhookValidatorService mailWebhookValidator) {
+	public MailJetWebhookRestController(MailJetSynchronizationService mailJetSynchronizationService, WebhookValidatorService mailWebhookValidator) {
 		this.mailJetSynchronizationService = mailJetSynchronizationService;
 		this.mailWebhookValidator = mailWebhookValidator;
 	}

@@ -1,15 +1,17 @@
 package org.runningdinner.mail.ses;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.aws.SnsMessage;
-import org.runningdinner.common.aws.SnsUtil;
-import org.runningdinner.mail.MailWebhookValidatorService;
+import org.runningdinner.common.aws.SnsMessageMapperService;
+import org.runningdinner.common.aws.WebhookValidatorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/rest/ses/notifications")
@@ -17,18 +19,18 @@ public class AwsSesWebhookRestController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AwsSesWebhookRestController.class);
 
-	private final MailWebhookValidatorService mailWebhookValidator;
+	private final WebhookValidatorService mailWebhookValidator;
 
 	private final AwsSesEmailSynchronizationService awsSesEmailSynchronizationService;
 
-	private final ObjectMapper objectMapper;
+	private final SnsMessageMapperService snsMessageMapperService;
 
-	public AwsSesWebhookRestController(MailWebhookValidatorService mailWebhookValidator,
+	public AwsSesWebhookRestController(WebhookValidatorService mailWebhookValidator,
 																		 AwsSesEmailSynchronizationService awsSesEmailSynchronizationService,
-																		 ObjectMapper objectMapper) {
+																		 SnsMessageMapperService snsMessageMapperService) {
 		this.mailWebhookValidator = mailWebhookValidator;
 		this.awsSesEmailSynchronizationService = awsSesEmailSynchronizationService;
-		this.objectMapper = objectMapper;
+		this.snsMessageMapperService = snsMessageMapperService;
 	}
 
 	@PostMapping(consumes = {"application/json", "text/plain" })
@@ -43,33 +45,16 @@ public class AwsSesWebhookRestController {
 			return ResponseEntity.status(403).body("Invalid token");
 		}
 
-		SnsMessage message = mapToMessage(messageBody);
+		SnsMessage message = snsMessageMapperService.mapToMessageWithAutoConfirm(messageBody);
 
-		switch (message.getType()) {
-			case "SubscriptionConfirmation":
-				SnsUtil.confirmSubscription(message);
-				LOGGER.info("AWS SES Notification Subscription confirmed.");
-				break;
-			case "Notification":
-				LOGGER.info("AWS SES Notification received: {}", message.getMessage());
-				awsSesEmailSynchronizationService.handleSesNotification(message.getMessage());
-				break;
-			case "UnsubscribeConfirmation":
-				LOGGER.info("Unsubscribe AWS SES Notification confirmation received.");
-				break;
-			default:
-				LOGGER.warn("Unknown AWS SES SNS message type: {}", message.getType());
+		if (message.getType().equals("Notification")) {
+			LOGGER.info("AWS SES Notification received: {}", message.getMessage());
+			awsSesEmailSynchronizationService.handleSesNotification(message.getMessage());
+		} else {
+			LOGGER.warn("Unknown AWS SES SNS message type: {}", message.getType());
 		}
 
 		return ResponseEntity.ok("OK");
-	}
-
-	private SnsMessage mapToMessage(String messageBody) {
-		try {
-			return objectMapper.readValue(messageBody, SnsMessage.class);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }
