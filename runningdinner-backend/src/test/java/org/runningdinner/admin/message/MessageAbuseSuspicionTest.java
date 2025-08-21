@@ -4,7 +4,11 @@ import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.runningdinner.admin.message.job.*;
+import org.runningdinner.admin.message.job.FailureType;
+import org.runningdinner.admin.message.job.MessageJob;
+import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.admin.message.job.MessageTaskRepository;
+import org.runningdinner.admin.message.job.SendingStatus;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
@@ -12,8 +16,8 @@ import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailSenderFactory;
+import org.runningdinner.mail.SuppressedEmail;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
-import org.runningdinner.mail.sendgrid.SuppressedEmail;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.test.util.ApplicationTest;
@@ -39,8 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
   "message.max-allowed-tasks-per-job=2",
   "message.max-allowed-tasks-per-dinner=6",
   "deliver.feedback.mail.scheduler.enabled=false",
-  "delete.runninginnder.instances.scheduler.enabled=false",
-  "sendgrid.sync.sent.mails=false"
+  "delete.runninginnder.instances.scheduler.enabled=false"
 })
 public class MessageAbuseSuspicionTest {
 

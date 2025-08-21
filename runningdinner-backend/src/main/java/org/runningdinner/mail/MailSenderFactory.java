@@ -1,13 +1,11 @@
 package org.runningdinner.mail;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
 import org.runningdinner.core.util.EnvUtilService;
 import org.runningdinner.mail.mailjet.MailJetWrapper;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.mail.pool.PoolableMailSender;
-import org.runningdinner.mail.sendgrid.SendGridMailWrapper;
 import org.runningdinner.mail.ses.AwsSesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +27,7 @@ public class MailSenderFactory {
   
   private final EnvUtilService envUtilService;
   
-  private final ObjectMapper objectMapper; // Maybe needed later on for sendgrid
-
-  public MailSenderFactory(ObjectMapper objectMapper, EnvUtilService envUtilService, MailConfig mailConfig) {
-    this.objectMapper = objectMapper;
+  public MailSenderFactory(EnvUtilService envUtilService, MailConfig mailConfig) {
     this.envUtilService = envUtilService;
     this.mailConfig = mailConfig;
   }
@@ -45,15 +40,6 @@ public class MailSenderFactory {
       var junitConfig = mailConfig.getMailSenderConfigForPrefix("mail.junit");
       result.add(new PoolableMailSender(MailProvider.MOCK, mailSender, junitConfig));
       LOGGER.info("*** Using mocked In-Memory MailSender with settings {} ***", junitConfig);
-    }
-
-    if (mailConfig.isSendGridApiEnabled()) {
-      var mailSender = new SendGridMailWrapper(mailConfig.getSendGridApiKeyMandatory(), objectMapper, mailConfig.isHtmlEmail());
-      var sendGridConfig = mailConfig.getMailSenderConfigForPrefix(MailConfig.SEND_GRID_CONFIG_PREFIX);
-      result.add(new PoolableMailSender(MailProvider.SENDGRID, mailSender, sendGridConfig));
-      LOGGER.info("*** Using SendGrid MailSender with settings {} ***", sendGridConfig);
-    } else {
-      LOGGER.warn("*** SendGrid MailSender is disabled ***");
     }
 
     if (mailConfig.isAwsSesEnabled()) {

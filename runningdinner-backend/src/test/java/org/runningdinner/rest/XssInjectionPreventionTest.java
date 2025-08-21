@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
         "deliver.feedback.mail.scheduler.enabled=false",
         "delete.runninginnder.instances.scheduler.enabled=false",
         "send.queued.messagetasks.scheduler.enabled=false",
-        "sendgrid.sync.sent.mails=false",
         "route.optimization.send.feedback=false",
         "aws.sqs.geocode.request.url=geocode-request-junit",
         "aws.sqs.geocode.response.url=geocode-response-junit",

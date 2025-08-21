@@ -12,12 +12,8 @@ import org.springframework.util.Assert;
 public class MailConfig {
 
 	public static final String MAIL_JET_CONFIG_PREFIX = "mail.mailjet";
-	public static final String SEND_GRID_CONFIG_PREFIX = "mail.sendgrid.api";
 	public static final String AWS_SES_CONFIG_PREFIX = "mail.awsses";
 	public static final String SMTP_CONFIG_PREFIX = "mail.smtp";
-
-	@Value("${mail.sendgrid.api.enabled}")
-	private boolean sendGridApiEnabled;
 
 	@Value("${mail.mailjet.enabled}")
 	private boolean mailJetApiEnabled;
@@ -33,9 +29,6 @@ public class MailConfig {
 
 	@Value("${mail.awsses.password:}")
 	private String awsSesPassword;
-
-	@Value("${mail.sendgrid.api.key:}")
-  private String sendGridApiKey;
 
   @Value("${mail.mailjet.key.public:}")
   private String mailJetApiKeyPublic;
@@ -100,11 +93,6 @@ public class MailConfig {
     return enableStartTls;
   }
 
-  public String getSendGridApiKeyMandatory() {
-		Assert.hasText(sendGridApiKey, "mail.sendgrid.api.key must be set when enabling SendGrid API");
-    return sendGridApiKey;
-  }
-
   public boolean isHtmlEmail() {
     return htmlEmail;
   }
@@ -127,10 +115,6 @@ public class MailConfig {
 	public String getAwsSesPasswordMandatory() {
 		Assert.hasText(awsSesPassword, "mail.awsses.password must be set when enabling AWS SES");
 		return awsSesPassword;
-	}
-
-	public boolean isSendGridApiEnabled() {
-		return sendGridApiEnabled;
 	}
 
 	public boolean isMailJetApiEnabled() {

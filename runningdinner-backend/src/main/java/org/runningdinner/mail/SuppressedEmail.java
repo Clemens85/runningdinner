@@ -1,15 +1,14 @@
 
-package org.runningdinner.mail.sendgrid;
-
-import java.time.LocalDateTime;
-
-import org.runningdinner.admin.message.job.FailureType;
-import org.runningdinner.core.util.DateTimeUtil;
-import org.springframework.util.Assert;
+package org.runningdinner.mail;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
+import org.runningdinner.admin.message.job.FailureType;
+import org.runningdinner.core.util.DateTimeUtil;
+import org.springframework.util.Assert;
+
+import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SuppressedEmail {

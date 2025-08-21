@@ -11,7 +11,7 @@ import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.mail.MailProvider;
 import org.runningdinner.mail.MailUtil;
-import org.runningdinner.mail.sendgrid.SuppressedEmail;
+import org.runningdinner.mail.SuppressedEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
