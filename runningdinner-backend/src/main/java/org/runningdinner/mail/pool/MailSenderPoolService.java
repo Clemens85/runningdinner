@@ -61,34 +61,35 @@ public class MailSenderPoolService {
 			return matchingMailSenders.getFirst();
 		}
 
-		PoolableMailSender result = getMailSenderWithHighestPriority(matchingMailSenders);
-		if (result == null) {
+		List<PoolableMailSender> result = getMailSendersWithHighestPriority(matchingMailSenders);
+		if (result.size() > 1) {
 			// Randomly select one of the matching mail senders
-			int randomIndex = ThreadLocalRandom.current().nextInt(matchingMailSenders.size());
-			result = matchingMailSenders.get(randomIndex);
+			int randomIndex = ThreadLocalRandom.current().nextInt(result.size());
+			return matchingMailSenders.get(randomIndex);
 		}
-		return result;
+		return result.getFirst();
 	}
 
-	public static PoolableMailSender getMailSenderWithHighestPriority(List<PoolableMailSender> matchingMailSenders) {
+	public static List<PoolableMailSender> getMailSendersWithHighestPriority(List<PoolableMailSender> matchingMailSenders) {
 
-		Set<Integer> priorities = matchingMailSenders
-																	.stream()
-																	.map(PoolableMailSender::getPriority)
-																	.map(priority -> priority < 0 ? 0 : priority)
-																	.collect(Collectors.toSet());
-		if (priorities.size() < 2) {
-			return null;
+		Set<Integer> uniquePriorities = matchingMailSenders
+																		.stream()
+																		.map(PoolableMailSender::getPriority)
+																		.map(priority -> priority < 0 ? 0 : priority)
+																		.collect(Collectors.toSet());
+
+		if (uniquePriorities.size() < 2) {
+			return new ArrayList<>(matchingMailSenders);
 		}
 
-		PoolableMailSender result = null;
+		int highestPriority = uniquePriorities.stream()
+																		.max(Integer::compareTo)
+																		.orElseThrow(() -> new IllegalStateException("No priorities found"));
+
+		List<PoolableMailSender> result = new ArrayList<>();
 		for (PoolableMailSender matchingMailSender : matchingMailSenders) {
-			if (matchingMailSender.getPriority() > 0 && result == null) {
-				result = matchingMailSender;
-				continue;
-			}
-			if (result != null && matchingMailSender.getPriority() > result.getPriority()) {
-				result = matchingMailSender;
+			if (matchingMailSender.getPriority() == highestPriority) {
+				result.add(matchingMailSender);
 			}
 		}
 		return result;

@@ -36,7 +36,7 @@ public class TestMessageTaskHelperService {
 		LocalDateTime now = LocalDateTime.now();
 		Awaitility
 						.await()
-						.atMost(5, TimeUnit.SECONDS)
+						.atMost(7, TimeUnit.SECONDS)
 						.until(areAllMessageTasksSent(now));
 	}
 

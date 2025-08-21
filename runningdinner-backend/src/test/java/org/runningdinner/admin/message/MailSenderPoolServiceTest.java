@@ -100,13 +100,13 @@ public class MailSenderPoolServiceTest {
 				newPoolableMailSenderMock(MailProvider.MOCK, -1, 2, -1, false)
 		));
 
-		var result = MailSenderPoolService.getMailSenderWithHighestPriority(matchingMailSenders);
-		assertThat(result).isNull();
+		var result = MailSenderPoolService.getMailSendersWithHighestPriority(matchingMailSenders);
+		assertThat(result).hasSize(2);
 
 		matchingMailSenders.add(newPoolableMailSenderMock(MailProvider.MAILJET, -1, 4, 5, true));
-		result = MailSenderPoolService.getMailSenderWithHighestPriority(matchingMailSenders);
-		assertThat(result).isNotNull();
-		assertThat(result.getKey()).isEqualTo(MailProvider.MAILJET);
+		result = MailSenderPoolService.getMailSendersWithHighestPriority(matchingMailSenders);
+		assertThat(result).hasSize(1);
+		assertThat(result.getFirst().getKey()).isEqualTo(MailProvider.MAILJET);
 	}
 
 	@Test

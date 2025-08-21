@@ -43,11 +43,11 @@ public class PoolableMailSender {
 	}
 
 	public boolean hasDailyLimit() {
-		return mailSenderLimit != null && mailSenderLimit.dailyLimit() > 0;
+		return mailSenderLimit != null && mailSenderLimit.dailyLimit() >= 0;
 	}
 
 	public boolean hasMonthlyLimit() {
-		return mailSenderLimit != null && mailSenderLimit.monthlyLimit() > 0;
+		return mailSenderLimit != null && mailSenderLimit.monthlyLimit() >= 0;
 	}
 
 	public int getPriority() {
