@@ -73,7 +73,11 @@ function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistancesList 
 
   return (
     <Dialog
-      onClose={handleClose}
+      onClose={(_event, reason) => {
+        if (reason !== 'backdropClick') {
+          handleClose();
+        }
+      }}
       open={!!isOpen}
       maxWidth={'md'}
       sx={{
