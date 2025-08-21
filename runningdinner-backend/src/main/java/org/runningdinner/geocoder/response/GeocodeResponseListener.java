@@ -1,19 +1,18 @@
 package org.runningdinner.geocoder.response;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.runningdinner.queue.QueueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class GeocodeResponseListener {
@@ -65,7 +64,7 @@ public class GeocodeResponseListener {
   }
   
   private List<Message> pollMessagesSafe() {
-  	LOGGER.info("Start polling of {}", queueUrl);
+  	LOGGER.debug("Start polling of {}", queueUrl);
     try {
       ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
           .queueUrl(queueUrl)
@@ -76,7 +75,7 @@ public class GeocodeResponseListener {
 
     	ReceiveMessageResponse response = queueProvider.receiveMessage(receiveRequest);
     	List<Message> result = response != null && response.hasMessages() ? response.messages() : Collections.emptyList();
-    	LOGGER.info("Finished polling of {}", queueUrl);
+    	LOGGER.debug("Finished polling of {}", queueUrl);
     	return result;
     } catch (Exception e) {
     	LOGGER.error("Error during polling of {}", queueUrl, e);
