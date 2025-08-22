@@ -65,7 +65,7 @@ public class MailSenderPoolService {
 		if (result.size() > 1) {
 			// Randomly select one of the matching mail senders
 			int randomIndex = ThreadLocalRandom.current().nextInt(result.size());
-			return matchingMailSenders.get(randomIndex);
+			return result.get(randomIndex);
 		}
 		return result.getFirst();
 	}

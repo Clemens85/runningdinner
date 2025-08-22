@@ -110,6 +110,26 @@ public class MailSenderPoolServiceTest {
 	}
 
 	@Test
+	public void getMailSenderWithHighestPriorityBugfixTest() {
+		List<PoolableMailSender> matchingMailSenders = new ArrayList<>(List.of(
+						newPoolableMailSenderMock(MailProvider.SMTP, -1, 6000, 0, false),
+						newPoolableMailSenderMock(MailProvider.AWS_SES, -1, 4, 5, true),
+						newPoolableMailSenderMock(MailProvider.MOCK, -1, 2, 5, false)
+		));
+
+		var result = MailSenderPoolService.getMailSendersWithHighestPriority(matchingMailSenders);
+		assertThat(result).hasSize(2);
+
+		Set<MailProvider> mailSendersWithHighestPriority = result
+																												.stream()
+																												.map(PoolableMailSender::getKey)
+																												.collect(Collectors.toSet());
+
+		assertThat(mailSendersWithHighestPriority).containsExactlyInAnyOrder(MailProvider.AWS_SES, MailProvider.MOCK);
+	}
+
+
+	@Test
 	public void messageTasksAreDistributedToMailSenders() {
 
 		assertThat(mailSenderInMemory.getMessages()).isEmpty();
