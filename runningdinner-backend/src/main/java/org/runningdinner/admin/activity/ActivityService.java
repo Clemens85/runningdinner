@@ -1,13 +1,5 @@
 package org.runningdinner.admin.activity;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageType;
@@ -27,6 +19,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ActivityService {
@@ -67,7 +67,7 @@ public class ActivityService {
 
   private static final String PARTICIPANT_SUBSCRIBED_MESSAGE_TEMPLATE = "{participantName} hat sich angemeldet";
   
-  private static final String MEAL_TIMES_UPDATED_MESSAGE_TEMPLATE = "Du hast die Uhrzeiten für die einzelnen Speisen geändert.";
+  private static final String MEAL_TIMES_UPDATED_MESSAGE_TEMPLATE = "Du hast den Zeitplan für die einzelnen Speisen geändert.";
 
   private static final String TEAM_ARRANGEMENT_CREATED_DINNER_MESSAGE_TEMPLATE = "Du hast die Team-Einteilungen für <strong>{numTeams}</strong> Teams vorgenommen.";
   

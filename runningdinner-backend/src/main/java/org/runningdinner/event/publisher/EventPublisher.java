@@ -1,11 +1,9 @@
 
 package org.runningdinner.event.publisher;
 
-import java.util.List;
-
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.event.MealTimesUpdatedEvent;
 import org.runningdinner.event.MealsSwappedEvent;
+import org.runningdinner.event.MealsUpdatedEvent;
 import org.runningdinner.event.NewParticipantSubscribedEvent;
 import org.runningdinner.event.NewRunningDinnerEvent;
 import org.runningdinner.event.ParticipantNumbersSwappedEvent;
@@ -23,6 +21,8 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Simple Spring component which is used for publishing ApplicationEvents in a synchronous way.
@@ -87,9 +87,12 @@ public class EventPublisher implements ApplicationEventPublisherAware {
     applicationEventPublisher.publishEvent(new TeamsHostChangedEvent(this, teams, runningDinner, executingParticipant, comment));
   }
   
-  public void notifyMealTimesUpdated(RunningDinner runningDinner) {
+  public void notifyMealsUpdatedEvent(RunningDinner runningDinner) {
+    applicationEventPublisher.publishEvent(new MealsUpdatedEvent(this, runningDinner));
+  }
 
-    applicationEventPublisher.publishEvent(new MealTimesUpdatedEvent(this, runningDinner));
+  public void notifyMealsAddedOrRemovedEvent(RunningDinner runningDinner, boolean mealsAddedOrRemoved) {
+    applicationEventPublisher.publishEvent(new MealsAddedOrRemovedEvent(this, runningDinner, mealsAddedOrRemoved));
   }
 
   public void notifyTeamCancelledEvent(TeamCancellationResult teamCancellationResult, RunningDinner runningDinner) {

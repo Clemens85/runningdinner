@@ -1,21 +1,7 @@
 
 package org.runningdinner.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import jakarta.persistence.EntityManagerFactory;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,6 +36,19 @@ import org.runningdinner.wizard.BasicDetailsTO;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -190,7 +189,7 @@ public class RunningDinnerServiceTest {
   }
 
   @Test
-  public void testUpdateMealTimesWithCorrectSorting() {
+  public void testUpdateMealsWithCorrectSorting() {
 
     LocalDate dinnerDate = LocalDate.now().plusYears(1).withDayOfYear(1); 
 
@@ -211,7 +210,7 @@ public class RunningDinnerServiceTest {
 
     result.getConfiguration().getMealClasses().get(0).setTime(nine.withMinute(30));
     result.getConfiguration().getMealClasses().get(1).setTime(seven.withMinute(30));
-    runningDinnerService.updateMealTimes(result.getAdminId(), result.getConfiguration().getMealClasses());
+    runningDinnerService.updateMeals(result.getAdminId(), result.getConfiguration().getMealClasses());
 
     RunningDinner updatedRunningDinner = runningDinnerService.findRunningDinnerByAdminId(result.getAdminId());
     assertThat(updatedRunningDinner.getConfiguration().getMealClasses()).extracting("label").containsExactly("Haupt", "Vor", "Nach");

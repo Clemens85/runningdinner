@@ -195,6 +195,8 @@
   "message_template_help_hostaddress": "Address of the host",
   "message_template_help_mobilenumber": "Mobile number of the host",
 
+  "meals_add_constraint": "You can only add a maxium of 3 meals.",
+  "meals_remove_constraint": "You need at least 2 meals.",
   "meals_swap": "Swap meals",
   "meals_swap_success": "Meals successfully swapped",
   "meals_swap_team": "Swap meal of {{team}}",
@@ -202,6 +204,7 @@
   "meals_swap_team_description": "{{team}} is currently cooking the following meal: <strong>{{meal}}</strong>",
   "meals_swap_team_after_swap_src": "Team with {{team}} will be the new team {{newTeamNumber}} with following meal assigned: <strong>{{meal}}</strong>.",
   "meals_swap_team_after_swap_selected": "Team with {{team}} will be the new team {{newTeamNumber}} with following meal assigned: <strong>{{meal}}</strong>.",
+  "meals_update_cause_drop_teams": "By removing and/or adding meals, all existing team arrangements will be dropped. You can generate new team arrangements afterwards.",
   "mealtimes_save_success": "Meal schedule saved successfully!",
 
   "no_registrations": "No registrations",

@@ -1,16 +1,17 @@
 
 package org.runningdinner.admin.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.runningdinner.core.MealClass;
 
-import jakarta.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UpdateMealsRequestTO {
 
   @NotEmpty
+  @Valid
   private List<MealClass> meals = new ArrayList<>();
 
   public List<MealClass> getMeals() {

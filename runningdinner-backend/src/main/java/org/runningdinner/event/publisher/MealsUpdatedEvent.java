@@ -1,15 +1,13 @@
-package org.runningdinner.event;
+package org.runningdinner.event.publisher;
 
 import org.runningdinner.core.RunningDinner;
 import org.springframework.context.ApplicationEvent;
 
-public class MealTimesUpdatedEvent extends ApplicationEvent {
+public class MealsUpdatedEvent extends ApplicationEvent {
 
-	private static final long serialVersionUID = 2362167628097318302L;
+	private final RunningDinner runningDinner;
 
-	private RunningDinner runningDinner;
-
-	public MealTimesUpdatedEvent(Object source, RunningDinner runningDinner) {
+	public MealsUpdatedEvent(Object source, RunningDinner runningDinner) {
 		super(source);
 		this.runningDinner = runningDinner;
 	}
@@ -24,3 +22,4 @@ public class MealTimesUpdatedEvent extends ApplicationEvent {
 	}
 
 }
+

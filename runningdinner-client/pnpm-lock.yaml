@@ -78,6 +78,9 @@ importers:
       redux-thunk:
         specifier: 2.4.2
         version: 2.4.2(redux@4.2.1)
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
       yup:
         specifier: ^0.28.3
         version: 0.28.5
@@ -103,6 +106,9 @@ importers:
       '@types/redux-logger':
         specifier: 3.0.9
         version: 3.0.9
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       '@types/yup':
         specifier: ^0.29.6
         version: 0.29.14
@@ -1017,6 +1023,9 @@ packages:
 
   '@types/use-sync-external-store@0.0.3':
     resolution: {integrity: sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==}
+
+  '@types/uuid@10.0.0':
+    resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
 
   '@types/yup@0.29.14':
     resolution: {integrity: sha512-Ynb/CjHhE/Xp/4bhHmQC4U1Ox+I2OpfRYF3dnNgQqn1cHa6LK3H1wJMNPT02tSVZA6FYuXE2ITORfbnb6zBCSA==}
@@ -2269,6 +2278,10 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+
   vite-node@3.0.9:
     resolution: {integrity: sha512-w3Gdx7jDcuT9cNn9jExXgOyKmf5UOTb6WMHz8LGAm54eS1Elf5OuBhCxl6zJxGhEeIkgsE1WbHuoL0mj/UXqXg==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
@@ -3107,6 +3120,8 @@ snapshots:
   '@types/semver@7.5.8': {}
 
   '@types/use-sync-external-store@0.0.3': {}
+
+  '@types/uuid@10.0.0': {}
 
   '@types/yup@0.29.14': {}
 
@@ -4393,6 +4408,8 @@ snapshots:
   use-sync-external-store@1.4.0(react@18.3.1):
     dependencies:
       react: 18.3.1
+
+  uuid@11.1.0: {}
 
   vite-node@3.0.9(@types/node@18.11.9):
     dependencies:

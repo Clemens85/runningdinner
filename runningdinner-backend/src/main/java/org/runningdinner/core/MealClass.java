@@ -1,18 +1,17 @@
 
 package org.runningdinner.core;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Represents a meal-type in a running diner like e.g. dessert.
@@ -34,7 +33,7 @@ public final class MealClass extends AbstractEntity {
   @NotNull
   private LocalDateTime time;
 
-  protected MealClass() {
+  private MealClass() {
     // JPA
   }
 
@@ -53,8 +52,11 @@ public final class MealClass extends AbstractEntity {
    * @return
    */
   public String getLabel() {
-
     return label;
+  }
+
+  public void setLabel(String label) {
+    this.label = label;
   }
 
   /**

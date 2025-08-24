@@ -198,6 +198,8 @@
   "message_template_help_hostaddress": "Adresse des Gastgebers",
   "message_template_help_mobilenumber": "Handy-Nr des Gastgebers",
 
+  "meals_add_constraint": "Du kannst maximal 3 Speisen hinzufügen.",
+  "meals_remove_constraint": "Es müssen mindestens 2 Speisen vorhanden sein.",
   "meals_swap": "Speise tauschen",
   "meals_swap_success": "Speisen erfolgreich getauscht",
   "meals_swap_team": "Speise tauschen von {{team}}",
@@ -205,6 +207,7 @@
   "meals_swap_team_description": "{{team}} kocht aktuell folgende Speise: <strong>{{meal}}</strong>",
   "meals_swap_team_after_swap_src": "Team mit {{team}} wird zu Team {{newTeamNumber}} mit folgender Speise: <strong>{{meal}}</strong>.",
   "meals_swap_team_after_swap_selected": "Team mit {{team}} wird zu Team {{newTeamNumber}} mit folgender Speise: <strong>{{meal}}</strong>.",
+  "meals_update_cause_drop_teams": "Durch das Entfernen bzw. Hinzufügen von Speisen werden alle bestehenden Teameinteilungen aufgehoben. Du kannst danach neue Teams generieren.",
   "mealtimes_save_success": "Zeitplan erfolgreich gespeichert!",
 
   "no_registrations": "Keine Anmeldungen",

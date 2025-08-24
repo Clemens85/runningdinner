@@ -1,7 +1,6 @@
 
 package org.runningdinner.admin;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -14,8 +13,19 @@ import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.common.service.ValidatorService;
-import org.runningdinner.core.*;
+import org.runningdinner.core.AfterPartyLocation;
+import org.runningdinner.core.AssignableParticipantSizes;
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.MealClassSorter;
+import org.runningdinner.core.PublicSettings;
+import org.runningdinner.core.RegistrationType;
+import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinner.RunningDinnerType;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.RunningDinnerInfo;
+import org.runningdinner.core.RunningDinnerPreference;
+import org.runningdinner.core.RunningDinnerPreferences;
+import org.runningdinner.core.ZipRestrictionCalculator;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.event.RunningDinnerSettingsUpdatedEvent;
 import org.runningdinner.event.publisher.EventPublisher;
@@ -36,7 +46,12 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -204,31 +219,63 @@ public class RunningDinnerService implements ApplicationContextAware {
   }
 
   @Transactional
-  public RunningDinner updateMealTimes(@ValidateAdminId String adminId, Collection<MealClass> incomingMeals) {
+  public RunningDinner updateMeals(@ValidateAdminId String adminId, Collection<MealClass> incomingMeals) {
 
     RunningDinner dinner = findRunningDinnerByAdminId(adminId);
     List<MealClass> existingMeals = dinner.getConfiguration().getMealClasses();
 
-    LOGGER.info("Update {} meal-times for dinner {}", existingMeals.size(), adminId);
-
-    // It's not allowed to add or remove meals (just update the existing ones):
-    Assert.state(existingMeals.size() == incomingMeals.size(), "Expected " + incomingMeals.size() + " meals to be found, but there were  " + existingMeals.size());
-
-    for (MealClass incomingMeal : incomingMeals) {
-
-      Optional<MealClass> existingMealOptional = existingMeals.stream().filter(m -> m.isSameId(incomingMeal.getId())).findFirst();
-      MealClass existingMeal = existingMealOptional.orElseThrow(() -> new EntityNotFoundException(incomingMeal.getId() + " could not be found!"));
-      
-      existingMeal.setTime(incomingMeal.getTime());
+    int incomingMealsSize = incomingMeals != null ? incomingMeals.size() : 0;
+    if (incomingMealsSize > 3) {
+      throw new ValidationException(new IssueList(new Issue("meals_add_constraint", IssueType.VALIDATION)));
+    }
+    if (incomingMealsSize < 2) {
+      throw new ValidationException(new IssueList(new Issue("meals_remove_constraint", IssueType.VALIDATION)));
     }
 
-    // TODO Maybe add validation for times not being set to other days.
-    
+    LOGGER.info("Updating existing {} meals for dinner {}", existingMeals.size(), adminId);
+
+    List<MealClass> mealsToAdd = new ArrayList<>();
+    List<MealClass> mealsToDelete = new ArrayList<>();
+
+    // Update existing meals
+    for (MealClass incomingMeal : incomingMeals) {
+      MealClass existingMeal = existingMeals.stream().filter(m -> m.isSameId(incomingMeal.getId())).findFirst().orElse(null);
+      if (existingMeal == null) {
+        mealsToAdd.add(new MealClass(incomingMeal.getLabel(), incomingMeal.getTime()));
+      } else {
+        existingMeal.setLabel(incomingMeal.getLabel());
+        existingMeal.setTime(incomingMeal.getTime());
+      }
+    }
+
+    // Delete meals
+    for (MealClass existingMeal: existingMeals) {
+      Optional<MealClass> sentMeal = incomingMeals.stream().filter(m -> m.isSameId(existingMeal.getId())).findFirst();
+      if (sentMeal.isEmpty()) {
+        mealsToDelete.add(existingMeal);
+      }
+    }
+
+    boolean mealsAddedOrRemoved = !mealsToAdd.isEmpty() || !mealsToDelete.isEmpty();
+    eventPublisher.notifyMealsAddedOrRemovedEvent(dinner, mealsAddedOrRemoved);
+
+    if (!mealsToDelete.isEmpty()) {
+      LOGGER.info("Deleting {} meals for dinner {}", mealsToDelete.size(), adminId);
+      mealRepository.deleteAll(mealsToDelete);
+      existingMeals.removeAll(mealsToDelete);
+    }
+
+    if (!mealsToAdd.isEmpty()) {
+      LOGGER.info("Adding {} new meals for dinner {}", mealsToAdd.size(), adminId);
+      List<MealClass> addedMeals = mealRepository.saveAll(mealsToAdd);
+      existingMeals.addAll(addedMeals);
+    }
+
     // Ensure that ordering is still correct
     existingMeals.sort(new MealClassSorter());
     dinner.getConfiguration().setMealClasses(existingMeals);
 
-    emitUpdateMealTimesEvent(dinner);
+    emitUpdateMealsEvent(dinner);
 
     return dinner;
   }
@@ -388,12 +435,6 @@ public class RunningDinnerService implements ApplicationContextAware {
     return result;
   }
 
-  public RunningDinnerSessionData findSessionData(String dinnerAdminId, Locale locale) {
-
-    RunningDinner runningDinner = findRunningDinnerByAdminId(dinnerAdminId);
-    return calculateSessionData(runningDinner, locale);
-  }
-  
   public RunningDinnerSessionData calculateSessionData(RunningDinner runningDinner, Locale locale) {
     
     RunningDinnerSessionData result = new RunningDinnerSessionData();
@@ -421,13 +462,13 @@ public class RunningDinnerService implements ApplicationContextAware {
     RunningDinner result = runningDinnerRepository.save(dinnerToUpdate);
     return urlGenerator.addPublicDinnerUrl(result);
   }
-  
 
-  private void emitUpdateMealTimesEvent(RunningDinner dinner) {
+
+  private void emitUpdateMealsEvent(RunningDinner dinner) {
     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCommit() {
-        eventPublisher.notifyMealTimesUpdated(dinner);
+        eventPublisher.notifyMealsUpdatedEvent(dinner);
       }
     });
   }

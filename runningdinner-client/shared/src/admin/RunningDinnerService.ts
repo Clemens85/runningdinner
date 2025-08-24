@@ -1,15 +1,20 @@
 import axios from 'axios';
-import { BackendConfig } from "../BackendConfig";
-import {cloneDeep} from 'lodash-es';
+import { BackendConfig } from '../BackendConfig';
+import { cloneDeep } from 'lodash-es';
 import {
-  Meal, RunningDinner, RunningDinnerBasicDetailsFormModel,
-  RunningDinnerOptions, RunningDinnerPublicSettings, ReSendRunningDinnerCreatedMessageModel, AfterPartyLocation
-} from "../types";
-import {CONSTANTS} from "../Constants";
-import {getDaysBetweenDates, isAfterInDays} from '../date';
-import {CreateRunningDinnerWizardModel} from "../wizard";
-import {hasClosedRegistrationType} from "./SettingsService"
-import {isStringNotEmpty} from "../Utils";
+  Meal,
+  RunningDinner,
+  RunningDinnerBasicDetailsFormModel,
+  RunningDinnerOptions,
+  RunningDinnerPublicSettings,
+  ReSendRunningDinnerCreatedMessageModel,
+  AfterPartyLocation,
+} from '../types';
+import { CONSTANTS } from '../Constants';
+import { getDaysBetweenDates, isAfterInDays } from '../date';
+import { CreateRunningDinnerWizardModel } from '../wizard';
+import { hasClosedRegistrationType } from './SettingsService';
+import { isStringNotEmpty } from '../Utils';
 
 export async function findRunningDinnerAsync(adminId: string): Promise<RunningDinner> {
   const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}`);
@@ -17,10 +22,10 @@ export async function findRunningDinnerAsync(adminId: string): Promise<RunningDi
   return response.data;
 }
 
-export async function updateMealTimesAsync(adminId: string, meals: Array<Meal>): Promise<RunningDinner> {
-  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/mealtimes`);
+export async function updateMealsAsync(adminId: string, meals: Array<Meal>): Promise<RunningDinner> {
+  const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/meals`);
   const data = {
-    meals: cloneDeep(meals)
+    meals: cloneDeep(meals),
   };
   const response = await axios.put(url, data);
   return response.data;
@@ -32,7 +37,7 @@ export async function updateBasicSettingsAsync(adminId: string, basicDetails: Ru
   // { basicDetails: {}, teamPartnerWishDisabled: true }
   const response = await axios.put(url, {
     basicDetails,
-    teamPartnerWishDisabled: basicDetails.teamPartnerWishDisabled
+    teamPartnerWishDisabled: basicDetails.teamPartnerWishDisabled,
   });
   return response.data;
 }
@@ -61,7 +66,10 @@ export async function cancelRunningDinnerAsync(adminId: string): Promise<Running
   return response.data;
 }
 
-export async function reSendRunningDinnerCreatedMessageAsync(adminId: string, reSendRunningDinnerCreatedMessageModel: ReSendRunningDinnerCreatedMessageModel): Promise<RunningDinner> {
+export async function reSendRunningDinnerCreatedMessageAsync(
+  adminId: string,
+  reSendRunningDinnerCreatedMessageModel: ReSendRunningDinnerCreatedMessageModel,
+): Promise<RunningDinner> {
   const url = BackendConfig.buildUrl(`/runningdinnerservice/v1/runningdinner/${adminId}/resend-runningdinner-created-message`);
   const response = await axios.put<RunningDinner>(url, reSendRunningDinnerCreatedMessageModel);
   return response.data;
@@ -96,10 +104,12 @@ export function isAcknowledgeRequired(runningDinner: RunningDinner) {
 }
 
 export function isNotificationRequired(runningDinner: RunningDinner): boolean {
-  return isAcknowledgeRequired(runningDinner) || 
-         !!runningDinner.cancellationDate || 
-         runningDinner.runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO ||
-         isDinnerExpired(runningDinner, new Date());
+  return (
+    isAcknowledgeRequired(runningDinner) ||
+    !!runningDinner.cancellationDate ||
+    runningDinner.runningDinnerType === CONSTANTS.RUNNING_DINNER_TYPE.DEMO ||
+    isDinnerExpired(runningDinner, new Date())
+  );
 }
 
 export function isDinnerExpired(runningDinner: RunningDinner, now: Date) {

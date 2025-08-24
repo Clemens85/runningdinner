@@ -1,14 +1,6 @@
 package org.runningdinner.admin.rest;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
+import jakarta.validation.Valid;
 import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.admin.ReSendRunningDinnerCreatedMessage;
 import org.runningdinner.admin.ReSendRunningDinnerCreatedMessageService;
@@ -34,7 +26,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/rest/runningdinnerservice/v1/runningdinner", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,12 +61,10 @@ public class RunningDinnerServiceRest {
     return mapRunningDinnerAdminTO(runningDinner, locale);
   }
 
-  @PutMapping("/{adminId}/mealtimes")
-  public RunningDinnerAdminTO updateMealTimes(@PathVariable String adminId,
-      @RequestBody @Valid UpdateMealsRequestTO updateMealsList,
-      Locale locale) {
+  @PutMapping("/{adminId}/meals")
+  public RunningDinnerAdminTO updateMealTimes(@PathVariable String adminId, @RequestBody @Valid UpdateMealsRequestTO updateMealsList, Locale locale) {
 
-    RunningDinner updatedRunningDinner = runningDinnerService.updateMealTimes(adminId, updateMealsList.getMeals());
+    RunningDinner updatedRunningDinner = runningDinnerService.updateMeals(adminId, updateMealsList.getMeals());
     return mapRunningDinnerAdminTO(updatedRunningDinner, locale);
   }
 	
