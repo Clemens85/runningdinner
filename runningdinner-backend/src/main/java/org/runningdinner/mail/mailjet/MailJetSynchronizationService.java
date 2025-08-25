@@ -9,11 +9,13 @@ import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.FailureType;
 import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.core.util.DateTimeUtil;
+import org.runningdinner.mail.MailBounceHandlerService;
 import org.runningdinner.mail.MailProvider;
 import org.runningdinner.mail.MailUtil;
 import org.runningdinner.mail.SuppressedEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,9 +33,18 @@ public class MailJetSynchronizationService {
 
 	private final MessageService messageService;
 
-	public MailJetSynchronizationService(ObjectMapper objectMapper, MessageService messageService) {
+	private final MailBounceHandlerService mailBounceHandlerService;
+
+	private final boolean allowResendWithAlternativeProvider;
+
+	public MailJetSynchronizationService(ObjectMapper objectMapper,
+																			 MessageService messageService,
+																			 MailBounceHandlerService mailBounceHandlerService,
+																			 @Value("${mail.mailjet.allow.resend.alternative.provider:true}") boolean allowResendWithAlternativeProvider) {
 		this.objectMapper = objectMapper;
 		this.messageService = messageService;
+		this.mailBounceHandlerService = mailBounceHandlerService;
+		this.allowResendWithAlternativeProvider = allowResendWithAlternativeProvider;
 	}
 
 	public boolean handleMailJetNotification(String messageBody) {
@@ -88,7 +99,7 @@ public class MailJetSynchronizationService {
 		}
 
 		var suppressedEmailMap = mapToSuppressedEmails(notification);
-		updateMessageTaskSendingResults(messageTasks, suppressedEmailMap);
+		mailBounceHandlerService.handleBounces(messageTasks, suppressedEmailMap, allowResendWithAlternativeProvider);
 	}
 
 	private Map<String, SuppressedEmail> mapToSuppressedEmails(MailJetNotification notification) {
@@ -146,17 +157,6 @@ public class MailJetSynchronizationService {
 			return objectMapper.readValue(messageBody, new TypeReference<List<MailJetNotification>>() {});
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	private void updateMessageTaskSendingResults(List<MessageTask> messageTasks, Map<String, SuppressedEmail> suppressedEmailMap) {
-		for (var messageTask : messageTasks) {
-			SuppressedEmail suppressedEmail = suppressedEmailMap.get(MailUtil.normalizeEmailAddress(messageTask.getRecipientEmail()));
-			if (suppressedEmail == null) {
-				LOGGER.warn("Could not find suppressed email for message task {} with recipient email {}", messageTask.getId(), messageTask.getRecipientEmail());
-				continue;
-			}
-			messageService.updateMessageTaskAsFailedInNewTransaction(messageTask.getId(), suppressedEmail);
 		}
 	}
 

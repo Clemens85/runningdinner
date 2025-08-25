@@ -17,6 +17,7 @@ import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestMessageTaskHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
@@ -29,6 +30,9 @@ import static org.assertj.core.api.Assertions.within;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
+@TestPropertySource(properties = {
+	"mail.mailjet.allow.resend.alternative.provider=false"
+})
 public class MailJetSynchronizationServiceTest  {
 
 	@Autowired

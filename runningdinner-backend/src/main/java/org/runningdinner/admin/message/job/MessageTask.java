@@ -1,9 +1,8 @@
 
 package org.runningdinner.admin.message.job;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -16,13 +15,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-
 import org.runningdinner.admin.message.BaseMessage;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerRelatedEntity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 public class MessageTask extends RunningDinnerRelatedEntity {
@@ -50,12 +48,25 @@ public class MessageTask extends RunningDinnerRelatedEntity {
   @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
   private LocalDateTime sendingEndTime;
 
+
   @Embedded
   @AttributeOverrides({
     @AttributeOverride(name = "delieveryFailed", column = @Column(nullable = false)),
     @AttributeOverride(name = "failureMessage", column = @Column(length = 512)),
   })
   private SendingResult sendingResult = new SendingResult();
+
+  /**
+   * Number of times this message was resent by another provider (max 1 for now).
+   */
+  @Column(nullable = false)
+  private int resendCount = 0;
+
+  /**
+   * The provider key (e.g. AWS_SES, MAILJET) used for the resend, if any. Null if not resent.
+   */
+  @Column
+  private String originalSender;
 
   @Embedded
   @Valid
@@ -159,6 +170,22 @@ public class MessageTask extends RunningDinnerRelatedEntity {
     this.sendingResult = sendingResult;
   }
 
+  public int getResendCount() {
+    return resendCount;
+  }
+
+  public void setResendCount(int resendCount) {
+    this.resendCount = resendCount;
+  }
+
+  public String getOriginalSender() {
+    return originalSender;
+  }
+
+  public void setOriginalSender(String originalSender) {
+    this.originalSender = originalSender;
+  }
+
   public Message getMessage() {
 
     return message;
@@ -177,15 +204,16 @@ public class MessageTask extends RunningDinnerRelatedEntity {
 		this.sender = sender;
 	}
 
-	@Override
+  @Override
   public String toString() {
-    
     return MoreObjects
             .toStringHelper(this)
             .addValue(id)
             .addValue(sendingStatus)
             .addValue(sendingResult)
             .addValue(message)
+            .add("resendCount", resendCount)
+            .add("resendSender", originalSender)
             .toString();
   }
 }

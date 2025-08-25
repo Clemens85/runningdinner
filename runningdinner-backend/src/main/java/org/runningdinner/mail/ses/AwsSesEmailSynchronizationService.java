@@ -8,11 +8,13 @@ import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.FailureType;
 import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.core.util.DateTimeUtil;
+import org.runningdinner.mail.MailBounceHandlerService;
 import org.runningdinner.mail.MailProvider;
 import org.runningdinner.mail.MailUtil;
 import org.runningdinner.mail.SuppressedEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,9 +36,18 @@ public class AwsSesEmailSynchronizationService {
 
   private final MessageService messageService;
 
-	public AwsSesEmailSynchronizationService(ObjectMapper objectMapper, MessageService messageService) {
+	private final MailBounceHandlerService mailBounceHandlerService;
+
+	private final boolean allowResendWithAlternativeProvider;
+
+	public AwsSesEmailSynchronizationService(ObjectMapper objectMapper,
+                                           MessageService messageService,
+                                           MailBounceHandlerService mailBounceHandlerService,
+                                           @Value("${mail.awsses.allow.resend.alternative.provider:true}") boolean allowResendWithAlternativeProvider) {
 		this.objectMapper = objectMapper;
 		this.messageService = messageService;
+		this.mailBounceHandlerService = mailBounceHandlerService;
+		this.allowResendWithAlternativeProvider = allowResendWithAlternativeProvider;
 	}
 
 	public boolean handleSesNotification(String jsonPayload) {
@@ -85,7 +96,7 @@ public class AwsSesEmailSynchronizationService {
 
     LOGGER.info("Handling reject for {} recipients: {}", recipients.size(), recipients);
     var suppressedEmailMap = mapToSuppressedEmails(recipients, reject, notification.getMail().getSourceIp());
-    updateMessageTaskSendingResults(messageTasks, suppressedEmailMap);
+    mailBounceHandlerService.handleBounces(messageTasks, suppressedEmailMap, allowResendWithAlternativeProvider);
   }
 
   private void handleBounce(AwsSesNotification notification) {
@@ -105,7 +116,7 @@ public class AwsSesEmailSynchronizationService {
 
     LOGGER.info("Handling bounce for {} recipients: {}", bouncedRecipients.size(), emails);
     var suppressedEmailMap = mapToSuppressedEmails(bouncedRecipients, bounce, notification.getMail().getSourceIp());
-    updateMessageTaskSendingResults(messageTasks, suppressedEmailMap);
+    mailBounceHandlerService.handleBounces(messageTasks, suppressedEmailMap, allowResendWithAlternativeProvider);
   }
 
   private void handleComplaint(AwsSesNotification notification) {
@@ -124,7 +135,7 @@ public class AwsSesEmailSynchronizationService {
 
     LOGGER.info("Handling complaint for {} recipients: {}", complaintRecipients.size(), emails);
     var suppressedEmailMap = mapToSuppressedEmails(complaintRecipients, complaint, notification.getMail().getSourceIp());
-    updateMessageTaskSendingResults(messageTasks, suppressedEmailMap);
+    mailBounceHandlerService.handleBounces(messageTasks, suppressedEmailMap, allowResendWithAlternativeProvider);
   }
 
   private void handleDelivery(AwsSesNotification notification) {
@@ -164,17 +175,6 @@ public class AwsSesEmailSynchronizationService {
             .stream()
             .filter(mt -> StringUtils.equals(mt.getSender(), MailProvider.AWS_SES.toString()))
             .toList();
-  }
-
-  private void updateMessageTaskSendingResults(List<MessageTask> messageTasks, Map<String, SuppressedEmail> suppressedEmailMap) {
-    for (var messageTask : messageTasks) {
-      SuppressedEmail suppressedEmail = suppressedEmailMap.get(MailUtil.normalizeEmailAddress(messageTask.getRecipientEmail()));
-      if (suppressedEmail == null) {
-        LOGGER.warn("Could not find suppressed email for message task {} with recipient email {}", messageTask.getId(), messageTask.getRecipientEmail());
-        continue;
-      }
-      messageService.updateMessageTaskAsFailedInNewTransaction(messageTask.getId(), suppressedEmail);
-    }
   }
 
   private static Map<String, SuppressedEmail> mapToSuppressedEmails(List<AwsSesNotification.BouncedRecipient> recipients, AwsSesNotification.Bounce bounce, String source) {
