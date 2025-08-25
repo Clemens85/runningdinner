@@ -47,7 +47,7 @@ describe('participants list', () => {
     assertMealsExistInDashboardWithTimes(["Vorspeise", "Hauptgericht", "Dessert"],
                                          ["19:00 Uhr", "21:30 Uhr", "23:00 Uhr"]);
 
-    assertDashboardAdminActivityContains(0, "Du hast die Uhrzeiten für die einzelnen Speisen geändert");
+    assertDashboardAdminActivityContains(0, "Du hast den Zeitplan für die einzelnen Speisen geändert");
   });
 
 })

@@ -259,7 +259,7 @@ function EditableMealControl({ meal, handleTimeChange, handleMealLabelChange, ha
           </IconButton>
         )}
       </Stack>
-      <MealTimeEditControl time={meal.time} label={''} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} sx={{ width: '100%' }} />
+      <MealTimeEditControl time={meal.time} label={meal.label} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} sx={{ width: '100%' }} />
     </>
   );
 }
