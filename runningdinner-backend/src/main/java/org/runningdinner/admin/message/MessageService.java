@@ -454,7 +454,6 @@ public class MessageService {
     return getRecipients(result);
   }
 
-  // TODO: Test
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public MessageTask updateMessageTaskAsFailedInNewTransaction(UUID messageTaskId, SuppressedEmail suppressedEmail) {
 
@@ -479,6 +478,33 @@ public class MessageService {
     return result;
   }
 
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void resendWithAlternativeProviderInNewTransaction(UUID messageTaskId, MailProvider alternativeMailProvider) {
+
+    LOGGER.info("Resending MessageTask with id {} with alternative provider {}", messageTaskId, alternativeMailProvider);
+
+    MessageTask messageTask = messageTaskRepository.findByIdMandatory(messageTaskId);
+
+    Assert.state(!StringUtils.equals(messageTask.getSender(), alternativeMailProvider.toString()),
+            "Original sender is already " + alternativeMailProvider + " - cannot resend with same provider");
+
+    Assert.state(messageTask.getResendCount() <= 0, "MessageTask with id " + messageTaskId + " was already resent once - cannot resend again");
+
+    messageTask.setResendCount(1);
+    messageTask.setOriginalSender(messageTask.getSender());
+    messageTask.setSender(alternativeMailProvider.toString());
+    messageTask.setSendingStartTime(LocalDateTime.now());
+
+    mailService.sendMessage(messageTask);
+
+    messageTask.setSendingStatus(SendingStatus.SENDING_FINISHED);
+    messageTask.setSendingEndTime(LocalDateTime.now());
+    messageTaskRepository.save(messageTask);
+  }
+
+  /**
+   * Resends an existing MessageTask with updated content and recipient email. This logic is called by end-users
+   */
   @Transactional
   public MessageTask reSendMessageTask(String adminId, UUID messageTaskId, MessageTask incomingMessageTask) {
 
