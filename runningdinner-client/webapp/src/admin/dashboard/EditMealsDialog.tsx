@@ -32,6 +32,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
 import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
 import { shouldShowDropTeamsConfirmationOnMealsUpdate } from './MealUpdateUtil';
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 
 export interface EditMealsDialogProps extends BaseAdminIdProps {
   runningDinnerDate: Date;
@@ -57,6 +58,8 @@ export function EditMealsDialog({ adminId, open, dashboardAdminActivities, incom
 
   const [showDropTeamsConfirmDialog, setShowDropTeamsConfirmDialog] = useState(false);
   const [pendingMealsToSave, setPendingMealsToSave] = useState<Meal[] | null>(null);
+
+  const isMobileDevie = useIsMobileDevice('xs');
 
   function handleTimeChange(meal: Meal, newTime: Date) {
     const updatedMeals = cloneDeep(meals);
@@ -136,7 +139,7 @@ export function EditMealsDialog({ adminId, open, dashboardAdminActivities, incom
   }
 
   const mealTimeFields = meals.map((meal: Meal) => (
-    <Grid item xs key={meal.id}>
+    <Grid item xs={isMobileDevie ? 12 : undefined} key={meal.id}>
       <Box sx={{ px: 2 }}>
         <EditableMealControl
           meal={meal}
