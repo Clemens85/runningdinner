@@ -1,6 +1,6 @@
 const NewsMessages_en: any = {
-  news_title_20250828: 'Meals can be adjusted afterwards',
-  news_content_20250828:
+  news_title_20250825: 'Meals can be adjusted afterwards',
+  news_content_20250825:
     'From now on, the meals for a Running Dinner can also be adjusted afterwards. For example, a 3-course event can be changed to a 2-course event if there are too few registrations.',
 
   news_title_20250209: 'Limit registrations to zip codes',

@@ -1,6 +1,6 @@
 const NewsMessages_de: any = {
-  news_title_20250828: 'Speisen können nachträglich angepasst werden',
-  news_content_20250828:
+  news_title_20250825: 'Speisen können nachträglich angepasst werden',
+  news_content_20250825:
     'Ab sofort können die Speisen für ein Running Dinner auch nachträglich angepasst werden, z.B. kann aus einem 3-Gang Event ein 2-Gang Event gemacht werden wenn es zu wenig Anmeldungen gibt.',
 
   news_title_20250209: 'Anmeldungen auf Postleitzahlen beschränken',
