@@ -212,8 +212,6 @@ public class MessageTask extends RunningDinnerRelatedEntity {
             .addValue(sendingStatus)
             .addValue(sendingResult)
             .addValue(message)
-            .add("resendCount", resendCount)
-            .add("resendSender", originalSender)
             .toString();
   }
 }

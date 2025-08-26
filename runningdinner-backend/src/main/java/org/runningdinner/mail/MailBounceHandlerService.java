@@ -23,7 +23,7 @@ public class MailBounceHandlerService {
 
 	private final MailSenderPoolService mailSenderPoolService;
 
-	public MailBounceHandlerService(MessageService messageService, MailSenderPoolService mailSenderPoolService, MailService mailService) {
+	public MailBounceHandlerService(MessageService messageService, MailSenderPoolService mailSenderPoolService) {
 		this.messageService = messageService;
 		this.mailSenderPoolService = mailSenderPoolService;
 	}
@@ -39,7 +39,7 @@ public class MailBounceHandlerService {
 		}
 	}
 
-	protected void handleBounce(MessageTask messageTask, SuppressedEmail suppressedEmail, boolean allowResend) {
+	private void handleBounce(MessageTask messageTask, SuppressedEmail suppressedEmail, boolean allowResend) {
 		LOGGER.info("Handling bounce for message task {} with recipient email {} and failure type {} and allowResend {}",
 								messageTask.getId(), messageTask.getRecipientEmail(), suppressedEmail.getFailureType(), allowResend);
 
@@ -56,7 +56,7 @@ public class MailBounceHandlerService {
 	 * Attempts to resend a failed MessageTask using an alternative provider, if possible and not already resent.
 	 * Returns true if a resend was attempted, false otherwise.
 	 */
-	protected boolean tryResendWithAlternativeProvider(MessageTask messageTask) {
+	private boolean tryResendWithAlternativeProvider(MessageTask messageTask) {
 		String originalProvider = messageTask.getSender();
 		Optional<PoolableMailSender> alternativeSender = mailSenderPoolService.getAlternativeMailSender(LocalDate.now(), 1, originalProvider);
 		if (alternativeSender.isEmpty()) {
@@ -72,7 +72,7 @@ public class MailBounceHandlerService {
 		}
 	}
 
-	protected static boolean canResend(MessageTask messageTask, SuppressedEmail suppressedEmail) {
+	private static boolean canResend(MessageTask messageTask, SuppressedEmail suppressedEmail) {
 		if (messageTask.getResendCount() > 0 || messageTask.getSendingResult().isDelieveryFailed()) {
 			LOGGER.info("Cannot resend message task {} with recipient email {} since it was already resent once", messageTask.getId(), messageTask.getRecipientEmail());
 			return false;
