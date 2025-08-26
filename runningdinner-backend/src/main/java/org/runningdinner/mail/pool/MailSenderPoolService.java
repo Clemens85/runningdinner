@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -50,7 +51,16 @@ public class MailSenderPoolService {
 		List<PoolableMailSender> matchingMailSenders = getMatchingMailSenders(now, numMessageTasksToSend);
 		return getBestFittingSender(matchingMailSenders);
 	}
-	
+
+	public Optional<PoolableMailSender> getAlternativeMailSender(LocalDate now, int numMessageTasksToSend, String originalProvider) {
+		Assert.notEmpty(this.mailSenderPool, "Mail sender pool must not be empty");
+		List<PoolableMailSender> matchingMailSenders = getMatchingMailSenders(now, numMessageTasksToSend);
+		return matchingMailSenders
+						.stream()
+						.filter(mailSender -> !StringUtils.equals(mailSender.getKey().toString(), originalProvider))
+						.findFirst();
+	}
+
 	private PoolableMailSender getBestFittingSender(List<PoolableMailSender> matchingMailSenders) {
 		if (CollectionUtils.isEmpty(matchingMailSenders)) {
 			LOGGER.error("Could not find any matching mail sender to use, so use fallback");
@@ -141,4 +151,5 @@ public class MailSenderPoolService {
 		}
 		return result;
 	}
+
 }

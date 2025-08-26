@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -107,6 +108,13 @@ public class MailSenderPoolServiceTest {
 		result = MailSenderPoolService.getMailSendersWithHighestPriority(matchingMailSenders);
 		assertThat(result).hasSize(1);
 		assertThat(result.getFirst().getKey()).isEqualTo(MailProvider.MAILJET);
+	}
+
+	@Test
+	public void getAlternativeMailSender() {
+		Optional<PoolableMailSender> result = mailSenderPoolService.getAlternativeMailSender(LocalDate.now(), 1, MailProvider.AWS_SES.toString());
+		assertThat(result).isPresent();
+		assertThat(result.get().getKey()).isEqualTo(MailProvider.MOCK);
 	}
 
 	@Test
