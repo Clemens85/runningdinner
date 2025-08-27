@@ -80,7 +80,7 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
 
   const { adminId } = runningDinner;
 
-  const { dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry, teamsWithUnresolvedGeocodings } = dinnerRouteMapData;
+  const { dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry, teamsWithUnresolvedGeocodings, numberOfClusters } = dinnerRouteMapData;
 
   const mapContainerRef = useRef(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
@@ -120,7 +120,7 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
 
   return (
     <Box>
-      <MapControlsAppBar teamsWithUnresolvedGeocodings={teamsWithUnresolvedGeocodings} />
+      <MapControlsAppBar teamsWithUnresolvedGeocodings={teamsWithUnresolvedGeocodings} numberOfClusters={numberOfClusters} />
 
       <MapControlsSidebar open={!!state.isSidebarOpen}
                           adminId={adminId}

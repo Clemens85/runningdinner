@@ -1,4 +1,14 @@
-import { Toolbar, Tooltip, IconButton, styled, FormControlLabel, FormGroup, Switch, Typography } from '@mui/material';
+import {
+  Toolbar,
+  Tooltip,
+  IconButton,
+  styled,
+  FormControlLabel,
+  FormGroup,
+  Switch,
+  Typography,
+  Box
+} from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext } from '@runningdinner/shared';
 import { t } from 'i18next';
@@ -37,7 +47,11 @@ const CustomAppBar = styled(MuiAppBar, {
   ],
 }));
 
-export function MapControlsAppBar({ teamsWithUnresolvedGeocodings }: UnresolvedGeocodesWarningAlertProps) {
+type MapControlsAppBarProps = {
+  numberOfClusters: number;
+} & UnresolvedGeocodesWarningAlertProps;
+
+export function MapControlsAppBar({ teamsWithUnresolvedGeocodings, numberOfClusters }: MapControlsAppBarProps) {
   const { dispatch, state } = useDinnerRouteOverviewContext();
   const { isSidebarOpen, showTeamPaths, showTeamClusters } = state;
 
@@ -72,7 +86,7 @@ export function MapControlsAppBar({ teamsWithUnresolvedGeocodings }: UnresolvedG
           {t('admin:hostlocations_overview')}
         </Typography>
 
-        <Tooltip title={t('admin:hostlocations_team_connections_enable')}>
+        <Tooltip title={t('Zeige Laufwege als Linien zwischen Team-Standorten')}>
           <FormGroup>
             <FormControlLabel
               control={<Switch color="secondary" onChange={(evt) => onToggleShowTeamPaths(evt.target.checked)} checked={showTeamPaths} size="small" />}
@@ -81,14 +95,18 @@ export function MapControlsAppBar({ teamsWithUnresolvedGeocodings }: UnresolvedG
           </FormGroup>
         </Tooltip>
 
-        <Tooltip title={t('admin:hostlocations_team_cluster_view_enable')}>
-          <FormGroup>
-            <FormControlLabel
-              control={<Switch color="secondary" onChange={(evt) => onToggleShowTeamClusters(evt.target.checked)} checked={showTeamClusters} size="small" />}
-              label={t('admin:hostlocations_team_cluster_view_enable')}
-            />
-          </FormGroup>
-        </Tooltip>
+        { numberOfClusters > 1 &&
+          <Box sx={{ ml: 2 }}>
+            <Tooltip title={t('Markiere Teams die sich im gleichen Geo-Cluster befinden mit gleicher Farbe')}>
+              <FormGroup>
+                <FormControlLabel
+                  control={<Switch color="secondary" onChange={(evt) => onToggleShowTeamClusters(evt.target.checked)} checked={showTeamClusters} size="small" />}
+                  label={t('admin:hostlocations_team_cluster_view_enable')}
+                />
+              </FormGroup>
+            </Tooltip>
+          </Box>
+        }
 
         <RouteOptimizationButton sx={{ mx: 2 }} />
 

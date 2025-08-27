@@ -88,6 +88,8 @@ export class DinnerRouteMapCalculator {
 
   private readonly secondaryClusterColorMappings: Record<number, string> = {};
 
+  private readonly numberOfClusters: number;
+
   constructor(settings: DinnerRouteMapDataCalculationSettings) {
     this.settings = settings;
     const { allDinnerRoutes, meals, afterPartyLocation, teamClusterMappings } = settings;
@@ -96,7 +98,7 @@ export class DinnerRouteMapCalculator {
     this.mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(meals);
 
     this.afterPartyLocationMapEntry = isGeocodingResultValid(afterPartyLocation?.geocodingResult)
-      ? { ...afterPartyLocation, position: afterPartyLocation.geocodingResult!, color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor() }
+      ? { ...afterPartyLocation, position: afterPartyLocation!.geocodingResult!, color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor() }
       : undefined;
 
     // Build color mappings for team clusters
@@ -111,6 +113,7 @@ export class DinnerRouteMapCalculator {
         });
       });
     }
+    this.numberOfClusters = clusterColorIndex;
   }
 
   public static getMarkerLabel(str: string) {
@@ -185,6 +188,7 @@ export class DinnerRouteMapCalculator {
       afterPartyLocationMapEntry: this.afterPartyLocationMapEntry,
       centerPosition: centerPosition || { lat: 0, lng: 0 },
       teamsWithUnresolvedGeocodings,
+      numberOfClusters: this.numberOfClusters
     };
   }
 

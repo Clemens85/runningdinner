@@ -88,6 +88,7 @@ export type DinnerRouteMapData = {
   teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
   centerPosition: GeocodingResult;
   afterPartyLocationMapEntry?: AfterPartyLocationMapEntry;
+  numberOfClusters: number;
 };
 
 export type TeamMemberChange = {
