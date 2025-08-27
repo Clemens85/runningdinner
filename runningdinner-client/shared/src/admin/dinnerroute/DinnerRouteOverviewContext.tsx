@@ -1,16 +1,6 @@
 import React from 'react';
 import { cloneDeep, remove } from 'lodash-es';
-import {
-  AfterPartyLocation,
-  BaseEntity,
-  BaseRunningDinnerProps,
-  DinnerRouteMapData,
-  DinnerRouteTeamMapEntry,
-  Meal,
-  MealType,
-  Parent,
-  TeamConnectionPath,
-} from '../../types';
+import { AfterPartyLocation, BaseEntity, BaseRunningDinnerProps, DinnerRouteMapData, DinnerRouteTeamMapEntry, Meal, MealType, Parent, TeamConnectionPath } from '../../types';
 import { isAfterPartyLocationDefined } from '../RunningDinnerService';
 import { findEntityById, isDefined, isSameEntity } from '../../Utils';
 import { DinnerRouteMapCalculator } from './DinnerRouteMapCalculator';
@@ -33,6 +23,7 @@ export type DinnerRouteOverviewState = {
   showTeamPaths: boolean;
   isSidebarOpen?: boolean;
   isRouteOptimizationDialogOpen?: boolean;
+  isHelpDialogOpen?: boolean;
 
   meals: Meal[];
   mealTypeMappings: Record<string, MealType>;
@@ -64,6 +55,7 @@ export enum DinnerRouteOverviewActionType {
   TOGGLE_SHOW_TEAM_PATHS,
   TOGGLE_SIDEBAR,
   TOGGLE_ROUTE_OPTIMIZATION_DIALOG,
+  TOGGLE_HELP_DIALOG,
 }
 
 type Action = {
@@ -229,6 +221,10 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
     }
     case DinnerRouteOverviewActionType.TOGGLE_ROUTE_OPTIMIZATION_DIALOG: {
       result.isRouteOptimizationDialogOpen = !state.isRouteOptimizationDialogOpen;
+      return result;
+    }
+    case DinnerRouteOverviewActionType.TOGGLE_HELP_DIALOG: {
+      result.isHelpDialogOpen = !state.isHelpDialogOpen;
       return result;
     }
   }

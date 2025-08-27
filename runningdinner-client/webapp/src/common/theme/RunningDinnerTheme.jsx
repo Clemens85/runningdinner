@@ -1,33 +1,40 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
 export const runningDinnerTheme = createTheme({
   palette: {
     primary: {
       // main: '#6db33f'
-      main: '#2e7d32'
+      main: '#2e7d32',
     },
     secondary: {
-      main: '#f50057'
-    }
+      main: '#f50057',
+    },
   },
   components: {
     MuiAppBar: {
       styleOverrides: {
         root: {
           color: 'white',
-          backgroundColor: 'black'
-        }
-      }
+          backgroundColor: 'black',
+        },
+      },
     },
     MuiTableRow: {
       styleOverrides: {
         root: {
-          "&.Mui-selected, &.Mui-selected:hover": {
-            "backgroundColor": grey["100"]
-          }
-        }
-      }
-    }
-  }
+          '&.Mui-selected, &.Mui-selected:hover': {
+            backgroundColor: grey['100'],
+          },
+        },
+      },
+    },
+    MuiSpeedDialAction: {
+      styleOverrides: {
+        staticTooltipLabel: {
+          width: 250,
+        },
+      },
+    },
+  },
 });

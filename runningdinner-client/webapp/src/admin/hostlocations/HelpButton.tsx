@@ -1,17 +1,25 @@
 import { IconButton } from '@mui/material';
-import { useDisclosure } from '@runningdinner/shared';
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, useDisclosure } from '@runningdinner/shared';
 import { DinnerRouteOverviewHelpDialog } from './DinnerRouteOverviewHelpDialog';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export function HelpButton() {
-  const { open, isOpen, close } = useDisclosure();
+  // const { open, isOpen, close } = useDisclosure();
+
+  const { dispatch } = useDinnerRouteOverviewContext();
+
+  const openHelpDialog = () => {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_HELP_DIALOG,
+    });
+  };
 
   return (
     <>
-      <IconButton edge="end" color="inherit" onClick={open} aria-label="help" size="large">
+      <IconButton edge="end" color="inherit" onClick={openHelpDialog} aria-label="help" size="large">
         <HelpOutlineIcon />
       </IconButton>
-      {isOpen && <DinnerRouteOverviewHelpDialog onClose={close} />}
+      {/* {isOpen && <DinnerRouteOverviewHelpDialog onClose={close} />} */}
     </>
   );
 }
