@@ -117,11 +117,12 @@ export function TeamCardDetails({ hostTeamMember, meal, contactInfo, isCurrentTe
   );
 }
 
-type WarningAlertProps = {
+export type UnresolvedGeocodesWarningAlertProps = {
   teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
+  hideCloseButton?: boolean;
 };
 
-export function WarningAlert({ teamsWithUnresolvedGeocodings }: WarningAlertProps) {
+export function WarningAlert({ teamsWithUnresolvedGeocodings, hideCloseButton }: UnresolvedGeocodesWarningAlertProps) {
   const { t } = useTranslation('common');
 
   const show = isArrayNotEmpty(teamsWithUnresolvedGeocodings);
@@ -142,8 +143,7 @@ export function WarningAlert({ teamsWithUnresolvedGeocodings }: WarningAlertProp
     <>
       {isOpen && (
         <Box mb={2}>
-          <Alert severity="warning" variant="outlined" onClose={close}>
-            {/* <AlertTitle>{t('attention')}</AlertTitle> */}
+          <Alert severity="warning" variant="outlined" onClose={hideCloseButton ? undefined : close}>
             {t('dinner_route_geocoding_warning')}
             <ul>
               {teamsWithUnresolvedGeocodings.map((team) => (

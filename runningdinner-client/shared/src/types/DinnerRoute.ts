@@ -33,10 +33,13 @@ export interface DinnerRouteWithDistances {
   averageDistanceInMeters: number;
 }
 
-export interface DinnerRouteWithDistancesList {
-  dinnerRoutes: DinnerRouteWithDistances[];
+export interface RouteDistanceMetrics {
   averageDistanceInMeters: number;
   sumDistanceInMeters: number;
+}
+
+export interface DinnerRouteWithDistancesList extends RouteDistanceMetrics {
+  dinnerRoutes: DinnerRouteWithDistances[];
 }
 
 interface DistanceEntry {
