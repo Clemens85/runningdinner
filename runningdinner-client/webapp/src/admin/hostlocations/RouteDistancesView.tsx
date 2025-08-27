@@ -10,7 +10,7 @@ import {
   isDefined,
   DinnerRouteWithDistancesList,
 } from '@runningdinner/shared';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { getTeamLabel } from '../../common/dinnerroute';
 import { CancelledTeamMember } from '../teams/CancelledTeamMember';
 import { useZoomToMarker } from './useZoomToMarker';
@@ -59,16 +59,6 @@ export function RouteDistancesView({ routeDistancesList }: RouteDistancesViewPro
       payload: team.teamNumber,
     });
   }
-
-  useEffect(() => {
-    if (!routeDistancesList) {
-      return;
-    }
-    dispatch({
-      type: DinnerRouteOverviewActionType.UPDATE_ROUTE_DISTANCE_METRICS,
-      payload: { averageDistanceInMeters: routeDistancesList.averageDistanceInMeters, sumDistanceInMeters: routeDistancesList.sumDistanceInMeters },
-    });
-  }, [routeDistancesList, dispatch]);
 
   if (!routeDistancesList || !routeDistancesList.dinnerRoutes) {
     return <LinearProgress variant="determinate" />;

@@ -151,12 +151,6 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
 
           {afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} />}
 
-          {/* {!settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} dinnerRouteMapData={dinnerRouteMapData} />}
-          {settingsViewMinimized && <DinnerRouteOverviewSettingsMinimizedButton />}
-
-          {!hostFilterViewMinimized && <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} />}
-          {hostFilterViewMinimized && <HostLocationsFilterMinimizedButton />} */}
-
           <MapControlsOverlay onOpenOptimization={() => {}} onResetView={() => {}} />
 
           <RouteOptimizationDialog adminId={adminId} onClose={handleClose} isOpen={isRouteOptimizationDialogOpen} routeDistanceMetrics={routeDistancesList} />

@@ -9,7 +9,6 @@ import {
   Meal,
   MealType,
   Parent,
-  RouteDistanceMetrics,
   TeamConnectionPath,
 } from '../../types';
 import { isAfterPartyLocationDefined } from '../RunningDinnerService';
@@ -27,8 +26,6 @@ export const ALL_MEALS_OPTION: MealFilterOption = {
 
 export type DinnerRouteOverviewState = {
   activeTeamsFilter: Record<number, DinnerRouteTeamMapEntry>;
-  hostFilterViewMinimized: boolean;
-  settingsViewMinimized: boolean;
   mealFilter: MealFilterOption;
   mealFilterOptions: MealFilterOption[];
   excludeAfterPartyLocation: boolean;
@@ -43,14 +40,10 @@ export type DinnerRouteOverviewState = {
   afterPartyLocation?: AfterPartyLocation;
 
   scrollToTeamRequest: number | undefined;
-
-  routeDistanceMetrics?: RouteDistanceMetrics;
 };
 
 const INITIAL_STATE_TEMPLATE: DinnerRouteOverviewState = {
   activeTeamsFilter: {},
-  hostFilterViewMinimized: false,
-  settingsViewMinimized: false,
   excludeAfterPartyLocation: false,
   mealFilterOptions: [],
   mealFilter: ALL_MEALS_OPTION,
@@ -63,8 +56,6 @@ const INITIAL_STATE_TEMPLATE: DinnerRouteOverviewState = {
 
 export enum DinnerRouteOverviewActionType {
   UPDATE_MEAL_FILTER,
-  UPDATE_SETTINGS_VIEW_MINIMIZED,
-  UPDATE_HOST_FILTER_VIEW_MINIMIZED,
   TOGGLE_ACTIVE_TEAM,
   TOGGLE_EXCLUDE_AFTER_PARTY_LOCATION,
   SCROLL_TO_TEAM,
@@ -72,7 +63,6 @@ export enum DinnerRouteOverviewActionType {
   TOGGLE_SHOW_TEAM_CLUSTERS,
   TOGGLE_SHOW_TEAM_PATHS,
   TOGGLE_SIDEBAR,
-  UPDATE_ROUTE_DISTANCE_METRICS,
   TOGGLE_ROUTE_OPTIMIZATION_DIALOG,
 }
 
@@ -199,14 +189,6 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
       }
       return result;
     }
-    case DinnerRouteOverviewActionType.UPDATE_HOST_FILTER_VIEW_MINIMIZED: {
-      result.hostFilterViewMinimized = action.payload;
-      return result;
-    }
-    case DinnerRouteOverviewActionType.UPDATE_SETTINGS_VIEW_MINIMIZED: {
-      result.settingsViewMinimized = action.payload;
-      return result;
-    }
     case DinnerRouteOverviewActionType.TOGGLE_ACTIVE_TEAM: {
       const dinnerRouteTeam = action.payload as DinnerRouteTeamMapEntry;
       if (result.activeTeamsFilter[dinnerRouteTeam.teamNumber]) {
@@ -243,10 +225,6 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
     }
     case DinnerRouteOverviewActionType.TOGGLE_SIDEBAR: {
       result.isSidebarOpen = !result.isSidebarOpen;
-      return result;
-    }
-    case DinnerRouteOverviewActionType.UPDATE_ROUTE_DISTANCE_METRICS: {
-      result.routeDistanceMetrics = action.payload;
       return result;
     }
     case DinnerRouteOverviewActionType.TOGGLE_ROUTE_OPTIMIZATION_DIALOG: {
