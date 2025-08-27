@@ -61,7 +61,6 @@ function MapView({ dinnerRouteMapData, dinnerRoute }: MapViewProps) {
             <TeamHostMarker
               key={team.teamNumber}
               team={team}
-              scale={1.3}
               teamLabel={`#${teamOrderNumberByTeamNumber[team.teamNumber]}`}
               isCurrentTeam={isSameDinnerRouteTeam(dinnerRoute.currentTeam, team)}
             />

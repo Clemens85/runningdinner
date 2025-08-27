@@ -88,7 +88,7 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
   const { data: routeDistancesList } = useCalculateRouteDistances(adminId);
 
   const { state, dispatch } = useDinnerRouteOverviewContext();
-  const { showTeamClusters, showTeamPaths, isRouteOptimizationDialogOpen } = state;
+  const { showTeamClusters, showTeamPaths, isRouteOptimizationDialogOpen, activeTeamsFilter } = state;
 
   const filteredTeamConnectionPaths = filterTeamConnectionPaths(dinnerRouteMapData, state);
 
@@ -145,7 +145,7 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
               useSecondaryClusterColor={showTeamClusters}
               teamLabel={`#${team.teamNumber}`}
               zIndex={index}
-              scale={1.5}
+              isSelected={!!activeTeamsFilter[team.teamNumber]}
             />
           ))}
 
