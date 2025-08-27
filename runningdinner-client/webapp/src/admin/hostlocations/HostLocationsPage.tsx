@@ -132,7 +132,7 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
           {showTeamPaths && (
             <>
               {filteredTeamConnectionPaths.map((path) => (
-                <TeamConnectionPathLine key={path.teamNumber} {...path} useSecondaryClusterColor={showTeamClusters} />
+                <TeamConnectionPathLine key={path.teamNumber} {...path} useSecondaryClusterColor={showTeamClusters} isSelected={!!activeTeamsFilter[path.teamNumber]} />
               ))}
             </>
           )}
@@ -163,9 +163,10 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
 type TeamConnectionPathLineProps = {
   teamConnectionPaths: TeamConnectionPath[];
   useSecondaryClusterColor: boolean;
+  isSelected?: boolean;
 };
 
-function TeamConnectionPathLine({ teamConnectionPaths, useSecondaryClusterColor }: TeamConnectionPathLineProps) {
+function TeamConnectionPathLine({ teamConnectionPaths, useSecondaryClusterColor, isSelected }: TeamConnectionPathLineProps) {
   function getStrokeColor(path: TeamConnectionPath): string {
     const secondaryClusterColor = isStringNotEmpty(path.secondaryClusterColor) ? path.secondaryClusterColor : path.color;
     return useSecondaryClusterColor ? secondaryClusterColor : path.color;
@@ -178,7 +179,7 @@ function TeamConnectionPathLine({ teamConnectionPaths, useSecondaryClusterColor 
         .map((path) => (
           <Polyline
             key={path.key}
-            strokeWeight={4}
+            strokeWeight={isSelected ? 6 : 4}
             geodesic={true}
             icons={[
               { icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '60%' },
