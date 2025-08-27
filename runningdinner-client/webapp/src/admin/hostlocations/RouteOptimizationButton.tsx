@@ -1,183 +1,168 @@
-import { Alert, Box, Button, Dialog, DialogContent, Tooltip, Typography } from '@mui/material';
-import {
-  BaseAdminIdProps,
-  useDisclosure,
-  isStringNotEmpty,
-  DinnerRouteWithDistancesList,
-  OptimizationImpact,
-  CalculateDinnerRouteOptimizationRequest,
-} from '@runningdinner/shared';
-import { Trans, useTranslation } from 'react-i18next';
-import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
-import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
-import Paragraph from '../../common/theme/typography/Paragraph';
-import { ProgressBar } from '../../common/ProgressBar';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Button, ButtonProps } from '@mui/material';
+import { isStringNotEmpty, useDinnerRouteOverviewContext, DinnerRouteOverviewActionType } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
 import { useIsRouteOptimization } from './useIsRouteOptimization';
-import { usePredictOptimizationImpact } from './usePredictOptimizationImpact';
-import { FetchProgressBar } from '../../common/FetchProgressBar';
-import { useRouteOptimization } from './useRouteOptimization';
-import { t } from 'i18next';
-import { Span } from '../../common/theme/typography/Tags';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
-type RouteOptimizationButtonProps = {
-  routeDistancesList: DinnerRouteWithDistancesList | undefined;
-} & BaseAdminIdProps;
-
-export function RouteOptimizationButton(props: RouteOptimizationButtonProps) {
-  const { isOpen, open, close } = useDisclosure();
+export function RouteOptimizationButton(props: ButtonProps) {
   const { t } = useTranslation(['admin']);
+
+  const { dispatch } = useDinnerRouteOverviewContext();
 
   const optimizationId = useIsRouteOptimization();
   if (isStringNotEmpty(optimizationId)) {
     return null;
   }
 
+  function handleOpen() {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_ROUTE_OPTIMIZATION_DIALOG,
+    });
+  }
+
   return (
     <>
-      <Tooltip title={'Aktuell nicht verfügbar'}>
-        <Button sx={{ mr: 1 }} color="inherit" onClick={() => open()} size="small" variant="outlined" disabled={false}>
-          {t('admin:dinner_route_optimize_action')}
-        </Button>
-      </Tooltip>
-      <RouteOptimizationDialog onClose={close} isOpen={isOpen} {...props} />
+      <Button color="inherit" onClick={handleOpen} variant="outlined" disableElevation startIcon={<AutoAwesomeIcon />} {...props}>
+        {t('admin:dinner_route_optimize_action')}
+      </Button>
+      {/* <RouteOptimizationDialog onClose={close} isOpen={isOpen} {...props} /> */}
     </>
   );
 }
 
-type RouteOptimizationDialogProps = {
-  onClose: () => void;
-  isOpen?: boolean;
-} & RouteOptimizationButtonProps;
+// type RouteOptimizationDialogProps = {
+//   onClose: () => void;
+//   isOpen?: boolean;
+// } & RouteOptimizationButtonProps;
 
-function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistancesList }: RouteOptimizationDialogProps) {
-  const { t } = useTranslation(['common', 'admin']);
+// function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanceMetrics }: RouteOptimizationDialogProps) {
+//   const { t } = useTranslation(['common', 'admin']);
 
-  const predictOptimizationQuery = usePredictOptimizationImpact(adminId);
-  const { isPending, triggerCalculateOptimization, previewUrl, errorMessage, resetAll } = useRouteOptimization({ adminId });
+//   const predictOptimizationQuery = usePredictOptimizationImpact(adminId);
+//   const { isPending, triggerCalculateOptimization, previewUrl, errorMessage, resetAll } = useRouteOptimization({ adminId });
 
-  async function handleTriggerCalculationOptimization() {
-    const calculateRequest: CalculateDinnerRouteOptimizationRequest = {
-      currentAverageDistanceInMeters: routeDistancesList?.averageDistanceInMeters || -1,
-      currentSumDistanceInMeters: routeDistancesList?.sumDistanceInMeters || -1,
-    };
-    triggerCalculateOptimization(calculateRequest);
-  }
+//   async function handleTriggerCalculationOptimization() {
+//     const calculateRequest: CalculateDinnerRouteOptimizationRequest = {
+//       currentAverageDistanceInMeters: routeDistanceMetrics?.averageDistanceInMeters || -1,
+//       currentSumDistanceInMeters: routeDistanceMetrics?.sumDistanceInMeters || -1,
+//     };
+//     triggerCalculateOptimization(calculateRequest);
+//   }
 
-  const okButtonDisabled = isPending() || !routeDistancesList || isStringNotEmpty(previewUrl) || predictOptimizationQuery.data === 'NONE';
+//   const okButtonDisabled = isPending() || !routeDistanceMetrics || isStringNotEmpty(previewUrl) || predictOptimizationQuery.data === 'NONE';
 
-  function handleClose() {
-    resetAll();
-    onClose();
-  }
+//   function handleClose() {
+//     resetAll();
+//     onClose();
+//   }
 
-  return (
-    <Dialog
-      onClose={(_event, reason) => {
-        if (reason !== 'backdropClick') {
-          handleClose();
-        }
-      }}
-      open={!!isOpen}
-      maxWidth={'md'}
-      sx={{
-        zIndex: 10002,
-      }}
-    >
-      <DialogTitleCloseable onClose={handleClose}>{t('admin:dinner_route_optimize_title')}</DialogTitleCloseable>
-      <DialogContent>
-        <Paragraph>
-          <Trans i18nKey={'admin:dinner_route_optimize_description'} />
-          <br />
-          <Trans i18nKey={'admin:dinner_route_optimize_note'} />
-        </Paragraph>
-        <Box my={2}>
-          <FetchProgressBar {...predictOptimizationQuery} />
-          {predictOptimizationQuery.data && !previewUrl && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
-        </Box>
+//   return (
+//     <Dialog
+//       onClose={(_event, reason) => {
+//         if (reason !== 'backdropClick') {
+//           handleClose();
+//         }
+//       }}
+//       open={!!isOpen}
+//       maxWidth={'md'}
+//       sx={{
+//         zIndex: 10002,
+//       }}
+//     >
+//       <DialogTitleCloseable onClose={handleClose}>{t('admin:dinner_route_optimize_title')}</DialogTitleCloseable>
+//       <DialogContent>
+//         <Paragraph>
+//           <Trans i18nKey={'admin:dinner_route_optimize_description'} />
+//           <br />
+//           <Trans i18nKey={'admin:dinner_route_optimize_note'} />
+//         </Paragraph>
+//         <Box my={2}>
+//           <FetchProgressBar {...predictOptimizationQuery} />
+//           {predictOptimizationQuery.data && !previewUrl && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
+//         </Box>
 
-        <Box my={2}>
-          {!routeDistancesList && <ProgressBar showLoadingProgress={true} />}
-          {isPending() && <OptimizationProgressBar />}
-          {errorMessage && <ErrorAlert errorMessage={errorMessage} />}
-          {previewUrl && (
-            <Box sx={{ textAlign: 'center', mb: -4 }}>
-              <Button onClick={handleClose} color="primary" startIcon={<OpenInNewIcon />} href={previewUrl} target="_blank" rel="noopener noreferrer">
-                <Paragraph>
-                  <strong>
-                    <Trans i18nKey={'admin:dinner_route_optimize_preview_open'} />
-                  </strong>
-                </Paragraph>
-              </Button>
-            </Box>
-          )}
-        </Box>
-      </DialogContent>
-      <DialogActionsPanel
-        onOk={handleTriggerCalculationOptimization}
-        okButtonDisabled={okButtonDisabled}
-        onCancel={handleClose}
-        okLabel={t('admin:dinner_route_optimize_action')}
-        cancelLabel={t('common:cancel')}
-      />
-    </Dialog>
-  );
-}
+//         <Box my={2}>
+//           {!routeDistanceMetrics && <ProgressBar showLoadingProgress={true} />}
+//           {isPending() && <OptimizationProgressBar />}
+//           {errorMessage && <ErrorAlert errorMessage={errorMessage} />}
+//           {previewUrl && (
+//             <Box sx={{ textAlign: 'center', mb: -4 }}>
+//               <Button onClick={handleClose} color="primary" startIcon={<OpenInNewIcon />} href={previewUrl} target="_blank" rel="noopener noreferrer">
+//                 <Paragraph>
+//                   <strong>
+//                     <Trans i18nKey={'admin:dinner_route_optimize_preview_open'} />
+//                   </strong>
+//                 </Paragraph>
+//               </Button>
+//             </Box>
+//           )}
+//         </Box>
+//       </DialogContent>
+//       <DialogActionsPanel
+//         onOk={handleTriggerCalculationOptimization}
+//         okButtonDisabled={okButtonDisabled}
+//         onCancel={handleClose}
+//         okLabel={t('admin:dinner_route_optimize_action')}
+//         cancelLabel={t('common:cancel')}
+//       />
+//     </Dialog>
+//   );
+// }
 
-function OptimizationProgressBar() {
-  return (
-    <Box flexDirection="column" alignItems="center" gap={2}>
-      <ProgressBar showLoadingProgress={true} />
-      <Typography variant="body1" color="textSecondary" align="center" sx={{ mt: 2 }}>
-        {t('admin:dinner_route_optimization_running')}
-      </Typography>
-    </Box>
-  );
-}
+// function OptimizationProgressBar() {
+//   return (
+//     <Box flexDirection="column" alignItems="center" gap={2}>
+//       <ProgressBar showLoadingProgress={true} />
+//       <Typography variant="body1" color="textSecondary" align="center" sx={{ mt: 2 }}>
+//         {t('admin:dinner_route_optimization_running')}
+//       </Typography>
+//     </Box>
+//   );
+// }
 
-type ErrorAlertProps = {
-  errorMessage: string;
-};
-function ErrorAlert({ errorMessage }: ErrorAlertProps) {
-  return (
-    <Box my={2}>
-      <Alert severity="error" variant="outlined">
-        <Span i18n={errorMessage} />
-      </Alert>
-    </Box>
-  );
-}
+// type ErrorAlertProps = {
+//   errorMessage: string;
+// };
+// function ErrorAlert({ errorMessage }: ErrorAlertProps) {
+//   return (
+//     <Box my={2}>
+//       <Alert severity="error" variant="outlined">
+//         <Span i18n={errorMessage} />
+//       </Alert>
+//     </Box>
+//   );
+// }
 
-type OptimizationImpactInfoProps = {
-  optimizationImpact: OptimizationImpact;
-};
-function OptimizationImpactInfo({ optimizationImpact }: OptimizationImpactInfoProps) {
-  const { t } = useTranslation(['admin']);
+// type OptimizationImpactInfoProps = {
+//   optimizationImpact: OptimizationImpact;
+// };
+// function OptimizationImpactInfo({ optimizationImpact }: OptimizationImpactInfoProps) {
+//   const { t } = useTranslation(['admin']);
 
-  if (!optimizationImpact || optimizationImpact === 'NONE') {
-    return <ErrorAlert errorMessage="admin:dinner_route_optimize_prediction_no_impact" />;
-  }
+//   if (!optimizationImpact || optimizationImpact === 'NONE') {
+//     return <ErrorAlert errorMessage="admin:dinner_route_optimize_prediction_no_impact" />;
+//   }
 
-  let color = 'default';
-  if (optimizationImpact === 'LOW') {
-    color = 'warning.main';
-  } else if (optimizationImpact === 'HIGH') {
-    color = 'success.main';
-  } else if (optimizationImpact === 'MEDIUM') {
-    color = 'info.main';
-  }
+//   let color = 'default';
+//   if (optimizationImpact === 'LOW') {
+//     color = 'warning.main';
+//   } else if (optimizationImpact === 'HIGH') {
+//     color = 'success.main';
+//   } else if (optimizationImpact === 'MEDIUM') {
+//     color = 'info.main';
+//   }
 
-  const impactLabel = t('admin:dinner_route_optimization_impact_' + optimizationImpact.toLowerCase());
+//   const impactLabel = t('admin:dinner_route_optimization_impact_' + optimizationImpact.toLowerCase());
 
-  return (
-    <Typography variant="body1" component="div">
-      <Trans
-        i18nKey="admin:dinner_route_optimize_prediction_impact"
-        components={{
-          typography: <Typography variant="body1" component="span" color={color} />,
-        }}
-        values={{ impact: impactLabel }}
-      />
-    </Typography>
-  );
-}
+//   return (
+//     <Typography variant="body1" component="div">
+//       <Trans
+//         i18nKey="admin:dinner_route_optimize_prediction_impact"
+//         components={{
+//           typography: <Typography variant="body1" component="span" color={color} />,
+//         }}
+//         values={{ impact: impactLabel }}
+//       />
+//     </Typography>
+//   );
+// }

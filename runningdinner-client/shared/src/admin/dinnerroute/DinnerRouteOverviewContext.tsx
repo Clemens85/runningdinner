@@ -1,10 +1,20 @@
-import React from "react";
-import { cloneDeep, remove } from "lodash-es";
-import { AfterPartyLocation, BaseEntity, BaseRunningDinnerProps, DinnerRouteMapData, DinnerRouteTeamMapEntry, Meal, MealType, Parent, TeamConnectionPath} from "../../types";
-import { isAfterPartyLocationDefined } from "../RunningDinnerService";
-import { findEntityById, isDefined, isSameEntity } from "../../Utils";
-import { DinnerRouteMapCalculator } from "./DinnerRouteMapCalculator";
-
+import React from 'react';
+import { cloneDeep, remove } from 'lodash-es';
+import {
+  AfterPartyLocation,
+  BaseEntity,
+  BaseRunningDinnerProps,
+  DinnerRouteMapData,
+  DinnerRouteTeamMapEntry,
+  Meal,
+  MealType,
+  Parent,
+  RouteDistanceMetrics,
+  TeamConnectionPath,
+} from '../../types';
+import { isAfterPartyLocationDefined } from '../RunningDinnerService';
+import { findEntityById, isDefined, isSameEntity } from '../../Utils';
+import { DinnerRouteMapCalculator } from './DinnerRouteMapCalculator';
 
 export type MealFilterOption = {
   fromMeal?: Meal;
@@ -12,7 +22,7 @@ export type MealFilterOption = {
 } & BaseEntity;
 
 export const ALL_MEALS_OPTION: MealFilterOption = {
-  id: "ALL"
+  id: 'ALL',
 };
 
 export type DinnerRouteOverviewState = {
@@ -24,6 +34,8 @@ export type DinnerRouteOverviewState = {
   excludeAfterPartyLocation: boolean;
   showTeamClusters: boolean;
   showTeamPaths: boolean;
+  isSidebarOpen?: boolean;
+  isRouteOptimizationDialogOpen?: boolean;
 
   meals: Meal[];
   mealTypeMappings: Record<string, MealType>;
@@ -31,6 +43,8 @@ export type DinnerRouteOverviewState = {
   afterPartyLocation?: AfterPartyLocation;
 
   scrollToTeamRequest: number | undefined;
+
+  routeDistanceMetrics?: RouteDistanceMetrics;
 };
 
 const INITIAL_STATE_TEMPLATE: DinnerRouteOverviewState = {
@@ -56,19 +70,21 @@ export enum DinnerRouteOverviewActionType {
   SCROLL_TO_TEAM,
   RESET,
   TOGGLE_SHOW_TEAM_CLUSTERS,
-  TOGGLE_SHOW_TEAM_PATHS
+  TOGGLE_SHOW_TEAM_PATHS,
+  TOGGLE_SIDEBAR,
+  UPDATE_ROUTE_DISTANCE_METRICS,
+  TOGGLE_ROUTE_OPTIMIZATION_DIALOG,
 }
 
 type Action = {
   type: DinnerRouteOverviewActionType;
   payload?: any;
-}
+};
 
 type DinnerRouteOverviewContextType = {
   state: DinnerRouteOverviewState;
   dispatch: React.Dispatch<Action>;
-}
-
+};
 
 function newInitialState(meals: Meal[], afterPartyLocation: AfterPartyLocation | undefined): DinnerRouteOverviewState {
   const result = cloneDeep(INITIAL_STATE_TEMPLATE);
@@ -84,21 +100,19 @@ function newInitialState(meals: Meal[], afterPartyLocation: AfterPartyLocation |
 }
 
 function buildMealFilterOptions(incomingMeals: Meal[], afterPartyLocation: AfterPartyLocation | undefined, excludeAfterPartyLocation: boolean): MealFilterOption[] {
-  const result = [
-    ALL_MEALS_OPTION
-  ];
+  const result = [ALL_MEALS_OPTION];
   for (let i = 0; i < incomingMeals.length; i++) {
     const meal = cloneDeep(incomingMeals[i]);
     if (i + 1 < incomingMeals.length) {
       result.push({
         fromMeal: meal,
         toMeal: incomingMeals[i + 1],
-        id: meal.id
+        id: meal.id,
       });
     } else if (isAfterPartyLocationDefined(afterPartyLocation) && !excludeAfterPartyLocation) {
       result.push({
         fromMeal: meal,
-        id: meal.id
+        id: meal.id,
       });
     }
   }
@@ -111,9 +125,8 @@ function getLastMeal(meals: Meal[]): Meal {
 
 const DinnerRouteOverviewContext = React.createContext<DinnerRouteOverviewContextType>({
   state: INITIAL_STATE_TEMPLATE,
-  dispatch: () => {}
+  dispatch: () => {},
 });
-
 
 function filterActiveTeams(activeTeamsFilter: Record<number, DinnerRouteTeamMapEntry>) {
   const result = new Array<DinnerRouteTeamMapEntry>();
@@ -127,21 +140,22 @@ function filterActiveTeams(activeTeamsFilter: Record<number, DinnerRouteTeamMapE
 }
 
 export function filterTeamConnectionPaths(dinnerRouteMapData: DinnerRouteMapData, state: DinnerRouteOverviewState): DinnerRouteTeamMapEntry[] {
-  
-  const {dinnerRouteMapEntries} = dinnerRouteMapData;
-  const {activeTeamsFilter, mealFilter} = state;
+  const { dinnerRouteMapEntries } = dinnerRouteMapData;
+  const { activeTeamsFilter, mealFilter } = state;
 
   let result = filterActiveTeams(activeTeamsFilter);
   if (result.length === 0) {
     result = dinnerRouteMapEntries;
-  }  
+  }
   result = cloneDeep(result);
 
   for (let i = 0; i < result.length; i++) {
     const currentEntry = result[i];
     const currentTeamConnectionPaths = currentEntry.teamConnectionPaths;
- 
-    remove(currentTeamConnectionPaths, path => { return !isIncludedInMealFilter(mealFilter, currentEntry, path, state.excludeAfterPartyLocation); });
+
+    remove(currentTeamConnectionPaths, (path) => {
+      return !isIncludedInMealFilter(mealFilter, currentEntry, path, state.excludeAfterPartyLocation);
+    });
 
     if (state.excludeAfterPartyLocation) {
       remove(currentTeamConnectionPaths, (path) => !path.toTeam);
@@ -151,7 +165,12 @@ export function filterTeamConnectionPaths(dinnerRouteMapData: DinnerRouteMapData
   return result;
 }
 
-function isIncludedInMealFilter(mealFilter: MealFilterOption, dinnerRouteMapEntry: DinnerRouteTeamMapEntry, teamConnectionPath: TeamConnectionPath, excludeAfterPartyLocation: boolean): boolean {
+function isIncludedInMealFilter(
+  mealFilter: MealFilterOption,
+  dinnerRouteMapEntry: DinnerRouteTeamMapEntry,
+  teamConnectionPath: TeamConnectionPath,
+  excludeAfterPartyLocation: boolean,
+): boolean {
   if (isSameEntity(mealFilter, ALL_MEALS_OPTION)) {
     return true;
   }
@@ -170,7 +189,6 @@ function isIncludedInMealFilter(mealFilter: MealFilterOption, dinnerRouteMapEntr
 }
 
 function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Action): DinnerRouteOverviewState {
-
   const result = cloneDeep(state);
 
   switch (action.type) {
@@ -201,9 +219,7 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
     case DinnerRouteOverviewActionType.TOGGLE_EXCLUDE_AFTER_PARTY_LOCATION: {
       result.excludeAfterPartyLocation = !result.excludeAfterPartyLocation;
       result.mealFilterOptions = buildMealFilterOptions(result.meals, result.afterPartyLocation, result.excludeAfterPartyLocation);
-      if (isSameEntity(result.mealFilter, getLastMeal(result.meals)) && 
-          result.excludeAfterPartyLocation && 
-          isAfterPartyLocationDefined(result.afterPartyLocation)) {
+      if (isSameEntity(result.mealFilter, getLastMeal(result.meals)) && result.excludeAfterPartyLocation && isAfterPartyLocationDefined(result.afterPartyLocation)) {
         result.mealFilter = ALL_MEALS_OPTION; // Reset due to Nachspeise => AfterEventParty is not possible anymore
       }
       return result;
@@ -213,7 +229,9 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
       return result;
     }
     case DinnerRouteOverviewActionType.RESET: {
-      return newInitialState(result.meals, result.afterPartyLocation);
+      const resettedState = newInitialState(result.meals, result.afterPartyLocation);
+      resettedState.isSidebarOpen = result.isSidebarOpen; // keep sidebar state
+      return resettedState;
     }
     case DinnerRouteOverviewActionType.TOGGLE_SHOW_TEAM_CLUSTERS: {
       result.showTeamClusters = !result.showTeamClusters;
@@ -223,6 +241,18 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
       result.showTeamPaths = !result.showTeamPaths;
       return result;
     }
+    case DinnerRouteOverviewActionType.TOGGLE_SIDEBAR: {
+      result.isSidebarOpen = !result.isSidebarOpen;
+      return result;
+    }
+    case DinnerRouteOverviewActionType.UPDATE_ROUTE_DISTANCE_METRICS: {
+      result.routeDistanceMetrics = action.payload;
+      return result;
+    }
+    case DinnerRouteOverviewActionType.TOGGLE_ROUTE_OPTIMIZATION_DIALOG: {
+      result.isRouteOptimizationDialogOpen = !state.isRouteOptimizationDialogOpen;
+      return result;
+    }
   }
   // Should not reach this point
   return result;
@@ -230,13 +260,11 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
 
 type DinnerRouteOverviewContextProviderProps = BaseRunningDinnerProps & Parent;
 
-export function DinnerRouteOverviewContextProvider({children, runningDinner}: DinnerRouteOverviewContextProviderProps) {
-
+export function DinnerRouteOverviewContextProvider({ children, runningDinner }: DinnerRouteOverviewContextProviderProps) {
   const [state, dispatch] = React.useReducer(dinnerRouteOverviewReducer, newInitialState(runningDinner.options.meals, runningDinner.afterPartyLocation));
-  const value = {state, dispatch};
-  return <DinnerRouteOverviewContext.Provider value={value}>{children}</DinnerRouteOverviewContext.Provider>
+  const value = { state, dispatch };
+  return <DinnerRouteOverviewContext.Provider value={value}>{children}</DinnerRouteOverviewContext.Provider>;
 }
-
 
 export function useDinnerRouteOverviewContext() {
   const context = React.useContext(DinnerRouteOverviewContext);

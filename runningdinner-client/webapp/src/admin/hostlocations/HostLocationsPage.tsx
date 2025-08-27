@@ -1,14 +1,12 @@
-import { BaseRunningDinnerProps, DinnerRouteMapCalculator, isQuerySucceeded, isStringNotEmpty, TeamConnectionPath } from '@runningdinner/shared';
+import { BaseRunningDinnerProps, DinnerRouteMapCalculator, DinnerRouteOverviewActionType, isQuerySucceeded, isStringNotEmpty, TeamConnectionPath } from '@runningdinner/shared';
 import { useEffect, useRef } from 'react';
 import { useDynamicFullscreenHeight } from '../../common/hooks/DynamicFullscreenHeightHook';
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import { FetchProgressBar } from '../../common/FetchProgressBar';
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from '../../common/maps';
 import { AfterPartyLocationMarker, TeamHostMarker, WarningAlert } from '../../common/dinnerroute';
-import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from './HostLocationsFilterView';
 import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
 import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteMapData } from '@runningdinner/shared';
-import { DinnerRouteOverviewSettingsMinimizedButton, DinnerRouteOverviewSettingsView } from './DinnerRouteOverviewSettingsView';
 import { useFindAllDinnerRoutes } from './useFindAllDinnerRoutes';
 import { useIsRouteOptimization } from './useIsRouteOptimization';
 import { RouteOptimizationPreviewBanner } from './RouteOptimizationPreviewBanner';
@@ -16,6 +14,11 @@ import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { useShowRouteOptimizationSavedMessage } from './useShowRouteOptimizationSavedMessage';
 import Paragraph from '../../common/theme/typography/Paragraph';
 import { Trans } from 'react-i18next';
+import { MapControlsOverlay } from './MapControlsOverlay';
+import { Box } from '@mui/system';
+import { MapControlsAppBar } from './MapControlsAppBar.tsx';
+import { MapControlsSidebar } from './MapControlsSidebar.tsx';
+import { RouteOptimizationDialog } from './RouteOptimizationDialog.tsx';
 
 export function HostLocationsPage({ runningDinner }: BaseRunningDinnerProps) {
   return (
@@ -74,15 +77,23 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
   const { showRouteOptimizationSavedMessage, deleteRouteOptimizationSavedQueryParam } = useShowRouteOptimizationSavedMessage();
   const { showSuccess } = useCustomSnackbar();
 
-  const { dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry } = dinnerRouteMapData;
+  const { dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry, teamsWithUnresolvedGeocodings } = dinnerRouteMapData;
 
   const mapContainerRef = useRef(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
 
-  const { state } = useDinnerRouteOverviewContext();
-  const { hostFilterViewMinimized, settingsViewMinimized, showTeamClusters, showTeamPaths } = state;
+  const { state, dispatch } = useDinnerRouteOverviewContext();
+  const { showTeamClusters, showTeamPaths, routeDistanceMetrics, isRouteOptimizationDialogOpen } = state;
 
   const filteredTeamConnectionPaths = filterTeamConnectionPaths(dinnerRouteMapData, state);
+
+  const { adminId } = runningDinner;
+
+  function handleClose() {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_ROUTE_OPTIMIZATION_DIALOG,
+    });
+  }
 
   useEffect(() => {
     if (showRouteOptimizationSavedMessage) {
@@ -105,7 +116,11 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
   }, [showRouteOptimizationSavedMessage]);
 
   return (
-    <>
+    <Box>
+      <MapControlsAppBar teamsWithUnresolvedGeocodings={teamsWithUnresolvedGeocodings} />
+
+      <MapControlsSidebar open={!!state.isSidebarOpen} adminId={adminId} dinnerRouteMapData={dinnerRouteMapData} />
+
       <div ref={mapContainerRef}>
         <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }} defaultZoom={11} style={{ height: `${mapHeight}px` }} mapId={GOOGLE_MAPS_ID}>
           {showTeamPaths && (
@@ -130,14 +145,18 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
 
           {afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} />}
 
-          {!settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} dinnerRouteMapData={dinnerRouteMapData} />}
+          {/* {!settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} dinnerRouteMapData={dinnerRouteMapData} />}
           {settingsViewMinimized && <DinnerRouteOverviewSettingsMinimizedButton />}
 
           {!hostFilterViewMinimized && <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} />}
-          {hostFilterViewMinimized && <HostLocationsFilterMinimizedButton />}
+          {hostFilterViewMinimized && <HostLocationsFilterMinimizedButton />} */}
+
+          <MapControlsOverlay onOpenOptimization={() => {}} onResetView={() => {}} />
+
+          <RouteOptimizationDialog adminId={adminId} onClose={handleClose} isOpen={isRouteOptimizationDialogOpen} routeDistanceMetrics={routeDistanceMetrics} />
         </Map>
       </div>
-    </>
+    </Box>
   );
 }
 
