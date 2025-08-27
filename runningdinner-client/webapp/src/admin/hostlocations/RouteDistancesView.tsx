@@ -8,14 +8,12 @@ import {
   TeamStatus,
   DinnerRouteDistanceUtil,
   isDefined,
-  BaseAdminIdProps,
   DinnerRouteWithDistancesList,
 } from '@runningdinner/shared';
 import React, { useEffect } from 'react';
 import { getTeamLabel } from '../../common/dinnerroute';
 import { CancelledTeamMember } from '../teams/CancelledTeamMember';
 import { useZoomToMarker } from './useZoomToMarker';
-import { useCalculateRouteDistances } from './useCalculateRouteDistances';
 
 type RouteDistancesViewProps = {
   routeDistancesList: DinnerRouteWithDistancesList | undefined;
@@ -49,12 +47,7 @@ function RouteDistancesSummary({ routeDistancesList }: RouteDistancesViewProps) 
   );
 }
 
-export function RouteDistancesView({ adminId }: BaseAdminIdProps) {
-  const { data: routeDistancesList } = useCalculateRouteDistances(adminId);
-  return <RouteDistancesControls routeDistancesList={routeDistancesList} />;
-}
-
-export function RouteDistancesControls({ routeDistancesList }: RouteDistancesViewProps) {
+export function RouteDistancesView({ routeDistancesList }: RouteDistancesViewProps) {
   const { handleZoomTo } = useZoomToMarker();
   const { dispatch } = useDinnerRouteOverviewContext();
 

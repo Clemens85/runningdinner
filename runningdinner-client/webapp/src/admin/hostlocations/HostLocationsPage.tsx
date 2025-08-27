@@ -19,6 +19,7 @@ import { Box } from '@mui/system';
 import { MapControlsAppBar } from './MapControlsAppBar.tsx';
 import { MapControlsSidebar } from './MapControlsSidebar.tsx';
 import { RouteOptimizationDialog } from './RouteOptimizationDialog.tsx';
+import {useCalculateRouteDistances} from "./useCalculateRouteDistances.ts";
 
 export function HostLocationsPage({ runningDinner }: BaseRunningDinnerProps) {
   return (
@@ -77,17 +78,19 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
   const { showRouteOptimizationSavedMessage, deleteRouteOptimizationSavedQueryParam } = useShowRouteOptimizationSavedMessage();
   const { showSuccess } = useCustomSnackbar();
 
+  const { adminId } = runningDinner;
+
   const { dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry, teamsWithUnresolvedGeocodings } = dinnerRouteMapData;
 
   const mapContainerRef = useRef(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
 
+  const { data: routeDistancesList } = useCalculateRouteDistances(adminId);
+
   const { state, dispatch } = useDinnerRouteOverviewContext();
-  const { showTeamClusters, showTeamPaths, routeDistanceMetrics, isRouteOptimizationDialogOpen } = state;
+  const { showTeamClusters, showTeamPaths, isRouteOptimizationDialogOpen } = state;
 
   const filteredTeamConnectionPaths = filterTeamConnectionPaths(dinnerRouteMapData, state);
-
-  const { adminId } = runningDinner;
 
   function handleClose() {
     dispatch({
@@ -119,7 +122,10 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
     <Box>
       <MapControlsAppBar teamsWithUnresolvedGeocodings={teamsWithUnresolvedGeocodings} />
 
-      <MapControlsSidebar open={!!state.isSidebarOpen} adminId={adminId} dinnerRouteMapData={dinnerRouteMapData} />
+      <MapControlsSidebar open={!!state.isSidebarOpen}
+                          adminId={adminId}
+                          dinnerRouteMapData={dinnerRouteMapData}
+                          routeDistancesList={routeDistancesList} />
 
       <div ref={mapContainerRef}>
         <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }} defaultZoom={11} style={{ height: `${mapHeight}px` }} mapId={GOOGLE_MAPS_ID}>
@@ -153,7 +159,7 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
 
           <MapControlsOverlay onOpenOptimization={() => {}} onResetView={() => {}} />
 
-          <RouteOptimizationDialog adminId={adminId} onClose={handleClose} isOpen={isRouteOptimizationDialogOpen} routeDistanceMetrics={routeDistanceMetrics} />
+          <RouteOptimizationDialog adminId={adminId} onClose={handleClose} isOpen={isRouteOptimizationDialogOpen} routeDistanceMetrics={routeDistancesList} />
         </Map>
       </div>
     </Box>

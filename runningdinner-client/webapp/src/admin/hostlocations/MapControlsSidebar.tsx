@@ -1,7 +1,12 @@
 import { Box, Divider, Drawer, IconButton, Stack, styled, Tab, Tabs, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
-import { DinnerRouteMapData, DinnerRouteOverviewActionType, useDinnerRouteOverviewContext } from '@runningdinner/shared';
+import {
+  DinnerRouteMapData,
+  DinnerRouteOverviewActionType,
+  DinnerRouteWithDistancesList,
+  useDinnerRouteOverviewContext
+} from '@runningdinner/shared';
 import { BaseAdminIdProps } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -43,9 +48,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 type MapControlSidebarProps = {
   open: boolean;
   dinnerRouteMapData: DinnerRouteMapData;
+  routeDistancesList?: DinnerRouteWithDistancesList | undefined;
 } & BaseAdminIdProps;
 
-export function MapControlsSidebar({ open, adminId, dinnerRouteMapData }: MapControlSidebarProps) {
+export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDistancesList }: MapControlSidebarProps) {
   const [activeTab, setActiveTab] = useState(0);
   const isMobile = useIsMobileDevice();
   const sidebarWidth = isMobile ? '100%' : SIDEBAR_WIDTH;
@@ -109,7 +115,7 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData }: MapCon
       </TabPanel>
 
       <TabPanel value={activeTab} index={1}>
-        <RouteDistancesView adminId={adminId} />
+        <RouteDistancesView routeDistancesList={routeDistancesList} />
       </TabPanel>
 
       <TabPanel value={activeTab} index={2}>
