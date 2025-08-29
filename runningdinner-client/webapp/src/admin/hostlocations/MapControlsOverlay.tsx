@@ -7,16 +7,20 @@ import { FabProps } from '@mui/material/Fab';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DirectionsOutlinedIcon from '@mui/icons-material/DirectionsOutlined';
 import Groups2Icon from '@mui/icons-material/Groups2';
-import Backdrop from '@mui/material/Backdrop';
-import { useState } from 'react';
+// import Backdrop from '@mui/material/Backdrop';
+// import { useState } from 'react';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
+import { ADVANCED_TAB_INDEX, DISTANCES_TAB_INDEX } from './MapControlsSidebar';
 
 export function MapControlsOverlay() {
   const { dispatch } = useDinnerRouteOverviewContext();
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  // const [open, setOpen] = useState(false);
+  // const handleOpen = () => setOpen(true);
+  // const handleClose = () => setOpen(false);
+
+  const isMobileDevice = useIsMobileDevice();
 
   const openRouteOptimization = () => {
     dispatch({
@@ -36,7 +40,12 @@ export function MapControlsOverlay() {
     });
   };
 
-  const todo = () => {};
+  const openSidebarView = (tabIndex: number) => {
+    dispatch({
+      type: DinnerRouteOverviewActionType.OPEN_SIDEBAR,
+      payload: tabIndex,
+    });
+  };
 
   const fabProps: Partial<FabProps> = {
     sx: { backgroundColor: 'primary.main', width: 64, height: 64 },
@@ -44,8 +53,8 @@ export function MapControlsOverlay() {
 
   const actions = [
     { icon: <AutoAwesomeIcon />, name: 'Optimierung', onClick: openRouteOptimization },
-    { icon: <DirectionsOutlinedIcon />, name: 'Entfernungen', onClick: todo },
-    { icon: <Groups2Icon />, name: 'Gastgeber Überschneidungen', onClick: todo },
+    { icon: <DirectionsOutlinedIcon />, name: 'Entfernungen', onClick: () => openSidebarView(DISTANCES_TAB_INDEX) },
+    { icon: <Groups2Icon />, name: 'Gastgeber Überschneidungen', onClick: () => openSidebarView(ADVANCED_TAB_INDEX) },
     { icon: <SettingsBackupRestoreIcon />, name: 'Sicht zurücksetzen', onClick: resetAll },
     { icon: <HelpOutlineIcon />, name: 'Hilfe', onClick: openHelpDialog },
   ];
@@ -59,26 +68,26 @@ export function MapControlsOverlay() {
         zIndex: 10,
       }}
     >
-      <Backdrop open={open} />
+      {/* <Backdrop open={open} /> */}
       <SpeedDial
         FabProps={fabProps}
         ariaLabel="Map controls"
-        onClick={() => setOpen(!open)}
+        // onClick={() => setOpen(!open)}
         // onClose={handleClose}
-        onOpen={handleOpen}
-        open={open}
+        // onOpen={handleOpen}
+        // open={open}
         icon={<SpeedDialIcon openIcon={<CloseIcon />} icon={<EditIcon />} />}
       >
         {actions.map((action) => (
           <SpeedDialAction
             icon={action.icon}
             tooltipTitle={action.name}
-            tooltipOpen
+            tooltipOpen={isMobileDevice}
             tooltipPlacement={'right'}
             key={action.name}
             onClick={() => {
               action.onClick();
-              window.setTimeout(() => handleClose(), 100);
+              // window.setTimeout(() => handleClose(), 100);
             }}
           />
         ))}

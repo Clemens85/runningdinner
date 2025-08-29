@@ -22,6 +22,7 @@ export type DinnerRouteOverviewState = {
   showTeamClusters: boolean;
   showTeamPaths: boolean;
   isSidebarOpen?: boolean;
+  activeSideBarTabIndex: number;
   isRouteOptimizationDialogOpen?: boolean;
   isHelpDialogOpen?: boolean;
 
@@ -43,6 +44,10 @@ const INITIAL_STATE_TEMPLATE: DinnerRouteOverviewState = {
   scrollToTeamRequest: undefined,
   showTeamClusters: false,
   showTeamPaths: true,
+  activeSideBarTabIndex: 0,
+  isSidebarOpen: false,
+  isRouteOptimizationDialogOpen: false,
+  isHelpDialogOpen: false,
 };
 
 export enum DinnerRouteOverviewActionType {
@@ -56,6 +61,7 @@ export enum DinnerRouteOverviewActionType {
   TOGGLE_SIDEBAR,
   TOGGLE_ROUTE_OPTIMIZATION_DIALOG,
   TOGGLE_HELP_DIALOG,
+  OPEN_SIDEBAR,
 }
 
 type Action = {
@@ -217,6 +223,7 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
     }
     case DinnerRouteOverviewActionType.TOGGLE_SIDEBAR: {
       result.isSidebarOpen = !result.isSidebarOpen;
+      // result.activeSideBarTabIndex = 0; // Reset to first tab on toggle
       return result;
     }
     case DinnerRouteOverviewActionType.TOGGLE_ROUTE_OPTIMIZATION_DIALOG: {
@@ -225,6 +232,11 @@ function dinnerRouteOverviewReducer(state: DinnerRouteOverviewState, action: Act
     }
     case DinnerRouteOverviewActionType.TOGGLE_HELP_DIALOG: {
       result.isHelpDialogOpen = !state.isHelpDialogOpen;
+      return result;
+    }
+    case DinnerRouteOverviewActionType.OPEN_SIDEBAR: {
+      result.isSidebarOpen = true;
+      result.activeSideBarTabIndex = action.payload ?? 0;
       return result;
     }
   }

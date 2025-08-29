@@ -1,12 +1,7 @@
 import { Box, Divider, Drawer, IconButton, Stack, styled, Tab, Tabs, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
-import {
-  DinnerRouteMapData,
-  DinnerRouteOverviewActionType,
-  DinnerRouteWithDistancesList,
-  useDinnerRouteOverviewContext
-} from '@runningdinner/shared';
+import { DinnerRouteMapData, DinnerRouteOverviewActionType, DinnerRouteWithDistancesList, useDinnerRouteOverviewContext } from '@runningdinner/shared';
 import { BaseAdminIdProps } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -16,6 +11,10 @@ import { NearbyHostsAnalysis } from './NearbyHostsAnalysis';
 import { ResetAllButton } from './ResetAllButton';
 
 export const SIDEBAR_WIDTH = 540;
+
+export const TEAMS_TAB_INDEX = 0;
+export const DISTANCES_TAB_INDEX = 1;
+export const ADVANCED_TAB_INDEX = 2;
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -52,17 +51,25 @@ type MapControlSidebarProps = {
 } & BaseAdminIdProps;
 
 export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDistancesList }: MapControlSidebarProps) {
-  const [activeTab, setActiveTab] = useState(0);
+  const { dispatch, state } = useDinnerRouteOverviewContext();
+  const { activeSideBarTabIndex } = state;
+
+  // const [activeTab, setActiveTab] = useState(0);
   const isMobile = useIsMobileDevice();
   const sidebarWidth = isMobile ? '100%' : SIDEBAR_WIDTH;
 
   const { dinnerRouteMapEntries } = dinnerRouteMapData;
 
-  const { dispatch } = useDinnerRouteOverviewContext();
-
   const toggleSidebar = () => {
     dispatch({
       type: DinnerRouteOverviewActionType.TOGGLE_SIDEBAR,
+    });
+  };
+
+  const setActiveTab = (newValue: number) => {
+    dispatch({
+      type: DinnerRouteOverviewActionType.OPEN_SIDEBAR,
+      payload: newValue,
     });
   };
 
@@ -99,7 +106,7 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
       <Divider />
 
       <Tabs
-        value={activeTab}
+        value={activeSideBarTabIndex}
         onChange={(_, newValue) => setActiveTab(newValue)}
         variant="fullWidth"
         aria-label="map control options"
@@ -110,15 +117,15 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
         <Tab label={t('Erweitert')} id="tab-2" />
       </Tabs>
 
-      <TabPanel value={activeTab} index={0}>
+      <TabPanel value={activeSideBarTabIndex} index={TEAMS_TAB_INDEX}>
         <TeamLocationsFilterList dinnerRouteMapEntries={dinnerRouteMapEntries} />
       </TabPanel>
 
-      <TabPanel value={activeTab} index={1}>
+      <TabPanel value={activeSideBarTabIndex} index={DISTANCES_TAB_INDEX}>
         <RouteDistancesView routeDistancesList={routeDistancesList} />
       </TabPanel>
 
-      <TabPanel value={activeTab} index={2}>
+      <TabPanel value={activeSideBarTabIndex} index={ADVANCED_TAB_INDEX}>
         <NearbyHostsAnalysis adminId={adminId} />
       </TabPanel>
     </Drawer>
