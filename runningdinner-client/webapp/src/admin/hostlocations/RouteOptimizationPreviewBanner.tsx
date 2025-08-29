@@ -47,8 +47,8 @@ export function RouteOptimizationPreviewBanner({ optimizationId, adminId }: Rout
 
   return (
     <>
-      <Snackbar open={isOpen} sx={{ width: '100%', opacity: 0.95, top: 0 }} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-        <Alert icon={false} severity="info" sx={{ width: '98%' }} variant="filled" onClose={handleClose}>
+      <Snackbar open={isOpen} sx={{ width: '100%', opacity: 0.95, top: '-5px ! important' }} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert icon={false} severity="info" sx={{ width: '98%', paddingBottom: '2px' }} variant="filled" onClose={handleClose}>
           <AlertTitle>
             <Paragraph>
               <strong>
