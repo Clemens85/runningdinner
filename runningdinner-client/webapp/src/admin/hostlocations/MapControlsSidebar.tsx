@@ -1,5 +1,4 @@
 import { Box, Divider, Drawer, IconButton, Stack, styled, Tab, Tabs, Typography } from '@mui/material';
-import { useState } from 'react';
 import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { DinnerRouteMapData, DinnerRouteOverviewActionType, DinnerRouteWithDistancesList, useDinnerRouteOverviewContext } from '@runningdinner/shared';
 import { BaseAdminIdProps } from '@runningdinner/shared';
@@ -54,7 +53,6 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
   const { dispatch, state } = useDinnerRouteOverviewContext();
   const { activeSideBarTabIndex } = state;
 
-  // const [activeTab, setActiveTab] = useState(0);
   const isMobile = useIsMobileDevice();
   const sidebarWidth = isMobile ? '100%' : SIDEBAR_WIDTH;
 
@@ -86,7 +84,8 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
         '& .MuiDrawer-paper': {
           width: sidebarWidth,
           boxSizing: 'border-box',
-          ...(isMobile ? { height: '80%', borderTopLeftRadius: 16, borderTopRightRadius: 16 } : { top: '64px', height: 'calc(100% - 64px)' }),
+          // ...(isMobile ? { height: '80%', borderTopLeftRadius: 16, borderTopRightRadius: 16 } : { top: '64px', height: 'calc(100% - 64px)' }),
+          ...(isMobile ? { height: 'calc(100% - 48px)', borderTopLeftRadius: 16, borderTopRightRadius: 16 } : { top: '64px', height: 'calc(100% - 48px)' }),
         },
       }}
     >
