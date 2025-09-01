@@ -8,7 +8,6 @@ import { LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH } from '
 import { styled } from '@mui/material/styles';
 import { DonateButton } from '../donate/DonateButton';
 import { CallbackHandler } from '@runningdinner/shared';
-import path from 'path';
 
 const HomeTitle = styled(Typography)(({ theme }) => ({
   marginRight: theme.spacing(4),
