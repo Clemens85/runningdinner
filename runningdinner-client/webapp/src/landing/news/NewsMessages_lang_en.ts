@@ -1,4 +1,10 @@
 const NewsMessages_en: any = {
+  news_title_20250902: 'Route Optimization available',
+  news_content_20250902:
+    'Often requested and now finally available in an initial version: It is now possible to optimize the dinner routes so that the distances between the individual teams are as short as possible. ' +
+    '<br />Further improvements to this feature are planned for the future. ' +
+    '<br />Important: In some cases, the optimization may not result in a noticeable improvement, as this always depends on the specific distribution of participants.',
+
   news_title_20250825: 'Meals can be adjusted afterwards',
   news_content_20250825:
     'From now on, the meals for a Running Dinner can also be adjusted afterwards. For example, a 3-course event can be changed to a 2-course event if there are too few registrations.',

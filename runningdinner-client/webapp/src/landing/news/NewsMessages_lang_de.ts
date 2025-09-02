@@ -1,4 +1,10 @@
 const NewsMessages_de: any = {
+  news_title_20250902: 'Routen Optimierung vefügbar',
+  news_content_20250902:
+    'Oft angefragt, nun endlich in einer ersten Version verfügbar: Ab sofort ist es möglich die Dinner-Routen zu optimieren, so dass die Wege ziwschen den einzlnen Teams möglichst gering sind. ' +
+    '<br />Künftig sind noch weitere Verbesserungen an diesem Feature geplant. ' +
+    '<br />Wichtig: Nicht in jedem Fall erzielt die Optimierung eine spürbare Verbesserung, das hängt immer von der konkreten Verteilung der Teilnehmer ab.',
+
   news_title_20250825: 'Speisen können nachträglich angepasst werden',
   news_content_20250825:
     'Ab sofort können die Speisen für ein Running Dinner auch nachträglich angepasst werden, z.B. kann aus einem 3-Gang Event ein 2-Gang Event gemacht werden wenn es zu wenig Anmeldungen gibt.',
