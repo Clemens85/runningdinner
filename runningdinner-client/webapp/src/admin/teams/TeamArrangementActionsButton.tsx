@@ -23,6 +23,7 @@ import { useUrlQuery } from '../../common/hooks/useUrlQuery';
 import { OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM } from '../AdminNavigationHook';
 import { useEffect } from 'react';
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 
 
 export interface TeamArrangementActionsButtonProps extends BaseAdminIdProps {
@@ -48,6 +49,8 @@ export function TeamArrangementActionsButton({adminId}: TeamArrangementActionsBu
   const {updateTeams} = useUpdateFindTeamsQueryData(adminId);
 
   const {showSuccess} = useCustomSnackbar();
+
+  const isMobileDevice = useIsMobileDevice();
 
   const initiallyShowDropTeamsDialog = query.get(OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM);
 
@@ -149,7 +152,7 @@ export function TeamArrangementActionsButton({adminId}: TeamArrangementActionsBu
 
   return (
     <>
-      <DropdownButton label={t('admin:teams_arrangement_action_button')} color='secondary'>
+      <DropdownButton label={t('admin:teams_arrangement_action_button')} color='secondary' fullWidth={isMobileDevice}>
         <DropdownButtonItem onClick={() => handleOpenTeamArrangementActionConfirmationDialog(TEAM_ARRANGEMENT_ACTION.REGENERATE)}>
           {t('admin:teams_reset')}...
         </DropdownButtonItem>

@@ -118,6 +118,7 @@
 
   "headline_teams": "Teams",
   "hostlocations_overview": "Dinner Routen Cockpit",
+  "hostlocations_overview_help": "Hier findest du eine Übersicht aller Routen mit weiteren Infos, aber auch Optionen wie der Routen-Optimierung.<br/> Willst du die Route für ein einzelnes Team ansehen, so kannst du alternativ direkt hier ein Team aus der Liste auswählen und dessen Route öffnen.",
   "hostlocations_sidebar_title": "OPTIONEN & AKTIONEN",
   "hostlocations_team_filter": "Wähle einzelne Teams aus zur Routen-Filterung",
   "hostlocations_team_cluster_view_enable": "Team-Cluster Sicht",
