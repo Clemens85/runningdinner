@@ -1,5 +1,5 @@
 import {useParams} from "react-router-dom";
-import {Box, Button, Grid} from "@mui/material";
+import {Box, Button, Grid, Stack} from "@mui/material";
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import TeamsNotExisting from "./TeamsNotExisting";
@@ -31,8 +31,10 @@ import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDe
 import { TeamArrangementActionsButton } from "./TeamArrangementActionsButton";
 import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
 import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
-import { useIsBigTabletDevice } from "../../common/theme/CustomMediaQueryHook";
+import { useIsBigTabletDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
 import { FetchProgressBar } from "../../common/FetchProgressBar";
+import { HelpIconTooltip } from "../../common/theme/HelpIconTooltip";
+import Paragraph from "../../common/theme/typography/Paragraph";
 
 const TeamsContainer = () => {
 
@@ -243,13 +245,24 @@ function DinnerRouteOverviewLinkButton({adminId}: DinnerRouteOverviewLinkButtonP
   const {t} = useTranslation('admin');
   const {generateHostLocationsPath} = useAdminNavigation();
 
+  const isMobileDevice = useIsMobileDevice();
+
   return (
-    <Button color={"primary"}
-            variant={"outlined"}
-            to={generateHostLocationsPath(adminId)}
-            target="_blank"
-            component={RouterLink}>{t('admin:hostlocations_overview')}
-    </Button>
+    <Stack alignItems={"center"} justifyContent={"flex-end"} direction="row">
+      <Button color={"primary"}
+              variant={"outlined"}
+              to={generateHostLocationsPath(adminId)}
+              target="_blank"
+              fullWidth={isMobileDevice}
+              component={RouterLink}>{t('admin:hostlocations_overview')}
+      </Button>
+      <Box sx={{ ml: 1}}>
+        <HelpIconTooltip 
+          title={<Paragraph html={true} i18n='admin:hostlocations_overview_help' />} 
+          sx={{ verticalAlign: "middle" }}
+          placement='right'/>
+      </Box>
+    </Stack>
   );
 }
 

@@ -19,7 +19,7 @@ import { SmallTitle, Span, Subtitle } from '../theme/typography/Tags';
 import { uniq } from 'lodash-es';
 import LinkExtern from '../theme/LinkExtern';
 import { useTranslation } from 'react-i18next';
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert } from '@mui/material';
 import { useGeoPosition } from '../hooks/GeoPositionHook';
 import { AdvancedMarker, InfoWindow, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { useEffect, useState } from 'react';
@@ -29,8 +29,6 @@ import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 import IcecreamIcon from '@mui/icons-material/Icecream';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import React from 'react';
-import LinkIntern from '../theme/LinkIntern';
-import { useAdminNavigation } from '../../admin/AdminNavigationHook';
 
 export const TeamCardDetailRow = styled('div')({
   display: 'flex',
@@ -117,11 +115,12 @@ export function TeamCardDetails({ hostTeamMember, meal, contactInfo, isCurrentTe
   );
 }
 
-type WarningAlertProps = {
+export type UnresolvedGeocodesWarningAlertProps = {
   teamsWithUnresolvedGeocodings: DinnerRouteTeam[];
+  hideCloseButton?: boolean;
 };
 
-export function WarningAlert({ teamsWithUnresolvedGeocodings }: WarningAlertProps) {
+export function WarningAlert({ teamsWithUnresolvedGeocodings, hideCloseButton }: UnresolvedGeocodesWarningAlertProps) {
   const { t } = useTranslation('common');
 
   const show = isArrayNotEmpty(teamsWithUnresolvedGeocodings);
@@ -142,8 +141,7 @@ export function WarningAlert({ teamsWithUnresolvedGeocodings }: WarningAlertProp
     <>
       {isOpen && (
         <Box mb={2}>
-          <Alert severity="warning" variant="outlined" onClose={close}>
-            {/* <AlertTitle>{t('attention')}</AlertTitle> */}
+          <Alert severity="warning" variant="outlined" onClose={hideCloseButton ? undefined : close}>
             {t('dinner_route_geocoding_warning')}
             <ul>
               {teamsWithUnresolvedGeocodings.map((team) => (
@@ -236,8 +234,8 @@ type TeamHostMarkerProps = {
   isCurrentTeam: boolean;
   teamLabel: string;
   useSecondaryClusterColor?: boolean;
-  scale?: number;
   zIndex?: number;
+  isSelected?: boolean;
 };
 
 const MapEntryPin = styled('div', {
@@ -276,7 +274,7 @@ export function getAfterPartyLocationIcon(fontSize: number = 16) {
   return <LocalBarIcon sx={{ fontSize }} />;
 }
 
-export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, zIndex = 1 }: TeamHostMarkerProps) {
+export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, isSelected, zIndex = 1 }: TeamHostMarkerProps) {
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [open, setOpen] = useState(false);
 
@@ -284,20 +282,30 @@ export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, 
 
   const secondaryClusterColor = isStringNotEmpty(team.secondaryClusterColor) ? team.secondaryClusterColor : team.color;
 
+  const isHovered = false; // Maybe we add this in future
+
+  const zIndexUnselected = zIndex + 1;
   return (
     <>
       <AdvancedMarker
         ref={markerRef}
         title={`Team ${team.teamNumber} - ${team.meal.label} (${getFullname(team.hostTeamMember)})`}
         onClick={() => setOpen(!open)}
-        zIndex={zIndex + 1}
+        zIndex={isSelected ? zIndexUnselected + 1000 : zIndexUnselected}
         position={{ lat: team.position.lat!, lng: team.position.lng! }}
       >
-        {/* @ts-ignore */}
-        <MapEntryPin teamColor={useSecondaryClusterColor ? secondaryClusterColor : team.color}>
-          <>{getMealTypeIcon(team.mealType)}</>
-          {DinnerRouteMapCalculator.getMarkerLabel(`#${team.teamNumber}`)}
-        </MapEntryPin>
+        <Box
+          sx={{
+            transform: `scale(${isSelected || isHovered ? 1.35 : 1})`,
+            transition: 'transform 0.7s ease',
+          }}
+        >
+          {/* @ts-ignore */}
+          <MapEntryPin teamColor={useSecondaryClusterColor ? secondaryClusterColor : team.color}>
+            <>{getMealTypeIcon(team.mealType)}</>
+            {DinnerRouteMapCalculator.getMarkerLabel(`#${team.teamNumber}`)}
+          </MapEntryPin>
+        </Box>
       </AdvancedMarker>
       {open && (
         <InfoWindow anchor={marker} maxWidth={300} onCloseClick={() => setOpen(false)}>

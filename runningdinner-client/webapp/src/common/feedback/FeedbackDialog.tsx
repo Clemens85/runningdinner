@@ -1,4 +1,3 @@
-import React from 'react';
 import {Trans, useTranslation} from "react-i18next";
 import {DialogTitleCloseable} from "../theme/DialogTitleCloseable";
 import {Span} from "../theme/typography/Tags";
@@ -7,6 +6,7 @@ import {
   CallbackHandler,
   Feedback,
   FeedbackData,
+  HttpError,
   newEmptyFeedbackInstance,
   useBackendIssueHandler
 } from "@runningdinner/shared";
@@ -55,8 +55,9 @@ export function FeedbackDialog({onClose}: FeedbackDialogProps) {
       showSuccess(t("common:feedback_success"));
       onClose();
     } catch (e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      const httpError = e as HttpError;
+      applyValidationIssuesToForm(httpError, setError);
+      showHttpErrorDefaultNotification(httpError);
     }
   }
 

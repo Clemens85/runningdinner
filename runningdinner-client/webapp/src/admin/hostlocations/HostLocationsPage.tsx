@@ -1,14 +1,12 @@
-import { BaseRunningDinnerProps, DinnerRouteMapCalculator, isQuerySucceeded, isStringNotEmpty, TeamConnectionPath } from '@runningdinner/shared';
+import { BaseRunningDinnerProps, DinnerRouteMapCalculator, DinnerRouteOverviewActionType, isQuerySucceeded, isStringNotEmpty, TeamConnectionPath } from '@runningdinner/shared';
 import { useEffect, useRef } from 'react';
 import { useDynamicFullscreenHeight } from '../../common/hooks/DynamicFullscreenHeightHook';
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import { FetchProgressBar } from '../../common/FetchProgressBar';
 import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from '../../common/maps';
 import { AfterPartyLocationMarker, TeamHostMarker, WarningAlert } from '../../common/dinnerroute';
-import { HostLocationsFilterMinimizedButton, HostLocationsFilterView } from './HostLocationsFilterView';
 import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
 import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteMapData } from '@runningdinner/shared';
-import { DinnerRouteOverviewSettingsMinimizedButton, DinnerRouteOverviewSettingsView } from './DinnerRouteOverviewSettingsView';
 import { useFindAllDinnerRoutes } from './useFindAllDinnerRoutes';
 import { useIsRouteOptimization } from './useIsRouteOptimization';
 import { RouteOptimizationPreviewBanner } from './RouteOptimizationPreviewBanner';
@@ -16,6 +14,13 @@ import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { useShowRouteOptimizationSavedMessage } from './useShowRouteOptimizationSavedMessage';
 import Paragraph from '../../common/theme/typography/Paragraph';
 import { Trans } from 'react-i18next';
+import { MapControlsOverlay } from './MapControlsOverlay';
+import { Box } from '@mui/system';
+import { MapControlsAppBar } from './MapControlsAppBar.tsx';
+import { MapControlsSidebar } from './MapControlsSidebar.tsx';
+import { RouteOptimizationDialog } from './RouteOptimizationDialog.tsx';
+import { useCalculateRouteDistances } from './useCalculateRouteDistances.ts';
+import { DinnerRouteOverviewHelpDialog } from './DinnerRouteOverviewHelpDialog.tsx';
 
 export function HostLocationsPage({ runningDinner }: BaseRunningDinnerProps) {
   return (
@@ -74,15 +79,31 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
   const { showRouteOptimizationSavedMessage, deleteRouteOptimizationSavedQueryParam } = useShowRouteOptimizationSavedMessage();
   const { showSuccess } = useCustomSnackbar();
 
-  const { dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry } = dinnerRouteMapData;
+  const { adminId } = runningDinner;
+
+  const { dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry, teamsWithUnresolvedGeocodings, numberOfClusters } = dinnerRouteMapData;
 
   const mapContainerRef = useRef(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
 
-  const { state } = useDinnerRouteOverviewContext();
-  const { hostFilterViewMinimized, settingsViewMinimized, showTeamClusters, showTeamPaths } = state;
+  const { data: routeDistancesList } = useCalculateRouteDistances(adminId);
+
+  const { state, dispatch } = useDinnerRouteOverviewContext();
+  const { showTeamClusters, showTeamPaths, isRouteOptimizationDialogOpen, isHelpDialogOpen, activeTeamsFilter } = state;
 
   const filteredTeamConnectionPaths = filterTeamConnectionPaths(dinnerRouteMapData, state);
+
+  function handleOptimizationDialogClose() {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_ROUTE_OPTIMIZATION_DIALOG,
+    });
+  }
+
+  function handleHelpDialogClose() {
+    dispatch({
+      type: DinnerRouteOverviewActionType.TOGGLE_HELP_DIALOG,
+    });
+  }
 
   useEffect(() => {
     if (showRouteOptimizationSavedMessage) {
@@ -105,13 +126,17 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
   }, [showRouteOptimizationSavedMessage]);
 
   return (
-    <>
+    <Box>
+      <MapControlsAppBar teamsWithUnresolvedGeocodings={teamsWithUnresolvedGeocodings} numberOfClusters={numberOfClusters} />
+
+      <MapControlsSidebar open={!!state.isSidebarOpen} adminId={adminId} dinnerRouteMapData={dinnerRouteMapData} routeDistancesList={routeDistancesList} />
+
       <div ref={mapContainerRef}>
-        <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }} defaultZoom={11} style={{ height: `${mapHeight}px` }} mapId={GOOGLE_MAPS_ID}>
+        <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }} defaultZoom={11} style={{ height: `${mapHeight}px` }} zoomControl={true} mapId={GOOGLE_MAPS_ID}>
           {showTeamPaths && (
             <>
               {filteredTeamConnectionPaths.map((path) => (
-                <TeamConnectionPathLine key={path.teamNumber} {...path} useSecondaryClusterColor={showTeamClusters} />
+                <TeamConnectionPathLine key={path.teamNumber} {...path} useSecondaryClusterColor={showTeamClusters} isSelected={!!activeTeamsFilter[path.teamNumber]} />
               ))}
             </>
           )}
@@ -124,29 +149,30 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
               useSecondaryClusterColor={showTeamClusters}
               teamLabel={`#${team.teamNumber}`}
               zIndex={index}
-              scale={1.5}
+              isSelected={!!activeTeamsFilter[team.teamNumber]}
             />
           ))}
 
           {afterPartyLocationMapEntry && <AfterPartyLocationMarker {...afterPartyLocationMapEntry} />}
 
-          {!settingsViewMinimized && <DinnerRouteOverviewSettingsView adminId={runningDinner.adminId} dinnerRouteMapData={dinnerRouteMapData} />}
-          {settingsViewMinimized && <DinnerRouteOverviewSettingsMinimizedButton />}
+          <MapControlsOverlay />
 
-          {!hostFilterViewMinimized && <HostLocationsFilterView dinnerRouteMapEntries={dinnerRouteMapEntries} />}
-          {hostFilterViewMinimized && <HostLocationsFilterMinimizedButton />}
+          <RouteOptimizationDialog adminId={adminId} onClose={handleOptimizationDialogClose} isOpen={isRouteOptimizationDialogOpen} routeDistanceMetrics={routeDistancesList} />
+
+          {isHelpDialogOpen && <DinnerRouteOverviewHelpDialog onClose={handleHelpDialogClose} />}
         </Map>
       </div>
-    </>
+    </Box>
   );
 }
 
 type TeamConnectionPathLineProps = {
   teamConnectionPaths: TeamConnectionPath[];
   useSecondaryClusterColor: boolean;
+  isSelected?: boolean;
 };
 
-function TeamConnectionPathLine({ teamConnectionPaths, useSecondaryClusterColor }: TeamConnectionPathLineProps) {
+function TeamConnectionPathLine({ teamConnectionPaths, useSecondaryClusterColor, isSelected }: TeamConnectionPathLineProps) {
   function getStrokeColor(path: TeamConnectionPath): string {
     const secondaryClusterColor = isStringNotEmpty(path.secondaryClusterColor) ? path.secondaryClusterColor : path.color;
     return useSecondaryClusterColor ? secondaryClusterColor : path.color;
@@ -159,7 +185,7 @@ function TeamConnectionPathLine({ teamConnectionPaths, useSecondaryClusterColor 
         .map((path) => (
           <Polyline
             key={path.key}
-            strokeWeight={4}
+            strokeWeight={isSelected ? 6 : 4}
             geodesic={true}
             icons={[
               { icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '60%' },
