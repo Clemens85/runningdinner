@@ -7,9 +7,7 @@ import {
   DinnerRouteOverviewActionType,
   isAfterPartyLocationDefined,
 } from '@runningdinner/shared';
-import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { VirtuosoHandle } from 'react-virtuoso';
 import { getTeamLabel } from '../../common/dinnerroute';
 import { useIsBigDevice } from '../../common/theme/CustomMediaQueryHook';
 import { Span } from '../../common/theme/typography/Tags';
@@ -99,41 +97,41 @@ type TeamLocationsFilterListProps = {
 };
 
 export function TeamLocationsFilterList({ dinnerRouteMapEntries }: TeamLocationsFilterListProps) {
-  const { state } = useDinnerRouteOverviewContext();
-  const { scrollToTeamRequest } = state;
+  // const { state } = useDinnerRouteOverviewContext();
+  // const { scrollToTeamRequest } = state;
 
-  const virtuosoRef = useRef<VirtuosoHandle>(null);
+  // const virtuosoRef = useRef<VirtuosoHandle>(null);
 
   // TODO: Will not work any longer...
-  function handleScrollToTeam(scrollToTeamWithNumber: number) {
-    if (!virtuosoRef.current) {
-      return;
-    }
+  // function handleScrollToTeam(scrollToTeamWithNumber: number) {
+    // if (!virtuosoRef.current) {
+    //   return;
+    // }
 
-    let teamIndex = -1;
-    for (let i = 0; i < dinnerRouteMapEntries.length; i++) {
-      const team = dinnerRouteMapEntries[i];
-      if (team.teamNumber === scrollToTeamWithNumber) {
-        teamIndex = i;
-        break;
-      }
-    }
-    if (teamIndex < 0) {
-      return;
-    }
+    // let teamIndex = -1;
+    // for (let i = 0; i < dinnerRouteMapEntries.length; i++) {
+    //   const team = dinnerRouteMapEntries[i];
+    //   if (team.teamNumber === scrollToTeamWithNumber) {
+    //     teamIndex = i;
+    //     break;
+    //   }
+    // }
+    // if (teamIndex < 0) {
+    //   return;
+    // }
 
-    virtuosoRef.current.scrollToIndex({
-      index: teamIndex,
-      behavior: 'smooth',
-      align: 'start',
-    });
-  }
+    // virtuosoRef.current.scrollToIndex({
+    //   index: teamIndex,
+    //   behavior: 'smooth',
+    //   align: 'start',
+    // });
+  // }
 
-  useEffect(() => {
-    if (scrollToTeamRequest) {
-      handleScrollToTeam(scrollToTeamRequest);
-    }
-  }, [scrollToTeamRequest]);
+  // useEffect(() => {
+  //   if (scrollToTeamRequest) {
+  //     handleScrollToTeam(scrollToTeamRequest);
+  //   }
+  // }, [scrollToTeamRequest]);
 
   return (
     <Box>
