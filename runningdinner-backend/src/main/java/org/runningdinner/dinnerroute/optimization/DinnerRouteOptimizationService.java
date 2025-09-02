@@ -29,6 +29,7 @@ import org.runningdinner.dinnerroute.optimization.data.TeamReferenceResultList;
 import org.runningdinner.dinnerroute.optimization.data.TeamReferenceService;
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstance;
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
+import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
@@ -41,6 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
@@ -78,6 +81,8 @@ public class DinnerRouteOptimizationService {
 	private final TeamReferenceService teamReferenceService;
 
 	private final DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService;
+	
+	private final EventPublisher eventPublisher;
 
 	public DinnerRouteOptimizationService(RunningDinnerService runningDinnerService,
 																				DinnerRouteService dinnerRouteService,
@@ -88,7 +93,8 @@ public class DinnerRouteOptimizationService {
 																				TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService,
 																				DinnerRouteMessageFormatter dinnerRouteMessageFormatter,
 																				TeamReferenceService teamReferenceService,
-																				DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService) {
+																				DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService,
+																				EventPublisher eventPublisher) {
 
 		this.runningDinnerService = runningDinnerService;
 		this.dinnerRouteService = dinnerRouteService;
@@ -100,6 +106,7 @@ public class DinnerRouteOptimizationService {
 		this.dinnerRouteMessageFormatter = dinnerRouteMessageFormatter;
 		this.teamReferenceService = teamReferenceService;
 		this.dinnerRouteOptimizationFeedbackService = dinnerRouteOptimizationFeedbackService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	public DinnerRouteOptimizationRequest publishOptimizationEvent(@ValidateAdminId String adminId,
@@ -143,6 +150,8 @@ public class DinnerRouteOptimizationService {
 		DinnerRouteListTO optimizedRoutes = dinnerRouteService.findAllDinnerRoutes(adminId);
 		// Finally we validate the optimized routes thus ensuring we won't save any inconsistent data
 		validateOptimizedRoutes(optimizedRoutes.getDinnerRoutes(), runningDinner, existingTeams);
+
+		emitDinnerRoutesOptimizedEvent(existingTeams, runningDinner);
 
 		return optimizedRoutes;
 	}
@@ -325,5 +334,14 @@ public class DinnerRouteOptimizationService {
 	public OptimizationInstance findOptimizationInstanceStatus(@ValidateAdminId String adminId, String optimizationId) {
 		boolean hasResponseData = optimizationDataProvider.hasResponseData(adminId, optimizationId);
 		return new OptimizationInstance(optimizationId, null, hasResponseData ? OptimizationInstanceStatus.FINISHED : OptimizationInstanceStatus.RUNNING);
+	}
+
+	protected void emitDinnerRoutesOptimizedEvent(final List<Team> teams, final RunningDinner runningDinner) {
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				eventPublisher.notifyDinnerRoutesOptimized(teams.size(), runningDinner);
+			}
+		});
 	}
 }

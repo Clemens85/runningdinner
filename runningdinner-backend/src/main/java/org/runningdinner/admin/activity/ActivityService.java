@@ -40,6 +40,8 @@ public class ActivityService {
   public static final String TEAM_ARRANGEMENTS_DROPPED_HEADLINE = "Team-Einteilungen augehoben";
   public static final String TEAM_ARRANGEMENTS_RECREATED_HEADLINE = "Teams neu generiert";
   
+  public static final String DINNER_ROUTES_OPTIMIZED_HEADLINE = "Dinner Routen optimiert";
+  
   static final Collection<ActivityType> ADMIN_ACTIVITY_TYPES =
           Arrays.asList(
               ActivityType.DINNER_CREATED,
@@ -54,7 +56,8 @@ public class ActivityService {
               ActivityType.MEAL_TIMES_UPDATED,
               ActivityType.PARTICIPANT_CHANGED_TEAMHOST,
               ActivityType.WAITINGLIST_PARTICIPANTS_ASSIGNED,
-              ActivityType.WAITINGLIST_TEAMS_GENERATED
+              ActivityType.WAITINGLIST_TEAMS_GENERATED,
+              ActivityType.DINNER_ROUTES_OPTIMIZED
           );
 
       static final Collection<ActivityType> PARTICIPANT_ACTIVITY_TYPES =
@@ -108,7 +111,9 @@ public class ActivityService {
   
   private static final String WAITINGLIST_PARTICIPANTS_ASSIGNED_TEMPLATE = "Du hast {numTeams} mit Teilnehmern von der Warteliste aufgefüllt.";
   
-  private static final String WAITINGLIST_TEAMS_GENERATED_TEMPLATE = "Du hast {numTeams} von der Warteliste generiert";
+  private static final String WAITINGLIST_TEAMS_GENERATED_TEMPLATE = "Du hast {numTeams} von der Warteliste generiert.";
+  
+  private static final String DINNER_ROUTES_OPTIMIZED_MESSAGE_TEMPLATE = "Du hast die Dinner Routen für <strong>{numTeams}</strong> Teams optimiert.";
   
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivityService.class);
   
@@ -207,6 +212,16 @@ public class ActivityService {
     Activity result = new Activity(LocalDateTime.now(), ActivityType.WAITINGLIST_TEAMS_GENERATED, runningDinner.getEmail(), runningDinner);
     result.setActivityMessage(getActivityMessageForWaitingListTeamsGenerated(WAITINGLIST_TEAMS_GENERATED_TEMPLATE, teams.size()));
     result.setActivityHeadline("Teams von Warteliste hinzugefügt");
+    result = activityRepository.save(result);
+    return result;
+  }
+  
+  @Transactional
+  public Activity createActivityForDinnerRoutesOptimized(int numTeams, RunningDinner runningDinner) {
+    
+    Activity result = new Activity(LocalDateTime.now(), ActivityType.DINNER_ROUTES_OPTIMIZED, runningDinner.getEmail(), runningDinner);
+    result.setActivityMessage(replaceNumTeams(DINNER_ROUTES_OPTIMIZED_MESSAGE_TEMPLATE, numTeams));
+    result.setActivityHeadline(DINNER_ROUTES_OPTIMIZED_HEADLINE);
     result = activityRepository.save(result);
     return result;
   }
@@ -556,6 +571,10 @@ public class ActivityService {
   	} else {
     	return template.replaceAll("\\{numTeams\\}", numTeams + " neue Teams");
   	}
+  }
+
+  private static String replaceNumTeams(String template, int numTeams) {
+    return template.replaceAll("\\{numTeams\\}", String.valueOf(numTeams));
   }
 
   static final class AffectedTeamsInfo {
