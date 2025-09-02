@@ -71,7 +71,7 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
     });
   };
 
-  const { t } = useTranslation();
+  const { t } = useTranslation(["admin", "common"]);
 
   return (
     <Drawer
@@ -95,7 +95,7 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
             <IconButton onClick={toggleSidebar} size="small" color="inherit">
               <ChevronLeftIcon />
             </IconButton>
-            <Typography sx={{ ml: 1 }}>OPTIONEN & AKTIONEN</Typography>
+            <Typography sx={{ ml: 1 }}>{t("admin:hostlocations_sidebar_title")}</Typography>
           </Stack>
           <Box sx={{ textAlign: 'right', ml: 2 }}>
             <ResetAllButton />
@@ -108,12 +108,12 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
         value={activeSideBarTabIndex}
         onChange={(_, newValue) => setActiveTab(newValue)}
         variant="fullWidth"
-        aria-label="map control options"
+        aria-label={t("admin:hostlocations_sidebar_title")}
         sx={{ borderBottom: 1, borderColor: 'divider' }}
       >
-        <Tab label={t('Teams')} id="tab-0" />
-        <Tab label={t('Entfernungen')} id="tab-1" />
-        <Tab label={t('Erweitert')} id="tab-2" />
+        <Tab label={t('admin:headline_teams')} id="tab-0" />
+        <Tab label={t('common:distances')} id="tab-1" />
+        <Tab label={t('common:advanced')} id="tab-2" />
       </Tabs>
 
       <TabPanel value={activeSideBarTabIndex} index={TEAMS_TAB_INDEX}>

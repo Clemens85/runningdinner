@@ -14,6 +14,7 @@ import React from 'react';
 import { getTeamLabel } from '../../common/dinnerroute';
 import { CancelledTeamMember } from '../teams/CancelledTeamMember';
 import { useZoomToMarker } from './useZoomToMarker';
+import { useTranslation } from 'react-i18next';
 
 type RouteDistancesViewProps = {
   routeDistancesList: DinnerRouteWithDistancesList | undefined;
@@ -31,6 +32,9 @@ const HrRedLine = styled('hr')(({ theme }) => ({
 }));
 
 function RouteDistancesSummary({ routeDistancesList }: RouteDistancesViewProps) {
+
+  const {t} = useTranslation('admin');
+
   if (!routeDistancesList) {
     return null;
   }
@@ -38,10 +42,10 @@ function RouteDistancesSummary({ routeDistancesList }: RouteDistancesViewProps) 
   return (
     <Box>
       <div>
-        <span>&#8960; Durschnitts-Distanz pro Team:</span> <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.averageDistanceInMeters)}</strong>
+        <span>&#8960; {t('admin:dinner_route_distances_average')}</span> <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.averageDistanceInMeters)}</strong>
       </div>
       <div>
-        <span>&#8721; Summe aller Weg-Distanzen:</span> <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.sumDistanceInMeters)}</strong>
+        <span>&#8721; {t('admin:dinner_route_distances_sum')}</span> <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.sumDistanceInMeters)}</strong>
       </div>
     </Box>
   );

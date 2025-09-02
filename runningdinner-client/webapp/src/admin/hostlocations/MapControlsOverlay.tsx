@@ -12,9 +12,11 @@ import Groups2Icon from '@mui/icons-material/Groups2';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { ADVANCED_TAB_INDEX, DISTANCES_TAB_INDEX } from './MapControlsSidebar';
+import { useTranslation } from 'react-i18next';
 
 export function MapControlsOverlay() {
   const { dispatch } = useDinnerRouteOverviewContext();
+  const {t} = useTranslation(['admin', 'common']);
 
   // const [open, setOpen] = useState(false);
   // const handleOpen = () => setOpen(true);
@@ -51,12 +53,18 @@ export function MapControlsOverlay() {
     sx: { backgroundColor: 'primary.main', width: 64, height: 64 },
   };
 
+  const optimizeLabel = t("admin:dinner_route_optimize_action");
+  const distancesLabel = t("common:distances");
+  const nearbyHostsAnalysisLabel = t("admin:dinner_route_hosts_near_distance_title_short");
+  const resetLabel = t("admin:dinner_route_filter_reset");
+  const helpLabel = t("common:help");
+  
   const actions = [
-    { icon: <AutoAwesomeIcon />, name: 'Optimierung', onClick: openRouteOptimization },
-    { icon: <DirectionsOutlinedIcon />, name: 'Entfernungen', onClick: () => openSidebarView(DISTANCES_TAB_INDEX) },
-    { icon: <Groups2Icon />, name: 'Gastgeber Überschneidungen', onClick: () => openSidebarView(ADVANCED_TAB_INDEX) },
-    { icon: <SettingsBackupRestoreIcon />, name: 'Sicht zurücksetzen', onClick: resetAll },
-    { icon: <HelpOutlineIcon />, name: 'Hilfe', onClick: openHelpDialog },
+    { icon: <AutoAwesomeIcon />, name: optimizeLabel, onClick: openRouteOptimization },
+    { icon: <DirectionsOutlinedIcon />, name: distancesLabel, onClick: () => openSidebarView(DISTANCES_TAB_INDEX) },
+    { icon: <Groups2Icon />, name: nearbyHostsAnalysisLabel, onClick: () => openSidebarView(ADVANCED_TAB_INDEX) },
+    { icon: <SettingsBackupRestoreIcon />, name: resetLabel, onClick: resetAll },
+    { icon: <HelpOutlineIcon />, name: helpLabel, onClick: openHelpDialog },
   ];
 
   return (

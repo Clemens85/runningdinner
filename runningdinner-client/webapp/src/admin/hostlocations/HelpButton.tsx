@@ -1,12 +1,14 @@
-import { IconButton } from '@mui/material';
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, useDisclosure } from '@runningdinner/shared';
-import { DinnerRouteOverviewHelpDialog } from './DinnerRouteOverviewHelpDialog';
+import { IconButton, Tooltip } from '@mui/material';
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext } from '@runningdinner/shared';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { useTranslation } from 'react-i18next';
 
 export function HelpButton() {
-  // const { open, isOpen, close } = useDisclosure();
 
   const { dispatch } = useDinnerRouteOverviewContext();
+  const { t } = useTranslation('common');
+
+  const label = t("common:help")
 
   const openHelpDialog = () => {
     dispatch({
@@ -16,10 +18,11 @@ export function HelpButton() {
 
   return (
     <>
-      <IconButton edge="end" color="inherit" onClick={openHelpDialog} aria-label="help" size="large">
-        <HelpOutlineIcon />
-      </IconButton>
-      {/* {isOpen && <DinnerRouteOverviewHelpDialog onClose={close} />} */}
+      <Tooltip title={label}>
+        <IconButton edge="end" color="inherit" onClick={openHelpDialog} aria-label={label} size="large">
+          <HelpOutlineIcon />
+        </IconButton>
+      </Tooltip>
     </>
   );
 }
