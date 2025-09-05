@@ -15,6 +15,7 @@ import org.runningdinner.dinnerroute.optimization.data.MealReference;
 import org.runningdinner.dinnerroute.optimization.data.RouteOptimizationSettings;
 import org.runningdinner.dinnerroute.optimization.data.TeamReference;
 import org.runningdinner.dinnerroute.optimization.data.TeamReferenceService;
+import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.feedback.FeedbackService;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Participant;
@@ -72,6 +73,9 @@ public class DinnerRouteOptimizationServiceTest {
 	private MailConfig mailConfig;
 
 	@Autowired
+	private EventPublisher eventPublisher;
+
+	@Autowired
 	private CreateRunningDinnerWizardService createRunningDinnerWizardService;
 
 	@Autowired
@@ -98,7 +102,8 @@ public class DinnerRouteOptimizationServiceTest {
 			teamNeighbourClusterCalculationService,
 			dinnerRouteMessageFormatter,
 			teamReferenceService,
-			dinnerRouteOptimizationFeedbackService
+			dinnerRouteOptimizationFeedbackService,
+			eventPublisher
 		);
 
 		this.runningDinner = setUpDinnerWithDemoParticipants();
