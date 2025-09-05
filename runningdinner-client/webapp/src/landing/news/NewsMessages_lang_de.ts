@@ -1,7 +1,7 @@
 const NewsMessages_de: any = {
   news_title_20250902: 'Routen Optimierung vefügbar',
   news_content_20250902:
-    'Oft angefragt, nun endlich in einer ersten Version verfügbar: Ab sofort ist es möglich die Dinner-Routen zu optimieren, so dass die Wege ziwschen den einzlnen Teams möglichst gering sind. ' +
+    'Oft angefragt, nun endlich in einer ersten Version verfügbar: Ab sofort ist es möglich die Dinner-Routen zu optimieren, so dass die Wege zwischen den einzlnen Teams möglichst gering sind. ' +
     '<br />Künftig sind noch weitere Verbesserungen an diesem Feature geplant. ' +
     '<br />Wichtig: Nicht in jedem Fall erzielt die Optimierung eine spürbare Verbesserung, das hängt immer von der konkreten Verteilung der Teilnehmer ab.',
 
