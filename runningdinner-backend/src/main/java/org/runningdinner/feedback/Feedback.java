@@ -1,5 +1,6 @@
 package org.runningdinner.feedback;
 
+import com.google.common.base.MoreObjects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,12 +8,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.admin.message.BaseMessage;
 import org.runningdinner.core.AbstractEntity;
 
-import com.google.common.base.MoreObjects;
+import java.util.UUID;
 
 @Entity
 public class Feedback extends AbstractEntity {
@@ -43,6 +43,8 @@ public class Feedback extends AbstractEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 64)
   private DeliveryState deliveryState = DeliveryState.NOT_DELIVERED;
+
+  private UUID threadId;
 
   public String getSenderEmail() {
 
@@ -104,7 +106,15 @@ public class Feedback extends AbstractEntity {
     this.deliveryState = deliveryState;
   }
 
-  @Override 
+  public UUID getThreadId() {
+    return threadId;
+  }
+
+  public void setThreadId(UUID threadId) {
+    this.threadId = threadId;
+  }
+
+  @Override
   public String toString() {
 
     return MoreObjects.toStringHelper(this)
