@@ -7,7 +7,6 @@ import {
   finalizeRegistrationOrder,
   HttpError,
   isStringEmpty,
-  isStringNotEmpty,
   newEmptyRegistrationDataInstance,
   performRegistration,
   performRegistrationValidation,
@@ -41,7 +40,6 @@ import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
 import { commonStyles } from '../common/theme/CommonStyles';
 import { useQuery } from '@tanstack/react-query';
 import { ConfirmationDialog } from '../common/theme/dialog/ConfirmationDialog';
-import Paragraph from '../common/theme/typography/Paragraph';
 import { PublicContactInfo } from './PublicContactInfo';
 
 type BaseRegistrationFormProps = {
