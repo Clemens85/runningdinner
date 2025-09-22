@@ -14,6 +14,7 @@ export * from './admin';
 export * from './masterdata';
 export * from './wizard';
 export * from './issue';
+export * from './feedback';
 
 export * from './redux';
 

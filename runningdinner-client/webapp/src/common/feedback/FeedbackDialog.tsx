@@ -1,12 +1,21 @@
 import { useTranslation } from 'react-i18next';
 import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
 import { Box, Dialog, DialogActions, DialogContent, useMediaQuery, useTheme } from '@mui/material';
-import { CallbackHandler, Feedback, FeedbackData, HttpError, newEmptyFeedbackInstance, useBackendIssueHandler } from '@runningdinner/shared';
+import {
+  CallbackHandler,
+  Feedback,
+  FeedbackData,
+  HttpError,
+  newEmptyFeedbackInstance,
+  useBackendIssueHandler,
+  querySupportBotFromFeedback,
+  saveFeedbackAsync,
+  warmupSupportBot,
+} from '@runningdinner/shared';
 import { useNotificationHttpError } from '../NotificationHttpErrorHook';
 import { FormProvider, useForm } from 'react-hook-form';
-import { saveFeedbackAsync } from '@runningdinner/shared/src/feedback/FeedbackService';
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ContactFormView } from './ContactFormView';
 import { AgentChatView } from './AgentChatView';
 import SecondaryButton from '../theme/SecondaryButton';
@@ -16,6 +25,10 @@ import { commonStyles } from '../theme/CommonStyles';
 export interface FeedbackDialogProps {
   onClose: CallbackHandler;
 }
+
+const initialFeedbackInstance = newEmptyFeedbackInstance();
+initialFeedbackInstance.message =
+  'Unterstützt das Tool auch kürzeste Wegen bei den Routen? Wir veranstalten ein Event in Berlin und da ist es wichtig, dass man nicht vom einem Rand zum anderen Rand muss. Lg Jan';
 
 export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   const { t } = useTranslation('common');
@@ -27,6 +40,7 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agentResponse, setAgentResponse] = useState<string | null>(null);
+  const [agentError, setAgentError] = useState<Error | null>(null);
   const [sentFeedback, setSentFeedback] = useState<FeedbackData | null>(null);
 
   const { applyValidationIssuesToForm, getIssuesTranslated } = useBackendIssueHandler({
@@ -37,10 +51,14 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
   const formMethods = useForm<FeedbackData>({
-    defaultValues: newEmptyFeedbackInstance(),
+    defaultValues: initialFeedbackInstance, //newEmptyFeedbackInstance(),
     mode: 'onTouched',
   });
   const { handleSubmit, clearErrors, setError } = formMethods;
+
+  useEffect(() => {
+    warmupSupportBot();
+  }, []);
 
   async function handleSubmitFeedback(values: FeedbackData) {
     const feedback: Feedback = { ...values };
@@ -51,13 +69,13 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
       feedback.adminId = params.adminId;
       feedback.pageName = getCurrentPageName();
 
-      // Simulate request to our endpoint and response from AI agent
-      setTimeout(() => {
-        const responseText =
-          "Thank you for your feedback! I've reviewed your message and have forwarded it to our support team. They will look into your request and get back to you via email if needed. Is there anything else I can help you with?";
-
-        setAgentResponse(responseText);
-      }, 8000);
+      querySupportBotFromFeedback(feedback, feedback.message)
+        .then((response) => {
+          setAgentResponse(response);
+        })
+        .catch((error: Error) => {
+          setAgentError(error);
+        });
 
       await saveFeedbackAsync(feedback);
       setSentFeedback(feedback);
@@ -84,7 +102,7 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
         <FormProvider {...formMethods}>
           <form>
             {showFeedbackContactForm && <ContactFormView />}
-            {!showFeedbackContactForm && <AgentChatView sentFeedback={sentFeedback} response={agentResponse} />}
+            {!showFeedbackContactForm && <AgentChatView sentFeedback={sentFeedback} incomingResponse={agentResponse} incomingError={agentError} />}
           </form>
         </FormProvider>
       </DialogContent>
@@ -94,8 +112,7 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
           <Box sx={{ ...fullWidthProps, p: 2 }}>
             <SecondaryButton onClick={onClose} sx={fullWidthProps} data-testid="dialog-cancel">
               {t('common:cancel')}
-            </SecondaryButton>
-            :{' '}
+            </SecondaryButton>{' '}
             <PrimarySuccessButtonAsync disabled={isSubmitting} onClick={handleSubmit(handleSubmitFeedback)} size={'medium'} sx={fullWidthProps} data-testid="dialog-submit">
               {t('common:save')}
             </PrimarySuccessButtonAsync>
@@ -110,14 +127,6 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
           </Box>
         )}
       </DialogActions>
-
-      {/* <DialogActionsPanel
-        onOk={handleSubmit(handleSubmitFeedback)}
-        onCancel={onClose}
-        okLabel={t('common:save')}
-        cancelLabel={t('common:cancel')}
-        okButtonDisabled={isSubmitting || isAgentTyping || showFollowUpField || agentResponse !== null}
-      /> */}
     </Dialog>
   );
 }

@@ -1,66 +1,101 @@
-import { Alert, Box, Grid, TextField, Typography } from '@mui/material';
+import { Alert, Box, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ChatMessage } from './ChatMessage';
 import { TypingIndicator } from './TypingIndicator';
-import { useState } from 'react';
-import { Feedback } from '@runningdinner/shared';
+import { useEffect, useState } from 'react';
+import { Feedback, isStringNotEmpty, mapNewLineToHtmlLineBreaks } from '@runningdinner/shared';
+import { ChatInputTextField } from './ChatInputTextField.tsx';
 
 type AgentChatViewProps = {
   sentFeedback: Feedback;
-  response?: string | null | undefined;
-  error?: Error | undefined;
+  incomingResponse?: string | null | undefined;
+  incomingError?: Error | null | undefined;
 };
 
-export function AgentChatView({ sentFeedback, response, error }: AgentChatViewProps) {
-  const { t } = useTranslation('common');
+export function AgentChatView({ sentFeedback, incomingResponse, incomingError }: AgentChatViewProps) {
   const [followUpQuestion, setFollowUpQuestion] = useState<string>('');
+  const [sentFollowUpQuestion, setSentFollowUpQuestion] = useState<string>();
+  const [error, setError] = useState<Error | undefined | null>();
 
-  const isResponseLoading = !response && !error;
+  const showTypingIndicator = !incomingResponse && !error;
+  const showResponses = !error && !showTypingIndicator && isStringNotEmpty(incomingResponse);
+
+  useEffect(() => {
+    setError(incomingError);
+  }, [incomingError]);
+
+  async function handleSendNextMessage(question: string) {
+    // TODO
+    console.log(question);
+  }
+
+  // Handle submit of follow-up question
+  async function handleSendFollowUp() {
+    const theFollowUpQuestion = followUpQuestion.trim();
+    if (isStringNotEmpty(theFollowUpQuestion)) {
+      setFollowUpQuestion('');
+      await handleSendNextMessage(theFollowUpQuestion);
+      setSentFollowUpQuestion(theFollowUpQuestion);
+    }
+  }
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Alert severity="success" onClose={() => {}} variant="outlined" sx={{ mt: 2, mb: 1 }}>
-          {t('common:feedback_success')}
-        </Alert>
-      </Grid>
+      <FeedbackSentSuccessAlert />
 
       <Grid item xs={12} sx={{ my: 1 }}>
-        <ChatMessage text={sentFeedback.message} isAgentMessage={false} />
+        <ChatMessage text={mapNewLineToHtmlLineBreaks(sentFeedback.message)} isAgentMessage={false} />
       </Grid>
 
-      {isResponseLoading && (
+      {showTypingIndicator && (
         <Grid item xs={12} sx={{ my: 1 }}>
           <TypingIndicator />
         </Grid>
       )}
 
-      {response && (
+      {error && <NoResponseAlert />}
+
+      {showResponses && (
         <Grid item xs={12} sx={{ my: 1 }}>
-          <ChatMessage text={response} isAgentMessage={true} />
+          <ChatMessage text={incomingResponse} isAgentMessage={true} />
         </Grid>
       )}
 
-      {response && (
+      {sentFollowUpQuestion && showResponses && (
+        <Grid item xs={12} sx={{ my: 1 }}>
+          <ChatMessage text={sentFollowUpQuestion} isAgentMessage={false} />
+        </Grid>
+      )}
+
+      {showResponses && (
         <Grid item xs={12}>
           <Box mt={2}>
-            <Typography variant="subtitle2" gutterBottom>
-              Hast du noch weitere Fragen oder Anmerkungen?
-            </Typography>
-            <TextField
-              variant="outlined"
-              name="followUpQuestion"
-              fullWidth
-              multiline
-              rows={2}
-              value={followUpQuestion}
-              onChange={(e) => setFollowUpQuestion(e.target.value)}
-              label="Nachricht"
-              placeholder="Gibt eine Nachricht ein."
-            />
+            <ChatInputTextField inputMessage={followUpQuestion} onSendMessage={handleSendFollowUp} onInputMessageChange={setFollowUpQuestion} />
           </Box>
         </Grid>
       )}
+    </Grid>
+  );
+}
+
+function NoResponseAlert() {
+  return (
+    <Grid item xs={12}>
+      <Alert severity={'info'} variant={'outlined'}>
+        Leider konnte keine automatische Antwort für dein Anliegen gefunden werden. Du wirst jedoch zeitnah eine Antwort per Email erhalten.
+      </Alert>
+    </Grid>
+  );
+}
+
+function FeedbackSentSuccessAlert() {
+  const { t } = useTranslation('common');
+
+  return (
+    <Grid item xs={12}>
+      <Alert severity="info" onClose={() => {}} variant="outlined" sx={{ mt: 2, mb: 1 }}>
+        {t('common:feedback_success')}
+      </Alert>
     </Grid>
   );
 }

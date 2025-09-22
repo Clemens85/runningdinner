@@ -10,7 +10,7 @@ export function TypingIndicator({ label = 'Bitte einen Moment Geduld ...', sx }:
   const sxToUse = {
     ...sx,
     bgcolor: 'background.default',
-    p: 2,
+    py: 1,
   };
 
   return (
