@@ -14,13 +14,12 @@ import {
   useFindPublicDinner,
   isQuerySucceeded,
   assertDefined,
-  RunningDinnerPublicSettings,
   calculateResultingZipRestrictions,
   isArrayEmpty
 } from "@runningdinner/shared";
 import {PageTitle} from "../common/theme/typography/Tags";
 import {useParams} from "react-router-dom";
-import { Box, Chip, Grid, Link, List, ListItem, ListItemIcon, ListItemText, styled, Typography } from '@mui/material';
+import { Box, Grid, List, ListItem, ListItemIcon, ListItemText, styled, Typography } from '@mui/material';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Paragraph from "../common/theme/typography/Paragraph";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
