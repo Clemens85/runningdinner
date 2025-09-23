@@ -2,8 +2,8 @@ import { BackendConfig } from '../BackendConfig';
 import { Feedback } from '../types';
 import axios from 'axios';
 
-// const SUPPORT_BOT_API_URL = 'http://localhost:8000/api/support';
-const SUPPORT_BOT_API_URL = `${import.meta.env.VITE_SUPPORT_BOT_API_URL}`;
+const SUPPORT_BOT_API_URL = 'http://localhost:8000/api/support';
+// const SUPPORT_BOT_API_URL = `${import.meta.env.VITE_SUPPORT_BOT_API_URL}`;
 
 export async function saveFeedbackAsync(feedback: Feedback): Promise<void> {
   const url = BackendConfig.buildUrl(`/feedbackservice/v1/feedback`);
@@ -21,10 +21,11 @@ export async function querySupportBot(threadId: string, question: string, reques
   // return mapNewLineToHtmlLineBreaks(answer);
 }
 
-export async function querySupportBotFromFeedback(feedback: Feedback, question: string): Promise<string> {
+export async function querySupportBotFromFeedback(feedback: Feedback, question: string, publicEventRegistrations: string[]): Promise<string> {
   const requestContext = {
     page_name: feedback.pageName || '',
     admin_id: feedback.adminId || '',
+    public_event_registrations: publicEventRegistrations.join(','),
   };
   return querySupportBot(feedback.threadId || '', question, requestContext);
 }

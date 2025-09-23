@@ -21,6 +21,7 @@ import { AgentChatView } from './AgentChatView';
 import SecondaryButton from '../theme/SecondaryButton';
 import { PrimarySuccessButtonAsync } from '../theme/PrimarySuccessButtonAsync';
 import { commonStyles } from '../theme/CommonStyles';
+import { getPublicEventRegistrationsFromLocalStorage } from '../LocalStorageService';
 
 export interface FeedbackDialogProps {
   onClose: CallbackHandler;
@@ -69,7 +70,8 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
       feedback.adminId = params.adminId;
       feedback.pageName = getCurrentPageName();
 
-      querySupportBotFromFeedback(feedback, feedback.message)
+      const publicEventRegistrations = getPublicEventRegistrationsFromLocalStorage();
+      querySupportBotFromFeedback(feedback, feedback.message, publicEventRegistrations)
         .then((response) => {
           setAgentResponse(response);
         })

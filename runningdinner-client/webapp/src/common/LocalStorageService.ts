@@ -17,6 +17,17 @@ export function getLocalStorageInAdminId<T>(key: string, adminId: string): T | u
   return getLocalStorageItem(calculateKeyForAdminId(key, adminId));
 }
 
+export function getPublicEventRegistrationsFromLocalStorage() {
+  const result = new Array<string>();
+  Object.keys(localStorage).forEach((key: string) => {
+    if (key.startsWith('registration_')) {
+      const publicEventId = key.split('_')[1];
+      result.push(publicEventId);
+    }
+  });
+  return result;
+}
+
 export function setLocalStorageInAdminId(key: string, value: unknown, adminId: string) {
   setLocalStorageItem(calculateKeyForAdminId(key, adminId), value);
 }

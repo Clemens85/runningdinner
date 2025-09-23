@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ChatMessage } from './ChatMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { useEffect, useState } from 'react';
-import { Feedback, isStringNotEmpty, mapNewLineToHtmlLineBreaks } from '@runningdinner/shared';
+import { Feedback, isStringNotEmpty } from '@runningdinner/shared';
 import { ChatInputTextField } from './ChatInputTextField.tsx';
 
 type AgentChatViewProps = {
@@ -44,7 +44,7 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
       <FeedbackSentSuccessAlert />
 
       <Grid item xs={12} sx={{ my: 1 }}>
-        <ChatMessage text={mapNewLineToHtmlLineBreaks(sentFeedback.message)} isAgentMessage={false} />
+        <ChatMessage text={sentFeedback.message} isAgentMessage={false} />
       </Grid>
 
       {showTypingIndicator && (
