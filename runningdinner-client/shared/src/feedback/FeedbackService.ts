@@ -1,3 +1,4 @@
+import { newUuid } from '..';
 import { BackendConfig } from '../BackendConfig';
 import { Feedback } from '../types';
 import axios from 'axios';
@@ -10,18 +11,25 @@ export async function saveFeedbackAsync(feedback: Feedback): Promise<void> {
   await axios.post<Feedback>(url, feedback);
 }
 
-export async function querySupportBot(threadId: string, question: string, requestContext: Record<string, string>): Promise<string> {
+export type SupportBotQueryResponse = {
+  answer: string;
+  id: string;
+};
+
+export async function querySupportBot(threadId: string, question: string, requestContext: Record<string, string>): Promise<SupportBotQueryResponse> {
   const userRequest = {
     thread_id: threadId,
     question: question,
     request_params: requestContext as Record<string, string>,
   };
   const response = await axios.post<Feedback>(SUPPORT_BOT_API_URL, userRequest);
-  return response?.data?.answer || '';
-  // return mapNewLineToHtmlLineBreaks(answer);
+  return {
+    answer: response?.data?.answer || '',
+    id: newUuid(),
+  };
 }
 
-export async function querySupportBotFromFeedback(feedback: Feedback, question: string, publicEventRegistrations: string[]): Promise<string> {
+export async function querySupportBotFromFeedback(feedback: Feedback, question: string, publicEventRegistrations: string[]): Promise<SupportBotQueryResponse> {
   const requestContext = {
     page_name: feedback.pageName || '',
     admin_id: feedback.adminId || '',

@@ -1,20 +1,26 @@
-import {IconButton, Paper, TextField} from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
-import {CallbackHandler} from "@runningdinner/shared";
+import { IconButton, Paper, TextField } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import { CallbackHandler } from '@runningdinner/shared';
 
 export type ChatInputMessageProps = {
   inputMessage: string;
   onInputMessageChange: (inputMessage: string) => void;
-  onSendMessage: CallbackHandler
-}
+  onSendMessage: CallbackHandler;
+  disabled?: boolean;
+};
 
-export function ChatInputTextField({inputMessage, onInputMessageChange, onSendMessage}: ChatInputMessageProps) {
+export function ChatInputTextField({ inputMessage, onInputMessageChange, onSendMessage, disabled }: ChatInputMessageProps) {
+  function handleSubmitMessage() {
+    if (!disabled) {
+      onSendMessage();
+    }
+  }
 
   // Handle Enter key press
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      onSendMessage();
+      handleSubmitMessage();
     }
   };
 
@@ -57,16 +63,16 @@ export function ChatInputTextField({inputMessage, onInputMessageChange, onSendMe
       />
       <IconButton
         color="primary"
-        onClick={onSendMessage}
-        // disabled={!followUpQuestion.trim()}
+        onClick={handleSubmitMessage}
+        disabled={disabled}
         sx={{
           ml: 1,
           alignSelf: 'flex-end',
           mb: '6px',
-          backgroundColor: 'primary.main', //: 'action.disabledBackground',
-          color: 'white', //: 'action.disabled',
+          backgroundColor: !disabled ? 'primary.main' : 'action.disabledBackground',
+          color: !disabled ? 'white' : 'action.disabled',
           '&:hover': {
-            backgroundColor: 'primary.dark', //: 'action.disabledBackground',
+            backgroundColor: !disabled ? 'primary.dark' : 'action.disabledBackground',
           },
           width: '32px',
           height: '32px',
@@ -76,5 +82,5 @@ export function ChatInputTextField({inputMessage, onInputMessageChange, onSendMe
         <SendIcon fontSize="small" />
       </IconButton>
     </Paper>
-  )
+  );
 }

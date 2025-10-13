@@ -11,6 +11,7 @@ import {
   querySupportBotFromFeedback,
   saveFeedbackAsync,
   warmupSupportBot,
+  SupportBotQueryResponse,
 } from '@runningdinner/shared';
 import { useNotificationHttpError } from '../NotificationHttpErrorHook';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -40,7 +41,7 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   const fullWidthProps = isMobileDevice ? commonStyles.fullWidth : {};
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [agentResponse, setAgentResponse] = useState<string | null>(null);
+  const [agentResponse, setAgentResponse] = useState<SupportBotQueryResponse | null>(null);
   const [agentError, setAgentError] = useState<Error | null>(null);
   const [sentFeedback, setSentFeedback] = useState<FeedbackData | null>(null);
 
