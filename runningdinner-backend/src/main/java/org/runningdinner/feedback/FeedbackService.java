@@ -39,6 +39,8 @@ public class FeedbackService {
 
   private static final Duration LAST_MESSAGE_CREATED_AT_OFFSET = Duration.ofMinutes(1);
 
+  private static final int FEEDBACK_RATE_LIMIT_CHECK_SIZE = 3;
+
   private static final Sort SORTING = Sort.by("createdAt", "id").descending();
   
   @Autowired
@@ -96,10 +98,11 @@ public class FeedbackService {
    * Quite naive method for preventing too many feedbacks...
    */
   private void checkNotTooManyFeedbacksInTimeRange(LocalDateTime now) {
-    
-    Page<Feedback> lastCreatedFeedbacksPage = feedbackRepository.findAllBySenderIpNot(SYSTEM_FEEDBACK_SENDER_IP, PageRequest.of(0, 3, SORTING));
+
+    PageRequest pageable = PageRequest.of(0, FEEDBACK_RATE_LIMIT_CHECK_SIZE, SORTING);
+    Page<Feedback> lastCreatedFeedbacksPage = feedbackRepository.findAllBySenderIpNot(SYSTEM_FEEDBACK_SENDER_IP, pageable);
     List<Feedback> lastCreatedFeedbacks = lastCreatedFeedbacksPage.hasContent() ? lastCreatedFeedbacksPage.getContent() : Collections.emptyList();
-    if (CollectionUtils.isEmpty(lastCreatedFeedbacks) || lastCreatedFeedbacks.size() < 3) {
+    if (CollectionUtils.isEmpty(lastCreatedFeedbacks) || lastCreatedFeedbacks.size() < FEEDBACK_RATE_LIMIT_CHECK_SIZE) {
       return;
     }
 
