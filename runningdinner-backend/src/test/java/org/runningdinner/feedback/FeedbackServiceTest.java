@@ -1,12 +1,5 @@
 package org.runningdinner.feedback;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +11,14 @@ import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -54,7 +55,7 @@ public class FeedbackServiceTest {
   @Test
   public void testCreateFeedbackFromWizard() {
     
-    Feedback result = feedbackService.createFeedback(newFeedback("WizardPage", null));
+    Feedback result = feedbackService.createFeedback(newFeedback("WizardPage", null), LocalDateTime.now());
     
     List<Feedback> feedbacks = feedbackService.findAllNotDeliveredFeedbacks();
     assertThat(feedbacks).contains(result);
@@ -71,7 +72,7 @@ public class FeedbackServiceTest {
     
     RunningDinner runningDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, TOTAL_NUMBER_OF_PARTICIPANTS);
     
-    Feedback result = feedbackService.createFeedback(newFeedback("AdminPage", runningDinner.getAdminId()));
+    Feedback result = feedbackService.createFeedback(newFeedback("AdminPage", runningDinner.getAdminId()), LocalDateTime.now());
     
     List<Feedback> feedbacks = feedbackService.findAllNotDeliveredFeedbacks();
     assertThat(feedbacks).contains(result);
