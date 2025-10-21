@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 
 @Service
 public class DinnerRouteOptimizationFeedbackService {
@@ -63,9 +65,9 @@ public class DinnerRouteOptimizationFeedbackService {
   	feedback.setSenderEmail(receiver);
 		feedback.setMessage(message);
   	feedback.setPageName("/hostlocations");
-  	feedback.setSenderIp("SYSTEM_GENERATED");
+  	feedback.setSenderIp(FeedbackService.SYSTEM_FEEDBACK_SENDER_IP);
   	feedback.setAdminId(adminId);
-		feedbackService.createFeedback(feedback);
+		feedbackService.createFeedback(feedback, LocalDateTime.now());
 	}
   
 }
