@@ -28,9 +28,12 @@ export interface FeedbackDialogProps {
   onClose: CallbackHandler;
 }
 
-const initialFeedbackInstance = newEmptyFeedbackInstance();
-initialFeedbackInstance.message =
-  'Unterstützt das Tool auch kürzeste Wegen bei den Routen? Wir veranstalten ein Event in Berlin und da ist es wichtig, dass man nicht vom einem Rand zum anderen Rand muss. Lg Jan';
+function newTestFeedbackInstance() {
+  const initialFeedbackInstance = newEmptyFeedbackInstance();
+  initialFeedbackInstance.message =
+    'Unterstützt das Tool auch kürzeste Wegen bei den Routen? Wir veranstalten ein Event in Berlin und da ist es wichtig, dass man nicht vom einem Rand zum anderen Rand muss. Lg Jan';
+  return initialFeedbackInstance;
+}
 
 export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   const { t } = useTranslation('common');
@@ -52,8 +55,10 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   });
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
+
+  const testFeedbackInstance = newTestFeedbackInstance();
   const formMethods = useForm<FeedbackData>({
-    defaultValues: initialFeedbackInstance, //newEmptyFeedbackInstance(),
+    defaultValues: testFeedbackInstance, //newEmptyFeedbackInstance(),
     mode: 'onTouched',
   });
   const { handleSubmit, clearErrors, setError } = formMethods;
@@ -61,6 +66,8 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   useEffect(() => {
     warmupSupportBot();
   }, []);
+
+  console.log(`Using threadId ${testFeedbackInstance.threadId}`);
 
   async function handleSubmitFeedback(values: FeedbackData) {
     const feedback: Feedback = { ...values };
