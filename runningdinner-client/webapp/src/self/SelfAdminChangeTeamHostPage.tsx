@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {useParams} from "react-router-dom";
+import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   fetchSelfAdminTeam,
   Fullname,
@@ -15,43 +15,41 @@ import {
   updateSelfAdminTeamHost,
   useBackendIssueHandler,
   useSelfAdminDispatch,
-  useSelfAdminSelector
-} from "@runningdinner/shared";
-import {Trans, useTranslation} from "react-i18next";
-import {PageTitle} from "../common/theme/typography/Tags";
-import {Box, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme} from '@mui/material';
-import Grid from "@mui/material/Grid";
-import {PrimaryButton} from "../common/theme/PrimaryButton";
-import {FormProvider, useForm} from "react-hook-form";
-import FormTextField from "../common/input/FormTextField";
+  useSelfAdminSelector,
+} from '@runningdinner/shared';
+import { Trans, useTranslation } from 'react-i18next';
+import { PageTitle } from '../common/theme/typography/Tags';
+import { Box, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import { PrimaryButton } from '../common/theme/PrimaryButton';
+import { FormProvider, useForm } from 'react-hook-form';
+import FormTextField from '../common/input/FormTextField';
 
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
-import Paragraph from "../common/theme/typography/Paragraph";
-import {useCustomSnackbar} from "../common/theme/CustomSnackbarHook";
-import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
+import Paragraph from '../common/theme/typography/Paragraph';
+import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
 import { Alert } from '@mui/material';
-import {commonStyles} from "../common/theme/CommonStyles";
-import {styled} from "@mui/material/styles";
+import { commonStyles } from '../common/theme/CommonStyles';
+import { styled } from '@mui/material/styles';
 
-
-const NewSelectedHostText = styled('strong')(({theme}) => ({
-  color: theme.palette.secondary.main
+const NewSelectedHostText = styled('strong')(({ theme }) => ({
+  color: theme.palette.secondary.main,
 }));
 
 export default function SelfAdminChangeTeamHostPage() {
-
   const urlParams = useParams<Record<string, string>>();
-  const selfAdminId = urlParams.selfAdminId || "";
-  const participantId = urlParams.participantId || "";
-  const teamId = urlParams.teamId || "";
+  const selfAdminId = urlParams.selfAdminId || '';
+  const participantId = urlParams.participantId || '';
+  const teamId = urlParams.teamId || '';
 
   const dispatch = useSelfAdminDispatch();
 
-  const {data: team} = useSelfAdminSelector(getSelfAdminTeamFetchSelector);
+  const { data: team } = useSelfAdminSelector(getSelfAdminTeamFetchSelector);
 
   React.useEffect(() => {
-    dispatch(fetchSelfAdminTeam({selfAdminId, participantId, teamId}));
+    dispatch(fetchSelfAdminTeam({ selfAdminId, participantId, teamId }));
   }, [dispatch, selfAdminId, participantId, teamId]);
 
   if (!team) {
@@ -69,30 +67,29 @@ interface SelfAdminChangeTeamHostViewProps {
   team: Team;
 }
 
-function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
-
-  const {t} = useTranslation(['selfadmin', 'common']);
+function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps) {
+  const { t } = useTranslation(['selfadmin', 'common']);
 
   const urlParams = useParams<Record<string, string>>();
-  const selfAdminId = urlParams.selfAdminId || "";
-  const participantId = urlParams.participantId || "";
-  const teamId = urlParams.teamId || "";
+  const selfAdminId = urlParams.selfAdminId || '';
+  const participantId = urlParams.participantId || '';
+  const teamId = urlParams.teamId || '';
 
   const [newHostTeamMember, setNewHostTeamMember] = useState<Participant>(team.hostTeamMember);
   const [currentTeam, setCurrentTeam] = useState<Team>(team);
 
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
-  const {showSuccess} = useCustomSnackbar();
+  const { showSuccess } = useCustomSnackbar();
 
-  const {getIssuesTranslated} = useBackendIssueHandler();
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+  const { getIssuesTranslated } = useBackendIssueHandler();
+  const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
   const fullWidthProps = isSmallDevice ? commonStyles.fullWidth : {};
 
   const formMethods = useForm<SelfAdminChangeTeamHostViewModel>({
-    defaultValues: { comment: "" },
-    mode: 'onTouched'
+    defaultValues: { comment: '' },
+    mode: 'onTouched',
   });
   const { handleSubmit, clearErrors, formState } = formMethods;
   const { isSubmitting } = formState;
@@ -103,11 +100,11 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
       teamId,
       participantId,
       comment: updatedValues.comment,
-      newHostingTeamMemberId: newHostTeamMember.id!
-    }
+      newHostingTeamMemberId: newHostTeamMember.id!,
+    };
     try {
-      const updatedTeam = await updateSelfAdminTeamHost({selfAdminId, participantId, teamId}, requestBody);
-      const successMessage =  <Trans i18nKey={"selfadmin:change_team_host_success_text"} values={{newTeamHost: getFullname(newHostTeamMember)}} />;
+      const updatedTeam = await updateSelfAdminTeamHost({ selfAdminId, participantId, teamId }, requestBody);
+      const successMessage = <Trans i18nKey={'selfadmin:change_team_host_success_text'} values={{ newTeamHost: getFullname(newHostTeamMember) }} />;
       showSuccess(successMessage, { wrapInHtmlContainer: true });
       setCurrentTeam(updatedTeam);
     } catch (e) {
@@ -142,22 +139,25 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <List dense={isSmallDevice}>
-                { team.teamMembers.map(teamMember =>
+                {team.teamMembers.map((teamMember) => (
                   <ListItem button divider onClick={() => handleTeamMemberChange(teamMember, !isTeamHost(teamMember))} key={teamMember.id}>
                     <ListItemIcon>
                       <Box p={isSmallDevice ? 2 : 3}>
-                        <TeamMemberHostCheckboxIcon onChange={(newState) => handleTeamMemberChange(teamMember, newState)}
-                                                    checked={isTeamHost(teamMember)} />
+                        <TeamMemberHostCheckboxIcon onChange={(newState) => handleTeamMemberChange(teamMember, newState)} checked={isTeamHost(teamMember)} />
                       </Box>
                     </ListItemIcon>
-                    <ListItemText primary={
-                      <>
-                        <span><Fullname {...teamMember} /></span>
-                        { isNewSelectedTeamHost(teamMember) && <NewSelectedHostText>&nbsp;&nbsp;* </NewSelectedHostText> }
-                      </>
-                    } />
+                    <ListItemText
+                      primary={
+                        <>
+                          <span>
+                            <Fullname {...teamMember} />
+                          </span>
+                          {isNewSelectedTeamHost(teamMember) && <NewSelectedHostText>&nbsp;&nbsp;* </NewSelectedHostText>}
+                        </>
+                      }
+                    />
                   </ListItem>
-                )}
+                ))}
               </List>
             </Grid>
           </Grid>
@@ -165,25 +165,24 @@ function SelfAdminChangeTeamHostView({team}: SelfAdminChangeTeamHostViewProps) {
         <Box mt={1}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <FormTextField  fullWidth
-                              variant="outlined"
-                              helperText={t('selfadmin:change_team_host_comment_help')}
-                              multiline
-                              disabled={!isTeamHostChanged()}
-                              rows={3}
-                              name="comment"
-                              label={t('selfadmin:change_team_host_comment')} />
+              <FormTextField
+                fullWidth
+                variant="outlined"
+                helperText={t('selfadmin:change_team_host_comment_help')}
+                multiline
+                disabled={!isTeamHostChanged()}
+                rows={3}
+                name="comment"
+                label={t('selfadmin:change_team_host_comment')}
+              />
             </Grid>
           </Grid>
         </Box>
 
         <Box my={3}>
-          <Grid container justifyContent={"flex-end"} direction={"row"}>
+          <Grid container justifyContent={'flex-end'} direction={'row'}>
             <Grid item xs={isSmallDevice ? 12 : undefined}>
-              <PrimaryButton onClick={handleSubmit(updateTeamHost)}
-                             sx={fullWidthProps}
-                             disabled={isSubmitting || !isTeamHostChanged()}
-                             size={"large"}>
+              <PrimaryButton onClick={handleSubmit(updateTeamHost)} sx={fullWidthProps} disabled={isSubmitting || !isTeamHostChanged()} size={'large'}>
                 {t('common:save')}
               </PrimaryButton>
             </Grid>
@@ -199,19 +198,17 @@ interface TeamMemberHostCheckboxProps {
   checked: boolean;
 }
 
-function TeamMemberHostCheckboxIcon({checked, onChange}: TeamMemberHostCheckboxProps) {
+function TeamMemberHostCheckboxIcon({ checked, onChange }: TeamMemberHostCheckboxProps) {
   return (
     <>
-      { !checked && <CheckBoxOutlineBlankOutlinedIcon style={{ fontSize: 48 }} onClick={() => onChange(true) } /> }
-      { checked && <CheckBoxOutlinedIcon color={"primary"} style={{ fontSize: 48 }} onClick={() => onChange(false) } /> }
+      {!checked && <CheckBoxOutlineBlankOutlinedIcon style={{ fontSize: 48 }} onClick={() => onChange(true)} />}
+      {checked && <CheckBoxOutlinedIcon color={'primary'} style={{ fontSize: 48 }} onClick={() => onChange(false)} />}
     </>
   );
 }
 
-
 function SelfAdminChangeTeamHostNotPossibleView() {
-
-  const {t} = useTranslation(['selfadmin']);
+  const { t } = useTranslation(['selfadmin']);
 
   return (
     <>
@@ -220,7 +217,9 @@ function SelfAdminChangeTeamHostNotPossibleView() {
       <Box mt={3}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Alert severity={"info"} variant={"outlined"}>{t("selfadmin:team_partner_wish_registration_change_teamhost_not_possible")}</Alert>
+            <Alert severity={'info'} variant={'outlined'}>
+              {t('selfadmin:team_partner_wish_registration_change_teamhost_not_possible')}
+            </Alert>
           </Grid>
         </Grid>
       </Box>

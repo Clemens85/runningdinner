@@ -1,7 +1,6 @@
 import { isStringNotEmpty } from './Utils';
 
 class BackendConfig {
-
   static _baseUrl: string = '/rest';
 
   static getBaseUrl() {
@@ -19,6 +18,4 @@ class BackendConfig {
   }
 }
 
-export {
-  BackendConfig
-}
+export { BackendConfig };

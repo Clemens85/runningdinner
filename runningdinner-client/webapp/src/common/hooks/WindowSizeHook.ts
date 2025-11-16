@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import {useState} from "react";
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 // See https://github.com/rehooks/window-size/blob/master/index.js
 

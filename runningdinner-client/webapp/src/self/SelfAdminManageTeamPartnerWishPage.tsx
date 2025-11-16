@@ -1,33 +1,27 @@
-import React, {useState} from 'react';
-import {PageTitle, Span} from "../common/theme/typography/Tags";
-import Paragraph from "../common/theme/typography/Paragraph";
-import {useTranslation} from "react-i18next";
-import {useParams} from "react-router-dom";
-import TextField from "@mui/material/TextField";
-import {
-  getSelfAdminSessionDataFetchSelector,
-  updateSelfTeamPartnerWish,
-  useBackendIssueHandler,
-  useSelfAdminSelector
-} from "@runningdinner/shared";
-import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
-import {Box, Grid, useMediaQuery, useTheme} from '@mui/material';
-import {PrimaryButton} from "../common/theme/PrimaryButton";
-import {useUrlQuery} from "../common/hooks/useUrlQuery";
+import React, { useState } from 'react';
+import { PageTitle, Span } from '../common/theme/typography/Tags';
+import Paragraph from '../common/theme/typography/Paragraph';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
+import { getSelfAdminSessionDataFetchSelector, updateSelfTeamPartnerWish, useBackendIssueHandler, useSelfAdminSelector } from '@runningdinner/shared';
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { PrimaryButton } from '../common/theme/PrimaryButton';
+import { useUrlQuery } from '../common/hooks/useUrlQuery';
 import { Alert, AlertTitle } from '@mui/material';
 import { getDecodedQueryParam } from '../common/QueryParamDecoder';
-import {commonStyles} from "../common/theme/CommonStyles";
+import { commonStyles } from '../common/theme/CommonStyles';
 
 export default function SelfAdminManageTeamPartnerWishPage() {
-
-  const {data: selfAdminSessionData} = useSelfAdminSelector(getSelfAdminSessionDataFetchSelector);
+  const { data: selfAdminSessionData } = useSelfAdminSelector(getSelfAdminSessionDataFetchSelector);
   const query = useUrlQuery();
 
   if (!selfAdminSessionData) {
     return null;
   }
 
-  const teamPartnerWishQueryParam = getDecodedQueryParam(query, "email");
+  const teamPartnerWishQueryParam = getDecodedQueryParam(query, 'email');
   return <SelfAdminManageTeamPartnerWishView teamPartnerWishQueryParam={teamPartnerWishQueryParam} />;
 }
 
@@ -35,23 +29,22 @@ interface SelfAdminManageTeamPartnerWishViewProps {
   teamPartnerWishQueryParam: string;
 }
 
-function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdminManageTeamPartnerWishViewProps) {
-
-  const {t} = useTranslation(['selfadmin', 'common']);
+function SelfAdminManageTeamPartnerWishView({ teamPartnerWishQueryParam }: SelfAdminManageTeamPartnerWishViewProps) {
+  const { t } = useTranslation(['selfadmin', 'common']);
 
   const urlParams = useParams<Record<string, string>>();
-  const selfAdminId = urlParams.selfAdminId || "";
-  const participantId = urlParams.participantId || "";
+  const selfAdminId = urlParams.selfAdminId || '';
+  const participantId = urlParams.participantId || '';
 
   const [teamPartnerWishEmail, setTeamPartnerWishEmail] = useState(teamPartnerWishQueryParam);
   const [teamPartnerWishUpdateSucceeded, setTeamPartnerWishUpdateSucceeded] = useState(false);
 
-  const {getIssuesTranslated} = useBackendIssueHandler({
+  const { getIssuesTranslated } = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
-      namespaces: ["selfadmin", "common"]
-    }
+      namespaces: ['selfadmin', 'common'],
+    },
   });
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+  const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
@@ -59,10 +52,10 @@ function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdm
 
   async function handleSubmit() {
     try {
-      await updateSelfTeamPartnerWish({selfAdminId, participantId}, teamPartnerWishEmail);
+      await updateSelfTeamPartnerWish({ selfAdminId, participantId }, teamPartnerWishEmail);
       setTeamPartnerWishUpdateSucceeded(true);
     } catch (e) {
-      showHttpErrorDefaultNotification(e, {showMessageForValidationErrorsWithoutSource: true});
+      showHttpErrorDefaultNotification(e, { showMessageForValidationErrorsWithoutSource: true });
     }
   }
 
@@ -73,9 +66,9 @@ function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdm
   if (teamPartnerWishUpdateSucceeded) {
     return (
       <Box my={8}>
-        <Alert severity={"success"}>
+        <Alert severity={'success'}>
           <AlertTitle>{t('common:congratulation')}</AlertTitle>
-          <Span i18n={"selfadmin:manage_teampartner_wish_success"}/>
+          <Span i18n={'selfadmin:manage_teampartner_wish_success'} />
         </Alert>
       </Box>
     );
@@ -88,21 +81,14 @@ function SelfAdminManageTeamPartnerWishView({teamPartnerWishQueryParam}: SelfAdm
       <Box mt={3}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField label={t("common:teampartner_wish")}
-                       variant="outlined"
-                       fullWidth
-                       value={teamPartnerWishEmail}
-                       onChange={handleTeamPartnerWishInputChange}/>
+            <TextField label={t('common:teampartner_wish')} variant="outlined" fullWidth value={teamPartnerWishEmail} onChange={handleTeamPartnerWishInputChange} />
           </Grid>
         </Grid>
       </Box>
       <Box my={3}>
-        <Grid container justifyContent={"flex-end"} direction={"row"}>
+        <Grid container justifyContent={'flex-end'} direction={'row'}>
           <Grid item xs={isSmallDevice ? 12 : undefined}>
-            <PrimaryButton onClick={handleSubmit}
-                           sx={fullWidthProps}
-                           disabled={false}
-                           size={"large"}>
+            <PrimaryButton onClick={handleSubmit} sx={fullWidthProps} disabled={false} size={'large'}>
               {t('common:save')}
             </PrimaryButton>
           </Grid>

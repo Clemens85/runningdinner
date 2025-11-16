@@ -1,21 +1,16 @@
-import {
-  useBackendIssueHandler,
-  HttpError
-} from "@runningdinner/shared";
-import {useNotificationHttpError} from "./NotificationHttpErrorHook";
-import React from "react";
-import {LinearProgress} from "@mui/material";
-
+import { useBackendIssueHandler, HttpError } from '@runningdinner/shared';
+import { useNotificationHttpError } from './NotificationHttpErrorHook';
+import React from 'react';
+import { LinearProgress } from '@mui/material';
 
 export interface ProgressBarProps {
   showLoadingProgress: boolean;
   fetchError?: HttpError | null;
 }
 
-export function ProgressBar({showLoadingProgress, fetchError}: ProgressBarProps) {
-
-  const {getIssuesTranslated} = useBackendIssueHandler();
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+export function ProgressBar({ showLoadingProgress, fetchError }: ProgressBarProps) {
+  const { getIssuesTranslated } = useBackendIssueHandler();
+  const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
   React.useEffect(() => {
     if (fetchError) {
@@ -24,10 +19,5 @@ export function ProgressBar({showLoadingProgress, fetchError}: ProgressBarProps)
     // eslint-disable-next-line
   }, [fetchError]);
 
-  return (
-    <>
-      { showLoadingProgress && <LinearProgress color="secondary" /> }
-    </>
-  );
-
+  return <>{showLoadingProgress && <LinearProgress color="secondary" />}</>;
 }

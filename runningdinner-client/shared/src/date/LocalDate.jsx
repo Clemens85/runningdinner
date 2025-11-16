@@ -1,13 +1,9 @@
-import React from "react";
-import {formatLocalDate} from "./DateUtils";
+import React from 'react';
+import { formatLocalDate } from './DateUtils';
 
 function LocalDate(props) {
   const formattedDate = formatLocalDate(props.date);
-  return (
-      <>{formattedDate ? formattedDate : ''}</>
-  );
+  return <>{formattedDate ? formattedDate : ''}</>;
 }
 
-export {
-  LocalDate
-};
+export { LocalDate };

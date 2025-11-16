@@ -1,16 +1,9 @@
 /* eslint-disable complexity */
-import {
-  forwardRef,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef
-} from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 
-import {GoogleMapsContext} from '@vis.gl/react-google-maps';
+import { GoogleMapsContext } from '@vis.gl/react-google-maps';
 
-import type {Ref} from 'react';
+import type { Ref } from 'react';
 
 type PolylineEventProps = {
   onClick?: (e: google.maps.MapMouseEvent) => void;
@@ -28,24 +21,12 @@ type PolylineCustomProps = {
   encodedPath?: string;
 };
 
-export type PolylineProps = google.maps.PolylineOptions &
-  PolylineEventProps &
-  PolylineCustomProps;
+export type PolylineProps = google.maps.PolylineOptions & PolylineEventProps & PolylineCustomProps;
 
 export type PolylineRef = Ref<google.maps.Polyline | null>;
 
 function usePolyline(props: PolylineProps) {
-  const {
-    onClick,
-    onDrag,
-    onDragStart,
-    onDragEnd,
-    onMouseOver,
-    onMouseOut,
-    encodedPath,
-    path,
-    ...polylineOptions
-  } = props;
+  const { onClick, onDrag, onDragStart, onDragEnd, onMouseOver, onMouseOut, encodedPath, path, ...polylineOptions } = props;
   // This is here to avoid triggering the useEffect below when the callbacks change (which happen if the user didn't memoize them)
   const callbacks = useRef<Record<string, (e: unknown) => void>>({});
   Object.assign(callbacks.current, {
@@ -54,7 +35,7 @@ function usePolyline(props: PolylineProps) {
     onDragStart,
     onDragEnd,
     onMouseOver,
-    onMouseOut
+    onMouseOut,
   });
 
   // const geometryLibrary = useMapsLibrary('geometry');
@@ -72,7 +53,7 @@ function usePolyline(props: PolylineProps) {
   // update the path with the encodedPath
   useMemo(() => {
     // if (!encodedPath || !geometryLibrary) return;
-    if (!path) { 
+    if (!path) {
       return;
     }
     // const path = geometryLibrary.encoding.decodePath(encodedPath);
@@ -82,8 +63,7 @@ function usePolyline(props: PolylineProps) {
   // create polyline instance and add to the map once the map is available
   useEffect(() => {
     if (!map) {
-      if (map === undefined)
-        console.error('<Polyline> has to be inside a Map component.');
+      if (map === undefined) console.error('<Polyline> has to be inside a Map component.');
 
       return;
     }
@@ -107,7 +87,7 @@ function usePolyline(props: PolylineProps) {
       ['dragstart', 'onDragStart'],
       ['dragend', 'onDragEnd'],
       ['mouseover', 'onMouseOver'],
-      ['mouseout', 'onMouseOut']
+      ['mouseout', 'onMouseOut'],
     ].forEach(([eventName, eventCallback]) => {
       gme.addListener(polyline, eventName, (e: google.maps.MapMouseEvent) => {
         const callback = callbacks.current[eventCallback];

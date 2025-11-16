@@ -1,5 +1,5 @@
 /// <reference types="vitest/config" />
-import {defineConfig} from "vite";
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   test: {
@@ -9,4 +9,4 @@ export default defineConfig({
     reporters: ['junit', 'default'],
     outputFile: '../reports/webapp-tests.xml',
   },
-})
+});

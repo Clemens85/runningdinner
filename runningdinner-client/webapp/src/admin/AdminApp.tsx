@@ -1,28 +1,20 @@
-import React from 'react'
-import { useParams } from "react-router-dom";
-import { Container } from "@mui/material";
-import AdminMenu from "./AdminMenu";
-import AdminRoute from "./AdminRoute";
-import {Provider, useDispatch} from 'react-redux';
-import {
-  adminStore,
-  BaseAdminIdProps,
-  fetchRunningDinner,
-  getFetchDataErrorSelector,
-  isFetchingDataSelector,
-  useAdminSelector,
-} from "@runningdinner/shared";
-import {ProgressBar} from "../common/ProgressBar";
-import "../timeline.css";
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
-import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import useDatePickerLocale from "../common/date/DatePickerLocaleHook";
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { Container } from '@mui/material';
+import AdminMenu from './AdminMenu';
+import AdminRoute from './AdminRoute';
+import { Provider, useDispatch } from 'react-redux';
+import { adminStore, BaseAdminIdProps, fetchRunningDinner, getFetchDataErrorSelector, isFetchingDataSelector, useAdminSelector } from '@runningdinner/shared';
+import { ProgressBar } from '../common/ProgressBar';
+import '../timeline.css';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import useDatePickerLocale from '../common/date/DatePickerLocaleHook';
 import { TeaserPopup } from '../common/teaserpopup';
 
 export default function AdminApp() {
-
   const { locale } = useDatePickerLocale();
-  const {adminId} = useParams<Record<string, string>>();
+  const { adminId } = useParams<Record<string, string>>();
 
   if (!adminId) {
     return null; // TODO
@@ -34,11 +26,10 @@ export default function AdminApp() {
         <AdminAppPage adminId={adminId} />
       </LocalizationProvider>
     </Provider>
-  )
+  );
 }
 
-function AdminAppPage({adminId}: BaseAdminIdProps) {
-
+function AdminAppPage({ adminId }: BaseAdminIdProps) {
   const dispatch = useDispatch();
 
   const showLoadingProgress = useAdminSelector(isFetchingDataSelector);
@@ -50,13 +41,13 @@ function AdminAppPage({adminId}: BaseAdminIdProps) {
   }, [dispatch, adminId]);
 
   return (
-      <div>
-        <AdminMenu />
-        <ProgressBar showLoadingProgress={showLoadingProgress} fetchError={fetchError} />
-        <Container maxWidth={false}>
-          <AdminRoute />
-          <TeaserPopup />
-        </Container>
-      </div>
+    <div>
+      <AdminMenu />
+      <ProgressBar showLoadingProgress={showLoadingProgress} fetchError={fetchError} />
+      <Container maxWidth={false}>
+        <AdminRoute />
+        <TeaserPopup />
+      </Container>
+    </div>
   );
 }

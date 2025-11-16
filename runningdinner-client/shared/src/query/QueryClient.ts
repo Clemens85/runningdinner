@@ -1,4 +1,4 @@
-import { QueryClient, UseQueryResult } from "@tanstack/react-query";
+import { QueryClient, UseQueryResult } from '@tanstack/react-query';
 
 // Create a client
 export function createDefaultQueryClient() {
@@ -8,10 +8,10 @@ export function createDefaultQueryClient() {
         networkMode: 'always', // We want always an fetch-error, even if the client seems to be offline (which might anywaay be a false indication)
         refetchOnWindowFocus: false,
         retry: 1,
-        staleTime: Infinity
+        staleTime: Infinity,
       },
     },
-  })
+  });
 }
 
 export function isQuerySucceeded(query: UseQueryResult<unknown, unknown>) {
@@ -25,5 +25,5 @@ export function isQuerySucceeded(query: UseQueryResult<unknown, unknown>) {
 }
 
 export function isAllQueriesSucceeded(queries: UseQueryResult<unknown, unknown>[]) {
-  return queries.every(query => isQuerySucceeded(query));
+  return queries.every((query) => isQuerySucceeded(query));
 }

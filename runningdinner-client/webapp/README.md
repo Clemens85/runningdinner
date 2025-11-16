@@ -27,6 +27,7 @@ If you are developing a production application, we recommend updating the config
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 
 # TODO:
+
 https://ansonlowzf.com/how-to-build-a-material-ui-navbar bzw.:
 
 https://codesandbox.io/s/add-hide-on-scroll-and-back-to-top-features-to-material-ui-navbar-pmn11?fontsize=14&hidenavigation=1&theme=dark&file=/src/components/SideDrawer.jsx

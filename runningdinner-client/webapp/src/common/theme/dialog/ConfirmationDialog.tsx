@@ -1,19 +1,8 @@
-import React from "react";
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogProps,
-  Button,
-  useMediaQuery,
-  Grid,
-  useTheme,
-} from "@mui/material";
-import { DialogTitleCloseable } from "../DialogTitleCloseable";
-import { PrimaryButton } from "../PrimaryButton";
-import SecondaryButton from "../SecondaryButton";
+import React from 'react';
+import { Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, Button, useMediaQuery, Grid, useTheme } from '@mui/material';
+import { DialogTitleCloseable } from '../DialogTitleCloseable';
+import { PrimaryButton } from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
 
 export interface ConfirmationDialogProps extends Partial<DialogProps> {
   /**
@@ -62,57 +51,44 @@ export interface ConfirmationDialogProps extends Partial<DialogProps> {
  * @param remainderDialogProps
  * @constructor
  */
-export function ConfirmationDialog({dialogTitle, dialogContent, buttonConfirmText, buttonCancelText, onClose, danger = false, ...remainderDialogProps}: ConfirmationDialogProps) {
-
+export function ConfirmationDialog({ dialogTitle, dialogContent, buttonConfirmText, buttonCancelText, onClose, danger = false, ...remainderDialogProps }: ConfirmationDialogProps) {
   const handleCloseInternal = async (confirmed: boolean) => {
     onClose(confirmed);
   };
 
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
-  const buttonFlexDirection = isSmallDevice ? "column" : "row";
+  const buttonFlexDirection = isSmallDevice ? 'column' : 'row';
 
-  const dialogActionsCenteredStyle = isSmallDevice ? { "justifyContent": "center" } : {};
+  const dialogActionsCenteredStyle = isSmallDevice ? { justifyContent: 'center' } : {};
 
   return (
-    <Dialog
-      open={true}
-      onClose={() => handleCloseInternal(false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-      {...remainderDialogProps}>
-      
-        {dialogTitle && <DialogTitleCloseable onClose={() => handleCloseInternal(false)}>{dialogTitle}</DialogTitleCloseable> }
+    <Dialog open={true} onClose={() => handleCloseInternal(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" {...remainderDialogProps}>
+      {dialogTitle && <DialogTitleCloseable onClose={() => handleCloseInternal(false)}>{dialogTitle}</DialogTitleCloseable>}
 
       <DialogContent>
         {dialogContent && (
-          <DialogContentText id="alert-dialog-description" component={"div"}>{dialogContent}</DialogContentText>
+          <DialogContentText id="alert-dialog-description" component={'div'}>
+            {dialogContent}
+          </DialogContentText>
         )}
       </DialogContent>
       <DialogActions sx={dialogActionsCenteredStyle}>
         <Box px={2} pt={1} pb={2}>
           <Grid container justifyContent="flex-end" direction={buttonFlexDirection} alignContent="center">
-            <Grid item style={{ alignSelf: "center" }}>
-              {buttonCancelText && (
-                <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>
-              )}
+            <Grid item style={{ alignSelf: 'center' }}>
+              {buttonCancelText && <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>}
             </Grid>
-            <Grid item style={{ alignSelf: "center" }}>
-              {
-                danger ? <Button sx={{ ml: isSmallDevice ? 0 : 1 }}
-                                 color="secondary"
-                                 variant="contained"
-                                 onClick={() => handleCloseInternal(true)}
-                                 autoFocus>
-                                {buttonConfirmText}
-                          </Button>
-                : <PrimaryButton ml={isSmallDevice ? 0 : 1}
-                                 variant="contained"
-                                 onClick={() => handleCloseInternal(true)}
-                                 autoFocus>
-                    {buttonConfirmText}
-                  </PrimaryButton>
-              }
+            <Grid item style={{ alignSelf: 'center' }}>
+              {danger ? (
+                <Button sx={{ ml: isSmallDevice ? 0 : 1 }} color="secondary" variant="contained" onClick={() => handleCloseInternal(true)} autoFocus>
+                  {buttonConfirmText}
+                </Button>
+              ) : (
+                <PrimaryButton ml={isSmallDevice ? 0 : 1} variant="contained" onClick={() => handleCloseInternal(true)} autoFocus>
+                  {buttonConfirmText}
+                </PrimaryButton>
+              )}
             </Grid>
           </Grid>
         </Box>

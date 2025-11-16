@@ -1,15 +1,14 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { MessageType, isArrayEmpty } from "../..";
-import { findMessageJobsByAdminIdAndTypeAsync, isOneMessageJobNotFinished } from "../MessageService";
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { MessageType, isArrayEmpty } from '../..';
+import { findMessageJobsByAdminIdAndTypeAsync, isOneMessageJobNotFinished } from '../MessageService';
 
 export function useFindMessageJobs(adminId: string, messageType: MessageType) {
   return useQuery({
     placeholderData: keepPreviousData,
     queryFn: () => findMessageJobsByAdminIdAndTypeAsync(adminId, messageType),
-    queryKey: ["findMessageJobsByAdminIdAndType", adminId, messageType],
+    queryKey: ['findMessageJobsByAdminIdAndType', adminId, messageType],
     refetchOnMount: 'always',
     refetchInterval: (query) => {
-
       const THREE_SECONDS = 1000 * 3;
 
       if (query.state.status === 'error') {
@@ -25,6 +24,6 @@ export function useFindMessageJobs(adminId: string, messageType: MessageType) {
       }
       // At least one jobs is not finished, so we keep polling
       return THREE_SECONDS;
-    }
+    },
   });
 }

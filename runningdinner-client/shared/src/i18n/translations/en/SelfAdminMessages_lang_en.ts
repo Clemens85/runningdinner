@@ -1,6 +1,7 @@
 const SelfAdminMessages_en: any = {
   change_team_host_title: 'Manage Host',
-  change_team_host_help: 'Here you can change the host setting (you can e.g. enter your team mate as new host or enter yourself as new host. ' +
+  change_team_host_help:
+    'Here you can change the host setting (you can e.g. enter your team mate as new host or enter yourself as new host. ' +
     'After saving, this change will immediately be applied.',
 
   change_team_host_comment: 'Your note',
@@ -17,7 +18,8 @@ const SelfAdminMessages_en: any = {
   manage_teampartner_wish_help: 'Here you can confirm and/or change your wished team partner.',
   manage_teampartner_wish_success: 'Successfully saved the change of your wished team partner!',
 
-  team_partner_wish_update_invalid: 'Change of your wished team partner could not be performed. ' +
+  team_partner_wish_update_invalid:
+    'Change of your wished team partner could not be performed. ' +
     'This might happen e.g. due to your wished team partner is not registered or that e.g. the team arrangments were already created.',
 
   team_partner_wish_manage_title: 'Run Your Dinner - Manage Partner Wish',
@@ -25,10 +27,11 @@ const SelfAdminMessages_en: any = {
 
   dinnerroute_title: 'Run Your Dinner - Dinner Route',
 
-  invalid_url: "The link you called does not seem to be valid (anymore). In case of doubt, please contact the organizer of your event or <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />",
+  invalid_url:
+    "The link you called does not seem to be valid (anymore). In case of doubt, please contact the organizer of your event or <anchor href='mailto:{{ adminEmail }}' title='{{ adminEmail }}' />",
 
-  team_partner_wish_registration_change_teamhost_not_possible: "Since you have registered as a fixed cooking team and have only given one address, you cannot change hosts. " +
-    "If you want to adjust your address, please contact the event organizer."
-
+  team_partner_wish_registration_change_teamhost_not_possible:
+    'Since you have registered as a fixed cooking team and have only given one address, you cannot change hosts. ' +
+    'If you want to adjust your address, please contact the event organizer.',
 };
 export default SelfAdminMessages_en;

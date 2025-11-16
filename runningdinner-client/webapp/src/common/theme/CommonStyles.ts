@@ -1,8 +1,8 @@
-import {styled} from "@mui/material/styles";
-import {Grid, Paper, SxProps, TableCell, TableRow, Theme} from "@mui/material";
+import { styled } from '@mui/material/styles';
+import { Grid, Paper, SxProps, TableCell, TableRow, Theme } from '@mui/material';
 
 export const TableRowWithCursor = styled(TableRow)({
-  cursor: "pointer"
+  cursor: 'pointer',
 });
 
 export const TableCellBorderBottomNullable = styled(TableCell, {
@@ -10,8 +10,8 @@ export const TableCellBorderBottomNullable = styled(TableCell, {
   // @ts-ignore
 })(({ borderBottomNone, theme }) => ({
   ...(borderBottomNone && {
-    borderBottom: "none"
-  })
+    borderBottom: 'none',
+  }),
 }));
 
 export const PaperGrey = styled(Paper)({
@@ -20,21 +20,21 @@ export const PaperGrey = styled(Paper)({
 
 export const GridWithCenteredFullwidthButton = styled(Grid)({
   '& button': {
-    width: "100%"
-  }
+    width: '100%',
+  },
 });
 
 export const commonStyles: Record<string, SxProps<Theme> | undefined> = {
   textAlignRight: {
-    textAlign: 'right'
+    textAlign: 'right',
   },
   fullWidth: {
-    width: "100%"
+    width: '100%',
   },
   buttonSpacingLeft: {
-    marginLeft: (theme) => theme.spacing(2)
+    marginLeft: (theme) => theme.spacing(2),
   },
   defaultCursor: {
-    cursor: 'default'
-  }
-}
+    cursor: 'default',
+  },
+};

@@ -4,7 +4,8 @@ import {
   enableAfterPartyLocation,
   getRunningDinnerAfterPartyLocationSelector,
   getRunningDinnerBasicDetailsSelector,
-  getRunningDinnerOptionsSelector, HttpError,
+  getRunningDinnerOptionsSelector,
+  HttpError,
   isClosedDinnerSelector,
   isValidDate,
   newAfterPartyLocation,
@@ -12,53 +13,58 @@ import {
   setNextNavigationStep,
   setPreviousNavigationStep,
   updateAfterPartyLocation,
-  updateMeals, validateRunningDinnerAfterPartyLocation,
-} from "@runningdinner/shared";
-import {PageTitle} from "../common/theme/typography/Tags";
-import WizardButtons from "./WizardButtons";
-import {useTranslation} from "react-i18next";
-import {useDispatch} from "react-redux";
+  updateMeals,
+  validateRunningDinnerAfterPartyLocation,
+} from '@runningdinner/shared';
+import { PageTitle } from '../common/theme/typography/Tags';
+import WizardButtons from './WizardButtons';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import {
-  Meal, OptionsNavigationStep, ParticipantPreviewNavigationStep, PublicRegistrationNavigationStep, useBackendIssueHandler, validateRunningDinnerOptions,
-} from "@runningdinner/shared";
-import {useWizardSelector} from "@runningdinner/shared";
-import MealTimeEditControl from "../admin/dashboard/MealTimeEditControl";
+  Meal,
+  OptionsNavigationStep,
+  ParticipantPreviewNavigationStep,
+  PublicRegistrationNavigationStep,
+  useBackendIssueHandler,
+  validateRunningDinnerOptions,
+} from '@runningdinner/shared';
+import { useWizardSelector } from '@runningdinner/shared';
+import MealTimeEditControl from '../admin/dashboard/MealTimeEditControl';
 import { cloneDeep } from 'lodash-es';
-import {useNotificationHttpError} from "../common/NotificationHttpErrorHook";
-import {FormProvider, useForm} from "react-hook-form";
-import {Grid, useMediaQuery, useTheme} from "@mui/material";
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Grid, useMediaQuery, useTheme } from '@mui/material';
 import { AfterPartyLocationToggleButton } from '../common/dinnersettings/AfterPartyLocationToggleButton';
-import {AfterPartyLocationFormControl} from "../common/dinnersettings/AfterPartyLocationFormControl";
+import { AfterPartyLocationFormControl } from '../common/dinnersettings/AfterPartyLocationFormControl';
 
 export default function MealTimesStep() {
-
-  const {t} = useTranslation(['wizard', 'common']);
+  const { t } = useTranslation(['wizard', 'common']);
 
   const options = useWizardSelector(getRunningDinnerOptionsSelector);
   const afterPartyLocation = useWizardSelector(getRunningDinnerAfterPartyLocationSelector);
-  const {date} = useWizardSelector(getRunningDinnerBasicDetailsSelector);
+  const { date } = useWizardSelector(getRunningDinnerBasicDetailsSelector);
   const isClosedDinner = useWizardSelector(isClosedDinnerSelector);
 
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
 
-  const {meals} = options;
+  const { meals } = options;
 
   const [mealsFormState, setMealsFormState] = React.useState(cloneDeep(meals));
 
   const hasAfterPartyLocationActivated = afterPartyLocation !== undefined;
 
-  const {getIssuesTranslated, applyValidationIssuesToForm} = useBackendIssueHandler({
+  const { getIssuesTranslated, applyValidationIssuesToForm } = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
-      namespaces: ['wizard', 'common']
-    }
+      namespaces: ['wizard', 'common'],
+    },
   });
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+  const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
   const dispatch = useDispatch();
 
   const formMethods = useForm({
-    defaultValues: newAfterPartyLocation()
+    defaultValues: newAfterPartyLocation(),
   });
   const { clearErrors, setError, reset } = formMethods;
 
@@ -68,29 +74,28 @@ export default function MealTimesStep() {
     // eslint-disable-next-line
   }, [reset, clearErrors, afterPartyLocation]);
 
-
   React.useEffect(() => {
     dispatch(setNextNavigationStep(isClosedDinner ? ParticipantPreviewNavigationStep : PublicRegistrationNavigationStep));
     dispatch(setPreviousNavigationStep(OptionsNavigationStep));
     // eslint-disable-next-line
   }, [dispatch]);
 
-  const submitTimesAsync = async(afterPartyLocationValues: AfterPartyLocation) => {
+  const submitTimesAsync = async (afterPartyLocationValues: AfterPartyLocation) => {
     const mealtimesValidationCall = validateMealTimes();
     const afterPartyLocationValidationCall = validateAfterPartyLocation(afterPartyLocationValues);
     const mealtimesValidationResponse = await mealtimesValidationCall;
-    const afterPartyLocationValidationResponse =  await afterPartyLocationValidationCall;
+    const afterPartyLocationValidationResponse = await afterPartyLocationValidationCall;
     return mealtimesValidationResponse && afterPartyLocationValidationResponse;
   };
 
   async function validateMealTimes() {
-    const optionsToValidate = {...options};
+    const optionsToValidate = { ...options };
     optionsToValidate.meals = mealsFormState;
     try {
       await validateRunningDinnerOptions(optionsToValidate, date);
       dispatch(updateMeals(mealsFormState));
       return true;
-    } catch(e) {
+    } catch (e) {
       showHttpErrorDefaultNotification(e);
       return false;
     }
@@ -105,7 +110,7 @@ export default function MealTimesStep() {
       await validateRunningDinnerAfterPartyLocation(afterPartyLocationValues);
       dispatch(updateAfterPartyLocation(afterPartyLocationValues));
       return true;
-    } catch(e) {
+    } catch (e) {
       applyValidationIssuesToForm(e as HttpError, setError);
       showHttpErrorDefaultNotification(e as HttpError);
       return false;
@@ -122,28 +127,31 @@ export default function MealTimesStep() {
     setMealsFormState(meals);
   }
 
-  const mealTimeFields = mealsFormState.map((meal: Meal) =>
-      <Grid item key={meal.label} sx={{pr: 6}}>
-        <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
-      </Grid>
-  );
-  const mealTimeFieldsDirection = isSmallDevice ? "column" : "row";
+  const mealTimeFields = mealsFormState.map((meal: Meal) => (
+    <Grid item key={meal.label} sx={{ pr: 6 }}>
+      <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
+    </Grid>
+  ));
+  const mealTimeFieldsDirection = isSmallDevice ? 'column' : 'row';
 
   return (
-      <div>
-        <PageTitle>{t('time_setup')}</PageTitle>
-        <FormProvider {...formMethods}>
-          <Grid container direction={mealTimeFieldsDirection}>
-            {mealTimeFields}
-          </Grid>
+    <div>
+      <PageTitle>{t('time_setup')}</PageTitle>
+      <FormProvider {...formMethods}>
+        <Grid container direction={mealTimeFieldsDirection}>
+          {mealTimeFields}
+        </Grid>
 
-          <AfterPartyLocationToggleButton afterPartyLocationEnabled={!!afterPartyLocation}
-                                          onToggleAfterPartyLocation={enable => dispatch(enableAfterPartyLocation(enable)) }
-                                          mt={5} mb={3} />
-          { afterPartyLocation && <AfterPartyLocationFormControl /> }
+        <AfterPartyLocationToggleButton
+          afterPartyLocationEnabled={!!afterPartyLocation}
+          onToggleAfterPartyLocation={(enable) => dispatch(enableAfterPartyLocation(enable))}
+          mt={5}
+          mb={3}
+        />
+        {afterPartyLocation && <AfterPartyLocationFormControl />}
 
-          <WizardButtons onSubmitData={submitTimesAsync} />
-        </FormProvider>
-      </div>
+        <WizardButtons onSubmitData={submitTimesAsync} />
+      </FormProvider>
+    </div>
   );
 }

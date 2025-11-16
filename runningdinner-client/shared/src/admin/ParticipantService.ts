@@ -1,22 +1,9 @@
-import axios, {Method} from 'axios';
-import {filter, lowerCase, includes} from 'lodash-es';
-import { BackendConfig } from "../BackendConfig";
-import {
-  findEntityById, isArrayEmpty,
-  isNewEntity,
-  isStringEmpty,
-  isStringNotEmpty,
-  trimStringsInObject
-} from "../Utils";
-import {
-  Participant,
-  TeamPartnerWishInfo,
-  ParticipantList,
-  ParticipantListable,
-  ParticipantName,
-  ParticipantRegistrationInfoList
-} from "../types";
-import {CONSTANTS} from "../Constants";
+import axios, { Method } from 'axios';
+import { filter, lowerCase, includes } from 'lodash-es';
+import { BackendConfig } from '../BackendConfig';
+import { findEntityById, isArrayEmpty, isNewEntity, isStringEmpty, isStringNotEmpty, trimStringsInObject } from '../Utils';
+import { Participant, TeamPartnerWishInfo, ParticipantList, ParticipantListable, ParticipantName, ParticipantRegistrationInfoList } from '../types';
+import { CONSTANTS } from '../Constants';
 
 export async function findParticipantsAsync(adminId: string): Promise<ParticipantList> {
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants`);
@@ -25,11 +12,10 @@ export async function findParticipantsAsync(adminId: string): Promise<Participan
 }
 
 export async function saveParticipantAsync(adminId: string, participant: Participant): Promise<Participant> {
-
   let method: Method = 'post';
   let url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participant`);
   if (!isNewEntity(participant)) {
-    const {id} = participant;
+    const { id } = participant;
     url += `/${id}`;
     method = 'put';
   }
@@ -39,7 +25,7 @@ export async function saveParticipantAsync(adminId: string, participant: Partici
   const response = await axios.request<Participant>({
     url: url,
     method: method,
-    data: participantWithTrimmedStringFields
+    data: participantWithTrimmedStringFields,
   });
   return response.data;
 }
@@ -71,24 +57,23 @@ export async function findTeamPartnerWishInfoAsync(adminId: string, participant:
 }
 
 export async function findTeamPartnerWishInfoForListAsync(adminId: string, participants: Participant[]): Promise<TeamPartnerWishInfo[]> {
-  const participantIds = participants.map(p => p.id);
+  const participantIds = participants.map((p) => p.id);
   if (isArrayEmpty(participantIds)) {
     return [];
   }
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/team-partner-wish`);
   const response = await axios.put(url, {
     entityIds: participantIds,
-    adminId
+    adminId,
   });
   return response.data;
 }
 
-export async function findParticipantRegistrationsByAdminIdAsync(adminId: string, page: number) : Promise<ParticipantRegistrationInfoList>  {
+export async function findParticipantRegistrationsByAdminIdAsync(adminId: string, page: number): Promise<ParticipantRegistrationInfoList> {
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/registrations?page=${page}`);
   const response = await axios.get<ParticipantRegistrationInfoList>(url);
   return response.data;
 }
-
 
 export function getFullname(participant: ParticipantName): string {
   if (!participant || (!participant.firstnamePart && !participant.lastname)) {
@@ -101,17 +86,17 @@ export function getFullnameList(participants: Participant[]): string {
   if (!participants || participants.length === 0) {
     return '';
   }
-  const participantNames = participants.map(p => getFullname(p));
+  const participantNames = participants.map((p) => getFullname(p));
   return participantNames.join(', ');
 }
 
 export function filterParticipantsOrganizedInTeams<T extends Participant>(participants: T[]): T[] {
-  return participants.filter(p => isStringNotEmpty(p.teamId));
+  return participants.filter((p) => isStringNotEmpty(p.teamId));
 }
 
 export function searchParticipants<T extends Participant>(participants: T[], searchText: string): T[] {
   const searchTextLowerCase = lowerCase(searchText);
-  return filter(participants, function(p) {
+  return filter(participants, function (p) {
     let content = getFullname(p);
     const { email, street, zip, mobileNumber } = p;
     content += ` ${email} ${street} ${mobileNumber} ${zip}`;
@@ -168,22 +153,22 @@ async function enhanceParticipantsWithTeamPartnerRegistrationData(adminId: strin
       if (!rootParticipant) {
         continue;
       }
-      participant.rootTeamPartnerWish   = {
-        ...rootParticipant
+      participant.rootTeamPartnerWish = {
+        ...rootParticipant,
       };
     } else {
-      const childParticipant = filter(allParticipants, p => p.id !== participant.teamPartnerWishOriginatorId && p.teamPartnerWishOriginatorId === participant.id);
+      const childParticipant = filter(allParticipants, (p) => p.id !== participant.teamPartnerWishOriginatorId && p.teamPartnerWishOriginatorId === participant.id);
       if (!childParticipant || childParticipant.length !== 1) {
         continue;
       }
       participant.childTeamPartnerWish = {
-        ...childParticipant[0]
+        ...childParticipant[0],
       };
     }
   }
 
-  const participantsWithTeamPartnerWishEmail = filter(participants, p => isStringNotEmpty(p.teamPartnerWishEmail));
-  const teamPartnerWishInfos = await findTeamPartnerWishInfoForListAsync(adminId, participantsWithTeamPartnerWishEmail) || [];
+  const participantsWithTeamPartnerWishEmail = filter(participants, (p) => isStringNotEmpty(p.teamPartnerWishEmail));
+  const teamPartnerWishInfos = (await findTeamPartnerWishInfoForListAsync(adminId, participantsWithTeamPartnerWishEmail)) || [];
   for (let i = 0; i < teamPartnerWishInfos.length; i++) {
     const teamPartnerWishInfo = teamPartnerWishInfos[i];
     if (teamPartnerWishInfo.subscribedParticipant) {
@@ -192,7 +177,6 @@ async function enhanceParticipantsWithTeamPartnerRegistrationData(adminId: strin
     }
   }
 }
-
 
 export async function swapParticipantNumbersAsync(adminId: string, firstParticipantId: string, secondParticipantId: string): Promise<void> {
   const url = BackendConfig.buildUrl(`/participantservice/v1/runningdinner/${adminId}/participants/swap/${firstParticipantId}/${secondParticipantId}`);

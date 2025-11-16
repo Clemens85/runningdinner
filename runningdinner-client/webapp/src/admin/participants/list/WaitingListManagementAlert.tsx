@@ -1,6 +1,6 @@
-import { Box, }from "@mui/material";
+import { Box } from '@mui/material';
 import { Alert } from '@mui/material';
-import {useTranslation} from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import { PrimaryButton } from '../../../common/theme/PrimaryButton';
 import { BaseRunningDinnerProps, useDisclosure, useFindParticipants } from '@runningdinner/shared';
 import { WaitingListManagementDialog } from './WaitingListManagementDialog';
@@ -10,12 +10,11 @@ type WaitingListManagementAlertProps = {
 } & BaseRunningDinnerProps;
 
 export function WaitingListManagementAlert(props: WaitingListManagementAlertProps) {
+  const { t } = useTranslation('admin');
 
-  const {t} = useTranslation('admin');
+  const { isOpen, close, open } = useDisclosure();
 
-  const {isOpen, close, open} = useDisclosure();
-
-  const {refetch: refetchParticipantList} = useFindParticipants(props.runningDinner.adminId);
+  const { refetch: refetchParticipantList } = useFindParticipants(props.runningDinner.adminId);
 
   function handleClose() {
     close();
@@ -26,13 +25,15 @@ export function WaitingListManagementAlert(props: WaitingListManagementAlertProp
 
   return (
     <>
-      <Alert severity={"success"} variant="outlined">
+      <Alert severity={'success'} variant="outlined">
         {t(participantsWaitingListAlertMessage)}
         <Box mt={2}>
-          <PrimaryButton onClick={open} data-testid={"open-waitinglist-view-action"}>{t('admin:waitinglist_management')}</PrimaryButton>
+          <PrimaryButton onClick={open} data-testid={'open-waitinglist-view-action'}>
+            {t('admin:waitinglist_management')}
+          </PrimaryButton>
         </Box>
       </Alert>
-      { isOpen && <WaitingListManagementDialog {... props} onClose={handleClose}/> }
+      {isOpen && <WaitingListManagementDialog {...props} onClose={handleClose} />}
     </>
   );
 }

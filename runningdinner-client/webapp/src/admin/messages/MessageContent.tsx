@@ -1,8 +1,8 @@
-import React, {useRef} from 'react'
-import Box from "@mui/material/Box";
-import MessageTemplates from "./MessageTemplates";
-import { Controller, useFormContext } from "react-hook-form";
-import TextField from "@mui/material/TextField";
+import React, { useRef } from 'react';
+import Box from '@mui/material/Box';
+import MessageTemplates from './MessageTemplates';
+import { Controller, useFormContext } from 'react-hook-form';
+import TextField from '@mui/material/TextField';
 
 export interface MessageContentProps {
   templates?: string[];
@@ -14,14 +14,16 @@ export interface MessageContentProps {
   helperText?: string;
 }
 
-export default function MessageContent({templates, onMessageContentChange, name, label, rows, helperText, showTemplatesHelpIcon}: MessageContentProps) {
-
-  const { setValue, control, formState: {errors} } = useFormContext();
+export default function MessageContent({ templates, onMessageContentChange, name, label, rows, helperText, showTemplatesHelpIcon }: MessageContentProps) {
+  const {
+    setValue,
+    control,
+    formState: { errors },
+  } = useFormContext();
 
   const contentRef = useRef();
 
   function handleTemplateClick(template: string) {
-
     const inputField = getInputField();
     if (!inputField) {
       return;
@@ -65,7 +67,7 @@ export default function MessageContent({templates, onMessageContentChange, name,
     if (!inputField) {
       return -1;
     }
-    return /*inputField === document.activeElement && */inputField.selectionStart !== null ? inputField.selectionStart : -1;
+    return /*inputField === document.activeElement && */ inputField.selectionStart !== null ? inputField.selectionStart : -1;
   };
 
   const getInputField = (): HTMLInputElement | undefined => {
@@ -76,37 +78,38 @@ export default function MessageContent({templates, onMessageContentChange, name,
     return undefined;
   };
 
-
   const hasErrors = !!errors[name];
   const helperTextToDisplay = (hasErrors ? errors[name]?.message : helperText) as string;
 
   return (
-      <Box mt={3}>
+    <Box mt={3}>
+      <MessageTemplates templates={templates} onTemplateClick={handleTemplateClick} showTemplatesHelpIcon={showTemplatesHelpIcon} />
 
-        <MessageTemplates templates={templates}
-                          onTemplateClick={handleTemplateClick}
-                          showTemplatesHelpIcon={showTemplatesHelpIcon} />
-
-        <Controller control={control}
-                    name={name}
-                    render={({field: {onChange, value}}) => (
-                      <TextField inputRef={(ref) => { contentRef.current = ref; }}
-                                 fullWidth
-                                 onChange={changeEvt => { 
-                                    onChange(changeEvt);
-                                    handleMessageContentChange(changeEvt);
-                                 }}
-                                 value={value}
-                                 required
-                                 variant="outlined"
-                                 helperText={helperTextToDisplay}
-                                 error={hasErrors}
-                                 multiline
-                                 rows={rows}
-                                 name={name}
-                                 label={label} />
-                      )} />
-      </Box>
+      <Controller
+        control={control}
+        name={name}
+        render={({ field: { onChange, value } }) => (
+          <TextField
+            inputRef={(ref) => {
+              contentRef.current = ref;
+            }}
+            fullWidth
+            onChange={(changeEvt) => {
+              onChange(changeEvt);
+              handleMessageContentChange(changeEvt);
+            }}
+            value={value}
+            required
+            variant="outlined"
+            helperText={helperTextToDisplay}
+            error={hasErrors}
+            multiline
+            rows={rows}
+            name={name}
+            label={label}
+          />
+        )}
+      />
+    </Box>
   );
-
 }

@@ -4,11 +4,10 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useTranslation } from 'react-i18next';
 
 export function HelpButton() {
-
   const { dispatch } = useDinnerRouteOverviewContext();
   const { t } = useTranslation('common');
 
-  const label = t("common:help")
+  const label = t('common:help');
 
   const openHelpDialog = () => {
     dispatch({

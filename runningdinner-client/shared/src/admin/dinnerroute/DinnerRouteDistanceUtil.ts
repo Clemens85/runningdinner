@@ -1,5 +1,4 @@
 export class DinnerRouteDistanceUtil {
-
   public static getDistancePretty(distanceInMeters: number): number {
     if (DinnerRouteDistanceUtil.isDistanceLessOneKilometer(distanceInMeters)) {
       return Math.round(distanceInMeters);
@@ -19,5 +18,4 @@ export class DinnerRouteDistanceUtil {
   private static isDistanceLessOneKilometer(distanceInMeters: number): boolean {
     return distanceInMeters < 1000;
   }
-
 }

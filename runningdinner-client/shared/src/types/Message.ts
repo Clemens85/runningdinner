@@ -1,30 +1,30 @@
-import {FuzzyBoolean, RunningDinnerRelated} from "./Base";
-import { Participant } from "./Participant";
-import { Team } from "./Team";
+import { FuzzyBoolean, RunningDinnerRelated } from './Base';
+import { Participant } from './Participant';
+import { Team } from './Team';
 
 export enum MessageType {
-  MESSAGE_TYPE_PARTICIPANTS = "PARTICIPANT",
-  MESSAGE_TYPE_TEAMS = "TEAM",
-  MESSAGE_TYPE_DINNERROUTE = "DINNER_ROUTE"
+  MESSAGE_TYPE_PARTICIPANTS = 'PARTICIPANT',
+  MESSAGE_TYPE_TEAMS = 'TEAM',
+  MESSAGE_TYPE_DINNERROUTE = 'DINNER_ROUTE',
 }
 
 export enum MessageSubType {
-  TEAM_SINGLE = "TEAM_SINGLE",
-  TEAM_CANCELLATION = "TEAM_CANCELLATION",
-  DEFAULT = "DEFAULT",
-  RECIPIENTS_ALL = "RECIPIENTS_ALL",
-  TEAMS_MODIFIED_WAITINGLIST = "TEAMS_MODIFIED_WAITINGLIST"
+  TEAM_SINGLE = 'TEAM_SINGLE',
+  TEAM_CANCELLATION = 'TEAM_CANCELLATION',
+  DEFAULT = 'DEFAULT',
+  RECIPIENTS_ALL = 'RECIPIENTS_ALL',
+  TEAMS_MODIFIED_WAITINGLIST = 'TEAMS_MODIFIED_WAITINGLIST',
 }
 
 export enum MessageParticipantsType {
-  ALL = "ALL",
-  DEFAULT = "DEFAULT"
+  ALL = 'ALL',
+  DEFAULT = 'DEFAULT',
 }
 
 export enum SendingStatus {
-  QUEUED = "QUEUED",
-  SENDING_STARTED = "SENDING_STARTED",
-  SENDING_FINISHED = "SENDING_FINISHED"
+  QUEUED = 'QUEUED',
+  SENDING_STARTED = 'SENDING_STARTED',
+  SENDING_FINISHED = 'SENDING_FINISHED',
 }
 
 export interface Sendable extends RunningDinnerRelated {
@@ -38,7 +38,7 @@ export interface MessageJob extends Sendable {
 }
 
 export interface MessageTask extends Sendable {
-  parentJobId: string
+  parentJobId: string;
   recipientEmail: string;
   sendingStartTime: Date;
   sendingEndTime: Date;
@@ -77,15 +77,15 @@ export interface PreviewMessageList {
 }
 
 export enum TeamSelection {
-  ALL = "ALL",
-  CUSTOM_SELECTION = "CUSTOM_SELECTION"
+  ALL = 'ALL',
+  CUSTOM_SELECTION = 'CUSTOM_SELECTION',
 }
 
 export enum ParticipantSelection {
-  ALL = "ALL",
-  CUSTOM_SELECTION = "CUSTOM_SELECTION",
-  ASSIGNED_TO_TEAM = "ASSIGNED_TO_TEAM",
-  NOT_ASSIGNED_TO_TEAM = "NOT_ASSIGNED_TO_TEAM"
+  ALL = 'ALL',
+  CUSTOM_SELECTION = 'CUSTOM_SELECTION',
+  ASSIGNED_TO_TEAM = 'ASSIGNED_TO_TEAM',
+  NOT_ASSIGNED_TO_TEAM = 'NOT_ASSIGNED_TO_TEAM',
 }
 
 export interface BaseMessage {

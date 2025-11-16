@@ -1,11 +1,11 @@
-import { getAsHttpErrorOrDefault } from "..";
-import { newHttpError, HttpError } from "../types";
+import { getAsHttpErrorOrDefault } from '..';
+import { newHttpError, HttpError } from '../types';
 
 export enum FetchStatus {
-  IDLE = "IDLE",
-  LOADING = "LOADING",
-  SUCCEEDED = "SUCCEEDED",
-  FAILED = "FAILED"
+  IDLE = 'IDLE',
+  LOADING = 'LOADING',
+  SUCCEEDED = 'SUCCEEDED',
+  FAILED = 'FAILED',
 }
 
 export interface FetchData<T> {
@@ -30,12 +30,12 @@ export function handleFetchRejected<T>(fetchData: FetchData<T>, action?: any) {
   fetchData.fetchError = mapFetchErrorState(FetchStatus.FAILED, action);
 }
 
-export const GENERIC_HTTP_ERROR: HttpError = newHttpError(500);  // Will trigger a generic error message (-> useNotificationHttpError)
+export const GENERIC_HTTP_ERROR: HttpError = newHttpError(500); // Will trigger a generic error message (-> useNotificationHttpError)
 
 function mapFetchErrorState(fetchStatus: FetchStatus, action?: any): HttpError | undefined {
   let result = undefined;
   if (fetchStatus === FetchStatus.FAILED) {
-    result = getAsHttpErrorOrDefault(action?.payload, GENERIC_HTTP_ERROR)
+    result = getAsHttpErrorOrDefault(action?.payload, GENERIC_HTTP_ERROR);
     // @ts-ignore
     console.log(`Fetch error: ${JSON.stringify(action)}`);
   }
@@ -44,4 +44,4 @@ function mapFetchErrorState(fetchStatus: FetchStatus, action?: any): HttpError |
 
 export const INITIAL_FETCH_DATA = {
   fetchStatus: FetchStatus.IDLE,
-}
+};

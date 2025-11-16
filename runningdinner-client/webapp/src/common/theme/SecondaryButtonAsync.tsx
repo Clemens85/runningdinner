@@ -1,10 +1,7 @@
-import {Button, ButtonProps} from "@mui/material";
-import { useAsyncCallback } from "@runningdinner/shared";
+import { Button, ButtonProps } from '@mui/material';
+import { useAsyncCallback } from '@runningdinner/shared';
 
-
-
-export const SecondaryButtonAsync = ({onClick, size, disabled, children, ...remainder}: ButtonProps) => {
-
+export const SecondaryButtonAsync = ({ onClick, size, disabled, children, ...remainder }: ButtonProps) => {
   let asyncClickHandler = onClick;
   if (!asyncClickHandler) {
     asyncClickHandler = () => {}; // Noop
@@ -16,8 +13,8 @@ export const SecondaryButtonAsync = ({onClick, size, disabled, children, ...rema
   const initialDisabled = !!disabled;
 
   return (
-      <Button disabled={initialDisabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={sizeToUse} {...remainder}>
-        { children }
-      </Button>
+    <Button disabled={initialDisabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={sizeToUse} {...remainder}>
+      {children}
+    </Button>
   );
 };

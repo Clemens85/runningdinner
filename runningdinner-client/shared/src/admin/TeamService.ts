@@ -1,9 +1,9 @@
-import { BackendConfig } from "../BackendConfig";
-import axios from "axios";
-import {cloneDeep} from 'lodash-es';
-import {isSameEntity} from "../Utils";
-import { Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo} from "../types";
-import {getFullname} from "./ParticipantService";
+import { BackendConfig } from '../BackendConfig';
+import axios from 'axios';
+import { cloneDeep } from 'lodash-es';
+import { isSameEntity } from '../Utils';
+import { Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo } from '../types';
+import { getFullname } from './ParticipantService';
 
 export async function findTeamsAsync(adminId: string): Promise<Array<Team>> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}?filterCancelledTeams=false`);
@@ -41,7 +41,7 @@ export async function swapTeamMembersAsync(adminId: string, firstParticipantId: 
   return response.data;
 }
 
-export async function swapMealsAsync(adminId: string, firstTeamId: string, secondTeamId: string): Promise<TeamArrangementList>  {
+export async function swapMealsAsync(adminId: string, firstTeamId: string, secondTeamId: string): Promise<TeamArrangementList> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/meals/swap/${firstTeamId}/${secondTeamId}`);
   const response = await axios.put(url);
   return response.data;
@@ -52,7 +52,7 @@ export async function updateTeamHostAsync(adminId: string, team: Team, newHostin
   teamToUpdate.hostTeamMember = newHostingTeamMember;
   const requestData = {
     teams: [teamToUpdate],
-    dinnerAdminId: adminId
+    dinnerAdminId: adminId,
   };
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/teamhosts`);
   const response = await axios.put(url, requestData);
@@ -75,7 +75,7 @@ export async function cancelTeamMemberAsync(adminId: string, teamId: string, tea
 export function getTeamMemberCancelInfo(team: Team, teamMemberToCancel: Participant): TeamMemberCancelInfo {
   const result = {
     cancelWholeTeam: false,
-    remainingTeamMemberNames: new Array<string>()
+    remainingTeamMemberNames: new Array<string>(),
   };
 
   const { teamMembers } = team;
@@ -109,7 +109,7 @@ export function generateCancelledTeamMembersAsNumberArray(team: Team, teamSize: 
 }
 
 export function hasEnoughSeats(team: Team, numSeatsNeededForHost: number) {
-  const {teamMembers} = team;
+  const { teamMembers } = team;
   for (let j = 0; j < teamMembers.length; j++) {
     if (teamMembers[j].numSeats && teamMembers[j].numSeats >= numSeatsNeededForHost) {
       return true;
@@ -127,15 +127,14 @@ export async function cancelTeamAsync(adminId: string, team: Team, replacementPa
 }
 
 async function _performTeamCancellationAsync(adminId: string, team: Team, replacementParticipants: Participant[], dryRun: boolean): Promise<TeamCancellationResult> {
-
-  const replacementParticipantIds = replacementParticipants.map(rp => rp.id);
+  const replacementParticipantIds = replacementParticipants.map((rp) => rp.id);
   const replaceTeam = replacementParticipantIds.length > 0;
 
   const teamCancellationData = {
     teamId: team.id,
     replacementParticipantIds: replacementParticipantIds,
     replaceTeam: replaceTeam,
-    dryRun: dryRun
+    dryRun: dryRun,
   };
 
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/team/${team.id}/cancel`);
@@ -146,4 +145,3 @@ async function _performTeamCancellationAsync(adminId: string, team: Team, replac
 export function isTeam(entity: any): entity is Team {
   return entity && entity.teamNumber;
 }
-

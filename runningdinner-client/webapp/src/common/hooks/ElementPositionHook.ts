@@ -1,4 +1,4 @@
-import {RefObject, useLayoutEffect, useState} from "react";
+import { RefObject, useLayoutEffect, useState } from 'react';
 
 // See https://github.com/tranbathanhtung/usePosition
 
@@ -8,7 +8,7 @@ function getStyle(el: Element, styleName: any) {
 
 function getOffset(el: any) {
   if (!el) {
-    return {top: 0, left: 0}
+    return { top: 0, left: 0 };
   }
   const rect = el.getBoundingClientRect();
   const doc = el.ownerDocument;
@@ -16,12 +16,8 @@ function getOffset(el: any) {
   // @ts-ignore
   const win = doc.defaultView || doc.parentWindow;
 
-  const winX = (win.pageXOffset !== undefined)
-      ? win.pageXOffset
-      : (doc.documentElement || doc.body.parentNode || doc.body).scrollLeft;
-  const winY = (win.pageYOffset !== undefined)
-      ? win.pageYOffset
-      : (doc.documentElement || doc.body.parentNode || doc.body).scrollTop;
+  const winX = win.pageXOffset !== undefined ? win.pageXOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollLeft;
+  const winY = win.pageYOffset !== undefined ? win.pageYOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollTop;
 
   return {
     top: rect.top + winX,
@@ -31,10 +27,10 @@ function getOffset(el: any) {
 
 function getPosition(el: HTMLElement | null) {
   if (!el) {
-    return {top: 0, left: 0 };
+    return { top: 0, left: 0 };
   }
   let offset = getOffset(el);
-  let parentOffset = {top: 0, left: 0 };
+  let parentOffset = { top: 0, left: 0 };
   const marginTop = parseInt(getStyle(el, 'marginTop')) || 0;
   const marginLeft = parseInt(getStyle(el, 'marginLeft')) || 0;
 
@@ -65,14 +61,14 @@ function getPosition(el: HTMLElement | null) {
 
 export function useElementPosition(ref: RefObject<HTMLElement>) {
   let { top, left } = getPosition(ref.current);
-  let [ElementPosition, setElementPosition ] = useState({
+  let [ElementPosition, setElementPosition] = useState({
     top: top,
     left: left,
   });
 
   function handleChangePosition() {
     if (ref && ref.current) {
-      setElementPosition(getPosition(ref.current))
+      setElementPosition(getPosition(ref.current));
     }
   }
 
@@ -82,9 +78,9 @@ export function useElementPosition(ref: RefObject<HTMLElement>) {
 
     return () => {
       window.removeEventListener('resize', handleChangePosition);
-    }
+    };
     // eslint-disable-next-line
-  }, [ref])
+  }, [ref]);
 
   return ElementPosition;
 }

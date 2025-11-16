@@ -1,17 +1,17 @@
-import { isAfterInDays } from "../../date";
-import { findParticipantRegistrationsByAdminIdAsync, findParticipantsAsync } from "../ParticipantService";
-import { isClosedDinner } from "../RunningDinnerService";
-import {ParticipantList, ParticipantRegistrationInfo, RunningDinner} from "../../types";
-import { useQuery } from "@tanstack/react-query";
-import { assertDefined, isQuerySucceeded } from "../..";
+import { isAfterInDays } from '../../date';
+import { findParticipantRegistrationsByAdminIdAsync, findParticipantsAsync } from '../ParticipantService';
+import { isClosedDinner } from '../RunningDinnerService';
+import { ParticipantList, ParticipantRegistrationInfo, RunningDinner } from '../../types';
+import { useQuery } from '@tanstack/react-query';
+import { assertDefined, isQuerySucceeded } from '../..';
 
 export interface TeamsNotExistingInfo {
-  numParticipants: number,
-  numAssignableParticipants: number,
-  numNotAssignableParticipants: number,
-  registrationStillRunning: boolean,
-  numExpectedTeams: number,
-  endOfRegistrationDate?: Date,
+  numParticipants: number;
+  numAssignableParticipants: number;
+  numNotAssignableParticipants: number;
+  registrationStillRunning: boolean;
+  numExpectedTeams: number;
+  endOfRegistrationDate?: Date;
   warnTeamsCanBeCreatedButRegistrationStillRunning?: boolean;
   infoTeamCreationNotPossibleAndRegistrationStillRunning?: boolean;
   notActivatedParticipants?: ParticipantRegistrationInfo[];
@@ -22,36 +22,36 @@ async function findParticipantsAndRegistrationsAsync(adminId: string) {
   const findParticipantRegistrationsResponse = findParticipantRegistrationsByAdminIdAsync(adminId, 0);
   const participantList = await findParticipantsResponse;
   const participantRegistrationInfoList = await findParticipantRegistrationsResponse;
-  const notActivatedParticipants = participantRegistrationInfoList.registrations.filter(r => !r.activationDate);
+  const notActivatedParticipants = participantRegistrationInfoList.registrations.filter((r) => !r.activationDate);
   return {
     activatedParticipantList: participantList,
-    notActivatedParticipants
+    notActivatedParticipants,
   };
-} 
+}
 
 export function useTeamsNotExisting(runningDinner: RunningDinner) {
-
   const { adminId } = runningDinner;
 
   const findParticipantsAndRegistrationsQuery = useQuery({
-    queryKey: ["findParticipantsAndRegistrations", adminId],
-    queryFn: () => findParticipantsAndRegistrationsAsync(adminId)
-  })
+    queryKey: ['findParticipantsAndRegistrations', adminId],
+    queryFn: () => findParticipantsAndRegistrationsAsync(adminId),
+  });
 
   let teamsNotExistingInfo: TeamsNotExistingInfo | null = null;
   if (isQuerySucceeded(findParticipantsAndRegistrationsQuery)) {
     assertDefined(findParticipantsAndRegistrationsQuery.data);
-    teamsNotExistingInfo = calculateTeamsNotExistingInfo(findParticipantsAndRegistrationsQuery.data.activatedParticipantList, 
-                                                         findParticipantsAndRegistrationsQuery.data.notActivatedParticipants);
+    teamsNotExistingInfo = calculateTeamsNotExistingInfo(
+      findParticipantsAndRegistrationsQuery.data.activatedParticipantList,
+      findParticipantsAndRegistrationsQuery.data.notActivatedParticipants,
+    );
   }
 
   function calculateTeamsNotExistingInfo(participantList: ParticipantList, notActivatedParticipants: ParticipantRegistrationInfo[]): TeamsNotExistingInfo {
-
     let numAssignableParticipants;
     let numNotAssignableParticipants;
 
-    const {numParticipantsTotal} = participantList;
-    const {missingParticipantsInfo} = participantList;
+    const { numParticipantsTotal } = participantList;
+    const { missingParticipantsInfo } = participantList;
 
     if (missingParticipantsInfo.numParticipantsMissing > 0) {
       numNotAssignableParticipants = numParticipantsTotal;
@@ -66,7 +66,7 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
       numAssignableParticipants,
       numNotAssignableParticipants,
       registrationStillRunning: false,
-      numExpectedTeams: numAssignableParticipants / runningDinner.options.teamSize
+      numExpectedTeams: numAssignableParticipants / runningDinner.options.teamSize,
     };
 
     if (!isClosedDinner(runningDinner) && runningDinner.publicSettings.endOfRegistrationDate) {
@@ -86,8 +86,8 @@ export function useTeamsNotExisting(runningDinner: RunningDinner) {
   }
 
   return {
-    teamsNotExistingInfo, 
-    loading: findParticipantsAndRegistrationsQuery.isFetching, 
-    error: findParticipantsAndRegistrationsQuery.error
+    teamsNotExistingInfo,
+    loading: findParticipantsAndRegistrationsQuery.isFetching,
+    error: findParticipantsAndRegistrationsQuery.error,
   };
 }

@@ -188,7 +188,7 @@ export class DinnerRouteMapCalculator {
       afterPartyLocationMapEntry: this.afterPartyLocationMapEntry,
       centerPosition: centerPosition || { lat: 0, lng: 0 },
       teamsWithUnresolvedGeocodings,
-      numberOfClusters: this.numberOfClusters
+      numberOfClusters: this.numberOfClusters,
     };
   }
 

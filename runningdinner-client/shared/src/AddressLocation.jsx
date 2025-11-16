@@ -1,22 +1,20 @@
-import React from "react";
+import React from 'react';
 
 function AddressLocation(props) {
-
   const location = props.zip + ' ' + props.cityName;
 
   if (props.street && props.street.length > 0) {
     return (
-        <>
-        {location}<br/>
-        <span>{props.street} {props.streetNr}</span>
-        </>
+      <>
+        {location}
+        <br />
+        <span>
+          {props.street} {props.streetNr}
+        </span>
+      </>
     );
   }
-  return (
-      <>{location}</>
-  );
+  return <>{location}</>;
 }
 
-export {
-  AddressLocation
-};
+export { AddressLocation };

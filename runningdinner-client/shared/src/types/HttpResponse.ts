@@ -1,4 +1,4 @@
-import { BackendIssue, isArrayNotEmpty } from "..";
+import { BackendIssue, isArrayNotEmpty } from '..';
 
 /**
  * In order to avoid hard dependencies to a http fetch library (like e.g. axios) we encapsulate an HTTP error in an own interface.
@@ -26,8 +26,8 @@ export function newHttpError(status: number, issues?: BackendIssue[]): HttpError
   const result = {
     response: {
       status,
-      data: { }
-    }
+      data: {},
+    },
   };
 
   if (isArrayNotEmpty(issues)) {

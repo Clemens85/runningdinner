@@ -1,5 +1,5 @@
 /// <reference types="vitest/config" />
-import {defineConfig} from "vite";
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   test: {
@@ -7,6 +7,6 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./setupTests.js'],
     reporters: ['junit', 'default'],
-    outputFile: '../reports/shared-tests.xml'
+    outputFile: '../reports/shared-tests.xml',
   },
-})
+});

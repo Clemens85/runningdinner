@@ -1,11 +1,10 @@
-import { getFullname } from "../ParticipantService";
-import { isTeam } from "../TeamService";
-import {useTeamNameMembers} from "../teams/TeamNameMembersHook";
-import {Participant, Recipient, Team} from "../../types";
+import { getFullname } from '../ParticipantService';
+import { isTeam } from '../TeamService';
+import { useTeamNameMembers } from '../teams/TeamNameMembersHook';
+import { Participant, Recipient, Team } from '../../types';
 
 export function useRecipientName(recipient?: Recipient) {
-
-  const {getTeamNameMembers} = useTeamNameMembers();
+  const { getTeamNameMembers } = useTeamNameMembers();
 
   function getRecipientName(recipient: Participant | Team): string {
     if (isTeam(recipient)) {
@@ -18,4 +17,3 @@ export function useRecipientName(recipient?: Recipient) {
 
   return { recipientName, getRecipientName };
 }
-

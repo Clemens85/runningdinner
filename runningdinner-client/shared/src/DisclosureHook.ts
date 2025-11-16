@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export interface Disclosure<T> {
   /** Should be used to control the open/closed state of controls (This state is modifed by using the provided open/close methods **/
@@ -42,10 +42,7 @@ export interface Disclosure<T> {
  * @param initialOpenStatus Typically not set (and/or false) because a component is typically not initially open, but can be set to true if you want to initially opan a component
  * @param initialData Optional data that can be passd alongside when a component is opened. This can e.g. be usefull when you want to display some content in a dialog when it is opened.
  */
-export function useDisclosure<T>(
-    initialOpenStatus = false,
-    initialData: T | undefined = undefined
-): Disclosure<T> {
+export function useDisclosure<T>(initialOpenStatus = false, initialData: T | undefined = undefined): Disclosure<T> {
   const [internalState, setInternalState] = React.useState({
     isOpen: initialOpenStatus || false,
     data: initialData,
@@ -69,9 +66,7 @@ export function useDisclosure<T>(
 
   function getIsOpenData(): T {
     if (internalState.data === undefined) {
-      throw new Error(
-          "Data can only be accessed if it was provided during open call"
-      );
+      throw new Error('Data can only be accessed if it was provided during open call');
     }
     return internalState.data;
   }
@@ -83,5 +78,3 @@ export function useDisclosure<T>(
     getIsOpenData,
   };
 }
-
-

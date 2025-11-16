@@ -1,15 +1,9 @@
-import React from 'react'
-import {TableContainer, Paper, Table, TableBody, Box, Grid} from "@mui/material";
-import ParticipantRow, {ParticipantClickCallback} from "./ParticipantRow";
-import {
-  getRunningDinnerMandatorySelector, isArrayNotEmpty,
-  isSameEntity,
-  ParticipantList,
-  ParticipantListable,
-  useAdminSelector,
-} from "@runningdinner/shared";
-import {WaitingListManagementAlert} from './WaitingListManagementAlert';
-import {ParticipantSearchResult} from "./ParticipantsListHeader";
+import React from 'react';
+import { TableContainer, Paper, Table, TableBody, Box, Grid } from '@mui/material';
+import ParticipantRow, { ParticipantClickCallback } from './ParticipantRow';
+import { getRunningDinnerMandatorySelector, isArrayNotEmpty, isSameEntity, ParticipantList, ParticipantListable, useAdminSelector } from '@runningdinner/shared';
+import { WaitingListManagementAlert } from './WaitingListManagementAlert';
+import { ParticipantSearchResult } from './ParticipantsListHeader';
 
 export type ParticipantsListProps = {
   participantsListInfo: React.ReactNode;
@@ -19,21 +13,31 @@ export type ParticipantsListProps = {
   showMiscNotes: boolean;
 } & ParticipantClickCallback;
 
-export default function ParticipantsListView({participantList, selectedParticipant, participantsListInfo, participantSearchResult, onClick, showMiscNotes}: ParticipantsListProps) {
-
+export default function ParticipantsListView({
+  participantList,
+  selectedParticipant,
+  participantsListInfo,
+  participantSearchResult,
+  onClick,
+  showMiscNotes,
+}: ParticipantsListProps) {
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
   const { sessionData } = runningDinner;
 
   function buildParticipantRows(_participants: ParticipantListable[]) {
-    return _participants.map((participant) =>
-      <ParticipantRow key={participant.id} participant={participant} onClick={onClick}
-                      selected={isSameEntity(selectedParticipant, participant)}
-                      showMiscNotes={showMiscNotes}
-                      runningDinnerSessionData={sessionData} />
-    );
+    return _participants.map((participant) => (
+      <ParticipantRow
+        key={participant.id}
+        participant={participant}
+        onClick={onClick}
+        selected={isSameEntity(selectedParticipant, participant)}
+        showMiscNotes={showMiscNotes}
+        runningDinnerSessionData={sessionData}
+      />
+    ));
   }
 
-  const {hasSearchText, filteredParticipants} = participantSearchResult;
+  const { hasSearchText, filteredParticipants } = participantSearchResult;
 
   let participantsRows;
   let participantsWaitinglistRows;
@@ -48,32 +52,29 @@ export default function ParticipantsListView({participantList, selectedParticipa
   const showParticipantsOnWaitingListInOwnSection = !hasSearchText && isArrayNotEmpty(participantsWaitinglistRows);
 
   return (
-      <Grid container>
-        <Grid item xs={12} sx={{mb: 2}}>
+    <Grid container>
+      <Grid item xs={12} sx={{ mb: 2 }}>
+        {participantsListInfo}
 
-          {participantsListInfo}
+        <TableContainer component={Paper}>
+          <Table size={'small'}>
+            <TableBody>{participantsRows}</TableBody>
+          </Table>
+        </TableContainer>
 
-          <TableContainer component={Paper}>
-            <Table size={"small"}>
-              <TableBody>{participantsRows}</TableBody>
-            </Table>
-          </TableContainer>
-
-          {showParticipantsOnWaitingListInOwnSection &&
-            <Box mt={2} data-testid={"waitinglist-participants"}>
-              <Box mb={2}>
-                <WaitingListManagementAlert runningDinner={runningDinner} teamsGenerated={participantList.teamsGenerated}/>
-              </Box>
-              <TableContainer component={Paper}>
-                <Table size={"small"}>
-                  <TableBody>{participantsWaitinglistRows}</TableBody>
-                </Table>
-              </TableContainer>
+        {showParticipantsOnWaitingListInOwnSection && (
+          <Box mt={2} data-testid={'waitinglist-participants'}>
+            <Box mb={2}>
+              <WaitingListManagementAlert runningDinner={runningDinner} teamsGenerated={participantList.teamsGenerated} />
             </Box>
-          }
-
-        </Grid>
+            <TableContainer component={Paper}>
+              <Table size={'small'}>
+                <TableBody>{participantsWaitinglistRows}</TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        )}
       </Grid>
+    </Grid>
   );
-
 }

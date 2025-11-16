@@ -1,19 +1,16 @@
 import React from 'react';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import {useTranslation} from "react-i18next";
-import Paragraph from "../common/theme/typography/Paragraph";
+import { useTranslation } from 'react-i18next';
+import Paragraph from '../common/theme/typography/Paragraph';
 
 export function RegistrationPaymentProgressBackdrop() {
-
-  const {t} = useTranslation("landing");
+  const { t } = useTranslation('landing');
 
   return (
-    <Backdrop open={true}
-              sx={{ zIndex: (theme) => theme.zIndex.drawer + 1,
-                    color: '#ffffff' }}>
+    <Backdrop open={true} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, color: '#ffffff' }}>
       <CircularProgress color="inherit" />
-      <Paragraph>&nbsp; {t("landing:payment_processing")}</Paragraph>
+      <Paragraph>&nbsp; {t('landing:payment_processing')}</Paragraph>
     </Backdrop>
   );
 }

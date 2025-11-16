@@ -7,7 +7,7 @@ import { baseNodeConfig } from '../eslint.config.js';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  { ignores: ['dist', 'vitest.config.ts', 'vite.config.ts', '*.config.js', 'setupTests.js'] },
+  { ignores: ['dist', 'build', 'coverage', 'reports', 'vitest.config.ts', 'vite.config.ts', '*.config.js', 'setupTests.js'] },
   ...baseNodeConfig,
   {
     languageOptions: {

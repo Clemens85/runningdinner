@@ -1,13 +1,13 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { enhanceAdminActivitiesByDetailsAsync, findAdminActivitiesByAdminIdAsync } from "..";
-import { isDefined } from "../..";
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { enhanceAdminActivitiesByDetailsAsync, findAdminActivitiesByAdminIdAsync } from '..';
+import { isDefined } from '../..';
 
 export function useFindAdminActivitiesByAdminId(adminId: string) {
-  const result =  useQuery({
+  const result = useQuery({
     placeholderData: keepPreviousData,
     queryFn: () => findAdminActivitiesByAdminIdAsync(adminId),
     queryKey: ['findAdminActivitiesByAdminId', adminId],
-    refetchOnMount: 'always'
+    refetchOnMount: 'always',
   });
 
   useQuery({

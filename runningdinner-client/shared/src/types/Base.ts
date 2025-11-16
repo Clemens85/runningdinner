@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import {PublicRunningDinner, RunningDinner} from "./RunningDinner";
+import { ReactNode } from 'react';
+import { PublicRunningDinner, RunningDinner } from './RunningDinner';
 
 export interface BaseEntity {
   id?: string;
@@ -8,9 +8,9 @@ export interface BaseEntity {
 }
 
 export enum FuzzyBoolean {
-  TRUE = "TRUE",
-  FALSE = "FALSE",
-  UNKNOWN = "UNKNOWN"
+  TRUE = 'TRUE',
+  FALSE = 'FALSE',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export interface RunningDinnerRelated extends BaseEntity {
@@ -25,14 +25,14 @@ export interface LabelValue {
 }
 
 export enum GenderAspects {
-  FORCE_GENDER_MIX = "FORCE_GENDER_MIX",
-  FORCE_SAME_GENDER = "FORCE_SAME_GENDER",
-  IGNORE_GENDE0R = "IGNORE_GENDE0R"
+  FORCE_GENDER_MIX = 'FORCE_GENDER_MIX',
+  FORCE_SAME_GENDER = 'FORCE_SAME_GENDER',
+  IGNORE_GENDE0R = 'IGNORE_GENDE0R',
 }
 
 export enum RelatedEntityType {
-  MESSAGE_JOB = "MESSAGE_JOB",
-  PARTICIPANT = "PARTICIPANT"
+  MESSAGE_JOB = 'MESSAGE_JOB',
+  PARTICIPANT = 'PARTICIPANT',
 }
 
 export type CallbackHandler = (...args: any[]) => unknown;
@@ -92,7 +92,7 @@ export interface GeocodingResult {
 }
 
 export interface HasGeocoding {
-  geocodingResult?: GeocodingResult
+  geocodingResult?: GeocodingResult;
 }
 
 export interface KeyValue {

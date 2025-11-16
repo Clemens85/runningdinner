@@ -1,29 +1,28 @@
-import { isArrayEmpty, isStringEmpty } from "..";
+import { isArrayEmpty, isStringEmpty } from '..';
 
 export type ZipRestrictionsCalculationResult = {
   zipRestrictions: string[];
   invalidZips: string[];
-}
+};
 
 export function calculateResultingZipRestrictions(zipRestrictionsStr?: string): ZipRestrictionsCalculationResult {
-
   const result: ZipRestrictionsCalculationResult = {
     zipRestrictions: [],
-    invalidZips: [] 
+    invalidZips: [],
   };
 
   if (isStringEmpty(zipRestrictionsStr)) {
     return result;
   }
 
-  const zipEntries = zipRestrictionsStr!.split(",");
+  const zipEntries = zipRestrictionsStr!.split(',');
   for (const zipEntry of zipEntries) {
     const singleZipEntry = zipEntry.trim();
     if (isStringEmpty(singleZipEntry)) {
       continue;
     }
-    if (singleZipEntry.includes("-")) {
-      const [startZip, endZip] = singleZipEntry.split("-");
+    if (singleZipEntry.includes('-')) {
+      const [startZip, endZip] = singleZipEntry.split('-');
       if (isStringEmpty(startZip) || isStringEmpty(endZip)) {
         result.invalidZips.push(singleZipEntry);
         continue;

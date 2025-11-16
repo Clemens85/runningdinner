@@ -1,12 +1,5 @@
-import {
-  BaseAddress,
-  CONSTANTS,
-  CreateRunningDinnerWizardModel,
-  HasGeocoding,
-  minusDays, PaymentOptions,
-  plusHours
-} from "..";
-import { BaseEntity, GenderAspects, LabelValue } from "./Base";
+import { BaseAddress, CONSTANTS, CreateRunningDinnerWizardModel, HasGeocoding, minusDays, PaymentOptions, plusHours } from '..';
+import { BaseEntity, GenderAspects, LabelValue } from './Base';
 
 export const DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER = 5;
 
@@ -26,8 +19,8 @@ export interface Meal extends BaseEntity {
 }
 
 export enum RunningDinnerType {
-  DEMO = "DEMO",
-  STANDARD = "STANDARD"
+  DEMO = 'DEMO',
+  STANDARD = 'STANDARD',
 }
 
 export interface Contract {
@@ -97,7 +90,7 @@ export interface PublicRunningDinnerList {
   publicRunningDinners: PublicRunningDinner[];
 }
 
-export interface PublicRunningDinner extends Omit<RunningDinnerBasicDetails, "registrationType" | "title" | "languageCode"> {
+export interface PublicRunningDinner extends Omit<RunningDinnerBasicDetails, 'registrationType' | 'title' | 'languageCode'> {
   adminEmail: string;
   registrationDateExpired: boolean;
   runningDinnerType: RunningDinnerType;
@@ -112,12 +105,12 @@ export interface PublicRunningDinner extends Omit<RunningDinnerBasicDetails, "re
 
 export function newEmptyRunningDinnerBasicDetails(): RunningDinnerBasicDetails {
   return {
-    title: "",
-    city: "",
-    zip: "",
+    title: '',
+    city: '',
+    zip: '',
     date: new Date(),
     registrationType: CONSTANTS.REGISTRATION_TYPE.OPEN,
-    languageCode: "de"
+    languageCode: 'de',
   };
 }
 
@@ -132,9 +125,8 @@ export interface AfterPartyLocation extends AfterPartyLocationAddress, HasGeocod
 }
 
 export function newAfterPartyLocation(runningDinner?: CreateRunningDinnerWizardModel): AfterPartyLocation {
-
-  const zip = runningDinner?.basicDetails?.zip || "";
-  const cityName = runningDinner?.basicDetails?.city || "";
+  const zip = runningDinner?.basicDetails?.zip || '';
+  const cityName = runningDinner?.basicDetails?.city || '';
 
   let time = new Date();
   const meals = runningDinner?.options?.meals || [];
@@ -158,15 +150,15 @@ export function newAfterPartyLocation(runningDinner?: CreateRunningDinnerWizardM
 export function newEmptyRunningDinnerPublicSettings(runningDinnerDate?: Date): RunningDinnerPublicSettings {
   const endOfRegistrationDate = runningDinnerDate ? minusDays(runningDinnerDate, DEFAULT_END_OF_REGISTRATION_DATE_DAYS_BEFORE_DINNER) : undefined;
   return {
-    title: "",
-    description: "",
-    publicContactName: "",
-    publicContactEmail: "",
-    publicContactMobileNumber: "",
-    publicDinnerId: "",
-    publicDinnerUrl: "",
+    title: '',
+    description: '',
+    publicContactName: '',
+    publicContactEmail: '',
+    publicContactMobileNumber: '',
+    publicDinnerId: '',
+    publicDinnerUrl: '',
     endOfRegistrationDate,
-    registrationDeactivated: false
+    registrationDeactivated: false,
   };
 }
 
@@ -177,7 +169,7 @@ export interface RunningDinnerBasicDetailsFormModel extends RunningDinnerBasicDe
 export function newEmptyRunningDinnerBasicDetailsFormModel(): RunningDinnerBasicDetailsFormModel {
   return {
     ...newEmptyRunningDinnerBasicDetails(),
-    teamPartnerWishDisabled: false
+    teamPartnerWishDisabled: false,
   };
 }
 
@@ -187,6 +179,6 @@ export interface ReSendRunningDinnerCreatedMessageModel {
 
 export function newReSendRunningdinnerCreatedMessageModel(email: string): ReSendRunningDinnerCreatedMessageModel {
   return {
-    newEmailAddress: email
+    newEmailAddress: email,
   };
 }

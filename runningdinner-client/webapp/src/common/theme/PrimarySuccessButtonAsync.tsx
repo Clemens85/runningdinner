@@ -1,10 +1,9 @@
-import { useAsyncCallback } from "@runningdinner/shared";
-import {PrimaryButton} from "./PrimaryButton";
-import { ButtonProps } from "@mui/material";
+import { useAsyncCallback } from '@runningdinner/shared';
+import { PrimaryButton } from './PrimaryButton';
+import { ButtonProps } from '@mui/material';
 
 export const PrimarySuccessButtonAsync = (props: ButtonProps) => {
-
-  const {size, onClick, disabled, children, ...rest} = props;
+  const { size, onClick, disabled, children, ...rest } = props;
 
   let asyncClickHandler = onClick;
   if (!asyncClickHandler) {
@@ -17,8 +16,8 @@ export const PrimarySuccessButtonAsync = (props: ButtonProps) => {
   const incomingDisabled = !!disabled;
 
   return (
-      <PrimaryButton disabled={incomingDisabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={sizeToUse} {...rest}>
-        { children }
-      </PrimaryButton>
+    <PrimaryButton disabled={incomingDisabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={sizeToUse} {...rest}>
+      {children}
+    </PrimaryButton>
   );
 };

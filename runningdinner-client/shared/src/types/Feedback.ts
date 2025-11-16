@@ -10,7 +10,7 @@ export interface Feedback extends FeedbackData {
 
 export function newEmptyFeedbackInstance(): Feedback {
   return {
-    message: "",
-    senderEmail: ""
+    message: '',
+    senderEmail: '',
   };
 }

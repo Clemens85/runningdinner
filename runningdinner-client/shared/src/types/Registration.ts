@@ -1,28 +1,19 @@
-import {
-  newEmptyParticipantInstance,
-  TeamPartnerWishState,
-  MealSpecifics,
-  ParticipantFormModel,
-  Participant,
-  ParticipantName,
-  BackendIssue,
-  PaymentOptions
-} from ".";
-import { isStringNotEmpty, TeamPartnerWishRegistrationData } from "..";
+import { newEmptyParticipantInstance, TeamPartnerWishState, MealSpecifics, ParticipantFormModel, Participant, ParticipantName, BackendIssue, PaymentOptions } from '.';
+import { isStringNotEmpty, TeamPartnerWishRegistrationData } from '..';
 
 export interface RegistrationData extends ParticipantFormModel {
   dataProcessingAcknowledged: boolean;
   teamPartnerRegistrationDisabled?: boolean;
 }
 
-export interface RegistrationPaymentSummary extends Omit<PaymentOptions, "id"> {
+export interface RegistrationPaymentSummary extends Omit<PaymentOptions, 'id'> {
   teamPartnerRegistration: boolean;
   totalPriceFormatted: string;
 }
 
 export interface RegistrationSummary {
-  fullname: string,
-  gender: string,
+  fullname: string;
+  gender: string;
   mobile?: string;
   email: string;
   streetWithNr: string;
@@ -37,7 +28,7 @@ export interface RegistrationSummary {
   teamPartnerWishState: TeamPartnerWishState;
   teamPartnerWishRegistrationData?: TeamPartnerWishRegistrationData;
   notes?: string;
-  registrationPaymentSummary?: RegistrationPaymentSummary
+  registrationPaymentSummary?: RegistrationPaymentSummary;
 }
 
 export interface ParticipantActivationResult {
@@ -52,14 +43,13 @@ export interface RegistrationDataCollection {
 }
 
 export function isParticipantActivationSuccessful(activationResult?: ParticipantActivationResult): boolean {
-  return activationResult !== undefined && activationResult != null &&
-         activationResult.activatedParticipant !== undefined && activationResult.activatedParticipant != null;
+  return activationResult !== undefined && activationResult != null && activationResult.activatedParticipant !== undefined && activationResult.activatedParticipant != null;
 }
 
 export function newEmptyRegistrationDataInstance(invitingParticipantEmailAddress?: string, prefilledEmailAddress?: string): RegistrationData {
   const result: RegistrationData = {
     ...newEmptyParticipantInstance(),
-    dataProcessingAcknowledged: false
+    dataProcessingAcknowledged: false,
   };
   if (isStringNotEmpty(invitingParticipantEmailAddress)) {
     result.teamPartnerWishEmail = invitingParticipantEmailAddress;

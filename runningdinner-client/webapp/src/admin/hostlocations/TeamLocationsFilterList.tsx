@@ -104,27 +104,27 @@ export function TeamLocationsFilterList({ dinnerRouteMapEntries }: TeamLocations
 
   // TODO: Will not work any longer...
   // function handleScrollToTeam(scrollToTeamWithNumber: number) {
-    // if (!virtuosoRef.current) {
-    //   return;
-    // }
+  // if (!virtuosoRef.current) {
+  //   return;
+  // }
 
-    // let teamIndex = -1;
-    // for (let i = 0; i < dinnerRouteMapEntries.length; i++) {
-    //   const team = dinnerRouteMapEntries[i];
-    //   if (team.teamNumber === scrollToTeamWithNumber) {
-    //     teamIndex = i;
-    //     break;
-    //   }
-    // }
-    // if (teamIndex < 0) {
-    //   return;
-    // }
+  // let teamIndex = -1;
+  // for (let i = 0; i < dinnerRouteMapEntries.length; i++) {
+  //   const team = dinnerRouteMapEntries[i];
+  //   if (team.teamNumber === scrollToTeamWithNumber) {
+  //     teamIndex = i;
+  //     break;
+  //   }
+  // }
+  // if (teamIndex < 0) {
+  //   return;
+  // }
 
-    // virtuosoRef.current.scrollToIndex({
-    //   index: teamIndex,
-    //   behavior: 'smooth',
-    //   align: 'start',
-    // });
+  // virtuosoRef.current.scrollToIndex({
+  //   index: teamIndex,
+  //   behavior: 'smooth',
+  //   align: 'start',
+  // });
   // }
 
   // useEffect(() => {

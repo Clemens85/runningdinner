@@ -1,23 +1,13 @@
-import {CONSTANTS, getExampleParticipantMessage} from "../..";
-import {
-  BackendIssue,
-  BaseMessage,
-  MessageJob,
-  MessageTask,
-  MessageType,
-  Participant,
-  PreviewMessage,
-  Recipient,
-  RunningDinner,
-} from "../../types";
-import {FetchData, INITIAL_FETCH_DATA} from "../../redux";
+import { CONSTANTS, getExampleParticipantMessage } from '../..';
+import { BackendIssue, BaseMessage, MessageJob, MessageTask, MessageType, Participant, PreviewMessage, Recipient, RunningDinner } from '../../types';
+import { FetchData, INITIAL_FETCH_DATA } from '../../redux';
 
 export interface AdminState {
   runningDinner: FetchData<RunningDinner>;
 }
 
 export interface ParticipantsState {
-  participants: FetchData<Participant[]>
+  participants: FetchData<Participant[]>;
 }
 
 export interface MessagesState {
@@ -45,11 +35,11 @@ export interface MessageJobDetailsState {
 
 export function newInitialAdminState(): AdminState {
   return {
-    runningDinner: INITIAL_FETCH_DATA
-  }
+    runningDinner: INITIAL_FETCH_DATA,
+  };
 }
 
-export const newInitialMessagesState : MessagesState = {
+export const newInitialMessagesState: MessagesState = {
   adminId: '',
 
   recipients: INITIAL_FETCH_DATA,
@@ -64,11 +54,10 @@ export const newInitialMessagesState : MessagesState = {
   previewLoading: false,
   previewMessages: [],
   isMailMessageValid: false,
-  previewIssues: []
-
+  previewIssues: [],
 };
 
 export const newInitialMessageJobDetailsState: MessageJobDetailsState = {
   messageTasks: INITIAL_FETCH_DATA,
-  messageJob: INITIAL_FETCH_DATA
+  messageJob: INITIAL_FETCH_DATA,
 };

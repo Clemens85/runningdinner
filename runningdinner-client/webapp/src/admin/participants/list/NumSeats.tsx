@@ -1,28 +1,27 @@
-import React from 'react'
-import {Chip, Tooltip} from "@mui/material";
-import {canHost, isNumSeatsUnknown, Participant, RunningDinnerSessionData} from "@runningdinner/shared";
-import {styled} from "@mui/material/styles";
+import React from 'react';
+import { Chip, Tooltip } from '@mui/material';
+import { canHost, isNumSeatsUnknown, Participant, RunningDinnerSessionData } from '@runningdinner/shared';
+import { styled } from '@mui/material/styles';
 
-const ChipWhiteText = styled(Chip)( {
-  color: 'white'
+const ChipWhiteText = styled(Chip)({
+  color: 'white',
 });
 
 export interface NumSeatsProps {
-  participant: Participant,
-  runningDinnerSessionData: RunningDinnerSessionData
+  participant: Participant;
+  runningDinnerSessionData: RunningDinnerSessionData;
 }
 
-export default function NumSeats({participant, runningDinnerSessionData}: NumSeatsProps) {
-
-  const {numSeatsNeededForHost} = runningDinnerSessionData;
+export default function NumSeats({ participant, runningDinnerSessionData }: NumSeatsProps) {
+  const { numSeatsNeededForHost } = runningDinnerSessionData;
 
   const numSeatsUnknown = isNumSeatsUnknown(participant);
 
   if (numSeatsUnknown) {
     return (
-        <Tooltip title={"Keine Angabe über Sitzplatzkapazitäten"} aria-label={"Keine Angabe über Sitzplatzkapazitäten"} placement="top-end">
-          <Chip label={'?'} variant={"outlined"} size={"small"} />
-        </Tooltip>
+      <Tooltip title={'Keine Angabe über Sitzplatzkapazitäten'} aria-label={'Keine Angabe über Sitzplatzkapazitäten'} placement="top-end">
+        <Chip label={'?'} variant={'outlined'} size={'small'} />
+      </Tooltip>
     );
   }
 
@@ -31,9 +30,8 @@ export default function NumSeats({participant, runningDinnerSessionData}: NumSea
   const tooltipLabel = canHost(participant, numSeatsNeededForHost) ? 'Genügend Sitzplätze vorhanden' : 'Sitzplatz-Kapazität nicht ausreichend';
 
   return (
-      <Tooltip title={tooltipLabel} aria-label={tooltipLabel} placement="top-end">
-        <ChipWhiteText label={numSeats} color={color} size={"small"} />
-      </Tooltip>
+    <Tooltip title={tooltipLabel} aria-label={tooltipLabel} placement="top-end">
+      <ChipWhiteText label={numSeats} color={color} size={'small'} />
+    </Tooltip>
   );
-
 }

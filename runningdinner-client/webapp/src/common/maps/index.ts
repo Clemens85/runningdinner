@@ -1,2 +1,2 @@
 export * from './Polyline';
-export * from './MapConstants'
+export * from './MapConstants';

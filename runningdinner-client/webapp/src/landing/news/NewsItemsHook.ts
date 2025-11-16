@@ -1,9 +1,9 @@
-import {useTranslation} from "react-i18next";
-import {useEffect, useState} from "react";
-import News_de from "./NewsMessages_lang_de";
-import News_en from "./NewsMessages_lang_en";
-import {orderBy, startsWith} from 'lodash-es';
-import {parse} from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import News_de from './NewsMessages_lang_de';
+import News_en from './NewsMessages_lang_en';
+import { orderBy, startsWith } from 'lodash-es';
+import { parse } from 'date-fns';
 
 export interface NewsItem {
   title: string;
@@ -12,7 +12,6 @@ export interface NewsItem {
 }
 
 export function useNewsItems() {
-
   const { i18n } = useTranslation();
 
   const [newsItems, setNewsItems] = useState<Array<NewsItem>>([]);
@@ -29,18 +28,17 @@ export function useNewsItems() {
   }, [i18n.language]);
 
   function fetchNewsItems(): NewsItem[] {
-
     let result = new Array<NewsItem>();
 
-    const resourceBundle = i18n.getResourceBundle(i18n.language, "news");
+    const resourceBundle = i18n.getResourceBundle(i18n.language, 'news');
 
-    Object.keys(resourceBundle).forEach(function(translationKey) {
+    Object.keys(resourceBundle).forEach(function (translationKey) {
       if (startsWith(translationKey, 'news_title_')) {
         const newsDateStr = translationKey.substring(11);
         result.push({
           title: translationKey,
           content: 'news_content_' + newsDateStr,
-          date: parse(newsDateStr, 'yyyyMMdd', new Date())
+          date: parse(newsDateStr, 'yyyyMMdd', new Date()),
         });
       }
     });

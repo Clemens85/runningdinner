@@ -36,7 +36,6 @@ export interface IssueOption {
   translated?: boolean;
 }
 
-
 /**
  * Simple wrapper object which separates {@link Issue} object that could be mapped to a form field (= have a source from the issue) and that cannot be
  * mapped to a form field (have no source from issue)

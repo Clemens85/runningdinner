@@ -32,8 +32,7 @@ const HrRedLine = styled('hr')(({ theme }) => ({
 }));
 
 function RouteDistancesSummary({ routeDistancesList }: RouteDistancesViewProps) {
-
-  const {t} = useTranslation('admin');
+  const { t } = useTranslation('admin');
 
   if (!routeDistancesList) {
     return null;
@@ -42,7 +41,8 @@ function RouteDistancesSummary({ routeDistancesList }: RouteDistancesViewProps) 
   return (
     <Box>
       <div>
-        <span>&#8960; {t('admin:dinner_route_distances_average')}</span> <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.averageDistanceInMeters)}</strong>
+        <span>&#8960; {t('admin:dinner_route_distances_average')}</span>{' '}
+        <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.averageDistanceInMeters)}</strong>
       </div>
       <div>
         <span>&#8721; {t('admin:dinner_route_distances_sum')}</span> <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.sumDistanceInMeters)}</strong>

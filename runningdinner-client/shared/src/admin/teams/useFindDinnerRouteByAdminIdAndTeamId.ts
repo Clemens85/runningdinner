@@ -1,5 +1,5 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { findDinnerRouteByAdminIdAndTeamIdAsync } from "../dinnerroute";
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { findDinnerRouteByAdminIdAndTeamIdAsync } from '../dinnerroute';
 
 export function useFindDinnerRouteByAdminIdAndTeamId(adminId: string, teamId: string) {
   return useQuery({
