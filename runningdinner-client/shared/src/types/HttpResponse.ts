@@ -1,4 +1,5 @@
-import { BackendIssue, isArrayNotEmpty } from '..';
+import {BackendIssue} from '..';
+import {isArrayNotEmpty} from "../Utils";
 
 /**
  * In order to avoid hard dependencies to a http fetch library (like e.g. axios) we encapsulate an HTTP error in an own interface.
@@ -31,7 +32,7 @@ export function newHttpError(status: number, issues?: BackendIssue[]): HttpError
   };
 
   if (isArrayNotEmpty(issues)) {
-    // @ts-ignore
+    // @ts-expect-error no issue
     result.response.data.issues = issues;
   }
   return result;
