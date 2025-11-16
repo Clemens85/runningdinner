@@ -1,5 +1,4 @@
-import { PageTitle, Span } from '../common/theme/typography/Tags';
-import { Trans, useTranslation } from 'react-i18next';
+import { Alert, AlertTitle } from '@mui/material';
 import {
   activateSubscribedParticipant,
   BackendIssue,
@@ -13,10 +12,12 @@ import {
   useBackendIssueHandler,
   useFindPublicDinner,
 } from '@runningdinner/shared';
-import { useParams } from 'react-router-dom';
-import { Alert, AlertTitle } from '@mui/material';
-import LinkExtern from '../common/theme/LinkExtern';
 import { useQuery } from '@tanstack/react-query';
+import { Trans, useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+
+import LinkExtern from '../common/theme/LinkExtern';
+import { PageTitle, Span } from '../common/theme/typography/Tags';
 
 export function ParticipantActivationPage() {
   const { t } = useTranslation('landing');

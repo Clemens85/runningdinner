@@ -1,29 +1,30 @@
-import { useTranslation, Trans } from 'react-i18next';
-import { Paper, Box, Grid } from '@mui/material';
-import HtmlTranslate from '../../common/i18n/HtmlTranslate';
-import Alert from '@mui/material/Alert';
+import { Box, Grid,Paper } from '@mui/material';
 import { AlertTitle } from '@mui/material';
-import Paragraph from '../../common/theme/typography/Paragraph';
-import { PrimarySuccessButtonAsync } from '../../common/theme/PrimarySuccessButtonAsync';
+import Alert from '@mui/material/Alert';
 import {
+  assertDefined,
+  BaseAdminIdProps,
+  BaseRunningDinnerProps,
+  createTeamArrangementsAsync,
   formatLocalDate,
+  HttpError,
   isArrayEmpty,
   isClosedDinner,
+  TeamsNotExistingInfo,
+  useBackendIssueHandler,
   useTeamsNotExisting,
   useUpdateFindTeamsQueryData,
-  useBackendIssueHandler,
-  createTeamArrangementsAsync,
-  BaseRunningDinnerProps,
-  TeamsNotExistingInfo,
-  BaseAdminIdProps,
-  assertDefined,
-  HttpError,
 } from '@runningdinner/shared';
-import LinkIntern from '../../common/theme/LinkIntern';
-import { useAdminNavigation } from '../AdminNavigationHook';
-import { MissingParticipantActivationItem } from '../common/MissingParticipantActivationDialog';
+import { Trans,useTranslation } from 'react-i18next';
+
+import HtmlTranslate from '../../common/i18n/HtmlTranslate';
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
 import { ProgressBar } from '../../common/ProgressBar';
+import LinkIntern from '../../common/theme/LinkIntern';
+import { PrimarySuccessButtonAsync } from '../../common/theme/PrimarySuccessButtonAsync';
+import Paragraph from '../../common/theme/typography/Paragraph';
+import { useAdminNavigation } from '../AdminNavigationHook';
+import { MissingParticipantActivationItem } from '../common/MissingParticipantActivationDialog';
 
 const TeamsNotExisting = ({ runningDinner }: BaseRunningDinnerProps) => {
   const { t } = useTranslation('admin');

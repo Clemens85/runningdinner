@@ -1,11 +1,12 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { BasePublicDinnerProps, assertDefined, isQuerySucceeded, isStringNotEmpty, useFindPublicDinner } from '@runningdinner/shared';
-import { PageTitle, Span } from '../common/theme/typography/Tags';
-import { Trans, useTranslation } from 'react-i18next';
 import { Alert, AlertTitle } from '@mui/material';
-import LinkExtern from '../common/theme/LinkExtern';
+import { assertDefined, BasePublicDinnerProps, isQuerySucceeded, isStringNotEmpty, useFindPublicDinner } from '@runningdinner/shared';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+
 import { FetchProgressBar } from '../common/FetchProgressBar';
+import LinkExtern from '../common/theme/LinkExtern';
+import { PageTitle, Span } from '../common/theme/typography/Tags';
 
 export function PublicDinnerEventRegistrationFinishedPage() {
   const params = useParams<Record<string, string>>();

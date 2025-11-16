@@ -1,31 +1,33 @@
-import React from 'react';
-import { PageTitle, Span } from '../common/theme/typography/Tags';
-import { useTranslation } from 'react-i18next';
-import { Box, Container, Grid, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { TeaserCard } from './TeaserCard';
-import { PrimaryRouterButton } from '../common/theme/PrimaryButton';
-import { Link as RouterLink } from 'react-router-dom';
-import { Button } from '@mui/material';
-import { ExplanationBox } from './LandingStyles';
-import { IMPRESSUM_PATH, LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
-import Paragraph from '../common/theme/typography/Paragraph';
-import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
+
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import EventSeatIcon from '@mui/icons-material/EventSeat';
+import FastfoodIcon from '@mui/icons-material/Fastfood';
+import GroupIcon from '@mui/icons-material/Group';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
+import { Box, Container, Grid, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button } from '@mui/material';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import Zoom from 'react-medium-image-zoom';
+import { Link as RouterLink } from 'react-router-dom';
+
+import useElementSize from '../common/hooks/ElementSizeHook';
+import { IMPRESSUM_PATH, LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
+import { PrimaryRouterButton } from '../common/theme/PrimaryButton';
+import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle, Span } from '../common/theme/typography/Tags';
+import dashboardImg from './images/dashboard.png';
+import dinnerRouteImg from './images/dinner-route.png';
 import participantsImg from './images/participants.png';
-import teamsImg from './images/teams.png';
+import registrationImg from './images/registration.png';
+import selfServiceImg from './images/selfservice-team-host.png';
 import teamMailsImg from './images/team-mails.png';
+import teamsImg from './images/teams.png';
 import wizardImg1 from './images/wizard1.png';
 import wizardImg2 from './images/wizard2.png';
-import dinnerRouteImg from './images/dinner-route.png';
-import selfServiceImg from './images/selfservice-team-host.png';
-import registrationImg from './images/registration.png';
-import dashboardImg from './images/dashboard.png';
-import useElementSize from '../common/hooks/ElementSizeHook';
-import LocalBarIcon from '@mui/icons-material/LocalBar';
-import FastfoodIcon from '@mui/icons-material/Fastfood';
-import EventSeatIcon from '@mui/icons-material/EventSeat';
-import GroupIcon from '@mui/icons-material/Group';
-import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import { ExplanationBox } from './LandingStyles';
+import { TeaserCard } from './TeaserCard';
 
 export function LandingStart() {
   const { t } = useTranslation(['landing', 'common']);

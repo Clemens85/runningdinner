@@ -1,6 +1,7 @@
-import { useTranslation } from 'react-i18next';
 import { Grid, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { useDynamicFullscreenHeight } from '../../common/hooks/DynamicFullscreenHeightHook';
 import { useMasterDetailView } from '../../common/hooks/MasterDetailViewHook';
 

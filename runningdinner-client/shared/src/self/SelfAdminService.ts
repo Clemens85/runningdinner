@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { DinnerRoute, SelfAdminBaseParams, SelfAdminSessionData, SelfAdminTeamParams, SelfAdminUpdateTeamHostRequest, Team } from '../types';
+
 import { BackendConfig } from '..';
+import { DinnerRoute, SelfAdminBaseParams, SelfAdminSessionData, SelfAdminTeamParams, SelfAdminUpdateTeamHostRequest, Team } from '../types';
 
 export async function findSelfAdminSessionDataAsync({ selfAdminId, participantId }: SelfAdminBaseParams): Promise<SelfAdminSessionData> {
   const url = BackendConfig.buildUrl(`/self/v1/${selfAdminId}/${participantId}/sessiondata`);

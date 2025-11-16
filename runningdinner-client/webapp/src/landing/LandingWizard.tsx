@@ -1,11 +1,12 @@
-import React from 'react';
-import { PageTitle, Span } from '../common/theme/typography/Tags';
-import { Trans, useTranslation } from 'react-i18next';
 import { Box, Grid } from '@mui/material';
-import { PrimaryButton } from '../common/theme/PrimaryButton';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { DEMO_WIZARD_ROOT_PATH, WIZARD_ROOT_PATH } from '../common/mainnavigation/NavigationPaths';
-import { TeaserCard } from './TeaserCard';
+import { PrimaryButton } from '../common/theme/PrimaryButton';
+import { PageTitle, Span } from '../common/theme/typography/Tags';
 import { TeaserCardRow } from './LandingStyles';
+import { TeaserCard } from './TeaserCard';
 
 export function LandingWizard() {
   const { t } = useTranslation('landing');

@@ -1,43 +1,44 @@
-import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent, Box, Grid } from '@mui/material';
-import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
-import React, { useState } from 'react';
-import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
-import { SmallTitle, Span } from '../../../common/theme/typography/Tags';
+import { Box, Dialog, DialogContent, Grid } from '@mui/material';
 import { Alert, AlertTitle } from '@mui/material';
-import {
-  Fullname,
-  CONSTANTS,
-  useTeamName,
-  useNumberOfAssignableParticipantsToReplaceTeam,
-  findEntityById,
-  removeEntityFromList,
-  cancelTeamDryRunAsync,
-  getFullnameList,
-  useBackendIssueHandler,
-  RunningDinner,
-  Team,
-  Participant,
-  TeamCancellationResult,
-  CallbackHandler,
-  CallbackHandlerAsync,
-  isArrayEmpty,
-  cancelTeamAsync,
-  useFindParticipants,
-  isQuerySucceeded,
-  assertDefined,
-  HttpError,
-} from '@runningdinner/shared';
-import SelectableEntity from '../../common/SelectableEntity';
-import { cloneDeep } from 'lodash-es';
-import { take } from 'lodash-es';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import Paragraph from '../../../common/theme/typography/Paragraph';
+import {
+  assertDefined,
+  CallbackHandler,
+  CallbackHandlerAsync,
+  cancelTeamAsync,
+  cancelTeamDryRunAsync,
+  CONSTANTS,
+  findEntityById,
+  Fullname,
+  getFullnameList,
+  HttpError,
+  isArrayEmpty,
+  isQuerySucceeded,
+  Participant,
+  removeEntityFromList,
+  RunningDinner,
+  Team,
+  TeamCancellationResult,
+  useBackendIssueHandler,
+  useFindParticipants,
+  useNumberOfAssignableParticipantsToReplaceTeam,
+  useTeamName,
+} from '@runningdinner/shared';
+import { cloneDeep } from 'lodash-es';
+import { take } from 'lodash-es';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { FetchProgressBar } from '../../../common/FetchProgressBar';
 import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
 import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
-import { FetchProgressBar } from '../../../common/FetchProgressBar';
+import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import Paragraph from '../../../common/theme/typography/Paragraph';
+import { SmallTitle, Span } from '../../../common/theme/typography/Tags';
+import SelectableEntity from '../../common/SelectableEntity';
 
 export interface TeamCancelDialogProps {
   runningDinner: RunningDinner;
@@ -95,7 +96,7 @@ export const TeamCancelDialog = ({ runningDinner, teamToCancel, isOpen, onClose 
 
   const handleReplacementParticipantSelectionChange = (incomingParticipant: SelectableParticipant, selected: boolean) => {
     setTeamCancelPreviewData((prevState) => {
-      let result = cloneDeep(prevState);
+      const result = cloneDeep(prevState);
       let replacementParticipants = result.replacementParticipants;
       const replacementParticipant = findEntityById(replacementParticipants, incomingParticipant.id);
       if (selected && !replacementParticipant) {

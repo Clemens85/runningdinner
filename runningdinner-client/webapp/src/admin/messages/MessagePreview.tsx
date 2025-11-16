@@ -1,29 +1,30 @@
-import React from 'react';
 import { Box, FormControl, InputLabel, LinearProgress, MenuItem, Select, Typography } from '@mui/material';
-import SendToMeButton from './SendToMeButton';
-import { Span, Subtitle, Title } from '../../common/theme/typography/Tags';
 import {
+  BackendIssue,
+  getEffectiveSelectedRecipients,
   getMessageObjectSelector,
   getMessagePreviewSelector,
   getRecipientsPreviewSelector,
+  getRecipientsSelector,
   isArrayEmpty,
+  isArrayNotEmpty,
   MessageTypeAdminIdPayload,
   PreviewMessage,
   Recipient,
   updateRecipientForPreviewById,
-  useAdminSelector,
   useAdminDispatch,
-  useRecipientName,
+  useAdminSelector,
   useBackendIssueHandler,
-  isArrayNotEmpty,
-  BackendIssue,
-  getEffectiveSelectedRecipients,
-  getRecipientsSelector,
+  useRecipientName,
 } from '@runningdinner/shared';
 import { FetchStatus } from '@runningdinner/shared';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { TextViewHtml } from '../../common/TextViewHtml';
 import { PaperGrey } from '../../common/theme/CommonStyles';
+import { Span, Subtitle, Title } from '../../common/theme/typography/Tags';
+import SendToMeButton from './SendToMeButton';
 import { useCurrentRecipientSelectionValue } from './useCurrentRecipientSelectionValue';
 
 export function MessagePreview({ adminId, messageType }: MessageTypeAdminIdPayload) {

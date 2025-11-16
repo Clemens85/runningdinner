@@ -73,10 +73,10 @@ const InitialAsyncLoadingState: AsyncState<any> = {
   error: undefined,
 };
 
-// eslint-disable-next-line
+ 
 const defaultSetLoading: SetLoading<any> = (_asyncState) => InitialAsyncLoadingState;
 
-// eslint-disable-next-line
+ 
 const defaultSetResult: SetResult<any> = (result, _asyncState) => ({
   status: 'success',
   loading: false,
@@ -84,7 +84,7 @@ const defaultSetResult: SetResult<any> = (result, _asyncState) => ({
   error: undefined,
 });
 
-// eslint-disable-next-line
+ 
 const defaultSetError: SetError<any> = (error, _asyncState) => ({
   status: 'error',
   loading: false,

@@ -1,4 +1,3 @@
-
 on:
   workflow_call:
     secrets:
@@ -18,10 +17,10 @@ jobs:
           version: 9.15.0
 
       - uses: actions/setup-node@v4
-        name: 'Install Node.js & cache pnpm store'
+        name: "Install Node.js & cache pnpm store"
         with:
-          cache: 'pnpm'
-          cache-dependency-path: 'runningdinner-client/pnpm-lock.yaml'
+          cache: "pnpm"
+          cache-dependency-path: "runningdinner-client/pnpm-lock.yaml"
 
       - name: Install dependencies
         run: |
@@ -32,14 +31,14 @@ jobs:
         run: |
           cd runningdinner-client
           pnpm test
-  
+
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
-          name: Web Client Test Results               # Name of the check run which will be created
-          path: runningdinner-client/reports/*.xml              # Path to test results
-          reporter: jest-junit             # Format of test results
+          name: Web Client Test Results # Name of the check run which will be created
+          path: runningdinner-client/reports/*.xml # Path to test results
+          reporter: jest-junit # Format of test results
 
       - name: Build webclient
         run: |
@@ -50,7 +49,7 @@ jobs:
           GOOGLE_MAPS_KEY_JS: ${{ secrets.GOOGLE_MAPS_KEY_JS }}
 
       - name: Upload built webclient contents
-        uses: actions/upload-artifact@v4 
+        uses: actions/upload-artifact@v4
         with:
           name: runningdinner-client
           path: runningdinner-client/webapp/dist

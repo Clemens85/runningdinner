@@ -1,9 +1,8 @@
-import React from 'react';
-
-import { Controller, useFormContext } from 'react-hook-form';
-import { TimePicker, TimePickerProps } from '@mui/x-date-pickers/TimePicker';
 import { FormHelperText } from '@mui/material';
+import { TimePicker, TimePickerProps } from '@mui/x-date-pickers/TimePicker';
 import { isStringNotEmpty } from '@runningdinner/shared';
+import React from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 
 export interface FormTimePickerProps extends Partial<TimePickerProps<any>> {
   name: string;

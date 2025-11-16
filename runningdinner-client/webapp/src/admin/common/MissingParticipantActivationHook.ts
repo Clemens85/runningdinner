@@ -1,5 +1,6 @@
-import { BaseAdminIdProps, ParticipantRegistrationInfo, isArrayNotEmpty } from '@runningdinner/shared';
+import { BaseAdminIdProps, isArrayNotEmpty,ParticipantRegistrationInfo } from '@runningdinner/shared';
 import { useState } from 'react';
+
 import { getLocalStorageInAdminId, setLocalStorageInAdminId } from '../../common/LocalStorageService';
 
 function isNotificationAllowed(adminId: string): boolean {

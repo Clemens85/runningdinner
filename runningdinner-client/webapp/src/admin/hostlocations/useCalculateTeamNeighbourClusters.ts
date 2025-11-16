@@ -1,7 +1,8 @@
 import { calculateTeamNeighbourClusters, isStringNotEmpty, TeamNeighbourCluster } from '@runningdinner/shared';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { useIsRouteOptimization } from './useIsRouteOptimization';
+
 import { DinnerRouteOptimizationResultService } from './DinnerRouteOptimizationResultService';
+import { useIsRouteOptimization } from './useIsRouteOptimization';
 
 export function queryCalculateTeamDistanceClustersKey(adminId: string, range: number, optimizationId: string | null) {
   return ['calculateTeamNeighbourClusters', adminId, range, optimizationId];

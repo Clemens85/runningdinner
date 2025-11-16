@@ -1,9 +1,10 @@
 import { createAsyncThunk, createReducer } from '@reduxjs/toolkit';
-import { BaseAdminIdProps } from '../../types';
+
 import { findMessageJobByAdminIdAndJobIdAsync, findMessageTasksByAdminIdAndJobIdAsync } from '../../';
+import { handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../../redux';
+import { BaseAdminIdProps } from '../../types';
 import { AdminStateType, AdminThunk } from './AdminStore';
 import { newInitialMessageJobDetailsState } from './StoreTypes';
-import { handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../../redux';
 
 export interface MessageJobIdAdminIdPayload extends BaseAdminIdProps {
   messageJobId: string;

@@ -2,11 +2,12 @@ import { Chip, Dialog, DialogContent, Divider, List, ListItem, ListItemButton, L
 import { styled, useTheme } from '@mui/system';
 import { CallbackHandler, findEntityById, isAfterPartyLocationDefined, useDinnerRouteOverviewContext } from '@runningdinner/shared';
 import { Trans, useTranslation } from 'react-i18next';
+
+import { getAfterPartyLocationIcon, getMealTypeIcon } from '../../common/dinnerroute';
 import { commonStyles } from '../../common/theme/CommonStyles';
+import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
 import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
 import Paragraph from '../../common/theme/typography/Paragraph';
-import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
-import { getAfterPartyLocationIcon, getMealTypeIcon } from '../../common/dinnerroute';
 
 type DinnerRouteOverviewHelpDialogProps = {
   onClose: CallbackHandler;

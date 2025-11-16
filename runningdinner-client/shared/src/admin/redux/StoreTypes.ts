@@ -1,6 +1,6 @@
 import { CONSTANTS, getExampleParticipantMessage } from '../..';
-import { BackendIssue, BaseMessage, MessageJob, MessageTask, MessageType, Participant, PreviewMessage, Recipient, RunningDinner } from '../../types';
 import { FetchData, INITIAL_FETCH_DATA } from '../../redux';
+import { BackendIssue, BaseMessage, MessageJob, MessageTask, MessageType, Participant, PreviewMessage, Recipient, RunningDinner } from '../../types';
 
 export interface AdminState {
   runningDinner: FetchData<RunningDinner>;

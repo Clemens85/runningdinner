@@ -1,8 +1,9 @@
-import { BackendConfig } from '../BackendConfig';
 import axios from 'axios';
 import { cloneDeep } from 'lodash-es';
-import { isSameEntity } from '../Utils';
+
+import { BackendConfig } from '../BackendConfig';
 import { Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo } from '../types';
+import { isSameEntity } from '../Utils';
 import { getFullname } from './ParticipantService';
 
 export async function findTeamsAsync(adminId: string): Promise<Array<Team>> {

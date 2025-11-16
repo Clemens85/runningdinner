@@ -1,11 +1,12 @@
 import { Container, Grid } from '@mui/material';
 import React from 'react';
-import { useTranslation, Trans } from 'react-i18next';
+import { Trans,useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
+
+import { LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
 import LinkExtern from '../common/theme/LinkExtern';
 import { PrimaryRouterButton } from '../common/theme/PrimaryButton';
 import { Banner, SearchPublicEventsTeaserButton, TypographyTransparentWhite } from './LandingStyles';
-import { Link as RouterLink } from 'react-router-dom';
-import { LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
 
 export function LandingBanner() {
   const { t } = useTranslation('landing');

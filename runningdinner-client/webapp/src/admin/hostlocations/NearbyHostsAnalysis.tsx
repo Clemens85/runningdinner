@@ -15,15 +15,16 @@ import {
   useDinnerRouteOverviewContext,
 } from '@runningdinner/shared';
 import { t } from 'i18next';
-import { SmallTitle, Span } from '../../common/theme/typography/Tags';
-import { useCalculateTeamNeighbourClusters } from './useCalculateTeamNeighbourClusters';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
+
 import { ProgressBar } from '../../common/ProgressBar';
 import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
-import { useZoomToMarker } from './useZoomToMarker';
+import { SmallTitle, Span } from '../../common/theme/typography/Tags';
+import { useCalculateTeamNeighbourClusters } from './useCalculateTeamNeighbourClusters';
 import { useIsRouteOptimization } from './useIsRouteOptimization';
+import { useZoomToMarker } from './useZoomToMarker';
 
 function TeamNeighbourClustersLoadingView() {
   const { t } = useTranslation('common');

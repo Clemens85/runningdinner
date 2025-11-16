@@ -1,13 +1,14 @@
-import { DinnerRoute, DinnerRouteMapCalculator, DinnerRouteTeam, isAfterPartyLocationDefined, isStringNotEmpty, Meal, MealType, TeamStatus } from '@runningdinner/shared';
 import { Box, Grid, Paper, Typography } from '@mui/material';
-import { PageTitle, Subtitle } from '../theme/typography/Tags';
+import { DinnerRoute, DinnerRouteMapCalculator, DinnerRouteTeam, isAfterPartyLocationDefined, isStringNotEmpty, Meal, MealType, TeamStatus } from '@runningdinner/shared';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import { useTranslation } from 'react-i18next';
-import { TextViewHtml } from '../TextViewHtml';
 import { SuperSEO } from 'react-super-seo';
+
+import { GOOGLE_MAPS_KEY } from '../maps';
+import { TextViewHtml } from '../TextViewHtml';
+import { PageTitle, Subtitle } from '../theme/typography/Tags';
 import { AfterPartyLocationCard, getMealTypeIcon, TeamCardDetails } from './DinnerRouteComponents';
 import { DinnerRouteMapView } from './DinnerRouteMapView';
-import { APIProvider } from '@vis.gl/react-google-maps';
-import { GOOGLE_MAPS_KEY } from '../maps';
 
 export interface DinnerRouteProps {
   dinnerRoute: DinnerRoute;

@@ -1,54 +1,55 @@
-import { useEffect, useState } from 'react';
+import { Box, Dialog, DialogContent, Grid, Hidden, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import {
   BaseRunningDinnerProps,
+  CallbackHandler,
+  CONSTANTS,
   fetchMessageJobDetailsData,
+  formatLocalDateWithSeconds,
+  getStatusResult,
+  getTruncatedText,
+  HttpError,
   isArrayNotEmpty,
+  isSameEntity,
+  isStringNotEmpty,
+  LabelValue,
   LocalDate,
-  Time,
+  Message,
   MessageJob,
   MessageTask,
-  useAdminSelector,
-  isSameEntity,
-  LabelValue,
-  getStatusResult,
-  CONSTANTS,
-  formatLocalDateWithSeconds,
-  isStringNotEmpty,
-  CallbackHandler,
-  getTruncatedText,
-  useDisclosure,
-  useBackendIssueHandler,
-  reSendMessageTaskAsync,
-  Message,
   NoopFunction,
+  reSendMessageTaskAsync,
+  Time,
   useAdminDispatch,
-  HttpError,
+  useAdminSelector,
+  useBackendIssueHandler,
+  useDisclosure,
 } from '@runningdinner/shared';
-import { useParams } from 'react-router-dom';
 import { getMessageJobDetailsSelector, getMessageTasksSelector } from '@runningdinner/shared/src/admin/redux/MessageJobDetailsSlice';
-import { PageTitle, Span, Subtitle } from '../../../common/theme/typography/Tags';
-import { Box, Dialog, DialogContent, Grid, Hidden, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { BackToListButton, useMasterDetailView } from '../../../common/hooks/MasterDetailViewHook';
-import { useTranslation } from 'react-i18next';
 import { cloneDeep } from 'lodash-es';
-import { HelpIconTooltip } from '../../../common/theme/HelpIconTooltip';
-import Paragraph from '../../../common/theme/typography/Paragraph';
-import { TableRowWithCursor } from '../../../common/theme/CommonStyles';
-import { MessageJobStatus } from './MessageJobStatus';
-import { EmptyDetails } from '../../common/EmptyDetails';
-import FormFieldset from '../../../common/theme/FormFieldset';
 import { get, toLower } from 'lodash-es';
-import { MessageContentView } from './MessageContentView';
-import { SecondaryButtonAsync } from '../../../common/theme/SecondaryButtonAsync';
-import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
-import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
-import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
-import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
-import { useForm, FormProvider } from 'react-hook-form';
-import MessageSubject from '../MessageSubject';
-import MessageContent from '../MessageContent';
+import { useEffect, useState } from 'react';
+import { FormProvider,useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+
+import { BackToListButton, useMasterDetailView } from '../../../common/hooks/MasterDetailViewHook';
 import FormTextField from '../../../common/input/FormTextField';
 import { BrowserTitle } from '../../../common/mainnavigation/BrowserTitle';
+import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
+import { TableRowWithCursor } from '../../../common/theme/CommonStyles';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import FormFieldset from '../../../common/theme/FormFieldset';
+import { HelpIconTooltip } from '../../../common/theme/HelpIconTooltip';
+import { SecondaryButtonAsync } from '../../../common/theme/SecondaryButtonAsync';
+import Paragraph from '../../../common/theme/typography/Paragraph';
+import { PageTitle, Span, Subtitle } from '../../../common/theme/typography/Tags';
+import { EmptyDetails } from '../../common/EmptyDetails';
+import MessageContent from '../MessageContent';
+import MessageSubject from '../MessageSubject';
+import { MessageContentView } from './MessageContentView';
+import { MessageJobStatus } from './MessageJobStatus';
 
 export function MessageJobDetailsList({ runningDinner }: BaseRunningDinnerProps) {
   const params = useParams<Record<string, string>>();

@@ -1,28 +1,29 @@
 import { Autocomplete, Box, Dialog, DialogActions, DialogContent, TextField, Theme, UseAutocompleteProps, useMediaQuery } from '@mui/material';
-import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
-import { DialogActionsButtons, DefaultDialogCancelButton } from '../../common/theme/dialog/DialogActionsButtons';
 import {
-  BaseAdminIdProps,
-  HttpError,
-  Team,
-  TeamArrangementList,
-  TeamStatus,
   assertDefined,
+  BaseAdminIdProps,
   findEntityById,
   getFullnameList,
+  HttpError,
   isSameEntity,
   removeEntityFromList,
   swapMealsAsync,
+  Team,
+  TeamArrangementList,
+  TeamStatus,
   useBackendIssueHandler,
   useFindTeams,
   useTeamName,
   useTeamNameMembers,
 } from '@runningdinner/shared';
-import { Trans, useTranslation } from 'react-i18next';
-import Paragraph from '../../common/theme/typography/Paragraph';
 import { useMemo, useState } from 'react';
-import { PrimarySuccessButtonAsync } from '../../common/theme/PrimarySuccessButtonAsync';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import { DefaultDialogCancelButton,DialogActionsButtons } from '../../common/theme/dialog/DialogActionsButtons';
+import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
+import { PrimarySuccessButtonAsync } from '../../common/theme/PrimarySuccessButtonAsync';
+import Paragraph from '../../common/theme/typography/Paragraph';
 
 interface SelectTeamToSwapProps {
   allTeams: Team[];
@@ -40,7 +41,7 @@ function SelectTeamToSwap({ allTeams, srcTeam, selectedTeam, onSelectedTeamChang
   const smDownDevice = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
   const getTeamSelectionOptions = (allTeams: Team[], srcTeam: Team) => {
-    let result = removeEntityFromList(allTeams, srcTeam)!;
+    const result = removeEntityFromList(allTeams, srcTeam)!;
     return result
       .filter((t) => t.status !== TeamStatus.CANCELLED)
       .filter((t) => !isSameEntity(t.meal, srcTeam.meal))

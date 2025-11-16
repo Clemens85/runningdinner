@@ -1,11 +1,12 @@
-import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { fetchSelfAdminSessionData, getLanguageOfDinnerSelfAdmin, isStringNotEmpty, Parent, useSelfAdminDispatch, useSelfAdminSelector } from '@runningdinner/shared';
 import React from 'react';
-import Grid from '@mui/material/Grid';
-import { Box } from '@mui/material';
-import { LanguageSwitch } from '../common/i18n/LanguageSwitch';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import { SuperSEO } from 'react-super-seo';
+
+import { LanguageSwitch } from '../common/i18n/LanguageSwitch';
 import { commonStyles } from '../common/theme/CommonStyles';
 
 export interface SelfAdminPageContainerProps extends Parent {

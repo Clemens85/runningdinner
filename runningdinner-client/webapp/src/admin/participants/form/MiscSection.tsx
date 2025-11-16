@@ -1,9 +1,10 @@
 import { Grid } from '@mui/material';
-import FormFieldset from '../../../common/theme/FormFieldset';
-import FormTextField from '../../../common/input/FormTextField';
-import { useTranslation } from 'react-i18next';
-import Paragraph from '../../../common/theme/typography/Paragraph';
 import { LocalDate, Time } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
+import FormTextField from '../../../common/input/FormTextField';
+import FormFieldset from '../../../common/theme/FormFieldset';
+import Paragraph from '../../../common/theme/typography/Paragraph';
 
 export interface MiscSectionProps {
   miscNotesHelperText?: string;

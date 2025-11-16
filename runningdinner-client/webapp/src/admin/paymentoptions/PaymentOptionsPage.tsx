@@ -2,29 +2,30 @@ import { Grid } from '@mui/material';
 import {
   BaseAdminIdProps,
   BaseRunningDinnerProps,
-  useBackendIssueHandler,
-  PaymentOptions,
-  isNewEntity,
   createOrUpdatePaymentOptionsAsync,
-  newEmptyPaymentOptions,
   deletePaymentOptionsAsync,
   findPaymentOptionsAsync,
   HttpError,
+  isNewEntity,
   isQuerySucceeded,
+  newEmptyPaymentOptions,
+  PaymentOptions,
+  useBackendIssueHandler,
 } from '@runningdinner/shared';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
-import { PageTitle } from '../../common/theme/typography/Tags';
+import { FormProvider,useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useForm, FormProvider } from 'react-hook-form';
+
+import { FetchProgressBar } from '../../common/FetchProgressBar';
+import FormTextField from '../../common/input/FormTextField';
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import { commonStyles } from '../../common/theme/CommonStyles';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { PrimaryButton } from '../../common/theme/PrimaryButton';
 import SecondaryButton from '../../common/theme/SecondaryButton';
-import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
-import FormTextField from '../../common/input/FormTextField';
 import Paragraph from '../../common/theme/typography/Paragraph';
-import { commonStyles } from '../../common/theme/CommonStyles';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FetchProgressBar } from '../../common/FetchProgressBar';
+import { PageTitle } from '../../common/theme/typography/Tags';
 
 export function PaymentOptionsPage({ runningDinner }: BaseRunningDinnerProps) {
   const { adminId } = runningDinner;
@@ -94,7 +95,7 @@ function PaymentOptionsFormView({ paymentOptions, adminId }: PaymentOptionsFormV
       });
     }
     clearErrors();
-    // eslint-disable-next-line
+     
   }, [paymentOptions, reset, clearErrors]);
 
   const { applyValidationIssuesToForm } = useBackendIssueHandler({

@@ -1,4 +1,4 @@
-export * from './DinnerRouteService';
+export * from './DinnerRouteDistanceUtil';
 export * from './DinnerRouteMapCalculator';
 export * from './DinnerRouteOverviewContext';
-export * from './DinnerRouteDistanceUtil';
+export * from './DinnerRouteService';

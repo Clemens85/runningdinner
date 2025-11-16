@@ -1,6 +1,6 @@
-import React from 'react';
-import { RunningDinner } from '@runningdinner/shared';
 import { Link } from '@mui/material';
+import { RunningDinner } from '@runningdinner/shared';
+import React from 'react';
 
 export function PublicRunningDinnerLink({ publicSettings }: RunningDinner) {
   return (

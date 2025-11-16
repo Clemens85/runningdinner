@@ -1,7 +1,7 @@
+import { GeocodingResult } from './Base';
+import { Participant } from './Participant';
 import { AfterPartyLocation } from './RunningDinner';
 import { BaseTeam, Team } from './Team';
-import { Participant } from './Participant';
-import { GeocodingResult } from './Base';
 
 export interface DinnerRoute {
   currentTeam: Team;

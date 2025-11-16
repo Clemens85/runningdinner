@@ -1,13 +1,14 @@
-import { FormControlLabel, Checkbox, FormGroup, Switch } from '@mui/material';
+import { Checkbox, FormControlLabel, FormGroup, Switch } from '@mui/material';
 import { Box } from '@mui/system';
 import {
-  DinnerRouteTeamMapEntry,
-  useDinnerRouteOverviewContext,
   DinnerRouteMapCalculator,
   DinnerRouteOverviewActionType,
+  DinnerRouteTeamMapEntry,
   isAfterPartyLocationDefined,
+  useDinnerRouteOverviewContext,
 } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
+
 import { getTeamLabel } from '../../common/dinnerroute';
 import { useIsBigDevice } from '../../common/theme/CustomMediaQueryHook';
 import { Span } from '../../common/theme/typography/Tags';

@@ -1,12 +1,13 @@
-import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
 import { useWizardSelector } from '@runningdinner/shared';
 import { getMinimumParticipantsNeededSelector, isClosedDinnerSelector, isDemoDinnerSelector, setNextNavigationStep, setPreviousNavigationStep } from '@runningdinner/shared';
 import { FinishNavigationStep, MealTimesNavigationStep, PublicRegistrationNavigationStep } from '@runningdinner/shared';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { PageTitle } from '../common/theme/typography/Tags';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+
 import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle } from '../common/theme/typography/Tags';
 import WizardButtons from './WizardButtons';
 
 export default function ParticipantPreviewStep() {

@@ -1,32 +1,33 @@
+import { Grid } from '@mui/material';
 import {
-  BaseRunningDinnerProps,
-  Participant,
-  ParticipantList,
-  ParticipantListable,
   assertDefined,
+  BaseRunningDinnerProps,
   concatParticipantList,
   findEntityById,
   findTeamPartnerWishInfoAsync,
   isQuerySucceeded,
   isStringNotEmpty,
+  Participant,
+  ParticipantList,
+  ParticipantListable,
   useDisclosure,
   useFindParticipants,
 } from '@runningdinner/shared';
-import { useParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
+
+import { FetchProgressBar } from '../../common/FetchProgressBar';
 import { BackToListButton, useMasterDetailView } from '../../common/hooks/MasterDetailViewHook';
-import { useIsBigTabletDevice } from '../../common/theme/CustomMediaQueryHook';
-import ParticipantsListInfo from './list/ParticipantsListInfo';
-import { CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION } from './teampartnerwish/TeamPartnerWishAction';
 import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
-import { ParticipantSearchResult, ParticipantShowMiscNotesCallback, ParticipantsListHeader } from './list/ParticipantsListHeader';
-import { Grid } from '@mui/material';
-import ParticipantsListView from './list/ParticipantsListView';
-import ParticipantForm from './form/ParticipantForm';
+import { useIsBigTabletDevice } from '../../common/theme/CustomMediaQueryHook';
 import { StickyActionButton } from '../../common/theme/StickyActionButton';
 import { EmptyDetails } from '../common/EmptyDetails';
+import ParticipantForm from './form/ParticipantForm';
+import { ParticipantSearchResult, ParticipantShowMiscNotesCallback, ParticipantsListHeader } from './list/ParticipantsListHeader';
+import ParticipantsListInfo from './list/ParticipantsListInfo';
+import ParticipantsListView from './list/ParticipantsListView';
+import { CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION } from './teampartnerwish/TeamPartnerWishAction';
 import { TeamPartnerWishDialog } from './teampartnerwish/TeamPartnerWishDialog';
-import { FetchProgressBar } from '../../common/FetchProgressBar';
 
 export function ParticipantsPage({ runningDinner }: BaseRunningDinnerProps) {
   const params = useParams();

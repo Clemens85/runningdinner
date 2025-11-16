@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { CallbackHandler } from '@runningdinner/shared';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
+import { CallbackHandler } from '@runningdinner/shared';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function useMasterDetailView() {
   const [showDetailsView, setShowDetailsView] = useState(false);

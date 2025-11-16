@@ -1,13 +1,14 @@
-import { Route, Routes } from 'react-router-dom';
-import React, { Suspense } from 'react';
-import { SelfAdminPageContainer } from './SelfAdminPageContainer';
-import { ProgressBar } from '../common/ProgressBar';
 import { Alert } from '@mui/material';
-import { Span } from '../common/theme/typography/Tags';
-import { Trans } from 'react-i18next';
-import LinkExtern from '../common/theme/LinkExtern';
-import { CONSTANTS } from '@runningdinner/shared';
 import { Box } from '@mui/material';
+import { CONSTANTS } from '@runningdinner/shared';
+import React, { Suspense } from 'react';
+import { Trans } from 'react-i18next';
+import { Route, Routes } from 'react-router-dom';
+
+import { ProgressBar } from '../common/ProgressBar';
+import LinkExtern from '../common/theme/LinkExtern';
+import { Span } from '../common/theme/typography/Tags';
+import { SelfAdminPageContainer } from './SelfAdminPageContainer';
 
 const SelfAdminChangeTeamHostPage = React.lazy(() => import('./SelfAdminChangeTeamHostPage'));
 const SelfAdminDinnerRoutePage = React.lazy(() => import('./SelfAdminDinnerRoutePage'));

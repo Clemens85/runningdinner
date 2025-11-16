@@ -1,8 +1,5 @@
-import React from 'react';
-import { Box, IconButton, LinearProgress, MenuItem, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import FormSelect from '../../common/input/FormSelect';
-import { SingleSelectionDialog } from './SingleSelectionDialog';
+import { Box, IconButton, LinearProgress, MenuItem, Typography } from '@mui/material';
 import {
   CallbackHandler,
   CONSTANTS,
@@ -23,11 +20,15 @@ import {
   useRecipientName,
   useTeamSelectionOptions,
 } from '@runningdinner/shared';
-import { useTranslation } from 'react-i18next';
-import { SmallTitle, Span } from '../../common/theme/typography/Tags';
-import { useFormContext } from 'react-hook-form';
 import { finishEditCustomSelectedRecipients, getRecipientsSelector, MessageTypeAdminIdPayload, startEditCustomSelectedRecipients } from '@runningdinner/shared';
 import { FetchStatus } from '@runningdinner/shared';
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import FormSelect from '../../common/input/FormSelect';
+import { SmallTitle, Span } from '../../common/theme/typography/Tags';
+import { SingleSelectionDialog } from './SingleSelectionDialog';
 import { useCurrentRecipientSelectionValue } from './useCurrentRecipientSelectionValue';
 
 function RecipientSelection({ messageType }: MessageTypeAdminIdPayload) {

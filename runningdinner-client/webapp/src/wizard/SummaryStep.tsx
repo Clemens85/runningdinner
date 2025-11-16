@@ -1,13 +1,14 @@
-import React from 'react';
-import { PageTitle, Span } from '../common/theme/typography/Tags';
-import { useTranslation } from 'react-i18next';
-import Paragraph from '../common/theme/typography/Paragraph';
+import { Box, Grid, Typography } from '@mui/material';
 import { useWizardSelector } from '@runningdinner/shared';
 import { getAdministrationUrlSelector, setNextNavigationStep, setPreviousNavigationStep } from '@runningdinner/shared';
-import LinkExtern from '../common/theme/LinkExtern';
-import { Box, Grid, Typography } from '@mui/material';
 import { FinishNavigationStep } from '@runningdinner/shared';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+
+import LinkExtern from '../common/theme/LinkExtern';
+import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle, Span } from '../common/theme/typography/Tags';
 
 export default function SummaryStep() {
   const { t } = useTranslation(['wizard', 'common']);
@@ -17,7 +18,7 @@ export default function SummaryStep() {
   React.useEffect(() => {
     dispatch(setNextNavigationStep(undefined));
     dispatch(setPreviousNavigationStep(FinishNavigationStep));
-    // eslint-disable-next-line
+     
   }, [dispatch]);
 
   return (

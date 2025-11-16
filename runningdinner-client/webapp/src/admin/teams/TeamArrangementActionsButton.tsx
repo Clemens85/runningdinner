@@ -1,28 +1,29 @@
 import { Box } from '@mui/material';
 import { Alert, AlertTitle } from '@mui/material';
 import {
+  ActivityType,
   BaseAdminIdProps,
+  dropTeamArrangementsAsync,
+  filterActivitiesByType,
+  findAdminActivitiesByAdminIdAndTypesAsync,
   HttpError,
   reCreateTeamArrangementsAsync,
-  useDisclosure,
-  findAdminActivitiesByAdminIdAndTypesAsync,
-  filterActivitiesByType,
-  ActivityType,
   useBackendIssueHandler,
-  dropTeamArrangementsAsync,
+  useDisclosure,
   useUpdateFindTeamsQueryData,
 } from '@runningdinner/shared';
-import { useTranslation, Trans } from 'react-i18next';
+import { useEffect } from 'react';
+import { Trans,useTranslation } from 'react-i18next';
+
+import { useUrlQuery } from '../../common/hooks/useUrlQuery';
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
-import Paragraph from '../../common/theme/typography/Paragraph';
 import DropdownButton from '../../common/theme/dropdown/DropdownButton';
 import DropdownButtonItem from '../../common/theme/dropdown/DropdownButtonItem';
-import { useUrlQuery } from '../../common/hooks/useUrlQuery';
+import Paragraph from '../../common/theme/typography/Paragraph';
 import { OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM } from '../AdminNavigationHook';
-import { useEffect } from 'react';
-import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
-import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 
 export interface TeamArrangementActionsButtonProps extends BaseAdminIdProps {}
 

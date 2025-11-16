@@ -1,8 +1,9 @@
-import { BackendConfig } from '../';
-import { LabelValue, MealSpecifics } from '../types';
 import axios from 'axios';
 import { find } from 'lodash-es';
 import { useTranslation } from 'react-i18next';
+
+import { BackendConfig } from '../';
+import { LabelValue, MealSpecifics } from '../types';
 
 export async function findRegistrationTypesAsync(): Promise<LabelValue[]> {
   const url = BackendConfig.buildUrl(`/masterdataservice/v1/registrationtypes`);

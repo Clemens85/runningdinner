@@ -1,4 +1,10 @@
+import CloseIcon from '@mui/icons-material/Close';
 import { AppBar, Button, Dialog, Grid, IconButton, Paper, Slide, Toolbar, Typography } from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
+import Box from '@mui/material/Box';
+import { GridSize } from '@mui/material/Grid/Grid';
+import { Breakpoint } from '@mui/material/styles';
+import { TransitionProps } from '@mui/material/transitions';
 import {
   addSelectedParticipantToTeam,
   assertDefined,
@@ -31,24 +37,19 @@ import {
   WaitingListActionUI,
   WaitingListInfo,
 } from '@runningdinner/shared';
+import { cloneDeep } from 'lodash-es';
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Subtitle } from '../../../common/theme/typography/Tags';
-import Paragraph from '../../../common/theme/typography/Paragraph';
-import Box from '@mui/material/Box';
-import SelectableEntity from '../../common/SelectableEntity';
-import { cloneDeep } from 'lodash-es';
-import { CancelledTeamMember } from '../../teams/CancelledTeamMember';
-import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
-import { TransitionProps } from '@mui/material/transitions';
-import CloseIcon from '@mui/icons-material/Close';
-import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
-import { PrimarySuccessButtonAsync } from '../../../common/theme/PrimarySuccessButtonAsync';
-import { Breakpoint } from '@mui/material/styles';
-import { GridSize } from '@mui/material/Grid/Grid';
-import { useAdminNavigation } from '../../AdminNavigationHook';
-import { Alert, AlertTitle } from '@mui/material';
+
 import { FetchProgressBar } from '../../../common/FetchProgressBar';
+import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import { PrimarySuccessButtonAsync } from '../../../common/theme/PrimarySuccessButtonAsync';
+import Paragraph from '../../../common/theme/typography/Paragraph';
+import { Subtitle } from '../../../common/theme/typography/Tags';
+import { useAdminNavigation } from '../../AdminNavigationHook';
+import SelectableEntity from '../../common/SelectableEntity';
+import { CancelledTeamMember } from '../../teams/CancelledTeamMember';
 
 const Transition = React.forwardRef(function Transition(props: TransitionProps & { children?: React.ReactElement }, ref: React.Ref<unknown>) {
   // @ts-ignore

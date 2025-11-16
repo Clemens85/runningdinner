@@ -1,5 +1,6 @@
-import { RefObject } from 'react';
 import { useMediaQuery, useTheme } from '@mui/material';
+import { RefObject } from 'react';
+
 import { useElementPosition } from './ElementPositionHook';
 import { useWindowSize } from './WindowSizeHook';
 

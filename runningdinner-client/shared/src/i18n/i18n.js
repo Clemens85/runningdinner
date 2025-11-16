@@ -1,16 +1,17 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import Admin_en from './translations/en/AdminMessages_lang_en.json';
+import { initReactI18next } from 'react-i18next';
+
 import Admin_de from './translations/de/AdminMessages_lang_de.json';
-import Common_en from './translations/en/CommonMessages_lang_en.json';
 import Common_de from './translations/de/CommonMessages_lang_de.json';
-import Wizard_de from './translations/de/WizardMessages_lang_de';
-import Wizard_en from './translations/en/WizardMessages_lang_en';
-import SelfAdmin_de from './translations/de/SelfAdminMessages_lang_de';
-import SelfAdmin_en from './translations/en/SelfAdminMessages_lang_en';
 import Landing_de from './translations/de/LandingMessages_lang_de';
+import SelfAdmin_de from './translations/de/SelfAdminMessages_lang_de';
+import Wizard_de from './translations/de/WizardMessages_lang_de';
+import Admin_en from './translations/en/AdminMessages_lang_en.json';
+import Common_en from './translations/en/CommonMessages_lang_en.json';
 import Landing_en from './translations/en/LandingMessages_lang_en';
+import SelfAdmin_en from './translations/en/SelfAdminMessages_lang_en';
+import Wizard_en from './translations/en/WizardMessages_lang_en';
 
 const languageDetectionOptions = {
   order: ['querystring', 'cookie'],

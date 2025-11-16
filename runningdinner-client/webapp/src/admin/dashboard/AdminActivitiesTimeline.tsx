@@ -1,19 +1,20 @@
-import { Activity, ActivityType, DashboardAdminActivities, getDayOfMonthInNumbers, getShortFormattedMonth, MessageJobOverview, Time } from '@runningdinner/shared';
-import { Card, CardContent, Grid, Typography } from '@mui/material';
-import { Span, Subtitle } from '../../common/theme/typography/Tags';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import GroupIcon from '@mui/icons-material/Group';
-import SaveIcon from '@mui/icons-material/Save';
-import MailIcon from '@mui/icons-material/Mail';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { useAdminNavigation } from '../AdminNavigationHook';
-import LinkIntern from '../../common/theme/LinkIntern';
-import { useTranslation } from 'react-i18next';
-import Paragraph from '../../common/theme/typography/Paragraph';
-import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
-import { TextViewHtml } from '../../common/TextViewHtml';
+import GroupIcon from '@mui/icons-material/Group';
+import MailIcon from '@mui/icons-material/Mail';
+import SaveIcon from '@mui/icons-material/Save';
+import { Card, CardContent, Grid, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Activity, ActivityType, DashboardAdminActivities, getDayOfMonthInNumbers, getShortFormattedMonth, MessageJobOverview, Time } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
+import { TextViewHtml } from '../../common/TextViewHtml';
+import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
+import LinkIntern from '../../common/theme/LinkIntern';
+import Paragraph from '../../common/theme/typography/Paragraph';
+import { Span, Subtitle } from '../../common/theme/typography/Tags';
+import { useAdminNavigation } from '../AdminNavigationHook';
 
 export interface AdminActivitiesTimelineProps {
   dashboardAdminActivities: DashboardAdminActivities;

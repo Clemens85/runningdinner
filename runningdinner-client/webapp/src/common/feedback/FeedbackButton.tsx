@@ -1,11 +1,12 @@
-import React from 'react';
-import { useDisclosure } from '@runningdinner/shared';
-import { useTranslation } from 'react-i18next';
-import { FeedbackDialog } from './FeedbackDialog';
-import { Box, Button, Grid, useMediaQuery, useTheme } from '@mui/material';
-import Paragraph from '../theme/typography/Paragraph';
 import FeedbackIcon from '@mui/icons-material/Feedback';
+import { Box, Button, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { useDisclosure } from '@runningdinner/shared';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import LinkAction from '../theme/LinkAction';
+import Paragraph from '../theme/typography/Paragraph';
+import { FeedbackDialog } from './FeedbackDialog';
 
 export type FeedbackButtonProps = {
   labelOverridden?: React.ReactNode;

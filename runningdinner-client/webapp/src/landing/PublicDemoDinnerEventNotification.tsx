@@ -1,7 +1,8 @@
-import React from 'react';
-import AlertCentered from '../common/theme/AlertCentered';
-import { BasePublicDinnerProps, RunningDinnerType } from '@runningdinner/shared';
 import { Box } from '@mui/material';
+import { BasePublicDinnerProps, RunningDinnerType } from '@runningdinner/shared';
+import React from 'react';
+
+import AlertCentered from '../common/theme/AlertCentered';
 import Paragraph from '../common/theme/typography/Paragraph';
 
 export function PublicDemoDinnerEventNotification({ publicRunningDinner }: BasePublicDinnerProps) {

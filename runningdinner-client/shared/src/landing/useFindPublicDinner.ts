@@ -1,4 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+
 import { findPublicRunningDinnerByPublicId } from './PublicDinnerEventService';
 
 export function useFindPublicDinner(publicId: string) {

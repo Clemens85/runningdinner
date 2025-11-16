@@ -1,7 +1,8 @@
-import React from 'react';
-import DinnerRouteView from '../common/dinnerroute/DinnerRouteView';
-import { useParams } from 'react-router-dom';
 import { fetchSelfAdminDinnerRoute, getMealsOfDinnerSelfAdmin, getSelfAdminDinnerRouteFetchSelector, useSelfAdminDispatch, useSelfAdminSelector } from '@runningdinner/shared';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+
+import DinnerRouteView from '../common/dinnerroute/DinnerRouteView';
 
 export default function SelfAdminDinnerRoutePage() {
   const urlParams = useParams<Record<string, string>>();

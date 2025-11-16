@@ -1,8 +1,9 @@
-import { Button } from '@mui/material';
-import { useDinnerRouteOverviewContext, DinnerRouteOverviewActionType } from '@runningdinner/shared';
-import { useTranslation } from 'react-i18next';
-import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import { Button } from '@mui/material';
+import { DinnerRouteOverviewActionType,useDinnerRouteOverviewContext } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 
 export function ResetAllButton() {
   const { dispatch } = useDinnerRouteOverviewContext();

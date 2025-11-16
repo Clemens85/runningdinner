@@ -1,12 +1,13 @@
-import React from 'react';
-import { Box, Grid, Chip, useMediaQuery, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
-import Paragraph from '../../common/theme/typography/Paragraph';
-import { useTranslation } from 'react-i18next';
-import { findEntityById, isArrayEmpty, useDisclosure } from '@runningdinner/shared';
+import { Box, Chip, Divider, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText,useMediaQuery } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
-import LinkAction from '../../common/theme/LinkAction';
+import { isArrayEmpty, useDisclosure } from '@runningdinner/shared';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
+import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
+import LinkAction from '../../common/theme/LinkAction';
+import Paragraph from '../../common/theme/typography/Paragraph';
 
 const MessageTemplateChip = styled(Chip)(({ theme }) => ({
   margin: theme.spacing(0.5),

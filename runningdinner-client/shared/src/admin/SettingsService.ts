@@ -1,6 +1,6 @@
+import { CONSTANTS } from '../Constants';
 import { isSameDay } from '../date';
 import { RunningDinnerBasicDetails } from '../types';
-import { CONSTANTS } from '../Constants';
 import { findParticipantsAsync } from '.';
 
 function isChangeInDate(a: RunningDinnerBasicDetails, b: RunningDinnerBasicDetails) {

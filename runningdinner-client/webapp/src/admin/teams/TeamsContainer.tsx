@@ -1,16 +1,4 @@
-import { useParams } from 'react-router-dom';
 import { Box, Button, Grid, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import TeamsNotExisting from './TeamsNotExisting';
-import TeamsList from './TeamsList';
-import { EmptyDetails } from '../common/EmptyDetails';
-import TeamDetails from './TeamDetails';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { ChangeTeamHostDialog } from './ChangeTeamHostDialog';
-import { PageTitle } from '../../common/theme/typography/Tags';
-import { useUrlQuery } from '../../common/hooks/useUrlQuery';
 import {
   findEntityById,
   getFullname,
@@ -26,17 +14,30 @@ import {
   useFindTeams,
   useUpdateFindTeamsQueryData,
 } from '@runningdinner/shared';
-import { TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation } from '../AdminNavigationHook';
-import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
+import { useEffect, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
-import { BackToListButton, useMasterDetailView } from '../../common/hooks/MasterDetailViewHook';
-import { TeamArrangementActionsButton } from './TeamArrangementActionsButton';
-import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
-import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
-import { useIsBigTabletDevice, useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
+
 import { FetchProgressBar } from '../../common/FetchProgressBar';
+import { BackToListButton, useMasterDetailView } from '../../common/hooks/MasterDetailViewHook';
+import { useUrlQuery } from '../../common/hooks/useUrlQuery';
+import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
+import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import { useIsBigTabletDevice, useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
 import Paragraph from '../../common/theme/typography/Paragraph';
+import { PageTitle } from '../../common/theme/typography/Tags';
+import { TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation } from '../AdminNavigationHook';
+import { EmptyDetails } from '../common/EmptyDetails';
+import { ChangeTeamHostDialog } from './ChangeTeamHostDialog';
+import { TeamArrangementActionsButton } from './TeamArrangementActionsButton';
+import TeamDetails from './TeamDetails';
+import TeamsList from './TeamsList';
+import TeamsNotExisting from './TeamsNotExisting';
 
 const TeamsContainer = () => {
   const query = useUrlQuery();

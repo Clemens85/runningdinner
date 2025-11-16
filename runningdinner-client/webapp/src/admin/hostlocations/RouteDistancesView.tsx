@@ -1,20 +1,21 @@
-import { LinearProgress, Grid, Tooltip, Chip, Typography, styled, Divider } from '@mui/material';
+import { Chip, Divider,Grid, LinearProgress, styled, Tooltip, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import {
-  useDinnerRouteOverviewContext,
-  DinnerRouteTeamWithDistance,
+  DinnerRouteDistanceUtil,
   DinnerRouteMapCalculator,
   DinnerRouteOverviewActionType,
-  TeamStatus,
-  DinnerRouteDistanceUtil,
-  isDefined,
+  DinnerRouteTeamWithDistance,
   DinnerRouteWithDistancesList,
+  isDefined,
+  TeamStatus,
+  useDinnerRouteOverviewContext,
 } from '@runningdinner/shared';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { getTeamLabel } from '../../common/dinnerroute';
 import { CancelledTeamMember } from '../teams/CancelledTeamMember';
 import { useZoomToMarker } from './useZoomToMarker';
-import { useTranslation } from 'react-i18next';
 
 type RouteDistancesViewProps = {
   routeDistancesList: DinnerRouteWithDistancesList | undefined;

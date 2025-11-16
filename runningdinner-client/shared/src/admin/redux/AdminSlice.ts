@@ -1,9 +1,10 @@
-import { newInitialAdminState } from './StoreTypes';
 import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
+
 import { FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../../redux';
-import { findRunningDinnerAsync } from '..';
 import { HttpError, RunningDinner } from '../../types';
+import { findRunningDinnerAsync } from '..';
 import { AdminStateType } from './AdminStore';
+import { newInitialAdminState } from './StoreTypes';
 
 // *** Actions *** //
 export const fetchRunningDinner = createAsyncThunk('fetchRunningDinner', async (adminId: string) => {

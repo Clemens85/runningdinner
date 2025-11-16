@@ -1,12 +1,13 @@
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+
 import { MainNavigation } from '../common/mainnavigation/MainNavigation';
-import AdminNotificationBar from './common/AdminNotificationBar';
 import { useIsDeviceMinWidth } from '../common/theme/CustomMediaQueryHook';
+import AdminNotificationBar from './common/AdminNotificationBar';
 
 export default function AdminMenu() {
   const theme = useTheme();
-  let isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
   let showHomeLink = true;
   const min1024Device = useIsDeviceMinWidth(1024);
   const min1250Device = useIsDeviceMinWidth(1250);

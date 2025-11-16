@@ -1,27 +1,28 @@
-import React from 'react';
 import { Box, Dialog, DialogContent } from '@mui/material';
-import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
-import { Trans, useTranslation } from 'react-i18next';
-import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
-import { Span } from '../../../common/theme/typography/Tags';
+import { Alert } from '@mui/material';
 import {
-  isStringEmpty,
+  BaseAdminIdProps,
   CONSTANTS,
   deleteParticipantAsync,
-  getFullname,
-  useBackendIssueHandler,
   findIssueByMessage,
-  BaseAdminIdProps,
-  ParticipantListable,
-  Participant,
-  isTeamPartnerWishRegistration,
+  getFullname,
+  isStringEmpty,
   isTeamPartnerWishChild,
+  isTeamPartnerWishRegistration,
   isTeamPartnerWishRoot,
+  Participant,
+  ParticipantListable,
+  useBackendIssueHandler,
 } from '@runningdinner/shared';
-import { useAdminNavigation } from '../../AdminNavigationHook';
-import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
-import { Alert } from '@mui/material';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import { Span } from '../../../common/theme/typography/Tags';
+import { useAdminNavigation } from '../../AdminNavigationHook';
 
 type DeleteParticipantDialogProps = {
   participant: ParticipantListable;

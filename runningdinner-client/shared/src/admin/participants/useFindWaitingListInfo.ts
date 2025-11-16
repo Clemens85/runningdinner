@@ -1,4 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+
 import { findWaitingListInfoAsync } from '.';
 
 export function useFindWaitingListInfo(adminId: string) {

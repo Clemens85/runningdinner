@@ -1,8 +1,9 @@
+import { Link } from '@mui/material';
 import { isStringNotEmpty, RunningDinnerPublicSettings } from '@runningdinner/shared';
 import { t } from 'i18next';
+
 import FormFieldset from '../common/theme/FormFieldset';
 import Paragraph from '../common/theme/typography/Paragraph';
-import { Link } from '@mui/material';
 
 export function PublicContactInfo(publicSettings: RunningDinnerPublicSettings) {
   return (

@@ -1,17 +1,18 @@
-import { Toolbar, Tooltip, IconButton, styled, FormControlLabel, FormGroup, Switch, Typography, Box, Popover } from '@mui/material';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import GridViewIcon from '@mui/icons-material/GridView';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Box, FormControlLabel, FormGroup, IconButton, Popover,styled, Switch, Toolbar, Tooltip, Typography } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { CallbackHandler, DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, useDisclosure } from '@runningdinner/shared';
-import MenuIcon from '@mui/icons-material/Menu';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { UnresolvedGeocodesWarningAlertProps } from '../../common/dinnerroute';
+import { FeedbackDialog } from '../../common/feedback/FeedbackDialog';
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { HelpButton } from './HelpButton';
 import { RouteOptimizationButton } from './RouteOptimizationButton';
 import { UnresolvedGeocodesNotificationButton } from './UnresolvedGeocodesNotificationButton';
-import { UnresolvedGeocodesWarningAlertProps } from '../../common/dinnerroute';
-import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
-import GridViewIcon from '@mui/icons-material/GridView';
-import FeedbackIcon from '@mui/icons-material/Feedback';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { FeedbackDialog } from '../../common/feedback/FeedbackDialog';
 
 interface CustomAppBarProps extends MuiAppBarProps {
   open?: boolean;

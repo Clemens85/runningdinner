@@ -1,9 +1,10 @@
+import { useQuery } from '@tanstack/react-query';
+
+import { assertDefined, isQuerySucceeded } from '../..';
 import { isAfterInDays } from '../../date';
+import { ParticipantList, ParticipantRegistrationInfo, RunningDinner } from '../../types';
 import { findParticipantRegistrationsByAdminIdAsync, findParticipantsAsync } from '../ParticipantService';
 import { isClosedDinner } from '../RunningDinnerService';
-import { ParticipantList, ParticipantRegistrationInfo, RunningDinner } from '../../types';
-import { useQuery } from '@tanstack/react-query';
-import { assertDefined, isQuerySucceeded } from '../..';
 
 export interface TeamsNotExistingInfo {
   numParticipants: number;

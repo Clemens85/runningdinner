@@ -1,7 +1,8 @@
 import { formatLocalDateWithSeconds, getMinutesBetweenDates, isAfterInDays, parseLocalDateWithSeconds, useDisclosure } from '@runningdinner/shared';
-import { getLocalStorageItem, setLocalStorageItem } from '../LocalStorageService';
 import { cloneDeep } from 'lodash-es';
+
 import { isLocalDevEnv } from '../EnvService';
+import { getLocalStorageItem, setLocalStorageItem } from '../LocalStorageService';
 
 type TeaserPopupStatus = {
   remindMe: boolean;

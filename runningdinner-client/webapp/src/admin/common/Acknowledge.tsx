@@ -1,15 +1,16 @@
-import React from 'react';
-import { acknowledgeRunningDinnerAsync, BaseRunningDinnerProps, CONSTANTS, setUpdatedRunningDinner } from '@runningdinner/shared';
-import { PageTitle, Span } from '../../common/theme/typography/Tags';
 import { Alert, AlertTitle } from '@mui/material';
-import LinkIntern from '../../common/theme/LinkIntern';
-import { Trans, useTranslation } from 'react-i18next';
 import { LinearProgress } from '@mui/material';
-import LinkExtern from '../../common/theme/LinkExtern';
-import { useParams } from 'react-router-dom';
-import { useAdminNavigation } from '../AdminNavigationHook';
-import { useDispatch } from 'react-redux';
+import { acknowledgeRunningDinnerAsync, BaseRunningDinnerProps, CONSTANTS, setUpdatedRunningDinner } from '@runningdinner/shared';
 import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+
+import LinkExtern from '../../common/theme/LinkExtern';
+import LinkIntern from '../../common/theme/LinkIntern';
+import { PageTitle, Span } from '../../common/theme/typography/Tags';
+import { useAdminNavigation } from '../AdminNavigationHook';
 
 export default function Acknowledge({ runningDinner }: BaseRunningDinnerProps) {
   const { adminId } = runningDinner;

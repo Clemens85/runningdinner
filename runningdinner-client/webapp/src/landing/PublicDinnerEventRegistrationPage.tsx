@@ -1,10 +1,18 @@
-import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Box, Grid, List, ListItem, ListItemIcon, ListItemText, styled, Typography } from '@mui/material';
+import { Alert } from '@mui/material';
 import {
   AddressLocation,
+  AfterPartyLocationHeadline,
+  assertDefined,
   BasePublicDinnerProps,
+  calculateResultingZipRestrictions,
   formatLocalDate,
   isAfterPartyLocationDefined,
+  isArrayEmpty,
+  isQuerySucceeded,
   isStringEmpty,
   isStringNotEmpty,
   LocalDate,
@@ -13,33 +21,25 @@ import {
   RegistrationData,
   Time,
   useDisclosure,
-  AfterPartyLocationHeadline,
   useFindPublicDinner,
-  isQuerySucceeded,
-  assertDefined,
-  RunningDinnerPublicSettings,
-  calculateResultingZipRestrictions,
-  isArrayEmpty,
 } from '@runningdinner/shared';
-import { PageTitle } from '../common/theme/typography/Tags';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { Box, Chip, Grid, Link, List, ListItem, ListItemIcon, ListItemText, styled, Typography } from '@mui/material';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import Paragraph from '../common/theme/typography/Paragraph';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import FormFieldset from '../common/theme/FormFieldset';
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import { PrimaryButton } from '../common/theme/PrimaryButton';
-import { BackToListButton } from '../common/hooks/MasterDetailViewHook';
-import { PublicDinnerEventRegistrationFormContainer } from './PublicDinnerEventRegistrationForm';
-import { useLandingNavigation } from './LandingNavigationHook';
-import { getLocalStorageItem, setLocalStorageItem } from '../common/LocalStorageService';
-import { Alert } from '@mui/material';
-import LinkExtern from '../common/theme/LinkExtern';
-import { PublicDemoDinnerEventNotification } from './PublicDemoDinnerEventNotification';
-import { TextViewHtml } from '../common/TextViewHtml';
+
 import { FetchProgressBar } from '../common/FetchProgressBar';
+import { BackToListButton } from '../common/hooks/MasterDetailViewHook';
+import { getLocalStorageItem, setLocalStorageItem } from '../common/LocalStorageService';
+import { TextViewHtml } from '../common/TextViewHtml';
+import FormFieldset from '../common/theme/FormFieldset';
+import LinkExtern from '../common/theme/LinkExtern';
+import { PrimaryButton } from '../common/theme/PrimaryButton';
+import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle } from '../common/theme/typography/Tags';
+import { useLandingNavigation } from './LandingNavigationHook';
 import { PublicContactInfo } from './PublicContactInfo';
+import { PublicDemoDinnerEventNotification } from './PublicDemoDinnerEventNotification';
+import { PublicDinnerEventRegistrationFormContainer } from './PublicDinnerEventRegistrationForm';
 
 type RegistrationFormSettingsType = {
   showRegistrationForm?: boolean;

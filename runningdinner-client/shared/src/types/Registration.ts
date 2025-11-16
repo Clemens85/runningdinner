@@ -1,5 +1,5 @@
-import { newEmptyParticipantInstance, TeamPartnerWishState, MealSpecifics, ParticipantFormModel, Participant, ParticipantName, BackendIssue, PaymentOptions } from '.';
 import { isStringNotEmpty, TeamPartnerWishRegistrationData } from '..';
+import { BackendIssue, MealSpecifics, newEmptyParticipantInstance, Participant, ParticipantFormModel, ParticipantName, PaymentOptions,TeamPartnerWishState } from '.';
 
 export interface RegistrationData extends ParticipantFormModel {
   dataProcessingAcknowledged: boolean;

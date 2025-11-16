@@ -1,6 +1,7 @@
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
-import { GridWithCenteredFullwidthButton, commonStyles } from '../CommonStyles';
 import { CallbackHandler } from '@runningdinner/shared';
+
+import { commonStyles,GridWithCenteredFullwidthButton } from '../CommonStyles';
 import SecondaryButton from '../SecondaryButton';
 
 type DialogActionsButtonsProps = {

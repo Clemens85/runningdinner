@@ -1,11 +1,12 @@
 import Grid from '@mui/material/Grid';
-import ParticipantGenderSelection from './ParticipantGenderSelection';
-import { NumberFormTextFieldEmptyValueAllowed } from '../../../common/input/NumberTextInputEmptyValue';
-import FormFieldset from '../../../common/theme/FormFieldset';
-import FormTextField from '../../../common/input/FormTextField';
-import { useTranslation } from 'react-i18next';
 import { isStringNotEmpty } from '@runningdinner/shared';
 import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import FormTextField from '../../../common/input/FormTextField';
+import { NumberFormTextFieldEmptyValueAllowed } from '../../../common/input/NumberTextInputEmptyValue';
+import FormFieldset from '../../../common/theme/FormFieldset';
+import ParticipantGenderSelection from './ParticipantGenderSelection';
 
 export type PersonalDataSectionProps = {
   isTeamPartnerWishChild?: boolean;

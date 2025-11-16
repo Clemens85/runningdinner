@@ -1,8 +1,9 @@
-import React from 'react';
 import { cloneDeep, remove } from 'lodash-es';
+import React from 'react';
+
 import { AfterPartyLocation, BaseEntity, BaseRunningDinnerProps, DinnerRouteMapData, DinnerRouteTeamMapEntry, Meal, MealType, Parent, TeamConnectionPath } from '../../types';
-import { isAfterPartyLocationDefined } from '../RunningDinnerService';
 import { findEntityById, isDefined, isSameEntity } from '../../Utils';
+import { isAfterPartyLocationDefined } from '../RunningDinnerService';
 import { DinnerRouteMapCalculator } from './DinnerRouteMapCalculator';
 
 export type MealFilterOption = {

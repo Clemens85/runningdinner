@@ -1,13 +1,14 @@
-import React from 'react';
-import { AppBar, Drawer, Grid, IconButton, Link, List, ListItemButton, ListItemText, Toolbar, Typography } from '@mui/material';
-import { LanguageSwitch } from '../i18n/LanguageSwitch';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
-import { FeedbackButtonContainerRightAligned } from '../feedback/FeedbackButton';
-import { LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH } from './NavigationPaths';
+import { AppBar, Drawer, Grid, IconButton, Link, List, ListItemButton, ListItemText, Toolbar, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DonateButton } from '../donate/DonateButton';
 import { CallbackHandler } from '@runningdinner/shared';
+import React from 'react';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+
+import { DonateButton } from '../donate/DonateButton';
+import { FeedbackButtonContainerRightAligned } from '../feedback/FeedbackButton';
+import { LanguageSwitch } from '../i18n/LanguageSwitch';
+import { LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH } from './NavigationPaths';
 
 const HomeTitle = styled(Typography)(({ theme }) => ({
   marginRight: theme.spacing(4),

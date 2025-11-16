@@ -1,5 +1,5 @@
-import { styled } from '@mui/material/styles';
 import { Grid, Paper, SxProps, TableCell, TableRow, Theme } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 export const TableRowWithCursor = styled(TableRow)({
   cursor: 'pointer',
