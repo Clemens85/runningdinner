@@ -1,7 +1,8 @@
-import ContextMenuIcon from '../../../common/contextmenu/ContextMenuIcon';
 import { BaseAdminIdProps, CallbackHandler, getKeyValueList, isStringNotEmpty, newExampleParticipantInstance, Participant, useDisclosure } from '@runningdinner/shared';
-import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import ContextMenuIcon from '../../../common/contextmenu/ContextMenuIcon';
 import { SwapParticipantNumbersDialog } from './SwapParticipantNumbersDialog';
 
 type ParticipantFormContextMenuProps = {

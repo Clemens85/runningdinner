@@ -1,5 +1,6 @@
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, Grid, useMediaQuery, useTheme } from '@mui/material';
 import React from 'react';
-import { Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, Button, useMediaQuery, Grid, useTheme } from '@mui/material';
+
 import { DialogTitleCloseable } from '../DialogTitleCloseable';
 import { PrimaryButton } from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';

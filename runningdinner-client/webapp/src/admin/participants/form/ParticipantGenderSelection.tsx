@@ -1,10 +1,11 @@
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import ParticipantGenderTooltip from '../../../common/gender/ParticipantGenderTooltip';
+import Typography from '@mui/material/Typography';
+import { CONSTANTS, LabelValue,ValueTranslate } from '@runningdinner/shared';
+import { Controller,useFormContext } from 'react-hook-form';
+
 import ParticipantGenderIcon from '../../../common/gender/ParticipantGenderIcon';
-import { useFormContext, Controller } from 'react-hook-form';
-import { ValueTranslate, CONSTANTS, LabelValue } from '@runningdinner/shared';
+import ParticipantGenderTooltip from '../../../common/gender/ParticipantGenderTooltip';
 
 export default function ParticipantGenderSelection(props: LabelValue) {
   const { label, value: fieldName } = props;

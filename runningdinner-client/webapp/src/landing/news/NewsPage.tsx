@@ -1,8 +1,9 @@
-import { PageTitle } from '../../common/theme/typography/Tags';
-import { Trans, useTranslation } from 'react-i18next';
-import { useNewsItems } from './NewsItemsHook';
-import { NewsCard } from './NewsCard';
 import { Box, Grid } from '@mui/material';
+import { Trans, useTranslation } from 'react-i18next';
+
+import { PageTitle } from '../../common/theme/typography/Tags';
+import { NewsCard } from './NewsCard';
+import { useNewsItems } from './NewsItemsHook';
 
 export function NewsPage() {
   const { t } = useTranslation(['news', 'common']);

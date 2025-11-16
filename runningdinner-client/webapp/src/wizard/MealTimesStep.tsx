@@ -1,4 +1,4 @@
-import React from 'react';
+import { Grid, useMediaQuery, useTheme } from '@mui/material';
 import {
   AfterPartyLocation,
   enableAfterPartyLocation,
@@ -16,10 +16,6 @@ import {
   updateMeals,
   validateRunningDinnerAfterPartyLocation,
 } from '@runningdinner/shared';
-import { PageTitle } from '../common/theme/typography/Tags';
-import WizardButtons from './WizardButtons';
-import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
 import {
   Meal,
   OptionsNavigationStep,
@@ -29,13 +25,18 @@ import {
   validateRunningDinnerOptions,
 } from '@runningdinner/shared';
 import { useWizardSelector } from '@runningdinner/shared';
-import MealTimeEditControl from '../admin/dashboard/MealTimeEditControl';
 import { cloneDeep } from 'lodash-es';
-import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Grid, useMediaQuery, useTheme } from '@mui/material';
-import { AfterPartyLocationToggleButton } from '../common/dinnersettings/AfterPartyLocationToggleButton';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+
+import MealTimeEditControl from '../admin/dashboard/MealTimeEditControl';
 import { AfterPartyLocationFormControl } from '../common/dinnersettings/AfterPartyLocationFormControl';
+import { AfterPartyLocationToggleButton } from '../common/dinnersettings/AfterPartyLocationToggleButton';
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+import { PageTitle } from '../common/theme/typography/Tags';
+import WizardButtons from './WizardButtons';
 
 export default function MealTimesStep() {
   const { t } = useTranslation(['wizard', 'common']);
@@ -71,7 +72,7 @@ export default function MealTimesStep() {
   React.useEffect(() => {
     clearErrors();
     reset(afterPartyLocation);
-    // eslint-disable-next-line
+     
   }, [reset, clearErrors, afterPartyLocation]);
 
   React.useEffect(() => {

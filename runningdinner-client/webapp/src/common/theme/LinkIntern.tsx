@@ -1,6 +1,6 @@
 import { Link } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
 import { isStringEmpty, Parent } from '@runningdinner/shared';
+import { Link as RouterLink } from 'react-router-dom';
 
 export interface LinkInternProps extends Parent {
   pathname: string;

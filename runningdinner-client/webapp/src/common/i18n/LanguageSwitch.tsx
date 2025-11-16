@@ -1,5 +1,5 @@
+import { Button,ButtonGroup } from '@mui/material';
 import React from 'react';
-import { ButtonGroup, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 export function LanguageSwitch() {

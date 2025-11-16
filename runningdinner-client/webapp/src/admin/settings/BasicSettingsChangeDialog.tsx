@@ -1,7 +1,8 @@
-import { Dialog, DialogContent, Box } from '@mui/material';
+import { Box,Dialog, DialogContent } from '@mui/material';
 import { Alert } from '@mui/material';
-import { CallbackHandler, SettingsChangeType, RunningDinnerBasicDetailsFormModel } from '@runningdinner/shared';
-import { useTranslation, Trans } from 'react-i18next';
+import { CallbackHandler, RunningDinnerBasicDetailsFormModel,SettingsChangeType } from '@runningdinner/shared';
+import { Trans,useTranslation } from 'react-i18next';
+
 import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
 import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
 import { Subtitle } from '../../common/theme/typography/Tags';

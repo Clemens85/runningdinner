@@ -1,6 +1,6 @@
-import React from 'react';
-import parse from 'html-react-parser';
 import { getTruncatedText } from '@runningdinner/shared';
+import parse from 'html-react-parser';
+import React from 'react';
 
 export interface TextViewHtmlParsedProps {
   text: string;

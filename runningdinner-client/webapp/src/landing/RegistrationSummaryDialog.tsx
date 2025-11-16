@@ -1,10 +1,11 @@
-import { CallbackHandler, CallbackHandlerAsync, useDisclosure, BasePublicDinnerProps, RegistrationDataCollection } from '@runningdinner/shared';
-import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent } from '@mui/material';
-import { DialogTitleCloseable } from '../common/theme/DialogTitleCloseable';
+import { BasePublicDinnerProps, CallbackHandler, CallbackHandlerAsync, RegistrationDataCollection,useDisclosure } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
 import DialogActionsPanel from '../common/theme/DialogActionsPanel';
-import { RegistrationSummaryContentView } from './RegistrationSummaryContentView';
+import { DialogTitleCloseable } from '../common/theme/DialogTitleCloseable';
 import { RegistrationPaymentDialog } from './RegistrationPaymentDialog';
+import { RegistrationSummaryContentView } from './RegistrationSummaryContentView';
 
 type RegistrationSummaryDialogProps = {
   registrationDataCollection: RegistrationDataCollection;

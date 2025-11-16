@@ -1,5 +1,4 @@
-import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
-import { Box, Dialog, DialogActions, DialogContent, Alert, Autocomplete, TextField, UseAutocompleteProps } from '@mui/material';
+import { Alert, Autocomplete, Box, Dialog, DialogActions, DialogContent, TextField, UseAutocompleteProps } from '@mui/material';
 import {
   BaseAdminIdProps,
   CallbackHandler,
@@ -18,13 +17,15 @@ import {
 } from '@runningdinner/shared';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import Paragraph from '../../../common/theme/typography/Paragraph';
-import LinkIntern from '../../../common/theme/LinkIntern';
-import { DefaultDialogCancelButton, DialogActionsButtons } from '../../../common/theme/dialog/DialogActionsButtons';
-import { PrimarySuccessButtonAsync } from '../../../common/theme/PrimarySuccessButtonAsync';
-import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
-import { useAdminNavigation } from '../../AdminNavigationHook';
+
 import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import { DefaultDialogCancelButton, DialogActionsButtons } from '../../../common/theme/dialog/DialogActionsButtons';
+import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import LinkIntern from '../../../common/theme/LinkIntern';
+import { PrimarySuccessButtonAsync } from '../../../common/theme/PrimarySuccessButtonAsync';
+import Paragraph from '../../../common/theme/typography/Paragraph';
+import { useAdminNavigation } from '../../AdminNavigationHook';
 
 interface SelectParticiantToSwitchProps extends BaseAdminIdProps {
   srcParticipant: Participant;
@@ -131,7 +132,7 @@ export function SwapParticipantNumbersDialog({ onCancel, onParticipantsSwapped, 
     if (!selectedParticipant) {
       return;
     }
-    let allParticipants = concatParticipantList(participantList);
+    const allParticipants = concatParticipantList(participantList);
     const selectedParticipantForSwap = findEntityById(allParticipants, selectedParticipant.id);
     if (isStringNotEmpty(selectedParticipantForSwap.teamId)) {
       showError(t('admin:participants_swap_number_teams_existing_error'));

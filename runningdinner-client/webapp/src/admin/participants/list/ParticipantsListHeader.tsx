@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { Typography, Grid, TextField, Box, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { Box, Grid, InputAdornment,TextField, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
 import {
-  useDebounce,
-  isStringEmpty,
-  searchParticipants,
-  isArrayNotEmpty,
-  getParticipantsExportUrl,
   BaseAdminIdProps,
-  ParticipantList,
   concatParticipantList,
+  getParticipantsExportUrl,
+  isArrayNotEmpty,
+  isStringEmpty,
+  ParticipantList,
   ParticipantListable,
+  searchParticipants,
+  useDebounce,
   useFindParticipants,
   useNumberOfParticipants,
 } from '@runningdinner/shared';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PageTitle } from '../../../common/theme/typography/Tags';
-import Button from '@mui/material/Button';
+
+import HtmlTranslate from '../../../common/i18n/HtmlTranslate';
 import { FormCheckboxSimple } from '../../../common/input/FormCheckboxSimple';
 import { commonStyles } from '../../../common/theme/CommonStyles';
-import HtmlTranslate from '../../../common/i18n/HtmlTranslate';
+import { PageTitle } from '../../../common/theme/typography/Tags';
 
 export type ParticipantSearchResult = {
   filteredParticipants: ParticipantListable[];
@@ -141,7 +142,7 @@ function NumberOfParticipants({ participantList }: NumberOfParticipantsProps) {
 
   const { numberOfParticipantsTotal, numberOfParticipantsWaitingList } = useNumberOfParticipants(participantList);
 
-  let result = <HtmlTranslate i18n="participants_number" ns="admin" parameters={{ numberParticipants: numberOfParticipantsTotal }} />;
+  const result = <HtmlTranslate i18n="participants_number" ns="admin" parameters={{ numberParticipants: numberOfParticipantsTotal }} />;
 
   let numberOfParticipantsWaitingListInfo = '';
   if (numberOfParticipantsWaitingList > 0) {

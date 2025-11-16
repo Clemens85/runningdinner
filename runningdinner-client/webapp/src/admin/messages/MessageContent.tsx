@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
 import Box from '@mui/material/Box';
-import MessageTemplates from './MessageTemplates';
-import { Controller, useFormContext } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
+import React, { useRef } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
+
+import MessageTemplates from './MessageTemplates';
 
 export interface MessageContentProps {
   templates?: string[];

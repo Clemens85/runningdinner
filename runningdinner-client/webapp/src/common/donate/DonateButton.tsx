@@ -1,16 +1,17 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, Typography, useMediaQuery, useTheme } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Trans, useTranslation } from 'react-i18next';
-import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
+import { Box, Button, Dialog, DialogActions, DialogContent, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { CONSTANTS, useDisclosure } from '@runningdinner/shared';
-import Paragraph from '../theme/typography/Paragraph';
-import SecondaryButton from '../theme/SecondaryButton';
-import LinkExtern from '../theme/LinkExtern';
-import { commonStyles } from '../theme/CommonStyles';
 import { useState } from 'react';
-import { DialogActionsButtons } from '../theme/dialog/DialogActionsButtons';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { FormCheckboxSimple } from '../input/FormCheckboxSimple';
+import { commonStyles } from '../theme/CommonStyles';
+import { DialogActionsButtons } from '../theme/dialog/DialogActionsButtons';
+import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
+import LinkExtern from '../theme/LinkExtern';
 import { PrimaryButton } from '../theme/PrimaryButton';
+import SecondaryButton from '../theme/SecondaryButton';
+import Paragraph from '../theme/typography/Paragraph';
 
 export enum DonateDialogType {
   STANDARD,

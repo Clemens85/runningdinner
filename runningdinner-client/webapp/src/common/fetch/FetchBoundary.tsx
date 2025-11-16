@@ -1,11 +1,12 @@
+import { useBackendIssueHandler } from '@runningdinner/shared';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import React from 'react';
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
+import { Trans } from 'react-i18next';
+
+import { useNotificationHttpError } from '../NotificationHttpErrorHook';
 import { ProgressBar } from '../ProgressBar';
 import { PrimaryButton } from '../theme/PrimaryButton';
-import { Trans } from 'react-i18next';
-import { useBackendIssueHandler } from '@runningdinner/shared';
-import { useNotificationHttpError } from '../NotificationHttpErrorHook';
 
 export const FetchBoundary = ({ children }: { children: React.ReactNode }) => (
   <QueryErrorResetBoundary>

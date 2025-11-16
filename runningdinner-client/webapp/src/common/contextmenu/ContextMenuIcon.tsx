@@ -1,7 +1,7 @@
-import React from 'react';
-import { IconButton, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { IconButton, Menu, MenuItem } from '@mui/material';
 import { CallbackHandler, isStringNotEmpty } from '@runningdinner/shared';
+import React from 'react';
 
 export interface ContextMenuIconProps {
   entries: ContextMenuEntry[];

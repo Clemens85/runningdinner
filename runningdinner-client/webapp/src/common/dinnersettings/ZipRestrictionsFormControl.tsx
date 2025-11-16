@@ -1,6 +1,5 @@
+import ClearIcon from '@mui/icons-material/Clear';
 import { Alert, Box, Chip, Dialog, DialogContent, Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
-import SecondaryButton from '../theme/SecondaryButton';
-import { Trans, useTranslation } from 'react-i18next';
 import {
   calculateResultingZipRestrictions,
   CallbackHandler,
@@ -12,12 +11,14 @@ import {
   useDisclosure,
 } from '@runningdinner/shared';
 import { t } from 'i18next';
-import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
-import { useState } from 'react';
 import { debounce } from 'lodash-es';
-import DialogActionsPanel from '../theme/DialogActionsPanel';
-import ClearIcon from '@mui/icons-material/Clear';
+import { useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { useIsMobileDevice } from '../theme/CustomMediaQueryHook';
+import DialogActionsPanel from '../theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
+import SecondaryButton from '../theme/SecondaryButton';
 
 export type ZipRestrictionsFormControlProps = {
   currentRegistrationType: string;

@@ -1,3 +1,8 @@
+import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
+import IcecreamIcon from '@mui/icons-material/Icecream';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
+import SoupKitchenIcon from '@mui/icons-material/SoupKitchen';
+import { Alert } from '@mui/material';
 import { Box, styled } from '@mui/system';
 import {
   AfterPartyLocation,
@@ -5,30 +10,26 @@ import {
   DinnerRouteMapCalculator,
   DinnerRouteTeam,
   Fullname,
-  MealType,
-  TeamNr,
-  Time,
   getFullname,
   isArrayEmpty,
   isArrayNotEmpty,
   isDarkColor,
   isStringNotEmpty,
+  MealType,
+  TeamNr,
+  Time,
   useDisclosure,
 } from '@runningdinner/shared';
-import { SmallTitle, Span, Subtitle } from '../theme/typography/Tags';
-import { uniq } from 'lodash-es';
-import LinkExtern from '../theme/LinkExtern';
-import { useTranslation } from 'react-i18next';
-import { Alert } from '@mui/material';
-import { useGeoPosition } from '../hooks/GeoPositionHook';
-import { AdvancedMarker, InfoWindow, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
-import { useEffect, useState } from 'react';
 import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry } from '@runningdinner/shared';
-import SoupKitchenIcon from '@mui/icons-material/SoupKitchen';
-import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
-import IcecreamIcon from '@mui/icons-material/Icecream';
-import LocalBarIcon from '@mui/icons-material/LocalBar';
+import { AdvancedMarker, InfoWindow, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
+import { uniq } from 'lodash-es';
+import { useEffect, useState } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useGeoPosition } from '../hooks/GeoPositionHook';
+import LinkExtern from '../theme/LinkExtern';
+import { SmallTitle, Span, Subtitle } from '../theme/typography/Tags';
 
 export const TeamCardDetailRow = styled('div')({
   display: 'flex',

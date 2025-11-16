@@ -1,6 +1,7 @@
-import { useAsyncCallback } from '@runningdinner/shared';
-import { PrimaryButton } from './PrimaryButton';
 import { ButtonProps } from '@mui/material';
+import { useAsyncCallback } from '@runningdinner/shared';
+
+import { PrimaryButton } from './PrimaryButton';
 
 export const PrimarySuccessButtonAsync = (props: ButtonProps) => {
   const { size, onClick, disabled, children, ...rest } = props;

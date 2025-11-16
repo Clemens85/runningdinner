@@ -1,17 +1,18 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Container } from '@mui/material';
 import React from 'react';
-import Impressum from './Impressum';
-import { LandingWizard } from './LandingWizard';
-import { LandingStart } from './LandingStart';
-import { PublicDinnerEventsPage } from './PublicDinnerEventsPage';
-import { PublicDinnerEventRegistrationPage } from './PublicDinnerEventRegistrationPage';
-import { IMPRESSUM_PATH, LANDING_CREATE_RUNNING_DINNER_PATH, LANDING_NEWS_PATH, LANDING_START_PATH, RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
-import { PublicDinnerEventRegistrationFinishedPage } from './PublicDinnerEventRegistrationFinishedPage';
+import { Navigate, Route, Routes } from 'react-router-dom';
+
 import { BrowserTitle } from '../common/mainnavigation/BrowserTitle';
+import { IMPRESSUM_PATH, LANDING_CREATE_RUNNING_DINNER_PATH, LANDING_NEWS_PATH, LANDING_START_PATH, RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
+import Impressum from './Impressum';
+import { LandingBanner } from './LandingBanner';
+import { LandingStart } from './LandingStart';
+import { LandingWizard } from './LandingWizard';
 import { NewsPage } from './news/NewsPage';
 import { ParticipantActivationPage } from './ParticipantActivationPage';
-import { Container } from '@mui/material';
-import { LandingBanner } from './LandingBanner';
+import { PublicDinnerEventRegistrationFinishedPage } from './PublicDinnerEventRegistrationFinishedPage';
+import { PublicDinnerEventRegistrationPage } from './PublicDinnerEventRegistrationPage';
+import { PublicDinnerEventsPage } from './PublicDinnerEventsPage';
 
 export function LandingRoute() {
   return (

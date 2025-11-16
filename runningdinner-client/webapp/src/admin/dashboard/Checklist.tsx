@@ -1,15 +1,16 @@
-import React from 'react';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import DoneIcon from '@mui/icons-material/Done';
+import GroupIcon from '@mui/icons-material/Group';
+import MailIcon from '@mui/icons-material/Mail';
+import SaveIcon from '@mui/icons-material/Save';
+import { Box, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { Subtitle } from '../../common/theme/typography/Tags';
-import { Box, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import { BaseRunningDinnerProps, DashboardAdminActivities, getDaysFromTodayTillEndOfRegistration, isClosedDinner } from '@runningdinner/shared';
-import DoneIcon from '@mui/icons-material/Done';
-import SaveIcon from '@mui/icons-material/Save';
-import MailIcon from '@mui/icons-material/Mail';
-import GroupIcon from '@mui/icons-material/Group';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Subtitle } from '../../common/theme/typography/Tags';
 
 export interface ChecklistProps extends BaseRunningDinnerProps {
   dashboardAdminActivities: DashboardAdminActivities;

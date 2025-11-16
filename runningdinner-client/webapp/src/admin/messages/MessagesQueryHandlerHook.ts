@@ -1,6 +1,7 @@
 import { isArrayEmpty, isStringNotEmpty, MessageSubType, MessageType } from '@runningdinner/shared';
-import { MESSAGE_SUBTYPE_QUERY_PARAM, SELECTED_TEAM_IDS_QUERY_PARAM } from '../AdminNavigationHook';
+
 import { useUrlQuery } from '../../common/hooks/useUrlQuery';
+import { MESSAGE_SUBTYPE_QUERY_PARAM, SELECTED_TEAM_IDS_QUERY_PARAM } from '../AdminNavigationHook';
 
 export function useMessagesQueryHandler(messageType: MessageType) {
   const query = useUrlQuery();

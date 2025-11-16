@@ -1,14 +1,5 @@
-import { Box, Button, Divider, Grid, Hidden, Paper } from '@mui/material';
-import Paragraph from '../../common/theme/typography/Paragraph';
-import { useTranslation } from 'react-i18next';
-import TeamSchedule from './TeamSchedule';
-import { Span, Subtitle } from '../../common/theme/typography/Tags';
-import LinkAction from '../../common/theme/LinkAction';
-import { TeamMemberCancelDialog, TeamMemberCancelDialogResult } from './cancellation/TeamMemberCancelDialog';
-import ContextMenuIcon from '../../common/contextmenu/ContextMenuIcon';
-import { CancelledTeamMember } from './CancelledTeamMember';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import { TeamCancelDialog } from './cancellation/TeamCancelDialog';
+import { Box, Button, Divider, Grid, Hidden, Paper } from '@mui/material';
 import {
   assertDefined,
   BaseAdminIdProps,
@@ -35,10 +26,20 @@ import {
   useFindTeamMeetingPlan,
   ValueTranslate,
 } from '@runningdinner/shared';
-import { useAdminNavigation } from '../AdminNavigationHook';
 import { concat } from 'lodash-es';
-import { TeamPartnerWishIcon } from './TeamPartnerWishIcon';
+import { useTranslation } from 'react-i18next';
+
+import ContextMenuIcon from '../../common/contextmenu/ContextMenuIcon';
+import LinkAction from '../../common/theme/LinkAction';
+import Paragraph from '../../common/theme/typography/Paragraph';
+import { Span, Subtitle } from '../../common/theme/typography/Tags';
+import { useAdminNavigation } from '../AdminNavigationHook';
+import { TeamCancelDialog } from './cancellation/TeamCancelDialog';
+import { TeamMemberCancelDialog, TeamMemberCancelDialogResult } from './cancellation/TeamMemberCancelDialog';
+import { CancelledTeamMember } from './CancelledTeamMember';
 import { SwapMealsDialog } from './SwapMealsDialog';
+import { TeamPartnerWishIcon } from './TeamPartnerWishIcon';
+import TeamSchedule from './TeamSchedule';
 
 export interface TeamDetailsProps {
   team: Team;

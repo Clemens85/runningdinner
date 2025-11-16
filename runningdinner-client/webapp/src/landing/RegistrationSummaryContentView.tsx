@@ -1,4 +1,8 @@
-import { Trans, useTranslation } from 'react-i18next';
+import DoneIcon from '@mui/icons-material/Done';
+import MailIcon from '@mui/icons-material/Mail';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import { Box, Typography } from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
 import {
   hasTeamPartnerRegistrationData,
   isStringEmpty,
@@ -8,13 +12,10 @@ import {
   useMealSpecificsStringify,
   ValueTranslate,
 } from '@runningdinner/shared';
-import { Box, Typography } from '@mui/material';
-import { Span, Subtitle } from '../common/theme/typography/Tags';
-import MailIcon from '@mui/icons-material/Mail';
-import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import { Trans, useTranslation } from 'react-i18next';
+
 import Paragraph from '../common/theme/typography/Paragraph';
-import DoneIcon from '@mui/icons-material/Done';
-import { Alert, AlertTitle } from '@mui/material';
+import { Span, Subtitle } from '../common/theme/typography/Tags';
 
 export function RegistrationSummaryContentView(registrationSummary: RegistrationSummary) {
   const { t } = useTranslation(['landing', 'common']);

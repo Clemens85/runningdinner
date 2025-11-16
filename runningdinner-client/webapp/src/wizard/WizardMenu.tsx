@@ -1,15 +1,18 @@
-import React from 'react';
-import WizardMenuNotificationBar from './WizardMenuNotificationBar';
+import DoneIcon from '@mui/icons-material/Done';
+import EditIcon from '@mui/icons-material/Edit';
+import ListIcon from '@mui/icons-material/List';
+import PeopleIcon from '@mui/icons-material/People';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { AppBar, LinearProgress, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { useWizardSelector } from '@runningdinner/shared/';
+import { styled } from '@mui/material/styles';
 import {
   getAdministrationUrlSelector,
-  getLoadingDataErrorSelector,
   getAllNavigationStepsSelector,
-  isLoadingDataSelector,
   getCurrentNavigationStepSelector,
+  getLoadingDataErrorSelector,
+  isLoadingDataSelector,
 } from '@runningdinner/shared';
-import { useTranslation } from 'react-i18next';
 import {
   BasicDetailsNavigationStep,
   FinishNavigationStep,
@@ -22,16 +25,14 @@ import {
   SummaryNavigationStep,
   useBackendIssueHandler,
 } from '@runningdinner/shared';
-import EditIcon from '@mui/icons-material/Edit';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import ListIcon from '@mui/icons-material/List';
-import DoneIcon from '@mui/icons-material/Done';
-import PeopleIcon from '@mui/icons-material/People';
-import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
-import useWizardNavigation from './WizardNavigationHook';
+import { useWizardSelector } from '@runningdinner/shared/';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { FeedbackButtonContainerRightAligned } from '../common/feedback/FeedbackButton';
-import { styled } from '@mui/material/styles';
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+import WizardMenuNotificationBar from './WizardMenuNotificationBar';
+import useWizardNavigation from './WizardNavigationHook';
 
 const NavList = styled(List)(({ theme }) => ({
   display: `flex`,

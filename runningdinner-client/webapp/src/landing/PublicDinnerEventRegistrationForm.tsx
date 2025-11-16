@@ -1,4 +1,4 @@
-import { Alert, Box, Chip, Grid, LinearProgress, Link, Paper } from '@mui/material';
+import { Alert, Box, Chip, Grid, LinearProgress, Paper } from '@mui/material';
 import {
   assertDefined,
   BasePublicDinnerProps,
@@ -7,7 +7,6 @@ import {
   finalizeRegistrationOrder,
   HttpError,
   isStringEmpty,
-  isStringNotEmpty,
   newEmptyRegistrationDataInstance,
   performRegistration,
   performRegistrationValidation,
@@ -17,32 +16,32 @@ import {
   useBackendIssueHandler,
   useDisclosure,
 } from '@runningdinner/shared';
-import { Trans, useTranslation } from 'react-i18next';
-import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Subtitle } from '../common/theme/typography/Tags';
-import { PersonalDataSection } from '../admin/participants/form/PersonalDataSection';
+import { Trans, useTranslation } from 'react-i18next';
+
 import AddressSection from '../admin/participants/form/AddressSection';
 import MealSpecificsSection from '../admin/participants/form/MealSpecificsSection';
 import MiscSection from '../admin/participants/form/MiscSection';
-import SecondaryButton from '../common/theme/SecondaryButton';
-import { PrimaryButton } from '../common/theme/PrimaryButton';
-import { useEffect } from 'react';
-import FormCheckbox from '../common/input/FormCheckbox';
-import LinkExtern from '../common/theme/LinkExtern';
-import { IMPRESSUM_PATH } from '../common/mainnavigation/NavigationPaths';
-import { useUrlQuery } from '../common/hooks/useUrlQuery';
-import { getDecodedQueryParam } from '../common/QueryParamDecoder';
+import { PersonalDataSection } from '../admin/participants/form/PersonalDataSection';
 import { TeamPartnerWishSectionRegistration } from '../admin/participants/form/TeamPartnerWishSectionRegistration';
-import { RegistrationSummaryDialog } from './RegistrationSummaryDialog';
-import { RegistrationFormDrawer } from './LandingStyles';
-import { RegistrationPaymentProgressBackdrop } from './RegistrationPaymentProgressBackdrop';
-import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
+import { useUrlQuery } from '../common/hooks/useUrlQuery';
+import FormCheckbox from '../common/input/FormCheckbox';
+import { IMPRESSUM_PATH } from '../common/mainnavigation/NavigationPaths';
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+import { getDecodedQueryParam } from '../common/QueryParamDecoder';
 import { commonStyles } from '../common/theme/CommonStyles';
-import { useQuery } from '@tanstack/react-query';
+import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
 import { ConfirmationDialog } from '../common/theme/dialog/ConfirmationDialog';
-import Paragraph from '../common/theme/typography/Paragraph';
+import LinkExtern from '../common/theme/LinkExtern';
+import { PrimaryButton } from '../common/theme/PrimaryButton';
+import SecondaryButton from '../common/theme/SecondaryButton';
+import { Subtitle } from '../common/theme/typography/Tags';
+import { RegistrationFormDrawer } from './LandingStyles';
 import { PublicContactInfo } from './PublicContactInfo';
+import { RegistrationPaymentProgressBackdrop } from './RegistrationPaymentProgressBackdrop';
+import { RegistrationSummaryDialog } from './RegistrationSummaryDialog';
 
 type BaseRegistrationFormProps = {
   onCancel: CallbackHandler;

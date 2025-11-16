@@ -1,9 +1,10 @@
-import { LocalDate } from '@runningdinner/shared';
-import CardContent from '@mui/material/CardContent';
-import { Avatar, CardHeader } from '@mui/material';
-import { NewsItem } from './NewsItemsHook';
-import { CardFlexibleHeight } from '../LandingStyles';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { Avatar, CardHeader } from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import { LocalDate } from '@runningdinner/shared';
+
+import { CardFlexibleHeight } from '../LandingStyles';
+import { NewsItem } from './NewsItemsHook';
 
 interface NewsCardItem extends Omit<NewsItem, 'content'> {
   content: React.ReactNode;

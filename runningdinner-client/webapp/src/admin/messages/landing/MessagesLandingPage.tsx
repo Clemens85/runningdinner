@@ -1,23 +1,23 @@
-import { BaseAdminIdProps, BaseRunningDinnerProps, CallbackHandler, isQuerySucceeded, isStringNotEmpty, MessageType, useFindTeams } from '@runningdinner/shared';
-import { Box, Button, Card, Grid, Link, Stack, Typography } from '@mui/material';
-import { PageTitle, Span } from '../../../common/theme/typography/Tags';
-import Paragraph from '../../../common/theme/typography/Paragraph';
-import { useTranslation } from 'react-i18next';
-
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import { SENT_FROM_MESSAGE_TYPE_QUERY_PARAM } from '../../AdminNavigationHook';
-import { MessageJobsOverview } from '../messagejobs/MessageJobsOverview';
+import { Box, Button, Card, Grid, Link, Stack, Typography } from '@mui/material';
+import { BaseAdminIdProps, BaseRunningDinnerProps, CallbackHandler, isQuerySucceeded, isStringNotEmpty, MessageType, useFindTeams } from '@runningdinner/shared';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+
+import { DonateDialog, DonateDialogType } from '../../../common/donate/DonateButton';
 import { FetchProgressBar } from '../../../common/FetchProgressBar';
-import { useIsMobileDevice } from '../../../common/theme/CustomMediaQueryHook';
-import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
 import { BackToListButton, useMasterDetailView } from '../../../common/hooks/MasterDetailViewHook';
 import { BrowserTitle } from '../../../common/mainnavigation/BrowserTitle';
-import { useMessageCardInfo } from './useMessageCardInfo';
-import { CardRoundedClickable } from './CardRoundedClickable';
+import { useIsMobileDevice } from '../../../common/theme/CustomMediaQueryHook';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import Paragraph from '../../../common/theme/typography/Paragraph';
+import { PageTitle, Span } from '../../../common/theme/typography/Tags';
+import { SENT_FROM_MESSAGE_TYPE_QUERY_PARAM } from '../../AdminNavigationHook';
 import { useDonatePopup } from '../../common/useDonatePopup';
-import { DonateDialog, DonateDialogType } from '../../../common/donate/DonateButton';
+import { MessageJobsOverview } from '../messagejobs/MessageJobsOverview';
+import { CardRoundedClickable } from './CardRoundedClickable';
+import { useMessageCardInfo } from './useMessageCardInfo';
 
 type BaseMessagesCardProps = {
   currentMessageType: MessageType | undefined;

@@ -1,6 +1,7 @@
-import { useTranslation } from 'react-i18next';
 import { COMMON_ERROR_NAMESPACE, HttpError, isArrayEmpty, isArrayNotEmpty, Issue, Issues, isValidationError } from '@runningdinner/shared';
 import { getBackendIssuesFromErrorResponse, mapBackendIssuesToIssues } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
 import { CustomSnackbarOptions, useCustomSnackbar } from './theme/CustomSnackbarHook';
 
 export interface HttpErrorDefaultNotificationProps {
@@ -57,7 +58,7 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
       issues = mapBackendIssuesToIssues(backendIssues);
     }
 
-    let optionsToUse = options
+    const optionsToUse = options
       ? options
       : {
           showMessageForValidationErrorsWithoutSource: true,

@@ -1,8 +1,8 @@
+import { CloseRounded } from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import { omit } from 'lodash-es';
 import { OptionsObject, useSnackbar, VariantType } from 'notistack';
 import { ReactNode } from 'react';
-import IconButton from '@mui/material/IconButton';
-import { CloseRounded } from '@mui/icons-material';
-import { omit } from 'lodash-es';
 export interface CustomSnackbarOptions extends OptionsObject {
   showCloseButton?: boolean;
   wrapInHtmlContainer?: boolean;

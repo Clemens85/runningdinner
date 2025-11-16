@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { DialogTitleCloseable } from '../common/theme/DialogTitleCloseable';
-import { DialogContent, Dialog, Card, CardContent, Typography, CardActions, Grid } from '@mui/material';
+import { Card, CardActions, CardContent, Dialog, DialogContent, Grid,Typography } from '@mui/material';
 import { BasePublicDinnerProps, CallbackHandler, createRegistrationOrder, isStringNotEmpty, LocalDate, RegistrationDataCollection } from '@runningdinner/shared';
+import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import Paragraph from '../common/theme/typography/Paragraph';
-import { PaymentCardHeader, PaymentCardHeadlinePricing, PaymentCardList, PaymentCardPricing } from './LandingStyles';
-import paypalLogo from './images/paypal-logo.png';
+
+import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
+import { DialogTitleCloseable } from '../common/theme/DialogTitleCloseable';
 import LinkExtern from '../common/theme/LinkExtern';
 import { PrimaryButton } from '../common/theme/PrimaryButton';
-import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
+import Paragraph from '../common/theme/typography/Paragraph';
+import paypalLogo from './images/paypal-logo.png';
+import { PaymentCardHeader, PaymentCardHeadlinePricing, PaymentCardList, PaymentCardPricing } from './LandingStyles';
 
 type RegistrationPaymentDialogProps = {
   onCancel: CallbackHandler;

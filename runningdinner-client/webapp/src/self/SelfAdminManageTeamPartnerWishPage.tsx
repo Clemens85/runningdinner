@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import { PageTitle, Span } from '../common/theme/typography/Tags';
-import Paragraph from '../common/theme/typography/Paragraph';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { getSelfAdminSessionDataFetchSelector, updateSelfTeamPartnerWish, useBackendIssueHandler, useSelfAdminSelector } from '@runningdinner/shared';
-import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
-import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
-import { PrimaryButton } from '../common/theme/PrimaryButton';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+
 import { useUrlQuery } from '../common/hooks/useUrlQuery';
-import { Alert, AlertTitle } from '@mui/material';
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
 import { getDecodedQueryParam } from '../common/QueryParamDecoder';
 import { commonStyles } from '../common/theme/CommonStyles';
+import { PrimaryButton } from '../common/theme/PrimaryButton';
+import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle, Span } from '../common/theme/typography/Tags';
 
 export default function SelfAdminManageTeamPartnerWishPage() {
   const { data: selfAdminSessionData } = useSelfAdminSelector(getSelfAdminSessionDataFetchSelector);

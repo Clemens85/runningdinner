@@ -1,6 +1,7 @@
-import React from 'react';
-import { useTeaserPopup } from './useTeaserPopup';
 import { CallbackHandler } from '@runningdinner/shared';
+import React from 'react';
+
+import { useTeaserPopup } from './useTeaserPopup';
 
 // Show until 2024-04-10
 const showUntil = new Date(2024, 3, 10);

@@ -1,6 +1,7 @@
-import { getTruncatedText } from '@runningdinner/shared';
-import { useIsDeviceMinWidth } from './CustomMediaQueryHook';
 import { Tooltip } from '@mui/material';
+import { getTruncatedText } from '@runningdinner/shared';
+
+import { useIsDeviceMinWidth } from './CustomMediaQueryHook';
 
 type EllipsisResponsiveProps = {
   text: string;

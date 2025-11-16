@@ -1,6 +1,4 @@
-import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent, Box } from '@mui/material';
-import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import { Box,Dialog, DialogContent } from '@mui/material';
 import {
   cancelTeamMemberAsync,
   CONSTANTS,
@@ -12,10 +10,13 @@ import {
   Team,
   useBackendIssueHandler,
 } from '@runningdinner/shared';
-import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
-import { Span } from '../../../common/theme/typography/Tags';
+import { useTranslation } from 'react-i18next';
+
 import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
 import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import { Span } from '../../../common/theme/typography/Tags';
 
 export interface TeamMemberCancelDialogProps {
   adminId: string;

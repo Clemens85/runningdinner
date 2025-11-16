@@ -1,11 +1,12 @@
 import { Box, Card, CardContent, Dialog, DialogContent } from '@mui/material';
-import { Fullname, LocalDate, ParticipantRegistrationInfo, Time, isStringNotEmpty } from '@runningdinner/shared';
-import { Trans, useTranslation } from 'react-i18next';
+import { Fullname, isStringNotEmpty,LocalDate, ParticipantRegistrationInfo, Time } from '@runningdinner/shared';
 import { useState } from 'react';
-import LinkExtern from '../../common/theme/LinkExtern';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { FormCheckboxSimple } from '../../common/input/FormCheckboxSimple';
 import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
 import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
+import LinkExtern from '../../common/theme/LinkExtern';
 import Paragraph from '../../common/theme/typography/Paragraph';
 import { SmallTitle } from '../../common/theme/typography/Tags';
 

@@ -1,9 +1,10 @@
-import React from 'react';
-import { TableContainer, Paper, Table, TableBody, Box, Grid } from '@mui/material';
-import ParticipantRow, { ParticipantClickCallback } from './ParticipantRow';
+import { Box, Grid,Paper, Table, TableBody, TableContainer } from '@mui/material';
 import { getRunningDinnerMandatorySelector, isArrayNotEmpty, isSameEntity, ParticipantList, ParticipantListable, useAdminSelector } from '@runningdinner/shared';
-import { WaitingListManagementAlert } from './WaitingListManagementAlert';
+import React from 'react';
+
+import ParticipantRow, { ParticipantClickCallback } from './ParticipantRow';
 import { ParticipantSearchResult } from './ParticipantsListHeader';
+import { WaitingListManagementAlert } from './WaitingListManagementAlert';
 
 export type ParticipantsListProps = {
   participantsListInfo: React.ReactNode;

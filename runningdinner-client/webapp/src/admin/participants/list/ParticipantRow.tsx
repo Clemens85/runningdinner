@@ -1,9 +1,5 @@
-import { Hidden, TableCell, Tooltip, useMediaQuery, useTheme } from '@mui/material';
-import ParticipantGenderIcon from '../../../common/gender/ParticipantGenderIcon';
-import ParticipantGenderTooltip from '../../../common/gender/ParticipantGenderTooltip';
-import NumSeats from './NumSeats';
-import { TableCellBorderBottomNullable, TableRowWithCursor } from '../../../common/theme/CommonStyles';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { Hidden, TableCell, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import {
   AddressLocation,
   Fullname,
@@ -15,9 +11,14 @@ import {
   TeamPartnerWishState,
 } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
-import { Span } from '../../../common/theme/typography/Tags';
-import { EllipsisResponsive } from '../../../common/theme/EllipsisResponsive';
+
+import ParticipantGenderIcon from '../../../common/gender/ParticipantGenderIcon';
+import ParticipantGenderTooltip from '../../../common/gender/ParticipantGenderTooltip';
+import { TableCellBorderBottomNullable, TableRowWithCursor } from '../../../common/theme/CommonStyles';
 import { useIsDeviceMinWidth } from '../../../common/theme/CustomMediaQueryHook';
+import { EllipsisResponsive } from '../../../common/theme/EllipsisResponsive';
+import { Span } from '../../../common/theme/typography/Tags';
+import NumSeats from './NumSeats';
 
 export type ParticipantClickCallback = {
   onClick: (participant: ParticipantListable) => unknown;

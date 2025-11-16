@@ -1,18 +1,19 @@
-import { Box, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext } from '@runningdinner/shared';
-import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
-import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
-import { FabProps } from '@mui/material/Fab';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import DirectionsOutlinedIcon from '@mui/icons-material/DirectionsOutlined';
-import Groups2Icon from '@mui/icons-material/Groups2';
 // import Backdrop from '@mui/material/Backdrop';
 // import { useState } from 'react';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CloseIcon from '@mui/icons-material/Close';
+import DirectionsOutlinedIcon from '@mui/icons-material/DirectionsOutlined';
+import EditIcon from '@mui/icons-material/Edit';
+import Groups2Icon from '@mui/icons-material/Groups2';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import { Box, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
+import { FabProps } from '@mui/material/Fab';
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
 import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { ADVANCED_TAB_INDEX, DISTANCES_TAB_INDEX } from './MapControlsSidebar';
-import { useTranslation } from 'react-i18next';
 
 export function MapControlsOverlay() {
   const { dispatch } = useDinnerRouteOverviewContext();

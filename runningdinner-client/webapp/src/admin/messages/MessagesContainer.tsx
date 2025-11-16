@@ -1,17 +1,9 @@
 import { Box, Grid, Paper, useMediaQuery, useTheme } from '@mui/material';
-import { PageTitle } from '../../common/theme/typography/Tags';
-import { FormProvider, useForm } from 'react-hook-form';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import MessageHeadline from './MessageHeadline';
-import { PrimaryButton } from '../../common/theme/PrimaryButton';
-import MessageSubject from './MessageSubject';
-import MessageContent from './MessageContent';
-import { RecipientSelection } from './RecipientSelection';
-import { MessagePreview } from './MessagePreview';
 import {
   BaseAdminIdProps,
   BaseMessage,
+  BaseRunningDinnerProps,
+  CONSTANTS,
   DINNERROUTE_MESSAGE_VALIDATION_SCHEMA,
   fetchInitialMessageData,
   findEntityById,
@@ -19,11 +11,15 @@ import {
   getExampleParticipantMessage,
   getExampleTeamMessage,
   getRecipientsSelector,
+  HttpError,
+  isAfterPartyLocationDefined,
   isArrayNotEmpty,
   MessageType,
   PARTICIPANT_MESSAGE_VALIDATION_SCHEMA,
+  RunningDinner,
   sendMessages,
   setCustomSelectedRecipients,
+  setupInitialMessageType,
   TEAM_MESSAGE_VALIDATION_SCHEMA,
   updateDinnerRouteHostsPartTemplatePreviewAsync,
   updateDinnerRouteSelfPartTemplatePreviewAsync,
@@ -34,18 +30,23 @@ import {
   useAdminDispatch,
   useAdminSelector,
   useBackendIssueHandler,
-  CONSTANTS,
-  setupInitialMessageType,
-  BaseRunningDinnerProps,
-  isAfterPartyLocationDefined,
-  RunningDinner,
-  HttpError,
 } from '@runningdinner/shared';
-import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
-import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
-import { useMessagesQueryHandler } from './MessagesQueryHandlerHook';
 import { FetchStatus } from '@runningdinner/shared';
+import { useEffect } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
+import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import { PrimaryButton } from '../../common/theme/PrimaryButton';
+import { PageTitle } from '../../common/theme/typography/Tags';
 import { useAdminNavigation } from '../AdminNavigationHook';
+import MessageContent from './MessageContent';
+import MessageHeadline from './MessageHeadline';
+import { MessagePreview } from './MessagePreview';
+import { useMessagesQueryHandler } from './MessagesQueryHandlerHook';
+import MessageSubject from './MessageSubject';
+import { RecipientSelection } from './RecipientSelection';
 
 export function TeamMessages({ runningDinner }: BaseRunningDinnerProps) {
   const { adminId } = runningDinner;

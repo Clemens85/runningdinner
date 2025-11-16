@@ -1,18 +1,19 @@
-import { DinnerRouteMessages, ParticipantMessages, TeamMessages } from './messages/MessagesContainer';
-import TeamsContainer from './teams/TeamsContainer';
-import Dashboard from './dashboard/Dashboard';
-import { Route, Routes } from 'react-router-dom';
 import { getRunningDinnerFetchSelector, useAdminSelector } from '@runningdinner/shared';
-import Acknowledge from './common/Acknowledge';
-import TeamDinnerRoute from './teams/TeamDinnerRoute';
-import { MessageJobDetailsList } from './messages/messagejobs/MessageJobDetailsList';
-import { SettingsPage } from './settings/SettingsPage';
+import { Route, Routes } from 'react-router-dom';
+
 import { BrowserTitle } from '../common/mainnavigation/BrowserTitle';
-import { PaymentOptionsPage } from './paymentoptions/PaymentOptionsPage';
-import { ParticipantsPage } from './participants/ParticipantsPage';
+import Acknowledge from './common/Acknowledge';
+import Dashboard from './dashboard/Dashboard';
 import { HostLocationsPage } from './hostlocations';
 import { MessagesLandingPage } from './messages/landing';
+import { MessageJobDetailsList } from './messages/messagejobs/MessageJobDetailsList';
+import { DinnerRouteMessages, ParticipantMessages, TeamMessages } from './messages/MessagesContainer';
+import { ParticipantsPage } from './participants/ParticipantsPage';
+import { PaymentOptionsPage } from './paymentoptions/PaymentOptionsPage';
+import { SettingsPage } from './settings/SettingsPage';
 import { SupportPage } from './support/SupportPage.tsx';
+import TeamDinnerRoute from './teams/TeamDinnerRoute';
+import TeamsContainer from './teams/TeamsContainer';
 
 export default function AdminRoute() {
   const runningDinnerFetchData = useAdminSelector(getRunningDinnerFetchSelector);

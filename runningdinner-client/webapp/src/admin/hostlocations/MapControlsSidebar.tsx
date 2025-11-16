@@ -1,13 +1,14 @@
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Box, Divider, Drawer, IconButton, Stack, styled, Tab, Tabs, Typography } from '@mui/material';
-import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { DinnerRouteMapData, DinnerRouteOverviewActionType, DinnerRouteWithDistancesList, useDinnerRouteOverviewContext } from '@runningdinner/shared';
 import { BaseAdminIdProps } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { TeamLocationsFilterList } from './TeamLocationsFilterList';
-import { RouteDistancesView } from './RouteDistancesView';
+
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { NearbyHostsAnalysis } from './NearbyHostsAnalysis';
 import { ResetAllButton } from './ResetAllButton';
+import { RouteDistancesView } from './RouteDistancesView';
+import { TeamLocationsFilterList } from './TeamLocationsFilterList';
 
 export const SIDEBAR_WIDTH = 540;
 

@@ -1,5 +1,6 @@
-import { RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
 import { useNavigate } from 'react-router-dom';
+
+import { RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
 
 export function generateRegistrationFinishedPath(publicDinnerId: string) {
   return `/${RUNNING_DINNER_EVENTS_PATH}/${publicDinnerId}/registration-finished`;

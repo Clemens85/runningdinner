@@ -1,9 +1,7 @@
-import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { getRunningDinnerSelector, useWizardSelector } from '@runningdinner/shared';
 import { isDemoDinnerSelector, setNextNavigationStep, setPreviousNavigationStep, updateWithCreatedRunningDinner } from '@runningdinner/shared';
-import { useDispatch } from 'react-redux';
-import { FormProvider, useForm } from 'react-hook-form';
 import {
   CONSTANTS,
   Contract,
@@ -14,15 +12,18 @@ import {
   SummaryNavigationStep,
   useBackendIssueHandler,
 } from '@runningdinner/shared';
-import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
-import { PageTitle, Subtitle } from '../common/theme/typography/Tags';
-import FormTextField from '../common/input/FormTextField';
-import WizardButtons from './WizardButtons';
-import Paragraph from '../common/theme/typography/Paragraph';
-import Grid from '@mui/material/Grid';
+import React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+
 import FormCheckbox from '../common/input/FormCheckbox';
+import FormTextField from '../common/input/FormTextField';
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
 import LinkExtern from '../common/theme/LinkExtern';
-import { Box } from '@mui/material';
+import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle, Subtitle } from '../common/theme/typography/Tags';
+import WizardButtons from './WizardButtons';
 
 export default function FinishStep() {
   const { t } = useTranslation(['wizard', 'common']);
@@ -45,13 +46,13 @@ export default function FinishStep() {
   React.useEffect(() => {
     reset(newFormModel(runningDinner));
     clearErrors();
-    // eslint-disable-next-line
+     
   }, [reset, clearErrors, runningDinner]);
 
   React.useEffect(() => {
     dispatch(setNextNavigationStep(SummaryNavigationStep));
     dispatch(setPreviousNavigationStep(ParticipantPreviewNavigationStep));
-    // eslint-disable-next-line
+     
   }, [dispatch]);
 
   const submitRunningDinnerAsync = async (values: RunningDinner) => {

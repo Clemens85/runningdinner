@@ -1,9 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Box, Button, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, Grid, Radio, RadioGroup } from '@mui/material';
-import FormTextField from '../../../common/input/FormTextField';
-import FormFieldset from '../../../common/theme/FormFieldset';
-import { Trans, useTranslation } from 'react-i18next';
-import { Span } from '../../../common/theme/typography/Tags';
+import { Alert } from '@mui/material';
 import {
   assertDefined,
   CallbackHandler,
@@ -15,16 +11,21 @@ import {
   TeamPartnerOption,
   useDisclosure,
 } from '@runningdinner/shared';
-import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
-import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
-import Paragraph from '../../../common/theme/typography/Paragraph';
-import SecondaryButton from '../../../common/theme/SecondaryButton';
-import { TeamPartnerWishFormInput } from './TeamPartnerWishFormInput';
-import { Alert } from '@mui/material';
-import { useFormContext } from 'react-hook-form';
-import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { FetchProgressBar } from '../../../common/FetchProgressBar';
+import FormTextField from '../../../common/input/FormTextField';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import FormFieldset from '../../../common/theme/FormFieldset';
+import SecondaryButton from '../../../common/theme/SecondaryButton';
+import Paragraph from '../../../common/theme/typography/Paragraph';
+import { Span } from '../../../common/theme/typography/Tags';
+import { TeamPartnerWishFormInput } from './TeamPartnerWishFormInput';
 
 export type TeamPartnerWishSectionRegistrationProps = {
   invitingParticipantEmail?: string;

@@ -1,8 +1,9 @@
 import { Box } from '@mui/material';
 import { Alert } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { PrimaryButton } from '../../../common/theme/PrimaryButton';
 import { BaseRunningDinnerProps, useDisclosure, useFindParticipants } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
+import { PrimaryButton } from '../../../common/theme/PrimaryButton';
 import { WaitingListManagementDialog } from './WaitingListManagementDialog';
 
 type WaitingListManagementAlertProps = {

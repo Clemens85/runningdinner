@@ -1,7 +1,7 @@
-import React from 'react';
 import { Chip, Tooltip } from '@mui/material';
-import { canHost, isNumSeatsUnknown, Participant, RunningDinnerSessionData } from '@runningdinner/shared';
 import { styled } from '@mui/material/styles';
+import { canHost, isNumSeatsUnknown, Participant, RunningDinnerSessionData } from '@runningdinner/shared';
+import React from 'react';
 
 const ChipWhiteText = styled(Chip)({
   color: 'white',

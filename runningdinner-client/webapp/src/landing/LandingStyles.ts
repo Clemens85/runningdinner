@@ -1,6 +1,7 @@
-import bannerImg from './images/banner-pan.jpg';
-import { styled } from '@mui/material/styles';
 import { Button, Card, CardHeader, Drawer, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+import bannerImg from './images/banner-pan.jpg';
 
 export const TeaserCardRow = styled('div')(({ theme }) => ({
   marginBottom: theme.spacing(3),

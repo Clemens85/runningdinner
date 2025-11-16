@@ -1,38 +1,39 @@
-import React from 'react';
-import {
-  CONSTANTS,
-  isAcknowledgeRequired,
-  isNotificationRequired,
-  formatLocalDateWithSeconds,
-  reSendRunningDinnerCreatedMessageAsync,
-  useDisclosure,
-  useAdminSelector,
-  getRunningDinnerFetchSelector,
-  RunningDinner,
-  CallbackHandler,
-  BaseRunningDinnerProps,
-  ReSendRunningDinnerCreatedMessageModel,
-  useBackendIssueHandler,
-  useAdminDispatch,
-  setUpdatedRunningDinner,
-  HttpError,
-  newReSendRunningdinnerCreatedMessageModel,
-  isDinnerExpired,
-} from '@runningdinner/shared';
-import { Trans, useTranslation } from 'react-i18next';
 import { AlertColor, Box, Dialog, DialogContent, Grid } from '@mui/material';
-import AlertCentered from '../../common/theme/AlertCentered';
+import {
+  BaseRunningDinnerProps,
+  CallbackHandler,
+  CONSTANTS,
+  formatLocalDateWithSeconds,
+  getRunningDinnerFetchSelector,
+  HttpError,
+  isAcknowledgeRequired,
+  isDinnerExpired,
+  isNotificationRequired,
+  newReSendRunningdinnerCreatedMessageModel,
+  reSendRunningDinnerCreatedMessageAsync,
+  ReSendRunningDinnerCreatedMessageModel,
+  RunningDinner,
+  setUpdatedRunningDinner,
+  useAdminDispatch,
+  useAdminSelector,
+  useBackendIssueHandler,
+  useDisclosure,
+} from '@runningdinner/shared';
 import { FetchData } from '@runningdinner/shared/src/redux';
-import LinkAction from '../../common/theme/LinkAction';
-import { FeedbackButton } from '../../common/feedback/FeedbackButton';
-import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
-import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
-import { Span } from '../../common/theme/typography/Tags';
-import FormTextField from '../../common/input/FormTextField';
-import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
+import { Trans, useTranslation } from 'react-i18next';
+
+import { FeedbackButton } from '../../common/feedback/FeedbackButton';
 import { GLOBAL_NOTIFICATION_BANNER_ENABLED, GlobalNotificationBanner, GlobalNotificationBannerApp } from '../../common/global-notification';
+import FormTextField from '../../common/input/FormTextField';
+import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import AlertCentered from '../../common/theme/AlertCentered';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
+import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
+import LinkAction from '../../common/theme/LinkAction';
+import { Span } from '../../common/theme/typography/Tags';
 
 export default function AdminNotificationBar() {
   const { t } = useTranslation('admin');
@@ -64,7 +65,7 @@ export default function AdminNotificationBar() {
   const acknowledgeRequired = isAcknowledgeRequired(runningDinner);
   const expired = isDinnerExpired(runningDinner, new Date());
 
-  let notificationMessage = [];
+  const notificationMessage = [];
   if (cancellationDate) {
     const cancellationDateFormatted = formatLocalDateWithSeconds(cancellationDate);
     notificationMessage.push(<Box key="cancellationDate">{t('notification_dinner_cancellation_text', { cancellationDate: cancellationDateFormatted })}</Box>);

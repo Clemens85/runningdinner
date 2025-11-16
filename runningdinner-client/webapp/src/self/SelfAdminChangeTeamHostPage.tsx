@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import { Box, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme } from '@mui/material';
+import { Alert } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
 import {
   fetchSelfAdminTeam,
   Fullname,
@@ -17,22 +21,18 @@ import {
   useSelfAdminDispatch,
   useSelfAdminSelector,
 } from '@runningdinner/shared';
-import { Trans, useTranslation } from 'react-i18next';
-import { PageTitle } from '../common/theme/typography/Tags';
-import { Box, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import { PrimaryButton } from '../common/theme/PrimaryButton';
+import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import FormTextField from '../common/input/FormTextField';
+import { Trans, useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 
-import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
-import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
-import Paragraph from '../common/theme/typography/Paragraph';
-import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
+import FormTextField from '../common/input/FormTextField';
 import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
-import { Alert } from '@mui/material';
 import { commonStyles } from '../common/theme/CommonStyles';
-import { styled } from '@mui/material/styles';
+import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
+import { PrimaryButton } from '../common/theme/PrimaryButton';
+import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle } from '../common/theme/typography/Tags';
 
 const NewSelectedHostText = styled('strong')(({ theme }) => ({
   color: theme.palette.secondary.main,

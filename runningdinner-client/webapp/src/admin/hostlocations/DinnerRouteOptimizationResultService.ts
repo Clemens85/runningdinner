@@ -1,4 +1,5 @@
 import { DinnerRouteOptimizationResult } from '@runningdinner/shared';
+
 import { deleteLocalStorageByPrefix, deleteLocalStorageInAdminId, getLocalStorageInAdminId, setLocalStorageInAdminId } from '../../common/LocalStorageService';
 
 export class DinnerRouteOptimizationResultService {

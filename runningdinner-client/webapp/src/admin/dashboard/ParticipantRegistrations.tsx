@@ -1,4 +1,6 @@
-import { useEffect } from 'react';
+import DoneIcon from '@mui/icons-material/Done';
+import { Box, Button, Card, CardContent, Dialog, DialogContent, List, ListItem, ListItemSecondaryAction, ListItemText, Typography, useMediaQuery } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import {
   assertDefined,
   BaseAdminIdProps,
@@ -23,23 +25,22 @@ import {
   useBackendIssueHandler,
   useDisclosure,
 } from '@runningdinner/shared';
-import { Box, Button, Card, CardContent, Dialog, DialogContent, List, ListItem, ListItemSecondaryAction, ListItemText, Typography, useMediaQuery } from '@mui/material';
-import { Span, Subtitle } from '../../common/theme/typography/Tags';
+import { InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { cloneDeep } from 'lodash-es';
+import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import LinkAction from '../../common/theme/LinkAction';
-import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
-import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
-import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
-import DoneIcon from '@mui/icons-material/Done';
-import { useAdminNavigation } from '../AdminNavigationHook';
+
+import { FetchProgressBar } from '../../common/FetchProgressBar';
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
-import { Theme } from '@mui/material/styles';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
+import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
+import LinkAction from '../../common/theme/LinkAction';
 import LinkExtern from '../../common/theme/LinkExtern';
+import { Span, Subtitle } from '../../common/theme/typography/Tags';
+import { useAdminNavigation } from '../AdminNavigationHook';
 import { MissingParticipantActivationDialog } from '../common/MissingParticipantActivationDialog';
 import { useMissingParticipantActivation } from '../common/MissingParticipantActivationHook';
-import { InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { FetchProgressBar } from '../../common/FetchProgressBar';
-import { cloneDeep } from 'lodash-es';
 
 function filterNotActivatedRegistrationsTooOld(participantRegistrationDataPages: ParticipantRegistrationInfoList[]): ParticipantRegistrationInfo[] {
   return participantRegistrationDataPages.flatMap((p) => p.notActivatedRegistrationsTooOld).filter((notActivatedRegistration) => isDefined(notActivatedRegistration));

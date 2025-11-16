@@ -1,9 +1,7 @@
-/* eslint-disable complexity */
-import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-
+ 
 import { GoogleMapsContext } from '@vis.gl/react-google-maps';
-
 import type { Ref } from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 
 type PolylineEventProps = {
   onClick?: (e: google.maps.MapMouseEvent) => void;

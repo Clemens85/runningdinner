@@ -1,17 +1,14 @@
-import React from 'react';
-import { PageTitle, Span, Subtitle } from '../common/theme/typography/Tags';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, Grid, IconButton, MenuItem } from '@mui/material';
 import {
-  mapExistingMealTimesToNewMeals,
   BasicDetailsNavigationStep,
+  mapExistingMealTimesToNewMeals,
   MealTimesNavigationStep,
   RunningDinnerOptions,
   useBackendIssueHandler,
   validateRunningDinnerOptions,
 } from '@runningdinner/shared';
-import FormTextField from '../common/input/FormTextField';
-import WizardButtons from './WizardButtons';
-import { Trans, useTranslation } from 'react-i18next';
 import { useWizardSelector } from '@runningdinner/shared';
 import {
   getGenderAspectsSelector,
@@ -21,13 +18,17 @@ import {
   setPreviousNavigationStep,
   updateRunningDinnerOptions,
 } from '@runningdinner/shared';
+import React from 'react';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+
 import FormCheckbox from '../common/input/FormCheckbox';
 import FormSelect from '../common/input/FormSelect';
-import { Button, Grid, IconButton, MenuItem } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import FormTextField from '../common/input/FormTextField';
+import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
+import { PageTitle, Span, Subtitle } from '../common/theme/typography/Tags';
+import WizardButtons from './WizardButtons';
 
 export default function OptionsStep() {
   const { t } = useTranslation(['wizard', 'common']);
@@ -54,13 +55,13 @@ export default function OptionsStep() {
   React.useEffect(() => {
     reset(options);
     clearErrors();
-    // eslint-disable-next-line
+     
   }, [reset, clearErrors, options]);
 
   React.useEffect(() => {
     dispatch(setNextNavigationStep(MealTimesNavigationStep));
     dispatch(setPreviousNavigationStep(BasicDetailsNavigationStep));
-    // eslint-disable-next-line
+     
   }, [dispatch]);
 
   const submitOptionsAsync = async (values: RunningDinnerOptions) => {

@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import { getTeamPartnerOptionOfTeam, hasAllTeamMembersSameTeamPartnerWish, Team } from '@runningdinner/shared';
-import { Grid, Tooltip } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { Grid, Tooltip } from '@mui/material';
+import { getTeamPartnerOptionOfTeam, hasAllTeamMembersSameTeamPartnerWish, Team } from '@runningdinner/shared';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type TeamPartnerWishIconProps = {
   team: Team;

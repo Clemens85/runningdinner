@@ -60,8 +60,8 @@ function getPosition(el: HTMLElement | null) {
 }
 
 export function useElementPosition(ref: RefObject<HTMLElement>) {
-  let { top, left } = getPosition(ref.current);
-  let [ElementPosition, setElementPosition] = useState({
+  const { top, left } = getPosition(ref.current);
+  const [ElementPosition, setElementPosition] = useState({
     top: top,
     left: left,
   });

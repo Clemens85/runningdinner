@@ -8,11 +8,12 @@ import {
   findRouteOptimizationStatus,
   isStringEmpty,
 } from '@runningdinner/shared';
-import { useEffect, useRef, useState } from 'react';
-import { OPTIMIZATION_ID_QUERY_PARAM } from '../AdminNavigationHook';
-import { isAxiosError } from 'axios';
-import { DinnerRouteOptimizationResultService } from './DinnerRouteOptimizationResultService';
 import { useQuery } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
+import { useEffect, useRef, useState } from 'react';
+
+import { OPTIMIZATION_ID_QUERY_PARAM } from '../AdminNavigationHook';
+import { DinnerRouteOptimizationResultService } from './DinnerRouteOptimizationResultService';
 
 const POLLING_INTERVAL = 12000; // 12 seconds
 const MAX_POLLING_ATTEMPTS = 1 + 9; // initial + 9 retries

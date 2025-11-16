@@ -1,5 +1,3 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useWizardSelector } from '@runningdinner/shared';
 import {
   getRunningDinnerBasicDetailsSelector,
@@ -8,20 +6,23 @@ import {
   setPreviousNavigationStep,
   updatePublicSettings,
 } from '@runningdinner/shared';
-import { useDispatch } from 'react-redux';
-import { FormProvider, useForm } from 'react-hook-form';
 import {
+  HttpError,
   MealTimesNavigationStep,
   ParticipantPreviewNavigationStep,
   RunningDinnerPublicSettings,
   useBackendIssueHandler,
   validatePublicSettings,
-  HttpError,
 } from '@runningdinner/shared';
+import React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+
+import { PublicDinnerSettingsFormControl } from '../common/dinnersettings/PublicDinnerSettingsFormControl';
 import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
 import { PageTitle } from '../common/theme/typography/Tags';
 import WizardButtons from './WizardButtons';
-import { PublicDinnerSettingsFormControl } from '../common/dinnersettings/PublicDinnerSettingsFormControl';
 
 export default function PublicRegistrationStep() {
   const { t } = useTranslation(['wizard', 'common']);
@@ -44,13 +45,13 @@ export default function PublicRegistrationStep() {
   React.useEffect(() => {
     reset(publicSettings);
     clearErrors();
-    // eslint-disable-next-line
+     
   }, [reset, clearErrors, publicSettings]);
 
   React.useEffect(() => {
     dispatch(setNextNavigationStep(ParticipantPreviewNavigationStep));
     dispatch(setPreviousNavigationStep(MealTimesNavigationStep));
-    // eslint-disable-next-line
+     
   }, [dispatch]);
 
   const submitPublicSettingsAsync = async (values: RunningDinnerPublicSettings) => {

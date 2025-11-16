@@ -1,4 +1,5 @@
 import { useCallback, useLayoutEffect, useState } from 'react';
+
 import useEventListener from './EventListenerHook';
 
 interface Size {
@@ -23,7 +24,7 @@ function useElementSize<T extends HTMLElement = HTMLDivElement>(): [(node: T | n
       height: ref?.offsetHeight || 0,
     });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [ref?.offsetHeight, ref?.offsetWidth]);
 
   useEventListener('resize', handleSize);

@@ -1,7 +1,8 @@
-import React from 'react';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import Paragraph from '../common/theme/typography/Paragraph';
 
 export function RegistrationPaymentProgressBackdrop() {

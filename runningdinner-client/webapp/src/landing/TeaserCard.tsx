@@ -1,7 +1,8 @@
-import { Parent } from '@runningdinner/shared';
 import CardContent from '@mui/material/CardContent';
-import { Subtitle } from '../common/theme/typography/Tags';
+import { Parent } from '@runningdinner/shared';
 import React from 'react';
+
+import { Subtitle } from '../common/theme/typography/Tags';
 import { CardFlexibleHeight } from './LandingStyles';
 
 export interface TeaserCardProps extends Parent {

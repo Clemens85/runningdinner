@@ -1,8 +1,5 @@
-import DashboardTitle from './DashboardTitle';
-import MealsList from './MealsList';
-import Overview from './Overview';
 import { Box, Grid, useMediaQuery } from '@mui/material';
-import Checklist from './Checklist';
+import { Theme } from '@mui/material/styles';
 import {
   assertDefined,
   BaseRunningDinnerProps,
@@ -12,17 +9,21 @@ import {
   setUpdatedRunningDinner,
   useFindAdminActivitiesByAdminId,
 } from '@runningdinner/shared';
-import { SuperSEO } from 'react-super-seo';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { AdminActivitiesTimeline } from './AdminActivitiesTimeline';
-import { ParticipantRegistrations } from './ParticipantRegistrations';
-import { SmallTitle } from '../../common/theme/typography/Tags';
+import { SuperSEO } from 'react-super-seo';
+
+import { FetchProgressBar } from '../../common/FetchProgressBar';
 import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
 import Paragraph from '../../common/theme/typography/Paragraph';
-import { useTranslation } from 'react-i18next';
+import { SmallTitle } from '../../common/theme/typography/Tags';
+import { AdminActivitiesTimeline } from './AdminActivitiesTimeline';
+import Checklist from './Checklist';
+import DashboardTitle from './DashboardTitle';
+import MealsList from './MealsList';
+import Overview from './Overview';
+import { ParticipantRegistrations } from './ParticipantRegistrations';
 import { PublicRunningDinnerLink } from './PublicRunningDinnerLink';
-import { Theme } from '@mui/material/styles';
-import { FetchProgressBar } from '../../common/FetchProgressBar';
 
 export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
   const { basicDetails, adminId } = runningDinner;

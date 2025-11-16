@@ -1,12 +1,7 @@
-import React from 'react';
-import WizardMenu from './WizardMenu';
 import { Container, Grid } from '@mui/material';
-import { Route, Routes } from 'react-router-dom';
-import BasicDetailsStep from './BasicDetailsStep';
-import OptionsStep from './OptionsStep';
-import { Provider, useDispatch } from 'react-redux';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { BasicDetailsNavigationStep, useWizardSelector, wizardStore } from '@runningdinner/shared';
-import { useUrlQuery } from '../common/hooks/useUrlQuery';
 import { fetchGenderAspects, fetchRegistrationTypes, getRunningDinnerOptionsSelector, updateMeals, updateRunningDinnerType } from '@runningdinner/shared';
 import {
   FinishNavigationStep,
@@ -18,15 +13,21 @@ import {
   SummaryNavigationStep,
   useMealsTranslated,
 } from '@runningdinner/shared';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import React from 'react';
+import { Provider, useDispatch } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
+
 import useDatePickerLocale from '../common/date/DatePickerLocaleHook';
+import { useUrlQuery } from '../common/hooks/useUrlQuery';
+import { BrowserTitle } from '../common/mainnavigation/BrowserTitle';
+import BasicDetailsStep from './BasicDetailsStep';
+import FinishStep from './FinishStep';
 import MealTimesStep from './MealTimesStep';
+import OptionsStep from './OptionsStep';
 import ParticipantPreviewStep from './ParticipantPreviewStep';
 import PublicRegistrationStep from './PublicRegistrationStep';
-import FinishStep from './FinishStep';
 import SummaryStep from './SummaryStep';
-import { BrowserTitle } from '../common/mainnavigation/BrowserTitle';
+import WizardMenu from './WizardMenu';
 
 export default function WizardApp() {
   const query = useUrlQuery();

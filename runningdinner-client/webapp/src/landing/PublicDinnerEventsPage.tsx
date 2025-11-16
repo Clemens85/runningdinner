@@ -1,20 +1,21 @@
-import { PageTitle, Span, Subtitle } from '../common/theme/typography/Tags';
-import { useTranslation } from 'react-i18next';
-import { AddressLocation, findPublicRunningDinnersAsync, isArrayNotEmpty, isQuerySucceeded, LocalDate, PublicRunningDinner } from '@runningdinner/shared';
-import { Box, CardActions, Grid } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
-import { PrimaryButton } from '../common/theme/PrimaryButton';
-import Paragraph from '../common/theme/typography/Paragraph';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { CardFlexibleHeight } from './LandingStyles';
-import { isLocalDevEnv } from '../common/EnvService';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { Box, CardActions, Grid } from '@mui/material';
 import { Alert, AlertTitle } from '@mui/material';
-import LinkIntern from '../common/theme/LinkIntern';
+import CardContent from '@mui/material/CardContent';
+import { AddressLocation, findPublicRunningDinnersAsync, isArrayNotEmpty, isQuerySucceeded, LocalDate, PublicRunningDinner } from '@runningdinner/shared';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+
+import { isLocalDevEnv } from '../common/EnvService';
+import { FetchProgressBar } from '../common/FetchProgressBar';
 import { LANDING_CREATE_RUNNING_DINNER_PATH } from '../common/mainnavigation/NavigationPaths';
 import { TextViewHtml } from '../common/TextViewHtml';
-import { useQuery } from '@tanstack/react-query';
-import { FetchProgressBar } from '../common/FetchProgressBar';
+import LinkIntern from '../common/theme/LinkIntern';
+import { PrimaryButton } from '../common/theme/PrimaryButton';
+import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle, Span, Subtitle } from '../common/theme/typography/Tags';
+import { CardFlexibleHeight } from './LandingStyles';
 
 export function PublicDinnerEventsPage() {
   const { t } = useTranslation(['landing', 'common']);

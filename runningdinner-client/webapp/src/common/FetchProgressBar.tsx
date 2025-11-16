@@ -1,5 +1,6 @@
 import { GENERIC_HTTP_ERROR, getAsHttpErrorOrDefault } from '@runningdinner/shared';
 import { UseQueryResult } from '@tanstack/react-query';
+
 import { ProgressBar } from './ProgressBar';
 
 export type FetchProgressBarProps = {} & Pick<UseQueryResult<unknown, unknown>, 'error' | 'isPending'>;

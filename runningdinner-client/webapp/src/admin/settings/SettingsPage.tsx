@@ -1,57 +1,58 @@
-import React, { useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Box, Button, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
 import {
+  AfterPartyLocation,
+  BaseAdminIdProps,
   BaseRunningDinnerProps,
+  cancelRunningDinnerAsync,
+  deleteAfterPartyLocationAsync,
   findRegistrationTypesAsync,
+  getBackendIssuesFromErrorResponse,
+  getSettingsChangeTypeListAsync,
   HttpError,
+  isAfterPartyLocationDefined,
+  isArrayNotEmpty,
   isClosedDinner,
+  isQuerySucceeded,
   LabelValue,
+  MessageSubType,
+  newAfterPartyLocation,
+  newEmptyRunningDinnerBasicDetailsFormModel,
+  newEmptyRunningDinnerPublicSettings,
+  newHttpError,
+  newObjectWithDefaultValuesIfNotSet,
   RunningDinner,
   RunningDinnerBasicDetailsFormModel,
-  newEmptyRunningDinnerBasicDetailsFormModel,
-  updateBasicSettingsAsync,
-  useBackendIssueHandler,
-  getBackendIssuesFromErrorResponse,
-  newHttpError,
-  useDisclosure,
-  getSettingsChangeTypeListAsync,
-  isArrayNotEmpty,
-  SettingsChangeType,
-  newEmptyRunningDinnerPublicSettings,
-  updatePublicSettingsAsync,
   RunningDinnerPublicSettings,
-  MessageSubType,
-  cancelRunningDinnerAsync,
+  SettingsChangeType,
   setUpdatedRunningDinner,
-  updateRegistrationActiveState,
-  newObjectWithDefaultValuesIfNotSet,
-  AfterPartyLocation,
-  newAfterPartyLocation,
-  isAfterPartyLocationDefined,
-  BaseAdminIdProps,
   updateAfterPartyLocationAsync,
-  deleteAfterPartyLocationAsync,
-  isQuerySucceeded,
+  updateBasicSettingsAsync,
+  updatePublicSettingsAsync,
+  updateRegistrationActiveState,
+  useBackendIssueHandler,
+  useDisclosure,
 } from '@runningdinner/shared';
-import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
-import { BasicDinnerSettingsFormControl } from '../../common/dinnersettings/BasicDinnerSettingsFormControl';
-import { PageTitle, Span, Subtitle } from '../../common/theme/typography/Tags';
-import { Trans, useTranslation } from 'react-i18next';
-import { Box, Button, Grid, useMediaQuery, useTheme } from '@mui/material';
-import { PrimaryButton } from '../../common/theme/PrimaryButton';
-import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
-import { BasicSettingsChangeDialog, BasicSettingsChangeDialogData } from './BasicSettingsChangeDialog';
-import { useAdminNavigation } from '../AdminNavigationHook';
-import { PublicDinnerSettingsFormControl } from '../../common/dinnersettings/PublicDinnerSettingsFormControl';
-import SecondaryButton from '../../common/theme/SecondaryButton';
-import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
-import { Alert, AlertTitle } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import FormCheckbox from '../../common/input/FormCheckbox';
-import { AfterPartyLocationToggleButton } from '../../common/dinnersettings/AfterPartyLocationToggleButton';
-import { AfterPartyLocationFormControl } from '../../common/dinnersettings/AfterPartyLocationFormControl';
 import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+
+import { AfterPartyLocationFormControl } from '../../common/dinnersettings/AfterPartyLocationFormControl';
+import { AfterPartyLocationToggleButton } from '../../common/dinnersettings/AfterPartyLocationToggleButton';
+import { BasicDinnerSettingsFormControl } from '../../common/dinnersettings/BasicDinnerSettingsFormControl';
+import { PublicDinnerSettingsFormControl } from '../../common/dinnersettings/PublicDinnerSettingsFormControl';
 import { FetchProgressBar } from '../../common/FetchProgressBar';
+import FormCheckbox from '../../common/input/FormCheckbox';
+import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
+import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
+import { PrimaryButton } from '../../common/theme/PrimaryButton';
+import SecondaryButton from '../../common/theme/SecondaryButton';
+import { PageTitle, Span, Subtitle } from '../../common/theme/typography/Tags';
+import { useAdminNavigation } from '../AdminNavigationHook';
+import { BasicSettingsChangeDialog, BasicSettingsChangeDialogData } from './BasicSettingsChangeDialog';
 
 export function SettingsPage({ runningDinner }: BaseRunningDinnerProps) {
   const registrationTypesQuery = useQuery({
@@ -480,7 +481,7 @@ function AfterPartyLocationFormView({ adminId, afterPartyLocation, onSettingsSav
       });
     }
     clearErrors();
-    // eslint-disable-next-line
+     
   }, [afterPartyLocation, reset, clearErrors]);
 
   const { applyValidationIssuesToForm } = useBackendIssueHandler();

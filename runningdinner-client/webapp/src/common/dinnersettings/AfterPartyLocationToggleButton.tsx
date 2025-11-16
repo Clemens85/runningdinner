@@ -1,8 +1,9 @@
-import React from 'react';
-import SecondaryButton from '../theme/SecondaryButton';
-import { useTranslation } from 'react-i18next';
-import { SpacingProps } from '@mui/system';
 import { Grid } from '@mui/material';
+import { SpacingProps } from '@mui/system';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
+import SecondaryButton from '../theme/SecondaryButton';
 
 type AfterPartyLocationToggleButtonProps = {
   afterPartyLocationEnabled: boolean;

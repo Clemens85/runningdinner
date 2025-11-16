@@ -1,18 +1,19 @@
-import { Trans, useTranslation } from 'react-i18next';
-import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
-import { Span } from '../theme/typography/Tags';
 import { Box, Dialog, DialogContent } from '@mui/material';
-import { CallbackHandler, Feedback, FeedbackData, HttpError, newEmptyFeedbackInstance, useBackendIssueHandler } from '@runningdinner/shared';
-import DialogActionsPanel from '../theme/DialogActionsPanel';
-import { useNotificationHttpError } from '../NotificationHttpErrorHook';
-import { FormProvider, useForm } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
-import FormTextField from '../input/FormTextField';
-import LinkExtern from '../theme/LinkExtern';
-import { IMPRESSUM_PATH } from '../mainnavigation/NavigationPaths';
+import { CallbackHandler, Feedback, FeedbackData, HttpError, newEmptyFeedbackInstance, useBackendIssueHandler } from '@runningdinner/shared';
 import { saveFeedbackAsync } from '@runningdinner/shared/src/feedback/FeedbackService';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+
+import FormTextField from '../input/FormTextField';
+import { IMPRESSUM_PATH } from '../mainnavigation/NavigationPaths';
+import { useNotificationHttpError } from '../NotificationHttpErrorHook';
 import { useCustomSnackbar } from '../theme/CustomSnackbarHook';
+import DialogActionsPanel from '../theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
+import LinkExtern from '../theme/LinkExtern';
+import { Span } from '../theme/typography/Tags';
 
 export interface FeedbackDialogProps {
   onClose: CallbackHandler;

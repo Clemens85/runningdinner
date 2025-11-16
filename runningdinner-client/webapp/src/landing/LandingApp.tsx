@@ -1,11 +1,12 @@
 import { useMediaQuery } from '@mui/material';
-import { MainNavigation } from '../common/mainnavigation/MainNavigation';
-import { LandingRoute } from './LangingRoute';
 import { useTranslation } from 'react-i18next';
+
+import { GlobalNotificationBanner, GlobalNotificationBannerApp } from '../common/global-notification';
+import { MainNavigation } from '../common/mainnavigation/MainNavigation';
 import { IMPRESSUM_PATH, LANDING_CREATE_RUNNING_DINNER_PATH, LANDING_NEWS_PATH, LANDING_START_PATH, RUNNING_DINNER_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
 import { TeaserPopup } from '../common/teaserpopup';
 import { useIsDeviceMinWidth } from '../common/theme/CustomMediaQueryHook';
-import { GlobalNotificationBanner, GlobalNotificationBannerApp } from '../common/global-notification';
+import { LandingRoute } from './LangingRoute';
 
 export default function LandingApp() {
   const { t } = useTranslation(['landing', 'common']);

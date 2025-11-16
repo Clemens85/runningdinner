@@ -1,6 +1,6 @@
-import { MessageType } from '@runningdinner/shared';
-import MailIcon from '@mui/icons-material/Mail';
 import GroupIcon from '@mui/icons-material/Group';
+import MailIcon from '@mui/icons-material/Mail';
+import { MessageType } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 
 import { useAdminNavigation } from '../../AdminNavigationHook';

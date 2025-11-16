@@ -1,10 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Grid, Paper, Box, LinearProgress } from '@mui/material';
-import ParticipantFormHeadline from './ParticipantFormHeadline';
-import { PersonalDataSection } from './PersonalDataSection';
-import AddressSection from './AddressSection';
-import MealSpecificsSection from './MealSpecificsSection';
-import MiscSection from './MiscSection';
+import { Box, Grid, LinearProgress,Paper } from '@mui/material';
 import {
   CallbackHandler,
   getFullname,
@@ -18,16 +12,23 @@ import {
   saveParticipantAsync,
   useBackendIssueHandler,
 } from '@runningdinner/shared';
-import { PrimaryButton } from '../../../common/theme/PrimaryButton';
-import { DeleteParticipantDialog } from '../delete/DeleteParticipantDialog';
+import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import SecondaryButton from '../../../common/theme/SecondaryButton';
+
 import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
-import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
-import { TeamPartnerWishSectionAdmin } from './TeamPartnerWishSectionAdmin';
 import { commonStyles } from '../../../common/theme/CommonStyles';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import { PrimaryButton } from '../../../common/theme/PrimaryButton';
+import SecondaryButton from '../../../common/theme/SecondaryButton';
+import { DeleteParticipantDialog } from '../delete/DeleteParticipantDialog';
+import AddressSection from './AddressSection';
+import MealSpecificsSection from './MealSpecificsSection';
+import MiscSection from './MiscSection';
 import { ParticipantFormContextMenu } from './ParticipantFormContextMenu';
+import ParticipantFormHeadline from './ParticipantFormHeadline';
+import { PersonalDataSection } from './PersonalDataSection';
+import { TeamPartnerWishSectionAdmin } from './TeamPartnerWishSectionAdmin';
 
 export interface ParticipantFormProps {
   participant: ParticipantListable;
