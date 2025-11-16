@@ -1,10 +1,11 @@
+import axios from 'axios';
 import { cloneDeep } from 'lodash-es';
-import { find, uniqBy, orderBy } from 'lodash-es';
+import { find, orderBy,uniqBy } from 'lodash-es';
+
+import { BackendConfig } from '../../BackendConfig';
 import { Participant, SelectableParticipant, Team } from '../../types';
 import { isArrayEmpty, isArrayNotEmpty, isSameEntity, removeEntityFromList } from '../../Utils';
 import { generateCancelledTeamMembersAsNumberArray } from '../TeamService';
-import { BackendConfig } from '../../BackendConfig';
-import axios from 'axios';
 
 export interface TeamParticipantsAssignmentModel {
   allSelectableParticipants: SelectableParticipant[];

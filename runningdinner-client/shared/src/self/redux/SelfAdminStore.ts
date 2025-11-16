@@ -1,5 +1,6 @@
 import { AnyAction, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import { logger } from 'redux-logger';
+
 import { selfAdminSlice } from './SelfAdminSlice';
 
 export const selfAdminStore = configureStore({

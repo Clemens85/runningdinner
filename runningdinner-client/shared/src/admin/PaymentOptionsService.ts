@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { PaymentOptions } from '../types';
+
 import { BackendConfig } from '../BackendConfig';
+import { PaymentOptions } from '../types';
 import { isNewEntity } from '../Utils';
 
 export async function findPaymentOptionsAsync(adminId: string): Promise<PaymentOptions | undefined> {

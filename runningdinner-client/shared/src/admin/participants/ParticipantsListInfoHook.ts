@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { ParticipantList } from '../../types';
 
 export interface ParticipantListInfo {
@@ -66,7 +67,7 @@ export function useParticipantsListInfo(participantList: ParticipantList): Parti
     setParticipantInfo(result);
   }
   const calculateParticipantInfo = useCallback(() => {
-    _calculateParticipantInfo(); // eslint-disable-next-line
+    _calculateParticipantInfo();  
   }, [participantList]);
 
   useEffect(() => {

@@ -1,3 +1,8 @@
+import axios from 'axios';
+
+import { isArrayNotEmpty, trimStringsInObject } from '..';
+import { BackendConfig } from '../BackendConfig';
+import { getBackendIssuesFromErrorResponse } from '../issue';
 import {
   HttpError,
   isNumSeatsPositiveIntegerOrEmpty,
@@ -9,11 +14,7 @@ import {
   RegistrationSummary,
   RunningDinnerSessionData,
 } from '../types';
-import axios from 'axios';
-import { BackendConfig } from '../BackendConfig';
 import { RegistrationData } from '../types/Registration';
-import { getBackendIssuesFromErrorResponse } from '../issue';
-import { isArrayNotEmpty, trimStringsInObject } from '..';
 
 export async function findPublicRunningDinnersAsync(): Promise<PublicRunningDinner[]> {
   const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner`);

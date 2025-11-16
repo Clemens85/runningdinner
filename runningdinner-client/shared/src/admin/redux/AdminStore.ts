@@ -1,9 +1,10 @@
 import { AnyAction, configureStore, ThunkAction } from '@reduxjs/toolkit';
-import { logger } from 'redux-logger';
 import { combineReducers } from 'redux';
+import { logger } from 'redux-logger';
+
 import { adminSlice } from './AdminSlice';
-import { messagesSlice } from './MessagesSlice';
 import { messageJobDetailsSlice } from './MessageJobDetailsSlice';
+import { messagesSlice } from './MessagesSlice';
 
 export const adminStore = configureStore({
   reducer: combineReducers({

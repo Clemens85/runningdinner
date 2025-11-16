@@ -1,5 +1,5 @@
-import { hasAllTeamMembersSameTeamPartnerWish, Team, TeamStatus } from './Team';
 import { Participant, TeamPartnerOption } from './Participant';
+import { hasAllTeamMembersSameTeamPartnerWish, Team, TeamStatus } from './Team';
 
 it('hasAllTeamMembersSameTeamPartnerWish for team partner wish emails', () => {
   const p1 = newParticipant('max@muster.de', 'maria@muster.de');

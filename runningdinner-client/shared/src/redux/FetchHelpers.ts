@@ -1,5 +1,5 @@
 import { getAsHttpErrorOrDefault } from '..';
-import { newHttpError, HttpError } from '../types';
+import { HttpError,newHttpError } from '../types';
 
 export enum FetchStatus {
   IDLE = 'IDLE',

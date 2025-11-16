@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+
 import { ParticipantList } from '../../types';
 
 export interface NumberOfParticipants {
@@ -27,7 +28,7 @@ export function useNumberOfParticipants(participantList: ParticipantList): Numbe
   }
 
   const calculateParticipantInfo = useCallback(() => {
-    _calculateNumberOfParticipants(); // eslint-disable-next-line
+    _calculateNumberOfParticipants();  
   }, [participantList]);
 
   useEffect(() => {

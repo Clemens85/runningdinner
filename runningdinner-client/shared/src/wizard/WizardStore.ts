@@ -1,7 +1,8 @@
-import { configureStore, getDefaultMiddleware, ThunkAction, Action } from '@reduxjs/toolkit';
-import { logger } from 'redux-logger';
-import { wizardSlice } from './WizardSlice';
+import { Action,configureStore, getDefaultMiddleware, ThunkAction } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { logger } from 'redux-logger';
+
+import { wizardSlice } from './WizardSlice';
 
 const customizedMiddleware = getDefaultMiddleware({
   serializableCheck: false, // I want to use Dates in Redux for now (no persistence of store needed for now...)

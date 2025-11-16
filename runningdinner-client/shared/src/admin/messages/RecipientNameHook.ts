@@ -1,7 +1,7 @@
-import { getFullname } from '../ParticipantService';
-import { isTeam } from '../TeamService';
-import { useTeamNameMembers } from '../teams/TeamNameMembersHook';
 import { Participant, Recipient, Team } from '../../types';
+import { getFullname } from '../ParticipantService';
+import { useTeamNameMembers } from '../teams/TeamNameMembersHook';
+import { isTeam } from '../TeamService';
 
 export function useRecipientName(recipient?: Recipient) {
   const { getTeamNameMembers } = useTeamNameMembers();

@@ -1,4 +1,21 @@
 import { createAction, createAsyncThunk, createReducer, createSelector } from '@reduxjs/toolkit';
+import { find } from 'lodash-es';
+
+import { getMinimumParticipantsNeeded, isClosedDinner } from '../admin';
+import { CONSTANTS } from '../Constants';
+import { findGenderAspectsAsync, findRegistrationTypesAsync } from '../masterdata';
+import { FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../redux';
+import {
+  AfterPartyLocation,
+  HttpError,
+  Meal,
+  newAfterPartyLocation,
+  RunningDinnerBasicDetails,
+  RunningDinnerOptions,
+  RunningDinnerPublicSettings,
+  RunningDinnerType,
+} from '../types';
+import { isStringEmpty, isStringNotEmpty } from '../Utils';
 import {
   ALL_NAVIGATION_STEPS,
   ALL_NAVIGATION_STEPS_CLOSED_DINNER,
@@ -16,22 +33,6 @@ import {
   SummaryNavigationStep,
 } from './CreateWizardService';
 import { WizardRootState } from './WizardStore';
-import { find } from 'lodash-es';
-import {
-  RunningDinnerBasicDetails,
-  RunningDinnerOptions,
-  RunningDinnerPublicSettings,
-  RunningDinnerType,
-  Meal,
-  HttpError,
-  newAfterPartyLocation,
-  AfterPartyLocation,
-} from '../types';
-import { isStringEmpty, isStringNotEmpty } from '../Utils';
-import { findGenderAspectsAsync, findRegistrationTypesAsync } from '../masterdata';
-import { getMinimumParticipantsNeeded, isClosedDinner } from '../admin';
-import { FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../redux';
-import { CONSTANTS } from '../Constants';
 
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');

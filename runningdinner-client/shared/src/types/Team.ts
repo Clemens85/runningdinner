@@ -1,8 +1,8 @@
-import { Meal } from './RunningDinner';
-import { Participant, TeamPartnerOption } from './Participant';
-import { BaseEntity } from './Base';
-import { isArrayEmpty, isStringNotEmpty } from '../Utils';
 import { isTeamPartnerWishRegistration } from '../admin';
+import { isArrayEmpty, isStringNotEmpty } from '../Utils';
+import { BaseEntity } from './Base';
+import { Participant, TeamPartnerOption } from './Participant';
+import { Meal } from './RunningDinner';
 
 export enum TeamStatus {
   OK = 'OK',

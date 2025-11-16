@@ -1,9 +1,10 @@
 import { createAsyncThunk, createReducer } from '@reduxjs/toolkit';
+
 import { FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../../redux';
-import { SelfAdminStateType } from './SelfAdminStore';
-import { newInitialSelfAdminState } from './SelfAdminState';
-import { findSelfAdminDinnerRoute, findSelfAdminSessionDataAsync, findSelfAdminTeam } from '../SelfAdminService';
 import { HttpError, SelfAdminBaseParams, SelfAdminTeamParams } from '../../types';
+import { findSelfAdminDinnerRoute, findSelfAdminSessionDataAsync, findSelfAdminTeam } from '../SelfAdminService';
+import { newInitialSelfAdminState } from './SelfAdminState';
+import { SelfAdminStateType } from './SelfAdminStore';
 
 // *** Actions *** //
 export const fetchSelfAdminSessionData = createAsyncThunk('fetchSelfAdminSessionData', async (selfAdminRequestParams: SelfAdminBaseParams) => {

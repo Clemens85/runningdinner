@@ -1,7 +1,8 @@
-import { BackendConfig } from '../BackendConfig';
 import axios from 'axios';
-import { isArrayEmpty, isStringEmpty, isStringNotEmpty, removeEntitiesFromList } from '../Utils';
-import { get, cloneDeep, find } from 'lodash-es';
+import { cloneDeep, find,get } from 'lodash-es';
+
+import { BackendConfig } from '../BackendConfig';
+import { CONSTANTS } from '../Constants';
 import {
   BaseEntity,
   BaseMessage,
@@ -22,7 +23,7 @@ import {
   TeamMessage,
   TeamSelection,
 } from '../types';
-import { CONSTANTS } from '../Constants';
+import { isArrayEmpty, isStringEmpty, isStringNotEmpty, removeEntitiesFromList } from '../Utils';
 import { filterParticipantsOrganizedInTeams } from './ParticipantService';
 
 export async function findParticipantRecipients(adminId: string): Promise<ParticipantListable[]> {
