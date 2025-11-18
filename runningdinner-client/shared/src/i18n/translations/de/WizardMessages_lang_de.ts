@@ -51,7 +51,7 @@ const Wizard_de: any = {
     'dass du die Daten ausschließlich zur Ausübung persönlicher oder familiärer Tätigkeiten verarbeitest,\n' +
     'soll die <anchor href="/resources/AV-Vereinbarung.pdf" title="Vereinbarung zur Auftragsdatenverarbeitung" /> uns beide rechtlich absichern.',
   adv_text_address_help:
-    'Hierzu müssen wir auch deine persönlich Anschrift abfragen.<br>\n' +
+    'Hierzu müssen wir auch deine persönliche Anschrift abfragen.<br>\n' +
     '<strong>Wichtig: Wir veröffentlichen deine Daten nicht und verwenden Sie ausschließlich für die Erbringung unserer Dienstleistung.</strong>',
 
   finish: 'Fertigstellen!',
