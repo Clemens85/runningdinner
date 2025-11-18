@@ -1,13 +1,9 @@
-import React from "react";
-import {getFullname} from "./admin";
+import React from 'react';
+import { getFullname } from './admin';
 
 function Fullname(props) {
   const fullname = getFullname(props);
-  return (
-      <>{fullname}</>
-  );
+  return <>{fullname}</>;
 }
 
-export {
-  Fullname
-};
+export { Fullname };

@@ -1,43 +1,45 @@
-import {useParams} from "react-router-dom";
-import {Box, Button, Grid, Stack} from "@mui/material";
-import {useEffect, useState} from "react";
-import {useTranslation} from "react-i18next";
-import TeamsNotExisting from "./TeamsNotExisting";
-import TeamsList from "./TeamsList";
-import {EmptyDetails} from "../common/EmptyDetails";
-import TeamDetails from "./TeamDetails";
-import {DndProvider} from "react-dnd";
-import {HTML5Backend} from "react-dnd-html5-backend";
-import {ChangeTeamHostDialog} from "./ChangeTeamHostDialog";
-import {PageTitle} from "../../common/theme/typography/Tags";
-import {useUrlQuery} from "../../common/hooks/useUrlQuery";
+import { Box, Button, Grid, Stack } from '@mui/material';
 import {
   findEntityById,
-  getFullname, getRunningDinnerMandatorySelector,
+  getFullname,
+  getRunningDinnerMandatorySelector,
   HttpError,
   isArrayNotEmpty,
   isQuerySucceeded,
   swapTeamMembersAsync,
   Team,
-  useAdminSelector, useBackendIssueHandler,
+  useAdminSelector,
+  useBackendIssueHandler,
   useDisclosure,
   useFindTeams,
-  useUpdateFindTeamsQueryData
-} from "@runningdinner/shared";
-import {TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation} from "../AdminNavigationHook";
-import { useCustomSnackbar } from "../../common/theme/CustomSnackbarHook";
-import {Link as RouterLink} from "react-router-dom";
-import {BackToListButton, useMasterDetailView} from "../../common/hooks/MasterDetailViewHook";
-import { TeamArrangementActionsButton } from "./TeamArrangementActionsButton";
-import { useNotificationHttpError } from "../../common/NotificationHttpErrorHook";
-import {BrowserTitle} from "../../common/mainnavigation/BrowserTitle";
-import { useIsBigTabletDevice, useIsMobileDevice } from "../../common/theme/CustomMediaQueryHook";
-import { FetchProgressBar } from "../../common/FetchProgressBar";
-import { HelpIconTooltip } from "../../common/theme/HelpIconTooltip";
-import Paragraph from "../../common/theme/typography/Paragraph";
+  useUpdateFindTeamsQueryData,
+} from '@runningdinner/shared';
+import { useEffect, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+
+import { FetchProgressBar } from '../../common/FetchProgressBar';
+import { BackToListButton, useMasterDetailView } from '../../common/hooks/MasterDetailViewHook';
+import { useUrlQuery } from '../../common/hooks/useUrlQuery';
+import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
+import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
+import { useIsBigTabletDevice, useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
+import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
+import Paragraph from '../../common/theme/typography/Paragraph';
+import { PageTitle } from '../../common/theme/typography/Tags';
+import { TEAM_MEMBER_ID_TO_CANCEL_QUERY_PARAM, useAdminNavigation } from '../AdminNavigationHook';
+import { EmptyDetails } from '../common/EmptyDetails';
+import { ChangeTeamHostDialog } from './ChangeTeamHostDialog';
+import { TeamArrangementActionsButton } from './TeamArrangementActionsButton';
+import TeamDetails from './TeamDetails';
+import TeamsList from './TeamsList';
+import TeamsNotExisting from './TeamsNotExisting';
 
 const TeamsContainer = () => {
-
   const query = useUrlQuery();
 
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
@@ -53,10 +55,7 @@ const TeamsContainer = () => {
 
   const teams = findTeamsQuery.data || [];
 
-  return <Teams teamId={teamId}
-                teamMemberIdToCancel={teamMemberIdToCancel}
-                incomingTeams={teams}
-                refetch={findTeamsQuery.refetch} />;
+  return <Teams teamId={teamId} teamMemberIdToCancel={teamMemberIdToCancel} incomingTeams={teams} refetch={findTeamsQuery.refetch} />;
 };
 
 interface TeamsProps {
@@ -66,34 +65,30 @@ interface TeamsProps {
   refetch: () => unknown;
 }
 
-function Teams({incomingTeams, teamId, teamMemberIdToCancel, refetch}: TeamsProps) {
-
+function Teams({ incomingTeams, teamId, teamMemberIdToCancel, refetch }: TeamsProps) {
   const runningDinner = useAdminSelector(getRunningDinnerMandatorySelector);
 
   const { adminId } = runningDinner;
 
-  const {exchangeTeams} = useUpdateFindTeamsQueryData(adminId);
+  const { exchangeTeams } = useUpdateFindTeamsQueryData(adminId);
 
   const [selectedTeam, setSelectedTeam] = useState<Team>();
 
-  const {isOpen: isChangeTeamHostDialogOpen,
-         close: closeChangeTeamHostDialog,
-         open: openChangeTeamHostDialog,
-         getIsOpenData: getTeamForChangeTeamHostDialog} = useDisclosure();
+  const { isOpen: isChangeTeamHostDialogOpen, close: closeChangeTeamHostDialog, open: openChangeTeamHostDialog, getIsOpenData: getTeamForChangeTeamHostDialog } = useDisclosure();
 
-  const {navigateToTeam} = useAdminNavigation();
-  const {t} = useTranslation('admin');
+  const { navigateToTeam } = useAdminNavigation();
+  const { t } = useTranslation('admin');
 
-  const {getIssuesTranslated} = useBackendIssueHandler({
+  const { getIssuesTranslated } = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
-      namespaces: ['admin', 'common']
-    }
+      namespaces: ['admin', 'common'],
+    },
   });
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+  const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
-  const {showSuccess} = useCustomSnackbar();
+  const { showSuccess } = useCustomSnackbar();
 
-  const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
+  const { showBackToListViewButton, setShowDetailsView, showListView, showDetailsView } = useMasterDetailView();
 
   const isBigTablet = useIsBigTabletDevice();
 
@@ -126,12 +121,11 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel, refetch}: TeamsProp
 
   function handleMealsSwapped() {
     setNoSelectedTeam();
-    showSuccess(t("admin:meals_swap_success"));
+    showSuccess(t('admin:meals_swap_success'));
     refetch();
   }
 
-  const handleTeamMemberSwap = async(srcParticipantId: string, destParticipantId: string) => {
-
+  const handleTeamMemberSwap = async (srcParticipantId: string, destParticipantId: string) => {
     let teamArrangementListResult;
     try {
       teamArrangementListResult = await swapTeamMembersAsync(adminId, srcParticipantId, destParticipantId);
@@ -160,7 +154,7 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel, refetch}: TeamsProp
   const updateTeamStateInList = (team: Team) => {
     exchangeTeams([team]);
     handleTeamClick(team);
-    openTeamDetails(team)
+    openTeamDetails(team);
   };
 
   const handleOpenChangeTeamHostDialog = (team: Team) => {
@@ -169,98 +163,99 @@ function Teams({incomingTeams, teamId, teamMemberIdToCancel, refetch}: TeamsProp
 
   if (!teamsExisting) {
     return (
-        <Box>
-          <TeamsTitle hasTeams={false}/>
-          <TeamsNotExisting runningDinner={runningDinner} />
-        </Box>
+      <Box>
+        <TeamsTitle hasTeams={false} />
+        <TeamsNotExisting runningDinner={runningDinner} />
+      </Box>
     );
   }
 
   return (
-      <DndProvider backend={HTML5Backend}>
-        <Box>
-          { !showBackToListViewButton && <TeamsTitle hasTeams={true}/> }
-          <Grid container spacing={2}>
-            { showListView &&
-                <>
-                  <Grid item xs={12} md={isBigTablet ? 12 : 7} sx={{ textAlign: 'right' }}>
-                    <DinnerRouteOverviewLinkButton adminId={adminId} />
-                  </Grid>
-                  <Grid item xs={12} md={isBigTablet ? 12 :5 } sx={{ textAlign: 'right' }}>
-                    <TeamArrangementActionsButton adminId={adminId} />
-                  </Grid>
-                  <Grid item xs={12} md={isBigTablet ? 12 : 7}>
-                    <TeamsList teams={incomingTeams} onClick={handleTeamClick} onTeamMemberSwap={handleTeamMemberSwap}
-                               onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} selectedTeam={selectedTeam} />
-                  </Grid>
-                </>
-            }
-            <Grid item xs={12} md={isBigTablet ? 12 : 5}>
-              { showDetailsView && selectedTeam
-                  ? <>
-                      { showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}
-                      <TeamDetails team={selectedTeam}
-                                   onMealsSwapSuccess={handleMealsSwapped}
-                                   onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
-                                   teamMemberIdToCancel={teamMemberIdToCancel}
-                                   onUpdateTeamState={updateTeamStateInList} />
-                    </>
-                  : <EmptyDetails labelI18n='teams_no_selection' />
-              }
-            </Grid>
+    <DndProvider backend={HTML5Backend}>
+      <Box>
+        {!showBackToListViewButton && <TeamsTitle hasTeams={true} />}
+        <Grid container spacing={2}>
+          {showListView && (
+            <>
+              <Grid item xs={12} md={isBigTablet ? 12 : 7} sx={{ textAlign: 'right' }}>
+                <DinnerRouteOverviewLinkButton adminId={adminId} />
+              </Grid>
+              <Grid item xs={12} md={isBigTablet ? 12 : 5} sx={{ textAlign: 'right' }}>
+                <TeamArrangementActionsButton adminId={adminId} />
+              </Grid>
+              <Grid item xs={12} md={isBigTablet ? 12 : 7}>
+                <TeamsList
+                  teams={incomingTeams}
+                  onClick={handleTeamClick}
+                  onTeamMemberSwap={handleTeamMemberSwap}
+                  onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
+                  selectedTeam={selectedTeam}
+                />
+              </Grid>
+            </>
+          )}
+          <Grid item xs={12} md={isBigTablet ? 12 : 5}>
+            {showDetailsView && selectedTeam ? (
+              <>
+                {showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}
+                <TeamDetails
+                  team={selectedTeam}
+                  onMealsSwapSuccess={handleMealsSwapped}
+                  onOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
+                  teamMemberIdToCancel={teamMemberIdToCancel}
+                  onUpdateTeamState={updateTeamStateInList}
+                />
+              </>
+            ) : (
+              <EmptyDetails labelI18n="teams_no_selection" />
+            )}
           </Grid>
-        </Box>
-        { isChangeTeamHostDialogOpen && <ChangeTeamHostDialog isOpen={isChangeTeamHostDialogOpen}
-                                                              onClose={closeChangeTeamHostDialog}
-                                                              team={getTeamForChangeTeamHostDialog()}
-                                                              adminId={adminId}
-                                                              onTeamHostChanged={updateTeamStateInList} /> }
-      </DndProvider>
+        </Grid>
+      </Box>
+      {isChangeTeamHostDialogOpen && (
+        <ChangeTeamHostDialog
+          isOpen={isChangeTeamHostDialogOpen}
+          onClose={closeChangeTeamHostDialog}
+          team={getTeamForChangeTeamHostDialog()}
+          adminId={adminId}
+          onTeamHostChanged={updateTeamStateInList}
+        />
+      )}
+    </DndProvider>
   );
 }
-
 
 interface TeamsTitleProps {
   hasTeams: boolean;
 }
 
-function TeamsTitle({hasTeams}: TeamsTitleProps) {
-
-  const {t} = useTranslation(['admin']);
+function TeamsTitle({ hasTeams }: TeamsTitleProps) {
+  const { t } = useTranslation(['admin']);
   return (
-      <>
-        <BrowserTitle titleI18nKey={"headline_teams"} namespaces={"admin"}/>
-        <PageTitle>{t('headline_teams')}</PageTitle>
-        { hasTeams && <p style={{ fontWeight: 100 }}>{t("admin:teams_drag_drop_hint")}</p> }
-      </>
+    <>
+      <BrowserTitle titleI18nKey={'headline_teams'} namespaces={'admin'} />
+      <PageTitle>{t('headline_teams')}</PageTitle>
+      {hasTeams && <p style={{ fontWeight: 100 }}>{t('admin:teams_drag_drop_hint')}</p>}
+    </>
   );
 }
-
 
 interface DinnerRouteOverviewLinkButtonProps {
   adminId: string;
 }
-function DinnerRouteOverviewLinkButton({adminId}: DinnerRouteOverviewLinkButtonProps) {
-
-  const {t} = useTranslation('admin');
-  const {generateHostLocationsPath} = useAdminNavigation();
+function DinnerRouteOverviewLinkButton({ adminId }: DinnerRouteOverviewLinkButtonProps) {
+  const { t } = useTranslation('admin');
+  const { generateHostLocationsPath } = useAdminNavigation();
 
   const isMobileDevice = useIsMobileDevice();
 
   return (
-    <Stack alignItems={"center"} justifyContent={"flex-end"} direction="row">
-      <Button color={"primary"}
-              variant={"outlined"}
-              to={generateHostLocationsPath(adminId)}
-              target="_blank"
-              fullWidth={isMobileDevice}
-              component={RouterLink}>{t('admin:hostlocations_overview')}
+    <Stack alignItems={'center'} justifyContent={'flex-end'} direction="row">
+      <Button color={'primary'} variant={'outlined'} to={generateHostLocationsPath(adminId)} target="_blank" fullWidth={isMobileDevice} component={RouterLink}>
+        {t('admin:hostlocations_overview')}
       </Button>
-      <Box sx={{ ml: 1}}>
-        <HelpIconTooltip 
-          title={<Paragraph html={true} i18n='admin:hostlocations_overview_help' />} 
-          sx={{ verticalAlign: "middle" }}
-          placement='right'/>
+      <Box sx={{ ml: 1 }}>
+        <HelpIconTooltip title={<Paragraph html={true} i18n="admin:hostlocations_overview_help" />} sx={{ verticalAlign: 'middle' }} placement="right" />
       </Box>
     </Stack>
   );

@@ -21,10 +21,10 @@ export interface PaymentOptions {
 
 export function newEmptyPaymentOptions(): PaymentOptions {
   return {
-    brandName: "",
+    brandName: '',
     pricePerRegistration: 0.0,
-    pricePerRegistrationFormatted: "",
-    agbLink: "",
-    redirectAfterPurchaseLink: ""
+    pricePerRegistrationFormatted: '',
+    agbLink: '',
+    redirectAfterPurchaseLink: '',
   };
 }

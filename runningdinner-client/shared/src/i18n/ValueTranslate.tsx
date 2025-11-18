@@ -1,15 +1,14 @@
-import {useTranslation} from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 export interface ValueTranslateProps {
   ns?: string;
   prefix: string;
   value: string;
-  valueMapping?: Record<string, string>
+  valueMapping?: Record<string, string>;
 }
 
 export const ValueTranslate = (props: ValueTranslateProps) => {
-
-  const {t} = useTranslation(props.ns);
+  const { t } = useTranslation(props.ns);
 
   let value = props.value.toLowerCase();
 
@@ -22,10 +21,8 @@ export const ValueTranslate = (props: ValueTranslateProps) => {
 
   const i18nKey = props.prefix.toLowerCase() + '_' + value;
 
-  return (
-      <>{t(i18nKey)}</>
-  );
-}
+  return <>{t(i18nKey)}</>;
+};
 
 // ValueTranslate.defaultProps = {
 //   value: '',

@@ -1,16 +1,16 @@
-import React from "react";
-import {Box, Grid, Chip, useMediaQuery, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
-import {HelpIconTooltip} from "../../common/theme/HelpIconTooltip";
-import Paragraph from "../../common/theme/typography/Paragraph";
-import {useTranslation} from "react-i18next";
-import {findEntityById, isArrayEmpty, useDisclosure} from "@runningdinner/shared";
-import {styled, Theme} from "@mui/material/styles";
-import LinkAction from "../../common/theme/LinkAction";
-import { ConfirmationDialog } from "../../common/theme/dialog/ConfirmationDialog";
+import { Box, Chip, Divider, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText,useMediaQuery } from '@mui/material';
+import { styled, Theme } from '@mui/material/styles';
+import { isArrayEmpty, useDisclosure } from '@runningdinner/shared';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
+import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
+import LinkAction from '../../common/theme/LinkAction';
+import Paragraph from '../../common/theme/typography/Paragraph';
 
-const MessageTemplateChip = styled(Chip)(({theme}) => ({
-  margin: theme.spacing(0.5)
+const MessageTemplateChip = styled(Chip)(({ theme }) => ({
+  margin: theme.spacing(0.5),
 }));
 
 export interface MessageTemplatesProps {
@@ -19,65 +19,66 @@ export interface MessageTemplatesProps {
   showTemplatesHelpIcon: boolean;
 }
 
-function MessageTemplates({templates, onTemplateClick, showTemplatesHelpIcon}: MessageTemplatesProps) {
-
-  const {t} = useTranslation(['admin', 'common']);
+function MessageTemplates({ templates, onTemplateClick, showTemplatesHelpIcon }: MessageTemplatesProps) {
+  const { t } = useTranslation(['admin', 'common']);
 
   const smUpDevice = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
 
-  const {isOpen, open, close} = useDisclosure();
+  const { isOpen, open, close } = useDisclosure();
 
   if (isArrayEmpty(templates)) {
     return null;
   }
 
   // @ts-ignore
-  const messageTemplateNodes = templates.map(template =>
-      <Grid item key={template}>
-        <MessageTemplate template={template} onClick={onTemplateClick} />
-      </Grid>
-  );
+  const messageTemplateNodes = templates.map((template) => (
+    <Grid item key={template}>
+      <MessageTemplate template={template} onClick={onTemplateClick} />
+    </Grid>
+  ));
   return (
     <>
-      <Grid container alignItems={"center"} justifyContent={"flex-start"} sx={{ mb: 2 }}>
-        { smUpDevice &&
+      <Grid container alignItems={'center'} justifyContent={'flex-start'} sx={{ mb: 2 }}>
+        {smUpDevice && (
           <Grid item>
-            <Box component={"span"} pr={1}>{t('admin:mails_template_help')}: </Box>
-          </Grid> }
+            <Box component={'span'} pr={1}>
+              {t('admin:mails_template_help')}:{' '}
+            </Box>
+          </Grid>
+        )}
         {messageTemplateNodes}
-        {showTemplatesHelpIcon &&
+        {showTemplatesHelpIcon && (
           <Grid item>
-            <HelpIconTooltip 
+            <HelpIconTooltip
               title={
                 <>
-                  <Paragraph i18n='admin:mails_template_help_description' />
-                  <Box sx={{ mt: 1}}>
-                    <LinkAction onClick={() => open()}><Paragraph i18n="common:more"></Paragraph></LinkAction>
+                  <Paragraph i18n="admin:mails_template_help_description" />
+                  <Box sx={{ mt: 1 }}>
+                    <LinkAction onClick={() => open()}>
+                      <Paragraph i18n="common:more"></Paragraph>
+                    </LinkAction>
                   </Box>
                 </>
-              } 
-              sx={{ verticalAlign: "middle" }}
-              placement='right'/>
+              }
+              sx={{ verticalAlign: 'middle' }}
+              placement="right"
+            />
           </Grid>
-        }
+        )}
       </Grid>
-      { isOpen && 
-        <ConfirmationDialog buttonConfirmText={t('common:ok')} 
-                            onClose={close} 
-                            dialogTitle={t("common:help")}
-                            dialogContent={<TemplateHelpLegend templates={templates} />} /> 
-      }
+      {isOpen && (
+        <ConfirmationDialog buttonConfirmText={t('common:ok')} onClose={close} dialogTitle={t('common:help')} dialogContent={<TemplateHelpLegend templates={templates} />} />
+      )}
     </>
   );
 }
 
-function TemplateHelpLegend({templates}: Pick<MessageTemplatesProps, 'templates'>) {
-
-  const {t} = useTranslation(['admin']);
+function TemplateHelpLegend({ templates }: Pick<MessageTemplatesProps, 'templates'>) {
+  const { t } = useTranslation(['admin']);
 
   function getTemplateHelp(template: string): string {
     if (template.length < 2) {
-      return "";
+      return '';
     }
     const templateWithoutBraces = template.substring(1, template.length - 1);
     return t(`message_template_help_${templateWithoutBraces}`);
@@ -85,33 +86,32 @@ function TemplateHelpLegend({templates}: Pick<MessageTemplatesProps, 'templates'
 
   return (
     <Box>
-      <Paragraph i18n='admin:message_template_help_description' />
-      <Divider sx={{ my: 2}}><strong>{t("admin:legend")}</strong></Divider>
+      <Paragraph i18n="admin:message_template_help_description" />
+      <Divider sx={{ my: 2 }}>
+        <strong>{t('admin:legend')}</strong>
+      </Divider>
       <List dense>
-        { (templates || []).map((template) => 
+        {(templates || []).map((template) => (
           <ListItem disablePadding key={template}>
             <ListItemButton>
               <ListItemIcon>
                 <MessageTemplateChip label={template} />
               </ListItemIcon>
-              <ListItemText primary={<>{getTemplateHelp(template)}</>} sx={{ textAlign: "right" }}/>
+              <ListItemText primary={<>{getTemplateHelp(template)}</>} sx={{ textAlign: 'right' }} />
             </ListItemButton>
           </ListItem>
-        )}
+        ))}
       </List>
     </Box>
-  )
+  );
 }
-
 
 interface MessageTemplateProps {
   template: string;
   onClick: (template: string) => unknown;
 }
-function MessageTemplate({template, onClick}: MessageTemplateProps) {
-  return (
-    <MessageTemplateChip onClick={() => onClick(template)} label={template} />
-  );
+function MessageTemplate({ template, onClick }: MessageTemplateProps) {
+  return <MessageTemplateChip onClick={() => onClick(template)} label={template} />;
 }
 
 export default React.memo(MessageTemplates);

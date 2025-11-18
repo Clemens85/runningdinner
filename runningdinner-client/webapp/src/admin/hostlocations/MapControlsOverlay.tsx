@@ -1,22 +1,23 @@
-import { Box, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
-import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext } from '@runningdinner/shared';
-import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
-import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
-import { FabProps } from '@mui/material/Fab';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import DirectionsOutlinedIcon from '@mui/icons-material/DirectionsOutlined';
-import Groups2Icon from '@mui/icons-material/Groups2';
 // import Backdrop from '@mui/material/Backdrop';
 // import { useState } from 'react';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CloseIcon from '@mui/icons-material/Close';
+import DirectionsOutlinedIcon from '@mui/icons-material/DirectionsOutlined';
+import EditIcon from '@mui/icons-material/Edit';
+import Groups2Icon from '@mui/icons-material/Groups2';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import { Box, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
+import { FabProps } from '@mui/material/Fab';
+import { DinnerRouteOverviewActionType, useDinnerRouteOverviewContext } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
 import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { ADVANCED_TAB_INDEX, DISTANCES_TAB_INDEX } from './MapControlsSidebar';
-import { useTranslation } from 'react-i18next';
 
 export function MapControlsOverlay() {
   const { dispatch } = useDinnerRouteOverviewContext();
-  const {t} = useTranslation(['admin', 'common']);
+  const { t } = useTranslation(['admin', 'common']);
 
   // const [open, setOpen] = useState(false);
   // const handleOpen = () => setOpen(true);
@@ -53,12 +54,12 @@ export function MapControlsOverlay() {
     sx: { backgroundColor: 'primary.main', width: 64, height: 64 },
   };
 
-  const optimizeLabel = t("admin:dinner_route_optimize_action");
-  const distancesLabel = t("common:distances");
-  const nearbyHostsAnalysisLabel = t("admin:dinner_route_hosts_near_distance_title_short");
-  const resetLabel = t("admin:dinner_route_filter_reset");
-  const helpLabel = t("common:help");
-  
+  const optimizeLabel = t('admin:dinner_route_optimize_action');
+  const distancesLabel = t('common:distances');
+  const nearbyHostsAnalysisLabel = t('admin:dinner_route_hosts_near_distance_title_short');
+  const resetLabel = t('admin:dinner_route_filter_reset');
+  const helpLabel = t('common:help');
+
   const actions = [
     { icon: <AutoAwesomeIcon />, name: optimizeLabel, onClick: openRouteOptimization },
     { icon: <DirectionsOutlinedIcon />, name: distancesLabel, onClick: () => openSidebarView(DISTANCES_TAB_INDEX) },

@@ -1,10 +1,10 @@
-import { ChangeEvent, useState, KeyboardEvent } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { Box, Button, Dialog, DialogContent, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
-import MealTimeEditControl from './MealTimeEditControl';
-import { cloneDeep } from 'lodash-es';
-import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
-import { useTranslation } from 'react-i18next';
-import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
+import { AlertTitle } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import {
   BaseAdminIdProps,
   CallbackHandler,
@@ -23,16 +23,17 @@ import {
   useBackendIssueHandler,
   withHourAndMinute,
 } from '@runningdinner/shared';
-import Alert from '@mui/material/Alert';
-import { AlertTitle } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
+import { cloneDeep } from 'lodash-es';
+import { ChangeEvent, KeyboardEvent,useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
-import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
-import { shouldShowDropTeamsConfirmationOnMealsUpdate } from './MealUpdateUtil';
 import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
+import { ConfirmationDialog } from '../../common/theme/dialog/ConfirmationDialog';
+import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
+import MealTimeEditControl from './MealTimeEditControl';
+import { shouldShowDropTeamsConfirmationOnMealsUpdate } from './MealUpdateUtil';
 
 export interface EditMealsDialogProps extends BaseAdminIdProps {
   runningDinnerDate: Date;

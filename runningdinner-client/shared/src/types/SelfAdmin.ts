@@ -1,4 +1,4 @@
-import { Meal } from "./RunningDinner";
+import { Meal } from './RunningDinner';
 
 export interface SelfAdminSessionData {
   selfAdministrationId: string;
@@ -22,6 +22,6 @@ export interface SelfAdminUpdateTeamHostRequest {
   comment: string;
 }
 
-export  interface SelfAdminChangeTeamHostViewModel {
+export interface SelfAdminChangeTeamHostViewModel {
   comment: string;
 }

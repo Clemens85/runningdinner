@@ -1,13 +1,14 @@
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Box, Divider, Drawer, IconButton, Stack, styled, Tab, Tabs, Typography } from '@mui/material';
-import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { DinnerRouteMapData, DinnerRouteOverviewActionType, DinnerRouteWithDistancesList, useDinnerRouteOverviewContext } from '@runningdinner/shared';
 import { BaseAdminIdProps } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { TeamLocationsFilterList } from './TeamLocationsFilterList';
-import { RouteDistancesView } from './RouteDistancesView';
+
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { NearbyHostsAnalysis } from './NearbyHostsAnalysis';
 import { ResetAllButton } from './ResetAllButton';
+import { RouteDistancesView } from './RouteDistancesView';
+import { TeamLocationsFilterList } from './TeamLocationsFilterList';
 
 export const SIDEBAR_WIDTH = 540;
 
@@ -71,7 +72,7 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
     });
   };
 
-  const { t } = useTranslation(["admin", "common"]);
+  const { t } = useTranslation(['admin', 'common']);
 
   return (
     <Drawer
@@ -95,7 +96,7 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
             <IconButton onClick={toggleSidebar} size="small" color="inherit">
               <ChevronLeftIcon />
             </IconButton>
-            <Typography sx={{ ml: 1 }}>{t("admin:hostlocations_sidebar_title")}</Typography>
+            <Typography sx={{ ml: 1 }}>{t('admin:hostlocations_sidebar_title')}</Typography>
           </Stack>
           <Box sx={{ textAlign: 'right', ml: 2 }}>
             <ResetAllButton />
@@ -108,7 +109,7 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
         value={activeSideBarTabIndex}
         onChange={(_, newValue) => setActiveTab(newValue)}
         variant="fullWidth"
-        aria-label={t("admin:hostlocations_sidebar_title")}
+        aria-label={t('admin:hostlocations_sidebar_title')}
         sx={{ borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab label={t('admin:headline_teams')} id="tab-0" />

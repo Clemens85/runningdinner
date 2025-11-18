@@ -1,17 +1,18 @@
-import { Toolbar, Tooltip, IconButton, styled, FormControlLabel, FormGroup, Switch, Typography, Box, Popover } from '@mui/material';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import GridViewIcon from '@mui/icons-material/GridView';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Box, FormControlLabel, FormGroup, IconButton, Popover,styled, Switch, Toolbar, Tooltip, Typography } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { CallbackHandler, DinnerRouteOverviewActionType, useDinnerRouteOverviewContext, useDisclosure } from '@runningdinner/shared';
-import MenuIcon from '@mui/icons-material/Menu';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { UnresolvedGeocodesWarningAlertProps } from '../../common/dinnerroute';
+import { FeedbackDialog } from '../../common/feedback/FeedbackDialog';
+import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
 import { HelpButton } from './HelpButton';
 import { RouteOptimizationButton } from './RouteOptimizationButton';
 import { UnresolvedGeocodesNotificationButton } from './UnresolvedGeocodesNotificationButton';
-import { UnresolvedGeocodesWarningAlertProps } from '../../common/dinnerroute';
-import { useIsMobileDevice } from '../../common/theme/CustomMediaQueryHook';
-import GridViewIcon from '@mui/icons-material/GridView';
-import FeedbackIcon from '@mui/icons-material/Feedback';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { FeedbackDialog } from '../../common/feedback/FeedbackDialog';
 
 interface CustomAppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -50,7 +51,7 @@ export function MapControlsAppBar({ teamsWithUnresolvedGeocodings, numberOfClust
   const { isSidebarOpen } = state;
   const isMobileDevice = useIsMobileDevice();
 
-  const {t} = useTranslation('admin');
+  const { t } = useTranslation('admin');
 
   const [popoverViewSettingsElement, setPopoverViewSettingsElement] = useState<HTMLElement | null>(null);
 
@@ -60,7 +61,7 @@ export function MapControlsAppBar({ teamsWithUnresolvedGeocodings, numberOfClust
     });
   };
 
-  const viewLabel = t("admin:hostlocations_view_settings");
+  const viewLabel = t('admin:hostlocations_view_settings');
 
   return (
     <CustomAppBar position="static" elevation={0} open={!!isSidebarOpen}>
@@ -95,45 +96,49 @@ export function MapControlsAppBar({ teamsWithUnresolvedGeocodings, numberOfClust
 
         {isMobileDevice && (
           <>
-            <IconButton color="inherit" onClick={(evt: React.MouseEvent<HTMLButtonElement>) => setPopoverViewSettingsElement(evt.currentTarget) } aria-label={viewLabel} size="large">
+            <IconButton
+              color="inherit"
+              onClick={(evt: React.MouseEvent<HTMLButtonElement>) => setPopoverViewSettingsElement(evt.currentTarget)}
+              aria-label={viewLabel}
+              size="large"
+            >
               <GridViewIcon />
             </IconButton>
-            { popoverViewSettingsElement && <ViewSettingsPopover onClose={() => setPopoverViewSettingsElement(null) } popoverElement={popoverViewSettingsElement} numberOfClusters={numberOfClusters} /> }
+            {popoverViewSettingsElement && (
+              <ViewSettingsPopover onClose={() => setPopoverViewSettingsElement(null)} popoverElement={popoverViewSettingsElement} numberOfClusters={numberOfClusters} />
+            )}
           </>
         )}
 
         <HelpButton />
 
-        <FeedbackButton />          
-  
+        <FeedbackButton />
       </Toolbar>
     </CustomAppBar>
   );
 }
 
-
 function FeedbackButton() {
-  const {isOpen, close, open} = useDisclosure();
-  const {t} = useTranslation("common");
-  const label = t("common:feedback_label");
+  const { isOpen, close, open } = useDisclosure();
+  const { t } = useTranslation('common');
+  const label = t('common:feedback_label');
   return (
     <>
       <Tooltip title={label}>
         <IconButton color="inherit" onClick={open} aria-label={label} size="large" sx={{ paddingRight: 0, ml: 1 }}>
-          <FeedbackIcon /> 
+          <FeedbackIcon />
         </IconButton>
       </Tooltip>
-      { isOpen && <FeedbackDialog onClose={close} /> }
+      {isOpen && <FeedbackDialog onClose={close} />}
     </>
-  )
+  );
 }
-
 
 function ShowTeamConnectionPathsSwitch() {
   const { state, dispatch } = useDinnerRouteOverviewContext();
   const { showTeamPaths } = state;
 
-  const {t} = useTranslation('admin');
+  const { t } = useTranslation('admin');
 
   function onToggleShowTeamPaths(showTeamPaths: boolean) {
     dispatch({
@@ -158,8 +163,7 @@ function ShowTeamClustersSwitch() {
   const { state, dispatch } = useDinnerRouteOverviewContext();
   const { showTeamClusters } = state;
 
-  const {t} = useTranslation('admin');
-
+  const { t } = useTranslation('admin');
 
   function onToggleShowTeamClusters(showTeamClusters: boolean) {
     dispatch({
@@ -167,7 +171,7 @@ function ShowTeamClustersSwitch() {
       payload: showTeamClusters,
     });
   }
-  
+
   return (
     <Tooltip title={t('admin:hostlocations_team_cluster_view_help')}>
       <FormGroup>
@@ -178,7 +182,7 @@ function ShowTeamClustersSwitch() {
       </FormGroup>
     </Tooltip>
   );
-} 
+}
 
 type ViewSettingsPopoverProps = {
   onClose: CallbackHandler;
@@ -189,20 +193,21 @@ function ViewSettingsPopover({ onClose, popoverElement, numberOfClusters }: View
   return (
     <Popover
       open={true}
-      anchorEl={popoverElement} 
+      anchorEl={popoverElement}
       onClose={onClose}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'left',
-      }}>
+      }}
+    >
       <Box sx={{ p: 2 }}>
         <ShowTeamConnectionPathsSwitch />
       </Box>
-      { numberOfClusters > 1 && 
+      {numberOfClusters > 1 && (
         <Box sx={{ p: 2 }}>
           <ShowTeamClustersSwitch />
         </Box>
-      }
+      )}
     </Popover>
-  )
+  );
 }

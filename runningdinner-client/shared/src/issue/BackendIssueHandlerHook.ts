@@ -1,13 +1,11 @@
-import {
-  getBackendIssuesFromErrorResponse,
-  mapBackendIssuesToIssues,
-} from "./BackendIssueHandler";
-import { useTranslation } from "react-i18next";
-import {cloneDeep} from 'lodash-es';
-import { isStringNotEmpty } from "../Utils";
-import {BackendIssue, HttpError, Issue, IssueOption, Issues} from "../types";
+import { cloneDeep } from 'lodash-es';
+import { useTranslation } from 'react-i18next';
 
-export const COMMON_ERROR_NAMESPACE = "common";
+import { BackendIssue, HttpError, Issue, IssueOption, Issues } from '../types';
+import { isStringNotEmpty } from '../Utils';
+import { getBackendIssuesFromErrorResponse, mapBackendIssuesToIssues } from './BackendIssueHandler';
+
+export const COMMON_ERROR_NAMESPACE = 'common';
 
 export interface BackendIssueHandlerMethods {
   /**
@@ -53,13 +51,12 @@ export interface BackendIssueHandlerProps {
    * Can be customized by providing some specific attributes inside the settings. If no object is passed, then the default settings are applied.
    */
   defaultTranslationResolutionSettings?: DefaultTranslationResolutionStrategySettings;
-
 }
 
 enum NameResolutionStrategy {
-  UPPERCASE = "UPPERCASE",
-  LOWERCASE = "LOWERCASE",
-  NONE = "NONE",
+  UPPERCASE = 'UPPERCASE',
+  LOWERCASE = 'LOWERCASE',
+  NONE = 'NONE',
 }
 
 /**
@@ -88,11 +85,7 @@ export interface DefaultTranslationResolutionStrategySettings {
   fallbackTranslation?: string;
 }
 
-const DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER = [
-  NameResolutionStrategy.UPPERCASE,
-  NameResolutionStrategy.NONE,
-  NameResolutionStrategy.LOWERCASE,
-];
+const DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER = [NameResolutionStrategy.UPPERCASE, NameResolutionStrategy.NONE, NameResolutionStrategy.LOWERCASE];
 const DEFAULT_TRANSLATION_RESOLUTION_STRATEGY_SETTINGS: DefaultTranslationResolutionStrategySettings = {
   includeCommonNamespace: true,
   nameResolutionStrategyOrder: DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER,
@@ -103,16 +96,17 @@ const DEFAULT_TRANSLATION_RESOLUTION_STRATEGY_SETTINGS: DefaultTranslationResolu
  * @param props
  */
 export function useBackendIssueHandler(props?: BackendIssueHandlerProps): BackendIssueHandlerMethods {
-
   const defaultTranslationResolutionStrategy = cloneDeep(DEFAULT_TRANSLATION_RESOLUTION_STRATEGY_SETTINGS);
   if (props?.defaultTranslationResolutionSettings) {
     if (props.defaultTranslationResolutionSettings.includeCommonNamespace === false) {
       defaultTranslationResolutionStrategy.includeCommonNamespace = false;
     }
-    defaultTranslationResolutionStrategy.namespaces = props.defaultTranslationResolutionSettings.namespaces ? props.defaultTranslationResolutionSettings.namespaces
-                                                                                                            : defaultTranslationResolutionStrategy.namespaces;
-    defaultTranslationResolutionStrategy.nameResolutionStrategyOrder = props.defaultTranslationResolutionSettings.nameResolutionStrategyOrder ? props.defaultTranslationResolutionSettings.nameResolutionStrategyOrder
-                                                                                                                                              : DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
+    defaultTranslationResolutionStrategy.namespaces = props.defaultTranslationResolutionSettings.namespaces
+      ? props.defaultTranslationResolutionSettings.namespaces
+      : defaultTranslationResolutionStrategy.namespaces;
+    defaultTranslationResolutionStrategy.nameResolutionStrategyOrder = props.defaultTranslationResolutionSettings.nameResolutionStrategyOrder
+      ? props.defaultTranslationResolutionSettings.nameResolutionStrategyOrder
+      : DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
   }
 
   if (defaultTranslationResolutionStrategy.includeCommonNamespace) {
@@ -150,9 +144,8 @@ export function useBackendIssueHandler(props?: BackendIssueHandlerProps): Backen
     };
   }
 
-
   function applyValidationIssuesToForm(httpError: HttpError, setSingleFormErrorIntoFormCallback: (fieldName: any, error: IssueOption) => unknown): Issues {
-    const {issuesFieldRelated, issuesWithoutField} = getIssuesTranslated(httpError, true);
+    const { issuesFieldRelated, issuesWithoutField } = getIssuesTranslated(httpError, true);
 
     issuesFieldRelated.forEach((issue) => setSingleFormErrorIntoFormCallback(issue.field, issue.error));
     return {
@@ -166,8 +159,9 @@ export function useBackendIssueHandler(props?: BackendIssueHandlerProps): Backen
     if (result.error.translated) {
       return result;
     }
-    const namespaces = Array.isArray(defaultTranslationResolutionStrategy.namespaces) ? defaultTranslationResolutionStrategy.namespaces
-                                                                                      : [defaultTranslationResolutionStrategy.namespaces];
+    const namespaces = Array.isArray(defaultTranslationResolutionStrategy.namespaces)
+      ? defaultTranslationResolutionStrategy.namespaces
+      : [defaultTranslationResolutionStrategy.namespaces];
 
     const fallbackTranslation = defaultTranslationResolutionStrategy.fallbackTranslation;
     const nameResolutionStrategyOrder = defaultTranslationResolutionStrategy.nameResolutionStrategyOrder || DEFAULT_NAME_RESOLUTION_STRATEGY_ORDER;
@@ -188,19 +182,16 @@ export function useBackendIssueHandler(props?: BackendIssueHandlerProps): Backen
   }
 
   function tryTranslation(issue: Issue, nameResolutionStrategyOrder: NameResolutionStrategy[], namespace?: string): string | undefined {
-
     if (isStringNotEmpty(namespace)) {
       for (let i = 0; i < nameResolutionStrategyOrder.length; i++) {
         const nameResolutionStrategy = nameResolutionStrategyOrder[i];
         let i18nKey = issue.error.message;
         if (nameResolutionStrategy === NameResolutionStrategy.UPPERCASE) {
           i18nKey = i18nKey.toUpperCase();
-        } else if (
-            nameResolutionStrategy === NameResolutionStrategy.LOWERCASE
-        ) {
+        } else if (nameResolutionStrategy === NameResolutionStrategy.LOWERCASE) {
           i18nKey = i18nKey.toLowerCase();
         }
-        const translatedMessage = t(`${namespace}:${i18nKey}`, "");
+        const translatedMessage = t(`${namespace}:${i18nKey}`, '');
         if (isStringNotEmpty(translatedMessage)) {
           return translatedMessage;
         }

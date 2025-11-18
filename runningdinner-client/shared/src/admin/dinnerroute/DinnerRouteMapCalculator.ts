@@ -1,4 +1,5 @@
 import { uniqBy } from 'lodash-es';
+
 import { isGeocodingResultValid } from '../../GeocodeUtil';
 import {
   AfterPartyLocation,
@@ -188,7 +189,7 @@ export class DinnerRouteMapCalculator {
       afterPartyLocationMapEntry: this.afterPartyLocationMapEntry,
       centerPosition: centerPosition || { lat: 0, lng: 0 },
       teamsWithUnresolvedGeocodings,
-      numberOfClusters: this.numberOfClusters
+      numberOfClusters: this.numberOfClusters,
     };
   }
 

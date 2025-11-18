@@ -1,17 +1,20 @@
+import axios from 'axios';
+
+import { isArrayNotEmpty, trimStringsInObject } from '..';
+import { BackendConfig } from '../BackendConfig';
+import { getBackendIssuesFromErrorResponse } from '../issue';
 import {
   HttpError,
   isNumSeatsPositiveIntegerOrEmpty,
   newHttpError,
   ParticipantActivationResult,
   PublicRunningDinner,
-  PublicRunningDinnerList, RegistrationOrder,
-  RegistrationSummary, RunningDinnerSessionData
-} from "../types";
-import axios from "axios";
-import {BackendConfig} from "../BackendConfig";
-import {RegistrationData} from "../types/Registration";
-import {getBackendIssuesFromErrorResponse} from "../issue";
-import {isArrayNotEmpty, trimStringsInObject} from "..";
+  PublicRunningDinnerList,
+  RegistrationOrder,
+  RegistrationSummary,
+  RunningDinnerSessionData,
+} from '../types';
+import { RegistrationData } from '../types/Registration';
 
 export async function findPublicRunningDinnersAsync(): Promise<PublicRunningDinner[]> {
   const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner`);
@@ -38,11 +41,14 @@ async function executePerformRegistrationRequest(publicDinnerId: string, registr
   if (validateOnly) {
     url += '/validate';
   }
-  if (!isNumSeatsPositiveIntegerOrEmpty(registrationData)) { // TODO: Not very nice, but it works for now. Should be replaced by client side validation
-    throw newHttpError(406, [{
-      field: "numSeats",
-      message: "num_seats_invalid"
-    }]);
+  if (!isNumSeatsPositiveIntegerOrEmpty(registrationData)) {
+    // TODO: Not very nice, but it works for now. Should be replaced by client side validation
+    throw newHttpError(406, [
+      {
+        field: 'numSeats',
+        message: 'num_seats_invalid',
+      },
+    ]);
   }
 
   const registrationDataWithTrimmedStringFields = trimStringsInObject(registrationData);
@@ -59,7 +65,7 @@ export async function activateSubscribedParticipant(publicDinnerId: string, part
   } catch (e) {
     const backendValidationIssues = getBackendIssuesFromErrorResponse(e as HttpError, true);
     return {
-      validationIssue: isArrayNotEmpty(backendValidationIssues) ? backendValidationIssues[0] : undefined
+      validationIssue: isArrayNotEmpty(backendValidationIssues) ? backendValidationIssues[0] : undefined,
     };
   }
 }

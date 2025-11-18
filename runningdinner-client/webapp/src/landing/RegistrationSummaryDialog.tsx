@@ -1,16 +1,11 @@
-import {
-  CallbackHandler,
-  CallbackHandlerAsync,
-  useDisclosure,
-  BasePublicDinnerProps,
-  RegistrationDataCollection
-} from "@runningdinner/shared";
-import {useTranslation} from "react-i18next";
-import {Dialog, DialogContent} from "@mui/material";
-import {DialogTitleCloseable} from "../common/theme/DialogTitleCloseable";
-import DialogActionsPanel from "../common/theme/DialogActionsPanel";
-import {RegistrationSummaryContentView} from "./RegistrationSummaryContentView";
-import {RegistrationPaymentDialog} from "./RegistrationPaymentDialog";
+import { Dialog, DialogContent } from '@mui/material';
+import { BasePublicDinnerProps, CallbackHandler, CallbackHandlerAsync, RegistrationDataCollection,useDisclosure } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
+import DialogActionsPanel from '../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../common/theme/DialogTitleCloseable';
+import { RegistrationPaymentDialog } from './RegistrationPaymentDialog';
+import { RegistrationSummaryContentView } from './RegistrationSummaryContentView';
 
 type RegistrationSummaryDialogProps = {
   registrationDataCollection: RegistrationDataCollection;
@@ -18,15 +13,12 @@ type RegistrationSummaryDialogProps = {
   onPerformRegistration: CallbackHandlerAsync;
 } & BasePublicDinnerProps;
 
-export function RegistrationSummaryDialog({publicRunningDinner, registrationDataCollection, onPerformRegistration, onCancel}: RegistrationSummaryDialogProps) {
+export function RegistrationSummaryDialog({ publicRunningDinner, registrationDataCollection, onPerformRegistration, onCancel }: RegistrationSummaryDialogProps) {
+  const { t } = useTranslation(['landing', 'common']);
 
-  const {t} = useTranslation(["landing", "common"]);
+  const { isOpen: isRegistrationPaymentDialogOpen, open: openRegistrationPaymentDialog, close: closeRegistrationPaymentDialog } = useDisclosure();
 
-  const { isOpen: isRegistrationPaymentDialogOpen,
-          open: openRegistrationPaymentDialog,
-          close: closeRegistrationPaymentDialog} = useDisclosure();
-
-  const {registrationSummary} = registrationDataCollection;
+  const { registrationSummary } = registrationDataCollection;
 
   function handleOpenRegistrationPaymentDialog() {
     openRegistrationPaymentDialog();
@@ -36,28 +28,24 @@ export function RegistrationSummaryDialog({publicRunningDinner, registrationData
 
   return (
     <>
-      <Dialog onClose={onCancel} open={!isRegistrationPaymentDialogOpen} data-testid={"registration-summary-dialog"}>
+      <Dialog onClose={onCancel} open={!isRegistrationPaymentDialogOpen} data-testid={'registration-summary-dialog'}>
         <DialogTitleCloseable onClose={onCancel}>{t('landing:registration_finish')}</DialogTitleCloseable>
         <DialogContent>
           <RegistrationSummaryContentView {...registrationSummary} />
         </DialogContent>
-        { !needsPayment &&
-            <DialogActionsPanel onOk={onPerformRegistration}
-                                onCancel={onCancel}
-                                okLabel={t('landing:registration_perform')}
-                                cancelLabel={t('common:cancel')} />
-        }
-        { needsPayment &&
-            <DialogActionsPanel onOk={handleOpenRegistrationPaymentDialog}
-                                onCancel={onCancel}
-                                okLabel={t('landing:registration_payment_continue')}
-                                cancelLabel={t('common:cancel')} />
-        }
+        {!needsPayment && <DialogActionsPanel onOk={onPerformRegistration} onCancel={onCancel} okLabel={t('landing:registration_perform')} cancelLabel={t('common:cancel')} />}
+        {needsPayment && (
+          <DialogActionsPanel
+            onOk={handleOpenRegistrationPaymentDialog}
+            onCancel={onCancel}
+            okLabel={t('landing:registration_payment_continue')}
+            cancelLabel={t('common:cancel')}
+          />
+        )}
       </Dialog>
-      { isRegistrationPaymentDialogOpen && <RegistrationPaymentDialog onCancel={closeRegistrationPaymentDialog}
-                                                                      publicRunningDinner={publicRunningDinner}
-                                                                      registrationDataCollection={registrationDataCollection} /> }
+      {isRegistrationPaymentDialogOpen && (
+        <RegistrationPaymentDialog onCancel={closeRegistrationPaymentDialog} publicRunningDinner={publicRunningDinner} registrationDataCollection={registrationDataCollection} />
+      )}
     </>
-  )
+  );
 }
-

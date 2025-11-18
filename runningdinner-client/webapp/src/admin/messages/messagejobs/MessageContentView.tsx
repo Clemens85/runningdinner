@@ -1,13 +1,13 @@
+import { getTruncatedText, mapNewLineToHtmlLineBreaks, MessageTask } from '@runningdinner/shared';
 import React from 'react';
-import {getTruncatedText, mapNewLineToHtmlLineBreaks, MessageTask} from "@runningdinner/shared";
-import {TextViewHtml} from "../../../common/TextViewHtml";
+
+import { TextViewHtml } from '../../../common/TextViewHtml';
 
 interface MessageContentViewProps {
   messageTask: MessageTask;
   truncateMessageContentToNumChars?: number;
 }
-export function MessageContentView({messageTask, truncateMessageContentToNumChars}: MessageContentViewProps) {
-
+export function MessageContentView({ messageTask, truncateMessageContentToNumChars }: MessageContentViewProps) {
   const messageContent = truncateMessageContentToNumChars ? getTruncatedText(messageTask.message.content, truncateMessageContentToNumChars) : messageTask.message.content;
   const messageTeaser = mapNewLineToHtmlLineBreaks(messageContent);
   return (
@@ -15,7 +15,9 @@ export function MessageContentView({messageTask, truncateMessageContentToNumChar
       <div>
         <strong>{messageTask.message.subject}</strong>
       </div>
-      <div><TextViewHtml text={messageTeaser} /></div>
+      <div>
+        <TextViewHtml text={messageTeaser} />
+      </div>
     </>
   );
 }

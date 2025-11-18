@@ -1,4 +1,7 @@
 const NewsMessages_en: any = {
+  news_title_20251021: 'Bug fixed in feedback form',
+  news_content_20251021: 'There was unfortunately a bug in the feedback & help form that prevented feedback from being sent. This bug has now been fixed.',
+
   news_title_20250902: 'Route Optimization available',
   news_content_20250902:
     'Often requested and now finally available in an initial version: It is now possible to optimize the dinner routes so that the distances between the individual teams are as short as possible. ' +

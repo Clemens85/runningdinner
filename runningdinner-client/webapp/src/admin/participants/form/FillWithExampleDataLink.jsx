@@ -1,12 +1,11 @@
-import React from "react";
-import {getKeyValueList, newExampleParticipantInstance} from "@runningdinner/shared";
-import {useFormContext} from "react-hook-form";
-import {useTranslation} from "react-i18next";
-import LinkAction from "../../../common/theme/LinkAction";
+import React from 'react';
+import { getKeyValueList, newExampleParticipantInstance } from '@runningdinner/shared';
+import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import LinkAction from '../../../common/theme/LinkAction';
 
 export default function FillWithExampleDataLink() {
-
-  const {t} = useTranslation('admin');
+  const { t } = useTranslation('admin');
 
   const { setValue } = useFormContext();
 
@@ -19,6 +18,8 @@ export default function FillWithExampleDataLink() {
   }
 
   return (
-    <LinkAction onClick={setExampleData} variant={"body2"}>{t('fill_with_example_data')}</LinkAction>
+    <LinkAction onClick={setExampleData} variant={'body2'}>
+      {t('fill_with_example_data')}
+    </LinkAction>
   );
 }

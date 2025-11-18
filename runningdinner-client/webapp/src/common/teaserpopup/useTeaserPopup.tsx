@@ -1,7 +1,8 @@
-import { formatLocalDateWithSeconds, getMinutesBetweenDates, isAfterInDays, parseLocalDateWithSeconds, useDisclosure } from "@runningdinner/shared";
-import { getLocalStorageItem, setLocalStorageItem } from "../LocalStorageService";
-import { cloneDeep } from "lodash-es";
-import { isLocalDevEnv } from "../EnvService";
+import { formatLocalDateWithSeconds, getMinutesBetweenDates, isAfterInDays, parseLocalDateWithSeconds, useDisclosure } from '@runningdinner/shared';
+import { cloneDeep } from 'lodash-es';
+
+import { isLocalDevEnv } from '../EnvService';
+import { getLocalStorageItem, setLocalStorageItem } from '../LocalStorageService';
 
 type TeaserPopupStatus = {
   remindMe: boolean;
@@ -12,17 +13,15 @@ type TeaserPopupStatus = {
 type TeaserPopupProps = {
   popupKey: string;
   showUntil: Date;
-}
-export function useTeaserPopup({popupKey, showUntil}: TeaserPopupProps) {
-
-  const {open, isOpen, close} = useDisclosure();
+};
+export function useTeaserPopup({ popupKey, showUntil }: TeaserPopupProps) {
+  const { open, isOpen, close } = useDisclosure();
 
   const setPopupOpenDelayed = (delay: number) => {
     window.setTimeout(() => {
       open();
     }, delay);
   };
-
 
   const setTeaserPopupOpenIfSuitable = () => {
     let teaserPopupStatus = getLocalStorageItem<TeaserPopupStatus>(buildStorageKey(popupKey));
@@ -41,25 +40,25 @@ export function useTeaserPopup({popupKey, showUntil}: TeaserPopupProps) {
     close();
     persistTeaserPopupStatus({
       remindMe,
-      lastShowDate: new Date()
-    })
-  }
+      lastShowDate: new Date(),
+    });
+  };
 
   function persistTeaserPopupStatus(incomingTeaserPopupStatus: TeaserPopupStatus) {
     const teaserPopupStatus = cloneDeep(incomingTeaserPopupStatus);
     teaserPopupStatus.lastShowDateRaw = formatLocalDateWithSeconds(incomingTeaserPopupStatus.lastShowDate);
     setLocalStorageItem(buildStorageKey(popupKey), teaserPopupStatus);
-    sessionStorage.setItem(buildStorageKey(popupKey), "true");
+    sessionStorage.setItem(buildStorageKey(popupKey), 'true');
   }
 
   function shouldShowTeaserPopup(teaserPopupStatus: TeaserPopupStatus | undefined, showUntil: Date): boolean {
-    const isValid = !isAfterInDays(new Date(), showUntil)
+    const isValid = !isAfterInDays(new Date(), showUntil);
     if (!teaserPopupStatus && isValid) {
       return true;
     }
 
     const shownInCurrentSession = sessionStorage.getItem(buildStorageKey(popupKey));
-    if (shownInCurrentSession || !teaserPopupStatus?.remindMe) {  
+    if (shownInCurrentSession || !teaserPopupStatus?.remindMe) {
       return false;
     }
 
@@ -85,13 +84,13 @@ export function useTeaserPopup({popupKey, showUntil}: TeaserPopupProps) {
   }
 
   function buildStorageKey(popupKey: string) {
-    const devMarker = isLocalDevEnv() ? "dev_" : "";
+    const devMarker = isLocalDevEnv() ? 'dev_' : '';
     return `teaserPopupStatus_${devMarker}${popupKey}`;
   }
 
   return {
     setTeaserPopupOpenIfSuitable,
     closeTeaserPopup,
-    showTeaserPopup: isOpen
-  }
+    showTeaserPopup: isOpen,
+  };
 }

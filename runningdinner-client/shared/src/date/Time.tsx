@@ -1,22 +1,22 @@
 import { format } from 'date-fns';
-import {useTranslation} from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 export interface TimeProps {
   date?: Date;
   includeSeconds?: boolean;
 }
 
-function Time({date, includeSeconds}: TimeProps) {
-  const {t} = useTranslation('common');
+function Time({ date, includeSeconds }: TimeProps) {
+  const { t } = useTranslation('common');
   if (!date) {
     return null;
   }
-  const formattedTime = format(date, includeSeconds ? 'HH:mm:ss' : "HH:mm");
+  const formattedTime = format(date, includeSeconds ? 'HH:mm:ss' : 'HH:mm');
   return (
-      <>{formattedTime} {t('uhr')}</>
+    <>
+      {formattedTime} {t('uhr')}
+    </>
   );
 }
 
-export {
-  Time
-};
+export { Time };

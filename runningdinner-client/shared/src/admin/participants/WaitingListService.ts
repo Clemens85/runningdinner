@@ -1,11 +1,11 @@
-import {cloneDeep} from 'lodash-es';
-import {find, uniqBy, orderBy} from "lodash-es";
-import {Participant, SelectableParticipant, Team} from "../../types";
-import {isArrayEmpty, isArrayNotEmpty, isSameEntity, removeEntityFromList} from "../../Utils";
-import {generateCancelledTeamMembersAsNumberArray} from "../TeamService";
-import {BackendConfig} from "../../BackendConfig";
-import axios from "axios";
+import axios from 'axios';
+import { cloneDeep } from 'lodash-es';
+import { find, orderBy,uniqBy } from 'lodash-es';
 
+import { BackendConfig } from '../../BackendConfig';
+import { Participant, SelectableParticipant, Team } from '../../types';
+import { isArrayEmpty, isArrayNotEmpty, isSameEntity, removeEntityFromList } from '../../Utils';
+import { generateCancelledTeamMembersAsNumberArray } from '../TeamService';
 
 export interface TeamParticipantsAssignmentModel {
   allSelectableParticipants: SelectableParticipant[];
@@ -18,12 +18,12 @@ export interface TeamParticipantsAssignment {
 }
 
 export enum WaitingListAction {
-  ASSIGN_TO_EXISTING_TEAMS = "ASSIGN_TO_EXISTING_TEAMS",
-  GENERATE_NEW_TEAMS = "GENERATE_NEW_TEAMS",
-  DISTRIBUTE_TO_TEAMS = "DISTRIBUTE_TO_TEAMS"
+  ASSIGN_TO_EXISTING_TEAMS = 'ASSIGN_TO_EXISTING_TEAMS',
+  GENERATE_NEW_TEAMS = 'GENERATE_NEW_TEAMS',
+  DISTRIBUTE_TO_TEAMS = 'DISTRIBUTE_TO_TEAMS',
 }
 export enum WaitingListActionAdditional {
-  NO_ACTION = "NO_ACTION" // This is not from Backend, but we need it in frontend
+  NO_ACTION = 'NO_ACTION', // This is not from Backend, but we need it in frontend
 }
 
 export type WaitingListActionUI = WaitingListAction | WaitingListActionAdditional;
@@ -60,24 +60,24 @@ export async function findWaitingListInfoAsync(adminId: string): Promise<Waiting
 export async function generateNewTeamsFromWaitingListAsync(adminId: string, participants: Participant[]): Promise<WaitingListActionResult> {
   const url = BackendConfig.buildUrl(`/waitinglistservice/v1/runningdinner/${adminId}/generate-new-teams`);
   const result = await axios.put(url, {
-    participants
+    participants,
   });
   return result.data;
 }
 
 export async function assignParticipantsToExistingTeamsAsync(adminId: string, teamParticipantsAssignmentList: TeamParticipantsAssignment[]): Promise<WaitingListActionResult> {
   const url = BackendConfig.buildUrl(`/waitinglistservice/v1/runningdinner/${adminId}/assign-participants-teams`);
-  const teamParticipantsAssignments = teamParticipantsAssignmentList.filter(tpa => isArrayNotEmpty(tpa.selectedParticipants));
+  const teamParticipantsAssignments = teamParticipantsAssignmentList.filter((tpa) => isArrayNotEmpty(tpa.selectedParticipants));
 
   const teamParticipantsAssignmentsNormalized = teamParticipantsAssignments.map((tpa) => {
     return {
       teamId: tpa.team.id,
-      participantIds: tpa.selectedParticipants.map(p => p.id)
+      participantIds: tpa.selectedParticipants.map((p) => p.id),
     };
   });
 
   const result = await axios.put(url, {
-    teamParticipantsAssignments: teamParticipantsAssignmentsNormalized
+    teamParticipantsAssignments: teamParticipantsAssignmentsNormalized,
   });
   return result.data;
 }
@@ -85,15 +85,14 @@ export async function assignParticipantsToExistingTeamsAsync(adminId: string, te
 export function setupAssignParticipantsToTeamsModel(teams: Team[], participants: Participant[]): TeamParticipantsAssignmentModel {
   const result = {
     allSelectableParticipants: cloneDeep(participants),
-    teamParticipantAssignments: teams.map((t) => { return { team: t, selectedParticipants: [] } })
+    teamParticipantAssignments: teams.map((t) => {
+      return { team: t, selectedParticipants: [] };
+    }),
   };
   return orderAndDistinctAllSelectableParticipants(result);
 }
 
-export function removeSelectedParticipantFromTeam(teamParticipantsAssignmentModel: TeamParticipantsAssignmentModel,
-                                                  team: Team,
-                                                  participant: SelectableParticipant) {
-
+export function removeSelectedParticipantFromTeam(teamParticipantsAssignmentModel: TeamParticipantsAssignmentModel, team: Team, participant: SelectableParticipant) {
   const teamParticipantsAssignment = getTeamParticipantsAssignment(teamParticipantsAssignmentModel, team);
   teamParticipantsAssignment.selectedParticipants = removeEntityFromList(teamParticipantsAssignment.selectedParticipants, participant) || [];
   participant.selected = false;
@@ -101,10 +100,7 @@ export function removeSelectedParticipantFromTeam(teamParticipantsAssignmentMode
   return orderAndDistinctAllSelectableParticipants(teamParticipantsAssignmentModel);
 }
 
-export function addSelectedParticipantToTeam(teamParticipantsAssignmentModel: TeamParticipantsAssignmentModel,
-                                      team: Team,
-                                      participant: SelectableParticipant) {
-
+export function addSelectedParticipantToTeam(teamParticipantsAssignmentModel: TeamParticipantsAssignmentModel, team: Team, participant: SelectableParticipant) {
   const teamParticipantsAssignment = getTeamParticipantsAssignment(teamParticipantsAssignmentModel, team);
   teamParticipantsAssignment.selectedParticipants.push(participant);
   participant.selected = true;
@@ -132,9 +128,7 @@ export function calculateCancelledTeamMembersNumArr(team: Team, numSelectedParti
   return cancelledTeamMembers.slice(0, numCancelledTeamMembers);
 }
 
-export function getNumCancelledTeamMembers(team: Team,
-                                           numSelectedParticipants: number,
-                                           teamSizeOfRunningDinner: number) {
+export function getNumCancelledTeamMembers(team: Team, numSelectedParticipants: number, teamSizeOfRunningDinner: number) {
   const { teamMembers } = team;
   let numCancelledTeamMembers = teamSizeOfRunningDinner - teamMembers.length - numSelectedParticipants;
   if (numCancelledTeamMembers < 0) {

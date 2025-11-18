@@ -1,13 +1,14 @@
+import { StyledEngineProvider,Theme, ThemeProvider } from '@mui/material/styles';
 import React, { Suspense } from 'react';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
-import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
 import { WIZARD_ROOT_PATH } from './common/mainnavigation/NavigationPaths';
 import { ProgressBar } from './common/ProgressBar';
+import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
 import { ErrorBoundary } from './ErrorBoundary';
 
 declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+   
   interface DefaultTheme extends Theme {}
 }
 

@@ -1,21 +1,8 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
-
+import { Dispatch, SetStateAction, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 // See https://gist.github.com/gaearon/e7d97cdf38a2907924ea12e4ebdf3c85
 const useIsomorphicLayoutEffect =
-  typeof window !== 'undefined' &&
-  typeof window.document !== 'undefined' &&
-  typeof window.document.createElement !== 'undefined'
-    ? useLayoutEffect
-    : useEffect;
+  typeof window !== 'undefined' && typeof window.document !== 'undefined' && typeof window.document.createElement !== 'undefined' ? useLayoutEffect : useEffect;
 
 // Assign current value to a ref and returns a stable getter to get the latest value.
 // This way we are sure to always get latest value provided to hook and
@@ -30,18 +17,11 @@ const useGetter = <T>(t: T) => {
   return useCallback(() => ref.current, [ref]);
 };
 
-
 // keep compat with TS < 3.5
 type LegacyOmit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 // Some options are not allowed for useAsyncCallback
-export type UseAsyncCallbackOptions<R> =
-  | LegacyOmit<
-      Partial<UseAsyncOptionsNormalized<R>>,
-      'executeOnMount' | 'executeOnUpdate' | 'initialState'
-    >
-  | undefined
-  | null;
+export type UseAsyncCallbackOptions<R> = LegacyOmit<Partial<UseAsyncOptionsNormalized<R>>, 'executeOnMount' | 'executeOnUpdate' | 'initialState'> | undefined | null;
 
 type UnknownResult = unknown;
 
@@ -51,11 +31,7 @@ type UnknownResult = unknown;
 // See https://twitter.com/sebastienlorber/status/1170003594894106624
 type UnknownArgs = any[];
 
-export type AsyncStateStatus =
-  | 'not-requested'
-  | 'loading'
-  | 'success'
-  | 'error';
+export type AsyncStateStatus = 'not-requested' | 'loading' | 'success' | 'error';
 
 export type AsyncState<R> = {
   status: AsyncStateStatus;
@@ -69,10 +45,7 @@ type SetError<R> = (error: Error, asyncState: AsyncState<R>) => AsyncState<R>;
 
 type MaybePromise<T> = Promise<T> | T;
 
-export type UseAsyncReturn<
-  R = UnknownResult,
-  Args extends any[] = UnknownArgs
-> = AsyncState<R> & {
+export type UseAsyncReturn<R = UnknownResult, Args extends any[] = UnknownArgs> = AsyncState<R> & {
   set: (value: AsyncState<R>) => void;
   merge: (value: Partial<AsyncState<R>>) => void;
   reset: () => void;
@@ -100,11 +73,10 @@ const InitialAsyncLoadingState: AsyncState<any> = {
   error: undefined,
 };
 
-// eslint-disable-next-line
-const defaultSetLoading: SetLoading<any> = _asyncState =>
-  InitialAsyncLoadingState;
+ 
+const defaultSetLoading: SetLoading<any> = (_asyncState) => InitialAsyncLoadingState;
 
-// eslint-disable-next-line
+ 
 const defaultSetResult: SetResult<any> = (result, _asyncState) => ({
   status: 'success',
   loading: false,
@@ -112,7 +84,7 @@ const defaultSetResult: SetResult<any> = (result, _asyncState) => ({
   error: undefined,
 });
 
-// eslint-disable-next-line
+ 
 const defaultSetError: SetError<any> = (error, _asyncState) => ({
   status: 'error',
   loading: false,
@@ -133,29 +105,20 @@ export type UseAsyncOptionsNormalized<R> = {
 
 const noop = () => {};
 
-export type UseAsyncOptions<R> =
-  | Partial<UseAsyncOptionsNormalized<R>>
-  | undefined
-  | null;
+export type UseAsyncOptions<R> = Partial<UseAsyncOptionsNormalized<R>> | undefined | null;
 
-  const DefaultOptions: UseAsyncOptionsNormalized<any> = {
-    initialState: options =>
-      options && options.executeOnMount
-        ? InitialAsyncLoadingState
-        : InitialAsyncState,
-    executeOnMount: true,
-    executeOnUpdate: true,
-    setLoading: defaultSetLoading,
-    setResult: defaultSetResult,
-    setError: defaultSetError,
-    onSuccess: noop,
-    onError: noop,
-  };
+const DefaultOptions: UseAsyncOptionsNormalized<any> = {
+  initialState: (options) => (options && options.executeOnMount ? InitialAsyncLoadingState : InitialAsyncState),
+  executeOnMount: true,
+  executeOnUpdate: true,
+  setLoading: defaultSetLoading,
+  setResult: defaultSetResult,
+  setError: defaultSetError,
+  onSuccess: noop,
+  onError: noop,
+};
 
-
-const normalizeOptions = <R>(
-  options: UseAsyncOptions<R>
-): UseAsyncOptionsNormalized<R> => ({
+const normalizeOptions = <R>(options: UseAsyncOptions<R>): UseAsyncOptionsNormalized<R> => ({
   ...DefaultOptions,
   ...options,
 });
@@ -179,9 +142,9 @@ type UseCurrentPromiseReturn<R> = {
 const useCurrentPromise = <R>(): UseCurrentPromiseReturn<R> => {
   const ref = useRef<Promise<R> | null>(null);
   return {
-    set: promise => (ref.current = promise),
+    set: (promise) => (ref.current = promise),
     get: () => ref.current,
-    is: promise => ref.current === promise,
+    is: (promise) => ref.current === promise,
   };
 };
 
@@ -196,31 +159,15 @@ type UseAsyncStateResult<R> = {
 };
 
 // eslint-disable-next-line
-const useAsyncState = <R extends {}>(
-  options: UseAsyncOptionsNormalized<R>
-): UseAsyncStateResult<R> => {
-  const [value, setValue] = useState<AsyncState<R>>(() =>
-    options.initialState(options)
-  );
+const useAsyncState = <R extends {}>(options: UseAsyncOptionsNormalized<R>): UseAsyncStateResult<R> => {
+  const [value, setValue] = useState<AsyncState<R>>(() => options.initialState(options));
 
-  const reset = useCallback(() => setValue(options.initialState(options)), [
-    setValue,
-    options,
-  ]);
+  const reset = useCallback(() => setValue(options.initialState(options)), [setValue, options]);
 
-  const setLoading = useCallback(() => setValue(options.setLoading(value)), [
-    value,
-    setValue,
-  ]);
-  const setResult = useCallback(
-    (result: R) => setValue(options.setResult(result, value)),
-    [value, setValue]
-  );
+  const setLoading = useCallback(() => setValue(options.setLoading(value)), [value, setValue]);
+  const setResult = useCallback((result: R) => setValue(options.setResult(result, value)), [value, setValue]);
 
-  const setError = useCallback(
-    (error: Error) => setValue(options.setError(error, value)),
-    [value, setValue]
-  );
+  const setError = useCallback((error: Error) => setValue(options.setError(error, value)), [value, setValue]);
 
   const merge = useCallback(
     (state: Partial<AsyncState<R>>) =>
@@ -228,7 +175,7 @@ const useAsyncState = <R extends {}>(
         ...value,
         ...state,
       }),
-    [value, setValue]
+    [value, setValue],
   );
 
   return {
@@ -246,7 +193,7 @@ const useAsyncState = <R extends {}>(
 const useAsyncInternal = <R = UnknownResult, Args extends any[] = UnknownArgs>(
   asyncFunction: (...args: Args) => MaybePromise<R>,
   params: Args,
-  options?: UseAsyncOptions<R>
+  options?: UseAsyncOptions<R>,
 ): UseAsyncReturn<R, Args> => {
   // Fallback missing params, only for JS users forgetting the deps array, to prevent infinite loops
   // https://github.com/slorber/react-async-hook/issues/27
@@ -265,8 +212,7 @@ const useAsyncInternal = <R = UnknownResult, Args extends any[] = UnknownArgs>(
 
   // We only want to handle the promise result/error
   // if it is the last operation and the comp is still mounted
-  const shouldHandlePromise = (p: Promise<R>) =>
-    isMounted() && CurrentPromise.is(p);
+  const shouldHandlePromise = (p: Promise<R>) => isMounted() && CurrentPromise.is(p);
 
   const executeAsyncOperation = (...args: Args): Promise<R> => {
     // async ensures errors thrown synchronously are caught (ie, bug when formatting api payloads)
@@ -277,7 +223,7 @@ const useAsyncInternal = <R = UnknownResult, Args extends any[] = UnknownArgs>(
     CurrentPromise.set(promise);
     AsyncState.setLoading();
     promise.then(
-      result => {
+      (result) => {
         if (shouldHandlePromise(promise)) {
           AsyncState.setResult(result);
         }
@@ -285,24 +231,21 @@ const useAsyncInternal = <R = UnknownResult, Args extends any[] = UnknownArgs>(
           isCurrent: () => CurrentPromise.is(promise),
         });
       },
-      error => {
+      (error) => {
         if (shouldHandlePromise(promise)) {
           AsyncState.setError(error);
         }
         normalizedOptions.onError(error, {
           isCurrent: () => CurrentPromise.is(promise),
         });
-      }
+      },
     );
     return promise;
   };
 
   const getLatestExecuteAsyncOperation = useGetter(executeAsyncOperation);
 
-  const executeAsyncOperationMemo: (...args: Args) => Promise<R> = useCallback(
-    (...args) => getLatestExecuteAsyncOperation()(...args),
-    [getLatestExecuteAsyncOperation]
-  );
+  const executeAsyncOperationMemo: (...args: Args) => Promise<R> = useCallback((...args) => getLatestExecuteAsyncOperation()(...args), [getLatestExecuteAsyncOperation]);
 
   // Keep this outside useEffect, because inside isMounted()
   // will be true as the component is already mounted when it's run
@@ -324,13 +267,9 @@ const useAsyncInternal = <R = UnknownResult, Args extends any[] = UnknownArgs>(
   };
 };
 
-
-export const useAsyncCallback = <
-  R = UnknownResult,
-  Args extends any[] = UnknownArgs
->(
+export const useAsyncCallback = <R = UnknownResult, Args extends any[] = UnknownArgs>(
   asyncFunction: (...args: Args) => MaybePromise<R>,
-  options?: UseAsyncCallbackOptions<R>
+  options?: UseAsyncCallbackOptions<R>,
 ): UseAsyncReturn<R, Args> => {
   return useAsyncInternal(
     asyncFunction,
@@ -341,6 +280,6 @@ export const useAsyncCallback = <
       ...options,
       executeOnMount: false,
       executeOnUpdate: false,
-    }
+    },
   );
 };

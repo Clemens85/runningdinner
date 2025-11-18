@@ -1,27 +1,17 @@
+import { useWizardSelector } from '@runningdinner/shared';
+import { getMinimumParticipantsNeededSelector, isClosedDinnerSelector, isDemoDinnerSelector, setNextNavigationStep, setPreviousNavigationStep } from '@runningdinner/shared';
+import { FinishNavigationStep, MealTimesNavigationStep, PublicRegistrationNavigationStep } from '@runningdinner/shared';
 import React from 'react';
-import {Trans, useTranslation} from "react-i18next";
-import {useWizardSelector} from "@runningdinner/shared";
-import {
-  getMinimumParticipantsNeededSelector,
-  isClosedDinnerSelector,
-  isDemoDinnerSelector,
-  setNextNavigationStep,
-  setPreviousNavigationStep,
-} from "@runningdinner/shared";
-import {
-  FinishNavigationStep,
-  MealTimesNavigationStep,
-  PublicRegistrationNavigationStep,
-} from "@runningdinner/shared";
-import {useDispatch} from "react-redux";
-import {FormProvider, useForm} from "react-hook-form";
-import {PageTitle} from "../common/theme/typography/Tags";
-import Paragraph from "../common/theme/typography/Paragraph";
-import WizardButtons from "./WizardButtons";
+import { FormProvider, useForm } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+
+import Paragraph from '../common/theme/typography/Paragraph';
+import { PageTitle } from '../common/theme/typography/Tags';
+import WizardButtons from './WizardButtons';
 
 export default function ParticipantPreviewStep() {
-
-  const {t} = useTranslation(['wizard', 'common']);
+  const { t } = useTranslation(['wizard', 'common']);
 
   const isDemoDinner = useWizardSelector(isDemoDinnerSelector);
   const isClosedDinner = useWizardSelector(isClosedDinnerSelector);
@@ -36,18 +26,26 @@ export default function ParticipantPreviewStep() {
     // eslint-disable-next-line
   }, [dispatch]);
 
-  const submitAsync = async() => {
+  const submitAsync = async () => {
     return true;
   };
 
   return (
-      <div>
-        <PageTitle>{t('participants_preview')}</PageTitle>
-        <FormProvider {...formMethods}>
-          { !isDemoDinner && <Paragraph><Trans i18nKey="wizard:participants_preview_text" values={{ numParticipants: numParticipantsNeeded }}/></Paragraph> }
-          { isDemoDinner && <Paragraph><Trans i18nKey="wizard:participants_preview_demo_text" /></Paragraph> }
-          <WizardButtons onSubmitData={submitAsync} />
-        </FormProvider>
-      </div>
+    <div>
+      <PageTitle>{t('participants_preview')}</PageTitle>
+      <FormProvider {...formMethods}>
+        {!isDemoDinner && (
+          <Paragraph>
+            <Trans i18nKey="wizard:participants_preview_text" values={{ numParticipants: numParticipantsNeeded }} />
+          </Paragraph>
+        )}
+        {isDemoDinner && (
+          <Paragraph>
+            <Trans i18nKey="wizard:participants_preview_demo_text" />
+          </Paragraph>
+        )}
+        <WizardButtons onSubmitData={submitAsync} />
+      </FormProvider>
+    </div>
   );
 }

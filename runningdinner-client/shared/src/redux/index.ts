@@ -1,1 +1,1 @@
-export * from "./FetchHelpers";
+export * from './FetchHelpers';

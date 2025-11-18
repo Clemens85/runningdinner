@@ -1,11 +1,13 @@
 import React from 'react';
-import {Controller, useFormContext} from "react-hook-form";
-import TextField from "@mui/material/TextField";
-import {get} from "lodash-es";
+import { Controller, useFormContext } from 'react-hook-form';
+import TextField from '@mui/material/TextField';
+import { get } from 'lodash-es';
 
-const TextInputWatchable = ({name, label, onChange, ...other}) => {
-
-  const {control, formState: {errors}} = useFormContext();
+const TextInputWatchable = ({ name, label, onChange, ...other }) => {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
 
   let helperText = other.helperText;
   let hasErrors = false;
@@ -16,7 +18,7 @@ const TextInputWatchable = ({name, label, onChange, ...other}) => {
     hasErrors = true;
   }
 
-  const handleChange = changeEvt => {
+  const handleChange = (changeEvt) => {
     const changedValue = changeEvt.target.value;
     if (onChange) {
       onChange(changedValue);
@@ -24,21 +26,23 @@ const TextInputWatchable = ({name, label, onChange, ...other}) => {
   };
 
   return (
-    <Controller control={control}
-                name={name}
-                render={({field: {onChange, value}}) => (
-                  <TextField onChange={changeEvt => {
-                                        onChange(changeEvt);
-                                        handleChange(changeEvt);
-                                      }}
-                             {... other} 
-                             value={value}
-                             helperText={helperText} 
-                             label={label} 
-                             error={hasErrors} />
-                )}
+    <Controller
+      control={control}
+      name={name}
+      render={({ field: { onChange, value } }) => (
+        <TextField
+          onChange={(changeEvt) => {
+            onChange(changeEvt);
+            handleChange(changeEvt);
+          }}
+          {...other}
+          value={value}
+          helperText={helperText}
+          label={label}
+          error={hasErrors}
+        />
+      )}
     />
   );
 };
 export default TextInputWatchable;
-

@@ -1,1 +1,1 @@
-export * from "./MessagesLandingPage";
+export * from './MessagesLandingPage';

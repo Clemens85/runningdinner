@@ -1,9 +1,9 @@
-import {isArrayEmpty, isStringNotEmpty, MessageSubType, MessageType} from "@runningdinner/shared";
-import {MESSAGE_SUBTYPE_QUERY_PARAM, SELECTED_TEAM_IDS_QUERY_PARAM} from "../AdminNavigationHook";
-import {useUrlQuery} from "../../common/hooks/useUrlQuery";
+import { isArrayEmpty, isStringNotEmpty, MessageSubType, MessageType } from '@runningdinner/shared';
+
+import { useUrlQuery } from '../../common/hooks/useUrlQuery';
+import { MESSAGE_SUBTYPE_QUERY_PARAM, SELECTED_TEAM_IDS_QUERY_PARAM } from '../AdminNavigationHook';
 
 export function useMessagesQueryHandler(messageType: MessageType) {
-
   const query = useUrlQuery();
 
   function getHeadline() {
@@ -29,11 +29,11 @@ export function useMessagesQueryHandler(messageType: MessageType) {
 
   function getSelectedTeamIds() {
     const selectedTeamIds = query.get(SELECTED_TEAM_IDS_QUERY_PARAM);
-    const result = isStringNotEmpty(selectedTeamIds) ? selectedTeamIds.split(",") : [];
+    const result = isStringNotEmpty(selectedTeamIds) ? selectedTeamIds.split(',') : [];
     if (messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS || isArrayEmpty(result)) {
       return [];
     }
-    return result.map(teamId => teamId.trim());
+    return result.map((teamId) => teamId.trim());
   }
 
   function isPreselectAllRecipients() {
@@ -48,6 +48,6 @@ export function useMessagesQueryHandler(messageType: MessageType) {
   return {
     headline,
     selectedTeamIds,
-    preselectAllRecipients
+    preselectAllRecipients,
   };
 }

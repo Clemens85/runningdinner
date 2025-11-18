@@ -1,20 +1,21 @@
-import { LinearProgress, Grid, Tooltip, Chip, Typography, styled, Divider } from '@mui/material';
+import { Chip, Divider,Grid, LinearProgress, styled, Tooltip, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import {
-  useDinnerRouteOverviewContext,
-  DinnerRouteTeamWithDistance,
+  DinnerRouteDistanceUtil,
   DinnerRouteMapCalculator,
   DinnerRouteOverviewActionType,
-  TeamStatus,
-  DinnerRouteDistanceUtil,
-  isDefined,
+  DinnerRouteTeamWithDistance,
   DinnerRouteWithDistancesList,
+  isDefined,
+  TeamStatus,
+  useDinnerRouteOverviewContext,
 } from '@runningdinner/shared';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { getTeamLabel } from '../../common/dinnerroute';
 import { CancelledTeamMember } from '../teams/CancelledTeamMember';
 import { useZoomToMarker } from './useZoomToMarker';
-import { useTranslation } from 'react-i18next';
 
 type RouteDistancesViewProps = {
   routeDistancesList: DinnerRouteWithDistancesList | undefined;
@@ -32,8 +33,7 @@ const HrRedLine = styled('hr')(({ theme }) => ({
 }));
 
 function RouteDistancesSummary({ routeDistancesList }: RouteDistancesViewProps) {
-
-  const {t} = useTranslation('admin');
+  const { t } = useTranslation('admin');
 
   if (!routeDistancesList) {
     return null;
@@ -42,7 +42,8 @@ function RouteDistancesSummary({ routeDistancesList }: RouteDistancesViewProps) 
   return (
     <Box>
       <div>
-        <span>&#8960; {t('admin:dinner_route_distances_average')}</span> <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.averageDistanceInMeters)}</strong>
+        <span>&#8960; {t('admin:dinner_route_distances_average')}</span>{' '}
+        <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.averageDistanceInMeters)}</strong>
       </div>
       <div>
         <span>&#8721; {t('admin:dinner_route_distances_sum')}</span> <strong>{DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistancesList.sumDistanceInMeters)}</strong>

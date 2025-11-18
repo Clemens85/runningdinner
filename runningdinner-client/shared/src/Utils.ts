@@ -3,7 +3,6 @@ import { filter } from 'lodash-es';
 import { cloneDeep } from 'lodash-es';
 import { remove } from 'lodash-es';
 import { isArray } from 'lodash-es';
-import { BaseEntity } from './types';
 import { truncate } from 'lodash-es';
 import { mergeWith } from 'lodash-es';
 import { isString } from 'lodash-es';
@@ -13,6 +12,8 @@ import { isDate } from 'lodash-es';
 import { forIn } from 'lodash-es';
 import { set } from 'lodash-es';
 import { v4 as uuidv4 } from 'uuid';
+
+import { BaseEntity } from './types';
 
 /**
  * Iterates the passed list and tries to find the entity with the passed id.
@@ -217,7 +218,7 @@ export function stringToColor(string: string) {
   let hash = 0;
   let i;
 
-  /* eslint-disable no-bitwise */
+   
   for (i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }

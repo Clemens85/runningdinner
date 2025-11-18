@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -31,8 +32,14 @@ import java.util.Optional;
 
 @Service
 public class FeedbackService {
-  
+
+  public static final String SYSTEM_FEEDBACK_SENDER_IP = "SYSTEM_GENERATED";
+
   private static final long MIN_MILLIS_ALLOWED_BETWEEN_FIRST_LAST_FEEDBACK = 500;
+
+  private static final Duration LAST_MESSAGE_CREATED_AT_OFFSET = Duration.ofMinutes(1);
+
+  private static final int FEEDBACK_RATE_LIMIT_CHECK_SIZE = 3;
 
   private static final Sort SORTING = Sort.by("createdAt", "id").descending();
   
@@ -55,11 +62,11 @@ public class FeedbackService {
   private MessageSenderHistoryService messageSenderHistoryService;
 
   @Transactional
-  public Feedback createFeedback(Feedback feedback) {
+  public Feedback createFeedback(Feedback feedback, LocalDateTime now) {
 
     Assert.state(feedback.isNew(), "Can only create feedback for not yet existing entity, but was " + feedback);
     
-    checkNotTooManyFeedbacksInTimeRange();
+    checkNotTooManyFeedbacksInTimeRange(now);
     
     feedback.setDeliveryState(DeliveryState.NOT_DELIVERED);
     return feedbackRepository.save(feedback);
@@ -90,19 +97,24 @@ public class FeedbackService {
   /**
    * Quite naive method for preventing too many feedbacks...
    */
-  private void checkNotTooManyFeedbacksInTimeRange() {
-    
-    Page<Feedback> lastCreatedFeedbacksPage = feedbackRepository.findAll(PageRequest.of(0, 3, SORTING));
+  private void checkNotTooManyFeedbacksInTimeRange(LocalDateTime now) {
+
+    PageRequest pageable = PageRequest.of(0, FEEDBACK_RATE_LIMIT_CHECK_SIZE, SORTING);
+    Page<Feedback> lastCreatedFeedbacksPage = feedbackRepository.findAllBySenderIpNot(SYSTEM_FEEDBACK_SENDER_IP, pageable);
     List<Feedback> lastCreatedFeedbacks = lastCreatedFeedbacksPage.hasContent() ? lastCreatedFeedbacksPage.getContent() : Collections.emptyList();
-    if (CollectionUtils.isEmpty(lastCreatedFeedbacks) || lastCreatedFeedbacks.size() < 3) {
+    if (CollectionUtils.isEmpty(lastCreatedFeedbacks) || lastCreatedFeedbacks.size() < FEEDBACK_RATE_LIMIT_CHECK_SIZE) {
       return;
     }
-    
+
     Feedback lastCreatedFeedback = lastCreatedFeedbacks.getFirst();
     Feedback firstCreatedFeedback = lastCreatedFeedbacks.getLast();
     
     LocalDateTime lastCreatedAt = lastCreatedFeedback.getCreatedAt();
     LocalDateTime firstCreatedAt = firstCreatedFeedback.getCreatedAt();
+
+    if (lastCreatedAt.isBefore(now.minus(LAST_MESSAGE_CREATED_AT_OFFSET))) {
+      return;
+    }
     
     long differenceMillis = Math.abs(firstCreatedAt.until(lastCreatedAt, ChronoUnit.MILLIS));
     if (differenceMillis < MIN_MILLIS_ALLOWED_BETWEEN_FIRST_LAST_FEEDBACK) {

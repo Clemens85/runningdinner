@@ -1,26 +1,39 @@
-import { BaseRunningDinnerProps, Participant, ParticipantList, ParticipantListable, assertDefined, concatParticipantList, findEntityById, findTeamPartnerWishInfoAsync, isQuerySucceeded, isStringNotEmpty, useDisclosure, useFindParticipants } from "@runningdinner/shared";
-import { useParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
-import { BackToListButton, useMasterDetailView } from "../../common/hooks/MasterDetailViewHook";
-import { useIsBigTabletDevice } from "../../common/theme/CustomMediaQueryHook";
-import ParticipantsListInfo from "./list/ParticipantsListInfo";
-import { CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION } from "./teampartnerwish/TeamPartnerWishAction";
-import { BrowserTitle } from "../../common/mainnavigation/BrowserTitle";
-import { ParticipantSearchResult, ParticipantShowMiscNotesCallback, ParticipantsListHeader } from "./list/ParticipantsListHeader";
-import { Grid } from "@mui/material";
-import ParticipantsListView from "./list/ParticipantsListView";
-import ParticipantForm from "./form/ParticipantForm";
-import { StickyActionButton } from "../../common/theme/StickyActionButton";
-import { EmptyDetails } from "../common/EmptyDetails";
-import { TeamPartnerWishDialog } from "./teampartnerwish/TeamPartnerWishDialog";
-import { FetchProgressBar } from "../../common/FetchProgressBar";
+import { Grid } from '@mui/material';
+import {
+  assertDefined,
+  BaseRunningDinnerProps,
+  concatParticipantList,
+  findEntityById,
+  findTeamPartnerWishInfoAsync,
+  isQuerySucceeded,
+  isStringNotEmpty,
+  Participant,
+  ParticipantList,
+  ParticipantListable,
+  useDisclosure,
+  useFindParticipants,
+} from '@runningdinner/shared';
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-export function ParticipantsPage({runningDinner}: BaseRunningDinnerProps) {
+import { FetchProgressBar } from '../../common/FetchProgressBar';
+import { BackToListButton, useMasterDetailView } from '../../common/hooks/MasterDetailViewHook';
+import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
+import { useIsBigTabletDevice } from '../../common/theme/CustomMediaQueryHook';
+import { StickyActionButton } from '../../common/theme/StickyActionButton';
+import { EmptyDetails } from '../common/EmptyDetails';
+import ParticipantForm from './form/ParticipantForm';
+import { ParticipantSearchResult, ParticipantShowMiscNotesCallback, ParticipantsListHeader } from './list/ParticipantsListHeader';
+import ParticipantsListInfo from './list/ParticipantsListInfo';
+import ParticipantsListView from './list/ParticipantsListView';
+import { CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION } from './teampartnerwish/TeamPartnerWishAction';
+import { TeamPartnerWishDialog } from './teampartnerwish/TeamPartnerWishDialog';
 
+export function ParticipantsPage({ runningDinner }: BaseRunningDinnerProps) {
   const params = useParams();
   const participantId = params.participantId;
 
-  const {adminId} = runningDinner;
+  const { adminId } = runningDinner;
 
   const findParticipantsQuery = useFindParticipants(adminId, 'always');
 
@@ -38,23 +51,26 @@ export function ParticipantsPage({runningDinner}: BaseRunningDinnerProps) {
     if (!selectedParticipant && selectedParticipantFromUrl) {
       setSelectedParticipant(selectedParticipantFromUrl);
     }
-  }, [selectedParticipant, selectedParticipantFromUrl, setSelectedParticipant])
+  }, [selectedParticipant, selectedParticipantFromUrl, setSelectedParticipant]);
 
   if (!isQuerySucceeded(findParticipantsQuery)) {
-    return <FetchProgressBar {... findParticipantsQuery} />
+    return <FetchProgressBar {...findParticipantsQuery} />;
   }
-  
-  const {refetch, data: participantList} = findParticipantsQuery;
+
+  const { refetch, data: participantList } = findParticipantsQuery;
   assertDefined(participantList);
 
-  return <ParticipantsView  runningDinner={runningDinner} 
-                            onUpdateSelectedParticipant={setSelectedParticipant}
-                            selectedParticipant={selectedParticipant}
-                            showMiscNotes={showMiscNotes}
-                            onShowMiscNotesChange={setShowMiscNotes}
-                            participantList={participantList}
-                            refetch={refetch}
-                            />
+  return (
+    <ParticipantsView
+      runningDinner={runningDinner}
+      onUpdateSelectedParticipant={setSelectedParticipant}
+      selectedParticipant={selectedParticipant}
+      showMiscNotes={showMiscNotes}
+      onShowMiscNotesChange={setShowMiscNotes}
+      participantList={participantList}
+      refetch={refetch}
+    />
+  );
 }
 
 type ParticipantsViewProps = {
@@ -63,20 +79,25 @@ type ParticipantsViewProps = {
   onUpdateSelectedParticipant: (participant?: ParticipantListable) => unknown;
   showMiscNotes: boolean;
   refetch: () => unknown;
-} & BaseRunningDinnerProps & ParticipantShowMiscNotesCallback;
+} & BaseRunningDinnerProps &
+  ParticipantShowMiscNotesCallback;
 
-function ParticipantsView({runningDinner, participantList, onUpdateSelectedParticipant, selectedParticipant, showMiscNotes, onShowMiscNotesChange, refetch}: ParticipantsViewProps) {
-
-  const {adminId} = runningDinner;
+function ParticipantsView({
+  runningDinner,
+  participantList,
+  onUpdateSelectedParticipant,
+  selectedParticipant,
+  showMiscNotes,
+  onShowMiscNotesChange,
+  refetch,
+}: ParticipantsViewProps) {
+  const { adminId } = runningDinner;
 
   const [participantSearchResult, setParticipantSearchResult] = useState<ParticipantSearchResult>({ hasSearchText: false, filteredParticipants: [] });
 
-  const { isOpen: isTeamPartnerWishDialogOpen,
-          close: closeTeamPartnerWishDialog,
-          open: openTeamPartnerWishDialog,
-          getIsOpenData: getTeamPartnerWishInfo } = useDisclosure(false);
+  const { isOpen: isTeamPartnerWishDialogOpen, close: closeTeamPartnerWishDialog, open: openTeamPartnerWishDialog, getIsOpenData: getTeamPartnerWishInfo } = useDisclosure(false);
 
-  const {showBackToListViewButton, setShowDetailsView, showListView, showDetailsView} = useMasterDetailView();
+  const { showBackToListViewButton, setShowDetailsView, showListView, showDetailsView } = useMasterDetailView();
   const isBigTablet = useIsBigTabletDevice();
 
   useEffect(() => {
@@ -98,14 +119,13 @@ function ParticipantsView({runningDinner, participantList, onUpdateSelectedParti
   }
 
   function onParticipantSaved(updatedParticipant: Participant) {
-    findTeamPartnerWishInfoAsync(adminId, updatedParticipant)
-        .then((teamPartnerWishInfo) => {
-          if (teamPartnerWishInfo.relevant) {
-            openTeamPartnerWishDialog(teamPartnerWishInfo);
-          } else {
-            handleParticipantChange();
-          }
-        });
+    findTeamPartnerWishInfoAsync(adminId, updatedParticipant).then((teamPartnerWishInfo) => {
+      if (teamPartnerWishInfo.relevant) {
+        openTeamPartnerWishDialog(teamPartnerWishInfo);
+      } else {
+        handleParticipantChange();
+      }
+    });
   }
 
   const handleTeamPartnerWishDialogResult = (teamPartnerWishAction: any) => {
@@ -131,48 +151,59 @@ function ParticipantsView({runningDinner, participantList, onUpdateSelectedParti
     setParticipantSearchResult(searchResult);
   }
 
-  const participantsListInfo = <ParticipantsListInfo participantList={participantList} hasSearchText={participantSearchResult.hasSearchText}/>;
+  const participantsListInfo = <ParticipantsListInfo participantList={participantList} hasSearchText={participantSearchResult.hasSearchText} />;
 
   return (
     <>
       <BrowserTitle titleI18nKey={'common:participants'} namespaces={'common'} />
-        { showBackToListViewButton
-            ? <BackToListButton onBackToList={() => setShowDetailsView(false)} />
-            : <ParticipantsListHeader adminId={adminId}
-                                      onShowMiscNotesChange={onShowMiscNotesChange}
-                                      showMiscNotes={showMiscNotes}
-                                      onParticipantSearchChanged={handleParticipantSearchChange} />
-        }
-        <Grid container spacing={2}>
-          { showListView &&
-            <Grid item xs={12} md={isBigTablet ? 12 : 7}>
-              <ParticipantsListView participantsListInfo={participantsListInfo}
-                                    participantList={participantList!}
-                                    selectedParticipant={selectedParticipant}
-                                    participantSearchResult={participantSearchResult}
-                                    showMiscNotes={showMiscNotes}
-                                    // @ts-ignore
-                                    onReFetch={() => refetch()}
-                                    onClick={editParticipant} />
-            </Grid>
-          }
-          <Grid item xs={12} md={isBigTablet ? 12 : 5}>
-            { showDetailsView
-                ? <ParticipantForm participant={selectedParticipant!}
-                                   adminId={adminId}
-                                   teamPartnerWishDisabled={runningDinner.options.teamPartnerWishDisabled}
-                                   onParticipantSaved={onParticipantSaved}
-                                   onParticipantDeleted={onParticipantDeleted} />
-                : <EmptyDetails labelI18n='participant_empty_selection' />
-            }
+      {showBackToListViewButton ? (
+        <BackToListButton onBackToList={() => setShowDetailsView(false)} />
+      ) : (
+        <ParticipantsListHeader
+          adminId={adminId}
+          onShowMiscNotesChange={onShowMiscNotesChange}
+          showMiscNotes={showMiscNotes}
+          onParticipantSearchChanged={handleParticipantSearchChange}
+        />
+      )}
+      <Grid container spacing={2}>
+        {showListView && (
+          <Grid item xs={12} md={isBigTablet ? 12 : 7}>
+            <ParticipantsListView
+              participantsListInfo={participantsListInfo}
+              participantList={participantList!}
+              selectedParticipant={selectedParticipant}
+              participantSearchResult={participantSearchResult}
+              showMiscNotes={showMiscNotes}
+              // @ts-ignore
+              onReFetch={() => refetch()}
+              onClick={editParticipant}
+            />
           </Grid>
+        )}
+        <Grid item xs={12} md={isBigTablet ? 12 : 5}>
+          {showDetailsView ? (
+            <ParticipantForm
+              participant={selectedParticipant!}
+              adminId={adminId}
+              teamPartnerWishDisabled={runningDinner.options.teamPartnerWishDisabled}
+              onParticipantSaved={onParticipantSaved}
+              onParticipantDeleted={onParticipantDeleted}
+            />
+          ) : (
+            <EmptyDetails labelI18n="participant_empty_selection" />
+          )}
         </Grid>
-        <StickyActionButton onClick={onNewParticipant} />
-        { isTeamPartnerWishDialogOpen && <TeamPartnerWishDialog runningDinner={runningDinner}
-                                                                isOpen={isTeamPartnerWishDialogOpen}
-                                                                onClose={handleTeamPartnerWishDialogResult}
-                                                                teamPartnerWishInfo={getTeamPartnerWishInfo()} /> }
-
+      </Grid>
+      <StickyActionButton onClick={onNewParticipant} />
+      {isTeamPartnerWishDialogOpen && (
+        <TeamPartnerWishDialog
+          runningDinner={runningDinner}
+          isOpen={isTeamPartnerWishDialogOpen}
+          onClose={handleTeamPartnerWishDialogResult}
+          teamPartnerWishInfo={getTeamPartnerWishInfo()}
+        />
+      )}
     </>
   );
 }

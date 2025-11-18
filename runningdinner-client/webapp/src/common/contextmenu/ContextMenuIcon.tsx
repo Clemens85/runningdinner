@@ -1,7 +1,7 @@
-import React from "react";
-import {IconButton, Menu, MenuItem} from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import {CallbackHandler, isStringNotEmpty} from "@runningdinner/shared";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import { CallbackHandler, isStringNotEmpty } from '@runningdinner/shared';
+import React from 'react';
 
 export interface ContextMenuIconProps {
   entries: ContextMenuEntry[];
@@ -13,8 +13,7 @@ export interface ContextMenuEntry {
   onClick: CallbackHandler;
 }
 
-export default function ContextMenuIcon({entries, dataTestId}: ContextMenuIconProps) {
-
+export default function ContextMenuIcon({ entries, dataTestId }: ContextMenuIconProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -30,27 +29,18 @@ export default function ContextMenuIcon({entries, dataTestId}: ContextMenuIconPr
     entry.onClick();
   };
 
-  return <>
-    <IconButton
-      aria-label="more"
-      aria-controls="menu"
-      aria-haspopup="true"
-      onClick={handleOpenMenu}
-      data-testid={isStringNotEmpty(dataTestId) ? dataTestId : ""}
-      size="large">
-      <MoreVertIcon />
-    </IconButton>
-    <Menu
-        id="menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={handleCloseMenu}>
-      {entries.map((entry) => (
+  return (
+    <>
+      <IconButton aria-label="more" aria-controls="menu" aria-haspopup="true" onClick={handleOpenMenu} data-testid={isStringNotEmpty(dataTestId) ? dataTestId : ''} size="large">
+        <MoreVertIcon />
+      </IconButton>
+      <Menu id="menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleCloseMenu}>
+        {entries.map((entry) => (
           <MenuItem key={entry.label} onClick={() => handleEntryClicked(entry)} data-testid={`context-menu-entry-${entry.label}`}>
             {entry.label}
           </MenuItem>
-      ))}
-    </Menu>
-  </>;
+        ))}
+      </Menu>
+    </>
+  );
 }

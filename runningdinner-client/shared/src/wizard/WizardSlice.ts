@@ -1,4 +1,21 @@
-import {createAction, createAsyncThunk, createReducer, createSelector} from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk, createReducer, createSelector } from '@reduxjs/toolkit';
+import { find } from 'lodash-es';
+
+import { getMinimumParticipantsNeeded, isClosedDinner } from '../admin';
+import { CONSTANTS } from '../Constants';
+import { findGenderAspectsAsync, findRegistrationTypesAsync } from '../masterdata';
+import { FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../redux';
+import {
+  AfterPartyLocation,
+  HttpError,
+  Meal,
+  newAfterPartyLocation,
+  RunningDinnerBasicDetails,
+  RunningDinnerOptions,
+  RunningDinnerPublicSettings,
+  RunningDinnerType,
+} from '../types';
+import { isStringEmpty, isStringNotEmpty } from '../Utils';
 import {
   ALL_NAVIGATION_STEPS,
   ALL_NAVIGATION_STEPS_CLOSED_DINNER,
@@ -14,23 +31,8 @@ import {
   PublicRegistrationNavigationStep,
   setDefaultEndOfRegistrationDate,
   SummaryNavigationStep,
-} from "./CreateWizardService";
-import {WizardRootState} from "./WizardStore";
-import {find} from "lodash-es";
-import {
-  RunningDinnerBasicDetails,
-  RunningDinnerOptions,
-  RunningDinnerPublicSettings,
-  RunningDinnerType,
-  Meal,
-  HttpError,
-  newAfterPartyLocation, AfterPartyLocation
-} from "../types";
-import {isStringEmpty, isStringNotEmpty} from "../Utils";
-import {findGenderAspectsAsync, findRegistrationTypesAsync} from "../masterdata";
-import {getMinimumParticipantsNeeded, isClosedDinner} from "../admin";
-import {FetchData, FetchStatus, handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../redux";
-import { CONSTANTS } from "../Constants";
+} from './CreateWizardService';
+import { WizardRootState } from './WizardStore';
 
 // *** Actions *** //
 export const updateRunningDinnerType = createAction<RunningDinnerType>('updateRunningDinnerType');
@@ -45,94 +47,94 @@ export const setNextNavigationStep = createAction<NavigationStep | undefined>('s
 export const setPreviousNavigationStep = createAction<NavigationStep | undefined>('setPreviousNavigationStep');
 
 export const fetchRegistrationTypes = createAsyncThunk(
-    'fetchRegistrationTypes',
-    // Declare the type your function argument here:
-    async () => {
-      return await findRegistrationTypesAsync();
-    }
+  'fetchRegistrationTypes',
+  // Declare the type your function argument here:
+  async () => {
+    return await findRegistrationTypesAsync();
+  },
 );
 export const fetchGenderAspects = createAsyncThunk(
-    'fetchGenderAspects',
-    // Declare the type your function argument here:
-    async () => {
-      return await findGenderAspectsAsync();
-    }
+  'fetchGenderAspects',
+  // Declare the type your function argument here:
+  async () => {
+    return await findGenderAspectsAsync();
+  },
 );
 
 // *** Reducer *** //
-export const wizardSlice = createReducer(newInitialWizardState(), builder => {
+export const wizardSlice = createReducer(newInitialWizardState(), (builder) => {
   builder
-      .addCase(updateRunningDinnerType, (state, action) => {
-        state.runningDinner.runningDinnerType = action.payload;
-        if (state.runningDinner.runningDinnerType === RunningDinnerType.DEMO) {
-          fillDemoDinnerValues(state.runningDinner);
-        }
-      })
-      .addCase(updateBasicDetails, (state, action) => {
-        state.runningDinner.basicDetails = {...action.payload};
-        setDefaultEndOfRegistrationDate(state.runningDinner);
-        state.runningDinner.options.meals = applyDinnerDateToMeals(state.runningDinner.options.meals, state.runningDinner.basicDetails.date);
-        state.completedNavigationSteps.push(BasicDetailsNavigationStep);
-      })
-      .addCase(updateRunningDinnerOptions, (state, action) => {
-        state.runningDinner.options = {...action.payload};
-        state.completedNavigationSteps.push(OptionsNavigationStep);
-      })
-      .addCase(updateMeals, (state, action) => {
-        state.runningDinner.options.meals = action.payload;
-        state.completedNavigationSteps.push(MealTimesNavigationStep);
-      })
-      .addCase(updatePublicSettings, (state, action) => {
-        state.runningDinner.publicSettings = action.payload;
-        if (!isClosedDinner(state.runningDinner) && isStringEmpty(state.runningDinner.email)) {
-          state.runningDinner.email = state.runningDinner.publicSettings.publicContactEmail;
-        }
-        if (isStringNotEmpty(state.runningDinner.publicSettings.publicContactName)) {
-          state.runningDinner.contract.fullname = state.runningDinner.publicSettings.publicContactName;
-        }
-        state.completedNavigationSteps.push(PublicRegistrationNavigationStep);
-      })
-      .addCase(updateWithCreatedRunningDinner, (state, action) => {
-        state.runningDinner = action.payload.runningDinner;
-        state.administrationUrl = action.payload.administrationUrl;
-        state.completedNavigationSteps.push(FinishNavigationStep);
-      })
-      .addCase(enableAfterPartyLocation, (state, action) => {
-        if (action.payload) {
-          state.runningDinner.afterPartyLocation = newAfterPartyLocation(state.runningDinner);
-        } else {
-          state.runningDinner.afterPartyLocation = undefined;
-        }
-      })
-      .addCase(updateAfterPartyLocation, (state, action) => {
-        state.runningDinner.afterPartyLocation = action.payload;
-      })
-      .addCase(setNextNavigationStep, (state, action) => {
-        state.nextNavigationStep = action.payload;
-      })
-      .addCase(setPreviousNavigationStep, (state, action) => {
-        state.previousNavigationStep = action.payload;
-      })
+    .addCase(updateRunningDinnerType, (state, action) => {
+      state.runningDinner.runningDinnerType = action.payload;
+      if (state.runningDinner.runningDinnerType === RunningDinnerType.DEMO) {
+        fillDemoDinnerValues(state.runningDinner);
+      }
+    })
+    .addCase(updateBasicDetails, (state, action) => {
+      state.runningDinner.basicDetails = { ...action.payload };
+      setDefaultEndOfRegistrationDate(state.runningDinner);
+      state.runningDinner.options.meals = applyDinnerDateToMeals(state.runningDinner.options.meals, state.runningDinner.basicDetails.date);
+      state.completedNavigationSteps.push(BasicDetailsNavigationStep);
+    })
+    .addCase(updateRunningDinnerOptions, (state, action) => {
+      state.runningDinner.options = { ...action.payload };
+      state.completedNavigationSteps.push(OptionsNavigationStep);
+    })
+    .addCase(updateMeals, (state, action) => {
+      state.runningDinner.options.meals = action.payload;
+      state.completedNavigationSteps.push(MealTimesNavigationStep);
+    })
+    .addCase(updatePublicSettings, (state, action) => {
+      state.runningDinner.publicSettings = action.payload;
+      if (!isClosedDinner(state.runningDinner) && isStringEmpty(state.runningDinner.email)) {
+        state.runningDinner.email = state.runningDinner.publicSettings.publicContactEmail;
+      }
+      if (isStringNotEmpty(state.runningDinner.publicSettings.publicContactName)) {
+        state.runningDinner.contract.fullname = state.runningDinner.publicSettings.publicContactName;
+      }
+      state.completedNavigationSteps.push(PublicRegistrationNavigationStep);
+    })
+    .addCase(updateWithCreatedRunningDinner, (state, action) => {
+      state.runningDinner = action.payload.runningDinner;
+      state.administrationUrl = action.payload.administrationUrl;
+      state.completedNavigationSteps.push(FinishNavigationStep);
+    })
+    .addCase(enableAfterPartyLocation, (state, action) => {
+      if (action.payload) {
+        state.runningDinner.afterPartyLocation = newAfterPartyLocation(state.runningDinner);
+      } else {
+        state.runningDinner.afterPartyLocation = undefined;
+      }
+    })
+    .addCase(updateAfterPartyLocation, (state, action) => {
+      state.runningDinner.afterPartyLocation = action.payload;
+    })
+    .addCase(setNextNavigationStep, (state, action) => {
+      state.nextNavigationStep = action.payload;
+    })
+    .addCase(setPreviousNavigationStep, (state, action) => {
+      state.previousNavigationStep = action.payload;
+    })
 
-      .addCase(fetchRegistrationTypes.fulfilled, (state, action) => {
-        handleFetchSucceeded(state.registrationTypes, action.payload);
-      })
-      .addCase(fetchRegistrationTypes.pending, (state) => {
-        handleFetchLoading(state.registrationTypes);
-      })
-      .addCase(fetchRegistrationTypes.rejected, (state, action) => {
-        handleFetchRejected(state.registrationTypes, action);
-      })
+    .addCase(fetchRegistrationTypes.fulfilled, (state, action) => {
+      handleFetchSucceeded(state.registrationTypes, action.payload);
+    })
+    .addCase(fetchRegistrationTypes.pending, (state) => {
+      handleFetchLoading(state.registrationTypes);
+    })
+    .addCase(fetchRegistrationTypes.rejected, (state, action) => {
+      handleFetchRejected(state.registrationTypes, action);
+    })
 
-      .addCase(fetchGenderAspects.fulfilled, (state, action) => {
-        handleFetchSucceeded(state.genderAspects, action.payload);
-      })
-      .addCase(fetchGenderAspects.pending, (state) => {
-        handleFetchLoading(state.genderAspects);
-      })
-      .addCase(fetchGenderAspects.rejected, (state, action) => {
-        handleFetchRejected(state.genderAspects, action);
-      })
+    .addCase(fetchGenderAspects.fulfilled, (state, action) => {
+      handleFetchSucceeded(state.genderAspects, action.payload);
+    })
+    .addCase(fetchGenderAspects.pending, (state) => {
+      handleFetchLoading(state.genderAspects);
+    })
+    .addCase(fetchGenderAspects.rejected, (state, action) => {
+      handleFetchRejected(state.genderAspects, action);
+    });
 });
 
 // **** Selectors *** //
@@ -143,53 +145,52 @@ export const getAllNavigationStepsSelector = createSelector(currentRegistrationT
 });
 
 export const getCurrentNavigationStepSelector = createSelector(
-    getAllNavigationStepsSelector,
-    (state: WizardRootState) => state.administrationUrl,
-    (state: WizardRootState) => state.nextNavigationStep,
-    (state: WizardRootState) => state.completedNavigationSteps,
-    (allNavigationStepsToRunThrough, administrationUrl, nextNavigationStep, completedNavigationSteps) => {
-
-      let result;
-      if (!nextNavigationStep || nextNavigationStep.value === SummaryNavigationStep.value) {
-        result = {
-          currentNavigationStep: isStringNotEmpty(administrationUrl) ? SummaryNavigationStep : FinishNavigationStep,
-          percentage: 100,
-          redirectToBeginOfWizard: false
-        };
-      } else {
-        for (let i = 0; i < allNavigationStepsToRunThrough.length; i++) {
-          if (allNavigationStepsToRunThrough[i].value === nextNavigationStep.value && i > 0) {
-            const currentNavigationStep = allNavigationStepsToRunThrough[i - 1];
-            result = {
-              currentNavigationStep,
-              redirectToBeginOfWizard: false,
-              percentage: (i / allNavigationStepsToRunThrough.length) * 100  // We must use the currentStep (i -1) as factor, but due to we are 0-index-based, we just take i
-            };
-            break;
-          }
-        }
-      }
-      if (!result) {
-        console.error(`nextNavigationStep is ${JSON.stringify(nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`)
-        return {
-          currentNavigationStep: BasicDetailsNavigationStep,
-          redirectToBeginOfWizard: true
-        }
-      }
-      // Algorithm: Check if completedNavigationSteps contains the previous navigation step of the iterated navigation step (till we reach current step)
-      // If not contained in completedNavigationSteps it was not run through!
-      for (let i = 1; i < allNavigationStepsToRunThrough.length; i++) {
-        if (result.currentNavigationStep.value === allNavigationStepsToRunThrough[i].value) {
+  getAllNavigationStepsSelector,
+  (state: WizardRootState) => state.administrationUrl,
+  (state: WizardRootState) => state.nextNavigationStep,
+  (state: WizardRootState) => state.completedNavigationSteps,
+  (allNavigationStepsToRunThrough, administrationUrl, nextNavigationStep, completedNavigationSteps) => {
+    let result;
+    if (!nextNavigationStep || nextNavigationStep.value === SummaryNavigationStep.value) {
+      result = {
+        currentNavigationStep: isStringNotEmpty(administrationUrl) ? SummaryNavigationStep : FinishNavigationStep,
+        percentage: 100,
+        redirectToBeginOfWizard: false,
+      };
+    } else {
+      for (let i = 0; i < allNavigationStepsToRunThrough.length; i++) {
+        if (allNavigationStepsToRunThrough[i].value === nextNavigationStep.value && i > 0) {
+          const currentNavigationStep = allNavigationStepsToRunThrough[i - 1];
+          result = {
+            currentNavigationStep,
+            redirectToBeginOfWizard: false,
+            percentage: (i / allNavigationStepsToRunThrough.length) * 100, // We must use the currentStep (i -1) as factor, but due to we are 0-index-based, we just take i
+          };
           break;
         }
-        const completedNavigationStep = find(completedNavigationSteps, ['value', allNavigationStepsToRunThrough[i-1].value]);
-        if (!completedNavigationStep) {
-          result.redirectToBeginOfWizard = true;
-        }
       }
-
-      return result;
     }
+    if (!result) {
+      console.error(`nextNavigationStep is ${JSON.stringify(nextNavigationStep)}, but could not be found in allCurrentNavigationSteps`);
+      return {
+        currentNavigationStep: BasicDetailsNavigationStep,
+        redirectToBeginOfWizard: true,
+      };
+    }
+    // Algorithm: Check if completedNavigationSteps contains the previous navigation step of the iterated navigation step (till we reach current step)
+    // If not contained in completedNavigationSteps it was not run through!
+    for (let i = 1; i < allNavigationStepsToRunThrough.length; i++) {
+      if (result.currentNavigationStep.value === allNavigationStepsToRunThrough[i].value) {
+        break;
+      }
+      const completedNavigationStep = find(completedNavigationSteps, ['value', allNavigationStepsToRunThrough[i - 1].value]);
+      if (!completedNavigationStep) {
+        result.redirectToBeginOfWizard = true;
+      }
+    }
+
+    return result;
+  },
 );
 
 export const isDemoDinnerSelector = (state: WizardRootState) => state.runningDinner.runningDinnerType === RunningDinnerType.DEMO;
@@ -203,24 +204,22 @@ export const getMinimumParticipantsNeededSelector = (state: WizardRootState) => 
 export const getRunningDinnerSelector = (state: WizardRootState) => state.runningDinner;
 
 export const getNavigationStepSelector = createSelector(
-  (state: WizardRootState) => state.nextNavigationStep, 
+  (state: WizardRootState) => state.nextNavigationStep,
   (state: WizardRootState) => state.previousNavigationStep,
   (nextNavigationStep, previousNavigationStep) => {
     return {
       nextNavigationStep,
-      previousNavigationStep
+      previousNavigationStep,
     };
-  }
+  },
 );
 
 export const isLoadingDataSelector = (state: WizardRootState) => {
-  const loadingItems = getFetchDataItems(state)
-      .filter(item => item.fetchStatus === FetchStatus.LOADING);
+  const loadingItems = getFetchDataItems(state).filter((item) => item.fetchStatus === FetchStatus.LOADING);
   return loadingItems.length > 0;
 };
 export const getLoadingDataErrorSelector = (state: WizardRootState): HttpError | undefined => {
-  const errorItems = getFetchDataItems(state)
-      .filter(item => item.fetchError !== undefined && item.fetchError !== null);
+  const errorItems = getFetchDataItems(state).filter((item) => item.fetchError !== undefined && item.fetchError !== null);
   return errorItems.length > 0 ? errorItems[0].fetchError : undefined;
 };
 
@@ -228,25 +227,24 @@ const getFetchDataItems = (state: WizardRootState): FetchData<any>[] => {
   return [state.registrationTypes, state.genderAspects];
 };
 
-
 export const getRegistrationTypesSelector = createSelector(
-  (state: WizardRootState) => state.registrationTypes.fetchStatus, 
+  (state: WizardRootState) => state.registrationTypes.fetchStatus,
   (state: WizardRootState) => state.registrationTypes.data,
   (status, registrationTypes) => {
     return {
       status,
-      registrationTypes
+      registrationTypes,
     };
-  }
+  },
 );
 
 export const getGenderAspectsSelector = createSelector(
-  (state: WizardRootState) => state.genderAspects.fetchStatus, 
+  (state: WizardRootState) => state.genderAspects.fetchStatus,
   (state: WizardRootState) => state.genderAspects.data,
   (status, genderAspects) => {
     return {
       status,
-      genderAspects
+      genderAspects,
     };
-  }
+  },
 );

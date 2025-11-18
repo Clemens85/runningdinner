@@ -1,6 +1,6 @@
-import {isSameDay} from '../date';
-import {RunningDinnerBasicDetails} from "../types";
-import {CONSTANTS} from "../Constants";
+import { CONSTANTS } from '../Constants';
+import { isSameDay } from '../date';
+import { RunningDinnerBasicDetails } from '../types';
 import { findParticipantsAsync } from '.';
 
 function isChangeInDate(a: RunningDinnerBasicDetails, b: RunningDinnerBasicDetails) {
@@ -22,7 +22,7 @@ export function hasClosedRegistrationType(basicDetails: RunningDinnerBasicDetail
 export enum SettingsChangeType {
   CHANGE_FROM_NON_CLOSED_TO_CLOSED,
   CHANGE_FROM_CLOSED_TO_NON_CLOSED,
-  CHANGE_IN_DATE_WITH_REGISTERED_PARTICIPANTS
+  CHANGE_IN_DATE_WITH_REGISTERED_PARTICIPANTS,
 }
 
 export async function getSettingsChangeTypeListAsync(original: RunningDinnerBasicDetails, updated: RunningDinnerBasicDetails, adminId: string): Promise<SettingsChangeType[]> {
@@ -38,6 +38,6 @@ export async function getSettingsChangeTypeListAsync(original: RunningDinnerBasi
     if (participantList.numParticipantsTotal > 0) {
       result.push(SettingsChangeType.CHANGE_IN_DATE_WITH_REGISTERED_PARTICIPANTS);
     }
-  } 
+  }
   return result;
 }

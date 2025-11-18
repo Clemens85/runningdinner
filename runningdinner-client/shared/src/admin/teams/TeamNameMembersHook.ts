@@ -1,10 +1,9 @@
-import { Team } from "../../types";
-import { getFullnameList } from "../ParticipantService";
-import { useTeamName } from "./TeamNameHook";
+import { Team } from '../../types';
+import { getFullnameList } from '../ParticipantService';
+import { useTeamName } from './TeamNameHook';
 
 export function useTeamNameMembers(team?: Team) {
-
-  const {getTeamName} = useTeamName();
+  const { getTeamName } = useTeamName();
 
   function getTeamNameMembers(team: Team): string {
     const teamName = getTeamName(team);
@@ -16,4 +15,3 @@ export function useTeamNameMembers(team?: Team) {
 
   return { teamNameMembers, getTeamNameMembers };
 }
-

@@ -1,10 +1,11 @@
 import { DinnerRoute, DinnerRouteMapCalculator, isSameDinnerRouteTeam, Meal } from '@runningdinner/shared';
+import { DinnerRouteMapData, DinnerRouteTeamMapEntry } from '@runningdinner/shared';
 import { Map } from '@vis.gl/react-google-maps';
 import { useRef } from 'react';
+
 import { useDynamicFullscreenHeight } from '../hooks/DynamicFullscreenHeightHook';
-import { AfterPartyLocationMarker, CurrentPositionMarker, TeamHostMarker, WarningAlert } from './DinnerRouteComponents';
 import { GOOGLE_MAPS_ID, Polyline } from '../maps';
-import { DinnerRouteMapData, DinnerRouteTeamMapEntry } from '@runningdinner/shared';
+import { AfterPartyLocationMarker, CurrentPositionMarker, TeamHostMarker, WarningAlert } from './DinnerRouteComponents';
 
 type DinnerRouteMapViewProps = {
   dinnerRoute: DinnerRoute;

@@ -1,9 +1,8 @@
-import {Button, ButtonProps} from "@mui/material";
-import { useAsyncCallback } from "@runningdinner/shared";
+import { Button, ButtonProps } from '@mui/material';
+import { useAsyncCallback } from '@runningdinner/shared';
 
 export const PrimaryDangerButtonAsync = (props: ButtonProps) => {
-
-  const {size, onClick, disabled, children, ...rest} = props;
+  const { size, onClick, disabled, children, ...rest } = props;
 
   let asyncClickHandler = onClick;
   if (!asyncClickHandler) {
@@ -16,8 +15,8 @@ export const PrimaryDangerButtonAsync = (props: ButtonProps) => {
   const incomingDisabled = !!disabled;
 
   return (
-      <Button variant="contained" color="secondary" disabled={incomingDisabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={sizeToUse} {...rest}>
-        { children }
-      </Button>
+    <Button variant="contained" color="secondary" disabled={incomingDisabled || asyncOnClick.loading} onClick={asyncOnClick.execute} size={sizeToUse} {...rest}>
+      {children}
+    </Button>
   );
 };

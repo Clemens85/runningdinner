@@ -1,17 +1,18 @@
-import axios from "axios";
-import {filter} from 'lodash-es';
-import { BackendConfig } from "../BackendConfig";
-import {CONSTANTS} from "../Constants";
-import {Activity, ActivityList, ActivityType, DashboardAdminActivities, MessageJobOverview} from "../types";
-import { findMessageJobOverviewByAdminIdAndMessageJobId } from "./MessageService";
-import {cloneDeep} from 'lodash-es';
-import { isStringNotEmpty, findEntityById } from "../Utils";
+import axios from 'axios';
+import { filter } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
+
+import { BackendConfig } from '../BackendConfig';
+import { CONSTANTS } from '../Constants';
+import { Activity, ActivityList, ActivityType, DashboardAdminActivities, MessageJobOverview } from '../types';
+import { findEntityById,isStringNotEmpty } from '../Utils';
+import { findMessageJobOverviewByAdminIdAndMessageJobId } from './MessageService';
 
 const messageActivities = [
   CONSTANTS.ACTIVITY.DINNERROUTE_MAIL_SENT,
   CONSTANTS.ACTIVITY.PARTICIPANT_MAIL_SENT,
   CONSTANTS.ACTIVITY.TEAMARRANGEMENT_MAIL_SENT,
-  CONSTANTS.ACTIVITY.MESSAGE_JOB_SENDING_FAILED
+  CONSTANTS.ACTIVITY.MESSAGE_JOB_SENDING_FAILED,
 ];
 
 export async function findAdminActivitiesByAdminIdAsync(adminId: string): Promise<DashboardAdminActivities> {
@@ -20,13 +21,12 @@ export async function findAdminActivitiesByAdminIdAsync(adminId: string): Promis
   return response.data;
 }
 
-
 export async function findAdminActivitiesByAdminIdAndTypesAsync(adminId: string, activityTypes: string[]): Promise<ActivityList> {
   let url = BackendConfig.buildUrl(`/activityservice/v1/runningdinner/${adminId}`);
-  url += "?";
+  url += '?';
   for (let i = 0; i < activityTypes.length; i++) {
     if (i > 0) {
-      url += "&";
+      url += '&';
     }
     url += `type=${activityTypes[i]}`;
   }
@@ -34,13 +34,12 @@ export async function findAdminActivitiesByAdminIdAndTypesAsync(adminId: string,
   return response.data;
 }
 
-
 export function filterActivitiesByType(activities: Activity[], activityTypeToFilterFor: ActivityType) {
-  return filter(activities, ["activityType", activityTypeToFilterFor]);
+  return filter(activities, ['activityType', activityTypeToFilterFor]);
 }
 
 export function isMessageActivityContained(activities: Activity[]) {
-  for (let i=0; i<activities.length; i++) {
+  for (let i = 0; i < activities.length; i++) {
     if (messageActivities.indexOf(activities[i].activityType) > -1) {
       return true;
     }
@@ -49,7 +48,7 @@ export function isMessageActivityContained(activities: Activity[]) {
 }
 export async function enhanceAdminActivitiesByDetailsAsync(adminId: string, dashboardAdminActivities: DashboardAdminActivities): Promise<DashboardAdminActivities> {
   const asyncFetchDetailsJobs: Record<string, Promise<MessageJobOverview>> = {};
-  dashboardAdminActivities.activities.map(activity => {
+  dashboardAdminActivities.activities.map((activity) => {
     if (isMessageActivityContained([activity]) && isStringNotEmpty(activity.relatedEntityId)) {
       asyncFetchDetailsJobs[activity.id!] = findMessageJobOverviewByAdminIdAndMessageJobId(adminId, activity.relatedEntityId);
     }

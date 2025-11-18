@@ -1,21 +1,20 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { findParticipantsAsync } from "..";
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-export function useFindParticipants(adminId: string, refetchOnMount?: boolean | "always" | undefined) {
+import { findParticipantsAsync } from '..';
 
+export function useFindParticipants(adminId: string, refetchOnMount?: boolean | 'always' | undefined) {
   return useQuery({
     placeholderData: keepPreviousData,
     queryFn: () => findParticipantsAsync(adminId),
     queryKey: ['findParticipants', adminId],
-    refetchOnMount: refetchOnMount
+    refetchOnMount: refetchOnMount,
   });
 }
 
 export function useFindParticipantsListMandatory(adminId: string) {
-
-  const {data} = useFindParticipants(adminId);
+  const { data } = useFindParticipants(adminId);
   if (!data) {
-    throw "ParticipantList must be loaded, but was not!";
+    throw 'ParticipantList must be loaded, but was not!';
   }
   return data;
 }

@@ -1,8 +1,8 @@
-import { OptionsObject, useSnackbar, VariantType } from "notistack";
-import { ReactNode } from "react";
-import IconButton from "@mui/material/IconButton";
-import { CloseRounded } from "@mui/icons-material";
-import {omit} from 'lodash-es';
+import { CloseRounded } from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import { omit } from 'lodash-es';
+import { OptionsObject, useSnackbar, VariantType } from 'notistack';
+import { ReactNode } from 'react';
 export interface CustomSnackbarOptions extends OptionsObject {
   showCloseButton?: boolean;
   wrapInHtmlContainer?: boolean;
@@ -35,19 +35,19 @@ export function useCustomSnackbar() {
   const { enqueueSnackbar } = useSnackbar();
 
   function showSuccess(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions("success", options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions('success', options));
   }
 
   function showError(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions("error", options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions('error', options));
   }
 
   function showInfo(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions("info", options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions('info', options));
   }
 
   function showWarning(message: ReactNode, options?: CustomSnackbarOptions) {
-    enqueueSnackbar(wrapMessageIfNeeded(message, options),newSnackbarOptions("warning", options));
+    enqueueSnackbar(wrapMessageIfNeeded(message, options), newSnackbarOptions('warning', options));
   }
 
   function showDefault(message: ReactNode, options?: CustomSnackbarOptions) {
@@ -69,7 +69,11 @@ export function useCustomSnackbar() {
 
 function wrapMessageIfNeeded(message: ReactNode, options?: CustomSnackbarOptions): ReactNode {
   if (options?.wrapInHtmlContainer) {
-    return <><div style={{ display: "block" }}>{message}</div></>;
+    return (
+      <>
+        <div style={{ display: 'block' }}>{message}</div>
+      </>
+    );
   }
   return message;
 }
@@ -86,9 +90,11 @@ function newSnackbarOptions(variant?: VariantType, incomingOptions?: CustomSnack
 
 function CloseAction(key: string) {
   const { closeSnackbar } = useSnackbar();
-  return <>
-    <IconButton aria-label="close" onClick={() => closeSnackbar(key)} size="large">
-      <CloseRounded style={{ color: 'white' }} />
-    </IconButton>
-  </>;
+  return (
+    <>
+      <IconButton aria-label="close" onClick={() => closeSnackbar(key)} size="large">
+        <CloseRounded style={{ color: 'white' }} />
+      </IconButton>
+    </>
+  );
 }

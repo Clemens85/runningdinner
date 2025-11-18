@@ -1,6 +1,7 @@
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import { findTeamsAsync } from "..";
-import { Team, exchangeEntityInList } from "../..";
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { exchangeEntityInList,Team } from '../..';
+import { findTeamsAsync } from '..';
 
 export function useFindTeams(adminId: string) {
   return useQuery({
@@ -11,7 +12,6 @@ export function useFindTeams(adminId: string) {
 }
 
 export function useUpdateFindTeamsQueryData(adminId: string) {
-
   const queryClient = useQueryClient();
 
   function updateTeams(updatedTeams: Team[]) {
@@ -30,6 +30,6 @@ export function useUpdateFindTeamsQueryData(adminId: string) {
 
   return {
     updateTeams,
-    exchangeTeams
-  }
+    exchangeTeams,
+  };
 }

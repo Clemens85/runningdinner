@@ -1,26 +1,27 @@
-import { BaseRunningDinnerProps, DinnerRouteMapCalculator, DinnerRouteOverviewActionType, isQuerySucceeded, isStringNotEmpty, TeamConnectionPath } from '@runningdinner/shared';
-import { useEffect, useRef } from 'react';
-import { useDynamicFullscreenHeight } from '../../common/hooks/DynamicFullscreenHeightHook';
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
-import { FetchProgressBar } from '../../common/FetchProgressBar';
-import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from '../../common/maps';
-import { AfterPartyLocationMarker, TeamHostMarker, WarningAlert } from '../../common/dinnerroute';
-import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
-import { DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext, DinnerRouteMapData } from '@runningdinner/shared';
-import { useFindAllDinnerRoutes } from './useFindAllDinnerRoutes';
-import { useIsRouteOptimization } from './useIsRouteOptimization';
-import { RouteOptimizationPreviewBanner } from './RouteOptimizationPreviewBanner';
-import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
-import { useShowRouteOptimizationSavedMessage } from './useShowRouteOptimizationSavedMessage';
-import Paragraph from '../../common/theme/typography/Paragraph';
-import { Trans } from 'react-i18next';
-import { MapControlsOverlay } from './MapControlsOverlay';
 import { Box } from '@mui/system';
+import { BaseRunningDinnerProps, DinnerRouteMapCalculator, DinnerRouteOverviewActionType, isQuerySucceeded, isStringNotEmpty, TeamConnectionPath } from '@runningdinner/shared';
+import { DinnerRouteMapData,DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext } from '@runningdinner/shared';
+import { APIProvider, Map } from '@vis.gl/react-google-maps';
+import { useEffect, useRef } from 'react';
+import { Trans } from 'react-i18next';
+
+import { AfterPartyLocationMarker, TeamHostMarker, WarningAlert } from '../../common/dinnerroute';
+import { FetchProgressBar } from '../../common/FetchProgressBar';
+import { useDynamicFullscreenHeight } from '../../common/hooks/DynamicFullscreenHeightHook';
+import { BrowserTitle } from '../../common/mainnavigation/BrowserTitle';
+import { GOOGLE_MAPS_ID, GOOGLE_MAPS_KEY, Polyline } from '../../common/maps';
+import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
+import Paragraph from '../../common/theme/typography/Paragraph';
+import { DinnerRouteOverviewHelpDialog } from './DinnerRouteOverviewHelpDialog.tsx';
 import { MapControlsAppBar } from './MapControlsAppBar.tsx';
+import { MapControlsOverlay } from './MapControlsOverlay';
 import { MapControlsSidebar } from './MapControlsSidebar.tsx';
 import { RouteOptimizationDialog } from './RouteOptimizationDialog.tsx';
+import { RouteOptimizationPreviewBanner } from './RouteOptimizationPreviewBanner';
 import { useCalculateRouteDistances } from './useCalculateRouteDistances.ts';
-import { DinnerRouteOverviewHelpDialog } from './DinnerRouteOverviewHelpDialog.tsx';
+import { useFindAllDinnerRoutes } from './useFindAllDinnerRoutes';
+import { useIsRouteOptimization } from './useIsRouteOptimization';
+import { useShowRouteOptimizationSavedMessage } from './useShowRouteOptimizationSavedMessage';
 
 export function HostLocationsPage({ runningDinner }: BaseRunningDinnerProps) {
   return (

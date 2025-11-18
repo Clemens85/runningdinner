@@ -1,24 +1,22 @@
-import {useTranslation} from "react-i18next";
-import {
-  Dialog,
-  DialogContent,
-  Box,
-} from "@mui/material";
-import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
+import { Box,Dialog, DialogContent } from '@mui/material';
 import {
   cancelTeamMemberAsync,
-  CONSTANTS, findIssueByMessage,
+  CONSTANTS,
+  findIssueByMessage,
   getFullname,
   getTeamMemberCancelInfo,
   isSameEntity,
   Participant,
   Team,
-  useBackendIssueHandler
-} from "@runningdinner/shared";
-import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
-import {Span} from "../../../common/theme/typography/Tags";
-import {useNotificationHttpError} from "../../../common/NotificationHttpErrorHook";
-import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
+  useBackendIssueHandler,
+} from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
+import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import { Span } from '../../../common/theme/typography/Tags';
 
 export interface TeamMemberCancelDialogProps {
   adminId: string;
@@ -33,28 +31,27 @@ export interface TeamMemberCancelDialogResult {
   mustCancelWholeTeam?: boolean;
 }
 
-export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpen, onClose}: TeamMemberCancelDialogProps) => {
+export const TeamMemberCancelDialog = ({ adminId, team, teamMemberToCancel, isOpen, onClose }: TeamMemberCancelDialogProps) => {
+  const { t } = useTranslation(['admin', 'common']);
 
-  const {t} = useTranslation(['admin', 'common']);
-
-  const {getIssuesUntranslated, getIssuesTranslated} = useBackendIssueHandler({
+  const { getIssuesUntranslated, getIssuesTranslated } = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
-      namespaces: 'admin'
-    }
+      namespaces: 'admin',
+    },
   });
-  const {showHttpErrorDefaultNotification} = useNotificationHttpError(getIssuesTranslated);
+  const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
   const teamMemberToCancelIsHost = isSameEntity(team.hostTeamMember, teamMemberToCancel);
   const teamMemberToCancelFullname = getFullname(teamMemberToCancel);
 
   const { cancelWholeTeam, remainingTeamMemberNames } = getTeamMemberCancelInfo(team, teamMemberToCancel);
 
-  const {showSuccess, showError} = useCustomSnackbar();
+  const { showSuccess, showError } = useCustomSnackbar();
 
-  const handleCancelTeamMember = async() => {
-    try  {
+  const handleCancelTeamMember = async () => {
+    try {
       const teamAfterCancel = await cancelTeamMemberAsync(adminId, team.id!, teamMemberToCancel.id!);
-      showSuccess(t("admin:team_cancel_member_success_text", { fullname: teamMemberToCancelFullname }));
+      showSuccess(t('admin:team_cancel_member_success_text', { fullname: teamMemberToCancelFullname }));
       onClose({ teamAfterCancel });
     } catch (e) {
       const issues = getIssuesUntranslated(e);
@@ -64,7 +61,7 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
       }
       if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.INVALID_TEAM_MEMBER_CANCELLATION_ROOT_TEAMPARTNER)) {
         showError(t(`admin:${CONSTANTS.VALIDATION_ISSUE_CONSTANTS.INVALID_TEAM_MEMBER_CANCELLATION_ROOT_TEAMPARTNER}`, { fullname: getFullname(teamMemberToCancel) }), {
-          autoHideDuration: 9000
+          autoHideDuration: 9000,
         });
         return;
       }
@@ -93,17 +90,22 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
   };
 
   const renderContentForTeamMemberCancel = () => {
-    const remainingTeamMemberNamesAsStr = remainingTeamMemberNames.join(", ");
+    const remainingTeamMemberNamesAsStr = remainingTeamMemberNames.join(', ');
     return (
       <Box mt={1}>
         <Box>
-          <Span html={true} i18n="admin:team_member_cancel_info"
-                parameters={{ teamMemberToCancel: teamMemberToCancelFullname, remainingTeamMemberNames: remainingTeamMemberNamesAsStr }} />
+          <Span
+            html={true}
+            i18n="admin:team_member_cancel_info"
+            parameters={{ teamMemberToCancel: teamMemberToCancelFullname, remainingTeamMemberNames: remainingTeamMemberNamesAsStr }}
+          />
         </Box>
-        { teamMemberToCancelIsHost && <Span>
-                                        <br />
-                                        <strong>{t('admin:attention')}</strong> <span>{t('team_member_cancel_host_info')}</span>
-                                      </Span> }
+        {teamMemberToCancelIsHost && (
+          <Span>
+            <br />
+            <strong>{t('admin:attention')}</strong> <span>{t('team_member_cancel_host_info')}</span>
+          </Span>
+        )}
       </Box>
     );
   };
@@ -116,13 +118,21 @@ export const TeamMemberCancelDialog = ({adminId, team, teamMemberToCancel, isOpe
     return null;
   }
   return (
-      <Dialog open={true} onClose={cancelDialog} aria-labelledby="form-dialog-title" maxWidth={"sm"} fullWidth={true}>
-        <DialogTitleCloseable onClose={cancelDialog}>{t('team_member_cancel', {teamMemberToCancel: teamMemberToCancelFullname})}</DialogTitleCloseable>
-        <DialogContent>
-          { renderContent() }
-        </DialogContent>
-        { !cancelWholeTeam && <DialogActionsPanel onOk={handleCancelTeamMember} onCancel={cancelDialog} okLabel={t('admin:team_member_cancel_delete')} cancelLabel={t('common:cancel')} danger={true}/> }
-        { cancelWholeTeam && <DialogActionsPanel onOk={navigateToCancelWholeTeam} onCancel={cancelDialog} okLabel={t('admin:team_member_cancel_goto_team_cancel')} cancelLabel={t('common:cancel')} danger={true}/>}
-      </Dialog>
+    <Dialog open={true} onClose={cancelDialog} aria-labelledby="form-dialog-title" maxWidth={'sm'} fullWidth={true}>
+      <DialogTitleCloseable onClose={cancelDialog}>{t('team_member_cancel', { teamMemberToCancel: teamMemberToCancelFullname })}</DialogTitleCloseable>
+      <DialogContent>{renderContent()}</DialogContent>
+      {!cancelWholeTeam && (
+        <DialogActionsPanel onOk={handleCancelTeamMember} onCancel={cancelDialog} okLabel={t('admin:team_member_cancel_delete')} cancelLabel={t('common:cancel')} danger={true} />
+      )}
+      {cancelWholeTeam && (
+        <DialogActionsPanel
+          onOk={navigateToCancelWholeTeam}
+          onCancel={cancelDialog}
+          okLabel={t('admin:team_member_cancel_goto_team_cancel')}
+          cancelLabel={t('common:cancel')}
+          danger={true}
+        />
+      )}
+    </Dialog>
   );
 };

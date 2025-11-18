@@ -1,12 +1,5 @@
-import {useEffect, useState} from 'react';
-import {
-  Box, Button, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, Grid, Radio,
-  RadioGroup
-} from "@mui/material";
-import FormTextField from "../../../common/input/FormTextField";
-import FormFieldset from "../../../common/theme/FormFieldset";
-import {Trans, useTranslation} from "react-i18next";
-import {Span} from '../../../common/theme/typography/Tags';
+import { Box, Button, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, Grid, Radio, RadioGroup } from '@mui/material';
+import { Alert } from '@mui/material';
 import {
   assertDefined,
   CallbackHandler,
@@ -16,28 +9,33 @@ import {
   isStringNotEmpty,
   RunningDinnerSessionData,
   TeamPartnerOption,
-  useDisclosure
-} from "@runningdinner/shared";
-import {DialogTitleCloseable} from "../../../common/theme/DialogTitleCloseable";
-import DialogActionsPanel from "../../../common/theme/DialogActionsPanel";
-import Paragraph from "../../../common/theme/typography/Paragraph";
-import SecondaryButton from "../../../common/theme/SecondaryButton";
-import {TeamPartnerWishFormInput} from "./TeamPartnerWishFormInput";
-import { Alert } from '@mui/material';
-import {useFormContext} from "react-hook-form";
-import {useCustomSnackbar} from "../../../common/theme/CustomSnackbarHook";
+  useDisclosure,
+} from '@runningdinner/shared';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
+
 import { FetchProgressBar } from '../../../common/FetchProgressBar';
+import FormTextField from '../../../common/input/FormTextField';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
+import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
+import FormFieldset from '../../../common/theme/FormFieldset';
+import SecondaryButton from '../../../common/theme/SecondaryButton';
+import Paragraph from '../../../common/theme/typography/Paragraph';
+import { Span } from '../../../common/theme/typography/Tags';
+import { TeamPartnerWishFormInput } from './TeamPartnerWishFormInput';
 
 export type TeamPartnerWishSectionRegistrationProps = {
   invitingParticipantEmail?: string;
-  publicDinnerId: string
+  publicDinnerId: string;
 };
 
 export function TeamPartnerWishSectionRegistration(props: TeamPartnerWishSectionRegistrationProps) {
   const findRunningDinnerSessionDataQuery = useQuery({
-    queryKey: ["findRunningDinnerSessionData", props.publicDinnerId],
-    queryFn: () => findRunningDinnerSessionDataByPublicId(props.publicDinnerId)
+    queryKey: ['findRunningDinnerSessionData', props.publicDinnerId],
+    queryFn: () => findRunningDinnerSessionDataByPublicId(props.publicDinnerId),
   });
   if (!isQuerySucceeded(findRunningDinnerSessionDataQuery)) {
     return <FetchProgressBar {...findRunningDinnerSessionDataQuery} />;
@@ -50,9 +48,8 @@ type TeamPartnerWishSectionRegistrationViewProps = {
   runningDinnerSessionData: RunningDinnerSessionData;
 } & TeamPartnerWishSectionRegistrationProps;
 
-function TeamPartnerWishSectionRegistrationView({invitingParticipantEmail, runningDinnerSessionData}: TeamPartnerWishSectionRegistrationViewProps) {
-
-  const {t} = useTranslation(['common', 'landing']);
+function TeamPartnerWishSectionRegistrationView({ invitingParticipantEmail, runningDinnerSessionData }: TeamPartnerWishSectionRegistrationViewProps) {
+  const { t } = useTranslation(['common', 'landing']);
 
   const [teamPartnerOption, setTeamPartnerOption] = useState(TeamPartnerOption.NONE);
 
@@ -69,35 +66,37 @@ function TeamPartnerWishSectionRegistrationView({invitingParticipantEmail, runni
       <FormFieldset>{t('landing:teampartner_wish_section_title')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>
-          { teamPartnerOption === TeamPartnerOption.NONE &&
+          {teamPartnerOption === TeamPartnerOption.NONE && (
             <Box mb={2}>
-              <Span i18n={"landing:teampartner_wish_section_subtitle"} />
-            </Box> }
-          { hasEmailInvitation &&
+              <Span i18n={'landing:teampartner_wish_section_subtitle'} />
+            </Box>
+          )}
+          {hasEmailInvitation && (
             <Box mb={3} mt={1}>
-              <Alert severity={"success"} variant="outlined" data-testid={"email-invitation-info-box"}>
-                {t("landing:teampartner_wish_invitation_info", { invitingParticipantEmail: invitingParticipantEmail })}
+              <Alert severity={'success'} variant="outlined" data-testid={'email-invitation-info-box'}>
+                {t('landing:teampartner_wish_invitation_info', { invitingParticipantEmail: invitingParticipantEmail })}
               </Alert>
             </Box>
-          }
-          { teamPartnerOption === TeamPartnerOption.INVITATION && <TeamPartnerWishFormInput teamPartnerWishHelperText={t('landing:team_partner_wish_help')} /> }
-          { teamPartnerOption === TeamPartnerOption.REGISTRATION && <TeamPartnerRegistrationFormInput  /> }
-          { !hasEmailInvitation &&
-              <ToggleTeamPartnerOptionsButton currentTeamPartnerOption={teamPartnerOption}
-                                              runningDinnerSessionData={runningDinnerSessionData}
-                                              invitingParticipantEmail={invitingParticipantEmail}
-                                              handleTeamPartnerOptionChange={newTeamPartnerOption => setTeamPartnerOption(newTeamPartnerOption)} />
-          }
+          )}
+          {teamPartnerOption === TeamPartnerOption.INVITATION && <TeamPartnerWishFormInput teamPartnerWishHelperText={t('landing:team_partner_wish_help')} />}
+          {teamPartnerOption === TeamPartnerOption.REGISTRATION && <TeamPartnerRegistrationFormInput />}
+          {!hasEmailInvitation && (
+            <ToggleTeamPartnerOptionsButton
+              currentTeamPartnerOption={teamPartnerOption}
+              runningDinnerSessionData={runningDinnerSessionData}
+              invitingParticipantEmail={invitingParticipantEmail}
+              handleTeamPartnerOptionChange={(newTeamPartnerOption) => setTeamPartnerOption(newTeamPartnerOption)}
+            />
+          )}
         </Grid>
       </Grid>
     </Box>
   );
 }
 
-
 type TeamPartnerOptionChangeCallback = {
   handleTeamPartnerOptionChange: (selection: TeamPartnerOption) => unknown;
-}
+};
 
 type ToggleTeamPartnerOptionsButtonProps = {
   currentTeamPartnerOption: TeamPartnerOption;
@@ -105,16 +104,20 @@ type ToggleTeamPartnerOptionsButtonProps = {
   invitingParticipantEmail?: string;
 } & TeamPartnerOptionChangeCallback;
 
-function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinnerSessionData, handleTeamPartnerOptionChange, invitingParticipantEmail}: ToggleTeamPartnerOptionsButtonProps) {
-
-  const {t} = useTranslation('common');
+function ToggleTeamPartnerOptionsButton({
+  currentTeamPartnerOption,
+  runningDinnerSessionData,
+  handleTeamPartnerOptionChange,
+  invitingParticipantEmail,
+}: ToggleTeamPartnerOptionsButtonProps) {
+  const { t } = useTranslation('common');
 
   const { isOpen: isDialogOpen, close: closeDialog, open: openDialog } = useDisclosure(false);
 
-  const {showError} = useCustomSnackbar();
+  const { showError } = useCustomSnackbar();
 
-  const {watch, setValue} = useFormContext();
-  const numSeatsCurrentValue = watch("numSeats");
+  const { watch, setValue } = useFormContext();
+  const numSeatsCurrentValue = watch('numSeats');
 
   function handleToggleTeamPartnerOptionDialogClose(selectedTeamPartnerOption: TeamPartnerOption) {
     resetTeamPartnerWish(selectedTeamPartnerOption);
@@ -123,8 +126,8 @@ function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinner
     }
 
     if (selectedTeamPartnerOption === TeamPartnerOption.REGISTRATION && (!numSeatsCurrentValue || numSeatsCurrentValue < runningDinnerSessionData.numSeatsNeededForHost)) {
-      const errorMsg = <Trans i18nKey={"common:num_seats_teampartner_registration_invalid"} />;
-      showError(errorMsg, {autoHideDuration: 13000, wrapInHtmlContainer: true} );
+      const errorMsg = <Trans i18nKey={'common:num_seats_teampartner_registration_invalid'} />;
+      showError(errorMsg, { autoHideDuration: 13000, wrapInHtmlContainer: true });
       return;
     }
 
@@ -145,33 +148,33 @@ function ToggleTeamPartnerOptionsButton({currentTeamPartnerOption, runningDinner
   }
 
   function resetTeamPartnerWishEmail(mailToReset?: string) {
-    const value = isStringEmpty(mailToReset) ? "" : mailToReset;
-    setValue("teamPartnerWishEmail", value);
+    const value = isStringEmpty(mailToReset) ? '' : mailToReset;
+    setValue('teamPartnerWishEmail', value);
   }
 
   function resetTeamPartnerWishRegistrationData() {
-    setValue("teamPartnerWishRegistrationData", undefined);
+    setValue('teamPartnerWishRegistrationData', undefined);
   }
 
   return (
     <>
-      <Grid container justifyContent={"flex-start"}>
+      <Grid container justifyContent={'flex-start'}>
         <Grid item>
-          {currentTeamPartnerOption === TeamPartnerOption.NONE &&
-            <SecondaryButton color={"primary"} 
-                             variant={"outlined"}
-                             data-testid={"add-teampartner-wish-action"} 
-                             onClick={() => openDialog()}>{t("common:teampartner_wish_add")}...</SecondaryButton>
-          }
-          {currentTeamPartnerOption !== TeamPartnerOption.NONE &&
+          {currentTeamPartnerOption === TeamPartnerOption.NONE && (
+            <SecondaryButton color={'primary'} variant={'outlined'} data-testid={'add-teampartner-wish-action'} onClick={() => openDialog()}>
+              {t('common:teampartner_wish_add')}...
+            </SecondaryButton>
+          )}
+          {currentTeamPartnerOption !== TeamPartnerOption.NONE && (
             <Box mb={1} mt={2}>
-              <Button variant={"outlined"} onClick={() => handleToggleTeamPartnerOptionDialogClose(TeamPartnerOption.NONE)}>{t("common:teampartner_wish_option_remove")}</Button>
+              <Button variant={'outlined'} onClick={() => handleToggleTeamPartnerOptionDialogClose(TeamPartnerOption.NONE)}>
+                {t('common:teampartner_wish_option_remove')}
+              </Button>
             </Box>
-          }
+          )}
         </Grid>
       </Grid>
-      { isDialogOpen && <AddTeamPartnerOptionsDialog onCancel={closeDialog}
-                                                     handleTeamPartnerOptionChange={handleToggleTeamPartnerOptionDialogClose} /> }
+      {isDialogOpen && <AddTeamPartnerOptionsDialog onCancel={closeDialog} handleTeamPartnerOptionChange={handleToggleTeamPartnerOptionDialogClose} />}
     </>
   );
 }
@@ -180,9 +183,8 @@ type AddTeamPartnerOptionsDialogCallback = {
   onCancel: CallbackHandler;
 } & TeamPartnerOptionChangeCallback;
 
-function AddTeamPartnerOptionsDialog({onCancel, handleTeamPartnerOptionChange}: AddTeamPartnerOptionsDialogCallback) {
-
-  const {t} = useTranslation('common');
+function AddTeamPartnerOptionsDialog({ onCancel, handleTeamPartnerOptionChange }: AddTeamPartnerOptionsDialogCallback) {
+  const { t } = useTranslation('common');
 
   const [teamPartnerOption, setTeamPartnerOption] = useState(TeamPartnerOption.REGISTRATION);
 
@@ -192,88 +194,90 @@ function AddTeamPartnerOptionsDialog({onCancel, handleTeamPartnerOptionChange}: 
 
   return (
     <Dialog onClose={onCancel} open={true} data-testid="add-teampartner-wish-dialog">
-      <DialogTitleCloseable onClose={onCancel}>{t("common:teampartner_wish_add")}</DialogTitleCloseable>
+      <DialogTitleCloseable onClose={onCancel}>{t('common:teampartner_wish_add')}</DialogTitleCloseable>
       <DialogContent>
         <Grid item xs={12}>
           <FormControl variant="standard" component="fieldset">
-            <Box mb={1}><Paragraph>{t("common:teampartner_wish_options_label")}</Paragraph></Box>
-            <RadioGroup aria-label={t("common:teampartner_wish_options_label")}
-                        name="teamPartnerOption"
-                        value={teamPartnerOption}
-                        onChange={evt => handleRadioChange(evt.target.value)}>
+            <Box mb={1}>
+              <Paragraph>{t('common:teampartner_wish_options_label')}</Paragraph>
+            </Box>
+            <RadioGroup
+              aria-label={t('common:teampartner_wish_options_label')}
+              name="teamPartnerOption"
+              value={teamPartnerOption}
+              onChange={(evt) => handleRadioChange(evt.target.value)}
+            >
               <Box my={1}>
-                <FormControlLabel value={TeamPartnerOption.REGISTRATION}
-                                  control={<Radio color={"primary"} />}
-                                  label={t("common:teampartner_wish_options_registration")} />
-                  <FormHelperText><Trans i18nKey={"common:teampartner_registration_info_1"}/></FormHelperText>
+                <FormControlLabel value={TeamPartnerOption.REGISTRATION} control={<Radio color={'primary'} />} label={t('common:teampartner_wish_options_registration')} />
+                <FormHelperText>
+                  <Trans i18nKey={'common:teampartner_registration_info_1'} />
+                </FormHelperText>
               </Box>
               <Box my={1}>
-                <FormControlLabel value={TeamPartnerOption.INVITATION}
-                                  control={<Radio color={"primary"} />}
-                                  label={t("common:teampartner_wish_options_invitation")} />
+                <FormControlLabel value={TeamPartnerOption.INVITATION} control={<Radio color={'primary'} />} label={t('common:teampartner_wish_options_invitation')} />
                 <FormHelperText>{t('landing:team_partner_wish_help')}</FormHelperText>
               </Box>
             </RadioGroup>
           </FormControl>
         </Grid>
       </DialogContent>
-      <DialogActionsPanel onOk={() => handleTeamPartnerOptionChange(teamPartnerOption)}
-                          onCancel={onCancel}
-                          okLabel={t('common:ok')}
-                          cancelLabel={t('common:cancel')}/>
+      <DialogActionsPanel onOk={() => handleTeamPartnerOptionChange(teamPartnerOption)} onCancel={onCancel} okLabel={t('common:ok')} cancelLabel={t('common:cancel')} />
     </Dialog>
   );
 }
 
 function TeamPartnerRegistrationFormInput() {
-
-  const {t} = useTranslation('common');
+  const { t } = useTranslation('common');
 
   return (
     <>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <FormTextField required
-                         defaultValue={""}
-                         fullWidth
-                         autoFocus
-                         variant="filled"
-                         name="teamPartnerWishRegistrationData.firstnamePart"
-                         label={t("common:teampartner_registration_firstname")} />
+          <FormTextField
+            required
+            defaultValue={''}
+            fullWidth
+            autoFocus
+            variant="filled"
+            name="teamPartnerWishRegistrationData.firstnamePart"
+            label={t('common:teampartner_registration_firstname')}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
-          <FormTextField required
-                         defaultValue={""}
-                         variant="filled"
-                         fullWidth
-                         name="teamPartnerWishRegistrationData.lastname"
-                         label={t("common:teampartner_registration_lastname")}/>
-        </Grid>        
-        <Grid item xs={12} md={6}>
-          <FormTextField defaultValue={""}
-                         variant="filled"
-                         fullWidth
-                         name="teamPartnerWishRegistrationData.email"
-                         type="email"
-                         label={t("common:teampartner_registration_email")}/>
+          <FormTextField
+            required
+            defaultValue={''}
+            variant="filled"
+            fullWidth
+            name="teamPartnerWishRegistrationData.lastname"
+            label={t('common:teampartner_registration_lastname')}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
-          <FormTextField name="teamPartnerWishRegistrationData.mobileNumber"
-                         fullWidth
-                         variant="filled"
-                         label={t("common:teampartner_registration_mobilenumber")}/>
+          <FormTextField
+            defaultValue={''}
+            variant="filled"
+            fullWidth
+            name="teamPartnerWishRegistrationData.email"
+            type="email"
+            label={t('common:teampartner_registration_email')}
+          />
         </Grid>
-        <Grid item xs={12} sx={{py: 2}}>
-          <Span><Trans i18nKey={"common:teampartner_registration_info_address"} /></Span>
-          <Span><Trans i18nKey={"common:teampartner_registration_info_no_duplicate"} /></Span>
-          <Span><Trans i18nKey={"common:teampartner_registration_info_mealspecifics"} /></Span>
+        <Grid item xs={12} md={6}>
+          <FormTextField name="teamPartnerWishRegistrationData.mobileNumber" fullWidth variant="filled" label={t('common:teampartner_registration_mobilenumber')} />
+        </Grid>
+        <Grid item xs={12} sx={{ py: 2 }}>
+          <Span>
+            <Trans i18nKey={'common:teampartner_registration_info_address'} />
+          </Span>
+          <Span>
+            <Trans i18nKey={'common:teampartner_registration_info_no_duplicate'} />
+          </Span>
+          <Span>
+            <Trans i18nKey={'common:teampartner_registration_info_mealspecifics'} />
+          </Span>
         </Grid>
       </Grid>
     </>
-  )
+  );
 }
-
-
-
-
-

@@ -7,7 +7,7 @@ function rewriteAngularJsUrl(baseRoute) {
   var hash = window.location.hash;
   if (hash.length <= 2) {
     console.log(`Invalid hash: ${hash}`);
-    window.location.replace("/"); // Redirect to start page
+    window.location.replace('/'); // Redirect to start page
     return;
   }
 

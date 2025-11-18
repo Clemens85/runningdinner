@@ -1,9 +1,10 @@
-import { Grid } from "@mui/material";
-import FormFieldset from "../../../common/theme/FormFieldset";
-import FormTextField from "../../../common/input/FormTextField";
-import {useTranslation} from "react-i18next";
-import Paragraph from "../../../common/theme/typography/Paragraph";
-import { LocalDate, Time } from "@runningdinner/shared";
+import { Grid } from '@mui/material';
+import { LocalDate, Time } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
+import FormTextField from '../../../common/input/FormTextField';
+import FormFieldset from '../../../common/theme/FormFieldset';
+import Paragraph from '../../../common/theme/typography/Paragraph';
 
 export interface MiscSectionProps {
   miscNotesHelperText?: string;
@@ -11,30 +12,26 @@ export interface MiscSectionProps {
 }
 
 export default function MiscSection(props: MiscSectionProps) {
+  const { t } = useTranslation('common');
 
-  const {t} = useTranslation('common');
-
-  const {miscNotesHelperText, activationDate} = props;
+  const { miscNotesHelperText, activationDate } = props;
 
   return (
-      <>
-        <FormFieldset>{t('misc')}</FormFieldset>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <FormTextField fullWidth
-                           helperText={miscNotesHelperText}
-                           variant="filled"
-                           name="notes"
-                           label={t('misc_notes')}/>
-          </Grid>
-
-          { activationDate &&
-             <Grid item xs={12}>
-              <Paragraph>{t('activation_date')} <LocalDate date={activationDate} /> {t('at_time')} <Time date={activationDate} /></Paragraph>
-            </Grid>
-          }
-
+    <>
+      <FormFieldset>{t('misc')}</FormFieldset>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <FormTextField fullWidth helperText={miscNotesHelperText} variant="filled" name="notes" label={t('misc_notes')} />
         </Grid>
-      </>
+
+        {activationDate && (
+          <Grid item xs={12}>
+            <Paragraph>
+              {t('activation_date')} <LocalDate date={activationDate} /> {t('at_time')} <Time date={activationDate} />
+            </Paragraph>
+          </Grid>
+        )}
+      </Grid>
+    </>
   );
 }

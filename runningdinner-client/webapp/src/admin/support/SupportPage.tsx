@@ -1,31 +1,33 @@
-import {BaseRunningDinnerProps, Fullname, getParticipantsExportJsonUrl, importParticipantsFromJson, isArrayNotEmpty, Participant} from "@runningdinner/shared";
-import {Alert, Box, Button, CircularProgress, Stack} from "@mui/material";
-import {PrimaryButton} from "../../common/theme/PrimaryButton";
-import {PageTitle, Span} from "../../common/theme/typography/Tags";
-import {styled} from "@mui/system";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { useState } from "react";
+import { Alert, Box, Button, CircularProgress, Stack } from '@mui/material';
+import { styled } from '@mui/system';
+import { BaseRunningDinnerProps, Fullname, getParticipantsExportJsonUrl, importParticipantsFromJson, isArrayNotEmpty, Participant } from '@runningdinner/shared';
+import { useState } from 'react';
 
-export function SupportPage({runningDinner}: BaseRunningDinnerProps) {
+import { PrimaryButton } from '../../common/theme/PrimaryButton';
+import { PageTitle, Span } from '../../common/theme/typography/Tags';
+
+export function SupportPage({ runningDinner }: BaseRunningDinnerProps) {
   return (
     <Box>
       <ExportParticipantsToJsonView runningDinner={runningDinner} />
       <ImportParticipantsFromJsonView runningDinner={runningDinner} />
     </Box>
-  )
+  );
 }
 
-function ExportParticipantsToJsonView({runningDinner}: BaseRunningDinnerProps) {
+function ExportParticipantsToJsonView({ runningDinner }: BaseRunningDinnerProps) {
   return (
     <Box>
       <PageTitle>Export</PageTitle>
-      <PrimaryButton href={getParticipantsExportJsonUrl(runningDinner.adminId)} target={"_blank"}>Exportieren...</PrimaryButton>
+      <PrimaryButton href={getParticipantsExportJsonUrl(runningDinner.adminId)} target={'_blank'}>
+        Exportieren...
+      </PrimaryButton>
     </Box>
-  )
+  );
 }
 
-function ImportParticipantsFromJsonView({runningDinner}: BaseRunningDinnerProps) {
-
+function ImportParticipantsFromJsonView({ runningDinner }: BaseRunningDinnerProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>();
   const [failedParticipantsAfterImport, setFailedParticipantsAfterImport] = useState<Participant[]>();
@@ -45,7 +47,7 @@ function ImportParticipantsFromJsonView({runningDinner}: BaseRunningDinnerProps)
       }
     };
     reader.onerror = () => {
-      handleError("Error reading file");
+      handleError('Error reading file');
     };
     reader.readAsText(file);
   }
@@ -69,34 +71,31 @@ function ImportParticipantsFromJsonView({runningDinner}: BaseRunningDinnerProps)
   return (
     <Box sx={{ mt: 4 }}>
       <PageTitle>Import</PageTitle>
-      <Stack direction="column" gap={1} alignItems="center" justifyContent={"flex-start"}>
+      <Stack direction="column" gap={1} alignItems="center" justifyContent={'flex-start'}>
         <InputFileUpload onUpload={handleUpload} disabled={isUploading} />
         {isUploading && <CircularProgress size={20} />}
       </Stack>
 
       <Box sx={{ mt: 2 }}>
-        {errorMsg && (
-          <Alert severity="error">
-            {errorMsg}
-          </Alert>
-        )}
+        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
         {failedParticipantsAfterImport && (
           <Alert severity="success">
             Die Teilnehmer wurden erfolgreich importiert.
-            { isArrayNotEmpty(failedParticipantsAfterImport) && 
+            {isArrayNotEmpty(failedParticipantsAfterImport) && (
               <>
                 <Span>Folgende Teilnehmer konnten nicht importiert werden:</Span>
-                {failedParticipantsAfterImport.map(p => 
-                  <Box key={p.participantNumber}><Fullname {...p}/></Box>
-                )}
+                {failedParticipantsAfterImport.map((p) => (
+                  <Box key={p.participantNumber}>
+                    <Fullname {...p} />
+                  </Box>
+                ))}
               </>
-            }
+            )}
           </Alert>
         )}
       </Box>
-
     </Box>
-  )
+  );
 }
 
 const VisuallyHiddenInput = styled('input')({
@@ -116,9 +115,8 @@ type InputFileUploadProps = {
   disabled?: boolean;
 };
 
-function InputFileUpload({onUpload, disabled}: InputFileUploadProps) {
-
-function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+function InputFileUpload({ onUpload, disabled }: InputFileUploadProps) {
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
@@ -127,21 +125,9 @@ function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
   }
 
   return (
-    <Button
-      component="label"
-      role={undefined}
-      variant="contained"
-      disabled={disabled}
-      tabIndex={-1}
-      color={"primary"}
-      startIcon={<CloudUploadIcon />}
-    >
+    <Button component="label" role={undefined} variant="contained" disabled={disabled} tabIndex={-1} color={'primary'} startIcon={<CloudUploadIcon />}>
       Importieren...
-      <VisuallyHiddenInput
-        type="file"
-        onChange={handleChange}
-        multiple={false}
-      />
+      <VisuallyHiddenInput type="file" onChange={handleChange} multiple={false} />
     </Button>
   );
 }

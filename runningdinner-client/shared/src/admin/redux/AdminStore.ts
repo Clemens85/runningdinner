@@ -1,17 +1,18 @@
-import {AnyAction, configureStore, ThunkAction} from "@reduxjs/toolkit";
-import {logger} from "redux-logger";
-import {combineReducers} from 'redux';
-import {adminSlice} from "./AdminSlice";
-import {messagesSlice} from "./MessagesSlice";
-import {messageJobDetailsSlice} from "./MessageJobDetailsSlice";
+import { AnyAction, configureStore, ThunkAction } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
+import { logger } from 'redux-logger';
+
+import { adminSlice } from './AdminSlice';
+import { messageJobDetailsSlice } from './MessageJobDetailsSlice';
+import { messagesSlice } from './MessagesSlice';
 
 export const adminStore = configureStore({
   reducer: combineReducers({
     root: adminSlice,
     messages: messagesSlice,
-    messageJobDetails: messageJobDetailsSlice
+    messageJobDetails: messageJobDetailsSlice,
   }),
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}).concat(logger)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(logger),
 });
 
 export type AdminStateType = ReturnType<typeof adminStore.getState>;

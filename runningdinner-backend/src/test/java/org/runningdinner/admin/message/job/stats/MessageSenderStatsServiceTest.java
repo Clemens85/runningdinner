@@ -163,7 +163,7 @@ public class MessageSenderStatsServiceTest {
 		assertThat(statsBySender.getSentTasksOfMonth(MailProvider.MAILJET.toString())).isEqualTo(4);
 		assertThat(statsBySender.getSentTasksOfDay(MailProvider.MAILJET.toString())).isEqualTo(4);
 
-		Feedback feedback = feedbackService.createFeedback(newFeedback());
+		Feedback feedback = feedbackService.createFeedback(newFeedback(), LocalDateTime.now());
 		feedbackService.deliverFeedbackInNewTransaction(feedback);
 		statsBySender = messageSenderStatsService.getStatsBySender(now);
 		assertThat(statsBySender.getSentTasksOfMonth(MOCK)).isEqualTo(19); // +1 Feedback

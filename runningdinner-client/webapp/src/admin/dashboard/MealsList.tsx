@@ -1,12 +1,13 @@
-import React from 'react';
-import MealItem from './MealItem';
 import { Box, Card, CardActions, CardContent, Grid, List } from '@mui/material';
-import { EditMealsDialog } from './EditMealsDialog';
-import { useTranslation } from 'react-i18next';
-import { Subtitle } from '../../common/theme/typography/Tags';
 import { BaseRunningDinnerProps, DashboardAdminActivities, Meal, RunningDinner } from '@runningdinner/shared';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
 import { PrimaryButton } from '../../common/theme/PrimaryButton';
+import { Subtitle } from '../../common/theme/typography/Tags';
+import { EditMealsDialog } from './EditMealsDialog';
+import MealItem from './MealItem';
 
 export interface MealsListProps extends BaseRunningDinnerProps {
   meals: Meal[];

@@ -1,24 +1,25 @@
-import {BaseEntity, HasGeocoding} from "./Base";
-import {CONSTANTS} from "../Constants";
-import {clone} from "lodash-es";
-import {isStringEmpty, isStringNotEmpty} from "../";
+import { clone } from 'lodash-es';
+
+import { isStringEmpty, isStringNotEmpty } from '../';
+import { CONSTANTS } from '../Constants';
+import { BaseEntity, HasGeocoding } from './Base';
 
 export interface MealSpecifics {
-  vegetarian: boolean,
-  lactose: boolean,
-  gluten: boolean,
-  vegan: boolean,
+  vegetarian: boolean;
+  lactose: boolean;
+  gluten: boolean;
+  vegan: boolean;
   mealSpecificsNote: string;
 }
 
 export interface ParticipantName {
-  firstnamePart: string,
-  lastname: string,
+  firstnamePart: string;
+  lastname: string;
 }
 
 export interface Participant extends BaseEntity, HasGeocoding, MealSpecifics, ParticipantName {
   participantNumber?: number;
-  gender: string,
+  gender: string;
   mobileNumber: string;
   email: string;
   street: string;
@@ -26,7 +27,7 @@ export interface Participant extends BaseEntity, HasGeocoding, MealSpecifics, Pa
   zip: string;
   cityName: string;
   age: number;
-  numSeats: number,
+  numSeats: number;
   addressRemarks: string;
   notes: string;
   teamId?: string;
@@ -47,7 +48,7 @@ export interface ParticipantList {
   participantsWaitingList: ParticipantListable[];
   teamsGenerated: boolean;
   numParticipantsTotal: number;
-  missingParticipantsInfo: MissingParticipantsInfo
+  missingParticipantsInfo: MissingParticipantsInfo;
 }
 
 export function concatParticipantList(participantList?: ParticipantList): ParticipantListable[] {
@@ -74,11 +75,11 @@ export interface SelectableParticipant extends Participant {
 }
 
 export enum TeamPartnerWishState {
-  NOT_EXISTING = "NOT_EXISTING",
-  EXISTS_EMPTY_TEAM_PARTNER_WISH = "EXISTS_EMPTY_TEAM_PARTNER_WISH",
-  EXISTS_SAME_TEAM_PARTNER_WISH = "EXISTS_SAME_TEAM_PARTNER_WISH",
-  EXISTS_OTHER_TEAM_PARTNER_WISH = "EXISTS_OTHER_TEAM_PARTNER_WISH",
-  NO_PARTNER_WISH_BUT_OTHER_TEAM_PARTNER_WISHES = "NO_PARTNER_WISH_BUT_OTHER_TEAM_PARTNER_WISHES"
+  NOT_EXISTING = 'NOT_EXISTING',
+  EXISTS_EMPTY_TEAM_PARTNER_WISH = 'EXISTS_EMPTY_TEAM_PARTNER_WISH',
+  EXISTS_SAME_TEAM_PARTNER_WISH = 'EXISTS_SAME_TEAM_PARTNER_WISH',
+  EXISTS_OTHER_TEAM_PARTNER_WISH = 'EXISTS_OTHER_TEAM_PARTNER_WISH',
+  NO_PARTNER_WISH_BUT_OTHER_TEAM_PARTNER_WISHES = 'NO_PARTNER_WISH_BUT_OTHER_TEAM_PARTNER_WISHES',
 }
 
 export interface TeamPartnerWishInfo {
@@ -89,9 +90,9 @@ export interface TeamPartnerWishInfo {
 }
 
 export enum TeamPartnerOption {
-  INVITATION="INVITATION",
-  REGISTRATION="REGISTRATION",
-  NONE="NONE"
+  INVITATION = 'INVITATION',
+  REGISTRATION = 'REGISTRATION',
+  NONE = 'NONE',
 }
 
 export interface TeamPartnerWishRegistrationData extends ParticipantName {
@@ -112,13 +113,13 @@ const EMPTY_PARTICIPANT: Participant = {
   age: -1,
   vegetarian: false,
   lactose: false,
-  gluten:false,
+  gluten: false,
   vegan: false,
   mealSpecificsNote: '',
   numSeats: -1,
   addressRemarks: '',
   teamPartnerWishEmail: '',
-  notes: ''
+  notes: '',
 };
 
 const EXAMPLE_PARTICIPANT: Participant = {
@@ -130,12 +131,10 @@ const EXAMPLE_PARTICIPANT: Participant = {
   street: 'Musterstraße',
   streetNr: '1',
   age: 25,
-  numSeats: 6
+  numSeats: 6,
 };
 
-
-
-export interface ParticipantRegistrationInfo extends Omit<BaseEntity, "modifiedAt">, ParticipantName {
+export interface ParticipantRegistrationInfo extends Omit<BaseEntity, 'modifiedAt'>, ParticipantName {
   email: string;
   activationDate?: Date;
   activatedBy: string;
@@ -159,8 +158,8 @@ export function newExampleParticipantInstance(): Participant {
 }
 
 export function isNumSeatsPositiveIntegerOrEmpty(participant: Participant) {
-  const {numSeats} = participant;
-  const numSeatsStr = numSeats + "";
+  const { numSeats } = participant;
+  const numSeatsStr = numSeats + '';
   if (isStringEmpty(numSeatsStr)) {
     return true;
   }
@@ -170,4 +169,3 @@ export function isNumSeatsPositiveIntegerOrEmpty(participant: Participant) {
 export function hasTeamPartnerRegistrationData(teamPartnerWishRegistrationData?: TeamPartnerWishRegistrationData) {
   return teamPartnerWishRegistrationData && isStringNotEmpty(teamPartnerWishRegistrationData.lastname);
 }
-

@@ -1,7 +1,5 @@
 package org.runningdinner.mail.formatter;
 
-import java.util.Locale;
-
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.message.dinner.RunningDinnerRelatedMessage;
 import org.runningdinner.common.service.LocalizationProviderService;
@@ -13,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import java.util.Locale;
 
 @Component
 public class NewParticipantSubscribedFormatter {
@@ -41,7 +41,7 @@ public class NewParticipantSubscribedFormatter {
     message = message.replaceAll(FormatterUtil.ACTIVATE_PARTICIPANT_SUBSCRIPTION_LINK, activationUrl);
     message = message.replaceAll(FormatterUtil.PUBLIC_RUNNING_DINNER_TITLE, runningDinner.getPublicSettings().getPublicTitle());
 
-    return new RunningDinnerRelatedMessage(subject,message, runningDinner);
+    return new RunningDinnerRelatedMessage(subject, message, runningDinner);
   }
 
   public RunningDinnerRelatedMessage formatNewParticipantSubscribedWithPaymentMessage(RunningDinner runningDinner, Participant participant, PaymentOptions paymentOptions) {

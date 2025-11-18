@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from 'react';
 
 const defaultSettings = {
   enableHighAccuracy: false,
@@ -7,25 +7,25 @@ const defaultSettings = {
 };
 
 export interface PositionSettings {
-  enableHighAccuracy?: boolean,
-  timeout?: any,
-  maximumAge?: number,
+  enableHighAccuracy?: boolean;
+  timeout?: any;
+  maximumAge?: number;
 }
 
 export interface Position {
-  latitude?: number,
-  longitude?: number,
-  accuracy?: any,
-  speed?: any,
-  timestamp?: any,
-  error?: string
+  latitude?: number;
+  longitude?: number;
+  accuracy?: any;
+  speed?: any;
+  timestamp?: any;
+  error?: string;
 }
 
 export const useGeoPosition = (watch = false, settings: PositionSettings = defaultSettings) => {
   const [position, setPosition] = useState<Position>({});
   // const [error, setError] = useState<string | null>(null);
 
-  const onChange = ({coords, timestamp}: any) => {
+  const onChange = ({ coords, timestamp }: any) => {
     setPosition({
       latitude: coords.latitude,
       longitude: coords.longitude,
@@ -36,12 +36,12 @@ export const useGeoPosition = (watch = false, settings: PositionSettings = defau
   };
 
   function setError(error: string) {
-    setPosition(prev => {
+    setPosition((prev) => {
       return {
         ...prev,
-        error
-      }
-    })
+        error,
+      };
+    });
   }
 
   const onError = (error: any) => {
@@ -63,11 +63,7 @@ export const useGeoPosition = (watch = false, settings: PositionSettings = defau
 
     return () => watcher && navigator.geolocation.clearWatch(watcher);
     // eslint-disable-next-line
-  }, [
-    settings.enableHighAccuracy,
-    settings.timeout,
-    settings.maximumAge,
-  ]);
+  }, [settings.enableHighAccuracy, settings.timeout, settings.maximumAge]);
 
-  return {...position};
+  return { ...position };
 };

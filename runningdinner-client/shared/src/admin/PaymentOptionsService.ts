@@ -1,12 +1,13 @@
-import axios from "axios";
-import {PaymentOptions} from "../types";
-import {BackendConfig} from "../BackendConfig";
-import {isNewEntity} from "../Utils";
+import axios from 'axios';
+
+import { BackendConfig } from '../BackendConfig';
+import { PaymentOptions } from '../types';
+import { isNewEntity } from '../Utils';
 
 export async function findPaymentOptionsAsync(adminId: string): Promise<PaymentOptions | undefined> {
   const url = BackendConfig.buildUrl(`/paymentoptionsservice/v1/runningdinner/${adminId}`);
   const response = await axios.get(url);
-  return response.data
+  return response.data;
 }
 
 export async function createOrUpdatePaymentOptionsAsync(adminId: string, paymentOptions: PaymentOptions): Promise<PaymentOptions> {
@@ -17,7 +18,7 @@ export async function createOrUpdatePaymentOptionsAsync(adminId: string, payment
   } else {
     url += `/${paymentOptions.id}`;
     const response = await axios.put(url, paymentOptions);
-    return response.data
+    return response.data;
   }
 }
 

@@ -1,5 +1,5 @@
-import {BackendIssue, HttpError, HttpResponse, Issue, Issues} from "../types";
-import { isArrayNotEmpty, isStringEmpty, isStringNotEmpty } from "../Utils";
+import { BackendIssue, HttpError, HttpResponse, Issue, Issues } from '../types';
+import { isArrayNotEmpty, isStringEmpty, isStringNotEmpty } from '../Utils';
 
 /**
  * Returns a list with {@link BackendIssue} from the passed axios error object
@@ -18,7 +18,7 @@ export function getBackendIssuesFromErrorResponse(httpError: HttpError, filterVa
     return result;
   }
 
-   if (isArrayNotEmpty(errorResponse.data.issues)) {
+  if (isArrayNotEmpty(errorResponse.data.issues)) {
     result = errorResponse.data.issues as BackendIssue[];
   }
   return result;
@@ -26,14 +26,14 @@ export function getBackendIssuesFromErrorResponse(httpError: HttpError, filterVa
 
 export function isValidationError(error: HttpError | Error): boolean {
   let errorResponse: HttpResponse | undefined = undefined;
-  if ("response" in error) {
+  if ('response' in error) {
     errorResponse = error.response;
   }
   return errorResponse?.status === 406;
 }
 
 export function isHttpError(error: any): error is HttpError {
-  return error && "response" in error && "status" in error.response;
+  return error && 'response' in error && 'status' in error.response;
 }
 
 export function getAsHttpErrorOrDefault(error: any, defaultHttpError: HttpError): HttpError {
@@ -75,15 +75,15 @@ function findIssueByMessageInArr(issues: Issue[], message: string) {
 }
 
 function mapBackendIssueToIssue(issue: BackendIssue, shouldFocus?: boolean): Issue {
-  const {field, message, issueType} = issue;
+  const { field, message, issueType } = issue;
 
   return {
     field,
     error: {
       message,
-      issueType: isStringNotEmpty(issueType) ? issueType : "backend",
+      issueType: isStringNotEmpty(issueType) ? issueType : 'backend',
       shouldFocus,
-      translated: issue.translated
+      translated: issue.translated,
     },
   };
 }

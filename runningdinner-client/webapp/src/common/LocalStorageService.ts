@@ -1,5 +1,5 @@
 export function getLocalStorageItem<T>(key: string): T | undefined {
-  let item = localStorage.getItem(key);
+  const item = localStorage.getItem(key);
   if (item) {
     return JSON.parse(item, dateReviver);
   }

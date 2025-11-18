@@ -1,10 +1,8 @@
-import { useTranslation } from "react-i18next";
-import {COMMON_ERROR_NAMESPACE, HttpError, isArrayEmpty, isArrayNotEmpty, Issue, Issues, isValidationError} from "@runningdinner/shared";
-import {
-  getBackendIssuesFromErrorResponse,
-  mapBackendIssuesToIssues
-} from "@runningdinner/shared";
-import {CustomSnackbarOptions, useCustomSnackbar} from "./theme/CustomSnackbarHook";
+import { COMMON_ERROR_NAMESPACE, HttpError, isArrayEmpty, isArrayNotEmpty, Issue, Issues, isValidationError } from '@runningdinner/shared';
+import { getBackendIssuesFromErrorResponse, mapBackendIssuesToIssues } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
+
+import { CustomSnackbarOptions, useCustomSnackbar } from './theme/CustomSnackbarHook';
 
 export interface HttpErrorDefaultNotificationProps {
   /**
@@ -37,8 +35,7 @@ export interface HttpErrorDefaultNotificationProps {
  *
  */
 export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpError) => Issues) {
-
-  const {showError} = useCustomSnackbar();
+  const { showError } = useCustomSnackbar();
 
   const { t } = useTranslation(COMMON_ERROR_NAMESPACE);
 
@@ -52,11 +49,7 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
    * @param httpError
    * @param options Optional options (see {@link HttpErrorDefaultNotificationProps} ) to fine-tune which notifications shall be displayed
    */
-  function showHttpErrorDefaultNotification(
-      httpError: HttpError,
-      options?: HttpErrorDefaultNotificationProps
-  ) {
-
+  function showHttpErrorDefaultNotification(httpError: HttpError, options?: HttpErrorDefaultNotificationProps) {
     let issues;
     if (getIssuesTranslated) {
       issues = getIssuesTranslated(httpError);
@@ -65,19 +58,19 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
       issues = mapBackendIssuesToIssues(backendIssues);
     }
 
-    let optionsToUse = options
-        ? options
-        : {
+    const optionsToUse = options
+      ? options
+      : {
           showMessageForValidationErrorsWithoutSource: true,
           showGenericMesssageOnValidationError: true,
-          showAllValidationErrorMessages: false
+          showAllValidationErrorMessages: false,
         };
 
     if (isValidationError(httpError)) {
       if (isArrayNotEmpty(issues.issuesWithoutField) && optionsToUse.showMessageForValidationErrorsWithoutSource !== false) {
         showErrorNotification(issues.issuesWithoutField, optionsToUse);
       } else if (optionsToUse.showGenericMesssageOnValidationError !== false) {
-        const errorMessage = t("validation_error_desc");
+        const errorMessage = t('validation_error_desc');
         showError(errorMessage);
       }
       if (!optionsToUse.showAllValidationErrorMessages) {
@@ -114,7 +107,7 @@ export function useNotificationHttpError(getIssuesTranslated?: (httpError: HttpE
 function mapHttpErrorStatusCodeToTranslationKey(httpError: HttpError) {
   const statusCode = httpError?.response?.status;
   if (statusCode === 406) {
-    return "validation_error_desc";
+    return 'validation_error_desc';
   }
-  return "generic_error_label";
+  return 'generic_error_label';
 }

@@ -1,21 +1,20 @@
-import React from 'react'
-import {useFormContext} from "react-hook-form";
-import {useTranslation} from "react-i18next";
-import {Subtitle} from "../../../common/theme/typography/Tags";
-import {Fullname, isStringEmpty} from "@runningdinner/shared";
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Subtitle } from '../../../common/theme/typography/Tags';
+import { Fullname, isStringEmpty } from '@runningdinner/shared';
 
 export default function ParticipantFormHeadline() {
+  const { t } = useTranslation('admin');
 
-  const {t} = useTranslation('admin');
-
-  const {watch} = useFormContext();
+  const { watch } = useFormContext();
 
   const firstnamePart = watch('firstnamePart');
   const lastname = watch('lastname');
 
   const participant = {
     firstnamePart: firstnamePart,
-    lastname: lastname
+    lastname: lastname,
   };
 
   let headline = t('participant_new');
@@ -24,5 +23,4 @@ export default function ParticipantFormHeadline() {
   }
 
   return <Subtitle>{headline}</Subtitle>;
-
 }

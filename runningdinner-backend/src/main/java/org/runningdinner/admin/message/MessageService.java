@@ -338,13 +338,18 @@ public class MessageService {
     MessageJob result = messageJobRepository.save(messageJob);
 
     MessageTask messageTask = mailService.newSingleMessageTask(result, runningDinner);
-    messageTask.setMessage(new Message(message.getSubject(), message.getMessage(), mailConfig.getContactMailAddress()));
+		String replyTo = runningDinner.getEmail();
+		if (runningDinner.getPublicSettings() != null && StringUtils.isNotBlank(runningDinner.getPublicSettings().getPublicContactEmail())) {
+			// Should always be the case but just to be sure:
+			replyTo = runningDinner.getPublicSettings().getPublicContactEmail();
+		}
+
+    messageTask.setMessage(new Message(message.getSubject(), message.getMessage(), replyTo));
     messageTask.setRecipientEmail(subscribedParticipant.getEmail());
       
     return saveMessageJob(result, Collections.singletonList(messageTask));
   }
-  
-  
+
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public MessageJob sendTeamPartnerWishMail(RunningDinnerRelatedMessage message, String recipientEmail, String fromEmail) {
     

@@ -1,0 +1,14 @@
+# Build outputs
+dist/
+build/
+coverage/
+
+# Dependencies
+node_modules/
+
+# Generated files
+*.log
+*.tsbuildinfo
+
+# Test reports
+reports/

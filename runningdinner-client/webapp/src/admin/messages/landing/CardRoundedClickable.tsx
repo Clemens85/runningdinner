@@ -1,5 +1,5 @@
-import { Card } from "@mui/material";
-import { alpha, styled } from "@mui/system";
+import { Card } from '@mui/material';
+import { alpha, styled } from '@mui/system';
 
 export const brand = {
   100: '#CEE5FD',
@@ -22,6 +22,5 @@ export const CardRoundedClickable = styled(Card)(({}) => ({
     borderColor: brand[300],
     boxShadow: `0 0 24px ${brand[100]}`,
   },
-  cursor: 'pointer'
+  cursor: 'pointer',
 }));
-

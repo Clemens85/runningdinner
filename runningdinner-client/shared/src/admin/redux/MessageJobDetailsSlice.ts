@@ -1,44 +1,34 @@
-import {createAsyncThunk, createReducer} from "@reduxjs/toolkit";
-import {
-  BaseAdminIdProps,
-} from "../../types";
-import {
-  findMessageJobByAdminIdAndJobIdAsync,
-  findMessageTasksByAdminIdAndJobIdAsync
-} from "../../";
-import {AdminStateType, AdminThunk} from "./AdminStore";
-import {newInitialMessageJobDetailsState} from "./StoreTypes";
-import {handleFetchLoading, handleFetchRejected, handleFetchSucceeded} from "../../redux";
+import { createAsyncThunk, createReducer } from '@reduxjs/toolkit';
+
+import { findMessageJobByAdminIdAndJobIdAsync, findMessageTasksByAdminIdAndJobIdAsync } from '../../';
+import { handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../../redux';
+import { BaseAdminIdProps } from '../../types';
+import { AdminStateType, AdminThunk } from './AdminStore';
+import { newInitialMessageJobDetailsState } from './StoreTypes';
 
 export interface MessageJobIdAdminIdPayload extends BaseAdminIdProps {
   messageJobId: string;
 }
 
-export function fetchMessageJobDetailsData(adminId: string, messageJobId: string) : AdminThunk {
+export function fetchMessageJobDetailsData(adminId: string, messageJobId: string): AdminThunk {
   return async (dispatch) => {
-    dispatch(fetchMessageTasks({adminId, messageJobId}));
-    dispatch(fetchMessageJob({adminId, messageJobId}));
+    dispatch(fetchMessageTasks({ adminId, messageJobId }));
+    dispatch(fetchMessageJob({ adminId, messageJobId }));
   };
 }
 
-const fetchMessageJob = createAsyncThunk(
-  'fetchMessageJob',
-  async (props: MessageJobIdAdminIdPayload) => {
-    const {adminId, messageJobId} = props;
-    return await findMessageJobByAdminIdAndJobIdAsync(adminId, messageJobId);
-  }
-);
+const fetchMessageJob = createAsyncThunk('fetchMessageJob', async (props: MessageJobIdAdminIdPayload) => {
+  const { adminId, messageJobId } = props;
+  return await findMessageJobByAdminIdAndJobIdAsync(adminId, messageJobId);
+});
 
-const fetchMessageTasks = createAsyncThunk(
-  'fetchMessageTasks',
-  async (props: MessageJobIdAdminIdPayload) => {
-    const {adminId, messageJobId} = props;
-    return await findMessageTasksByAdminIdAndJobIdAsync(adminId, messageJobId);
-  }
-);
+const fetchMessageTasks = createAsyncThunk('fetchMessageTasks', async (props: MessageJobIdAdminIdPayload) => {
+  const { adminId, messageJobId } = props;
+  return await findMessageTasksByAdminIdAndJobIdAsync(adminId, messageJobId);
+});
 
 // *** Reducer *** //
-export const messageJobDetailsSlice = createReducer(newInitialMessageJobDetailsState, builder => {
+export const messageJobDetailsSlice = createReducer(newInitialMessageJobDetailsState, (builder) => {
   builder
     .addCase(fetchMessageTasks.fulfilled, (state, action) => {
       handleFetchSucceeded(state.messageTasks, action.payload);

@@ -1,6 +1,7 @@
-import axios from "axios";
-import {BackendConfig} from "../BackendConfig.ts";
-import { Participant, ParticipantList } from "../index.ts";
+import axios from 'axios';
+
+import { BackendConfig } from '../BackendConfig.ts';
+import { Participant, ParticipantList } from '../index.ts';
 
 export function getParticipantsExportJsonUrl(adminId: string) {
   return BackendConfig.buildUrl(`/export/v1/runningdinner/${adminId}/participants`);
