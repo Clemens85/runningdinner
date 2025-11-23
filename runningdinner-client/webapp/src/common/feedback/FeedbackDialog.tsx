@@ -9,6 +9,7 @@ import {
   saveFeedbackAsync,
   SupportBotQueryResponse,
   useBackendIssueHandler,
+  useDisclosure,
   warmupSupportBot,
 } from '@runningdinner/shared';
 import { useEffect, useState } from 'react';
@@ -23,6 +24,7 @@ import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
 import { PrimarySuccessButtonAsync } from '../theme/PrimarySuccessButtonAsync';
 import SecondaryButton from '../theme/SecondaryButton';
 import { AgentChatView } from './AgentChatView';
+import { AgentChatViewCloseConfirmationDialog } from './AgentChatViewCloseConfirmationDialog.tsx';
 import { ContactFormView } from './ContactFormView';
 
 export interface FeedbackDialogProps {
@@ -49,6 +51,8 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   const [agentError, setAgentError] = useState<Error | null>(null);
   const [sentFeedback, setSentFeedback] = useState<FeedbackData | null>(null);
 
+  const { isOpen: isCloseConfirmationOpen, open: openCloseConfirmation, close: closeCloseConfirmation } = useDisclosure();
+
   const { applyValidationIssuesToForm, getIssuesTranslated } = useBackendIssueHandler({
     defaultTranslationResolutionSettings: {
       namespaces: 'common',
@@ -66,8 +70,6 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   useEffect(() => {
     warmupSupportBot();
   }, []);
-
-  console.log(`Using threadId ${testFeedbackInstance.threadId}`);
 
   async function handleSubmitFeedback(values: FeedbackData) {
     const feedback: Feedback = { ...values };
@@ -99,45 +101,79 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   }
 
   function handleCloseFromAgentView() {
-    alert('TODO: Ask user if he wants a response via email or if his request is satisfied');
+    openCloseConfirmation();
+  }
+
+  async function handleCloseConfirmation(wantsEmailResponse: boolean) {
+    closeCloseConfirmation();
+    if (!wantsEmailResponse) {
+      // TODO: Implement backend request to mark that no email response is needed
+      // Example:
+      // try {
+      //   await updateFeedbackEmailPreference(sentFeedback?.threadId, false);
+      // } catch (error) {
+      //   // Handle error
+      // }
+    }
     onClose();
   }
 
   const showFeedbackContactForm = !sentFeedback;
+  const useAgentChatViewCloseHandler = !!sentFeedback && !agentError && !!agentResponse;
+
+  function handleCloseDialog() {
+    if (useAgentChatViewCloseHandler) {
+      handleCloseFromAgentView();
+    } else {
+      onClose();
+    }
+  }
 
   return (
-    <Dialog onClose={onClose} open={true} maxWidth="md">
-      <DialogTitleCloseable onClose={onClose}>{t('common:feedback_label')}</DialogTitleCloseable>
-      <DialogContent>
-        <FormProvider {...formMethods}>
-          <form>
-            {showFeedbackContactForm && <ContactFormView />}
-            {!showFeedbackContactForm && <AgentChatView sentFeedback={sentFeedback} incomingResponse={agentResponse} incomingError={agentError} />}
-          </form>
-        </FormProvider>
-      </DialogContent>
+    <>
+      <Dialog
+        onClose={(_, reason) => {
+          if (reason !== 'backdropClick') {
+            handleCloseDialog();
+          }
+        }}
+        open={true}
+        maxWidth="md"
+      >
+        <DialogTitleCloseable onClose={handleCloseDialog}>{t('common:feedback_label')}</DialogTitleCloseable>
+        <DialogContent>
+          <FormProvider {...formMethods}>
+            <form>
+              {showFeedbackContactForm && <ContactFormView />}
+              {!showFeedbackContactForm && <AgentChatView sentFeedback={sentFeedback} incomingResponse={agentResponse} incomingError={agentError} />}
+            </form>
+          </FormProvider>
+        </DialogContent>
 
-      <DialogActions>
-        {showFeedbackContactForm && (
-          <Box sx={{ ...fullWidthProps, p: 2 }}>
-            <SecondaryButton onClick={onClose} sx={fullWidthProps} data-testid="dialog-cancel">
-              {t('common:cancel')}
-            </SecondaryButton>{' '}
-            <PrimarySuccessButtonAsync disabled={isSubmitting} onClick={handleSubmit(handleSubmitFeedback)} size={'medium'} sx={fullWidthProps} data-testid="dialog-submit">
-              {t('common:save')}
-            </PrimarySuccessButtonAsync>
-          </Box>
-        )}
+        <DialogActions>
+          {showFeedbackContactForm && (
+            <Box sx={{ ...fullWidthProps, p: 2 }}>
+              <SecondaryButton onClick={onClose} sx={fullWidthProps} data-testid="dialog-cancel">
+                {t('common:cancel')}
+              </SecondaryButton>{' '}
+              <PrimarySuccessButtonAsync disabled={isSubmitting} onClick={handleSubmit(handleSubmitFeedback)} size={'medium'} sx={fullWidthProps} data-testid="dialog-submit">
+                {t('common:save')}
+              </PrimarySuccessButtonAsync>
+            </Box>
+          )}
 
-        {!showFeedbackContactForm && (
-          <Box sx={{ ...fullWidthProps, p: 2 }}>
-            <SecondaryButton onClick={handleCloseFromAgentView} sx={fullWidthProps} data-testid="dialog-close-agent">
-              {t('common:close')}
-            </SecondaryButton>
-          </Box>
-        )}
-      </DialogActions>
-    </Dialog>
+          {useAgentChatViewCloseHandler && (
+            <Box sx={{ ...fullWidthProps, p: 2 }}>
+              <SecondaryButton onClick={handleCloseFromAgentView} sx={fullWidthProps} data-testid="dialog-close-agent">
+                {t('common:close')}
+              </SecondaryButton>
+            </Box>
+          )}
+        </DialogActions>
+      </Dialog>
+
+      {isCloseConfirmationOpen && <AgentChatViewCloseConfirmationDialog open={isCloseConfirmationOpen} onConfirm={handleCloseConfirmation} />}
+    </>
   );
 }
 
