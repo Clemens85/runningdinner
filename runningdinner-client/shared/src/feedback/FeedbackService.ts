@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { newUuid } from '..';
 import { BackendConfig } from '../BackendConfig';
-import { Feedback } from '../types';
+import { ConversationRole, Feedback, FeedbackConversation } from '../types';
 
 // const SUPPORT_BOT_API_URL = 'http://localhost:8000/api/support';
 const SUPPORT_BOT_API_URL = `${import.meta.env.VITE_SUPPORT_BOT_API_URL}`;
@@ -10,6 +10,11 @@ const SUPPORT_BOT_API_URL = `${import.meta.env.VITE_SUPPORT_BOT_API_URL}`;
 export async function saveFeedbackAsync(feedback: Feedback): Promise<void> {
   const url = BackendConfig.buildUrl(`/feedbackservice/v1/feedback`);
   await axios.post<Feedback>(url, feedback);
+}
+
+export async function saveFeedbackConversationsAsync(feedbackConversations: FeedbackConversation[]): Promise<void> {
+  const url = BackendConfig.buildUrl(`/feedbackservice/v1/feedback/conversations`);
+  await axios.post<FeedbackConversation[]>(url, feedbackConversations);
 }
 
 export type SupportBotQueryResponse = {
@@ -26,10 +31,21 @@ export async function querySupportBot(threadId: string, question: string, reques
   const response = await axios.post<Feedback>(SUPPORT_BOT_API_URL, userRequest, {
     timeout: 22000,
   });
-  return {
+  const result = {
     answer: response?.data?.answer || '',
     id: newUuid(),
   };
+
+  // Fire and forget: Save conversation to backend
+  const feedbackConversations: FeedbackConversation[] = [
+    { message: question, role: ConversationRole.HUMAN, threadId },
+    { message: result.answer, role: ConversationRole.ASSISTANT, threadId },
+  ];
+  saveFeedbackConversationsAsync(feedbackConversations).catch((error) => {
+    console.error('Failed to save feedback conversations:', error);
+  });
+
+  return result;
 }
 
 export async function querySupportBotFromFeedback(feedback: Feedback, question: string, publicEventRegistrations: string[]): Promise<SupportBotQueryResponse> {

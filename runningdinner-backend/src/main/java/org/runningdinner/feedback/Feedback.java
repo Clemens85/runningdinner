@@ -11,13 +11,12 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.runningdinner.admin.message.BaseMessage;
 import org.runningdinner.core.AbstractEntity;
+import org.runningdinner.core.FuzzyBoolean;
 
 import java.util.UUID;
 
 @Entity
 public class Feedback extends AbstractEntity {
-
-  private static final long serialVersionUID = 1L;
 
   @NotBlank
   @SafeHtml
@@ -45,6 +44,9 @@ public class Feedback extends AbstractEntity {
   private DeliveryState deliveryState = DeliveryState.NOT_DELIVERED;
 
   private UUID threadId;
+
+	@Enumerated(EnumType.STRING)
+	private FuzzyBoolean resolved = FuzzyBoolean.UNKNOWN;
 
   public String getSenderEmail() {
 
@@ -114,7 +116,16 @@ public class Feedback extends AbstractEntity {
     this.threadId = threadId;
   }
 
-  @Override
+
+	public FuzzyBoolean getResolved() {
+		return resolved;
+	}
+
+	public void setResolved(FuzzyBoolean resolved) {
+		this.resolved = resolved;
+	}
+
+	@Override
   public String toString() {
 
     return MoreObjects.toStringHelper(this)

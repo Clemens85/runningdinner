@@ -3,6 +3,7 @@ package org.runningdinner.feedback.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.runningdinner.feedback.Feedback;
+import org.runningdinner.feedback.FeedbackConversation;
 import org.runningdinner.feedback.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/rest/feedbackservice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,5 +28,11 @@ public class FeedbackServiceRest {
     String senderIp = request.getRemoteAddr();
     incomingFeedback.setSenderIp(senderIp);
     return feedbackService.createFeedback(incomingFeedback, LocalDateTime.now());
+  }
+
+  @PostMapping("/feedback/conversations")
+  public List<FeedbackConversation> createFeedbackConversations(@Valid @RequestBody List<FeedbackConversation> feedbackConversations) {
+
+    return feedbackService.createFeedbackConversations(feedbackConversations);
   }
 }

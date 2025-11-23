@@ -13,6 +13,17 @@ export interface Feedback extends FeedbackData {
   answer?: string;
 }
 
+export enum ConversationRole {
+  HUMAN = 'HUMAN',
+  ASSISTANT = 'ASSISTANT',
+}
+
+export interface FeedbackConversation {
+  message: string;
+  role: ConversationRole;
+  threadId: string;
+}
+
 export function newEmptyFeedbackInstance(): Feedback {
   return {
     message: '',

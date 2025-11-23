@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class FeedbackService {
@@ -45,6 +46,9 @@ public class FeedbackService {
   
   @Autowired
   private FeedbackRepository feedbackRepository;
+
+  @Autowired
+  private FeedbackConversationRepository feedbackConversationRepository;
 
   @Autowired
   private RunningDinnerRepository runningDinnerRepository;
@@ -146,6 +150,28 @@ public class FeedbackService {
     Message message = new Message(subject, content.toString(), feedback.getSenderEmail());
 
     return mailService.newVirtualMessageTask(mailConfig.getContactMailAddress(), message);
+  }
+
+  @Transactional
+  public List<FeedbackConversation> createFeedbackConversations(List<FeedbackConversation> feedbackConversations) {
+    Assert.notEmpty(feedbackConversations, "feedbackConversations must not be empty");
+    for (FeedbackConversation feedbackConversation : feedbackConversations) {
+      Assert.state(feedbackConversation.isNew(), "Can only create feedback conversations for not yet existing entities, but was " + feedbackConversation);
+    }
+		Assert.state(feedbackConversations.size() <= 2, "Max two FeedbackConversation entities may be provided, but was " + feedbackConversations.size());
+    
+    // Validate that all threadIds are the same
+    UUID firstThreadId = feedbackConversations.getFirst().getThreadId();
+    for (FeedbackConversation feedbackConversation : feedbackConversations) {
+      Assert.state(firstThreadId.equals(feedbackConversation.getThreadId()), 
+                   "All threadIds must be the same, but found different threadIds: " + firstThreadId + " and " + feedbackConversation.getThreadId());
+    }
+    
+    // Validate that a Feedback entity exists for the threadId
+    boolean feedbackExists = feedbackRepository.existsByThreadId(firstThreadId);
+    Assert.state(feedbackExists, "No Feedback entity found for threadId: " + firstThreadId);
+    
+    return feedbackConversationRepository.saveAll(feedbackConversations);
   }
 
 }

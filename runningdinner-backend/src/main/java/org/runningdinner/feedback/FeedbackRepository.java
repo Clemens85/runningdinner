@@ -15,4 +15,6 @@ public interface FeedbackRepository extends JpaRepository<Feedback, UUID> {
 
   Page<Feedback> findAllBySenderIpNot(String senderIp, Pageable pageable);
 
+  boolean existsByThreadId(UUID threadId);
+
 }
