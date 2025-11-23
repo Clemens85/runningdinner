@@ -1,10 +1,11 @@
+import axios from 'axios';
+
 import { newUuid } from '..';
 import { BackendConfig } from '../BackendConfig';
 import { Feedback } from '../types';
-import axios from 'axios';
 
-const SUPPORT_BOT_API_URL = 'http://localhost:8000/api/support';
-// const SUPPORT_BOT_API_URL = `${import.meta.env.VITE_SUPPORT_BOT_API_URL}`;
+// const SUPPORT_BOT_API_URL = 'http://localhost:8000/api/support';
+const SUPPORT_BOT_API_URL = `${import.meta.env.VITE_SUPPORT_BOT_API_URL}`;
 
 export async function saveFeedbackAsync(feedback: Feedback): Promise<void> {
   const url = BackendConfig.buildUrl(`/feedbackservice/v1/feedback`);
@@ -22,7 +23,9 @@ export async function querySupportBot(threadId: string, question: string, reques
     question: question,
     request_params: requestContext as Record<string, string>,
   };
-  const response = await axios.post<Feedback>(SUPPORT_BOT_API_URL, userRequest);
+  const response = await axios.post<Feedback>(SUPPORT_BOT_API_URL, userRequest, {
+    timeout: 18000,
+  });
   return {
     answer: response?.data?.answer || '',
     id: newUuid(),

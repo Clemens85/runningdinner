@@ -2,10 +2,11 @@ import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import { t } from 'i18next';
 import { Trans } from 'react-i18next';
+
 import FormTextField from '../input/FormTextField';
 import { IMPRESSUM_PATH } from '../mainnavigation/NavigationPaths';
-import { Span } from '../theme/typography/Tags';
 import LinkExtern from '../theme/LinkExtern';
+import { Span } from '../theme/typography/Tags';
 
 export function ContactFormView() {
   return (

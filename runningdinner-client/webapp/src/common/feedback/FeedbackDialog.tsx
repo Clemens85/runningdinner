@@ -1,5 +1,3 @@
-import { useTranslation } from 'react-i18next';
-import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
 import { Box, Dialog, DialogActions, DialogContent, useMediaQuery, useTheme } from '@mui/material';
 import {
   CallbackHandler,
@@ -7,22 +5,25 @@ import {
   FeedbackData,
   HttpError,
   newEmptyFeedbackInstance,
-  useBackendIssueHandler,
   querySupportBotFromFeedback,
   saveFeedbackAsync,
-  warmupSupportBot,
   SupportBotQueryResponse,
+  useBackendIssueHandler,
+  warmupSupportBot,
 } from '@runningdinner/shared';
-import { useNotificationHttpError } from '../NotificationHttpErrorHook';
-import { FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ContactFormView } from './ContactFormView';
-import { AgentChatView } from './AgentChatView';
-import SecondaryButton from '../theme/SecondaryButton';
-import { PrimarySuccessButtonAsync } from '../theme/PrimarySuccessButtonAsync';
-import { commonStyles } from '../theme/CommonStyles';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+
 import { getPublicEventRegistrationsFromLocalStorage } from '../LocalStorageService';
+import { useNotificationHttpError } from '../NotificationHttpErrorHook';
+import { commonStyles } from '../theme/CommonStyles';
+import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
+import { PrimarySuccessButtonAsync } from '../theme/PrimarySuccessButtonAsync';
+import SecondaryButton from '../theme/SecondaryButton';
+import { AgentChatView } from './AgentChatView';
+import { ContactFormView } from './ContactFormView';
 
 export interface FeedbackDialogProps {
   onClose: CallbackHandler;
@@ -54,7 +55,6 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
     },
   });
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
-
 
   const testFeedbackInstance = newTestFeedbackInstance();
   const formMethods = useForm<FeedbackData>({

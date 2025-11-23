@@ -1,4 +1,4 @@
-import { Alert, Box, Grid } from '@mui/material';
+import { Alert, AlertTitle, Box, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ChatMessageView } from './ChatMessageView.tsx';
 import { TypingIndicator } from './TypingIndicator';
@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Feedback, isStringNotEmpty, newUuid, querySupportBot, SupportBotQueryResponse } from '@runningdinner/shared';
 import { ChatInputTextField } from './ChatInputTextField.tsx';
 import { ChatMessage, chatMessageFromFeedback, filterNonPendingMessages, hasAtLeastOnePendingMessage } from './ChatMessage.ts';
+import EmailIcon from '@mui/icons-material/Email';
 
 type AgentChatViewProps = {
   sentFeedback: Feedback;
@@ -185,13 +186,20 @@ function NoResponseAlert() {
 }
 
 function FeedbackSentSuccessAlert() {
-  const { t } = useTranslation('common');
+  // const { t } = useTranslation('common');
+
+  const [open, setOpen] = useState(true);
 
   return (
     <Grid item xs={12}>
-      <Alert severity="info" onClose={() => {}} variant="outlined" sx={{ mt: 2, mb: 1 }}>
-        {t('common:feedback_success')}
-      </Alert>
+      {open && (
+        <Alert severity="info" onClose={() => setOpen(false)} variant="outlined" sx={{ mt: 2, mb: 1 }} icon={<EmailIcon />}>
+          <AlertTitle>Vielen Dank für dein Feedback!</AlertTitle>
+          Deine Nachricht wurde erfolgreich übermittelt und du wirst eine Antwort per Email erhalten.
+          <br />
+          Habe bitte etwas Geduld, wir versuchen dir hier eine automatische Antwort zu liefern - vielleicht ist das schon die Lösung für dein Anliegen!
+        </Alert>
+      )}
     </Grid>
   );
 }
