@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { newUuid } from '..';
 import { BackendConfig } from '../BackendConfig';
-import { ConversationRole, Feedback, FeedbackConversation } from '../types';
+import { ConversationRole, Feedback, FeedbackConversation, FuzzyBoolean } from '../types';
 
 // const SUPPORT_BOT_API_URL = 'http://localhost:8000/api/support';
 const SUPPORT_BOT_API_URL = `${import.meta.env.VITE_SUPPORT_BOT_API_URL}`;
@@ -15,6 +15,11 @@ export async function saveFeedbackAsync(feedback: Feedback): Promise<void> {
 export async function saveFeedbackConversationsAsync(feedbackConversations: FeedbackConversation[]): Promise<void> {
   const url = BackendConfig.buildUrl(`/feedbackservice/v1/feedback/conversations`);
   await axios.post<FeedbackConversation[]>(url, feedbackConversations);
+}
+
+export async function updateFeedbackResolvedStatus(threadId: string, resolved: FuzzyBoolean): Promise<void> {
+  const url = BackendConfig.buildUrl(`/feedbackservice/v1/feedback/${threadId}/resolved/${resolved}`);
+  await axios.put(url);
 }
 
 export type SupportBotQueryResponse = {

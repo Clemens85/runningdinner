@@ -10,6 +10,7 @@ import org.runningdinner.admin.message.job.stats.MessageSenderHistoryService;
 import org.runningdinner.common.AlertLogger;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.ValidatorService;
+import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.feedback.Feedback.DeliveryState;
 import org.runningdinner.mail.MailService;
@@ -143,6 +144,7 @@ public class FeedbackService {
       String runningDinnerId = runningDinner != null ? runningDinner.getId().toString() : "null";
       content.append("ID: ").append(runningDinnerId).append(FormatterUtil.NEWLINE);
     }
+		content.append("Resolved: ").append(feedback.getResolved()).append(FormatterUtil.NEWLINE);
     
     content.append(FormatterUtil.TWO_NEWLINES);
     content.append("Content: ").append(FormatterUtil.NEWLINE).append(feedback.getMessage());
@@ -172,6 +174,19 @@ public class FeedbackService {
     Assert.state(feedbackExists, "No Feedback entity found for threadId: " + firstThreadId);
     
     return feedbackConversationRepository.saveAll(feedbackConversations);
+  }
+
+  @Transactional
+  public Feedback updateResolvedStatus(UUID threadId, FuzzyBoolean resolved) {
+    Assert.notNull(threadId, "threadId must not be null");
+    Assert.notNull(resolved, "resolved must not be null");
+    
+    Optional<Feedback> feedbackOptional = feedbackRepository.findByThreadId(threadId);
+    Assert.state(feedbackOptional.isPresent(), "No Feedback entity found for threadId: " + threadId);
+    
+    Feedback feedback = feedbackOptional.get();
+    feedback.setResolved(resolved);
+    return feedbackRepository.save(feedback);
   }
 
 }

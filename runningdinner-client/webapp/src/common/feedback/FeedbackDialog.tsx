@@ -3,11 +3,13 @@ import {
   CallbackHandler,
   Feedback,
   FeedbackData,
+  FuzzyBoolean,
   HttpError,
   newEmptyFeedbackInstance,
   querySupportBotFromFeedback,
   saveFeedbackAsync,
   SupportBotQueryResponse,
+  updateFeedbackResolvedStatus,
   useBackendIssueHandler,
   useDisclosure,
   warmupSupportBot,
@@ -49,7 +51,7 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agentResponse, setAgentResponse] = useState<SupportBotQueryResponse | null>(null);
   const [agentError, setAgentError] = useState<Error | null>(null);
-  const [sentFeedback, setSentFeedback] = useState<FeedbackData | null>(null);
+  const [sentFeedback, setSentFeedback] = useState<Feedback | null>(null);
 
   const { isOpen: isCloseConfirmationOpen, open: openCloseConfirmation, close: closeCloseConfirmation } = useDisclosure();
 
@@ -106,15 +108,16 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
 
   async function handleCloseConfirmation(wantsEmailResponse: boolean) {
     closeCloseConfirmation();
-    if (!wantsEmailResponse) {
-      // TODO: Implement backend request to mark that no email response is needed
-      // Example:
-      // try {
-      //   await updateFeedbackEmailPreference(sentFeedback?.threadId, false);
-      // } catch (error) {
-      //   // Handle error
-      // }
+
+    if (sentFeedback?.threadId) {
+      const resolved = wantsEmailResponse ? FuzzyBoolean.FALSE : FuzzyBoolean.TRUE;
+      try {
+        await updateFeedbackResolvedStatus(sentFeedback.threadId, resolved);
+      } catch (error) {
+        console.error('Failed to update feedback resolved status:', error);
+      }
     }
+
     onClose();
   }
 

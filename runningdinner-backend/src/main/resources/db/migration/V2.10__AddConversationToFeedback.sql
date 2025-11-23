@@ -2,6 +2,8 @@ ALTER TABLE runningdinner.Feedback
     ADD COLUMN threadId uuid,
     ADD COLUMN resolved text;
 
+alter table runningdinner.Feedback add constraint FeedbackThreadIdUnique unique (threadId);
+
 create table runningdinner.FeedbackConversation (
     id uuid not null,
     createdAt TIMESTAMP WITHOUT TIME ZONE not null,
