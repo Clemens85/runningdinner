@@ -24,7 +24,7 @@ export async function querySupportBot(threadId: string, question: string, reques
     request_params: requestContext as Record<string, string>,
   };
   const response = await axios.post<Feedback>(SUPPORT_BOT_API_URL, userRequest, {
-    timeout: 18000,
+    timeout: 22000,
   });
   return {
     answer: response?.data?.answer || '',

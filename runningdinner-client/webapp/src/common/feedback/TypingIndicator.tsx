@@ -1,12 +1,41 @@
 import { Typography } from '@mui/material';
 import { Box, SxProps } from '@mui/system';
+import { useEffect, useState } from 'react';
 
 type TypingIndicatorProps = {
-  label?: string;
+  // label?: string;
   sx?: SxProps;
 };
 
-export function TypingIndicator({ label = 'Bitte einen Moment Geduld ...', sx }: TypingIndicatorProps) {
+const labels = [
+  {
+    text: 'Bitte einen Moment Geduld ...',
+    durationMillis: 4000,
+  },
+  {
+    text: 'Wir arbeiten an einer Antwort für dich ...',
+    durationMillis: 4000,
+  },
+  {
+    text: 'Antwort wird vorbereitet ...',
+    durationMillis: 4000,
+  },
+];
+
+export function TypingIndicator({ sx }: TypingIndicatorProps) {
+  const [labelIndex, setLabelIndex] = useState(0);
+  const label = labels[labelIndex].text;
+
+  useEffect(() => {
+    if (labelIndex < labels.length - 1) {
+      const timer = setTimeout(() => {
+        setLabelIndex((prev) => prev + 1);
+      }, labels[labelIndex].durationMillis);
+
+      return () => clearTimeout(timer);
+    }
+  }, [labelIndex]);
+
   const sxToUse = {
     ...sx,
     bgcolor: 'background.default',
