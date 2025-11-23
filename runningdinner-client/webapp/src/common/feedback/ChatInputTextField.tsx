@@ -1,6 +1,7 @@
 import { IconButton, Paper, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { CallbackHandler } from '@runningdinner/shared';
+import { useTranslation } from 'react-i18next';
 
 export type ChatInputMessageProps = {
   inputMessage: string;
@@ -10,6 +11,8 @@ export type ChatInputMessageProps = {
 };
 
 export function ChatInputTextField({ inputMessage, onInputMessageChange, onSendMessage, disabled }: ChatInputMessageProps) {
+  const { t } = useTranslation('common');
+
   function handleSubmitMessage() {
     if (!disabled) {
       onSendMessage();
@@ -49,7 +52,7 @@ export function ChatInputTextField({ inputMessage, onInputMessageChange, onSendM
         value={inputMessage}
         onChange={(e) => onInputMessageChange(e.target.value)}
         onKeyDown={handleKeyPress}
-        placeholder={'Weitere Fragen oder Anmerkungen?'}
+        placeholder={t('feedback_agent_input_placeholder')}
         InputProps={{
           disableUnderline: true,
         }}

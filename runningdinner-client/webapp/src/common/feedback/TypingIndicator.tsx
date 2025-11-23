@@ -1,28 +1,31 @@
 import { Typography } from '@mui/material';
 import { Box, SxProps } from '@mui/system';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type TypingIndicatorProps = {
   // label?: string;
   sx?: SxProps;
 };
 
-const labels = [
-  {
-    text: 'Bitte einen Moment Geduld ...',
-    durationMillis: 4000,
-  },
-  {
-    text: 'Wir arbeiten an einer Antwort für dich ...',
-    durationMillis: 4000,
-  },
-  {
-    text: 'Antwort wird vorbereitet ...',
-    durationMillis: 4000,
-  },
-];
-
 export function TypingIndicator({ sx }: TypingIndicatorProps) {
+  const { t } = useTranslation('common');
+
+  const labels = [
+    {
+      text: t('feedback_agent_typing_patience'),
+      durationMillis: 4000,
+    },
+    {
+      text: t('feedback_agent_typing_working'),
+      durationMillis: 4000,
+    },
+    {
+      text: t('feedback_agent_typing_preparing'),
+      durationMillis: 4000,
+    },
+  ];
+
   const [labelIndex, setLabelIndex] = useState(0);
   const label = labels[labelIndex].text;
 

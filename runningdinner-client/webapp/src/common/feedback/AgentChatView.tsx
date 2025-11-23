@@ -176,17 +176,18 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
 }
 
 function NoResponseAlert() {
+  const { t } = useTranslation('common');
   return (
     <Grid item xs={12}>
       <Alert severity={'info'} variant={'outlined'}>
-        Leider konnte keine automatische Antwort für dein Anliegen gefunden werden. Du wirst jedoch zeitnah eine Antwort per Email erhalten.
+        {t('feedback_agent_no_response')}
       </Alert>
     </Grid>
   );
 }
 
 function FeedbackSentSuccessAlert() {
-  // const { t } = useTranslation('common');
+  const { t } = useTranslation('common');
 
   const [open, setOpen] = useState(true);
 
@@ -194,10 +195,10 @@ function FeedbackSentSuccessAlert() {
     <Grid item xs={12}>
       {open && (
         <Alert severity="info" onClose={() => setOpen(false)} variant="outlined" sx={{ mt: 2, mb: 1 }} icon={<EmailIcon />}>
-          <AlertTitle>Vielen Dank für dein Feedback!</AlertTitle>
-          Deine Nachricht wurde erfolgreich übermittelt und du wirst eine Antwort per Email erhalten.
+          <AlertTitle>{t('feedback_agent_sent_title')}</AlertTitle>
+          {t('feedback_agent_sent_message')}
           <br />
-          Habe bitte etwas Geduld, wir versuchen dir hier eine automatische Antwort zu liefern - vielleicht ist das schon die Lösung für dein Anliegen!
+          {t('feedback_agent_sent_patience')}
         </Alert>
       )}
     </Grid>
