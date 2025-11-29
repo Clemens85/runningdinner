@@ -28,6 +28,10 @@ export function getPublicEventRegistrationsFromLocalStorage() {
   return result;
 }
 
+export function setPublicEventRegistrationInLocalStorage(publicEventId: string, registrationData: unknown) {
+  setLocalStorageItem(`registration_${publicEventId}`, registrationData);
+}
+
 export function setLocalStorageInAdminId(key: string, value: unknown, adminId: string) {
   setLocalStorageItem(calculateKeyForAdminId(key, adminId), value);
 }

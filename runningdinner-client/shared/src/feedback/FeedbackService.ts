@@ -4,7 +4,6 @@ import { newUuid } from '..';
 import { BackendConfig } from '../BackendConfig';
 import { ConversationRole, Feedback, FeedbackConversation, FuzzyBoolean } from '../types';
 
-// const SUPPORT_BOT_API_URL = 'http://localhost:8000/api/support';
 const SUPPORT_BOT_API_URL = `${import.meta.env.VITE_SUPPORT_BOT_API_URL}`;
 
 export async function saveFeedbackAsync(feedback: Feedback): Promise<void> {
