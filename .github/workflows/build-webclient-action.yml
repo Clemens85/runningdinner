@@ -40,11 +40,17 @@ jobs:
           path: runningdinner-client/reports/*.xml # Path to test results
           reporter: jest-junit # Format of test results
 
+      - name: Set BUILD_AWS_ACCOUNT_ID to Env
+        run: |
+          echo "BUILD_AWS_ACCOUNT_ID=$BUILD_AWS_ACCOUNT_ID" >> $GITHUB_ENV
+        env:
+          BUILD_AWS_ACCOUNT_ID: ${{ vars.BUILD_AWS_ACCOUNT_ID }}
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-central-1
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
+          role-to-assume: arn:aws:iam::${{ env.BUILD_AWS_ACCOUNT_ID }}:role/github
 
       - name: Build webclient
         run: |
