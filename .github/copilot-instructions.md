@@ -129,3 +129,18 @@ import { ParticipantService, TeamService } from "@runningdinner/shared";
 - **Integration**: Spring Boot test slices for backend services
 - **E2E**: Cypress with page objects in `cypress/support/`
 - Test data fixtures in `cypress/fixtures/` and `route-data/` for geographic samples
+
+## Building Blocks
+
+### Administration of Event
+
+Upon creating a running dinner event, the organizer receives a unique admin link to manage participants, teams, and settings. This link is secret and should not be shared publicly.
+The organizer needs always this link (respectively the contained adminId) to access the administration functionalities.
+
+### Public Events
+
+All open and public events can be accessed via a public event link. This link is used by participants to register for the event and view relevant information. For open events this link is like a secret URL that should not be shared publicly to avoid unwanted registrations.
+
+### Participant Self-Service
+
+Participants can access some functionality like Dinner Routes, Managing Team Hosts etc. via a self-service link sent to them after registration. This link is unique to each participant and should be kept confidential.
