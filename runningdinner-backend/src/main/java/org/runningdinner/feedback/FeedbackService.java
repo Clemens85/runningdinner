@@ -44,6 +44,8 @@ public class FeedbackService {
   private static final int FEEDBACK_RATE_LIMIT_CHECK_SIZE = 3;
 
   private static final Sort SORTING = Sort.by("createdAt", "id").descending();
+
+	private static final int MAX_CONVERSATIONS_PER_REQUEST = 2;
   
   @Autowired
   private FeedbackRepository feedbackRepository;
@@ -160,7 +162,8 @@ public class FeedbackService {
     for (FeedbackConversation feedbackConversation : feedbackConversations) {
       Assert.state(feedbackConversation.isNew(), "Can only create feedback conversations for not yet existing entities, but was " + feedbackConversation);
     }
-		Assert.state(feedbackConversations.size() <= 2, "Max two FeedbackConversation entities may be provided, but was " + feedbackConversations.size());
+		Assert.state(feedbackConversations.size() <= MAX_CONVERSATIONS_PER_REQUEST,
+						"Max two FeedbackConversation entities may be provided, but was " + feedbackConversations.size());
     
     // Validate that all threadIds are the same
     UUID firstThreadId = feedbackConversations.getFirst().getThreadId();

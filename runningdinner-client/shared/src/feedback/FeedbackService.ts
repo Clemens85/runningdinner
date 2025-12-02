@@ -32,7 +32,7 @@ export async function querySupportBot(threadId: string, question: string, reques
     question: question,
     request_params: requestContext as Record<string, string>,
   };
-  const response = await axios.post<Feedback>(SUPPORT_BOT_API_URL, userRequest, {
+  const response = await axios.post<{ answer: string }>(SUPPORT_BOT_API_URL, userRequest, {
     timeout: 22000,
   });
   const result = {

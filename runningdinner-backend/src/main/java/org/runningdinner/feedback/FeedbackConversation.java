@@ -18,14 +18,18 @@ public class FeedbackConversation extends AbstractEntity {
 	@NotBlank
 	@SafeHtml
 	@Size(max = 4096, message = "error.message.max.size")
-	private final String message;
+	private String message;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	private final ConversationRole role;
+	private ConversationRole role;
 
 	@NotNull
-	private final UUID threadId;
+	private UUID threadId;
+
+	protected FeedbackConversation() {
+		// JPA
+	}
 
 	public FeedbackConversation(String message, ConversationRole role, UUID threadId) {
 		this.message = message;
