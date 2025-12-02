@@ -29,7 +29,7 @@ import { useParams } from 'react-router-dom';
 
 import { FetchProgressBar } from '../common/FetchProgressBar';
 import { BackToListButton } from '../common/hooks/MasterDetailViewHook';
-import { getLocalStorageItem, setLocalStorageItem } from '../common/LocalStorageService';
+import { getLocalStorageItem, setPublicEventRegistrationInLocalStorage } from '../common/LocalStorageService';
 import { TextViewHtml } from '../common/TextViewHtml';
 import FormFieldset from '../common/theme/FormFieldset';
 import LinkExtern from '../common/theme/LinkExtern';
@@ -102,7 +102,7 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
   }
 
   function handleRegistrationPerformed(registrationData: RegistrationData) {
-    setLocalStorageItem(`registration_${publicSettings.publicDinnerId}`, registrationData);
+    setPublicEventRegistrationInLocalStorage(publicSettings.publicDinnerId, registrationData);
     navigateToRegistrationFinished(publicSettings.publicDinnerId);
   }
 

@@ -10,6 +10,7 @@ import org.runningdinner.admin.message.job.stats.MessageSenderHistoryService;
 import org.runningdinner.common.AlertLogger;
 import org.runningdinner.common.exception.TechnicalException;
 import org.runningdinner.common.service.ValidatorService;
+import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.feedback.Feedback.DeliveryState;
 import org.runningdinner.mail.MailService;
@@ -29,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class FeedbackService {
@@ -42,9 +44,14 @@ public class FeedbackService {
   private static final int FEEDBACK_RATE_LIMIT_CHECK_SIZE = 3;
 
   private static final Sort SORTING = Sort.by("createdAt", "id").descending();
+
+	private static final int MAX_CONVERSATIONS_PER_REQUEST = 2;
   
   @Autowired
   private FeedbackRepository feedbackRepository;
+
+  @Autowired
+  private FeedbackConversationRepository feedbackConversationRepository;
 
   @Autowired
   private RunningDinnerRepository runningDinnerRepository;
@@ -139,6 +146,7 @@ public class FeedbackService {
       String runningDinnerId = runningDinner != null ? runningDinner.getId().toString() : "null";
       content.append("ID: ").append(runningDinnerId).append(FormatterUtil.NEWLINE);
     }
+		content.append("Resolved: ").append(feedback.getResolved()).append(FormatterUtil.NEWLINE);
     
     content.append(FormatterUtil.TWO_NEWLINES);
     content.append("Content: ").append(FormatterUtil.NEWLINE).append(feedback.getMessage());
@@ -146,6 +154,42 @@ public class FeedbackService {
     Message message = new Message(subject, content.toString(), feedback.getSenderEmail());
 
     return mailService.newVirtualMessageTask(mailConfig.getContactMailAddress(), message);
+  }
+
+  @Transactional
+  public List<FeedbackConversation> createFeedbackConversations(List<FeedbackConversation> feedbackConversations) {
+    Assert.notEmpty(feedbackConversations, "feedbackConversations must not be empty");
+    for (FeedbackConversation feedbackConversation : feedbackConversations) {
+      Assert.state(feedbackConversation.isNew(), "Can only create feedback conversations for not yet existing entities, but was " + feedbackConversation);
+    }
+		Assert.state(feedbackConversations.size() <= MAX_CONVERSATIONS_PER_REQUEST,
+						"Max two FeedbackConversation entities may be provided, but was " + feedbackConversations.size());
+    
+    // Validate that all threadIds are the same
+    UUID firstThreadId = feedbackConversations.getFirst().getThreadId();
+    for (FeedbackConversation feedbackConversation : feedbackConversations) {
+      Assert.state(firstThreadId.equals(feedbackConversation.getThreadId()), 
+                   "All threadIds must be the same, but found different threadIds: " + firstThreadId + " and " + feedbackConversation.getThreadId());
+    }
+    
+    // Validate that a Feedback entity exists for the threadId
+    boolean feedbackExists = feedbackRepository.existsByThreadId(firstThreadId);
+    Assert.state(feedbackExists, "No Feedback entity found for threadId: " + firstThreadId);
+    
+    return feedbackConversationRepository.saveAll(feedbackConversations);
+  }
+
+  @Transactional
+  public Feedback updateResolvedStatus(UUID threadId, FuzzyBoolean resolved) {
+    Assert.notNull(threadId, "threadId must not be null");
+    Assert.notNull(resolved, "resolved must not be null");
+    
+    Optional<Feedback> feedbackOptional = feedbackRepository.findByThreadId(threadId);
+    Assert.state(feedbackOptional.isPresent(), "No Feedback entity found for threadId: " + threadId);
+    
+    Feedback feedback = feedbackOptional.get();
+    feedback.setResolved(resolved);
+    return feedbackRepository.save(feedback);
   }
 
 }

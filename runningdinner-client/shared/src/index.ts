@@ -10,6 +10,8 @@ export * from './GeocodeUtil.js';
 export * from './HttpInterceptorConfig';
 export * from './issue';
 export * from './masterdata';
+export * from './feedback';
+
 export * from './redux';
 export * from './TeamNr';
 export * from './types';
