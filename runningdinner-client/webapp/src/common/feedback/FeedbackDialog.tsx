@@ -33,13 +33,6 @@ export interface FeedbackDialogProps {
   onClose: CallbackHandler;
 }
 
-function newTestFeedbackInstance() {
-  const initialFeedbackInstance = newEmptyFeedbackInstance();
-  initialFeedbackInstance.message =
-    'Unterstützt das Tool auch kürzeste Wegen bei den Routen? Wir veranstalten ein Event in Berlin und da ist es wichtig, dass man nicht vom einem Rand zum anderen Rand muss. Lg Jan';
-  return initialFeedbackInstance;
-}
-
 export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   const { t } = useTranslation('common');
   const params = useParams<Record<string, string>>();
@@ -62,9 +55,8 @@ export function FeedbackDialog({ onClose }: FeedbackDialogProps) {
   });
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
-  const testFeedbackInstance = newTestFeedbackInstance();
   const formMethods = useForm<FeedbackData>({
-    defaultValues: testFeedbackInstance, //newEmptyFeedbackInstance(),
+    defaultValues: newEmptyFeedbackInstance(),
     mode: 'onTouched',
   });
   const { handleSubmit, clearErrors, setError } = formMethods;
