@@ -1,5 +1,5 @@
 import CssBaseline from '@mui/material/CssBaseline';
-import { BackendConfig, configureAxiosHttpInterceptors, createDefaultQueryClient,setupI18n } from '@runningdinner/shared';
+import { configureAxiosHttpInterceptors, createDefaultQueryClient, setupI18n } from '@runningdinner/shared';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { SnackbarProvider } from 'notistack';
 import { createRoot } from 'react-dom/client';
@@ -8,8 +8,6 @@ import App from './App';
 import { LanguageChangeHandler } from './common/i18n/LanguageChangeHandler';
 
 configureAxiosHttpInterceptors();
-
-BackendConfig.setBaseUrl(process.env.REACT_APP_BACKEND_BASE_URL);
 
 setupI18n();
 
