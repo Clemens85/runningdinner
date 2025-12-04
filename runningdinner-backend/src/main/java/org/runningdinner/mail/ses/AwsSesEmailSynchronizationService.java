@@ -8,6 +8,7 @@ import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.FailureType;
 import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.core.util.DateTimeUtil;
+import org.runningdinner.core.util.LogSanitizer;
 import org.runningdinner.mail.MailBounceHandlerService;
 import org.runningdinner.mail.MailProvider;
 import org.runningdinner.mail.MailUtil;
@@ -256,10 +257,10 @@ public class AwsSesEmailSynchronizationService {
       if (notification != null && StringUtils.isNotEmpty(notification.getNotificationType())) {
         return Optional.of(notification);
       }
-      LOGGER.error("Parsed notification is null or has no notification type: {}", jsonPayload);
+      LOGGER.error("Parsed notification is null or has no notification type (or event type): {}", LogSanitizer.sanitize(jsonPayload, 3000));
       return Optional.empty();
     } catch (JsonProcessingException e) {
-      LOGGER.error("Failed to parse JSON payload: {}", jsonPayload, e);
+      LOGGER.error("Failed to parse JSON payload: {}", LogSanitizer.sanitize(jsonPayload, 3000), e);
       return Optional.empty();
     }
   }

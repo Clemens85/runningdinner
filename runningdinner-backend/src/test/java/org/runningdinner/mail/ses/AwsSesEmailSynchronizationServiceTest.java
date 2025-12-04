@@ -127,6 +127,12 @@ public class AwsSesEmailSynchronizationServiceTest {
 		assertThat(messageTask.getSendingResult().getDelieveryFailedDate()).isCloseTo(sendingStartTime, within(10, ChronoUnit.SECONDS));
 	}
 
+	@Test
+	public void deliveryWithEventTypeIsProperlyParsed() {
+		assertThat(awsSesEmailSynchronizationService.handleSesNotification(AwsSesNotificationExamples.DELIVERY_WITH_EVENT_TYPE)).isTrue();
+		// When reaching here we know that parsing was successful
+	}
+
 	private void addParticipant(RunningDinner runningDinner) {
 		Participant participant = ParticipantGenerator.generateParticipants(1).getFirst();
 		participant.setEmail("jane@example.com");

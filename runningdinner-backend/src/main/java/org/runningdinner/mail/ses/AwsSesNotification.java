@@ -1,10 +1,14 @@
 package org.runningdinner.mail.ses;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 import java.util.List;
 
 public class AwsSesNotification {
 
+	@JsonAlias("eventType")
 	private String notificationType;
+
 	private Mail mail;
 	private Bounce bounce;
 	private Complaint complaint;
@@ -15,7 +19,7 @@ public class AwsSesNotification {
 		return notificationType;
 	}
 
-	public void setNotificationType(String notificationType) {
+	protected void setNotificationType(String notificationType) {
 		this.notificationType = notificationType;
 	}
 

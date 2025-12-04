@@ -223,4 +223,100 @@ public final class AwsSesNotificationExamples {
 					    }
 					 }
 		""";
+
+	static final String DELIVERY_WITH_EVENT_TYPE = """
+					{
+					  "eventType": "Delivery",
+					  "mail": {
+					    "timestamp": "2025-12-04T06:57:27.644Z",
+					    "source": "runyourdinner@mailing.runyourdinner.eu",
+					    "sourceArn": "xxx",
+					    "sendingAccountId": "xxx",
+					    "messageId": "xxx",
+					    "destination": [
+					      "jane@example.com"
+					    ],
+					    "headersTruncated": false,
+					    "headers": [
+					      {
+					        "name": "From",
+					        "value": "runyourdinner@mailing.runyourdinner.eu"
+					      },
+					      {
+					        "name": "Reply-To",
+					        "value": "jane@example.com"
+					      },
+					      {
+					        "name": "To",
+					        "value": "jane@example.com"
+					      },
+					      {
+					        "name": "Subject",
+					        "value": "XXX"
+					      },
+					      {
+					        "name": "MIME-Version",
+					        "value": "1.0"
+					      },
+					      {
+					        "name": "Content-Type",
+					        "value": "text/html; charset=UTF-8"
+					      },
+					      {
+					        "name": "Content-Transfer-Encoding",
+					        "value": "quoted-printable"
+					      }
+					    ],
+					    "commonHeaders": {
+					      "from": [
+					        "runyourdinner@mailing.runyourdinner.eu"
+					      ],
+					      "replyTo": [
+					        "jane@example.com"
+					      ],
+					      "to": [
+					        "jane@example.com"
+					      ],
+					      "messageId": "XXX",
+					      "subject": "XXX"
+					    },
+					    "tags": {
+					      "ses:source-tls-version": [
+					        "TLSv1.3"
+					      ],
+					      "ses:operation": [
+					        "SendEmail"
+					      ],
+					      "ses:configuration-set": [
+					        "runyourdinner"
+					      ],
+					      "ses:outgoing-tls-version": [
+					        "TLSv1.3"
+					      ],
+					      "ses:source-ip": [
+					        "XXX"
+					      ],
+					      "ses:from-domain": [
+					        "mailing.runyourdinner.eu"
+					      ],
+					      "ses:caller-identity": [
+					        "XXX"
+					      ],
+					      "ses:outgoing-ip": [
+					        "XXX"
+					      ]
+					    }
+					  },
+					  "delivery": {
+					    "timestamp": "2025-12-04T06:57:28.120Z",
+					    "processingTimeMillis": 476,
+					    "recipients": [
+					      "jane@example.com"
+					    ],
+					    "smtpResponse": "250 Requested mail action okay, completed: id=1MA5nW-1vKykP3tMI-003AoD",
+					    "remoteMtaIp": "XXX",
+					    "reportingMTA": "XXX"
+					  }
+					}
+					""";
 }
