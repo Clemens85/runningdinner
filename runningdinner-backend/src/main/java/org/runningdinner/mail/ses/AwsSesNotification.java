@@ -1,22 +1,38 @@
 package org.runningdinner.mail.ses;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 
 public class AwsSesNotification {
 
 	private String notificationType;
+	private String eventType;
+
 	private Mail mail;
 	private Bounce bounce;
 	private Complaint complaint;
 	private Delivery delivery;
 	private Reject reject;
 
-	public String getNotificationType() {
+	public String getAwsSesNotificationType() {
+		return StringUtils.isNotEmpty(notificationType) ? notificationType : eventType;
+	}
+
+	protected String getNotificationType() {
 		return notificationType;
 	}
 
-	public void setNotificationType(String notificationType) {
+	protected void setNotificationType(String notificationType) {
 		this.notificationType = notificationType;
+	}
+
+	protected String getEventType() {
+		return eventType;
+	}
+
+	protected void setEventType(String eventType) {
+		this.eventType = eventType;
 	}
 
 	public Mail getMail() {

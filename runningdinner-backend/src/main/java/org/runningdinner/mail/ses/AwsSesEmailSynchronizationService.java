@@ -56,7 +56,7 @@ public class AwsSesEmailSynchronizationService {
       return false;
     }
 
-    String type = notification.getNotificationType();
+    String type = notification.getAwsSesNotificationType();
     switch (type) {
       case "Bounce":
         handleBounce(notification);
@@ -253,10 +253,10 @@ public class AwsSesEmailSynchronizationService {
   private Optional<AwsSesNotification> parseMessageJsonPayloadSafe(String jsonPayload) {
     try {
       AwsSesNotification notification = objectMapper.readValue(jsonPayload, AwsSesNotification.class);
-      if (notification != null && StringUtils.isNotEmpty(notification.getNotificationType())) {
+      if (notification != null && StringUtils.isNotEmpty(notification.getAwsSesNotificationType())) {
         return Optional.of(notification);
       }
-      LOGGER.error("Parsed notification is null or has no notification type: {}", jsonPayload);
+      LOGGER.error("Parsed notification is null or has no notification type (or event type): {}", jsonPayload);
       return Optional.empty();
     } catch (JsonProcessingException e) {
       LOGGER.error("Failed to parse JSON payload: {}", jsonPayload, e);
