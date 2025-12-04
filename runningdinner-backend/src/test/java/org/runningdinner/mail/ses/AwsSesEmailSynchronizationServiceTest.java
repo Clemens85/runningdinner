@@ -129,25 +129,6 @@ public class AwsSesEmailSynchronizationServiceTest {
 
 	@Test
 	public void deliveryWithEventTypeIsProperlyParsed() {
-
-		LocalDateTime sendingStartTime = MailUtil.parseIsoTimestampToLocalDateTime("2016-01-27T14:59:38.237Z");
-
-		// Simulate MessageTask
-		RunningDinner runningDinner = testHelperService.createPublicRunningDinner(LocalDate.now().plusDays(7), 1);
-		addParticipant(runningDinner);
-		testHelperService.sendMessagesToAllParticipants(runningDinner);
-		MessageTask messageTask = findParticipantMessageTask(runningDinner);
-		testHelperService.awaitMessageJobFinished(messageTask.getParentJob());
-
-		// Simulate MessageTask was sent in past with date X and with AWS_SES
-		testMessageTaskHelperService.updateMessageTaskSenders(List.of(messageTask), MailProvider.AWS_SES);
-		testMessageTaskHelperService.updateMessageTaskSentDates(List.of(messageTask), sendingStartTime);
-
-		// Ensure we have the proper test base now:
-		messageTask = findParticipantMessageTask(runningDinner);
-		assertThat(messageTask.getSender()).isEqualTo(MailProvider.AWS_SES.toString());
-		assertThat(messageTask.getSendingStartTime()).isCloseTo(sendingStartTime, within(10, ChronoUnit.SECONDS));
-
 		assertThat(awsSesEmailSynchronizationService.handleSesNotification(AwsSesNotificationExamples.DELIVERY_WITH_EVENT_TYPE)).isTrue();
 		// When reaching here we know that parsing was successful
 	}

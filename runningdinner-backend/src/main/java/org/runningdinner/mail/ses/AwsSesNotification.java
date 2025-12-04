@@ -1,13 +1,13 @@
 package org.runningdinner.mail.ses;
 
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 import java.util.List;
 
 public class AwsSesNotification {
 
+	@JsonAlias("eventType")
 	private String notificationType;
-	private String eventType;
 
 	private Mail mail;
 	private Bounce bounce;
@@ -15,24 +15,12 @@ public class AwsSesNotification {
 	private Delivery delivery;
 	private Reject reject;
 
-	public String getAwsSesNotificationType() {
-		return StringUtils.isNotEmpty(notificationType) ? notificationType : eventType;
-	}
-
-	protected String getNotificationType() {
+	public String getNotificationType() {
 		return notificationType;
 	}
 
 	protected void setNotificationType(String notificationType) {
 		this.notificationType = notificationType;
-	}
-
-	protected String getEventType() {
-		return eventType;
-	}
-
-	protected void setEventType(String eventType) {
-		this.eventType = eventType;
 	}
 
 	public Mail getMail() {
