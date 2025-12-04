@@ -91,7 +91,7 @@ public class TeamReferenceService {
 
 		MealReference mealReference = mapMealReference(currentTeam.getMealClass());
 
-		GeocodingResult geocodingResult = currentTeam.getHostTeamMember().getGeocodingResult();
+		GeocodingResult geocodingResult = currentTeam.getGeocodingResult();
 
 		int clusterNumber = findTeamClusterNumber(dinnerRouteList, currentTeam);
 
