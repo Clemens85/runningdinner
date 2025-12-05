@@ -74,11 +74,11 @@ export default function Impressum() {
             </li>
 
             <li>
-              Außer Google Maps (zur Darstellung der Koch-Routen) werden keinerlei 3rd Party Anwendungen eingebunden. So gibt es auf dieser Plattform auch <strong>kein</strong>{' '}
-              Google Analytics o.Ä.
+              Auf der Plattform wird soweit wie möglich auf die Einbindung von 3rd Party Anwendungen verzichtet - so wird z.B. <strong>kein</strong> Google Analytics o.Ä.
+              verwendet. Aktuell wird lediglich Google Maps zur Darstellung der Koch-Routen und OpenAI/Google Gemini für ein verbesseres Nutzererlebnis eingesetzt.
             </li>
           </ul>
-          (Stand: 20. April 2019)
+          (Stand: 02. Dezember 2025)
         </div>
       </div>
 
@@ -338,6 +338,19 @@ export default function Impressum() {
               , Opt-Out:{' '}
               <a target="_blank" href="https://adssettings.google.com/authenticated" rel="nofollow noreferrer">
                 https://adssettings.google.com/authenticated
+              </a>
+              .
+            </span>
+          </p>
+
+          <Subtitle id="dsg-thirdparty-googlemaps">Open AI / Google Gemini</Subtitle>
+          <p></p>
+          <p>
+            <span>
+              Wir verwenden die Dienste von OpenAI bzw. Google Gemini zur Verbesserung von Support-Anfragen. Hierbei können personenbezogene Daten an OpenAI / Google Gemini
+              übermittelt und in den USA verarbeitet werden. Datenschutzerklärung:{' '}
+              <a target="_blank" href="https://openai.com/policies/privacy-policy" rel="nofollow noreferrer">
+                https://openai.com/policies/privacy-policy
               </a>
               .
             </span>
