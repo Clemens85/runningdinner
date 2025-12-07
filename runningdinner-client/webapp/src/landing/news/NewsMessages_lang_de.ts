@@ -1,4 +1,9 @@
 const NewsMessages_de: any = {
+  news_title_20251207: 'Fehler in Routen Optimierung behoben',
+  news_content_20251207:
+    'Es gab leider einen Fehler in der Routen Optimierung, welcher dazu führen konnte, dass sich manche Teams mehrfach getroffen haben. ' +
+    'Natürlich sollte so etwas nie passieren. Dieser Fehler ist nun behoben und sollte bei der Optimierung nicht mehr auftreten.',
+
   news_title_20251021: 'Fehler im Feedback Formular behoben',
   news_content_20251021:
     'Es gab leider einen Fehler im Feedback & Hilfe Formular, welcher dazu führte, dass kein Feedback abgesendet werden konnte. ' + 'Dieser Fehler ist nun behoben.',
