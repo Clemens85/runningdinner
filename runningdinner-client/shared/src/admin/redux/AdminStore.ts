@@ -12,7 +12,7 @@ export const adminStore = configureStore({
     messages: messagesSlice,
     messageJobDetails: messageJobDetailsSlice,
   }),
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(logger),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(logger as any),
 });
 
 export type AdminStateType = ReturnType<typeof adminStore.getState>;

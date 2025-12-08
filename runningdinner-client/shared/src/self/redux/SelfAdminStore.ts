@@ -5,7 +5,7 @@ import { selfAdminSlice } from './SelfAdminSlice';
 
 export const selfAdminStore = configureStore({
   reducer: selfAdminSlice,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(logger),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(logger as any),
 });
 
 export type SelfAdminStateType = ReturnType<typeof selfAdminStore.getState>;

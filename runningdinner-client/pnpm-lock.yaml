@@ -8,12 +8,36 @@ importers:
 
   .:
     dependencies:
+      '@reduxjs/toolkit':
+        specifier: 2.11.1
+        version: 2.11.1(react-redux@9.2.0(react@18.3.1)(redux@5.0.1))(react@18.3.1)
+      '@tanstack/react-query':
+        specifier: 5.90.12
+        version: 5.90.12(react@18.3.1)
       axios:
         specifier: 1.13.2
         version: 1.13.2
+      date-fns:
+        specifier: 2.30.0
+        version: 2.30.0
       lodash-es:
         specifier: 4.17.21
         version: 4.17.21
+      react-hook-form:
+        specifier: 7.68.0
+        version: 7.68.0(react@18.3.1)
+      react-redux:
+        specifier: 9.2.0
+        version: 9.2.0(react@18.3.1)(redux@5.0.1)
+      redux:
+        specifier: 5.0.1
+        version: 5.0.1
+      redux-logger:
+        specifier: 3.0.6
+        version: 3.0.6
+      redux-thunk:
+        specifier: 3.1.0
+        version: 3.1.0(redux@5.0.1)
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.0
@@ -72,45 +96,21 @@ importers:
 
   shared:
     dependencies:
-      '@reduxjs/toolkit':
-        specifier: 1.9.5
-        version: 1.9.5(react-redux@8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(redux@4.2.1))(react@18.3.1)
-      '@tanstack/react-query':
-        specifier: 5.13.4
-        version: 5.13.4(react@18.3.1)
-      date-fns:
-        specifier: 2.30.0
-        version: 2.30.0
       i18next:
-        specifier: 23.5.1
-        version: 23.5.1
+        specifier: 25.7.2
+        version: 25.7.2(typescript@5.2.2)
       i18next-browser-languagedetector:
-        specifier: 7.1.0
-        version: 7.1.0
+        specifier: 8.2.0
+        version: 8.2.0
       react:
         specifier: ^18.0.2
         version: 18.3.1
       react-dom:
         specifier: ^18.0.2
         version: 18.3.1(react@18.3.1)
-      react-hook-form:
-        specifier: 7.46.1
-        version: 7.46.1(react@18.3.1)
       react-i18next:
-        specifier: 13.2.2
-        version: 13.2.2(i18next@23.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-redux:
-        specifier: 8.1.2
-        version: 8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(redux@4.2.1)
-      redux:
-        specifier: 4.2.1
-        version: 4.2.1
-      redux-logger:
-        specifier: 3.0.6
-        version: 3.0.6
-      redux-thunk:
-        specifier: 2.4.2
-        version: 2.4.2(redux@4.2.1)
+        specifier: 16.4.0
+        version: 16.4.0(i18next@25.7.2(typescript@5.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.2.2)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -134,11 +134,11 @@ importers:
         specifier: 18.2.7
         version: 18.2.7
       '@types/react-redux':
-        specifier: 7.1.26
-        version: 7.1.26
+        specifier: 7.1.34
+        version: 7.1.34
       '@types/redux-logger':
-        specifier: 3.0.9
-        version: 3.0.9
+        specifier: 3.0.13
+        version: 3.0.13
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -172,15 +172,9 @@ importers:
       '@mui/x-date-pickers':
         specifier: 6.11.0
         version: 6.11.0(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react@18.3.1))(@mui/base@5.0.0-beta.9(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/material@5.14.3(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@5.14.3(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(date-fns@2.30.0)(dayjs@1.11.19)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@reduxjs/toolkit':
-        specifier: 1.9.5
-        version: 1.9.5(react-redux@8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(redux@4.2.1))(react@18.3.1)
       '@runningdinner/shared':
         specifier: workspace:*
         version: link:../shared
-      '@tanstack/react-query':
-        specifier: 5.13.4
-        version: 5.13.4(react@18.3.1)
       '@vis.gl/react-google-maps':
         specifier: ^1.1.0
         version: 1.5.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -200,8 +194,8 @@ importers:
         specifier: 2.0.3
         version: 2.0.3(@mui/material@5.14.3(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(markdown-to-jsx@8.0.0(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       notistack:
-        specifier: 3.0.1
-        version: 3.0.1(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 3.0.2
+        version: 3.0.2(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.0.2
         version: 18.3.1
@@ -214,21 +208,12 @@ importers:
       react-dom:
         specifier: ^18.0.2
         version: 18.3.1(react@18.3.1)
-      react-geocode:
-        specifier: 0.2.3
-        version: 0.2.3
-      react-hook-form:
-        specifier: 7.46.1
-        version: 7.46.1(react@18.3.1)
       react-i18next:
         specifier: 13.2.2
         version: 13.2.2(i18next@23.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-medium-image-zoom:
         specifier: 5.1.8
         version: 5.1.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-redux:
-        specifier: 8.1.2
-        version: 8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(redux@4.2.1)
       react-router-dom:
         specifier: 6.3.0
         version: 6.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -238,15 +223,6 @@ importers:
       react-virtuoso:
         specifier: ^4.7.11
         version: 4.12.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      redux:
-        specifier: 4.2.1
-        version: 4.2.1
-      redux-logger:
-        specifier: 3.0.6
-        version: 3.0.6
-      redux-thunk:
-        specifier: 2.4.2
-        version: 2.4.2(redux@4.2.1)
       yup:
         specifier: ^0.28.3
         version: 0.28.5
@@ -418,6 +394,10 @@ packages:
 
   '@babel/runtime@7.26.10':
     resolution: {integrity: sha512-2WJMeRQPHKSPemqk/awGrAiuFfzBmOIPXKizAsVhWH9YJqLZ0H+HS4c8loHGgW6utJ3E/ejXQUsiGaQy2NZ9Fw==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.28.4':
+    resolution: {integrity: sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.26.9':
@@ -956,11 +936,11 @@ packages:
   '@react-dnd/shallowequal@4.0.2':
     resolution: {integrity: sha512-/RVXdLvJxLg4QKvMoM5WlwNR9ViO9z8B/qPcc+C0Sa/teJY7QG7kJ441DwzOjMYEY7GmU4dj5EcGHIkKZiQZCA==}
 
-  '@reduxjs/toolkit@1.9.5':
-    resolution: {integrity: sha512-Rt97jHmfTeaxL4swLRNPD/zV4OxTes4la07Xc4hetpUW/vc75t5m1ANyxG6ymnEQ2FsLQsoMlYB2vV1sO3m8tQ==}
+  '@reduxjs/toolkit@2.11.1':
+    resolution: {integrity: sha512-HjhlEREguAyBTGNzRlGNiDHGQ2EjLSPWwdhhpoEqHYy8hWak3Dp6/fU72OfqVsiMb8S6rbfPsWUF24fxpilrVA==}
     peerDependencies:
-      react: ^16.9.0 || ^17.0.0 || ^18
-      react-redux: ^7.2.1 || ^8.0.2
+      react: ^16.9.0 || ^17.0.0 || ^18 || ^19
+      react-redux: ^7.2.1 || ^8.1.3 || ^9.0.0
     peerDependenciesMeta:
       react:
         optional: true
@@ -1083,13 +1063,16 @@ packages:
   '@standard-schema/spec@1.0.0':
     resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
-  '@tanstack/query-core@5.13.4':
-    resolution: {integrity: sha512-8+rJucXvC/xlr4OrxHhEIob/cTlbT4fgmz1VsvB0D12FRStKaXeLORNGcOhSAynRd2NL74SV/Qq0IIb4DedLcA==}
+  '@standard-schema/utils@0.3.0':
+    resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
-  '@tanstack/react-query@5.13.4':
-    resolution: {integrity: sha512-3HjvkFFriEQwffUXtKHPiwkfFXUGbs46YATTzzyK1+Pw6Ekd3kwzS50e45qdamWuEXmXxyo5S1zp534LdFG0Rw==}
+  '@tanstack/query-core@5.90.12':
+    resolution: {integrity: sha512-T1/8t5DhV/SisWjDnaiU2drl6ySvsHj1bHBCWNXd+/T+Hh1cf6JodyEYMd5sgwm+b/mETT4EV3H+zCVczCU5hg==}
+
+  '@tanstack/react-query@5.90.12':
+    resolution: {integrity: sha512-graRZspg7EoEaw0a8faiUASCyJrqjKPdqJ9EwuDRUF9mEYJ1YPczI9H+/agJ0mOJkPCJDk0lsz5QTrLZ/jQ2rg==}
     peerDependencies:
-      react: ^18.0.0
+      react: ^18 || ^19
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -1273,8 +1256,8 @@ packages:
   '@types/react-dom@18.2.7':
     resolution: {integrity: sha512-GRaAEriuT4zp9N4p1i8BDBYmEyfo+xQ3yHjJU4eiK5NDa1RmUZG+unZABUTK4/Ox/M+GaHwb6Ow8rUITrtjszA==}
 
-  '@types/react-redux@7.1.26':
-    resolution: {integrity: sha512-UKPo7Cm7rswYU6PH6CmTNCRv5NYF3HrgKuHEYTK8g/3czYLrUux50gQ2pkxc9c7ZpQZi+PNhgmI8oNIRoiVIxg==}
+  '@types/react-redux@7.1.34':
+    resolution: {integrity: sha512-GdFaVjEbYv4Fthm2ZLvj1VSCedV7TqE5y1kNwnjSdBOTXuRSgowux6J8TAct15T3CKBr63UMk+2CO7ilRhyrAQ==}
 
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
@@ -1284,8 +1267,8 @@ packages:
   '@types/react@18.2.22':
     resolution: {integrity: sha512-60fLTOLqzarLED2O3UQImc/lsNRgG0jE/a1mPW9KjMemY0LMITWEsbS4VvZ4p6rorEHd5YKxxmMKSDK505GHpA==}
 
-  '@types/redux-logger@3.0.9':
-    resolution: {integrity: sha512-cwYhVbYNgH01aepeMwhd0ABX6fhVB2rcQ9m80u8Fl50ZODhsZ8RhQArnLTkE7/Zrfq4Sz/taNoF7DQy9pCZSKg==}
+  '@types/redux-logger@3.0.13':
+    resolution: {integrity: sha512-jylqZXQfMxahkuPcO8J12AKSSCQngdEWQrw7UiLUJzMBcv1r4Qg77P6mjGLjM27e5gFQDPD8vwUMJ9AyVxFSsg==}
 
   '@types/scheduler@0.23.0':
     resolution: {integrity: sha512-YIoDCTH3Af6XM5VuwGG/QL/CJqga1Zm3NkU3HZ4ZHK2fRMPYP1VczsTUqtsf43PH/iJNVlPHAo2oWX7BSdB2Hw==}
@@ -1293,8 +1276,8 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@types/use-sync-external-store@0.0.3':
-    resolution: {integrity: sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==}
+  '@types/use-sync-external-store@0.0.6':
+    resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
 
   '@types/uuid@10.0.0':
     resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
@@ -2129,11 +2112,19 @@ packages:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
 
-  i18next-browser-languagedetector@7.1.0:
-    resolution: {integrity: sha512-cr2k7u1XJJ4HTOjM9GyOMtbOA47RtUoWRAtt52z43r3AoMs2StYKyjS3URPhzHaf+mn10hY9dZWamga5WPQjhA==}
+  i18next-browser-languagedetector@8.2.0:
+    resolution: {integrity: sha512-P+3zEKLnOF0qmiesW383vsLdtQVyKtCNA9cjSoKCppTKPQVfKd2W8hbVo5ZhNJKDqeM7BOcvNoKJOjpHh4Js9g==}
 
   i18next@23.5.1:
     resolution: {integrity: sha512-JelYzcaCoFDaa+Ysbfz2JsGAKkrHiMG6S61+HLBUEIPaF40WMwW9hCPymlQGrP+wWawKxKPuSuD71WZscCsWHg==}
+
+  i18next@25.7.2:
+    resolution: {integrity: sha512-58b4kmLpLv1buWUEwegMDUqZVR5J+rT+WTRFaBGL7lxDuJQQ0NrJFrq+eT2N94aYVR1k1Sr13QITNOL88tZCuw==}
+    peerDependencies:
+      typescript: ^5
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -2147,8 +2138,8 @@ packages:
     resolution: {integrity: sha512-Hs59xBNfUIunMFgWAbGX5cq6893IbWg4KnrjbYwX3tx0ztorVgTDA6B2sxf8ejHJ4wz8BqGUMYlnzNBer5NvGg==}
     engines: {node: '>= 4'}
 
-  immer@9.0.21:
-    resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
+  immer@11.0.1:
+    resolution: {integrity: sha512-naDCyggtcBWANtIrjQEajhhBEuL9b0Zg4zmlWK2CzS6xCWSE39/vvf4LqnMjUAWHBhot4m9MHCM/Z+mfWhUkiA==}
 
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
@@ -2377,12 +2368,12 @@ packages:
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
 
-  notistack@3.0.1:
-    resolution: {integrity: sha512-ntVZXXgSQH5WYfyU+3HfcXuKaapzAJ8fBLQ/G618rn3yvSzEbnOB8ZSOwhX+dAORy/lw+GC2N061JA0+gYWTVA==}
+  notistack@3.0.2:
+    resolution: {integrity: sha512-0R+/arLYbK5Hh7mEfR2adt0tyXJcCC9KkA2hc56FeWik2QN6Bm/S4uW+BjzDARsJth5u06nTjelSw/VSnB1YEA==}
     engines: {node: '>=12.0.0', npm: '>=6.0.0'}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
 
   nwsapi@2.2.19:
     resolution: {integrity: sha512-94bcyI3RsqiZufXjkr3ltkI86iEl+I7uiHVDtcq9wJUTwYQJ5odHDeSzkkrRzi80jJ8MaeZgqKjH1bAWAFw9bA==}
@@ -2535,19 +2526,16 @@ packages:
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
-  react-geocode@0.2.3:
-    resolution: {integrity: sha512-sIpbgmn1IUzAxO4haOZ6jeeFnMD8ya9PC38yiNrmJ9vPWbvAO2D/2yfCBzZjGZVUm4PRzKAc0KghXfaEnug0TQ==}
-
   react-helmet@6.1.0:
     resolution: {integrity: sha512-4uMzEY9nlDlgxr61NL3XbKRy1hEkXmKNXhjbAIOVw5vcFrsdYbH2FEwcNyWvWinl103nXgzYNlns9ca+8kFiWw==}
     peerDependencies:
       react: '>=16.3.0'
 
-  react-hook-form@7.46.1:
-    resolution: {integrity: sha512-0GfI31LRTBd5tqbXMGXT1Rdsv3rnvy0FjEk8Gn9/4tp6+s77T7DPZuGEpBRXOauL+NhyGT5iaXzdIM2R6F/E+w==}
-    engines: {node: '>=12.22.0'}
+  react-hook-form@7.68.0:
+    resolution: {integrity: sha512-oNN3fjrZ/Xo40SWlHf1yCjlMK417JxoSJVUXQjGdvdRCU07NTFei1i1f8ApUAts+IVh14e4EdakeLEA+BEAs/Q==}
+    engines: {node: '>=18.0.0'}
     peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
+      react: ^16.8.0 || ^17 || ^18 || ^19
 
   react-i18next@13.2.2:
     resolution: {integrity: sha512-+nFUkbRByFwnrfDcYqvzBuaeZb+nACHx+fAWN/pZMddWOCJH5hoc21+Sa/N/Lqi6ne6/9wC/qRGOoQhJa6IkEQ==}
@@ -2560,6 +2548,22 @@ packages:
       react-dom:
         optional: true
       react-native:
+        optional: true
+
+  react-i18next@16.4.0:
+    resolution: {integrity: sha512-bxVeBA8Ky2UeItNhF4JRxHCFIrpEJHGFG/mOAa4CR0JkqaDEYSLmlEgmC4Os63SBlZ+E5U0YyrNJOSVl2mtVqQ==}
+    peerDependencies:
+      i18next: '>= 25.6.2'
+      react: '>= 16.8.0'
+      react-dom: '*'
+      react-native: '*'
+      typescript: ^5
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      typescript:
         optional: true
 
   react-is@16.13.1:
@@ -2583,23 +2587,14 @@ packages:
   react-property@2.0.0:
     resolution: {integrity: sha512-kzmNjIgU32mO4mmH5+iUyrqlpFQhF8K2k7eZ4fdLSOPFrD1XgEuSBv9LDEgxRXTMBqMd8ppT0x6TIzqE5pdGdw==}
 
-  react-redux@8.1.2:
-    resolution: {integrity: sha512-xJKYI189VwfsFc4CJvHqHlDrzyFTY/3vZACbE+rr/zQ34Xx1wQfB4OTOSeOSNrF6BDVe8OOdxIrAnMGXA3ggfw==}
+  react-redux@9.2.0:
+    resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
     peerDependencies:
-      '@types/react': ^16.8 || ^17.0 || ^18.0
-      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-      react-native: '>=0.59'
-      redux: ^4 || ^5.0.0-beta.0
+      '@types/react': ^18.2.25 || ^19
+      react: ^18.0 || ^19
+      redux: ^5.0.0
     peerDependenciesMeta:
       '@types/react':
-        optional: true
-      '@types/react-dom':
-        optional: true
-      react-dom:
-        optional: true
-      react-native:
         optional: true
       redux:
         optional: true
@@ -2653,22 +2648,22 @@ packages:
   redux-logger@3.0.6:
     resolution: {integrity: sha512-JoCIok7bg/XpqA1JqCqXFypuqBbQzGQySrhFzewB7ThcnysTO30l4VCst86AuB9T9tuT03MAA56Jw2PNhRSNCg==}
 
-  redux-thunk@2.4.2:
-    resolution: {integrity: sha512-+P3TjtnP0k/FEjcBL5FZpoovtvrTNT/UXd4/sluaSyrURlSlhLSzEdfsTBW7WsKB6yPvgd7q/iZPICFjW4o57Q==}
+  redux-thunk@3.1.0:
+    resolution: {integrity: sha512-NW2r5T6ksUKXCabzhL9z+h206HQw/NJkcLm1GPImRQ8IzfXwRGqjVhKJGauHirT0DAuyy6hjdnMZaRoAcy0Klw==}
     peerDependencies:
-      redux: ^4
+      redux: ^5.0.0
 
   redux@4.2.1:
     resolution: {integrity: sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==}
 
-  regenerator-runtime@0.13.11:
-    resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
+  redux@5.0.1:
+    resolution: {integrity: sha512-M9/ELqF6fy8FwmkpnF0S3YKOqMyoWJ4+CS5Efg2ct3oY9daQvd/Pc71FpGZsVsbl3Cpb+IIcjBDUnnyBdQbq4w==}
 
   regenerator-runtime@0.14.1:
     resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
 
-  reselect@4.1.8:
-    resolution: {integrity: sha512-ab9EmR80F/zQTMNeneUr4cv+jSwPJgIlvEmVwLerwrWVbpLlBuls9XHzIeTFy4cegU2NHBp3va0LKOzU5qFEYQ==}
+  reselect@5.1.1:
+    resolution: {integrity: sha512-K/BG6eIky/SBpzfHZv/dd+9JBFiS4SWV7FIujVyJRux6e45+73RaUHXLmIR1f7WOMaQ0U1km6qwklRQxpJJY0w==}
 
   resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
@@ -2868,6 +2863,11 @@ packages:
 
   use-sync-external-store@1.4.0:
     resolution: {integrity: sha512-9WXSPC5fMv61vaupRkCKCxsPxBocVnwakBEkMIHHpkTTg6icbJtg6jzgtLDm4bl3cSHAca52rYWih0k4K3PfHw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  use-sync-external-store@1.6.0:
+    resolution: {integrity: sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -3182,6 +3182,8 @@ snapshots:
   '@babel/runtime@7.26.10':
     dependencies:
       regenerator-runtime: 0.14.1
+
+  '@babel/runtime@7.28.4': {}
 
   '@babel/template@7.26.9':
     dependencies:
@@ -3688,15 +3690,17 @@ snapshots:
 
   '@react-dnd/shallowequal@4.0.2': {}
 
-  '@reduxjs/toolkit@1.9.5(react-redux@8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(redux@4.2.1))(react@18.3.1)':
+  '@reduxjs/toolkit@2.11.1(react-redux@9.2.0(react@18.3.1)(redux@5.0.1))(react@18.3.1)':
     dependencies:
-      immer: 9.0.21
-      redux: 4.2.1
-      redux-thunk: 2.4.2(redux@4.2.1)
-      reselect: 4.1.8
+      '@standard-schema/spec': 1.0.0
+      '@standard-schema/utils': 0.3.0
+      immer: 11.0.1
+      redux: 5.0.1
+      redux-thunk: 3.1.0(redux@5.0.1)
+      reselect: 5.1.1
     optionalDependencies:
       react: 18.3.1
-      react-redux: 8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(redux@4.2.1)
+      react-redux: 9.2.0(react@18.3.1)(redux@5.0.1)
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 
@@ -3768,16 +3772,18 @@ snapshots:
 
   '@standard-schema/spec@1.0.0': {}
 
-  '@tanstack/query-core@5.13.4': {}
+  '@standard-schema/utils@0.3.0': {}
 
-  '@tanstack/react-query@5.13.4(react@18.3.1)':
+  '@tanstack/query-core@5.90.12': {}
+
+  '@tanstack/react-query@5.90.12(react@18.3.1)':
     dependencies:
-      '@tanstack/query-core': 5.13.4
+      '@tanstack/query-core': 5.90.12
       react: 18.3.1
 
   '@testing-library/dom@10.4.0':
     dependencies:
-      '@babel/code-frame': 7.26.2
+      '@babel/code-frame': 7.27.1
       '@babel/runtime': 7.26.10
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
@@ -4025,7 +4031,7 @@ snapshots:
     dependencies:
       '@types/react': 18.2.22
 
-  '@types/react-redux@7.1.26':
+  '@types/react-redux@7.1.34':
     dependencies:
       '@types/hoist-non-react-statics': 3.3.6
       '@types/react': 18.2.22
@@ -4042,16 +4048,16 @@ snapshots:
       '@types/scheduler': 0.23.0
       csstype: 3.1.3
 
-  '@types/redux-logger@3.0.9':
+  '@types/redux-logger@3.0.13':
     dependencies:
-      redux: 4.2.1
+      redux: 5.0.1
 
   '@types/scheduler@0.23.0': {}
 
   '@types/trusted-types@2.0.7':
     optional: true
 
-  '@types/use-sync-external-store@0.0.3': {}
+  '@types/use-sync-external-store@0.0.6': {}
 
   '@types/uuid@10.0.0': {}
 
@@ -5029,13 +5035,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  i18next-browser-languagedetector@7.1.0:
+  i18next-browser-languagedetector@8.2.0:
     dependencies:
       '@babel/runtime': 7.26.10
 
   i18next@23.5.1:
     dependencies:
       '@babel/runtime': 7.26.10
+
+  i18next@25.7.2(typescript@5.2.2):
+    dependencies:
+      '@babel/runtime': 7.28.4
+    optionalDependencies:
+      typescript: 5.2.2
 
   iconv-lite@0.6.3:
     dependencies:
@@ -5045,7 +5057,7 @@ snapshots:
 
   ignore@7.0.5: {}
 
-  immer@9.0.21: {}
+  immer@11.0.1: {}
 
   import-fresh@3.3.1:
     dependencies:
@@ -5297,7 +5309,7 @@ snapshots:
 
   node-releases@2.0.19: {}
 
-  notistack@3.0.1(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  notistack@3.0.2(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       clsx: 1.2.1
       goober: 2.1.16(csstype@3.1.3)
@@ -5458,10 +5470,6 @@ snapshots:
 
   react-fast-compare@3.2.2: {}
 
-  react-geocode@0.2.3:
-    dependencies:
-      regenerator-runtime: 0.13.11
-
   react-helmet@6.1.0(react@18.3.1):
     dependencies:
       object-assign: 4.1.1
@@ -5470,7 +5478,7 @@ snapshots:
       react-fast-compare: 3.2.2
       react-side-effect: 2.1.2(react@18.3.1)
 
-  react-hook-form@7.46.1(react@18.3.1):
+  react-hook-form@7.68.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
@@ -5482,6 +5490,17 @@ snapshots:
       react: 18.3.1
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
+
+  react-i18next@16.4.0(i18next@25.7.2(typescript@5.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.2.2):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      html-parse-stringify: 3.0.1
+      i18next: 25.7.2(typescript@5.2.2)
+      react: 18.3.1
+      use-sync-external-store: 1.6.0(react@18.3.1)
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
+      typescript: 5.2.2
 
   react-is@16.13.1: {}
 
@@ -5498,20 +5517,13 @@ snapshots:
 
   react-property@2.0.0: {}
 
-  react-redux@8.1.2(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(redux@4.2.1):
+  react-redux@9.2.0(react@18.3.1)(redux@5.0.1):
     dependencies:
-      '@babel/runtime': 7.26.10
-      '@types/hoist-non-react-statics': 3.3.6
-      '@types/use-sync-external-store': 0.0.3
-      hoist-non-react-statics: 3.3.2
+      '@types/use-sync-external-store': 0.0.6
       react: 18.3.1
-      react-is: 18.3.1
       use-sync-external-store: 1.4.0(react@18.3.1)
     optionalDependencies:
-      '@types/react': 18.2.22
-      '@types/react-dom': 18.2.7
-      react-dom: 18.3.1(react@18.3.1)
-      redux: 4.2.1
+      redux: 5.0.1
 
   react-refresh@0.17.0: {}
 
@@ -5564,19 +5576,19 @@ snapshots:
     dependencies:
       deep-diff: 0.3.8
 
-  redux-thunk@2.4.2(redux@4.2.1):
+  redux-thunk@3.1.0(redux@5.0.1):
     dependencies:
-      redux: 4.2.1
+      redux: 5.0.1
 
   redux@4.2.1:
     dependencies:
       '@babel/runtime': 7.26.10
 
-  regenerator-runtime@0.13.11: {}
+  redux@5.0.1: {}
 
   regenerator-runtime@0.14.1: {}
 
-  reselect@4.1.8: {}
+  reselect@5.1.1: {}
 
   resolve-from@4.0.0: {}
 
@@ -5773,6 +5785,10 @@ snapshots:
       punycode: 2.3.1
 
   use-sync-external-store@1.4.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
+  use-sync-external-store@1.6.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 

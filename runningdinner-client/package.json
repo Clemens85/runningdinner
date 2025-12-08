@@ -12,7 +12,15 @@
   "license": "ISC",
   "dependencies": {
     "axios": "1.13.2",
-    "lodash-es": "4.17.21"
+    "lodash-es": "4.17.21",
+    "react-redux": "9.2.0",
+    "redux": "5.0.1",
+    "redux-logger": "3.0.6",
+    "redux-thunk": "3.1.0",
+    "@reduxjs/toolkit": "2.11.1",
+    "@tanstack/react-query": "5.90.12",
+    "react-hook-form": "7.68.0",
+    "date-fns": "2.30.0"
   },
   "devDependencies": {
     "@types/node": "^22.12.0",
