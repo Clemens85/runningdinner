@@ -20,12 +20,21 @@ importers:
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
+      i18next:
+        specifier: 25.7.2
+        version: 25.7.2(typescript@5.2.2)
+      i18next-browser-languagedetector:
+        specifier: 8.2.0
+        version: 8.2.0
       lodash-es:
         specifier: 4.17.21
         version: 4.17.21
       react-hook-form:
         specifier: 7.68.0
         version: 7.68.0(react@18.3.1)
+      react-i18next:
+        specifier: 16.4.0
+        version: 16.4.0(i18next@25.7.2(typescript@5.2.2))(react@18.3.1)(typescript@5.2.2)
       react-redux:
         specifier: 9.2.0
         version: 9.2.0(react@18.3.1)(redux@5.0.1)
@@ -96,21 +105,12 @@ importers:
 
   shared:
     dependencies:
-      i18next:
-        specifier: 25.7.2
-        version: 25.7.2(typescript@5.2.2)
-      i18next-browser-languagedetector:
-        specifier: 8.2.0
-        version: 8.2.0
       react:
         specifier: ^18.0.2
         version: 18.3.1
       react-dom:
         specifier: ^18.0.2
         version: 18.3.1(react@18.3.1)
-      react-i18next:
-        specifier: 16.4.0
-        version: 16.4.0(i18next@25.7.2(typescript@5.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.2.2)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -176,17 +176,11 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@vis.gl/react-google-maps':
-        specifier: ^1.1.0
-        version: 1.5.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      date-fns:
-        specifier: 2.30.0
-        version: 2.30.0
+        specifier: 1.7.1
+        version: 1.7.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       html-react-parser:
         specifier: 4.2.2
         version: 4.2.2(react@18.3.1)
-      i18next:
-        specifier: 23.5.1
-        version: 23.5.1
       material-ui-popup-state:
         specifier: 5.0.9
         version: 5.0.9(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react@18.3.1))(@types/react@18.2.22)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -208,12 +202,9 @@ importers:
       react-dom:
         specifier: ^18.0.2
         version: 18.3.1(react@18.3.1)
-      react-i18next:
-        specifier: 13.2.2
-        version: 13.2.2(i18next@23.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-medium-image-zoom:
-        specifier: 5.1.8
-        version: 5.1.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 5.4.0
+        version: 5.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router-dom:
         specifier: 6.3.0
         version: 6.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -221,8 +212,8 @@ importers:
         specifier: 1.1.3
         version: 1.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-virtuoso:
-        specifier: ^4.7.11
-        version: 4.12.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 4.17.0
+        version: 4.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       yup:
         specifier: ^0.28.3
         version: 0.28.5
@@ -1344,8 +1335,8 @@ packages:
     resolution: {integrity: sha512-/++5CYLQqsO9HFGLI7APrxBJYo+5OCMpViuhV8q5/Qa3o5mMrF//eQHks+PXcsAVaLdn817fMuS7zqoXNNZGaw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@vis.gl/react-google-maps@1.5.2':
-    resolution: {integrity: sha512-0Ypmde7M73GgV4TgcaUTNKXsbcXWToPVuawMNrVg7htXmhpEfLARHwhtmP6N1da3od195ZKC8ShXzC6Vm+zYHQ==}
+  '@vis.gl/react-google-maps@1.7.1':
+    resolution: {integrity: sha512-F/GJzJyri7Jqf+bkLNxoi2RcH2hCIo1I3//PyiILqQzdzglMoqZVO1DLXlHPifNdebk1/zib6dMJA3i73nwmuQ==}
     peerDependencies:
       react: '>=16.8.0 || ^19.0 || ^19.0.0-rc'
       react-dom: '>=16.8.0 || ^19.0 || ^19.0.0-rc'
@@ -2115,9 +2106,6 @@ packages:
   i18next-browser-languagedetector@8.2.0:
     resolution: {integrity: sha512-P+3zEKLnOF0qmiesW383vsLdtQVyKtCNA9cjSoKCppTKPQVfKd2W8hbVo5ZhNJKDqeM7BOcvNoKJOjpHh4Js9g==}
 
-  i18next@23.5.1:
-    resolution: {integrity: sha512-JelYzcaCoFDaa+Ysbfz2JsGAKkrHiMG6S61+HLBUEIPaF40WMwW9hCPymlQGrP+wWawKxKPuSuD71WZscCsWHg==}
-
   i18next@25.7.2:
     resolution: {integrity: sha512-58b4kmLpLv1buWUEwegMDUqZVR5J+rT+WTRFaBGL7lxDuJQQ0NrJFrq+eT2N94aYVR1k1Sr13QITNOL88tZCuw==}
     peerDependencies:
@@ -2537,19 +2525,6 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-i18next@13.2.2:
-    resolution: {integrity: sha512-+nFUkbRByFwnrfDcYqvzBuaeZb+nACHx+fAWN/pZMddWOCJH5hoc21+Sa/N/Lqi6ne6/9wC/qRGOoQhJa6IkEQ==}
-    peerDependencies:
-      i18next: '>= 23.2.3'
-      react: '>= 16.8.0'
-      react-dom: '*'
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-
   react-i18next@16.4.0:
     resolution: {integrity: sha512-bxVeBA8Ky2UeItNhF4JRxHCFIrpEJHGFG/mOAa4CR0JkqaDEYSLmlEgmC4Os63SBlZ+E5U0YyrNJOSVl2mtVqQ==}
     peerDependencies:
@@ -2578,11 +2553,11 @@ packages:
   react-is@19.0.0:
     resolution: {integrity: sha512-H91OHcwjZsbq3ClIDHMzBShc1rotbfACdWENsmEf0IFvZ3FgGPtdHMcsv45bQ1hAbgdfiA8SnxTKfDS+x/8m2g==}
 
-  react-medium-image-zoom@5.1.8:
-    resolution: {integrity: sha512-2X4oLlEopIWg7qalR1Qpy4gPrU9CTF0DvJ7HNu5u/NwdyQWupEsje2vuMbjBz7+np8MmQ4DKJ6zGr1ofCuzB3g==}
+  react-medium-image-zoom@5.4.0:
+    resolution: {integrity: sha512-BsE+EnFVQzFIlyuuQrZ9iTwyKpKkqdFZV1ImEQN573QPqGrIUuNni7aF+sZwDcxlsuOMayCr6oO/PZR/yJnbRg==}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react-property@2.0.0:
     resolution: {integrity: sha512-kzmNjIgU32mO4mmH5+iUyrqlpFQhF8K2k7eZ4fdLSOPFrD1XgEuSBv9LDEgxRXTMBqMd8ppT0x6TIzqE5pdGdw==}
@@ -2631,8 +2606,8 @@ packages:
       react: '>=16.6.0'
       react-dom: '>=16.6.0'
 
-  react-virtuoso@4.12.5:
-    resolution: {integrity: sha512-YeCbRRsC9CLf0buD0Rct7WsDbzf+yBU1wGbo05/XjbcN2nJuhgh040m3y3+6HVogTZxEqVm45ac9Fpae4/MxRQ==}
+  react-virtuoso@4.17.0:
+    resolution: {integrity: sha512-od3pi2v13v31uzn5zPXC2u3ouISFCVhjFVFch2VvS2Cx7pWA2F1aJa3XhNTN2F07M3lhfnMnsmGeH+7wZICr7w==}
     peerDependencies:
       react: '>=16 || >=17 || >= 18 || >= 19'
       react-dom: '>=16 || >=17 || >= 18 || >=19'
@@ -3784,7 +3759,7 @@ snapshots:
   '@testing-library/dom@10.4.0':
     dependencies:
       '@babel/code-frame': 7.27.1
-      '@babel/runtime': 7.26.10
+      '@babel/runtime': 7.28.4
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       chalk: 4.1.2
@@ -4156,7 +4131,7 @@ snapshots:
       '@typescript-eslint/types': 8.46.4
       eslint-visitor-keys: 4.2.1
 
-  '@vis.gl/react-google-maps@1.5.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@vis.gl/react-google-maps@1.7.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@types/google.maps': 3.58.1
       fast-deep-equal: 3.1.3
@@ -5037,11 +5012,7 @@ snapshots:
 
   i18next-browser-languagedetector@8.2.0:
     dependencies:
-      '@babel/runtime': 7.26.10
-
-  i18next@23.5.1:
-    dependencies:
-      '@babel/runtime': 7.26.10
+      '@babel/runtime': 7.28.4
 
   i18next@25.7.2(typescript@5.2.2):
     dependencies:
@@ -5482,16 +5453,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  react-i18next@13.2.2(i18next@23.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      '@babel/runtime': 7.26.10
-      html-parse-stringify: 3.0.1
-      i18next: 23.5.1
-      react: 18.3.1
-    optionalDependencies:
-      react-dom: 18.3.1(react@18.3.1)
-
-  react-i18next@16.4.0(i18next@25.7.2(typescript@5.2.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.2.2):
+  react-i18next@16.4.0(i18next@25.7.2(typescript@5.2.2))(react@18.3.1)(typescript@5.2.2):
     dependencies:
       '@babel/runtime': 7.28.4
       html-parse-stringify: 3.0.1
@@ -5499,7 +5461,6 @@ snapshots:
       react: 18.3.1
       use-sync-external-store: 1.6.0(react@18.3.1)
     optionalDependencies:
-      react-dom: 18.3.1(react@18.3.1)
       typescript: 5.2.2
 
   react-is@16.13.1: {}
@@ -5510,7 +5471,7 @@ snapshots:
 
   react-is@19.0.0: {}
 
-  react-medium-image-zoom@5.1.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-medium-image-zoom@5.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -5558,7 +5519,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  react-virtuoso@4.12.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-virtuoso@4.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
