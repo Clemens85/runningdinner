@@ -92,10 +92,10 @@ public class TeamPartnerRegistrationTest {
   public void registerTeamPartnerAndActivateBoth() {
 
     RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", TestUtil.newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerWithRegistrationData("Maria", "Musterfrau"));
     
     RegistrationSummary registrationSummary = frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);
-    assertThat(registrationSummary.getTeamPartnerWishRegistrationData()).isEqualTo(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    assertThat(registrationSummary.getTeamPartnerWishRegistrationData()).isEqualTo(TestUtil.newTeamPartnerWithRegistrationData("Maria", "Musterfrau"));
     assertThat(registrationSummary.getTeamPartnerWishState()).isNull();
     
     // Verify second participant is also registered and both can be activated by root participant
@@ -211,7 +211,7 @@ public class TeamPartnerRegistrationTest {
   public void validationForNotEnoughNumSeats() {
     
     RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", TestUtil.newAddress(), 4);
-    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerWithRegistrationData("Maria", "Musterfrau"));
     
     try {
       frontendRunningDinnerService.performRegistration(publicDinnerId, registrationData, false);

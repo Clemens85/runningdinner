@@ -176,7 +176,7 @@ public class MessageService {
   public MessageJob sendParticipantMessages(@ValidateAdminId String adminId, ParticipantMessage participantMessage) {
     
     final MessageJob messageJob = createParticipantMessagesJob(adminId, participantMessage);
-    executeSendMessagesJobAfterCommit(messageJob);
+    executeSendMessagesJobAfterCommit(messageJob, participantMessage);
     return messageJob;
   }
   
@@ -223,7 +223,7 @@ public class MessageService {
   public MessageJob sendTeamMessages(@ValidateAdminId String adminId, TeamMessage teamMessage) {
     
     final MessageJob messageJob = createTeamArrangementMessagesJob(adminId, teamMessage);
-    executeSendMessagesJobAfterCommit(messageJob);
+    executeSendMessagesJobAfterCommit(messageJob, teamMessage);
     return messageJob;
   }
   
@@ -267,7 +267,7 @@ public class MessageService {
   public MessageJob sendDinnerRouteMessages(@ValidateAdminId String adminId, DinnerRouteMessage dinnerRouteMessage) {
     
     final MessageJob messageJob = createDinnerRouteMessagesJob(adminId, dinnerRouteMessage);
-    executeSendMessagesJobAfterCommit(messageJob);
+    executeSendMessagesJobAfterCommit(messageJob, dinnerRouteMessage);
     return messageJob;
   }
   
@@ -291,7 +291,7 @@ public class MessageService {
     
     RunningDinnerRelatedMessage runningDinnerCreatedMessage = runningDinnerEventCreatedMessageFormatter.formatRunningDinnerCreatedMessage(runningDinner);
     final MessageJob messageJob = createNewRunningDinnerMessageJob(runningDinnerCreatedMessage);
-    executeSendMessagesJobAfterCommit(messageJob);
+    executeSendMessagesJobAfterCommit(messageJob, null);
     return messageJob;
   }
 
@@ -325,7 +325,7 @@ public class MessageService {
   public MessageJob sendSubscriptionActivationMail(RunningDinnerRelatedMessage message, Participant subscribedParticipant) {
     
     final MessageJob messageJob = createSubscriptionActivationMessageJob(message, subscribedParticipant);
-    executeSendMessagesJobAfterCommit(messageJob);
+    executeSendMessagesJobAfterCommit(messageJob, null);
     return messageJob;
   }
 
@@ -354,7 +354,7 @@ public class MessageService {
   public MessageJob sendTeamPartnerWishMail(RunningDinnerRelatedMessage message, String recipientEmail, String fromEmail) {
     
     final MessageJob messageJob = createTeamPartnerWishMessageJob(message, recipientEmail, fromEmail);
-    executeSendMessagesJobAfterCommit(messageJob);
+    executeSendMessagesJobAfterCommit(messageJob, null);
     return messageJob;
   }
 
@@ -378,7 +378,7 @@ public class MessageService {
   public MessageJob sendTeamHostChangedMessages(@ValidateAdminId String adminId, Team team, Participant executingParticipant, String comment) {
     
     final MessageJob messageJob = createTeamHostChangedMessagesJob(adminId, team, executingParticipant, comment);
-    executeSendMessagesJobAfterCommit(messageJob);
+    executeSendMessagesJobAfterCommit(messageJob, null);
     return messageJob;
   }
 
@@ -815,7 +815,7 @@ public class MessageService {
     return getRecipients(team.getTeamMembersOrdered());
   }
   
-  private void executeSendMessagesJobAfterCommit(final MessageJob messageJob) {
+  private void executeSendMessagesJobAfterCommit(final MessageJob messageJob, final BaseMessage messageTemplate) {
 
     checkAcknowledgedDinner(messageJob);
     
@@ -824,6 +824,9 @@ public class MessageService {
       public void afterCommit() {
         LOGGER.info("Publishing {}", messageJob);
         messageJobProcessorHelperService.publishProcessingEventAsync(messageJob);
+        if (messageTemplate != null) {
+          messageJobProcessorHelperService.publishNewMessageProposalEvent(messageJob, messageTemplate);
+        }
       }
     });
   }
