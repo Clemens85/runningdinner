@@ -25,8 +25,9 @@ export default function DinnerRouteView({ dinnerRoute, meals }: DinnerRouteProps
       key={team.teamNumber}
       size={{
         xs: 12,
-        md: 4
-      }}>
+        md: 4,
+      }}
+    >
       <TeamCard dinnerRouteTeam={team} isCurrentTeam={team.teamNumber === dinnerRoute.currentTeam.teamNumber} mealType={mealTypeMappings[team.meal.id || '']} />
     </Grid>
   ));
@@ -41,7 +42,7 @@ export default function DinnerRouteView({ dinnerRoute, meals }: DinnerRouteProps
             </Subtitle>
           </Grid>
         )}
-        <Grid container spacing={4} sx={{ mb: 4 }}>
+        <Grid container spacing={4} size={12} sx={{ mb: 4 }}>
           {teamCardNodes}
         </Grid>
         {afterPartyLocation && isAfterPartyLocationDefined(afterPartyLocation) && (
