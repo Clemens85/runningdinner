@@ -100,7 +100,7 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
     }
     return (
       <Grid container spacing={spacing} justifyContent={'center'} alignItems={'center'} sx={{ mb: 1 }}>
-        <Grid item xs={12} sx={{ textAlign: 'center', mt: 1 }}>
+        <Grid sx={{ textAlign: 'center', mt: 1 }} size={12}>
           <Button color={'primary'} variant={'outlined'} size="medium" href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} target="_blank">
             {t('teams_show_dinnerroute')}
           </Button>
@@ -182,7 +182,11 @@ function ScheduledMeal({ hostTeam, meal, guestTeams, currentTeam, xs, md, adminI
       <GridContentRight item xs={xs} md={md}>
         {highlightHostTeam ? <CurrentTeamButton team={hostTeam} /> : <MeetedTeamButton team={hostTeam} adminId={adminId} />}
       </GridContentRight>
-      <Grid item xs={xs} md={md}>
+      <Grid
+        size={{
+          xs: xs,
+          md: md
+        }}>
         <SchedulePaper elevation={3} sx={getSchedulePaperStyles(highlightMeal, hostTeamIsCancelled)}>
           <SmallTitle>{meal.label}</SmallTitle>
           <Paragraph>
@@ -283,11 +287,19 @@ function CurrentTeamButton({ team }) {
 function ScheduledMealTimeline({ xs, md }) {
   return (
     <>
-      <Grid item xs={xs} md={md} />
+      <Grid
+        size={{
+          xs: xs,
+          md: md
+        }} />
       <GridContentCenter item xs={xs} md={md}>
         <ScheduleRowTimeLineBox />
       </GridContentCenter>
-      <Grid item xs={xs} md={md} />
+      <Grid
+        size={{
+          xs: xs,
+          md: md
+        }} />
     </>
   );
 }

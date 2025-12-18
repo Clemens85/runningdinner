@@ -7,8 +7,7 @@ export const TableRowWithCursor = styled(TableRow)({
 
 export const TableCellBorderBottomNullable = styled(TableCell, {
   shouldForwardProp: (prop) => prop !== 'borderBottomNone',
-  // @ts-ignore
-})(({ borderBottomNone, theme }) => ({
+})<{ borderBottomNone?: boolean }>(({ borderBottomNone }) => ({
   ...(borderBottomNone && {
     borderBottom: 'none',
   }),

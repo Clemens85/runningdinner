@@ -34,7 +34,7 @@ import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
 import WizardMenuNotificationBar from './WizardMenuNotificationBar';
 import useWizardNavigation from './WizardNavigationHook';
 
-const NavList = styled(List)(({ theme }) => ({
+const NavList = styled(List)(() => ({
   display: `flex`,
   justifyContent: `space-evenly`,
   width: '100%',

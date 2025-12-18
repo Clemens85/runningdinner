@@ -1,4 +1,4 @@
-import { TableCell, Hidden, Button } from '@mui/material';
+import { TableCell, Button } from '@mui/material';
 import React from 'react';
 import NumSeats from '../participants/list/NumSeats';
 import ParticipantGenderTooltip from '../../common/gender/ParticipantGenderTooltip';
@@ -56,19 +56,15 @@ export default function TeamRow({ team, onClick, onTeamMemberSwap, onOpenChangeT
     <TableRowWithCursor hover onClick={() => onClick(team)} selected={selected} data-testid="team-row">
       <TableCell>{teamNumber}</TableCell>
       <TableCell>{isCancelled ? <CancelledTeamMember /> : teamMemberNames}</TableCell>
-      <Hidden smDown>
-        <TableCell>{!isCancelled && teamMemberSeats}</TableCell>
-        <TableCell>{!isCancelled && teamMemberGenders}</TableCell>
-      </Hidden>
+      <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{!isCancelled && teamMemberSeats}</TableCell>
+      <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{!isCancelled && teamMemberGenders}</TableCell>
       <TableCell>{meal.label}</TableCell>
-      <Hidden smDown>
-        <TableCell>
-          <ChangeTeamHostButton handleOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} hostTeamMember={hostTeamMember} isCancelled={isCancelled} />
-        </TableCell>
-        <TableCell>
-          <TeamPartnerWishIcon team={team} showLabelAsTooltip={true} />
-        </TableCell>
-      </Hidden>
+      <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+        <ChangeTeamHostButton handleOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} hostTeamMember={hostTeamMember} isCancelled={isCancelled} />
+      </TableCell>
+      <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+        <TeamPartnerWishIcon team={team} showLabelAsTooltip={true} />
+      </TableCell>
     </TableRowWithCursor>
   );
 }

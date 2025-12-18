@@ -12,7 +12,7 @@ export function TeamPartnerWishFormInput({ teamPartnerWishHelperText }: TeamPart
 
   return (
     <>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <FormTextField fullWidth helperText={teamPartnerWishHelperText} variant="filled" name="teamPartnerWishEmail" label={t('teampartner_wish')} />
       </Grid>
     </>

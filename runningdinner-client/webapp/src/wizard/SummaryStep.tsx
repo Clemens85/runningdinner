@@ -25,7 +25,7 @@ export default function SummaryStep() {
     <div>
       <PageTitle>{t('done')}</PageTitle>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Span i18n="wizard:administration_link" />
           <Paragraph>
             <strong>{administrationUrl}</strong>
@@ -35,9 +35,12 @@ export default function SummaryStep() {
           </Box>
         </Grid>
       </Grid>
-
       <Grid container>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <LinkExtern href={administrationUrl} self={true}>
             <Typography variant={'body1'} component={'span'}>
               {t('wizard:administration_link_open')}

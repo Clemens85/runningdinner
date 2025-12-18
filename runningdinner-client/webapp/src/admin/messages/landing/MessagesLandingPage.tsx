@@ -85,11 +85,10 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
     <>
       <BrowserTitle titleI18nKey={'messages_landing_messaging'} namespaces={'admin'} />
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <PageTitle>{t('admin:messages_landing_messaging')}</PageTitle>
         </Grid>
       </Grid>
-
       {showBackToListViewButton && <BackToListButton onBackToList={handleBackToListView} />}
       <Grid container spacing={2} sx={{ mb: 2 }}>
         {showListView && (
@@ -98,7 +97,12 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
 
         {showDetailsView && (
           <>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
               <MessagesCardContent currentMessageType={currentMessageType} adminId={adminId} hasTeams={hasTeams} />
             </Grid>
           </>
@@ -120,7 +124,13 @@ function MessageCardListView({ currentMessageType, hasTeams, onCurrentMessageTyp
   return (
     <>
       <Grid container>
-        <Grid item xs={12} md={6} sx={{ pl: 2 }}>
+        <Grid
+          sx={{ pl: 2 }}
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Paragraph>
             {t('admin:messages_landing_start_1')}
             <br />
@@ -128,7 +138,12 @@ function MessageCardListView({ currentMessageType, hasTeams, onCurrentMessageTyp
           </Paragraph>
         </Grid>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        size={{
+          xs: 12,
+          md: 6,
+        }}
+      >
         <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={2} useFlexGap sx={{ width: '100%', display: 'flex' }}>
           <MessagesCard
             onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_PARTICIPANTS)}
@@ -196,10 +211,8 @@ function MessagesCard({ currentMessageType, selected, hasTeams, adminId, onClick
   const { icon, title, description } = messageCardInfo;
 
   return (
-    // @ts-ignore
     <CardRoundedClickable
       variant="outlined"
-      component="button"
       onClick={onClick}
       sx={{
         p: 3,
@@ -259,7 +272,7 @@ function NoMessageTypeSelected() {
   return (
     <Card sx={{ p: 3, height: '50vh' }}>
       <Grid container justifyContent={'center'} alignItems={'baseline'}>
-        <Grid item>
+        <Grid>
           <Typography variant="subtitle1" sx={{ px: 2, verticalAlign: 'center' }}>
             {t('admin:messages_landing_no_selection_hint')}
           </Typography>

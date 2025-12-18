@@ -111,11 +111,11 @@ export const MainNavigation = ({
       {!!topNotificationBar && topNotificationBar}
       <AppBarBlackWhite position="static">
         <Toolbar>
-          <Grid container justifyContent={'space-between'} alignItems={'center'}>
-            <Grid item>
+          <Grid container justifyContent={'space-between'} alignItems={'center'} sx={{ width: '100%' }}>
+            <Grid>
               <Grid container alignItems={'center'}>
                 {isMobileDevice && (
-                  <Grid item>
+                  <Grid>
                     <MobileNavigation
                       navigationItems={navigationItems}
                       mobileDrawerNavigationOpen={mobileDrawerNavigationOpen}
@@ -124,10 +124,10 @@ export const MainNavigation = ({
                   </Grid>
                 )}
                 {!isMobileDevice && (
-                  <Grid item>
+                  <Grid>
                     <Grid container alignItems={'center'}>
                       {showHomeLink && (
-                        <Grid item>
+                        <Grid>
                           <HomeLink
                             // @ts-ignore
                             to={`${navigationItems[0].routePath}`}
@@ -139,18 +139,18 @@ export const MainNavigation = ({
                           </HomeLink>
                         </Grid>
                       )}
-                      <Grid item>{navigationItems.map((navigationItem) => createLink(navigationItem))}</Grid>
+                      <Grid>{navigationItems.map((navigationItem) => createLink(navigationItem))}</Grid>
                     </Grid>
                   </Grid>
                 )}
               </Grid>
             </Grid>
-            <Grid item>
+            <Grid>
               <Grid container id="donate-btn-container">
-                <Grid item sx={{ pr: donatePaddingRight }}>
+                <Grid sx={{ pr: donatePaddingRight }}>
                   <DonateButton />
                 </Grid>
-                <Grid item>
+                <Grid>
                   <LanguageSwitch />
                 </Grid>
               </Grid>

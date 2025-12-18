@@ -15,7 +15,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    "types": ["vitest", "vitest/globals"],
+    "types": ["vitest", "vitest/globals", "google.maps"],
 
     /* Linting */
     "strict": true,

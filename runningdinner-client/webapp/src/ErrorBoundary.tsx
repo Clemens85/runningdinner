@@ -1,12 +1,16 @@
 import { Box, Container } from '@mui/material';
 import { Alert, AlertTitle } from '@mui/material';
 import { CallbackHandler, CONSTANTS } from '@runningdinner/shared';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Trans } from 'react-i18next';
 
 import LinkExtern from './common/theme/LinkExtern';
 import { PrimaryButton } from './common/theme/PrimaryButton';
 import { Subtitle } from './common/theme/typography/Tags';
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
 
 interface ErrorBoundaryState {
   errorState: 'ok' | 'tryAgain';
@@ -24,12 +28,7 @@ function TryAgain({ onClick }: ClickHandler) {
         <Box my={2}>
           <Alert severity={'error'} variant={'outlined'}>
             <AlertTitle>
-              <Trans
-                i18nKey={'common:client_error_message'}
-                values={{ adminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL }}
-                // @ts-ignore
-                components={{ anchor: <LinkExtern /> }}
-              />
+              <Trans i18nKey={'common:client_error_message'} values={{ adminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL }} components={{ anchor: <LinkExtern href="" /> }} />
             </AlertTitle>
             <Box my={1}>
               <PrimaryButton onClick={onClick}>
@@ -43,8 +42,8 @@ function TryAgain({ onClick }: ClickHandler) {
   );
 }
 
-export class ErrorBoundary extends React.Component<React.ReactNode, ErrorBoundaryState> {
-  constructor(props: any) {
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
 
     this.state = {

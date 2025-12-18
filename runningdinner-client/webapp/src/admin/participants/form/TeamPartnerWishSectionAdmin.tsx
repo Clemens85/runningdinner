@@ -1,6 +1,5 @@
 import { Box, Grid } from '@mui/material';
 import { BaseAdminIdProps, getFullname, isStringEmpty, ParticipantListable } from '@runningdinner/shared';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -36,7 +35,12 @@ function TeamPartnerWishEmailInvitationFormInput() {
     <Box mt={3}>
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={12}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 12,
+          }}
+        >
           <TeamPartnerWishFormInput teamPartnerWishHelperText={t('admin:team_partner_wish_help')} />
         </Grid>
       </Grid>
@@ -58,7 +62,7 @@ function ChildTeamPartnerWishInfo({ childTeamPartnerWish, adminId }: TeamPartner
     <Box mt={3}>
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Span>
             <Trans
               i18nKey={'admin:team_partner_wish_registration_child_participant_child_info_1'}
@@ -85,7 +89,7 @@ function RootTeamPartnerWishInfo({ rootTeamPartnerWish, teamPartnerWishOriginato
     <Box mt={3}>
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Span>{t('admin:team_partner_wish_registration_child_participant_root_info_1', { fullname: getFullname(rootTeamPartnerWish!) })}</Span>
           <Span>
             <Trans

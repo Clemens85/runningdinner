@@ -152,21 +152,18 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
           </Paragraph>
         </div>
       </Box>
-
       <Box mt={2}>
         <FormFieldset>{t('common:schedule')}</FormFieldset>
         <List dense={true} disablePadding>
           {publicRunningDinner.meals.map((meal) => renderMealListItem(meal))}
         </List>
       </Box>
-
       <Box mt={2}>
         <FormFieldset>{t('common:description')}</FormFieldset>
         <Paragraph>
           <TextViewHtml text={publicSettings.description} />
         </Paragraph>
       </Box>
-
       {hasAfterPartyLocation && (
         <Box mt={2}>
           <FormFieldset>
@@ -182,20 +179,17 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
           {isStringNotEmpty(afterPartyLocation!.addressRemarks) && <Paragraph>{afterPartyLocation!.addressRemarks}</Paragraph>}
         </Box>
       )}
-
       {isPublicContactInfoAvailable && (
         <Box mt={2}>
           <PublicContactInfo {...publicSettings} />
         </Box>
       )}
-
       <Box mt={2}>
         <FormFieldset>{t('common:registration')}</FormFieldset>
         <Paragraph i18n={'landing:dinner_event_deadline_text'} parameters={{ endOfRegistrationDate: endOfRegistrationDateStr }} />
         <ZipRestrictionsInfo {...publicRunningDinner} />
         <PaymentInfo {...publicRunningDinner} />
       </Box>
-
       <Box my={2}>
         {renderRegistrationNotPossibleText()}
         {!registrationButtonHidden && (
@@ -205,7 +199,7 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
         )}
         {registrationButtonHidden && isCurrentUserSubscribedToEvent() && (
           <Grid container>
-            <Grid item>
+            <Grid>
               <Alert severity={'success'} variant={'outlined'}>
                 <Box mb={1}>
                   <Trans i18nKey={'landing:currentuser_already_registered_info'} components={{ italic: <em /> }} values={{ email: getCurrentUserSubscribedToEvent()?.email }} />
@@ -229,7 +223,6 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
           </Grid>
         )}
       </Box>
-
       {isRegistrationFormOpen && (
         <PublicDinnerEventRegistrationFormContainer
           publicRunningDinner={publicRunningDinner}

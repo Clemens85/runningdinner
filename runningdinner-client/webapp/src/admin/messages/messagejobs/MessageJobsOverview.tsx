@@ -52,18 +52,18 @@ export function MessageJobsOverview({ adminId, messageType }: MessageJobsOvervie
           <Box mt={2}>
             <Grid container justifyContent="space-between">
               {!isArrayEmpty(messageJobs) && (
-                <Grid item>
+                <Grid>
                   <Grid container alignItems="center" spacing={1}>
-                    <Grid item>
+                    <Grid>
                       <Span>Info</Span>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                       <HelpIconTooltip title={<Paragraph i18n="admin:synchronize_messagejobs_help" />} placement="right" />
                     </Grid>
                   </Grid>
                 </Grid>
               )}
-              <Grid item sx={{ textAlign: 'right' }}>
+              <Grid sx={{ textAlign: 'right' }}>
                 <i>
                   <Span i18n="admin:protocols_last_update_text" parameters={{ lastPollDate: lastPollDateFormatted }} />
                 </i>

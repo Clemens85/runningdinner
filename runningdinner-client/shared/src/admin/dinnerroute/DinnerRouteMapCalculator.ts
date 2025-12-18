@@ -99,7 +99,12 @@ export class DinnerRouteMapCalculator {
     this.mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(meals);
 
     this.afterPartyLocationMapEntry = isGeocodingResultValid(afterPartyLocation?.geocodingResult)
-      ? { ...afterPartyLocation, position: afterPartyLocation!.geocodingResult!, color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor() }
+      ? {
+          ...afterPartyLocation!,
+          title: afterPartyLocation!.title || '',
+          position: afterPartyLocation!.geocodingResult!,
+          color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor(),
+        }
       : undefined;
 
     // Build color mappings for team clusters

@@ -21,7 +21,12 @@ export default function DinnerRouteView({ dinnerRoute, meals }: DinnerRouteProps
   const mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(meals);
 
   const teamCardNodes = teams.map((team) => (
-    <Grid item xs={12} md={4} key={team.teamNumber}>
+    <Grid
+      key={team.teamNumber}
+      size={{
+        xs: 12,
+        md: 4
+      }}>
       <TeamCard dinnerRouteTeam={team} isCurrentTeam={team.teamNumber === dinnerRoute.currentTeam.teamNumber} mealType={mealTypeMappings[team.meal.id || '']} />
     </Grid>
   ));
@@ -30,7 +35,7 @@ export default function DinnerRouteView({ dinnerRoute, meals }: DinnerRouteProps
     <>
       <Grid container>
         {isStringNotEmpty(mealSpecificsOfGuestTeams) && (
-          <Grid item xs={12} sx={{ mb: 2 }}>
+          <Grid sx={{ mb: 2 }} size={12}>
             <Subtitle>
               <TextViewHtml text={mealSpecificsOfGuestTeams} />
             </Subtitle>
@@ -41,12 +46,12 @@ export default function DinnerRouteView({ dinnerRoute, meals }: DinnerRouteProps
         </Grid>
         {afterPartyLocation && isAfterPartyLocationDefined(afterPartyLocation) && (
           <Grid container spacing={4} sx={{ mb: 1 }}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <AfterPartyLocationCard {...afterPartyLocation} />
             </Grid>
           </Grid>
         )}
-        <Grid item xs={12} sx={{ mb: 2 }}>
+        <Grid sx={{ mb: 2 }} size={12}>
           <APIProvider apiKey={GOOGLE_MAPS_KEY}>
             <DinnerRouteMapView dinnerRoute={dinnerRoute} meals={meals} />
           </APIProvider>

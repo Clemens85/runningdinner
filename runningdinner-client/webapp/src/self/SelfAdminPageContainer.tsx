@@ -38,14 +38,25 @@ export function SelfAdminPageContainer({ children, htmlPageTitleI18n }: SelfAdmi
   return (
     <>
       <Grid container justifyContent={'center'}>
-        <Grid item xs={12} md={8} lg={8} sx={commonStyles.textAlignRight}>
+        <Grid
+          sx={commonStyles.textAlignRight}
+          size={{
+            xs: 12,
+            md: 8,
+            lg: 8
+          }}>
           <Box mt={2} mb={-3}>
             <LanguageSwitch />
           </Box>
         </Grid>
       </Grid>
       <Grid container justifyContent={'center'}>
-        <Grid item xs={12} md={8} lg={8}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 8,
+            lg: 8
+          }}>
           {children}
         </Grid>
       </Grid>

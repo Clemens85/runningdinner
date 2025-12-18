@@ -31,7 +31,7 @@ export default function TeamsList({ teams, selectedTeam, onClick, onTeamMemberSw
 
   return (
     <Grid container>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <TableContainer component={Paper}>
           <Table size={'small'}>
             <TableBody>{teamRows}</TableBody>

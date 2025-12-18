@@ -6,6 +6,7 @@ import {
   deleteParticipantAsync,
   findIssueByMessage,
   getFullname,
+  HttpError,
   isStringEmpty,
   isTeamPartnerWishChild,
   isTeamPartnerWishRegistration,
@@ -14,7 +15,6 @@ import {
   ParticipantListable,
   useBackendIssueHandler,
 } from '@runningdinner/shared';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useNotificationHttpError } from '../../../common/NotificationHttpErrorHook';
@@ -47,12 +47,12 @@ export const DeleteParticipantDialog = ({ adminId, participant, open, onClose }:
       showSuccess(t('admin:delete_participant_success_message', { fullname: getFullname(participant) }));
       onClose(deletedParticipant);
     } catch (e) {
-      const issues = getIssuesUntranslated(e);
+      const issues = getIssuesUntranslated(e as HttpError);
       if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.PARTICIPANT_ASSINGED_IN_TEAM)) {
         onClose(null);
         cancelTeamMember();
       }
-      showHttpErrorDefaultNotification(e);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   };
 

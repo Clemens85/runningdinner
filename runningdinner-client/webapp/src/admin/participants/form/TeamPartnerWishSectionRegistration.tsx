@@ -65,7 +65,11 @@ function TeamPartnerWishSectionRegistrationView({ invitingParticipantEmail, runn
     <Box mt={3}>
       <FormFieldset>{t('landing:teampartner_wish_section_title')}</FormFieldset>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={12}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 12
+          }}>
           {teamPartnerOption === TeamPartnerOption.NONE && (
             <Box mb={2}>
               <Span i18n={'landing:teampartner_wish_section_subtitle'} />
@@ -159,7 +163,7 @@ function ToggleTeamPartnerOptionsButton({
   return (
     <>
       <Grid container justifyContent={'flex-start'}>
-        <Grid item>
+        <Grid>
           {currentTeamPartnerOption === TeamPartnerOption.NONE && (
             <SecondaryButton color={'primary'} variant={'outlined'} data-testid={'add-teampartner-wish-action'} onClick={() => openDialog()}>
               {t('common:teampartner_wish_add')}...
@@ -196,7 +200,7 @@ function AddTeamPartnerOptionsDialog({ onCancel, handleTeamPartnerOptionChange }
     <Dialog onClose={onCancel} open={true} data-testid="add-teampartner-wish-dialog">
       <DialogTitleCloseable onClose={onCancel}>{t('common:teampartner_wish_add')}</DialogTitleCloseable>
       <DialogContent>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <FormControl variant="standard" component="fieldset">
             <Box mb={1}>
               <Paragraph>{t('common:teampartner_wish_options_label')}</Paragraph>
@@ -232,7 +236,11 @@ function TeamPartnerRegistrationFormInput() {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <FormTextField
             required
             defaultValue={''}
@@ -243,7 +251,11 @@ function TeamPartnerRegistrationFormInput() {
             label={t('common:teampartner_registration_firstname')}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <FormTextField
             required
             defaultValue={''}
@@ -253,7 +265,11 @@ function TeamPartnerRegistrationFormInput() {
             label={t('common:teampartner_registration_lastname')}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <FormTextField
             defaultValue={''}
             variant="filled"
@@ -263,10 +279,14 @@ function TeamPartnerRegistrationFormInput() {
             label={t('common:teampartner_registration_email')}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <FormTextField name="teamPartnerWishRegistrationData.mobileNumber" fullWidth variant="filled" label={t('common:teampartner_registration_mobilenumber')} />
         </Grid>
-        <Grid item xs={12} sx={{ py: 2 }}>
+        <Grid sx={{ py: 2 }} size={12}>
           <Span>
             <Trans i18nKey={'common:teampartner_registration_info_address'} />
           </Span>

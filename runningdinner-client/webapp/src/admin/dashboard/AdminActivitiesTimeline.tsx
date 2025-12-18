@@ -77,10 +77,10 @@ function TimelineContentPanel({ activityDate, activityType, activityHeadline, ac
     <div className="timeline-panel" data-testid="admin-activity-container">
       <div className="timeline-heading">
         <Grid container alignItems="center">
-          <Grid item>
+          <Grid>
             <TimelineHeadlineIconContainer>{renderHeadlineIcon()}</TimelineHeadlineIconContainer>
           </Grid>
-          <Grid item>
+          <Grid>
             <Typography variant="subtitle2">{activityHeadline}</Typography>
           </Grid>
         </Grid>
@@ -104,12 +104,12 @@ function TimelineContentPanel({ activityDate, activityType, activityHeadline, ac
             <br />
             {isShowMessageJobSendingFinishedInfo(relatedMessageJobOverview) && (
               <Grid container alignItems="center">
-                <Grid item>
+                <Grid>
                   <TimelineHeadlineIconContainer>
                     <Typography variant={'caption'}>{t('messages_sending_finished')}</Typography>
                   </TimelineHeadlineIconContainer>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <HelpIconTooltip sx={{ verticalAlign: 'middle' }} title={<Paragraph i18n="admin:synchronize_messagejobs_help" />} placement="right" fontSize={'small'} />
                 </Grid>
               </Grid>

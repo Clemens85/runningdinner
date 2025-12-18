@@ -1,5 +1,4 @@
 import { Container } from '@mui/material';
-import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { BrowserTitle } from '../common/mainnavigation/BrowserTitle';

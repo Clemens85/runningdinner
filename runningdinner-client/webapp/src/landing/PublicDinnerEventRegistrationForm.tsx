@@ -191,7 +191,7 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
               <FormProvider {...formMethods}>
                 <form>
                   <Grid container justifyContent={'space-between'} alignItems={'baseline'}>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <Subtitle i18n={'landing:registration'} />
                     </Grid>
                   </Grid>
@@ -234,7 +234,7 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
                   {isSubmitting && <LinearProgress />}
 
                   <Grid container justifyContent={'flex-end'}>
-                    <Grid item>
+                    <Grid>
                       <SecondaryButton onClick={onCancel}>{t('common:cancel')}</SecondaryButton>
                       <PrimaryButton
                         onClick={handleSubmit(submitRegistrationData)}
@@ -261,7 +261,6 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
           onPerformRegistration={handlePerformRegistration}
         />
       )}
-
       {isZipRestrictionDialogOpen && (
         <ConfirmationDialog
           open={isZipRestrictionDialogOpen}
@@ -290,16 +289,14 @@ function ZipRestrictionDialogView({ publicRunningDinner }: ZipRestrictionDialogV
       <Alert severity="info" variant="outlined">
         <Trans i18nKey="landing:registration_not_possible_zip_restriction" values={{ title }} />
       </Alert>
-
       <Box my={2}>
         <PublicContactInfo {...publicSettings} />
       </Box>
-
       <Box my={2}>
         <Trans i18nKey={'common:zip_restrictions_enabled'} />
         <Grid container spacing={1} sx={{ pt: 1 }}>
           {resultingZipRestrictions.zipRestrictions.map((zipRestriction: string, index: number) => (
-            <Grid key={index} item>
+            <Grid key={index}>
               <Chip label={zipRestriction} variant="outlined" color="primary" />
             </Grid>
           ))}

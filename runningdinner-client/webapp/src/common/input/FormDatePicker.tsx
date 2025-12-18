@@ -1,16 +1,19 @@
 import { FormHelperText } from '@mui/material';
-import { DatePicker, DatePickerProps } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { isStringNotEmpty } from '@runningdinner/shared';
-import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import useDatePickerLocale from '../date/DatePickerLocaleHook';
 
-export interface FormDatePickerProps extends Partial<DatePickerProps<Date>> {
+export interface FormDatePickerProps {
   name: string;
   label: string;
   helperText?: string;
   defaultValue?: Date | null;
+  disabled?: boolean;
+  readOnly?: boolean;
+  format?: string;
+  slotProps?: any;
 }
 
 export default function FormDatePicker({ name, label, helperText, defaultValue, ...other }: FormDatePickerProps) {

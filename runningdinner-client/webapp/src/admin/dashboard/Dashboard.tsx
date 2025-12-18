@@ -62,28 +62,28 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
         <>
           {smUpDevice && (
             <Grid container alignItems={'center'} spacing={1}>
-              <Grid item>
+              <Grid>
                 <SmallTitle>
                   {t('common:hidden_link_text')}&nbsp;
                   <PublicRunningDinnerLink {...runningDinner} />
                 </SmallTitle>
               </Grid>
-              <Grid item>
+              <Grid>
                 <HelpIconTooltip title={<Paragraph i18n={'admin:open_dinner_link_help'} fontSize={'small'} />} />
               </Grid>
             </Grid>
           )}
           {!smUpDevice && (
             <Grid container alignItems={'center'}>
-              <Grid item>
+              <Grid>
                 <Box pr={1}>
                   <SmallTitle i18n={'common:hidden_link_text'} />
                 </Box>
               </Grid>
-              <Grid item>
+              <Grid>
                 <HelpIconTooltip title={<Paragraph i18n={'admin:open_dinner_link_help'} fontSize={'small'} />} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <PublicRunningDinnerLink {...runningDinner} />
               </Grid>
             </Grid>
@@ -91,30 +91,50 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
         </>
       )}
       <Grid container justifyContent={'center'} alignItems={'stretch'}>
-        <Grid item xs={12} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 4
+          }}>
           <Box {...padding}>
             <Overview runningDinner={runningDinner} />
           </Box>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 4
+          }}>
           <Box {...padding}>
             {dashboardAdminActivities && (
               <MealsList meals={meals} runningDinner={runningDinner} onRunningDinnerUpdate={handleRunningDinnerUpdate} dashboardAdminActivities={dashboardAdminActivities} />
             )}
           </Box>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 4
+          }}>
           <Box {...padding} pr={0}>
             {dashboardAdminActivities && <Checklist runningDinner={runningDinner} dashboardAdminActivities={dashboardAdminActivities} />}
           </Box>
         </Grid>
       </Grid>
       <Grid container>
-        <Grid item xs={12} md={8}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 8
+          }}>
           <Box {...padding}>{dashboardAdminActivities && <AdminActivitiesTimeline dashboardAdminActivities={dashboardAdminActivities} />}</Box>
         </Grid>
         {!isClosedDinner(runningDinner) && (
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4
+            }}>
             <Box {...padding} pr={0}>
               <ParticipantRegistrations runningDinner={runningDinner} />
             </Box>

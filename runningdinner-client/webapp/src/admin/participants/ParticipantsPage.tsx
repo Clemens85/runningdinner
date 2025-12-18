@@ -168,7 +168,11 @@ function ParticipantsView({
       )}
       <Grid container spacing={2}>
         {showListView && (
-          <Grid item xs={12} md={isBigTablet ? 12 : 7}>
+          <Grid
+            size={{
+              xs: 12,
+              md: isBigTablet ? 12 : 7
+            }}>
             <ParticipantsListView
               participantsListInfo={participantsListInfo}
               participantList={participantList!}
@@ -181,7 +185,11 @@ function ParticipantsView({
             />
           </Grid>
         )}
-        <Grid item xs={12} md={isBigTablet ? 12 : 5}>
+        <Grid
+          size={{
+            xs: 12,
+            md: isBigTablet ? 12 : 5
+          }}>
           {showDetailsView ? (
             <ParticipantForm
               participant={selectedParticipant!}

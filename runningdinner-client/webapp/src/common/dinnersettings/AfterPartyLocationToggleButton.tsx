@@ -1,6 +1,5 @@
 import { Grid } from '@mui/material';
 import { SpacingProps } from '@mui/system';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SecondaryButton from '../theme/SecondaryButton';
@@ -17,7 +16,7 @@ export function AfterPartyLocationToggleButton(props: AfterPartyLocationToggleBu
 
   return (
     <Grid container justifyContent={'flex-start'} sx={spacingProps}>
-      <Grid item>
+      <Grid>
         {!afterPartyLocationEnabled && (
           <SecondaryButton color={'primary'} variant={'outlined'} onClick={() => onToggleAfterPartyLocation(true)}>
             {t('common:after_party_location_add')}

@@ -170,7 +170,7 @@ function DialogButtons({ sendInvitationButton, createNewParticipantButton, updat
               {updateTeamPartnerWishButton}
             </GridWithCenteredFullwidthButton>
           )}
-          <Grid item xs={12} sx={{ textAlign: 'center' }}>
+          <Grid sx={{ textAlign: 'center' }} size={12}>
             {cancelButton}
           </Grid>
         </Grid>

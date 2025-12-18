@@ -16,16 +16,15 @@ export function ContactFormView() {
           <Trans i18nKey={'common:feedback_text'} />
         </Span>
       </Box>
-
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <FormTextField name="senderEmail" label={t('common:email')} required variant="filled" fullWidth />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <FormTextField required variant="filled" fullWidth multiline rows={9} name="message" label={t('common:content')} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={12}>
           <small>
             <Trans
               i18nKey={'common:feedback_privacy_text'}

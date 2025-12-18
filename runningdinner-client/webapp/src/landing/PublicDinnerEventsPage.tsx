@@ -53,7 +53,13 @@ function PublicDinnerEventsListPage({ publicRunningDinners }: PublicDinnerEvents
     }
 
     return (
-      <Grid item xs={12} md={4} key={publicRunningDinner.publicSettings.publicDinnerId} sx={{ pb: 3 }}>
+      <Grid
+        key={publicRunningDinner.publicSettings.publicDinnerId}
+        sx={{ pb: 3 }}
+        size={{
+          xs: 12,
+          md: 4
+        }}>
         <CardFlexibleHeight>
           <CardContent>
             <Subtitle>{title}</Subtitle>

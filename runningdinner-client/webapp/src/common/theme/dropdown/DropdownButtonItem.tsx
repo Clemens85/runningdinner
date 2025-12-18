@@ -7,7 +7,7 @@ export default function DropdownButtonItem({ onClick, ...remainder }: MenuItemPr
     <DropdownButtonContext.Consumer>
       {({ handleCloseMenu: closeMenu }) => (
         // @ts-ignore
-        <MenuItem
+        (<MenuItem
           onClick={(evt) => {
             closeMenu();
             if (onClick) {
@@ -16,7 +16,7 @@ export default function DropdownButtonItem({ onClick, ...remainder }: MenuItemPr
           }}
           // ref={menuRef}
           {...remainder}
-        />
+        />)
       )}
     </DropdownButtonContext.Consumer>
   );

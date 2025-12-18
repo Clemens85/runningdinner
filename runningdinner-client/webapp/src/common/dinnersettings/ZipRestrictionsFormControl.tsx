@@ -50,7 +50,7 @@ export function ZipRestrictionsFormControl({ currentRegistrationType, currentZip
 
   return (
     <>
-      <Grid item xs={12} sx={{ mt: 1, mb: 2 }}>
+      <Grid sx={{ mt: 1, mb: 2 }} size={12}>
         <Stack direction={isMobileDevice ? 'column' : 'row'} gap={1} alignItems={isMobileDevice ? 'flex-start' : 'center'}>
           <Box>
             {hasZipRestrictions && (
@@ -157,12 +157,12 @@ function EditZipRestrictionsDialog({ onCancel, onSave, currentZipRestrictions }:
             <Typography variant="subtitle1">{t('common:zip_restrictions_enabled')}</Typography>
             <Grid container spacing={1} sx={{ pt: 1 }}>
               {resultingZipRestrictions.map((zipRestriction, index) => (
-                <Grid key={index} item>
+                <Grid key={index}>
                   <Chip label={zipRestriction} variant="outlined" color="primary" />
                 </Grid>
               ))}
               {isStringEmpty(zipRestrictions) && (
-                <Grid item>
+                <Grid>
                   <Typography variant="body2">{t('common:zip_restrictions_disabled')}</Typography>
                 </Grid>
               )}

@@ -72,7 +72,6 @@ export default function MealTimesStep() {
   React.useEffect(() => {
     clearErrors();
     reset(afterPartyLocation);
-     
   }, [reset, clearErrors, afterPartyLocation]);
 
   React.useEffect(() => {
@@ -97,7 +96,7 @@ export default function MealTimesStep() {
       dispatch(updateMeals(mealsFormState));
       return true;
     } catch (e) {
-      showHttpErrorDefaultNotification(e);
+      showHttpErrorDefaultNotification(e as HttpError);
       return false;
     }
   }
@@ -129,7 +128,7 @@ export default function MealTimesStep() {
   }
 
   const mealTimeFields = mealsFormState.map((meal: Meal) => (
-    <Grid item key={meal.label} sx={{ pr: 6 }}>
+    <Grid key={meal.label} sx={{ pr: 6 }}>
       <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
     </Grid>
   ));

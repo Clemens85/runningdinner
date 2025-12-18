@@ -24,7 +24,7 @@ export const EmptyDetails = ({ labelI18n }: EmptyDetailsProps) => {
       {!showDetailsView && !isSmallDevice && (
         <Paper style={{ height: paperHeight, display: 'flex' }} elevation={3} id="empty-details">
           <Grid container justifyContent={'center'} alignItems={'center'}>
-            <Grid item>
+            <Grid>
               <Typography variant="subtitle2" sx={{ px: 2 }}>
                 {t(labelI18n)}
               </Typography>

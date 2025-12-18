@@ -1,4 +1,4 @@
-import { Box, Dialog, DialogContent, Grid, Hidden, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Dialog, DialogContent, Grid, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import {
   BaseRunningDinnerProps,
   CallbackHandler,
@@ -28,7 +28,7 @@ import { getMessageJobDetailsSelector, getMessageTasksSelector } from '@runningd
 import { cloneDeep } from 'lodash-es';
 import { get, toLower } from 'lodash-es';
 import { useEffect, useState } from 'react';
-import { FormProvider,useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
@@ -113,12 +113,12 @@ function MessageJobDetailsListView({ messageTasks, messageJob, triggerReload }: 
       </PageTitle>
       <Box mt={-1} mb={2}>
         <Grid container alignItems={'baseline'}>
-          <Grid item>
+          <Grid>
             <Subtitle gutterBottom={false}>
               <LocalDate date={messageJob.createdAt} /> {t('common:at_time')} <Time date={messageJob.createdAt} includeSeconds={true} />
             </Subtitle>
           </Grid>
-          <Grid item>
+          <Grid>
             <Box ml={1}>
               <HelpIconTooltip title={<Paragraph i18n={'admin:synchronize_messagejobs_help'} />} fontSize={'small'} />
             </Box>
@@ -127,11 +127,21 @@ function MessageJobDetailsListView({ messageTasks, messageJob, triggerReload }: 
       </Box>
       <Grid container spacing={2}>
         {showListView && (
-          <Grid item xs={12} md={8}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 8,
+            }}
+          >
             <MessageTasksTable messageTasks={messageTasks} onSelectMessageTask={handleSelectMessageTask} selectedMessageTask={selectedMessageTask} />
           </Grid>
         )}
-        <Grid item xs={12} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 4,
+          }}
+        >
           {showDetailsView && selectedMessageTask ? (
             <>
               {showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}
@@ -159,31 +169,23 @@ function MessageTasksTable({ messageTasks, onSelectMessageTask, selectedMessageT
   function messageTaskTableRow(messageTask: MessageTask) {
     return (
       <TableRowWithCursor key={messageTask.id} hover onClick={() => onSelectMessageTask(messageTask)} selected={isSameEntity(messageTask, selectedMessageTask)}>
-        <Hidden smDown>
-          <TableCell>
-            <MessageJobStatus messageJobOrTask={messageTask} />
-          </TableCell>
-          <TableCell>{messageTask.recipientEmail}</TableCell>
-        </Hidden>
-        <Hidden smUp>
-          <TableCell>
-            <div style={{ display: 'flex', alignContent: 'center' }}>
-              <div style={{ marginRight: '4px' }}>
-                <MessageJobStatus messageJobOrTask={messageTask} />
-              </div>
-              <div>{getTruncatedText(messageTask.recipientEmail, 18)}</div>
+        <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+          <MessageJobStatus messageJobOrTask={messageTask} />
+        </TableCell>
+        <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{messageTask.recipientEmail}</TableCell>
+        <TableCell sx={{ display: { xs: 'table-cell', sm: 'table-cell', md: 'none' } }}>
+          <div style={{ display: 'flex', alignContent: 'center' }}>
+            <div style={{ marginRight: '4px' }}>
+              <MessageJobStatus messageJobOrTask={messageTask} />
             </div>
-          </TableCell>
-        </Hidden>
+            <div>{getTruncatedText(messageTask.recipientEmail, 18)}</div>
+          </div>
+        </TableCell>
         <TableCell>{formatLocalDateWithSeconds(messageTask.sendingStartTime)}</TableCell>
-        <Hidden smDown>
-          <TableCell>{formatLocalDateWithSeconds(messageTask.sendingEndTime)}</TableCell>
-        </Hidden>
-        <Hidden smDown>
-          <TableCell>
-            <MessageContentView messageTask={messageTask} truncateMessageContentToNumChars={48} />
-          </TableCell>
-        </Hidden>
+        <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{formatLocalDateWithSeconds(messageTask.sendingEndTime)}</TableCell>
+        <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+          <MessageContentView messageTask={messageTask} truncateMessageContentToNumChars={48} />
+        </TableCell>
       </TableRowWithCursor>
     );
   }
@@ -192,20 +194,12 @@ function MessageTasksTable({ messageTasks, onSelectMessageTask, selectedMessageT
       <Table size={'small'}>
         <TableHead>
           <TableRow>
-            <Hidden smDown>
-              <TableCell>Status</TableCell>
-              <TableCell>{t('common:recipient')}</TableCell>
-            </Hidden>
-            <Hidden smUp>
-              <TableCell>&nbsp;</TableCell>
-            </Hidden>
+            <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>Status</TableCell>
+            <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{t('common:recipient')}</TableCell>
+            <TableCell sx={{ display: { xs: 'table-cell', sm: 'table-cell', md: 'none' } }}>&nbsp;</TableCell>
             <TableCell>{t('admin:sending_started_at_text')}</TableCell>
-            <Hidden smDown>
-              <TableCell>{t('admin:sending_finished_at_text')}</TableCell>
-            </Hidden>
-            <Hidden smDown>
-              <TableCell>{t('common:content')}</TableCell>
-            </Hidden>
+            <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{t('admin:sending_finished_at_text')}</TableCell>
+            <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{t('common:content')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>{messageTasks.map((messageTask) => messageTaskTableRow(messageTask))}</TableBody>
@@ -237,14 +231,14 @@ function MessageTaskDetailsView({ messageTask, onReSendMessageTask }: MessageTas
     <Paper elevation={3}>
       <Box p={2}>
         <Grid container>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Subtitle>{messageTask.recipientEmail}</Subtitle>
           </Grid>
         </Grid>
 
         <Box mt={2}>
           <Grid container>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <FormFieldset>{t('admin:transfer')}</FormFieldset>
               <MessageTaskDetailsRow label="Status" value={statusResultMessage} />
               {isStringNotEmpty(failureTypeMessage) && <MessageTaskDetailsRow label={t('common:failure')} value={failureTypeMessage} />}
@@ -256,7 +250,7 @@ function MessageTaskDetailsView({ messageTask, onReSendMessageTask }: MessageTas
         </Box>
         <Box mt={3}>
           <Grid container>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <FormFieldset>{t('common:content')}</FormFieldset>
               <MessageContentView messageTask={messageTask} />
             </Grid>
@@ -264,7 +258,7 @@ function MessageTaskDetailsView({ messageTask, onReSendMessageTask }: MessageTas
         </Box>
         <Box mt={2}>
           <Grid container justifyContent={'flex-end'}>
-            <Grid item>
+            <Grid>
               <SecondaryButtonAsync onClick={onReSendMessageTask} color="primary" variant={'outlined'} size={'small'}>
                 {t('admin:send_again')}...
               </SecondaryButtonAsync>
@@ -279,10 +273,10 @@ function MessageTaskDetailsView({ messageTask, onReSendMessageTask }: MessageTas
 function MessageTaskDetailsRow({ label, value }: LabelValue) {
   return (
     <Grid container justifyContent={'space-between'}>
-      <Grid item>
+      <Grid>
         <span>{label}</span>
       </Grid>
-      <Grid item>
+      <Grid>
         <strong>{value}</strong>
       </Grid>
     </Grid>
@@ -343,13 +337,13 @@ function ReSendMessageTaskDialog({ messageTask, onClose }: ReSendMessageTaskDial
             <Span i18n={'admin:send_again_help_text'} />
             <Box mt={3}>
               <Grid container>
-                <Grid item xs={12}>
-                  <FormTextField name="recipientEmail" label={t('admin:recipient_email')} variant={'outlined'} fullWidth mb={2} />
+                <Grid size={12}>
+                  <FormTextField name="recipientEmail" label={t('admin:recipient_email')} variant={'outlined'} fullWidth sx={{ mb: 2 }} />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <MessageSubject onMessageSubjectChange={NoopFunction} />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <MessageContent name="content" label={t('common:content')} showTemplatesHelpIcon={true} />
                 </Grid>
               </Grid>

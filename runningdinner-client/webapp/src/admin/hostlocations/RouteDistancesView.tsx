@@ -74,15 +74,13 @@ export function RouteDistancesView({ routeDistancesList }: RouteDistancesViewPro
   return (
     <Box>
       <RouteDistancesSummary routeDistancesList={routeDistancesList} />
-
       <Divider sx={{ my: 2 }}>Entfernungen pro Team</Divider>
-
       {routeDistances.map((routeDistance, index) => (
         <Box pr={1} sx={{ borderBottom: '1px dotted' }} key={index}>
           <Grid container justifyContent="space-between" alignItems={'center'}>
             {routeDistance.teams.map((team, index) => (
               <React.Fragment key={index}>
-                <Grid item sx={{ my: 2 }}>
+                <Grid sx={{ my: 2 }}>
                   {team.status === TeamStatus.CANCELLED && <CancelledTeamMember />}
                   {team.status !== TeamStatus.CANCELLED && team.currentTeam && (
                     <Tooltip

@@ -1,5 +1,4 @@
 import { getTruncatedText, mapNewLineToHtmlLineBreaks, MessageTask } from '@runningdinner/shared';
-import React from 'react';
 
 import { TextViewHtml } from '../../../common/TextViewHtml';
 
