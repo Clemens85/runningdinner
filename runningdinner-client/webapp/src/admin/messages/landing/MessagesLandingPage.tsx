@@ -90,23 +90,28 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
         </Grid>
       </Grid>
       {showBackToListViewButton && <BackToListButton onBackToList={handleBackToListView} />}
-      <Grid container spacing={2} sx={{ mb: 2 }}>
-        {showListView && (
-          <MessageCardListView currentMessageType={currentMessageType} hasTeams={hasTeams} onCurrentMessageTypeChanged={handleCurrentMessageTypeChanged} adminId={adminId} />
-        )}
 
-        {showDetailsView && (
-          <>
-            <Grid
-              size={{
-                xs: 12,
-                md: 6,
-              }}
-            >
-              <MessagesCardContent currentMessageType={currentMessageType} adminId={adminId} hasTeams={hasTeams} />
-            </Grid>
-          </>
-        )}
+      {showListView && (
+        <Grid container sx={{ mb: 2 }}>
+          <Grid size={12}>
+            <Paragraph>
+              {t('admin:messages_landing_start_1')}
+              <br />
+              {t('admin:messages_landing_start_2')}
+            </Paragraph>
+          </Grid>
+        </Grid>
+      )}
+
+      <Grid container size={12} spacing={2}>
+        <Grid size={{ xs: 12, md: 6 }} data-testid="messages-card-list-wrapper">
+          {showListView && (
+            <MessageCardListView currentMessageType={currentMessageType} hasTeams={hasTeams} onCurrentMessageTypeChanged={handleCurrentMessageTypeChanged} adminId={adminId} />
+          )}
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }} data-testid="messages-content-wrapper">
+          {showDetailsView && <MessagesCardContent currentMessageType={currentMessageType} adminId={adminId} hasTeams={hasTeams} />}
+        </Grid>
       </Grid>
       {showDonatePopup && (
         <DonateDialog
@@ -119,56 +124,32 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
 }
 
 function MessageCardListView({ currentMessageType, hasTeams, onCurrentMessageTypeChanged, adminId }: MessageCardListViewProps) {
-  const { t } = useTranslation('admin');
-
   return (
     <>
-      <Grid container>
-        <Grid
-          sx={{ pl: 2 }}
-          size={{
-            xs: 12,
-            md: 6,
-          }}
-        >
-          <Paragraph>
-            {t('admin:messages_landing_start_1')}
-            <br />
-            {t('admin:messages_landing_start_2')}
-          </Paragraph>
-        </Grid>
-      </Grid>
-      <Grid
-        size={{
-          xs: 12,
-          md: 6,
-        }}
-      >
-        <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={2} useFlexGap sx={{ width: '100%', display: 'flex' }}>
-          <MessagesCard
-            onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_PARTICIPANTS)}
-            currentMessageType={MessageType.MESSAGE_TYPE_PARTICIPANTS}
-            adminId={adminId}
-            selected={currentMessageType === MessageType.MESSAGE_TYPE_PARTICIPANTS}
-          />
+      <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={2} useFlexGap sx={{ width: '100%', display: 'flex' }}>
+        <MessagesCard
+          onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_PARTICIPANTS)}
+          currentMessageType={MessageType.MESSAGE_TYPE_PARTICIPANTS}
+          adminId={adminId}
+          selected={currentMessageType === MessageType.MESSAGE_TYPE_PARTICIPANTS}
+        />
 
-          <MessagesCard
-            onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_TEAMS)}
-            currentMessageType={MessageType.MESSAGE_TYPE_TEAMS}
-            adminId={adminId}
-            hasTeams={hasTeams}
-            selected={currentMessageType === MessageType.MESSAGE_TYPE_TEAMS}
-          />
+        <MessagesCard
+          onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_TEAMS)}
+          currentMessageType={MessageType.MESSAGE_TYPE_TEAMS}
+          adminId={adminId}
+          hasTeams={hasTeams}
+          selected={currentMessageType === MessageType.MESSAGE_TYPE_TEAMS}
+        />
 
-          <MessagesCard
-            onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_DINNERROUTE)}
-            currentMessageType={MessageType.MESSAGE_TYPE_DINNERROUTE}
-            adminId={adminId}
-            hasTeams={hasTeams}
-            selected={currentMessageType === MessageType.MESSAGE_TYPE_DINNERROUTE}
-          />
-        </Stack>
-      </Grid>
+        <MessagesCard
+          onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_DINNERROUTE)}
+          currentMessageType={MessageType.MESSAGE_TYPE_DINNERROUTE}
+          adminId={adminId}
+          hasTeams={hasTeams}
+          selected={currentMessageType === MessageType.MESSAGE_TYPE_DINNERROUTE}
+        />
+      </Stack>
     </>
   );
 }
