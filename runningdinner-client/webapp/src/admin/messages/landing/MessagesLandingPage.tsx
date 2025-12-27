@@ -182,12 +182,12 @@ function MessagesCardContent({ currentMessageType, hasTeams, adminId }: BaseMess
 }
 
 function MessagesCard({ currentMessageType, selected, hasTeams, adminId, onClick }: MessagesCardProps) {
+  const isMobileDevice = useIsMobileDevice();
+
   const messageCardInfo = useMessageCardInfo(currentMessageType, adminId, hasTeams);
   if (!messageCardInfo) {
     return null;
   }
-
-  const isMobileDevice = useIsMobileDevice();
 
   const { icon, title, description } = messageCardInfo;
 

@@ -11,7 +11,6 @@ import {
 } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { SuperSEO } from 'react-super-seo';
 
 import { FetchProgressBar } from '../../common/FetchProgressBar';
 import { HelpIconTooltip } from '../../common/theme/HelpIconTooltip';
@@ -141,7 +140,7 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
           </Grid>
         )}
       </Grid>
-      <SuperSEO title={'Dashboard - Running Dinner Administration'} />
+      <title>Dashboard - Running Dinner Administration</title>
     </div>
   );
 }

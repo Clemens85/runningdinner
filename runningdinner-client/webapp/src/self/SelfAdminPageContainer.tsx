@@ -4,7 +4,6 @@ import { fetchSelfAdminSessionData, getLanguageOfDinnerSelfAdmin, isStringNotEmp
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { SuperSEO } from 'react-super-seo';
 
 import { LanguageSwitch } from '../common/i18n/LanguageSwitch';
 import { commonStyles } from '../common/theme/CommonStyles';
@@ -43,8 +42,9 @@ export function SelfAdminPageContainer({ children, htmlPageTitleI18n }: SelfAdmi
           size={{
             xs: 12,
             md: 8,
-            lg: 8
-          }}>
+            lg: 8,
+          }}
+        >
           <Box mt={2} mb={-3}>
             <LanguageSwitch />
           </Box>
@@ -55,12 +55,13 @@ export function SelfAdminPageContainer({ children, htmlPageTitleI18n }: SelfAdmi
           size={{
             xs: 12,
             md: 8,
-            lg: 8
-          }}>
+            lg: 8,
+          }}
+        >
           {children}
         </Grid>
       </Grid>
-      <SuperSEO title={t(htmlPageTitleI18n)} />
+      <title>{t(htmlPageTitleI18n)}</title>
     </>
   );
 }

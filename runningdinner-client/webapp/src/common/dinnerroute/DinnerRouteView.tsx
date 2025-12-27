@@ -2,7 +2,6 @@ import { Box, Grid, Paper, Typography } from '@mui/material';
 import { DinnerRoute, DinnerRouteMapCalculator, DinnerRouteTeam, isAfterPartyLocationDefined, isStringNotEmpty, Meal, MealType, TeamStatus } from '@runningdinner/shared';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useTranslation } from 'react-i18next';
-import { SuperSEO } from 'react-super-seo';
 
 import { GOOGLE_MAPS_KEY } from '../maps';
 import { TextViewHtml } from '../TextViewHtml';
@@ -58,7 +57,7 @@ export default function DinnerRouteView({ dinnerRoute, meals }: DinnerRouteProps
           </APIProvider>
         </Grid>
       </Grid>
-      <SuperSEO title={'Run Your Dinner - Dinner Route'} />
+      <title>Run Your Dinner - Dinner Route</title>
     </>
   );
 }
