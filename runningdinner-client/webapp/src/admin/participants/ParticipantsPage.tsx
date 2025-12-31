@@ -28,6 +28,7 @@ import ParticipantsListInfo from './list/ParticipantsListInfo';
 import ParticipantsListView from './list/ParticipantsListView';
 import { CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION } from './teampartnerwish/TeamPartnerWishAction';
 import { TeamPartnerWishDialog } from './teampartnerwish/TeamPartnerWishDialog';
+import { useAdminNavigation } from '../AdminNavigationHook';
 
 export function ParticipantsPage({ runningDinner }: BaseRunningDinnerProps) {
   const params = useParams();
@@ -92,6 +93,7 @@ function ParticipantsView({
   refetch,
 }: ParticipantsViewProps) {
   const { adminId } = runningDinner;
+  const { navigateToParticipants } = useAdminNavigation();
 
   const [participantSearchResult, setParticipantSearchResult] = useState<ParticipantSearchResult>({ hasSearchText: false, filteredParticipants: [] });
 
@@ -114,6 +116,7 @@ function ParticipantsView({
 
   function onNewParticipant() {
     onUpdateSelectedParticipant(undefined);
+    navigateToParticipants(adminId);
     setShowDetailsView(true);
     window.scrollTo(0, 0);
   }
@@ -171,8 +174,9 @@ function ParticipantsView({
           <Grid
             size={{
               xs: 12,
-              md: isBigTablet ? 12 : 7
-            }}>
+              md: isBigTablet ? 12 : 7,
+            }}
+          >
             <ParticipantsListView
               participantsListInfo={participantsListInfo}
               participantList={participantList!}
@@ -188,8 +192,9 @@ function ParticipantsView({
         <Grid
           size={{
             xs: 12,
-            md: isBigTablet ? 12 : 5
-          }}>
+            md: isBigTablet ? 12 : 5,
+          }}
+        >
           {showDetailsView ? (
             <ParticipantForm
               participant={selectedParticipant!}
