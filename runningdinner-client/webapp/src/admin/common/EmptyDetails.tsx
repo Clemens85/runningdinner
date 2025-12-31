@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -124,7 +124,7 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
   }
 
   return (
-    <Paper elevation={3}>
+    <Paper elevation={3} sx={{ mb: 2 }}>
       <Box p={2}>
         <Grid container>
           <Grid size={11}>
