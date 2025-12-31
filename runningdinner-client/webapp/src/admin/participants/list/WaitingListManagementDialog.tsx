@@ -99,7 +99,7 @@ export function WaitingListManagementDialog(props: BaseRunningDinnerProps & Clos
 }
 
 function WaitingListManagementDialogContentView(props: CloseCallback & BaseRunningDinnerProps) {
-  const findWaitingListInfoQuery = useFindWaitingListInfo(props.runningDinner.adminId);
+  const findWaitingListInfoQuery = useFindWaitingListInfo(props.runningDinner.adminId, 'always');
 
   const [currentWaitingListAction, setCurrentWaitingListAction] = React.useState<WaitingListActionUI>();
   const [teamNotificationModel, setTeamNotificationModel] = React.useState<TeamNotificationModel>();
