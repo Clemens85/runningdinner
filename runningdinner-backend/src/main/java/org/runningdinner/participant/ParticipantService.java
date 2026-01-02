@@ -1,20 +1,6 @@
 
 package org.runningdinner.participant;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
@@ -54,6 +40,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ParticipantService {
@@ -200,7 +200,7 @@ public class ParticipantService {
 
     syncChangesToChildParticipant(adminId, result, syncSettings);
 
-    putGeocodeEventToQueue(result, runningDinner);
+    putGeocodeEventToQueue(result);
 
     return result;
   }
@@ -290,7 +290,7 @@ public class ParticipantService {
 
     // Only perform geocoding if not already provided (-> import scenarios)
     if (!GeocodingResult.isValid(incomingParticipant.getGeocodingResult())) {
-      putGeocodeEventToQueue(createdParticipant, runningDinner);
+      putGeocodeEventToQueue(createdParticipant);
     }
 
     return createdParticipant;
@@ -556,7 +556,7 @@ public class ParticipantService {
     }
   }
 
-  private void putGeocodeEventToQueue(final Participant participant, final RunningDinner runningDinner) {
+  private void putGeocodeEventToQueue(final Participant participant) {
     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCompletion(int status) {
