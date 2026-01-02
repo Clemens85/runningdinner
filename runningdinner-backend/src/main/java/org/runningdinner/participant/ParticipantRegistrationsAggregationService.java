@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,8 +34,9 @@ public class ParticipantRegistrationsAggregationService {
 
   public ParticipantRegistrationInfoList findParticipantRegistrations(@ValidateAdminId String dinnerAdminId, LocalDateTime now, int page) {
 
-    Sort orderBy = Sort.by(new Sort.Order(Sort.Direction.DESC, "activationDate", Sort.NullHandling.NULLS_FIRST),
-      new Sort.Order(Sort.Direction.DESC, "createdAt")); // The second order is only relevant in edge cases when we have several not activated participants
+//    Sort orderBy = Sort.by(new Sort.Order(Sort.Direction.DESC, "activationDate", Sort.NullHandling.NULLS_FIRST),
+//      new Sort.Order(Sort.Direction.DESC, "createdAt")); // The second order is only relevant in edge cases when we have several not activated participants
+
     // Normally I would use the Sort defined above, but Spring Boot 3.4.3 introduced a bug preventing this one to be used....
     PageRequest pageRequest = PageRequest.of(page, PARTICIPANT_PAGE_SIZE);
     Slice<ParticipantRegistrationProjection> resultSlice = participantRepository.findRegistrationInfoSliceByAdminId(dinnerAdminId, pageRequest);
@@ -47,7 +47,7 @@ public class ParticipantRegistrationsAggregationService {
 
     List<ParticipantRegistrationInfo> registrations = resultSlice.getContent()
       .stream()
-      .map(projection -> new ParticipantRegistrationInfo(projection))
+      .map(ParticipantRegistrationInfo::new)
       .collect(Collectors.toList());
 
     // Aggregate team partner wish root and children:
