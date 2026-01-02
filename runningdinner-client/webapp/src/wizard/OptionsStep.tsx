@@ -3,6 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Grid, IconButton, MenuItem } from '@mui/material';
 import {
   BasicDetailsNavigationStep,
+  HttpError,
   mapExistingMealTimesToNewMeals,
   MealTimesNavigationStep,
   RunningDinnerOptions,
@@ -55,13 +56,11 @@ export default function OptionsStep() {
   React.useEffect(() => {
     reset(options);
     clearErrors();
-     
   }, [reset, clearErrors, options]);
 
   React.useEffect(() => {
     dispatch(setNextNavigationStep(MealTimesNavigationStep));
     dispatch(setPreviousNavigationStep(BasicDetailsNavigationStep));
-     
   }, [dispatch]);
 
   const submitOptionsAsync = async (values: RunningDinnerOptions) => {
@@ -77,8 +76,8 @@ export default function OptionsStep() {
       dispatch(updateRunningDinnerOptions(optionsToSubmit));
       return true;
     } catch (e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
       return false;
     }
   };
@@ -89,10 +88,20 @@ export default function OptionsStep() {
       <FormProvider {...formMethods}>
         <form>
           <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
               <TeamSettings />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
               <MealSettings runningDinnerDate={date} />
             </Grid>
           </Grid>
@@ -115,13 +124,13 @@ function TeamSettings() {
 
   return (
     <Grid container>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <FormTextField name="teamSize" disabled={true} label={t('wizard:team_size')} variant="outlined" />
       </Grid>
-      <Grid item xs={12} sx={{ mt: 3 }}>
+      <Grid sx={{ mt: 3 }} size={12}>
         <FormCheckbox name="forceEqualDistributedCapacityTeams" label={t('team_distribution_force_equl_hosting')} helperText={t('team_distribution_help')} />
       </Grid>
-      <Grid item xs={12} sx={{ mt: 3 }}>
+      <Grid sx={{ mt: 3 }} size={12}>
         <FormSelect name="genderAspects" label={t('gender_aspects')} variant={'outlined'} fullWidth>
           {genderAspects.map((genderAspect) => (
             <MenuItem key={genderAspect.value} value={genderAspect.value}>
@@ -130,7 +139,7 @@ function TeamSettings() {
           ))}
         </FormSelect>
       </Grid>
-      <Grid item xs={12} sx={{ mt: 3 }}>
+      <Grid sx={{ mt: 3 }} size={12}>
         <FormCheckbox name="teamPartnerWishDisabled" label={<Trans i18nKey="team_partner_wish_disabled" ns="common" />} helperText={t('common:team_partner_wish_disabled_help')} />
       </Grid>
     </Grid>
@@ -159,18 +168,18 @@ function MealSettings({ runningDinnerDate }: MealSettingsProps) {
 
   return (
     <Grid container>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <Subtitle i18n={'common:meals'} />
         <Span i18n={'wizard:meals_help'} />
       </Grid>
-      <Grid item xs={12}>
+      <Grid size={12}>
         {fields.map((field, index) => (
           <Grid container sx={{ mt: 3 }} key={field.key}>
-            <Grid item xs={11}>
-              <FormTextField name={`meals[${index}].label`} variant="outlined" fullWidth label="" defaultValue={field.label} />
+            <Grid size={11}>
+              <FormTextField name={`meals[${index}].label`} variant="outlined" fullWidth label="" defaultValue={''} />
             </Grid>
             {index + 1 >= fields.length && (
-              <Grid item xs={1}>
+              <Grid size={1}>
                 <IconButton aria-label="delete" color="secondary" onClick={() => handleRemoveMeal(index)} size="large">
                   <DeleteIcon fontSize={'large'} />
                 </IconButton>
@@ -179,7 +188,7 @@ function MealSettings({ runningDinnerDate }: MealSettingsProps) {
           </Grid>
         ))}
       </Grid>
-      <Grid container item xs={12} sx={{ mt: 2 }}>
+      <Grid container sx={{ mt: 2 }} size={12}>
         <Button color={'primary'} startIcon={<AddIcon />} onClick={handleAddMeal} style={{ paddingLeft: '0' }}>
           {t('add')}
         </Button>

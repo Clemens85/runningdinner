@@ -291,16 +291,16 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
     return (
       <Box mb={1}>
         <Grid container>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <SmallTitle i18n="admin:team_cancel_remove_text" parameters={{ teamName: teamName }} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <SmallTitle i18n="admin:team_cancel_replaced_by_text" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             {renderParticipantList(removedParticipants)}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             {renderParticipantList(replacementParticipants)}
           </Grid>
         </Grid>
@@ -331,16 +331,16 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
 
     return (
       <Grid container>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <SmallTitle i18n="admin:affected_hosting_teams" />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <SmallTitle i18n="admin:affected_guest_teams" />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           {renderAffectedTeamsList(affectedHostTeams)}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           {renderAffectedTeamsList(affectedGuestTeams)}
         </Grid>
         {showNotificationHint && (

@@ -155,22 +155,10 @@ function DialogButtons({ sendInvitationButton, createNewParticipantButton, updat
     return (
       <Box p={1}>
         <Grid container direction="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
-          {createNewParticipantButton && (
-            <GridWithCenteredFullwidthButton item xs={12}>
-              {createNewParticipantButton}
-            </GridWithCenteredFullwidthButton>
-          )}
-          {sendInvitationButton && (
-            <GridWithCenteredFullwidthButton item xs={12}>
-              {sendInvitationButton}
-            </GridWithCenteredFullwidthButton>
-          )}
-          {updateTeamPartnerWishButton && (
-            <GridWithCenteredFullwidthButton item xs={12}>
-              {updateTeamPartnerWishButton}
-            </GridWithCenteredFullwidthButton>
-          )}
-          <Grid item xs={12} sx={{ textAlign: 'center' }}>
+          {createNewParticipantButton && <GridWithCenteredFullwidthButton size={12}>{createNewParticipantButton}</GridWithCenteredFullwidthButton>}
+          {sendInvitationButton && <GridWithCenteredFullwidthButton size={12}>{sendInvitationButton}</GridWithCenteredFullwidthButton>}
+          {updateTeamPartnerWishButton && <GridWithCenteredFullwidthButton size={12}>{updateTeamPartnerWishButton}</GridWithCenteredFullwidthButton>}
+          <Grid sx={{ textAlign: 'center' }} size={12}>
             {cancelButton}
           </Grid>
         </Grid>

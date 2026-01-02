@@ -1,14 +1,17 @@
 import { FormHelperText } from '@mui/material';
-import { TimePicker, TimePickerProps } from '@mui/x-date-pickers/TimePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { isStringNotEmpty } from '@runningdinner/shared';
-import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-export interface FormTimePickerProps extends Partial<TimePickerProps<any>> {
+export interface FormTimePickerProps {
   name: string;
   label: string;
   helperText?: string;
-  defaultValue?: unknown;
+  defaultValue?: Date | null;
+  disabled?: boolean;
+  readOnly?: boolean;
+  format?: string;
+  slotProps?: any;
 }
 
 export default function FormTimePicker({ name, label, helperText, defaultValue, ...other }: FormTimePickerProps) {

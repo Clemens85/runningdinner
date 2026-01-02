@@ -80,13 +80,13 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
   const renderScheduleRowHeading = () => {
     return (
       <Grid container spacing={spacing} justifyContent={'center'} alignItems={'center'}>
-        <GridContentRight item xs={xs} md={md}>
+        <GridContentRight size={{ xs, md }}>
           <Title i18n="common:host" />
         </GridContentRight>
-        <GridContentCenter item xs={xs} md={md}>
+        <GridContentCenter size={{ xs, md }}>
           <Title i18n="common:meal" />
         </GridContentCenter>
-        <GridContentCenter item xs={xs} md={md}>
+        <GridContentCenter size={{ xs, md }}>
           <Title i18n="common:guests" />
         </GridContentCenter>
       </Grid>
@@ -100,7 +100,7 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
     }
     return (
       <Grid container spacing={spacing} justifyContent={'center'} alignItems={'center'} sx={{ mb: 1 }}>
-        <Grid item xs={12} sx={{ textAlign: 'center', mt: 1 }}>
+        <Grid sx={{ textAlign: 'center', mt: 1 }} size={12}>
           <Button color={'primary'} variant={'outlined'} size="medium" href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} target="_blank">
             {t('teams_show_dinnerroute')}
           </Button>
@@ -179,10 +179,13 @@ function ScheduledMeal({ hostTeam, meal, guestTeams, currentTeam, xs, md, adminI
 
   return (
     <>
-      <GridContentRight item xs={xs} md={md}>
-        {highlightHostTeam ? <CurrentTeamButton team={hostTeam} /> : <MeetedTeamButton team={hostTeam} adminId={adminId} />}
-      </GridContentRight>
-      <Grid item xs={xs} md={md}>
+      <GridContentRight size={{ xs, md }}>{highlightHostTeam ? <CurrentTeamButton team={hostTeam} /> : <MeetedTeamButton team={hostTeam} adminId={adminId} />}</GridContentRight>
+      <Grid
+        size={{
+          xs: xs,
+          md: md,
+        }}
+      >
         <SchedulePaper elevation={3} sx={getSchedulePaperStyles(highlightMeal, hostTeamIsCancelled)}>
           <SmallTitle>{meal.label}</SmallTitle>
           <Paragraph>
@@ -190,9 +193,7 @@ function ScheduledMeal({ hostTeam, meal, guestTeams, currentTeam, xs, md, adminI
           </Paragraph>
         </SchedulePaper>
       </Grid>
-      <GridContentCenter item xs={xs} md={md}>
-        {renderGuestTems()}
-      </GridContentCenter>
+      <GridContentCenter size={{ xs, md }}>{renderGuestTems()}</GridContentCenter>
     </>
   );
 }
@@ -283,11 +284,21 @@ function CurrentTeamButton({ team }) {
 function ScheduledMealTimeline({ xs, md }) {
   return (
     <>
-      <Grid item xs={xs} md={md} />
-      <GridContentCenter item xs={xs} md={md}>
+      <Grid
+        size={{
+          xs: xs,
+          md: md,
+        }}
+      />
+      <GridContentCenter size={{ xs, md }}>
         <ScheduleRowTimeLineBox />
       </GridContentCenter>
-      <Grid item xs={xs} md={md} />
+      <Grid
+        size={{
+          xs: xs,
+          md: md,
+        }}
+      />
     </>
   );
 }

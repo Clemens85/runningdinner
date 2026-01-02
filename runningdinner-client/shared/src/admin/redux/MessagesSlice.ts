@@ -14,7 +14,7 @@ import {
   getMessagePreviewAsync,
   sendMessagesAsync,
 } from '../../';
-import { findEntityById,isArrayNotEmpty, isStringEmpty } from '../../';
+import { findEntityById, isArrayNotEmpty, isStringEmpty } from '../../';
 import { handleFetchLoading, handleFetchRejected, handleFetchSucceeded } from '../../redux';
 import { BaseAdminIdProps, BaseMessage, HttpError, MessageType, ParticipantMessage, PreviewMessage, Recipient, TeamMessage } from '../../types';
 import { AdminStateType, adminStore, AdminThunk } from './AdminStore';
@@ -267,10 +267,10 @@ function enhanceMessageObjectWithCustomSelectedRecipients<T extends BaseMessage>
   const customSelectedRecipientIds = isArrayNotEmpty(customSelectedRecipients) ? customSelectedRecipients.map((recipient) => recipient.id) : [];
   const result = cloneDeep(messageObj);
   if (messageTye === MessageType.MESSAGE_TYPE_PARTICIPANTS) {
-    // @ts-ignore
+    // @ts-expect-error will not be undefined
     (result as ParticipantMessage).customSelectedParticipantIds = customSelectedRecipientIds;
   } else {
-    // @ts-ignore
+    // @ts-expect-error will not be undefined
     (result as BaseTeamMessage).customSelectedTeamIds = customSelectedRecipientIds;
   }
   return result;

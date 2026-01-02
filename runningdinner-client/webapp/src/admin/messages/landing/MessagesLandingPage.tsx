@@ -85,24 +85,33 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
     <>
       <BrowserTitle titleI18nKey={'messages_landing_messaging'} namespaces={'admin'} />
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <PageTitle>{t('admin:messages_landing_messaging')}</PageTitle>
         </Grid>
       </Grid>
-
       {showBackToListViewButton && <BackToListButton onBackToList={handleBackToListView} />}
-      <Grid container spacing={2} sx={{ mb: 2 }}>
-        {showListView && (
-          <MessageCardListView currentMessageType={currentMessageType} hasTeams={hasTeams} onCurrentMessageTypeChanged={handleCurrentMessageTypeChanged} adminId={adminId} />
-        )}
 
-        {showDetailsView && (
-          <>
-            <Grid item xs={12} md={6}>
-              <MessagesCardContent currentMessageType={currentMessageType} adminId={adminId} hasTeams={hasTeams} />
-            </Grid>
-          </>
-        )}
+      {showListView && (
+        <Grid container sx={{ mb: 2 }}>
+          <Grid size={12}>
+            <Paragraph>
+              {t('admin:messages_landing_start_1')}
+              <br />
+              {t('admin:messages_landing_start_2')}
+            </Paragraph>
+          </Grid>
+        </Grid>
+      )}
+
+      <Grid container size={12} spacing={2}>
+        <Grid size={{ xs: 12, md: 6 }} data-testid="messages-card-list-wrapper">
+          {showListView && (
+            <MessageCardListView currentMessageType={currentMessageType} hasTeams={hasTeams} onCurrentMessageTypeChanged={handleCurrentMessageTypeChanged} adminId={adminId} />
+          )}
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }} data-testid="messages-content-wrapper">
+          {showDetailsView && <MessagesCardContent currentMessageType={currentMessageType} adminId={adminId} hasTeams={hasTeams} />}
+        </Grid>
       </Grid>
       {showDonatePopup && (
         <DonateDialog
@@ -115,45 +124,32 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
 }
 
 function MessageCardListView({ currentMessageType, hasTeams, onCurrentMessageTypeChanged, adminId }: MessageCardListViewProps) {
-  const { t } = useTranslation('admin');
-
   return (
     <>
-      <Grid container>
-        <Grid item xs={12} md={6} sx={{ pl: 2 }}>
-          <Paragraph>
-            {t('admin:messages_landing_start_1')}
-            <br />
-            {t('admin:messages_landing_start_2')}
-          </Paragraph>
-        </Grid>
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={2} useFlexGap sx={{ width: '100%', display: 'flex' }}>
-          <MessagesCard
-            onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_PARTICIPANTS)}
-            currentMessageType={MessageType.MESSAGE_TYPE_PARTICIPANTS}
-            adminId={adminId}
-            selected={currentMessageType === MessageType.MESSAGE_TYPE_PARTICIPANTS}
-          />
+      <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={2} useFlexGap sx={{ width: '100%', display: 'flex' }}>
+        <MessagesCard
+          onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_PARTICIPANTS)}
+          currentMessageType={MessageType.MESSAGE_TYPE_PARTICIPANTS}
+          adminId={adminId}
+          selected={currentMessageType === MessageType.MESSAGE_TYPE_PARTICIPANTS}
+        />
 
-          <MessagesCard
-            onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_TEAMS)}
-            currentMessageType={MessageType.MESSAGE_TYPE_TEAMS}
-            adminId={adminId}
-            hasTeams={hasTeams}
-            selected={currentMessageType === MessageType.MESSAGE_TYPE_TEAMS}
-          />
+        <MessagesCard
+          onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_TEAMS)}
+          currentMessageType={MessageType.MESSAGE_TYPE_TEAMS}
+          adminId={adminId}
+          hasTeams={hasTeams}
+          selected={currentMessageType === MessageType.MESSAGE_TYPE_TEAMS}
+        />
 
-          <MessagesCard
-            onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_DINNERROUTE)}
-            currentMessageType={MessageType.MESSAGE_TYPE_DINNERROUTE}
-            adminId={adminId}
-            hasTeams={hasTeams}
-            selected={currentMessageType === MessageType.MESSAGE_TYPE_DINNERROUTE}
-          />
-        </Stack>
-      </Grid>
+        <MessagesCard
+          onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_DINNERROUTE)}
+          currentMessageType={MessageType.MESSAGE_TYPE_DINNERROUTE}
+          adminId={adminId}
+          hasTeams={hasTeams}
+          selected={currentMessageType === MessageType.MESSAGE_TYPE_DINNERROUTE}
+        />
+      </Stack>
     </>
   );
 }
@@ -186,20 +182,18 @@ function MessagesCardContent({ currentMessageType, hasTeams, adminId }: BaseMess
 }
 
 function MessagesCard({ currentMessageType, selected, hasTeams, adminId, onClick }: MessagesCardProps) {
+  const isMobileDevice = useIsMobileDevice();
+
   const messageCardInfo = useMessageCardInfo(currentMessageType, adminId, hasTeams);
   if (!messageCardInfo) {
     return null;
   }
 
-  const isMobileDevice = useIsMobileDevice();
-
   const { icon, title, description } = messageCardInfo;
 
   return (
-    // @ts-ignore
     <CardRoundedClickable
       variant="outlined"
-      component="button"
       onClick={onClick}
       sx={{
         p: 3,
@@ -259,7 +253,7 @@ function NoMessageTypeSelected() {
   return (
     <Card sx={{ p: 3, height: '50vh' }}>
       <Grid container justifyContent={'center'} alignItems={'baseline'}>
-        <Grid item>
+        <Grid>
           <Typography variant="subtitle1" sx={{ px: 2, verticalAlign: 'center' }}>
             {t('admin:messages_landing_no_selection_hint')}
           </Typography>

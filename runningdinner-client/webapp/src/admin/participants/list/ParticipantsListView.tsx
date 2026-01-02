@@ -54,7 +54,7 @@ export default function ParticipantsListView({
 
   return (
     <Grid container>
-      <Grid item xs={12} sx={{ mb: 2 }}>
+      <Grid sx={{ mb: 2 }} size={12}>
         {participantsListInfo}
 
         <TableContainer component={Paper}>

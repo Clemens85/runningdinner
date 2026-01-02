@@ -63,7 +63,7 @@ function RecipientSelection({ messageType }: MessageTypeAdminIdPayload) {
     }
   }
 
-  function handleRecipientSelectionChange(event: React.ChangeEvent<{ value: unknown }>) {
+  function handleRecipientSelectionChange(event: { target: { value: unknown } }) {
     const newRecipientSelection = event.target.value as string;
     if (newRecipientSelection === CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION) {
       dispatch(startEditCustomSelectedRecipients());

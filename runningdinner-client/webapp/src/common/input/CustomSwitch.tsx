@@ -1,5 +1,4 @@
 import { styled, Switch, SwitchProps } from '@mui/material';
-import React from 'react';
 
 const pxToRem = (px: number, oneRemPx = 17) => `${px / oneRemPx}rem`;
 const borderWidth = 2;

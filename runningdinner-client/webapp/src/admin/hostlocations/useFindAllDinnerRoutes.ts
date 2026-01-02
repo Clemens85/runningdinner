@@ -1,5 +1,5 @@
 import { DinnerRouteList, findAllDinnerRoutesByAdminIdAsync, isStringNotEmpty } from '@runningdinner/shared';
-import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { DinnerRouteOptimizationResultService } from './DinnerRouteOptimizationResultService';
 import { useIsRouteOptimization } from './useIsRouteOptimization';
@@ -7,7 +7,6 @@ import { useIsRouteOptimization } from './useIsRouteOptimization';
 
 export function useFindAllDinnerRoutes(adminId: string) {
   const optimizationId = useIsRouteOptimization();
-  const queryClient = useQueryClient();
 
   return useQuery({
     placeholderData: keepPreviousData,

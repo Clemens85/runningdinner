@@ -107,9 +107,13 @@ function NotActivatedParticipantsAlert({ teamsNotExistingInfo, adminId }: TeamsN
           components={{ anchor: <LinkIntern pathname={generateDashboardPath(adminId)} /> }}
         />
       </Alert>
-
       <Grid container>
-        <Grid item xs={12} md={8} lg={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 8,
+            lg: 6
+          }}>
           {teamsNotExistingInfo.notActivatedParticipants?.map((nap) => (
             <Box key={nap.id} sx={{ mt: 3 }}>
               <MissingParticipantActivationItem {...nap} />

@@ -14,7 +14,7 @@ export default function LinkIntern({ pathname, color, href, target, children }: 
 
   return (
     // @ts-ignore
-    <Link to={{ pathname: pathname }} component={RouterLink} color={colorToSet} href={href} target={target} underline="hover">
+    <Link to={pathname} component={RouterLink} color={colorToSet} href={href} target={target} underline="hover">
       {children}
     </Link>
   );

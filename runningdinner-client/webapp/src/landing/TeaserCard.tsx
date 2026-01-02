@@ -1,6 +1,5 @@
 import CardContent from '@mui/material/CardContent';
 import { Parent } from '@runningdinner/shared';
-import React from 'react';
 
 import { Subtitle } from '../common/theme/typography/Tags';
 import { CardFlexibleHeight } from './LandingStyles';

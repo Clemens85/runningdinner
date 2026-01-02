@@ -31,24 +31,41 @@ export default function MealSpecificsSection() {
     <>
       <FormFieldset>{t('mealspecifics')}</FormFieldset>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
+        >
           <FormCheckbox label={t('vegetarian')} name="vegetarian" />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
+        >
           <FormCheckbox label={t('lactose')} name="lactose" />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
+        >
           <FormCheckbox label={t('gluten')} name="gluten" />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
+        >
           <FormCheckbox label={t('vegan')} name="vegan" />
         </Grid>
       </Grid>
       <Grid container alignItems={'center'} sx={{ mt: 1 }}>
-        {/*<Grid item sx={{ml: -1, mr: 1}}>*/}
-        {/*  <CustomSwitch checked={mealSpecificsNoteActivated} onChange={(checked) => activateMealSpecificsNote(checked)} />*/}
-        {/*</Grid>*/}
-        <GridFlexGrow1 item>
+        <GridFlexGrow1>
           <FormTextField fullWidth variant={'filled'} disabled={/*!mealSpecificsNoteActivated*/ false} name="mealSpecificsNote" label={t('mealnotes')} />
         </GridFlexGrow1>
       </Grid>

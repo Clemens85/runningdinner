@@ -145,13 +145,13 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
         <FeedbackSentSuccessAlert />
 
         {nonPendingMessages.map((msg) => (
-          <Grid item xs={12} sx={{ my: 1 }} key={msg.id}>
+          <Grid sx={{ my: 1 }} key={msg.id} size={12}>
             <ChatMessageView text={msg.text} isAgentMessage={msg.isAgentMessage || false} />
           </Grid>
         ))}
 
         {showTypingIndicator && (
-          <Grid item xs={12} sx={{ my: 1 }}>
+          <Grid sx={{ my: 1 }} size={12}>
             <TypingIndicator />
           </Grid>
         )}
@@ -159,7 +159,7 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
         {error && <NoResponseAlert />}
 
         {showChatInputField && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box mt={2} pb={1}>
               <ChatInputTextField
                 inputMessage={followUpQuestion}
@@ -178,7 +178,7 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
 function NoResponseAlert() {
   const { t } = useTranslation('common');
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Alert severity={'info'} variant={'outlined'}>
         {t('feedback_agent_no_response')}
       </Alert>
@@ -192,7 +192,7 @@ function FeedbackSentSuccessAlert() {
   const [open, setOpen] = useState(true);
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       {open && (
         <Alert severity="info" onClose={() => setOpen(false)} variant="outlined" sx={{ mt: 2, mb: 1 }} icon={<EmailIcon />}>
           <AlertTitle>{t('feedback_agent_sent_title')}</AlertTitle>

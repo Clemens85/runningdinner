@@ -61,8 +61,8 @@ function WizardPage({ demoDinner }: WizardAppProps) {
   }, [demoDinner, dispatch]);
 
   React.useEffect(() => {
-    dispatch(fetchRegistrationTypes());
-    dispatch(fetchGenderAspects());
+    dispatch(fetchRegistrationTypes() as any);
+    dispatch(fetchGenderAspects() as any);
   }, [dispatch]);
 
   React.useEffect(() => {
@@ -78,7 +78,12 @@ function WizardPage({ demoDinner }: WizardAppProps) {
       <WizardMenu />
       <Container id={'wizardContainer'} maxWidth={false}>
         <Grid container>
-          <Grid item xs={12} md={8}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 8,
+            }}
+          >
             <Routes>
               <Route path={`${OptionsNavigationStep.value}`} element={<OptionsStep />} />
               <Route path={`${MealTimesNavigationStep.value}`} element={<MealTimesStep />} />

@@ -177,13 +177,27 @@ function Teams({ incomingTeams, teamId, teamMemberIdToCancel, refetch }: TeamsPr
         <Grid container spacing={2}>
           {showListView && (
             <>
-              <Grid item xs={12} md={isBigTablet ? 12 : 7} sx={{ textAlign: 'right' }}>
+              <Grid
+                sx={{ textAlign: 'right' }}
+                size={{
+                  xs: 12,
+                  md: isBigTablet ? 12 : 7
+                }}>
                 <DinnerRouteOverviewLinkButton adminId={adminId} />
               </Grid>
-              <Grid item xs={12} md={isBigTablet ? 12 : 5} sx={{ textAlign: 'right' }}>
+              <Grid
+                sx={{ textAlign: 'right' }}
+                size={{
+                  xs: 12,
+                  md: isBigTablet ? 12 : 5
+                }}>
                 <TeamArrangementActionsButton adminId={adminId} />
               </Grid>
-              <Grid item xs={12} md={isBigTablet ? 12 : 7}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: isBigTablet ? 12 : 7
+                }}>
                 <TeamsList
                   teams={incomingTeams}
                   onClick={handleTeamClick}
@@ -194,7 +208,11 @@ function Teams({ incomingTeams, teamId, teamMemberIdToCancel, refetch }: TeamsPr
               </Grid>
             </>
           )}
-          <Grid item xs={12} md={isBigTablet ? 12 : 5}>
+          <Grid
+            size={{
+              xs: 12,
+              md: isBigTablet ? 12 : 5
+            }}>
             {showDetailsView && selectedTeam ? (
               <>
                 {showBackToListViewButton && <BackToListButton onBackToList={() => setShowDetailsView(false)} />}

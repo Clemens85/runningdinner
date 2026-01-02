@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { getRunningDinnerSelector, useWizardSelector } from '@runningdinner/shared';
+import { getRunningDinnerSelector, HttpError, useWizardSelector } from '@runningdinner/shared';
 import { isDemoDinnerSelector, setNextNavigationStep, setPreviousNavigationStep, updateWithCreatedRunningDinner } from '@runningdinner/shared';
 import {
   CONSTANTS,
@@ -46,13 +46,11 @@ export default function FinishStep() {
   React.useEffect(() => {
     reset(newFormModel(runningDinner));
     clearErrors();
-     
   }, [reset, clearErrors, runningDinner]);
 
   React.useEffect(() => {
     dispatch(setNextNavigationStep(SummaryNavigationStep));
     dispatch(setPreviousNavigationStep(ParticipantPreviewNavigationStep));
-     
   }, [dispatch]);
 
   const submitRunningDinnerAsync = async (values: RunningDinner) => {
@@ -69,8 +67,8 @@ export default function FinishStep() {
       dispatch(updateWithCreatedRunningDinner(createRunningDinnerResponse));
       return true;
     } catch (e) {
-      applyValidationIssuesToForm(e, setError);
-      showHttpErrorDefaultNotification(e);
+      applyValidationIssuesToForm(e as HttpError, setError);
+      showHttpErrorDefaultNotification(e as HttpError);
       return false;
     }
   };
@@ -81,7 +79,12 @@ export default function FinishStep() {
       <FormProvider {...formMethods}>
         <form>
           <Grid container>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
               <FormTextField
                 name="email"
                 label={t('administration_email_label')}
@@ -111,7 +114,7 @@ function ContractSettings({ contract }: ContractProps) {
   return (
     <>
       <Grid container sx={{ mt: 3 }}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Subtitle i18n="wizard:adv_headline" />
           <Paragraph>
             <Trans i18nKey="wizard:adv_text_question" />
@@ -137,27 +140,34 @@ function ContractSettings({ contract }: ContractProps) {
           </Box>
         </Grid>
       </Grid>
-
       <Grid container sx={{ mt: 3 }} spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <FormTextField name="fullname" label={t('common:fullname')} required variant="outlined" defaultValue={contract.fullname} fullWidth />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <FormTextField name="streetWithNr" label={t('common:street')} required variant="outlined" defaultValue={contract.streetWithNr} fullWidth />
         </Grid>
       </Grid>
-
       <Grid container sx={{ mt: 3 }} spacing={3}>
-        <Grid item xs={4}>
+        <Grid size={4}>
           <FormTextField name="zip" label={t('common:zip')} required variant="outlined" defaultValue={contract.zip} fullWidth />
         </Grid>
-        <Grid item xs={8}>
+        <Grid size={8}>
           <FormTextField name="city" label={t('common:city')} variant="outlined" defaultValue={contract.city} fullWidth />
         </Grid>
       </Grid>
-
       <Grid container sx={{ mt: 3 }}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <FormCheckbox
             name="newsletterEnabled"
             useTableDisplay={true}

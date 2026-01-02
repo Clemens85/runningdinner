@@ -1,7 +1,7 @@
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
 import { CallbackHandler } from '@runningdinner/shared';
 
-import { commonStyles,GridWithCenteredFullwidthButton } from '../CommonStyles';
+import { commonStyles, GridWithCenteredFullwidthButton } from '../CommonStyles';
 import SecondaryButton from '../SecondaryButton';
 
 type DialogActionsButtonsProps = {
@@ -43,12 +43,8 @@ export function DialogActionsButtons({ okButton, cancelButton }: DialogActionsBu
     return (
       <Box sx={{ width: '100%', p: 1 }}>
         <Grid container direction="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
-          {okButton && (
-            <GridWithCenteredFullwidthButton item xs={12}>
-              {okButton}
-            </GridWithCenteredFullwidthButton>
-          )}
-          <Grid item xs={12} sx={{ textAlign: 'center' }}>
+          {okButton && <GridWithCenteredFullwidthButton size={12}>{okButton}</GridWithCenteredFullwidthButton>}
+          <Grid sx={{ textAlign: 'center' }} size={12}>
             {cancelButton}
           </Grid>
         </Grid>

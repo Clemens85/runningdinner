@@ -113,10 +113,19 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
         <FormProvider {...formMethods}>
           <form>
             <Grid container justifyContent={'space-between'} alignItems={'baseline'}>
-              <Grid item xs={12} md={8}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 8
+                }}>
                 <ParticipantFormHeadline />
               </Grid>
-              <Grid item xs={12} md={4} sx={commonStyles.textAlignRight}>
+              <Grid
+                sx={commonStyles.textAlignRight}
+                size={{
+                  xs: 12,
+                  md: 4
+                }}>
                 <ParticipantFormContextMenu
                   participant={participant}
                   teamPartnerWishChild={teamPartnerWishChild}
@@ -149,7 +158,7 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
             {isSubmitting && <LinearProgress />}
 
             <Grid container justifyContent={'flex-end'}>
-              <Grid item>
+              <Grid>
                 {showDeleteBtn && (
                   <SecondaryButton onClick={() => setOpenDeleteDialog(true)} data-testid={'delete-participant-dialog-action'}>
                     {t('delete')}
@@ -163,7 +172,6 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
           </form>
         </FormProvider>
       </Box>
-
       {showDeleteBtn && <DeleteParticipantDialog open={openDeleteDialog} adminId={adminId} participant={participant} onClose={onDeleteDialogClosed} />}
     </Paper>
   );

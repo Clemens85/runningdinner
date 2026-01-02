@@ -11,18 +11,31 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@reduxjs/toolkit": "2.11.1",
+    "@tanstack/react-query": "5.90.12",
     "axios": "1.13.2",
-    "lodash-es": "4.17.21"
+    "date-fns": "4.1.0",
+    "i18next": "25.7.2",
+    "i18next-browser-languagedetector": "8.2.0",
+    "lodash-es": "4.17.21",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-hook-form": "7.68.0",
+    "react-i18next": "16.4.0",
+    "react-redux": "9.2.0",
+    "redux": "5.0.1",
+    "redux-logger": "3.0.6",
+    "redux-thunk": "3.1.0",
+    "react-is": "18.3.1"
   },
   "devDependencies": {
-    "@types/node": "^22.12.0",
-    "typescript": "^5.2.2",
-    "vite": "^7.0.7",
-    "vitest": "^4.0.7",
-    "@vitejs/plugin-react": "^4.3.5",
-    "@vitejs/plugin-basic-ssl": "^2.0.1",
-    "@types/lodash-es": "4.17.12",
     "@eslint/js": "^9.39.0",
+    "@types/lodash-es": "4.17.12",
+    "@types/node": "^22.12.0",
+    "@types/react": "18.2.22",
+    "@types/react-dom": "18.2.7",
+    "@vitejs/plugin-basic-ssl": "^2.0.1",
+    "@vitejs/plugin-react": "^4.3.5",
     "eslint": "^9.39.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -32,6 +45,9 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "^15.9.0",
     "prettier": "^3.6.2",
-    "typescript-eslint": "^8.0.0"
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^8.0.0",
+    "vite": "^7.0.7",
+    "vitest": "^4.0.7"
   }
 }

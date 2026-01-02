@@ -65,7 +65,7 @@ const NumberTextInputEmptyValue = React.forwardRef(({ onChange, emptyValue = -1,
   const parse = (val: string | undefined) => {
     if (isStringEmpty(val)) {
       return emptyValue;
-    } else if (!isInteger(val)) {
+    } else if (!isInteger(val!)) {
       return emptyValue;
     }
     return val;

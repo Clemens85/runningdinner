@@ -112,7 +112,12 @@ function TeamMessagesDonateContent({ remindMe, onRemindMeChanged }: RemindMeProp
       </Box>
 
       <Box mt={2}>
-        <FormCheckboxSimple label={t('common:remind_me')} name="remindMe" value={remindMe} onChange={(evt) => onRemindMeChanged(evt.target.checked)} />
+        <FormCheckboxSimple
+          label={t('common:remind_me')}
+          name="remindMe"
+          value={remindMe}
+          onChange={(evt: React.ChangeEvent<HTMLInputElement>) => onRemindMeChanged(evt.target.checked)}
+        />
       </Box>
     </>
   );

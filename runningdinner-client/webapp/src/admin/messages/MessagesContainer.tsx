@@ -210,22 +210,25 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
   return (
     <>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <PageTitle>{t(headline)}</PageTitle>
         </Grid>
       </Grid>
-
       <FormProvider {...formMethods}>
         <form>
           <Grid container spacing={3}>
-            <Grid item xs={12} lg={7}>
+            <Grid
+              size={{
+                xs: 12,
+                lg: 7
+              }}>
               <Paper elevation={3}>
                 <Box p={2}>
                   <Grid container>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <MessageHeadline />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <RecipientSelection messageType={messageType} adminId={adminId} />
                       <MessageSubject onMessageSubjectChange={handleMessageSubjectChange} />
                       <MessageContent
@@ -239,7 +242,11 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                     </Grid>
                     {messageType === MessageType.MESSAGE_TYPE_TEAMS && (
                       <Grid container spacing={1}>
-                        <Grid item xs={12} md={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            md: 6
+                          }}>
                           <MessageContent
                             templates={[]}
                             onMessageContentChange={handleHostMessagePartTemplateChange}
@@ -250,7 +257,11 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                             label={t('admin:mails_sendteams_host')}
                           />
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            md: 6
+                          }}>
                           <MessageContent
                             templates={[]}
                             onMessageContentChange={handleNonHostMessagePartTemplateChange}
@@ -266,7 +277,11 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
 
                     {messageType === MessageType.MESSAGE_TYPE_DINNERROUTE && (
                       <Grid container spacing={1}>
-                        <Grid item xs={12} lg={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            lg: 6
+                          }}>
                           <MessageContent
                             templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{mealspecifics}']}
                             onMessageContentChange={handleDinnerRouteSelfPartTemplateChange}
@@ -277,7 +292,11 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                             label={t('admin:mails_senddinnerroute_self')}
                           />
                         </Grid>
-                        <Grid item xs={12} lg={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            lg: 6
+                          }}>
                           <MessageContent
                             templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{hostaddress}', '{mobilenumber}']}
                             onMessageContentChange={handleDinnerRouteHostsPartTemplateChange}
@@ -292,7 +311,7 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                     )}
 
                     <Grid container justifyContent="flex-end">
-                      <Grid item>
+                      <Grid>
                         <Box mt={3}>
                           {/* @ts-ignore */}
                           <PrimaryButton onClick={handleSubmit(handleSendMessages)} disabled={isSubmitting} size="large">
@@ -306,8 +325,12 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
               </Paper>
             </Grid>
 
-            <Grid item xs={12} lg={5}>
-              <Grid item xs={12}>
+            <Grid
+              size={{
+                xs: 12,
+                lg: 5
+              }}>
+              <Grid size={12}>
                 <Box mt={0}>
                   <Paper elevation={3}>
                     <Box p={2}>

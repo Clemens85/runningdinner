@@ -140,7 +140,7 @@ export function EditMealsDialog({ adminId, open, dashboardAdminActivities, incom
   }
 
   const mealTimeFields = meals.map((meal: Meal) => (
-    <Grid item xs={isMobileDevie ? 12 : undefined} key={meal.id}>
+    <Grid key={meal.id} size={isMobileDevie ? 12 : undefined}>
       <Box sx={{ px: 2 }}>
         <EditableMealControl
           meal={meal}
@@ -289,7 +289,7 @@ function AddMealControl({ handleAddMeal, meals }: AddMealControlProps) {
 
   return (
     <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
-      <Grid item>
+      <Grid>
         <Button color={'primary'} startIcon={<AddIcon />} onClick={onAddMeal} style={{ paddingLeft: '0' }}>
           {t('common:add')}
         </Button>

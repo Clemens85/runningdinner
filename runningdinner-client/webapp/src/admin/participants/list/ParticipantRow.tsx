@@ -1,5 +1,5 @@
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { Hidden, TableCell, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import { SxProps, TableCell, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import {
   AddressLocation,
   Fullname,
@@ -77,15 +77,19 @@ function ParticipantDetailCells({ participant, runningDinnerSessionData, showMis
 
   const showMiscNotesForParticipant = showMiscNotes && isStringNotEmpty(participant.notes);
 
+  const smallDeviceHiddenSx: SxProps = {
+    display: { xs: 'none', sm: 'none', md: 'table-cell' },
+  };
+
   return (
-    <Hidden smDown>
+    <>
       {teamPartnerWishChild && (
         <>
-          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} colSpan={4}>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} colSpan={4} sx={smallDeviceHiddenSx}>
             {t('admin:team_partner_wish_registration_child_participant_root_info_1', { fullname: getFullname(participant.rootTeamPartnerWish!) })}
           </TableCellBorderBottomNullable>
           {isBigDevice && (
-            <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}>
+            <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={smallDeviceHiddenSx}>
               <ParticipantTeamPartnerWishIcon {...participant} />
             </TableCellBorderBottomNullable>
           )}
@@ -93,33 +97,33 @@ function ParticipantDetailCells({ participant, runningDinnerSessionData, showMis
       )}
       {!teamPartnerWishChild && (
         <>
-          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={smallDeviceHiddenSx}>
             <ParticipantGenderTooltip gender={gender}>
               <ParticipantGenderIcon gender={gender} />
             </ParticipantGenderTooltip>
           </TableCellBorderBottomNullable>
-          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={{ textOverflow: 'ellipsis' }}>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={{ textOverflow: 'ellipsis', ...smallDeviceHiddenSx }}>
             <EllipsisResponsive text={email} numCharsBeforeTruncaction={17} />
           </TableCellBorderBottomNullable>
-          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={smallDeviceHiddenSx}>
             <AddressLocation {...participant} />
           </TableCellBorderBottomNullable>
-          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}>
+          <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={smallDeviceHiddenSx}>
             <NumSeats participant={participant} runningDinnerSessionData={runningDinnerSessionData} />
           </TableCellBorderBottomNullable>
           {isBigDevice && (
             <>
               {showTeamPartnerInfo && (
-                <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}>
+                <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={smallDeviceHiddenSx}>
                   <ParticipantTeamPartnerWishIcon {...participant} />
                 </TableCellBorderBottomNullable>
               )}
-              {!showTeamPartnerInfo && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant}></TableCellBorderBottomNullable>}
+              {!showTeamPartnerInfo && <TableCellBorderBottomNullable borderBottomNone={showMiscNotesForParticipant} sx={smallDeviceHiddenSx}></TableCellBorderBottomNullable>}
             </>
           )}
         </>
       )}
-    </Hidden>
+    </>
   );
 }
 

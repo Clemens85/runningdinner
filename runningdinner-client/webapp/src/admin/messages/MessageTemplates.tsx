@@ -32,7 +32,7 @@ function MessageTemplates({ templates, onTemplateClick, showTemplatesHelpIcon }:
 
   // @ts-ignore
   const messageTemplateNodes = templates.map((template) => (
-    <Grid item key={template}>
+    <Grid key={template}>
       <MessageTemplate template={template} onClick={onTemplateClick} />
     </Grid>
   ));
@@ -40,7 +40,7 @@ function MessageTemplates({ templates, onTemplateClick, showTemplatesHelpIcon }:
     <>
       <Grid container alignItems={'center'} justifyContent={'flex-start'} sx={{ mb: 2 }}>
         {smUpDevice && (
-          <Grid item>
+          <Grid>
             <Box component={'span'} pr={1}>
               {t('admin:mails_template_help')}:{' '}
             </Box>
@@ -48,7 +48,7 @@ function MessageTemplates({ templates, onTemplateClick, showTemplatesHelpIcon }:
         )}
         {messageTemplateNodes}
         {showTemplatesHelpIcon && (
-          <Grid item>
+          <Grid>
             <HelpIconTooltip
               title={
                 <>

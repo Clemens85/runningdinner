@@ -88,7 +88,7 @@ function newSnackbarOptions(variant?: VariantType, incomingOptions?: CustomSnack
   return options;
 }
 
-function CloseAction(key: string) {
+function CloseAction(key: string | number) {
   const { closeSnackbar } = useSnackbar();
   return (
     <>

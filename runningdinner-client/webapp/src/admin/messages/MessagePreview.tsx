@@ -83,7 +83,7 @@ export function MessagePreview({ adminId, messageType }: MessageTypeAdminIdPaylo
       {(previewLoading || recipients.fetchStatus === FetchStatus.LOADING) && <LinearProgress color="secondary" />}
       {previewMessageNodes}
 
-      <SendToMeButton adminId={adminId} messageObj={messageObject} selectedRecipient={selectedRecipientForPreview} messageType={messageType} />
+      <SendToMeButton adminId={adminId} messageObj={messageObject} selectedRecipient={selectedRecipientForPreview!} messageType={messageType} />
     </Box>
   );
 }

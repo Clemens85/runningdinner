@@ -20,12 +20,12 @@ export default function MiscSection(props: MiscSectionProps) {
     <>
       <FormFieldset>{t('misc')}</FormFieldset>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <FormTextField fullWidth helperText={miscNotesHelperText} variant="filled" name="notes" label={t('misc_notes')} />
         </Grid>
 
         {activationDate && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Paragraph>
               {t('activation_date')} <LocalDate date={activationDate} /> {t('at_time')} <Time date={activationDate} />
             </Paragraph>

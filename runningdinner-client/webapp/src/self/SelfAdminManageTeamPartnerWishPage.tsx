@@ -1,7 +1,7 @@
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
 import { Alert, AlertTitle } from '@mui/material';
 import TextField from '@mui/material/TextField';
-import { getSelfAdminSessionDataFetchSelector, updateSelfTeamPartnerWish, useBackendIssueHandler, useSelfAdminSelector } from '@runningdinner/shared';
+import { getSelfAdminSessionDataFetchSelector, HttpError, updateSelfTeamPartnerWish, useBackendIssueHandler, useSelfAdminSelector } from '@runningdinner/shared';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -56,7 +56,7 @@ function SelfAdminManageTeamPartnerWishView({ teamPartnerWishQueryParam }: SelfA
       await updateSelfTeamPartnerWish({ selfAdminId, participantId }, teamPartnerWishEmail);
       setTeamPartnerWishUpdateSucceeded(true);
     } catch (e) {
-      showHttpErrorDefaultNotification(e, { showMessageForValidationErrorsWithoutSource: true });
+      showHttpErrorDefaultNotification(e as HttpError, { showMessageForValidationErrorsWithoutSource: true });
     }
   }
 
@@ -81,14 +81,14 @@ function SelfAdminManageTeamPartnerWishView({ teamPartnerWishQueryParam }: SelfA
       <Paragraph>{t('selfadmin:manage_teampartner_wish_help')}</Paragraph>
       <Box mt={3}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField label={t('common:teampartner_wish')} variant="outlined" fullWidth value={teamPartnerWishEmail} onChange={handleTeamPartnerWishInputChange} />
           </Grid>
         </Grid>
       </Box>
       <Box my={3}>
         <Grid container justifyContent={'flex-end'} direction={'row'}>
-          <Grid item xs={isSmallDevice ? 12 : undefined}>
+          <Grid size={isSmallDevice ? 12 : undefined}>
             <PrimaryButton onClick={handleSubmit} sx={fullWidthProps} disabled={false} size={'large'}>
               {t('common:save')}
             </PrimaryButton>

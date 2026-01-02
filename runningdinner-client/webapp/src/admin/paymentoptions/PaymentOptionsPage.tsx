@@ -63,7 +63,7 @@ function NewPaymentOptionsView({ adminId }: BaseAdminIdProps) {
       <PageTitle>{t('admin:payment_options')}</PageTitle>
       <Paragraph i18n={'admin:payment_options_help'} />
       <Grid container justifyContent={'flex-start'} sx={{ mt: 3 }}>
-        <Grid item>
+        <Grid>
           <PrimaryButton onClick={handleCreate} size="large">
             {t('admin:payment_options_create')}
           </PrimaryButton>
@@ -140,19 +140,25 @@ function PaymentOptionsFormView({ paymentOptions, adminId }: PaymentOptionsFormV
   return (
     <>
       <PageTitle>{t('admin:payment_options')}</PageTitle>
-
       <Paragraph i18n={'admin:payment_options_edit_help'} />
-
       <FormProvider {...formMethods}>
         <form>
           <Grid container sx={{ mt: 3 }}>
-            <Grid item xs={12} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 4
+              }}>
               <FormTextField fullWidth variant="outlined" required name="brandName" label={t('common:brand_name')} />
             </Grid>
           </Grid>
 
           <Grid container sx={{ my: 3 }}>
-            <Grid item xs={12} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 4
+              }}>
               <FormTextField
                 fullWidth
                 variant="outlined"
@@ -165,13 +171,21 @@ function PaymentOptionsFormView({ paymentOptions, adminId }: PaymentOptionsFormV
           </Grid>
 
           <Grid container sx={{ mt: 3 }}>
-            <Grid item xs={12} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 4
+              }}>
               <FormTextField fullWidth variant="outlined" name="agbLink" helperText={t('admin:agb_link_help')} label={t('admin:agb_link')} />
             </Grid>
           </Grid>
 
           <Grid container sx={{ mt: 3 }}>
-            <Grid item xs={12} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 4
+              }}>
               <FormTextField
                 fullWidth
                 variant="outlined"
@@ -183,7 +197,11 @@ function PaymentOptionsFormView({ paymentOptions, adminId }: PaymentOptionsFormV
           </Grid>
 
           <Grid container justifyContent={'flex-start'} sx={{ mt: 3 }}>
-            <Grid item xs={12} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 4
+              }}>
               {showDeleteBtn && <SecondaryButton onClick={deletePaymentOptions}>{t('common:delete')}</SecondaryButton>}
               <PrimaryButton onClick={handleSubmit(savePaymentOptions)} disabled={formState.isSubmitting} size={'large'} sx={sxPropsPrimaryBtn}>
                 {t('common:save')}

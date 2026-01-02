@@ -1,5 +1,4 @@
 import { Box, Grid } from '@mui/material';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { DEMO_WIZARD_ROOT_PATH, WIZARD_ROOT_PATH } from '../common/mainnavigation/NavigationPaths';
@@ -18,7 +17,12 @@ export function LandingWizard() {
       <PageTitle>{t('create_your_own_event_hedline')}</PageTitle>
       <div>
         <Grid container spacing={gridSpacing} alignItems="stretch">
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
             <TeaserCard titleI18nKey={'quickstart'}>
               <Span i18n={'landing:quickstart_description'} />
               <Box pt={2}>
@@ -28,7 +32,12 @@ export function LandingWizard() {
               </Box>
             </TeaserCard>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
             <TeaserCard titleI18nKey={'landing:uncertain_headline'}>
               <Span>
                 <Trans i18nKey={'landing:uncertain_description'} />
@@ -42,13 +51,17 @@ export function LandingWizard() {
           </Grid>
         </Grid>
       </div>
-
       <Box pt={2}>
         <PageTitle>{t('common:features')}</PageTitle>
       </Box>
       <TeaserCardRow>
         <Grid container spacing={gridSpacing} alignItems={'stretch'}>
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <TeaserCard titleI18nKey={'common:visibilities'}>
               <Span i18n={'landing:visibilities_text'} />
               <ul>
@@ -64,7 +77,12 @@ export function LandingWizard() {
               </ul>
             </TeaserCard>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <TeaserCard titleI18nKey={'common:team_arrangements'}>
               <ul>
                 <li>
@@ -79,7 +97,12 @@ export function LandingWizard() {
               </ul>
             </TeaserCard>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <TeaserCard titleI18nKey={'common:dinner_route'}>
               <ul>
                 <li>
@@ -96,10 +119,14 @@ export function LandingWizard() {
           </Grid>
         </Grid>
       </TeaserCardRow>
-
       <TeaserCardRow>
         <Grid container spacing={gridSpacing} alignItems={'stretch'}>
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <TeaserCard titleI18nKey={'landing:mail_sending_personalized'}>
               <Span i18n={'landing:mail_sending_personalized_description'} />
               <ul>
@@ -115,7 +142,12 @@ export function LandingWizard() {
               </ul>
             </TeaserCard>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <TeaserCard titleI18nKey={'landing:participant_management_headline'}>
               <ul>
                 <li>
@@ -130,7 +162,12 @@ export function LandingWizard() {
               </ul>
             </TeaserCard>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <TeaserCard titleI18nKey={'landing:participant_features'}>
               <ul>
                 <li>
@@ -147,10 +184,14 @@ export function LandingWizard() {
           </Grid>
         </Grid>
       </TeaserCardRow>
-
       <TeaserCardRow>
         <Grid container spacing={gridSpacing} alignItems={'stretch'}>
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <TeaserCard titleI18nKey={'common:Dashboard'}>
               <ul>
                 <li>
@@ -162,7 +203,12 @@ export function LandingWizard() {
               </ul>
             </TeaserCard>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <TeaserCard titleI18nKey={'common:misc'}>
               <ul>
                 <li>

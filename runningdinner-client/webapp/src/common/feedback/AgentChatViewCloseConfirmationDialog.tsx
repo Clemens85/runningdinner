@@ -35,21 +35,19 @@ export function AgentChatViewCloseConfirmationDialog({ open, onConfirm }: Feedba
       fullWidth
     >
       <DialogTitleCloseable onClose={handleWantsEmail}>{t('common:feedback_close_confirmation_title')}</DialogTitleCloseable>
-
       <DialogContent>
         <DialogContentText id="feedback-close-confirmation-description">{t('common:feedback_close_confirmation_message')}</DialogContentText>
       </DialogContent>
-
       <DialogActions sx={{ justifyContent: 'center', pb: 3, px: 3 }}>
         <Grid container spacing={2} justifyContent="center" direction={isSmallDevice ? 'column' : 'row'}>
-          <Grid item xs={isSmallDevice ? 12 : 'auto'}>
+          <Grid size={isSmallDevice ? 12 : 'auto'}>
             <Box width={isSmallDevice ? '100%' : 'auto'}>
               <PrimaryButton onClick={handleWantsEmail} fullWidth={isSmallDevice} autoFocus>
                 {t('common:feedback_close_yes_need_email')}
               </PrimaryButton>
             </Box>
           </Grid>
-          <Grid item xs={isSmallDevice ? 12 : 'auto'}>
+          <Grid size={isSmallDevice ? 12 : 'auto'}>
             <Box width={isSmallDevice ? '100%' : 'auto'}>
               <SecondaryButton onClick={handleNoEmailNeeded} fullWidth={isSmallDevice}>
                 {t('common:feedback_close_no_email_needed')}

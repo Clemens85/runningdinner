@@ -3,8 +3,8 @@ import React from 'react';
 import { CONSTANTS, getStatusResult } from '@runningdinner/shared';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorIcon from '@mui/icons-material/Error';
-import { Hidden } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
 function MessageJobStatus({ messageJobOrTask }) {
@@ -25,9 +25,9 @@ function MessageJobStatus({ messageJobOrTask }) {
 function MessageJobStatusGrid({ icon, label }) {
   return (
     <Grid container alignItems="center">
-      <Grid item>{icon}</Grid>
-      <Grid item>
-        <Hidden lgDown>{label}</Hidden>
+      <Grid>{icon}</Grid>
+      <Grid>
+        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>{label}</Box>
       </Grid>
     </Grid>
   );
