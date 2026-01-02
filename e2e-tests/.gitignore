@@ -2,4 +2,8 @@ node_modules/
 cypress/videos/
 cypress/screenshots/
 
+# Lock files for other package managers
+package-lock.json
+yarn.lock
+
 

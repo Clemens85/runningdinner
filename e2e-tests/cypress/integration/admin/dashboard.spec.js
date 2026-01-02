@@ -37,8 +37,6 @@ describe('participants list', () => {
       getMealTimeControlInputByMealLabel('Hauptgericht').should('have.value', '21:00');
 
       openMealTimeControlTimePickerByMealLabel('Hauptgericht');
-
-      submitStandardDialog();
     });
 
     selectHourInTimePicker('22');
