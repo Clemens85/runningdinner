@@ -142,10 +142,6 @@ export class DinnerRouteMapCalculator {
     return uniqBy(result, 'teamNumber');
   }
 
-  public static distinctDinnerRouteTeams(allDinnerRouteTeams: DinnerRouteTeam[]): DinnerRouteTeam[] {
-    return allDinnerRouteTeams.filter((team, index, self) => index === self.findIndex((t) => t.teamNumber === team.teamNumber));
-  }
-
   public static buildMealTypeMappings(meals: Meal[]): Record<string, MealType> {
     const result: Record<string, MealType> = {};
     for (let i = 0; i < meals.length; i++) {
