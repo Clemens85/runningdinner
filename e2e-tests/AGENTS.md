@@ -20,7 +20,7 @@ Cypress e2e test suite for a "Running Dinner" event management application. Test
 
 ### Helper Pattern
 
-All helpers export functions from `cypress/support/index.js` for convenient imports:
+All helpers export functions from `cypress/support/e2e.js` for convenient imports:
 
 ```javascript
 import {
@@ -107,7 +107,7 @@ npm run cypress-open-local
 ./run-headless.sh  # runs all specs in cypress/integration/**/*.spec.js
 ```
 
-**Base URL**: `https://localhost:3000` (set in cypress.json)
+**Base URL**: `https://localhost:3000` (set in cypress.config.js)
 **Chrome web security**: Disabled (`chromeWebSecurity: false`) for cross-origin API calls
 
 ## Common Patterns

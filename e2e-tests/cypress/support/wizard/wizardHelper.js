@@ -1,37 +1,41 @@
-import {getByTestId, getMealTimeControlInputByMealLabel, getTextInputByName} from "../index";
+import { getByTestId, getMealTimeControlInputByMealLabel, getTextInputByName } from '../index';
 
 export function navigateWizardStart(demo) {
-  cy.visit("/create-running-dinner");
+  cy.visit('/create-running-dinner');
   getByTestId(`wizard-open-action${demo ? '-demo' : ''}`)
     .invoke('removeAttr', 'target')
     .click();
 
-  getWizardNextButton().should("exist");
-  getWizardPrevButton().should("not.exist");
+  getWizardNextButton().should('exist');
+  getWizardPrevButton().should('not.exist');
 }
 
 export function getWizardNextButton() {
-  return getByTestId("wizard-next-action");
+  return getByTestId('wizard-next-action');
 }
 
 export function getWizardPrevButton() {
-  return getByTestId("wizard-previous-action");
+  return getByTestId('wizard-previous-action');
 }
 
 export function getWizardTitleInput() {
-  return getTextInputByName("title");
+  return getTextInputByName('title');
 }
 
 export function getWizardZipInput() {
-  return getTextInputByName("zip");
+  return getTextInputByName('zip');
 }
 
 export function getWizardCityInput() {
-  return getTextInputByName("city");
+  return getTextInputByName('city');
 }
 
-export function getWizardDateInput() {
-  return getTextInputByName("date");
+export function getWizardDateTextInput() {
+  return getTextInputByName('date');
+}
+
+export function getWizardDateControl() {
+  return cy.get('[data-sectionindex="0"] > .MuiPickersSectionList-sectionContent');
 }
 
 export function getMealInputByIndex(index) {
@@ -39,17 +43,13 @@ export function getMealInputByIndex(index) {
 }
 
 export function openMealTimeControlTimePickerByMealLabel(mealLabel) {
-  return getMealTimeControlInputByMealLabel(mealLabel)
-          .siblings()
-          .first()
-          .find("button")
-          .click();
+  cy.get(`#meal-time-${mealLabel}-label`).parent().find('button').first().click({ force: true });
 }
 
 export function getWizardPublicTitleInput() {
-  return getTextInputByName("title");
+  return getTextInputByName('title');
 }
 
 export function getWizardEndOfRegistrationDateInput() {
-  return getTextInputByName("endOfRegistrationDate");
+  return getTextInputByName('endOfRegistrationDate');
 }
