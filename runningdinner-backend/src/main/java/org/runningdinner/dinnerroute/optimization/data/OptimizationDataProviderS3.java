@@ -37,6 +37,7 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 		LOGGER.info("Using S3-based OptimizationDataProvider with bucket: {}", bucketName);
 	}
 
+	@Override
 	public String readResponseData(String adminId, String optimizationId) {
 		String key = OptimizationDataUtil.buildResponseFilePath(adminId, optimizationId);
 		try {
@@ -52,6 +53,7 @@ public class OptimizationDataProviderS3 implements OptimizationDataProvider {
 		return s3ClientProviderService.isFileExisting(bucketName, OptimizationDataUtil.buildResponseFilePath(adminId, optimizationId));
 	}
 
+	@Override
 	public void writeRequestData(String adminId, String optimizationId, String requestJsonString) throws TooManyOptimizationRequestsException {
 		List<OptimizationInstance> existingInstances = optimizationInstanceService.getOptimizationRequestInstances(adminId);
 		// Set those instances to FINISHED which have a response file already existing...
