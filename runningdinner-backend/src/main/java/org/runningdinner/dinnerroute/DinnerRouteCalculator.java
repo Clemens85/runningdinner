@@ -1,15 +1,5 @@
 package org.runningdinner.dinnerroute;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.core.util.CoreUtil;
@@ -20,6 +10,16 @@ import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.rest.TeamTO;
 import org.springframework.util.Assert;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DinnerRouteCalculator {
 
@@ -49,7 +49,7 @@ public class DinnerRouteCalculator {
 	public static AllDinnerRoutesWithDistancesListTO calculateDistancesForAllDinnerRoutes(List<DinnerRouteTO> allDinnerRoutes) {
 		
 		List<TeamTO> locations = allDinnerRoutes.stream().map(route -> route.getCurrentTeam()).toList();
-		DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(locations, true);
+		DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(locations);
 		
     List<DinnerRouteWithDistancesTO> distancesForAllRoutes = new ArrayList<>();
     
@@ -83,7 +83,7 @@ public class DinnerRouteCalculator {
 			
 			Deque<Integer> teamNumbersToVisit = new ArrayDeque<>(getTeamNumbersOfRoute(dinnerRoute));
 			
-			Integer currentTeamNumber = teamNumbersToVisit.poll();;
+			Integer currentTeamNumber = teamNumbersToVisit.poll();
 			int iterationCounter = 0;
 			
 			while (currentTeamNumber != null && iterationCounter <= MAX_ITERATIONS_OF_REVERSE_CLUSTERING) {

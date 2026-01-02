@@ -23,12 +23,12 @@ public class TeamNeighbourClusterCalculationService {
 
 	 public List<TeamNeighbourCluster> calculateTeamNeighbourClusters(@ValidateAdminId String adminId, double rangeInMeters) {
 		 List<Team> teams = teamService.findTeamArrangements(adminId, false);
-		 DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(teams, rangeInMeters, true);
+		 DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(teams, rangeInMeters);
 	   return mapToTeamNeighbourClusters(distanceMatrix, teams); 
 	 }
 	 
 	 public List<TeamNeighbourCluster> calculateTeamNeighbourClusters(List<Team> teams, double rangeInMeters) {
-		 DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(teams, rangeInMeters, true);
+		 DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(teams, rangeInMeters);
 	   return mapToTeamNeighbourClusters(distanceMatrix, teams); 
 	 }
 

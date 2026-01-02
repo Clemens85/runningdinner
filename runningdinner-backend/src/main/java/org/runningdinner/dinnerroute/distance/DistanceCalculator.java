@@ -65,11 +65,11 @@ public class DistanceCalculator {
 		return s * 1.201; // Convert to meters and apply factor for better accuracy
 	}
 
-	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations, boolean removeInvalidGeocodings) {
-		return calculateDistanceMatrix(locations, -1, removeInvalidGeocodings);
+	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations) {
+		return calculateDistanceMatrix(locations, -1);
 	}
 
-	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations, double maxRangeInMetersToInclude, boolean removeInvalidGeocodings) {
+	public static DistanceMatrix calculateDistanceMatrix(List<? extends HasGeocodingResult> locations, double maxRangeInMetersToInclude) {
 
 		List<? extends HasGeocodingResult> locationsToUse = locations
 																													.stream()
