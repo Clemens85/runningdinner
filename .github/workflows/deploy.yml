@@ -4,12 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to deploy against'
+        description: "Environment to deploy against"
         type: environment
         required: true
 
 jobs:
-
   build_backend:
     uses: ./.github/workflows/build-backend-action.yml
     with:
@@ -67,10 +66,17 @@ jobs:
           fi
           echo "DOCKER_IMAGE_TAGS=$TAGS" >> $GITHUB_ENV
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push Backend Docker image
         id: build-backend-image
         uses: docker/build-push-action@v5
         with:
+          platforms: linux/amd64,linux/arm64
           push: true
           context: .
           tags: ${{ env.DOCKER_IMAGE_TAGS }}
@@ -110,13 +116,13 @@ jobs:
           if [ "dev" == "${{ github.event.inputs.environment }}" ]; then
             STAGE_SUBDOMAIN="dev."
           fi
-          curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"       
+          curl -k -XGET "https://${STAGE_SUBDOMAIN}runyourdinner.eu/rest/masterdataservice/v1/registrationtypes"
 
   deploy_webclient_s3:
     needs: [deploy_backend_ecs, build_webclient]
     permissions:
       contents: read
-      id-token: write   
+      id-token: write
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.event.inputs.environment }}
