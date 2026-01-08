@@ -48,9 +48,9 @@ public class ProposalBaseGeneratorTest {
     ProposalBase result = ProposalBaseGenerator.newMessageProposal(participantMessage, runningDinner);
     
     assertThat(result).isNotNull();
-    assertThat(result.storagePath()).isEqualTo("input/messages/PARTICIPANT/" + runningDinner.getAdminId() + ".md");
+    assertThat(result.storagePath()).isEqualTo("input/message/PARTICIPANT/" + runningDinner.getAdminId() + ".md");
     assertThat(result.textContent()).contains("## Subject");
-    assertThat(result.textContent()).contains("## Message");
+    assertThat(result.textContent()).contains("## Message Template");
     assertThat(result.textContent()).contains("Hello participants, this is a test message");
   }
 
@@ -67,9 +67,9 @@ public class ProposalBaseGeneratorTest {
     ProposalBase result = ProposalBaseGenerator.newMessageProposal(teamMessage, runningDinner);
     
     assertThat(result).isNotNull();
-    assertThat(result.storagePath()).isEqualTo("input/messages/TEAM/" + runningDinner.getAdminId() + ".md");
+    assertThat(result.storagePath()).isEqualTo("input/message/TEAM/" + runningDinner.getAdminId() + ".md");
     assertThat(result.textContent()).contains("## Subject");
-    assertThat(result.textContent()).contains("## Message");
+    assertThat(result.textContent()).contains("## Message Template");
     assertThat(result.textContent()).contains("Dear teams, here are your arrangements");
     assertThat(result.textContent()).contains("## Host Template");
     assertThat(result.textContent()).contains("You are hosting at {meal}");
@@ -90,9 +90,9 @@ public class ProposalBaseGeneratorTest {
     ProposalBase result = ProposalBaseGenerator.newMessageProposal(dinnerRouteMessage, runningDinner);
     
     assertThat(result).isNotNull();
-    assertThat(result.storagePath()).isEqualTo("input/messages/DINNER_ROUTE/" + runningDinner.getAdminId() + ".md");
+    assertThat(result.storagePath()).isEqualTo("input/message/DINNER_ROUTE/" + runningDinner.getAdminId() + ".md");
     assertThat(result.textContent()).contains("## Subject");
-    assertThat(result.textContent()).contains("## Message");
+    assertThat(result.textContent()).contains("## Message Template");
     assertThat(result.textContent()).contains("Here is your dinner route: {route}");
     assertThat(result.textContent()).contains("## Hosts Template");
     assertThat(result.textContent()).contains("Hosts: {mobilenumber}");
@@ -132,7 +132,7 @@ public class ProposalBaseGeneratorTest {
 
   private void assertEventDescriptionProposal(final ProposalBase result, final RunningDinner runningDinner) {
     assertThat(result).isNotNull();
-    assertThat(result.storagePath()).isEqualTo("input/event_descriptions/" + runningDinner.getAdminId() + ".md");
+			assertThat(result.storagePath()).isEqualTo("input/event_description/" + runningDinner.getAdminId() + ".md");
     assertThat(result.textContent()).contains("## Test Event Title");
     assertThat(result.textContent()).contains("This is a test event description");
   }

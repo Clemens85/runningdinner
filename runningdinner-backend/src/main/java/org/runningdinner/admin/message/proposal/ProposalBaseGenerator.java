@@ -12,8 +12,8 @@ import org.runningdinner.mail.formatter.FormatterUtil;
 
 public final class ProposalBaseGenerator {
 
-  public static final String EVENT_DESCRIPTIONS_INPUT_PREFIX = "input/event_descriptions";
-  public static final String MESSAGES_INPUT_PREFIX = "input/messages";
+  public static final String EVENT_DESCRIPTIONS_INPUT_PREFIX = "input/event_description";
+  public static final String MESSAGES_INPUT_PREFIX = "input/message";
 
   private ProposalBaseGenerator() {
     // Utility class
@@ -48,28 +48,29 @@ public final class ProposalBaseGenerator {
   }
 
   private static ProposalBase newDinnerRouteMessageProposal(DinnerRouteMessage dinnerRouteMessage, RunningDinner runningDinner) {
-    String textContent = "## Subject" + FormatterUtil.NEWLINE + "## Message" + dinnerRouteMessage.getMessage() + FormatterUtil.NEWLINE;
+    String textContent = "## Subject" + FormatterUtil.NEWLINE + "## Message Template" + dinnerRouteMessage.getMessage() + FormatterUtil.NEWLINE;
     textContent += "## Hosts Template" + FormatterUtil.NEWLINE + dinnerRouteMessage.getHostsTemplate() + FormatterUtil.NEWLINE;
     textContent += "## Self Template" + FormatterUtil.NEWLINE + dinnerRouteMessage.getSelfTemplate();
     return new ProposalBase(mapMessagePath(MessageType.DINNER_ROUTE, runningDinner), textContent);
   }
 
   private static ProposalBase newTeamMessageProposal(TeamMessage teamMessage, RunningDinner runningDinner) {
-    String textContent = "## Subject" + FormatterUtil.NEWLINE + "## Message" + teamMessage.getMessage() + FormatterUtil.NEWLINE;
+    String textContent = "## Subject" + FormatterUtil.NEWLINE + "## Message Template" + teamMessage.getMessage() + FormatterUtil.NEWLINE;
     textContent += "## Host Template" + FormatterUtil.NEWLINE + teamMessage.getHostMessagePartTemplate() + FormatterUtil.NEWLINE;
     textContent += "## Non Host Template" + FormatterUtil.NEWLINE + teamMessage.getNonHostMessagePartTemplate();
     return new ProposalBase(mapMessagePath(MessageType.TEAM, runningDinner), textContent);
   }
 
   private static ProposalBase newParticipantMessageProposal(ParticipantMessage participantMessage, RunningDinner runningDinner) {
-    String textContent = "## Subject" + FormatterUtil.NEWLINE + "## Message" + FormatterUtil.NEWLINE + participantMessage.getMessage();
+    String textContent = "## Subject" + FormatterUtil.NEWLINE + "## Message Template" + FormatterUtil.NEWLINE + participantMessage.getMessage();
     return new ProposalBase(mapMessagePath(MessageType.PARTICIPANT, runningDinner), textContent);
   }
 
   private static String mapEventDescriptionPath(RunningDinner runningDinner) {
     return EVENT_DESCRIPTIONS_INPUT_PREFIX + "/" + runningDinner.getAdminId() + ".md";
   }
-  private static String mapMessagePath(MessageType messageType, RunningDinner runningDinner) {
+
+	private static String mapMessagePath(MessageType messageType, RunningDinner runningDinner) {
     return MESSAGES_INPUT_PREFIX + "/" + messageType.toString() + "/" + runningDinner.getAdminId() + ".md";
   }
 }
