@@ -1,10 +1,10 @@
 package org.runningdinner.dinnerroute.distance;
 
-import java.util.List;
-
-import org.runningdinner.dinnerroute.DinnerRouteTeamWithDistanceTO;
 import org.runningdinner.dinnerroute.AllDinnerRoutesWithDistancesListTO;
+import org.runningdinner.dinnerroute.DinnerRouteTeamWithDistanceTO;
 import org.runningdinner.dinnerroute.DinnerRouteWithDistancesTO;
+
+import java.util.List;
 
 public final class DistanceUtil {
 	
@@ -51,7 +51,7 @@ public final class DistanceUtil {
 	
 
 	public static Double calculateSumDistance(List<DinnerRouteTeamWithDistanceTO> dinnerRouteTeamsWithDistances) {
-    Double sum = 0.0d;
+    double sum = 0.0d;
     for (DinnerRouteTeamWithDistanceTO dinnerRouteTeamWithDistanceTO : dinnerRouteTeamsWithDistances) {
       Double distanceToNextTeam = dinnerRouteTeamWithDistanceTO.getDistanceToNextTeam();
       if (distanceToNextTeam != null) {

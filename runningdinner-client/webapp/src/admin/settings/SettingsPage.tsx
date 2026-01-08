@@ -128,7 +128,7 @@ function SettingsViewController({ runningDinner, registrationTypes }: SettingsVi
       <PageTitle>{t('common:settings')}</PageTitle>
       {!currentRunningDinner.cancellationDate && (
         <Grid container>
-          <Grid item xs={12} sx={{ mt: -2, pb: 1, textAlign: 'right' }}>
+          <Grid sx={{ mt: -2, pb: 1, textAlign: 'right' }} size={12}>
             <Button onClick={openCancelEventDialog} color="secondary">
               {t('admin:settings_cancel_event')}
             </Button>
@@ -136,12 +136,21 @@ function SettingsViewController({ runningDinner, registrationTypes }: SettingsVi
         </Grid>
       )}
       <Grid container>
-        <Grid item xs={12} md={7} sx={{ pr: paddingRightOfLeftCol }}>
+        <Grid
+          sx={{ pr: paddingRightOfLeftCol }}
+          size={{
+            xs: 12,
+            md: 7
+          }}>
           <BasicDinnerSettingsView registrationTypes={registrationTypes} runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
           <AfterPartyLocationSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
         </Grid>
         {!isClosedDinner(currentRunningDinner) && (
-          <Grid item xs={12} md={5}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 5
+            }}>
             <PublicDinnerSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
           </Grid>
         )}
@@ -267,7 +276,7 @@ function BasicDinnerSettingsView({ runningDinner, registrationTypes, onSettingsS
       <FormProvider {...formMethods}>
         <form>
           <Grid container>
-            <Grid item>
+            <Grid>
               <Box pb={2}>
                 <Subtitle i18n="admin:settings_basics" />
               </Box>
@@ -275,7 +284,7 @@ function BasicDinnerSettingsView({ runningDinner, registrationTypes, onSettingsS
             </Grid>
           </Grid>
           <Grid container>
-            <Grid item xs={12} sx={{ mt: 2 }}>
+            <Grid sx={{ mt: 2 }} size={12}>
               <FormCheckbox
                 name="teamPartnerWishDisabled"
                 label={<Trans i18nKey="team_partner_wish_disabled" ns="common" />}
@@ -284,7 +293,7 @@ function BasicDinnerSettingsView({ runningDinner, registrationTypes, onSettingsS
             </Grid>
           </Grid>
           <Grid container justifyContent={'flex-end'}>
-            <Grid item sx={{ pt: 3, pb: 6 }}>
+            <Grid sx={{ pt: 3, pb: 6 }}>
               <PrimaryButton disabled={formState.isSubmitting} size={'large'} onClick={handleSubmit(handleSubmitBasicDetailsAsync)}>
                 {t('common:save')}
               </PrimaryButton>
@@ -374,7 +383,7 @@ function PublicDinnerSettingsView({ runningDinner, onSettingsSaved }: BaseRunnin
       <FormProvider {...formMethods}>
         <form>
           <Grid container>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box pb={2}>
                 <Subtitle i18n="admin:settings_public_registration" />
               </Box>
@@ -382,7 +391,7 @@ function PublicDinnerSettingsView({ runningDinner, onSettingsSaved }: BaseRunnin
             </Grid>
           </Grid>
           <Grid container justifyContent={'flex-end'}>
-            <Grid item sx={{ pt: 3, pb: 6 }}>
+            <Grid sx={{ pt: 3, pb: 6 }}>
               <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}...</SecondaryButton>
               <PrimaryButton disabled={formState.isSubmitting} size={'large'} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} sx={{ ml: 2 }}>
                 {t('common:save')}
@@ -506,7 +515,7 @@ function AfterPartyLocationFormView({ adminId, afterPartyLocation, onSettingsSav
         <form>
           <AfterPartyLocationFormControl />
           <Grid container justifyContent={'flex-end'}>
-            <Grid item sx={{ pt: 3, pb: 6, justifyContent: 'flex-end' }}>
+            <Grid sx={{ pt: 3, pb: 6, justifyContent: 'flex-end' }}>
               <PrimaryButton disabled={formState.isSubmitting} size={'large'} onClick={handleSubmit(handleSubmitAfterPartyLocation)} sx={{ ml: 2 }}>
                 {t('common:save')}
               </PrimaryButton>

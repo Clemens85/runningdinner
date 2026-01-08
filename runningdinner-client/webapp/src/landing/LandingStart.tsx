@@ -55,17 +55,20 @@ export function LandingStart() {
     <div>
       <Container maxWidth={false}>
         <Grid container sx={{ mt: 6, mb: 4 }}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Typography variant={'h4'} component="h4" color="textPrimary">
               {t('landing:teaser_how_does_it_work')}
             </Typography>
           </Grid>
         </Grid>
       </Container>
-
       <ExplanationBox>
         <Grid container sx={{ mt: 2, mb: 4 }} justifyContent="center" spacing={4}>
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6
+            }}>
             <Box my={2} display="flex" alignItems={'center'}>
               <GroupIcon color="primary" sx={{ mr: 2 }} fontSize="large" />
               <Paragraph i18n="landing:teaser_workflow_team_generation" />
@@ -91,7 +94,11 @@ export function LandingStart() {
               <Paragraph i18n="landing:teaser_workflow_dinner_route_finish" />
             </Box>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6
+            }}>
             <Typography variant={'h4'} component="h4" gutterBottom>
               {t('common:example')}
             </Typography>
@@ -110,26 +117,30 @@ export function LandingStart() {
           </Grid>
         </Grid>
       </ExplanationBox>
-
       <Container maxWidth={false}>
         <Grid container spacing={6} sx={{ mt: 2 }}>
-          <Grid item xs={12} md={6} ref={columnRef}>
+          <Grid
+            ref={columnRef}
+            size={{
+              xs: 12,
+              md: 6
+            }}>
             <PageTitle>{t('for_organizers_headline')}</PageTitle>
             <Box mb={mbTeaser}>
               <TeaserCard titleI18nKey={'landing:create_event_headline'}>
                 <Span i18n={'landing:create_event_description'} html={true} />
                 <Grid container justifyContent="space-evenly" alignItems={imageAlignItems} sx={{ py: 2 }} spacing={imageSpacing} direction={imageRowDirection}>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={wizardImg1} alt="Running Dinner Wizard with Basic Details" width={imageWidth} loading="lazy" />
                     </Zoom>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={wizardImg2} alt="Running Dinner Wizard with Option Settings" width={imageWidth} loading="lazy" />
                     </Zoom>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={dashboardImg} alt="Dashboard after Dinner Creation" width={imageWidth} loading="lazy" />
                     </Zoom>
@@ -145,17 +156,17 @@ export function LandingStart() {
               <TeaserCard titleI18nKey={'landing:manage_event_headline'}>
                 <Span i18n={'landing:manage_event_description'} />
                 <Grid container justifyContent="space-evenly" alignItems={imageAlignItems} sx={{ py: 2 }} spacing={imageSpacing} direction={imageRowDirection}>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={participantsImg} alt="Administration of Participants" width={imageWidth} loading="lazy" />
                     </Zoom>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={teamsImg} alt="Administration of Teams" width={imageWidth} loading="lazy" />
                     </Zoom>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={teamMailsImg} alt="Sending Mails" width={imageWidth} loading="lazy" />
                     </Zoom>
@@ -176,24 +187,28 @@ export function LandingStart() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6
+            }}>
             <PageTitle>{t('for_participants_headline')}</PageTitle>
 
             <Box mb={mbTeaser}>
               <TeaserCard titleI18nKey={'landing:discover_public_events_headline'}>
                 <Span i18n={'landing:discover_public_events_description'} />
                 <Grid container justifyContent="space-evenly" alignItems={imageAlignItems} sx={{ py: 2 }} spacing={imageSpacing} direction={imageRowDirection}>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={registrationImg} alt="Dinner Registration" width={imageWidth} />
                     </Zoom>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={selfServiceImg} alt="Functionalities for self managing settings" width={imageWidth} />
                     </Zoom>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Zoom>
                       <img src={dinnerRouteImg} alt="Live Dinner Route" width={imageWidth} />
                     </Zoom>

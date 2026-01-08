@@ -1,6 +1,6 @@
-import { Card, CardActions, CardContent, Dialog, DialogContent, Grid,Typography } from '@mui/material';
+import { Card, CardActions, CardContent, Dialog, DialogContent, Grid, Typography } from '@mui/material';
 import { BasePublicDinnerProps, CallbackHandler, createRegistrationOrder, isStringNotEmpty, LocalDate, RegistrationDataCollection } from '@runningdinner/shared';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
@@ -63,7 +63,7 @@ export function RegistrationPaymentDialog({ onCancel, registrationDataCollection
         </Paragraph>
 
         <Grid container sx={{ my: 3 }}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card>
               <PaymentCardHeader
                 title={publicRunningDinner.publicSettings.title}
@@ -73,7 +73,7 @@ export function RegistrationPaymentDialog({ onCancel, registrationDataCollection
               />
               <CardContent>
                 <PaymentCardPricing>
-                  <PaymentCardHeadlinePricing component="h2" variant="h3" color="textPrimary">
+                  <PaymentCardHeadlinePricing variant="h3" color="textPrimary">
                     {totalPriceFormatted}
                   </PaymentCardHeadlinePricing>
                 </PaymentCardPricing>
@@ -120,7 +120,7 @@ export function RegistrationPaymentDialog({ onCancel, registrationDataCollection
             </Card>
           </Grid>
 
-          <Grid item sx={{ pt: 2 }}>
+          <Grid sx={{ pt: 2 }}>
             <Typography variant={'caption'}>
               <cite>
                 <Trans

@@ -1,7 +1,6 @@
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Grid, Tooltip } from '@mui/material';
 import { getTeamPartnerOptionOfTeam, hasAllTeamMembersSameTeamPartnerWish, Team } from '@runningdinner/shared';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type TeamPartnerWishIconProps = {
@@ -31,12 +30,10 @@ export function TeamPartnerWishIcon({ team, showLabelAsTooltip, mt }: TeamPartne
     return (
       <>
         <Grid container alignItems={'center'} sx={{ mt: mt }}>
-          <Grid item>
+          <Grid>
             <FavoriteBorderIcon color={'primary'} />
           </Grid>
-          <Grid item sx={{ pl: 1 }}>
-            {label}
-          </Grid>
+          <Grid sx={{ pl: 1 }}>{label}</Grid>
         </Grid>
       </>
     );

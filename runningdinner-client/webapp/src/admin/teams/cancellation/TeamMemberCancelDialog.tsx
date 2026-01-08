@@ -1,10 +1,11 @@
-import { Box,Dialog, DialogContent } from '@mui/material';
+import { Box, Dialog, DialogContent } from '@mui/material';
 import {
   cancelTeamMemberAsync,
   CONSTANTS,
   findIssueByMessage,
   getFullname,
   getTeamMemberCancelInfo,
+  HttpError,
   isSameEntity,
   Participant,
   Team,
@@ -54,7 +55,7 @@ export const TeamMemberCancelDialog = ({ adminId, team, teamMemberToCancel, isOp
       showSuccess(t('admin:team_cancel_member_success_text', { fullname: teamMemberToCancelFullname }));
       onClose({ teamAfterCancel });
     } catch (e) {
-      const issues = getIssuesUntranslated(e);
+      const issues = getIssuesUntranslated(e as HttpError);
       if (findIssueByMessage(issues, CONSTANTS.VALIDATION_ISSUE_CONSTANTS.TEAM_NO_TEAM_MEMBERS_LEFT)) {
         navigateToCancelWholeTeam();
         return;
@@ -65,7 +66,7 @@ export const TeamMemberCancelDialog = ({ adminId, team, teamMemberToCancel, isOp
         });
         return;
       }
-      showHttpErrorDefaultNotification(e);
+      showHttpErrorDefaultNotification(e as HttpError);
     }
   };
 

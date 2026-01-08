@@ -99,7 +99,12 @@ export class DinnerRouteMapCalculator {
     this.mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(meals);
 
     this.afterPartyLocationMapEntry = isGeocodingResultValid(afterPartyLocation?.geocodingResult)
-      ? { ...afterPartyLocation, position: afterPartyLocation!.geocodingResult!, color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor() }
+      ? {
+          ...afterPartyLocation!,
+          title: afterPartyLocation!.title || '',
+          position: afterPartyLocation!.geocodingResult!,
+          color: DinnerRouteMapCalculator.calculatAfterPartyLocationColor(),
+        }
       : undefined;
 
     // Build color mappings for team clusters
@@ -135,10 +140,6 @@ export class DinnerRouteMapCalculator {
       }
     }
     return uniqBy(result, 'teamNumber');
-  }
-
-  public static distinctDinnerRouteTeams(allDinnerRouteTeams: DinnerRouteTeam[]): DinnerRouteTeam[] {
-    return allDinnerRouteTeams.filter((team, index, self) => index === self.findIndex((t) => t.teamNumber === team.teamNumber));
   }
 
   public static buildMealTypeMappings(meals: Meal[]): Record<string, MealType> {

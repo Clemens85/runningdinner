@@ -78,7 +78,7 @@ public class DistanceCalculatorTest {
 
   @Test
   public void calculateDistanceMatrix() {
-    DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(List.of(loerracherStr20, johannVonWeerth9, schwarzwaldStr193, jesuitenSchloss1), true);
+    DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(List.of(loerracherStr20, johannVonWeerth9, schwarzwaldStr193, jesuitenSchloss1));
     assertThat(distanceMatrix.getEntries()).hasSize(6);
 
     Double distance = distanceMatrix.getEntries().get(new DistanceEntry(johannVonWeerth9.getId().toString(), loerracherStr20.getId().toString()));

@@ -106,13 +106,13 @@ function ReSendRunningDinnerCreatedMessageContainer({ runningDinner }: BaseRunni
   return (
     <>
       <Grid container spacing={1} alignContent={'center'} justifyContent={'center'}>
-        <Grid item>
+        <Grid>
           <Span>{t('notification_dinner_acknowledge_required')}</Span>
         </Grid>
-        <Grid item>
+        <Grid>
           <Span>{t('admin:acknowledge_link_no_mail_received')}</Span>
         </Grid>
-        <Grid item>
+        <Grid>
           <LinkAction onClick={open}>
             <Span>{t('admin:acknowledge_link_no_mail_received_action')}</Span>
           </LinkAction>
@@ -180,10 +180,10 @@ function ReSendRunningDinnerCreatedMessageDialog({ onClose, runningDinner }: ReS
         </FormProvider>
         <Box mt={3}>
           <Grid container alignContent={'center'} spacing={1}>
-            <Grid item>
+            <Grid>
               <Span>{t('admin:acknowledge_link_resend_change_email_contact')}</Span>
             </Grid>
-            <Grid item>
+            <Grid>
               <FeedbackButton showAsLinkWithoutIcon={true} labelOverridden={<Span>{t('common:contact_help')}</Span>} />
             </Grid>
           </Grid>

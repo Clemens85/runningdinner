@@ -1,8 +1,8 @@
 import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
-import { Box, List, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Grid, List, ListItemIcon, ListItemText, useMediaQuery, useTheme } from '@mui/material';
 import { Alert } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import ListItemButton from '@mui/material/ListItemButton';
 import { styled } from '@mui/material/styles';
 import {
   fetchSelfAdminTeam,
@@ -10,6 +10,7 @@ import {
   getFullname,
   getSelfAdminTeamFetchSelector,
   getTeamPartnerOptionOfTeam,
+  HttpError,
   isSameEntity,
   Participant,
   SelfAdminChangeTeamHostViewModel,
@@ -108,7 +109,7 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
       showSuccess(successMessage, { wrapInHtmlContainer: true });
       setCurrentTeam(updatedTeam);
     } catch (e) {
-      showHttpErrorDefaultNotification(e, { showGenericMesssageOnValidationError: true });
+      showHttpErrorDefaultNotification(e as HttpError, { showGenericMesssageOnValidationError: true });
     }
   }
 
@@ -137,10 +138,10 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
         <Paragraph>{t('selfadmin:change_team_host_help')}</Paragraph>
         <Box mt={3}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <List dense={isSmallDevice}>
                 {team.teamMembers.map((teamMember) => (
-                  <ListItem button divider onClick={() => handleTeamMemberChange(teamMember, !isTeamHost(teamMember))} key={teamMember.id}>
+                  <ListItemButton divider onClick={() => handleTeamMemberChange(teamMember, !isTeamHost(teamMember))} key={teamMember.id}>
                     <ListItemIcon>
                       <Box p={isSmallDevice ? 2 : 3}>
                         <TeamMemberHostCheckboxIcon onChange={(newState) => handleTeamMemberChange(teamMember, newState)} checked={isTeamHost(teamMember)} />
@@ -156,7 +157,7 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
                         </>
                       }
                     />
-                  </ListItem>
+                  </ListItemButton>
                 ))}
               </List>
             </Grid>
@@ -164,7 +165,7 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
         </Box>
         <Box mt={1}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <FormTextField
                 fullWidth
                 variant="outlined"
@@ -181,7 +182,7 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
 
         <Box my={3}>
           <Grid container justifyContent={'flex-end'} direction={'row'}>
-            <Grid item xs={isSmallDevice ? 12 : undefined}>
+            <Grid size={isSmallDevice ? 12 : undefined}>
               <PrimaryButton onClick={handleSubmit(updateTeamHost)} sx={fullWidthProps} disabled={isSubmitting || !isTeamHostChanged()} size={'large'}>
                 {t('common:save')}
               </PrimaryButton>
@@ -216,7 +217,7 @@ function SelfAdminChangeTeamHostNotPossibleView() {
       <Paragraph>{t('selfadmin:change_team_host_help')}</Paragraph>
       <Box mt={3}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Alert severity={'info'} variant={'outlined'}>
               {t('selfadmin:team_partner_wish_registration_change_teamhost_not_possible')}
             </Alert>

@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,14 +22,10 @@ export const EmptyDetails = ({ labelI18n }: EmptyDetailsProps) => {
   return (
     <div ref={paperRef}>
       {!showDetailsView && !isSmallDevice && (
-        <Paper style={{ height: paperHeight, display: 'flex' }} elevation={3} id="empty-details">
-          <Grid container justifyContent={'center'} alignItems={'center'}>
-            <Grid item>
-              <Typography variant="subtitle2" sx={{ px: 2 }}>
-                {t(labelI18n)}
-              </Typography>
-            </Grid>
-          </Grid>
+        <Paper style={{ height: paperHeight, display: 'flex', justifyContent: 'center', alignItems: 'center' }} elevation={3} id="empty-details">
+          <Typography variant="subtitle2" sx={{ px: 2 }}>
+            {t(labelI18n)}
+          </Typography>
         </Paper>
       )}
     </div>

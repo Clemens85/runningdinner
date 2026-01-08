@@ -53,7 +53,7 @@ function MapView({ dinnerRouteMapData, dinnerRoute }: MapViewProps) {
     <>
       <WarningAlert teamsWithUnresolvedGeocodings={teamsWithUnresolvedGeocodings} />
       <div ref={mapContainerRef}>
-        <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }} defaultZoom={12} style={{ height: `${mapHeight}px` }} mapId={GOOGLE_MAPS_ID}>
+        <Map defaultCenter={{ lat: centerPosition.lat!, lng: centerPosition.lng! }} defaultZoom={12} style={{ height: `${mapHeight}px` }} mapId={GOOGLE_MAPS_ID} zoomControl={true}>
           {dinnerRouteMapData.dinnerRouteMapEntries.map((path) => (
             <TeamConnectionPathLine key={path.teamNumber} {...path} />
           ))}

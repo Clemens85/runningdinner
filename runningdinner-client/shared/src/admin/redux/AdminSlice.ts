@@ -51,5 +51,5 @@ export const getFetchDataErrorSelector = (state: AdminStateType): HttpError | un
 
 // *** Helpers *** //
 const getFetchDataItems = (state: AdminStateType): FetchData<any>[] => {
-  return [state.root.runningDinner, state.messages.messageJobs, state.messageJobDetails.messageTasks, state.messageJobDetails.messageJob];
+  return [state.root.runningDinner, state.messages.recipients, state.messageJobDetails.messageTasks, state.messageJobDetails.messageJob];
 };

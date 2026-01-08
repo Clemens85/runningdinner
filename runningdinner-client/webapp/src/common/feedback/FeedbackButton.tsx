@@ -40,7 +40,7 @@ export function FeedbackButtonContainerRightAligned() {
 
   return (
     <Grid container justifyContent={'flex-end'} alignItems={'center'}>
-      <Grid item>
+      <Grid>
         <Box mt={1} mr={isMobileDevice ? 1 : 2}>
           <FeedbackButton />
         </Box>

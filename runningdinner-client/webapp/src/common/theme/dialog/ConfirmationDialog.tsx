@@ -66,7 +66,6 @@ export function ConfirmationDialog({ dialogTitle, dialogContent, buttonConfirmTe
   return (
     <Dialog open={true} onClose={() => handleCloseInternal(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" {...remainderDialogProps}>
       {dialogTitle && <DialogTitleCloseable onClose={() => handleCloseInternal(false)}>{dialogTitle}</DialogTitleCloseable>}
-
       <DialogContent>
         {dialogContent && (
           <DialogContentText id="alert-dialog-description" component={'div'}>
@@ -77,10 +76,10 @@ export function ConfirmationDialog({ dialogTitle, dialogContent, buttonConfirmTe
       <DialogActions sx={dialogActionsCenteredStyle}>
         <Box px={2} pt={1} pb={2}>
           <Grid container justifyContent="flex-end" direction={buttonFlexDirection} alignContent="center">
-            <Grid item style={{ alignSelf: 'center' }}>
+            <Grid style={{ alignSelf: 'center' }}>
               {buttonCancelText && <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>}
             </Grid>
-            <Grid item style={{ alignSelf: 'center' }}>
+            <Grid style={{ alignSelf: 'center' }}>
               {danger ? (
                 <Button sx={{ ml: isSmallDevice ? 0 : 1 }} color="secondary" variant="contained" onClick={() => handleCloseInternal(true)} autoFocus>
                   {buttonConfirmText}

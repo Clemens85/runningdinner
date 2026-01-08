@@ -41,21 +41,21 @@ function ParticipantGenderSelectionFormController({ onChange, value }: Participa
 
   return (
     <Grid container alignItems={'center'}>
-      <Grid item>
+      <Grid>
         <Box>
           <ParticipantGenderTooltip gender={CONSTANTS.GENDER.MALE}>
             <ParticipantGenderIcon color={iconColors.MALE} gender={CONSTANTS.GENDER.MALE} onClick={() => onChange(CONSTANTS.GENDER.MALE)} />
           </ParticipantGenderTooltip>
         </Box>
       </Grid>
-      <Grid item>
+      <Grid>
         <Box>
           <ParticipantGenderTooltip gender={CONSTANTS.GENDER.UNDEFINED}>
             <ParticipantGenderIcon color={iconColors.UNDEFINED} gender={CONSTANTS.GENDER.UNDEFINED} onClick={() => onChange(CONSTANTS.GENDER.UNDEFINED)} />
           </ParticipantGenderTooltip>
         </Box>
       </Grid>
-      <Grid item>
+      <Grid>
         <Box>
           <ParticipantGenderTooltip gender={CONSTANTS.GENDER.FEMALE}>
             <ParticipantGenderIcon color={iconColors.FEMALE} gender={CONSTANTS.GENDER.FEMALE} onClick={() => onChange(CONSTANTS.GENDER.FEMALE)} />
@@ -63,7 +63,7 @@ function ParticipantGenderSelectionFormController({ onChange, value }: Participa
         </Box>
       </Grid>
       {gender && (
-        <Grid item>
+        <Grid>
           <Box ml={2}>
             <Typography variant={'caption'}>
               <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />

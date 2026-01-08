@@ -76,7 +76,12 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
       <PageTitle>{t('common:headline_participantlist')}</PageTitle>
       <Box mt={1}>
         <Grid container direction={'row'} spacing={2} alignItems={'center'} justifyContent={'flex-start'}>
-          <Grid item xs={12} sm={7} lg={3}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 7,
+              lg: 3
+            }}>
             <TextField
               variant="standard"
               onChange={handleSearchTextChange}
@@ -96,19 +101,35 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={5} lg={2}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 5,
+              lg: 2
+            }}>
             <Typography variant={'subtitle1'}>
               <NumberOfParticipants participantList={participantList!} />
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={12} lg={2} sx={commonStyles.textAlignRight}>
+          <Grid
+            sx={commonStyles.textAlignRight}
+            size={{
+              xs: 12,
+              sm: 12,
+              lg: 2
+            }}>
             {/* <Button color={"primary"} variant={"outlined"}
                     to={generateParticipantMessagesPath(adminId)}
                     component={RouterLink}>{t('messages_send_participants')}</Button> */}
           </Grid>
 
           {isArrayNotEmpty(searchableParticipants) && (
-            <Grid item xs={12} lg={5} sx={commonStyles.textAlignRight}>
+            <Grid
+              sx={commonStyles.textAlignRight}
+              size={{
+                xs: 12,
+                lg: 5
+              }}>
               <Button href={getParticipantsExportUrl(adminId)} rel="noopener noreferrer" color="primary" target="_blank">
                 {t('admin:export')}
               </Button>
@@ -117,7 +138,11 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
         </Grid>
 
         <Grid container direction={'row'} spacing={2} alignItems={'center'} justifyContent={'flex-start'}>
-          <Grid item xs={12} sm={7}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 7
+            }}>
             <FormCheckboxSimple
               name={'showMiscNotes'}
               label={t('admin:participants_show_misc_notes')}

@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, Dialog, DialogContent } from '@mui/material';
-import { Fullname, isStringNotEmpty,LocalDate, ParticipantRegistrationInfo, Time } from '@runningdinner/shared';
+import { Fullname, isStringNotEmpty, LocalDate, ParticipantRegistrationInfo, Time } from '@runningdinner/shared';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -88,7 +88,7 @@ export function MissingParticipantActivationDialog({ open, onClose, missingParti
             label={t('common:show_message_not_any_longer')}
             name="disableMissingParticipantActivationDialog"
             value={disableNotification}
-            onChange={(evt) => setDisableNotification(evt.target.checked)}
+            onChange={(evt: React.ChangeEvent<HTMLInputElement>) => setDisableNotification(evt.target.checked)}
           />
         </Box>
       </DialogContent>

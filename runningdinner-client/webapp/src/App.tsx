@@ -1,5 +1,6 @@
-import { StyledEngineProvider,Theme, ThemeProvider } from '@mui/material/styles';
-import React, { Suspense } from 'react';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import { Suspense } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { WIZARD_ROOT_PATH } from './common/mainnavigation/NavigationPaths';
@@ -7,9 +8,11 @@ import { ProgressBar } from './common/ProgressBar';
 import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
 import { ErrorBoundary } from './ErrorBoundary';
 
-declare module '@mui/styles/defaultTheme' {
-   
-  interface DefaultTheme extends Theme {}
+declare module '@mui/material/styles' {
+  // eslint-disable-next-line
+  interface Theme {
+    // Your custom theme extensions if any
+  }
 }
 
 const SelfAdminApp = React.lazy(() => import('./self/SelfAdminApp'));

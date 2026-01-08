@@ -31,10 +31,10 @@ function TeamNeighbourClustersLoadingView() {
 
   return (
     <Grid container alignItems="center" sx={{ my: 2 }}>
-      <Grid item>
+      <Grid>
         <CircularProgress size={20} />
       </Grid>
-      <Grid item>
+      <Grid>
         <Box sx={{ ml: 2 }}>
           <small>{t('common:loading')}</small>
         </Box>
@@ -86,15 +86,15 @@ function TeamNeighbourClusterView({ teamNeighbourClusters, distanceRange, loadin
 function SingleTeamNeighbourClusterView({ a, b, distance }: TeamNeighbourCluster) {
   return (
     <Grid container justifyContent="space-between" alignItems={'center'}>
-      <Grid item>
+      <Grid>
         <TeamNeighbourClusterItem {...a} />
       </Grid>
-      <Grid item>
+      <Grid>
         <Box>
           <center>{Math.round(distance)} m</center>
         </Box>
       </Grid>
-      <Grid item>
+      <Grid>
         <TeamNeighbourClusterItem {...b} />
       </Grid>
     </Grid>
@@ -200,7 +200,7 @@ function MealsRouteFilterView() {
     if (isDefined(mealFilterOption.toMeal)) {
       return (
         <>
-          {mealFilterOption.fromMeal?.label} &nbsp;=&gt;&nbsp; <strong>{mealFilterOption.toMeal.label}</strong>
+          {mealFilterOption.fromMeal?.label} &nbsp;=&gt;&nbsp; <strong>{mealFilterOption.toMeal?.label}</strong>
         </>
       );
     }

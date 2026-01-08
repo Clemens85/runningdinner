@@ -2,7 +2,6 @@ import Grid from '@mui/material/Grid';
 import { useWizardSelector } from '@runningdinner/shared';
 import { getNavigationStepSelector } from '@runningdinner/shared';
 import { SummaryNavigationStep } from '@runningdinner/shared';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -41,7 +40,7 @@ export default function WizardButtons({ onSubmitData }: WizardButtonsProps) {
 
   return (
     <Grid container justifyContent="flex-end" sx={{ ...commonStyles.textAlignRight, my: 3 }}>
-      <Grid item xs={12}>
+      <Grid size={12}>
         {previousNavigationStep && (
           <SecondaryButton onClick={handleSubmit(handlePrevious)} data-testid={'wizard-previous-action'}>
             {t('common:back')}

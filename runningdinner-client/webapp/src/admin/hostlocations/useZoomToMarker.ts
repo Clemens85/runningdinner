@@ -17,7 +17,7 @@ export function useZoomToMarker() {
       if (!isGeocodingResultValid(geocodingResult)) {
         return;
       }
-      mapRef.panTo({ lat, lng });
+      mapRef.panTo({ lat: lat!, lng: lng! });
       mapRef.setZoom(15);
     },
   };

@@ -1,5 +1,4 @@
-import { Checkbox, FormControl, FormControlLabel, FormHelperText } from '@mui/material';
-import { CheckboxProps } from '@mui/material/Checkbox/Checkbox';
+import { Checkbox, CheckboxProps, FormControl, FormControlLabel, FormHelperText } from '@mui/material';
 import { isStringNotEmpty } from '@runningdinner/shared';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';

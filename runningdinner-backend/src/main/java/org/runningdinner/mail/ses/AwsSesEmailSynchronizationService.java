@@ -81,7 +81,7 @@ public class AwsSesEmailSynchronizationService {
   private void handleReject(AwsSesNotification notification) {
     AwsSesNotification.Reject reject = notification.getReject();
     if (reject == null) {
-      LOGGER.warn("Received Reject notification without reject details: {}", notification);
+      LOGGER.warn("Received Reject notification without reject details: {}", notification.getMail() != null ? notification.getMail().toString() : "null");
       return;
     }
 

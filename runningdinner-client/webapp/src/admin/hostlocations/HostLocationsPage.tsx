@@ -1,6 +1,6 @@
 import { Box } from '@mui/system';
 import { BaseRunningDinnerProps, DinnerRouteMapCalculator, DinnerRouteOverviewActionType, isQuerySucceeded, isStringNotEmpty, TeamConnectionPath } from '@runningdinner/shared';
-import { DinnerRouteMapData,DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext } from '@runningdinner/shared';
+import { DinnerRouteMapData, DinnerRouteOverviewContextProvider, filterTeamConnectionPaths, useDinnerRouteOverviewContext } from '@runningdinner/shared';
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import { useEffect, useRef } from 'react';
 import { Trans } from 'react-i18next';
@@ -39,8 +39,6 @@ function HostLocationsMapsPage({ runningDinner }: BaseRunningDinnerProps) {
 
   const dinnerRoutesQueryResult = useFindAllDinnerRoutes(adminId);
   const allDinnerRoutes = dinnerRoutesQueryResult.data?.dinnerRoutes || [];
-  let allDinnerRouteTeams = allDinnerRoutes.flatMap((dinnerRoute) => dinnerRoute.teams);
-  allDinnerRouteTeams = DinnerRouteMapCalculator.distinctDinnerRouteTeams(allDinnerRouteTeams);
 
   const afterPartyLocation = allDinnerRoutes.length > 0 ? allDinnerRoutes[0].afterPartyLocation : null;
 

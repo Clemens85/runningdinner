@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { PageTitle, Subtitle } from '../common/theme/typography/Tags';
 
 export default function Impressum() {

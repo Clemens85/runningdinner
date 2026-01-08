@@ -1,11 +1,8 @@
 package org.runningdinner.dinnerroute;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceContext;
 import org.hibernate.StaleObjectStateException;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
@@ -24,9 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.OptimisticLockException;
-import jakarta.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class DinnerRouteService {
@@ -84,7 +83,7 @@ public class DinnerRouteService {
     
     Map<Integer, LinkedHashSet<Integer>> teamClusters = DinnerRouteCalculator.reverseCalculateClustersOfTeams(dinnerRoutes);
     
-    List<TeamNeighbourCluster> teamNeighbourClusters = teamNeighbourClusterCalculationService.calculateTeamNeighbourClusters(adminId, teams, 0d);
+    List<TeamNeighbourCluster> teamNeighbourClusters = teamNeighbourClusterCalculationService.calculateTeamNeighbourClusters(teams, 0d);
     
     return new DinnerRouteListTO(dinnerRoutes, teamClusters, new TeamNeighbourClusterListTO(teamNeighbourClusters));
   }

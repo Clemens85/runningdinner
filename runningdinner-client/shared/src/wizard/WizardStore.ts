@@ -1,15 +1,16 @@
-import { Action,configureStore, getDefaultMiddleware, ThunkAction } from '@reduxjs/toolkit';
+import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { logger } from 'redux-logger';
 
 import { wizardSlice } from './WizardSlice';
 
-const customizedMiddleware = getDefaultMiddleware({
-  serializableCheck: false, // I want to use Dates in Redux for now (no persistence of store needed for now...)
+export const wizardStore = configureStore({
+  reducer: wizardSlice,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // I want to use Dates in Redux for now (no persistence of store needed for now...)
+    }).concat(logger as any),
 });
-const middleware = [...customizedMiddleware, logger];
-
-export const wizardStore = configureStore({ reducer: wizardSlice, middleware });
 
 export type WizardRootState = ReturnType<typeof wizardStore.getState>;
 

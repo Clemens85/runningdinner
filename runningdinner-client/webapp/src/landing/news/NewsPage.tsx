@@ -15,7 +15,13 @@ export function NewsPage() {
       <PageTitle mt={4}>{t('common:news')}</PageTitle>
       <Grid container direction={'column'} spacing={3}>
         {newsItems.map((newsItem) => (
-          <Grid item xs={12} lg={10} xl={8} key={newsItem.title}>
+          <Grid
+            key={newsItem.title}
+            size={{
+              xs: 12,
+              lg: 10,
+              xl: 8
+            }}>
             <NewsCard title={t(`news:${newsItem.title}`)} content={<Trans i18nKey={`news:${newsItem.content}`} />} date={newsItem.date} />
           </Grid>
         ))}

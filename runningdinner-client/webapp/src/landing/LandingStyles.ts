@@ -18,7 +18,7 @@ export const ExplanationBox = styled('div')(({ theme }) => ({
   padding: theme.spacing(4),
 }));
 
-export const TypographyTransparentWhite = styled(Typography)(({ theme }) => ({
+export const TypographyTransparentWhite = styled(Typography)(() => ({
   color: 'rgba(255, 255, 255, 0.87)',
 }));
 

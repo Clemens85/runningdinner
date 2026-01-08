@@ -28,7 +28,11 @@ export function BasicDinnerSettingsFormControl({ registrationTypes }: BasicDinne
   return (
     <>
       <Grid container>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <FormSelect
             name="registrationType"
             variant={'outlined'}
@@ -45,15 +49,27 @@ export function BasicDinnerSettingsFormControl({ registrationTypes }: BasicDinne
         </Grid>
       </Grid>
       <Grid container sx={{ mt: 3 }}>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <FormTextField name="title" label={t('common:title')} required helperText={t('common:title_help')} variant="outlined" fullWidth />
         </Grid>
       </Grid>
       <Grid container sx={{ mt: 3 }} spacing={3}>
-        <Grid item xs={12} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 3
+          }}>
           <FormTextField name="zip" label={t('common:zip')} required variant="outlined" helperText={t('common:zip_help')} fullWidth />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <FormTextField name="city" label={t('common:city')} required variant="outlined" fullWidth />
         </Grid>
 
@@ -63,13 +79,16 @@ export function BasicDinnerSettingsFormControl({ registrationTypes }: BasicDinne
           onUpdateZipRestrictions={handleUpdateZipRestrictions}
         />
 
-        <Grid item xs={12} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 3
+          }}>
           <FormDatePicker name={'date'} label={t('common:date')} />
         </Grid>
       </Grid>
-
       <Grid container sx={{ mt: 3 }}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <FormLabel>{t('common:event_language_label')}</FormLabel>
           <Box my={1}>
             <Controller

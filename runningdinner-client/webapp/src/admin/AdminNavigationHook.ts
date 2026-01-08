@@ -22,6 +22,10 @@ function generateParticipantPath(adminId: string, participantId: string) {
   return `/admin/${adminId}/participants/${participantId}`;
 }
 
+function generateParticipantsPath(adminId: string) {
+  return `/admin/${adminId}/participants`;
+}
+
 function generateTeamMessagesPath(adminId: string, messageSubType?: MessageSubType, teamsToSelect?: Team[]) {
   let result = generateMessagesPath(adminId, 'teams');
   let queryParamSeparator = '?';
@@ -102,6 +106,10 @@ export function useAdminNavigation() {
     navigate(generateParticipantPath(adminId, participantId));
   }
 
+  function navigateToParticipants(adminId: string) {
+    navigate(generateParticipantsPath(adminId));
+  }
+
   function navigateToMessagesLandingPage(adminId: string, sentFromMessageType?: string) {
     navigate(generateMessagesLandingPath(adminId, sentFromMessageType));
   }
@@ -134,6 +142,7 @@ export function useAdminNavigation() {
     navigateToDinnerRouteMessages,
     generateParticipantPath,
     navigateToParticipant,
+    navigateToParticipants,
     navigateToMessagesLandingPage,
     generateDinnerRouteMessagesPath,
     generateHostLocationsPath,

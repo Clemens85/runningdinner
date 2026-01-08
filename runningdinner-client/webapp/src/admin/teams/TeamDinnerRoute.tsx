@@ -17,5 +17,5 @@ export default function TeamDinnerRoute() {
   if (!isQuerySucceeded(dinnerRouteQuery)) {
     return <FetchProgressBar {...dinnerRouteQuery} />;
   }
-  return <DinnerRouteView dinnerRoute={dinnerRouteQuery.data!} meals={runningDinner.options.meals} adminId={adminId} />;
+  return <DinnerRouteView dinnerRoute={dinnerRouteQuery.data!} meals={runningDinner.options.meals} />;
 }

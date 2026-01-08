@@ -39,7 +39,7 @@ export default function MealsList({ meals, runningDinner, onRunningDinnerUpdate,
       </CardContent>
       <CardActions>
         <Grid container justifyContent={'flex-end'}>
-          <Grid item>
+          <Grid>
             <Box pr={2} mt={-2} pb={2}>
               <PrimaryButton onClick={() => setEditMealsDialogOpen(true)} size={'small'} data-testid="open-edit-meals-action">
                 {t('common:label_edit')}
@@ -48,7 +48,6 @@ export default function MealsList({ meals, runningDinner, onRunningDinnerUpdate,
           </Grid>
         </Grid>
       </CardActions>
-
       <EditMealsDialog
         open={editMealsDialogOpen}
         dashboardAdminActivities={dashboardAdminActivities}

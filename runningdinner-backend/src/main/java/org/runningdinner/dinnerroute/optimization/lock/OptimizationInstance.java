@@ -2,6 +2,7 @@ package org.runningdinner.dinnerroute.optimization.lock;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -83,5 +84,13 @@ public class OptimizationInstance {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(getOptimizationId());
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+						.add("optimizationId", optimizationId)
+						.add("status", status)
+						.toString();
 	}
 }
