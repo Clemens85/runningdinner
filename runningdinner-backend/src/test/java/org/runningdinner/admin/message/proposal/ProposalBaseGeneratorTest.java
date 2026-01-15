@@ -7,12 +7,14 @@ import org.runningdinner.admin.message.participant.ParticipantSelection;
 import org.runningdinner.admin.message.team.TeamMessage;
 import org.runningdinner.admin.message.team.TeamSelection;
 import org.runningdinner.core.AfterPartyLocation;
+import org.runningdinner.core.MealClass;
 import org.runningdinner.core.PublicSettings;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerConfig;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +36,7 @@ public class ProposalBaseGeneratorTest {
     
     ProposalBase result = ProposalBaseGenerator.newEventDescriptionProposal(runningDinner);
     assertEventDescriptionProposal(result, runningDinner);
-    assertThat(result.textContent()).contains("After Party at Bar XYZ");
+    assertThat(result.textContent()).contains("### After Party at Bar XYZ - 22:00 Uhr");
   }
 
   @Test
@@ -71,9 +73,9 @@ public class ProposalBaseGeneratorTest {
     assertThat(result.textContent()).contains("## Subject");
     assertThat(result.textContent()).contains("## Message Template");
     assertThat(result.textContent()).contains("Dear teams, here are your arrangements");
-    assertThat(result.textContent()).contains("## Host Template");
+    assertThat(result.textContent()).contains("### Host Template");
     assertThat(result.textContent()).contains("You are hosting at {meal}");
-    assertThat(result.textContent()).contains("## Non Host Template");
+    assertThat(result.textContent()).contains("### Non Host Template");
     assertThat(result.textContent()).contains("You are guest at {meal}");
   }
 
@@ -94,9 +96,9 @@ public class ProposalBaseGeneratorTest {
     assertThat(result.textContent()).contains("## Subject");
     assertThat(result.textContent()).contains("## Message Template");
     assertThat(result.textContent()).contains("Here is your dinner route: {route}");
-    assertThat(result.textContent()).contains("## Hosts Template");
+    assertThat(result.textContent()).contains("### Hosts Template");
     assertThat(result.textContent()).contains("Hosts: {mobilenumber}");
-    assertThat(result.textContent()).contains("## Self Template");
+    assertThat(result.textContent()).contains("### Self Template");
     assertThat(result.textContent()).contains("Your team is hosting");
   }
 
@@ -106,11 +108,18 @@ public class ProposalBaseGeneratorTest {
     runningDinner.setTitle("Test Dinner");
     runningDinner.setCity("Test City");
     runningDinner.setZip("12345");
-    runningDinner.setDate(LocalDate.now().plusDays(7));
+    runningDinner.setDate(LocalDate.of(2026, 12, 24));
     runningDinner.setEmail("test@example.com");
-    runningDinner.setLanguageCode("en");
-    runningDinner.setConfiguration(RunningDinnerConfig.newConfigurer().build());
-    
+    runningDinner.setLanguageCode("de");
+    runningDinner.setConfiguration(
+			RunningDinnerConfig.newConfigurer()
+				.havingMeals(List.of(
+					new MealClass("Vorspeise", LocalDateTime.of(2026, 12, 24, 18, 0)),
+					new MealClass("Hauptgang", LocalDateTime.of(2026, 12, 24, 20, 0))
+				))
+				.build()
+		);
+
     PublicSettings publicSettings = new PublicSettings();
     publicSettings.setPublicTitle("Test Event Title");
     publicSettings.setPublicDescription("This is a test event description");
@@ -126,14 +135,19 @@ public class ProposalBaseGeneratorTest {
     afterPartyLocation.setStreetNr("123");
     afterPartyLocation.setZip("12345");
     afterPartyLocation.setCityName("Test City");
-    afterPartyLocation.setTime(LocalDateTime.now());
+    afterPartyLocation.setTime(LocalDateTime.of(2026, 12, 24, 22, 0));
     return afterPartyLocation;
   }
 
   private void assertEventDescriptionProposal(final ProposalBase result, final RunningDinner runningDinner) {
     assertThat(result).isNotNull();
-			assertThat(result.storagePath()).isEqualTo("input/event_description/" + runningDinner.getAdminId() + ".md");
-    assertThat(result.textContent()).contains("## Test Event Title");
-    assertThat(result.textContent()).contains("This is a test event description");
+			assertThat(result.storagePath()).isEqualTo("input/EVENT_DESCRIPTION/" + runningDinner.getAdminId() + ".md");
+    assertThat(result.textContent()).contains("# Test Event Title");
+    assertThat(result.textContent()).contains("12345 Test City");
+		assertThat(result.textContent()).contains("24.12.2026");
+		assertThat(result.textContent()).contains("This is a test event description");
+		assertThat(result.textContent()).contains("## Ablauf");
+		assertThat(result.textContent()).contains("18:00 Uhr: Vorspeise");
+		assertThat(result.textContent()).contains("20:00 Uhr: Hauptgang");
   }
 }
