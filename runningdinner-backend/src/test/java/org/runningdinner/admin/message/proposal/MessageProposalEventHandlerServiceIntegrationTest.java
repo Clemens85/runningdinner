@@ -81,7 +81,7 @@ public class MessageProposalEventHandlerServiceIntegrationTest {
 
     awaitTillNumProposalsPersisted(2);
     assertThat(getProposalRepository().getProposals()).hasSize(2);
-    assertThat(getProposalRepository().getProposals().getFirst().storagePath()).contains("input/event_descriptions");
+    assertThat(getProposalRepository().getProposals().getFirst().storagePath()).contains("input/EVENT_DESCRIPTION");
     assertThat(getProposalRepository().getLast().storagePath()).contains(MessageType.PARTICIPANT.toString());
 
     teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
