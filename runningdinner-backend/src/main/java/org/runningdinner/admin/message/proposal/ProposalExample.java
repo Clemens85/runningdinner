@@ -1,6 +1,6 @@
 package org.runningdinner.admin.message.proposal;
 
-public record ProposalBase(
+public record ProposalExample(
     String storagePath,
     String textContent
 ) {

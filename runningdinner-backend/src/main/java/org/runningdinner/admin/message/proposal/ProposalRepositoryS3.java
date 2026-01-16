@@ -23,7 +23,7 @@ public class ProposalRepositoryS3 implements ProposalRepository {
   }
 
   @Override
-  public void saveProposal(final ProposalBase proposal) {
+  public void saveProposal(final ProposalExample proposal) {
     try {
       s3ClientProviderService.writeStringToFile(
           s3ClientProviderService.getMessageProposalBucket(),
@@ -40,7 +40,7 @@ public class ProposalRepositoryS3 implements ProposalRepository {
   }
 
   @Override
-  public Optional<ProposalBase> findProposalByStoragePath(final String storagePath) {
+  public Optional<ProposalExample> findProposalByStoragePath(final String storagePath) {
 
     if (!s3ClientProviderService.isFileExisting(s3ClientProviderService.getMessageProposalBucket(), storagePath)) {
       return Optional.empty();
@@ -51,7 +51,7 @@ public class ProposalRepositoryS3 implements ProposalRepository {
           s3ClientProviderService.getMessageProposalBucket(),
           storagePath
       );
-      return Optional.of(new ProposalBase(storagePath, content));
+      return Optional.of(new ProposalExample(storagePath, content));
     } catch (Exception e) {
       LOGGER.warn("Failed to read proposal from S3 at path: {}", storagePath, e);
       return Optional.empty();

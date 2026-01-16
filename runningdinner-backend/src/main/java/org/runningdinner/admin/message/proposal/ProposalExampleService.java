@@ -11,45 +11,54 @@ import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MessageProposalEventHandlerService {
+public class ProposalExampleService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MessageProposalEventHandlerService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProposalExampleService.class);
 
   private final ProposalRepository proposalRepository;
 
-  public MessageProposalEventHandlerService(final ProposalRepository proposalRepository) {
+  public ProposalExampleService(final ProposalRepository proposalRepository) {
     this.proposalRepository = proposalRepository;
   }
 
-  @EventListener
-  public void handleMessageProposal(MessageProposalEvent messageProposalEvent) {
+  public void saveMessageProposalExample(MessageProposalExampleEvent messageProposalExampleEvent) {
 
-    final MessageJob messageJob = messageProposalEvent.messageJob();
+    final MessageJob messageJob = messageProposalExampleEvent.messageJob();
     final RunningDinner runningDinner = messageJob.getRunningDinner();
 
-    if (runningDinner.getRegistrationType() == RegistrationType.CLOSED ||
-        runningDinner.getRunningDinnerType() == RunningDinner.RunningDinnerType.DEMO) {
-      LOGGER.info("Skipping message proposal generation for running dinner with registration type CLOSED or DEMO: {}", runningDinner);
-      return;
-    }
-
-    if (!isMessageJobRelevant(messageJob, messageProposalEvent.messageTemplate())) {
+		if (!isRunningDinnerRelevant(runningDinner)) {
+			return;
+		}
+    if (!isMessageJobRelevant(messageJob, messageProposalExampleEvent.messageTemplate())) {
       LOGGER.info("Skipping message proposal generation for non-relevant message job: {}", messageJob);
       return;
     }
 
-    final ProposalBase eventDescriptionProposal = ProposalBaseGenerator.newEventDescriptionProposal(runningDinner);
-    saveProposalIfNotExistingWithEqualContent(eventDescriptionProposal);
-
-    final ProposalBase messageProposal = ProposalBaseGenerator.newMessageProposal(messageProposalEvent.messageTemplate(), runningDinner);
+    final ProposalExample messageProposal = ProposalExampleGenerator.newMessageProposalExample(messageProposalExampleEvent.messageTemplate(), runningDinner);
     if (messageProposal != null) {
       saveProposalIfNotExistingWithEqualContent(messageProposal);
     }
   }
+
+	public void saveEventDescriptionProposalExample(RunningDinner runningDinner) {
+		if (!isRunningDinnerRelevant(runningDinner)) {
+			return;
+		}
+		final ProposalExample eventDescriptionProposal = ProposalExampleGenerator.newEventDescriptionProposalExample(runningDinner);
+		saveProposalIfNotExistingWithEqualContent(eventDescriptionProposal);
+	}
+
+	private boolean isRunningDinnerRelevant(RunningDinner runningDinner) {
+		if (runningDinner.getRegistrationType() == RegistrationType.CLOSED ||
+				runningDinner.getRunningDinnerType() == RunningDinner.RunningDinnerType.DEMO) {
+			LOGGER.info("Skipping proposal example generation for running dinner with registration type CLOSED or DEMO: {}", runningDinner);
+			return false;
+		}
+		return true;
+	}
 
   private boolean isMessageJobRelevant(MessageJob messageJob, BaseMessage messageTemplate) {
     final MessageType messageType = messageJob.getMessageType();
@@ -64,8 +73,8 @@ public class MessageProposalEventHandlerService {
     };
   }
 
-  private void saveProposalIfNotExistingWithEqualContent(ProposalBase proposal) {
-    ProposalBase existingProposal = this.proposalRepository.findProposalByStoragePath(proposal.storagePath())
+  private void saveProposalIfNotExistingWithEqualContent(ProposalExample proposal) {
+    ProposalExample existingProposal = this.proposalRepository.findProposalByStoragePath(proposal.storagePath())
                                               .orElse(null);
     if (existingProposal == null) {
       this.proposalRepository.saveProposal(proposal);

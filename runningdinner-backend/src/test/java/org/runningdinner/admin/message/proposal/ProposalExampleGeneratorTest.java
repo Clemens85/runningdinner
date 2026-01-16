@@ -19,12 +19,12 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ProposalBaseGeneratorTest {
+public class ProposalExampleGeneratorTest {
 
   @Test
   public void generateEventDescriptionProposal() {
     RunningDinner runningDinner = newRunningDinner();
-    ProposalBase result = ProposalBaseGenerator.newEventDescriptionProposal(runningDinner);
+    ProposalExample result = ProposalExampleGenerator.newEventDescriptionProposalExample(runningDinner);
     assertEventDescriptionProposal(result, runningDinner);
   }
 
@@ -34,7 +34,7 @@ public class ProposalBaseGeneratorTest {
     AfterPartyLocation afterPartyLocation = newAfterPartyLocation();
     runningDinner.setAfterPartyLocation(afterPartyLocation);
     
-    ProposalBase result = ProposalBaseGenerator.newEventDescriptionProposal(runningDinner);
+    ProposalExample result = ProposalExampleGenerator.newEventDescriptionProposalExample(runningDinner);
     assertEventDescriptionProposal(result, runningDinner);
     assertThat(result.textContent()).contains("### After Party at Bar XYZ - 22:00 Uhr");
   }
@@ -47,7 +47,7 @@ public class ProposalBaseGeneratorTest {
     participantMessage.setMessage("Hello participants, this is a test message");
     participantMessage.setParticipantSelection(ParticipantSelection.ALL);
     
-    ProposalBase result = ProposalBaseGenerator.newMessageProposal(participantMessage, runningDinner);
+    ProposalExample result = ProposalExampleGenerator.newMessageProposalExample(participantMessage, runningDinner);
     
     assertThat(result).isNotNull();
     assertThat(result.storagePath()).isEqualTo("input/message/PARTICIPANT/" + runningDinner.getAdminId() + ".md");
@@ -66,7 +66,7 @@ public class ProposalBaseGeneratorTest {
     teamMessage.setNonHostMessagePartTemplate("You are guest at {meal}");
     teamMessage.setTeamSelection(TeamSelection.ALL);
     
-    ProposalBase result = ProposalBaseGenerator.newMessageProposal(teamMessage, runningDinner);
+    ProposalExample result = ProposalExampleGenerator.newMessageProposalExample(teamMessage, runningDinner);
     
     assertThat(result).isNotNull();
     assertThat(result.storagePath()).isEqualTo("input/message/TEAM/" + runningDinner.getAdminId() + ".md");
@@ -89,7 +89,7 @@ public class ProposalBaseGeneratorTest {
     dinnerRouteMessage.setSelfTemplate("Your team is hosting");
     dinnerRouteMessage.setTeamSelection(TeamSelection.ALL);
     
-    ProposalBase result = ProposalBaseGenerator.newMessageProposal(dinnerRouteMessage, runningDinner);
+    ProposalExample result = ProposalExampleGenerator.newMessageProposalExample(dinnerRouteMessage, runningDinner);
     
     assertThat(result).isNotNull();
     assertThat(result.storagePath()).isEqualTo("input/message/DINNER_ROUTE/" + runningDinner.getAdminId() + ".md");
@@ -139,7 +139,7 @@ public class ProposalBaseGeneratorTest {
     return afterPartyLocation;
   }
 
-  private void assertEventDescriptionProposal(final ProposalBase result, final RunningDinner runningDinner) {
+  private void assertEventDescriptionProposal(final ProposalExample result, final RunningDinner runningDinner) {
     assertThat(result).isNotNull();
 			assertThat(result.storagePath()).isEqualTo("input/EVENT_DESCRIPTION/" + runningDinner.getAdminId() + ".md");
     assertThat(result.textContent()).contains("# Test Event Title");

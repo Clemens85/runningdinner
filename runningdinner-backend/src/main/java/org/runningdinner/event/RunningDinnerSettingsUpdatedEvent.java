@@ -8,9 +8,7 @@ import org.springframework.util.Assert;
 
 public class RunningDinnerSettingsUpdatedEvent extends ApplicationEvent {
 
-  private static final long serialVersionUID = 1L;
-  
-  private RunningDinner runningDinner;
+  private final RunningDinner runningDinner;
   
   private RunningDinnerInfo oldBasicSettings;
   

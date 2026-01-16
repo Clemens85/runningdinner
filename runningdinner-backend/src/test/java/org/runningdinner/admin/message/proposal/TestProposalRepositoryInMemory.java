@@ -11,23 +11,23 @@ import java.util.Optional;
 @Primary
 public class TestProposalRepositoryInMemory implements ProposalRepository {
 
-  private final List<ProposalBase> proposals = new ArrayList<>();
+  private final List<ProposalExample> proposals = new ArrayList<>();
 
   @Override
-  public void saveProposal(final ProposalBase proposal) {
+  public void saveProposal(final ProposalExample proposal) {
     proposals.add(proposal);
   }
 
   @Override
-  public Optional<ProposalBase> findProposalByStoragePath(final String storagePath) {
+  public Optional<ProposalExample> findProposalByStoragePath(final String storagePath) {
     return proposals.stream().filter(p -> p.storagePath().equals(storagePath)).findFirst();
   }
 
-  public List<ProposalBase> getProposals() {
+  public List<ProposalExample> getProposals() {
     return this.proposals;
   }
 
-  public ProposalBase getLast() {
+  public ProposalExample getLast() {
     return this.proposals.getLast();
   }
 

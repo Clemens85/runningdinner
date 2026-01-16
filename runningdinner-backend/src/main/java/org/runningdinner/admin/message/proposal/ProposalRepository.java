@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public interface ProposalRepository {
 
-  void saveProposal(ProposalBase proposal);
+  void saveProposal(ProposalExample proposal);
 
-  Optional<ProposalBase> findProposalByStoragePath(String storagePath);
+  Optional<ProposalExample> findProposalByStoragePath(String storagePath);
 }

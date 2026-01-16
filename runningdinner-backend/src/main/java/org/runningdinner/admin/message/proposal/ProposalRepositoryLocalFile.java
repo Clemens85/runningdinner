@@ -30,7 +30,7 @@ public class ProposalRepositoryLocalFile implements ProposalRepository {
   }
 
   @Override
-  public void saveProposal(final ProposalBase proposal) {
+  public void saveProposal(final ProposalExample proposal) {
     String filePath = destFolder + File.separator + proposal.storagePath();
     File file = new File(filePath);
 
@@ -46,7 +46,7 @@ public class ProposalRepositoryLocalFile implements ProposalRepository {
   }
 
   @Override
-  public Optional<ProposalBase> findProposalByStoragePath(final String storagePath) {
+  public Optional<ProposalExample> findProposalByStoragePath(final String storagePath) {
     String filePath = destFolder + File.separator + storagePath;
     File file = new File(filePath);
 
@@ -57,7 +57,7 @@ public class ProposalRepositoryLocalFile implements ProposalRepository {
 
     try {
       String content = FileUtils.readFileToString(file, "UTF-8");
-      ProposalBase proposal = new ProposalBase(storagePath, content);
+      ProposalExample proposal = new ProposalExample(storagePath, content);
       return Optional.of(proposal);
     } catch (IOException e) {
       LOGGER.error("Failed to read proposal from local file: {}", filePath, e);

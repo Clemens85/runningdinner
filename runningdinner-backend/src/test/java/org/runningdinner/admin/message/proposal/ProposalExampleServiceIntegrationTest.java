@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
-public class MessageProposalEventHandlerServiceIntegrationTest {
+public class ProposalExampleServiceIntegrationTest {
 
   private static final int TOTAL_NUMBER_OF_PARTICIPANTS = 22;
 
@@ -68,8 +68,8 @@ public class MessageProposalEventHandlerServiceIntegrationTest {
     this.testMessageTaskHelperService.awaitAllMessageTasksSent();
     // Assert normal running dinner creation message was sent
     assertThat(mailSenderInMemory.filterForMessageTo(CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS)).isNotNull();
-    // But this shouldn't cause any proposals being stored
-    assertThat(getProposalRepository().getProposals()).isEmpty();
+    // Assert that proposal for event description is created
+    assertThat(getProposalRepository().getProposals()).hasSize(1);
 
     ParticipantMessage participantMessage = new ParticipantMessage();
     participantMessage.setMessage("Message");
