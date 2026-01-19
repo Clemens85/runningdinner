@@ -41,13 +41,12 @@ public class ProposalRepositoryS3 implements ProposalRepository {
 
   @Override
   public Optional<ProposalExample> findProposalByStoragePath(final String storagePath) {
-
-    if (!s3ClientProviderService.isFileExisting(s3ClientProviderService.getMessageProposalBucket(), storagePath)) {
-      return Optional.empty();
-    }
-
     try {
-      String content = s3ClientProviderService.readFileContentToString(
+			if (!s3ClientProviderService.isFileExisting(s3ClientProviderService.getMessageProposalBucket(), storagePath)) {
+				return Optional.empty();
+			}
+
+			String content = s3ClientProviderService.readFileContentToString(
           s3ClientProviderService.getMessageProposalBucket(),
           storagePath
       );

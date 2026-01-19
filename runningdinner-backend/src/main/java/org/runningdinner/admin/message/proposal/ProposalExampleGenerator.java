@@ -11,8 +11,12 @@ import org.runningdinner.core.PublicSettings;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.runningdinner.mail.formatter.FormatterUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ProposalExampleGenerator {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProposalExampleGenerator.class);
 
   public static final String EVENT_DESCRIPTIONS_INPUT_PREFIX = "input/EVENT_DESCRIPTION";
   public static final String MESSAGES_INPUT_PREFIX = "input/message";
@@ -23,6 +27,11 @@ public final class ProposalExampleGenerator {
 
   public static ProposalExample newEventDescriptionProposalExample(RunningDinner runningDinner) {
     final PublicSettings publicSettings = runningDinner.getPublicSettings();
+		if (publicSettings == null) {
+			// Should never happen
+			LOGGER.error("Cannot generate event description proposal example for running dinner {} without public settings", runningDinner.getAdminId());
+			return null;
+		}
     StringBuilder textContent = new StringBuilder("# " + publicSettings.getPublicTitle()).append(FormatterUtil.NEWLINE)
 				.append(getLocationInfo(runningDinner))
 				.append(FormatterUtil.TWO_NEWLINES)

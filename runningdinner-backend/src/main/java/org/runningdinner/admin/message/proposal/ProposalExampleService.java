@@ -51,7 +51,7 @@ public class ProposalExampleService {
 		saveProposalIfNotExistingWithEqualContent(eventDescriptionProposal);
 	}
 
-	private boolean isRunningDinnerRelevant(RunningDinner runningDinner) {
+	private static boolean isRunningDinnerRelevant(RunningDinner runningDinner) {
 		if (runningDinner.getRegistrationType() == RegistrationType.CLOSED ||
 				runningDinner.getRunningDinnerType() == RunningDinner.RunningDinnerType.DEMO) {
 			LOGGER.info("Skipping proposal example generation for running dinner with registration type CLOSED or DEMO: {}", runningDinner);
