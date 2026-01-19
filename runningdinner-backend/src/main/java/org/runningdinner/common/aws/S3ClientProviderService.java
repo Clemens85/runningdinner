@@ -22,13 +22,16 @@ public class S3ClientProviderService {
 
 	private final String awsProfile;
 	private final String routeOptimizationBucket;
+  private final String messageProposalBucket;
 
 	private S3Client s3Client;
 
 	public S3ClientProviderService(EnvUtilService envUtilService,
-																 @Value("${aws.s3.route.optimization.bucket}") String routeOptimizationBucket) {
+																 @Value("${aws.s3.route.optimization.bucket}") String routeOptimizationBucket,
+                                 @Value("${aws.s3.message.proposal.bucket}") String messageProposalBucket) {
 		this.awsProfile = envUtilService.getConfigProperty("aws.profile");
 		this.routeOptimizationBucket = routeOptimizationBucket;
+    this.messageProposalBucket = messageProposalBucket;
 	}
 
 	@PostConstruct
@@ -51,7 +54,11 @@ public class S3ClientProviderService {
 		return routeOptimizationBucket;
 	}
 
-	public boolean isFileExisting(String bucketName, String key) {
+  public String getMessageProposalBucket() {
+    return messageProposalBucket;
+  }
+
+  public boolean isFileExisting(String bucketName, String key) {
 		try {
 			// Fetch the metadata for the lock file using a HeadObjectRequest
 			HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()

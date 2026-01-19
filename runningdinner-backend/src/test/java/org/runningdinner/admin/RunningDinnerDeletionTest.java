@@ -175,7 +175,7 @@ public class RunningDinnerDeletionTest {
     this.runningDinner = changeClosedToPublic();
     
     RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", "max@muster.de", TestUtil.newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData("Maria", "Musterfrau"));
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerWithRegistrationData("Maria", "Musterfrau"));
     
     RegistrationSummary rs = frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
     assertThat(rs).isNotNull();

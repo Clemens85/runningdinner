@@ -193,7 +193,7 @@ public class TestHelperService {
 
     // Register (and activate) fixed team
     RegistrationDataTO registrationData = TestUtil.createRegistrationData(rootFullname, rootEmail, TestUtil.newAddress(), 6);
-    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerwithRegistrationData(childName.getFirstnamePart(), childName.getLastname()));
+    registrationData.setTeamPartnerWishRegistrationData(TestUtil.newTeamPartnerWithRegistrationData(childName.getFirstnamePart(), childName.getLastname()));
     if (StringUtils.isNotBlank(childEmail)) {
       registrationData.getTeamPartnerWishRegistrationData().setEmail(childEmail);
     }

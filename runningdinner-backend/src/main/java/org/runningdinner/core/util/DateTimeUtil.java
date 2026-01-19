@@ -1,6 +1,9 @@
 
 package org.runningdinner.core.util;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,9 +11,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 public final class DateTimeUtil {
 
@@ -25,37 +25,19 @@ public final class DateTimeUtil {
   public static final String EUROPE_BERLIN_TIME_ZONE = "Europe/Berlin";
 
   private DateTimeUtil() {
-
+		// NOP
   }
 
   public static DateTimeFormatter getTimeFormatter(String languageCode) {
-
     return isEnglish(languageCode) ? DEFAULT_TIME_FORMATTER_EN : DEFAULT_TIME_FORMATTER;
   }
 
-  public static DateTimeFormatter getDateFormatter(String languageCode) {
-
-    return isEnglish(languageCode) ? DEFAULT_DATE_FORMATTER_EN : DEFAULT_DATE_FORMATTER;
-  }
-  
-  public static String getDefaultFormattedDate(LocalDateTime date, String languageCode) {
-    
-    return isEnglish(languageCode) ? date.format(DEFAULT_DATE_TIME_FORMATTER_EN) : date.format(DEFAULT_DATE_TIME_FORMATTER) ;
-  }
-  
   public static String getDefaultFormattedDate(LocalDate date, String languageCode) {
-    
     return isEnglish(languageCode) ? date.format(DEFAULT_DATE_FORMATTER_EN) : date.format(DEFAULT_DATE_FORMATTER);
   }
-  
-//  
-//  public static String getDefaultFormattedDate(LocalDateTime date, String fallback) {
-//    
-//    if (date == null) {
-//      return fallback;
-//    }
-//    return date.format(DEFAULT_DATE_TIME_FORMATTER);
-//  }
+	public static String getDefaultFormattedTime(LocalDateTime date, String languageCode) {
+		return date.format(getTimeFormatter(languageCode));
+	}
 
   public static void setDefaultTimeZoneToEuropeBerlin() {
 
