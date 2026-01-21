@@ -94,6 +94,9 @@ export function LandingWizard() {
                 <li>
                   <span>{t('landing:team_arrangements_swap_feature')}</span>
                 </li>
+                <li>
+                  <span>{t('landing:team_arrangements_manual_meal_swap_feature')}</span>
+                </li>
               </ul>
             </TeaserCard>
           </Grid>
@@ -113,6 +116,15 @@ export function LandingWizard() {
                 </li>
                 <li>
                   <span>{t('landing:dinner_route_googlemaps_feature')}</span>
+                </li>
+                <li>
+                  <span>{t('landing:dinner_route_optimization_feature')}</span>
+                </li>
+                <li>
+                  <span>{t('landing:dinner_route_host_collision_feature')}</span>
+                </li>
+                <li>
+                  <span>{t('landing:dinner_route_visualizations_feature')}</span>
                 </li>
               </ul>
             </TeaserCard>
@@ -199,6 +211,9 @@ export function LandingWizard() {
                 </li>
                 <li>
                   <span>{t('landing:misc_feature_new_participants')}</span>
+                </li>
+                <li>
+                  <span>{t('landing:misc_feature_meal_changes')}</span>
                 </li>
               </ul>
             </TeaserCard>

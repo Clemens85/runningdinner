@@ -10,6 +10,8 @@ export const TeaserCardRow = styled('div')(({ theme }) => ({
 export const CardFlexibleHeight = styled(Card)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 

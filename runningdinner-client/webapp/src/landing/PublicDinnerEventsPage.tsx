@@ -58,12 +58,13 @@ function PublicDinnerEventsListPage({ publicRunningDinners }: PublicDinnerEvents
         sx={{ pb: 3 }}
         size={{
           xs: 12,
-          md: 4
-        }}>
+          md: 4,
+        }}
+      >
         <CardFlexibleHeight>
-          <CardContent>
+          <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
             <Subtitle>{title}</Subtitle>
-            <Box>
+            <Box sx={{ flexGrow: 1 }}>
               <Span>
                 <TextViewHtml text={publicRunningDinner.publicSettings.description} limit={256} />
               </Span>
@@ -72,7 +73,7 @@ function PublicDinnerEventsListPage({ publicRunningDinners }: PublicDinnerEvents
               <PrimaryButton href={publicDinnerUrl}>{t('common:more')}</PrimaryButton>
             </Box>
           </CardContent>
-          <CardActions>
+          <CardActions sx={{ marginTop: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
               <div style={{ display: 'flex' }}>
                 <LocationOnIcon color={'primary'} />
