@@ -1,6 +1,6 @@
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { Box, CardActions, Grid } from '@mui/material';
+import { Box, CardActionArea, CardActions, Grid } from '@mui/material';
 import { Alert, AlertTitle } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import { AddressLocation, findPublicRunningDinnersAsync, isArrayNotEmpty, isQuerySucceeded, LocalDate, PublicRunningDinner } from '@runningdinner/shared';
@@ -62,33 +62,35 @@ function PublicDinnerEventsListPage({ publicRunningDinners }: PublicDinnerEvents
         }}
       >
         <CardFlexibleHeight>
-          <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-            <Subtitle>{title}</Subtitle>
-            <Box sx={{ flexGrow: 1 }}>
-              <Span>
-                <TextViewHtml text={publicRunningDinner.publicSettings.description} limit={256} />
-              </Span>
-            </Box>
-            <Box pt={2}>
-              <PrimaryButton href={publicDinnerUrl}>{t('common:more')}</PrimaryButton>
-            </Box>
-          </CardContent>
-          <CardActions sx={{ marginTop: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <div style={{ display: 'flex' }}>
-                <LocationOnIcon color={'primary'} />
-                <Paragraph>
-                  <AddressLocation cityName={publicRunningDinner.city} zip={publicRunningDinner.zip} />
-                </Paragraph>
+          <CardActionArea href={publicDinnerUrl} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
+              <Subtitle>{title}</Subtitle>
+              <Box sx={{ flexGrow: 1 }}>
+                <Span>
+                  <TextViewHtml text={publicRunningDinner.publicSettings.description} limit={256} />
+                </Span>
+              </Box>
+              <Box pt={2}>
+                <PrimaryButton href={publicDinnerUrl}>{t('common:more')}</PrimaryButton>
+              </Box>
+            </CardContent>
+            <CardActions sx={{ marginTop: 'auto', width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                <div style={{ display: 'flex' }}>
+                  <LocationOnIcon color={'primary'} />
+                  <Paragraph>
+                    <AddressLocation cityName={publicRunningDinner.city} zip={publicRunningDinner.zip} />
+                  </Paragraph>
+                </div>
+                <div style={{ display: 'flex' }}>
+                  <CalendarTodayIcon color={'primary'} />
+                  <Paragraph>
+                    <LocalDate date={publicRunningDinner.date} />
+                  </Paragraph>
+                </div>
               </div>
-              <div style={{ display: 'flex' }}>
-                <CalendarTodayIcon color={'primary'} />
-                <Paragraph>
-                  <LocalDate date={publicRunningDinner.date} />
-                </Paragraph>
-              </div>
-            </div>
-          </CardActions>
+            </CardActions>
+          </CardActionArea>
         </CardFlexibleHeight>
       </Grid>
     );
