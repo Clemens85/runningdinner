@@ -71,7 +71,7 @@ function PublicDinnerEventsListPage({ publicRunningDinners }: PublicDinnerEvents
                 </Span>
               </Box>
               <Box pt={2}>
-                <PrimaryButton href={publicDinnerUrl}>{t('common:more')}</PrimaryButton>
+                <PrimaryButton component="div">{t('common:more')}</PrimaryButton>
               </Box>
             </CardContent>
             <CardActions sx={{ marginTop: 'auto', width: '100%' }}>
