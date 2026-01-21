@@ -99,7 +99,7 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
               name="ignoreMealAssignments"
               label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
               disabled={isPending() || isStringNotEmpty(previewUrl)}
-              helperText="Erlaubt der Optimierung, existierende Speisen-Zuordnungen der Teams zu verwerfen, um optimiertere Laufwege zu erzielen"
+              helperText={t('admin:dinner_route_optimize_ignore_meal_assignments_help')}
             />
           </Box>
 

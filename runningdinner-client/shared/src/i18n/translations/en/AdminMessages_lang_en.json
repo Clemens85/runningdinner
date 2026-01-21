@@ -78,6 +78,7 @@
   "dinner_route_optimize_description": "Here you can recalculate the dinner routes to optimize the walking distances.<br/><br/>The system will try to optimize the routes so that the teams have the shortest possible walking distances. The result will then be shown to you in a new browser tab as a preview.",
   "dinner_route_optimize_note": "Your dinner routes will only be changed once you save the suggested changes in the preview.",
   "dinner_route_optimize_ignore_meal_assignments": "Allow new meal assignments",
+  "dinner_route_optimize_ignore_meal_assignments_help": "Allows the optimization to discard existing meal assignments of teams in order to achieve more optimized routes",
   "dinner_route_optimize_minimum_distance": "Minimum distance between hosts at the same time",
   "dinner_route_optimize_minimum_distance_help": "Can help prevent hosts in close proximity from being visited at the same time.",
   "dinner_route_optimize_minimum_distance_current": "Current minimum distance: <strong>{{ distance }}</strong>",

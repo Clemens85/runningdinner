@@ -79,6 +79,7 @@
   "dinner_route_optimize_description": "Hier kannst du eine Neu-Berechnung der Dinner-Routen zur Optimierung der Laufwege durchführen.<br/><br/>Es wird versucht, die Routen so zu optimieren, dass die Laufwege der Teams möglichst kurz sind. Das Ergebnis wird dir aschließend in einem neuen Browser-Tab als Vorschau angezeigt.",
   "dinner_route_optimize_note": "Deine Dinner-Routen werden erst geändert, wenn du die vorgeschlagenen Änderungen in der Vorschau speicherst.",
   "dinner_route_optimize_ignore_meal_assignments": "Erlaube neue Speisen-Zuordnungen",
+  "dinner_route_optimize_ignore_meal_assignments_help": "Erlaubt der Optimierung, existierende Speisen-Zuordnungen der Teams zu verwerfen, um optimiertere Laufwege zu erzielen",
   "dinner_route_optimize_minimum_distance": "Mindestabstand zwischen Gastgebern zur gleichen Zeit",
   "dinner_route_optimize_minimum_distance_help": "Kann dazu beitragen, dass Gastgeber in räumlicher Nähe nicht zur gleichen Zeit besucht werden.",
   "dinner_route_optimize_minimum_distance_current": "Aktueller Mindestabstand: <strong>{{ distance }}</strong>",
