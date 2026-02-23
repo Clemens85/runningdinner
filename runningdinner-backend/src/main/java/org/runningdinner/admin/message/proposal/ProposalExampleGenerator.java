@@ -122,7 +122,7 @@ public final class ProposalExampleGenerator {
 
   private static ProposalExample newDinnerRouteMessageExampleProposal(DinnerRouteMessage dinnerRouteMessage, RunningDinner runningDinner) {
     String textContent = "## Subject" + FormatterUtil.NEWLINE + dinnerRouteMessage.getSubject() + FormatterUtil.TWO_NEWLINES +
-						             "## Message Template" + dinnerRouteMessage.getMessage() + FormatterUtil.TWO_NEWLINES;
+						             "## Message Template" + FormatterUtil.NEWLINE +  dinnerRouteMessage.getMessage() + FormatterUtil.TWO_NEWLINES;
     textContent += "### Hosts Template" + FormatterUtil.NEWLINE + dinnerRouteMessage.getHostsTemplate() + FormatterUtil.TWO_NEWLINES;
     textContent += "### Self Template" + FormatterUtil.NEWLINE + dinnerRouteMessage.getSelfTemplate();
     return new ProposalExample(mapMessagePath(MessageType.DINNER_ROUTE, runningDinner), textContent);
