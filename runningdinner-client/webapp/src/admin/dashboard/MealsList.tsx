@@ -1,4 +1,4 @@
-import { Box, Card, CardActions, CardContent, Grid, List } from '@mui/material';
+import { Card, CardActions, CardContent, List } from '@mui/material';
 import { BaseRunningDinnerProps, DashboardAdminActivities, Meal, RunningDinner } from '@runningdinner/shared';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,20 +33,14 @@ export default function MealsList({ meals, runningDinner, onRunningDinnerUpdate,
 
   return (
     <Card>
-      <CardContent>
+      <CardContent sx={{ pb: '0 ! important' }}>
         <Subtitle i18n="admin:time_schedule" />
         <div>{<List dense={true}>{mealItems}</List>}</div>
       </CardContent>
-      <CardActions>
-        <Grid container justifyContent={'flex-end'}>
-          <Grid>
-            <Box pr={2} mt={-2} pb={2}>
-              <PrimaryButton onClick={() => setEditMealsDialogOpen(true)} size={'small'} data-testid="open-edit-meals-action">
-                {t('common:label_edit')}
-              </PrimaryButton>
-            </Box>
-          </Grid>
-        </Grid>
+      <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
+        <PrimaryButton onClick={() => setEditMealsDialogOpen(true)} size={'small'} data-testid="open-edit-meals-action">
+          {t('common:label_edit')}
+        </PrimaryButton>
       </CardActions>
       <EditMealsDialog
         open={editMealsDialogOpen}

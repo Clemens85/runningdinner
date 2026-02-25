@@ -192,10 +192,14 @@ const LandingMessages_en: any = {
   team_arrangements_meal_feature: 'Automatic team arrangement generation and meal assignment',
   team_arrangements_distribution_feature: 'Random team arrangement distribution or by specific criteria (e.g. gender)',
   team_arrangements_swap_feature: 'Comfortable changes of team arrangements possible by drag & drop',
+  team_arrangements_manual_meal_swap_feature: 'Manual swap of assigned meals',
 
   dinner_route_calculation_feature: 'Optimal calculation of dinner routes',
   dinner_route_view_feature: 'View of dinner routes',
   dinner_route_googlemaps_feature: 'Google-Maps Integration',
+  dinner_route_optimization_feature: 'Reduction / optimization of travel distances',
+  dinner_route_host_collision_feature: 'Display of host collisions at the same time',
+  dinner_route_visualizations_feature: 'Versatile visualizations',
 
   mail_sending_personalized: 'Personalized sending of mails',
   mail_sending_personalized_description: 'Simple and customizable way for sending individual mails to your participants / teams.',
@@ -221,6 +225,7 @@ const LandingMessages_en: any = {
 
   misc_feature_dashboard: 'Dashboard with activity stream, checklist, etc.',
   misc_feature_new_participants: 'See new registrations at once',
+  misc_feature_meal_changes: 'Subsequent changes to meals',
   misc_feature_cancel_teams: 'Handling of cancellations of teams / participants',
   misc_feature_team_partner_wish: 'Handling of partner wish',
 
