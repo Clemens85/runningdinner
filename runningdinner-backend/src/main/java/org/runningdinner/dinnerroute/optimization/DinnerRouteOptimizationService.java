@@ -143,7 +143,7 @@ public class DinnerRouteOptimizationService {
 
 		List<Team> existingTeams = teamService.findTeamArrangements(adminId, false);
 
-		applyOptimizedRoutesToTeams(adminId, optimizationId, existingTeams);
+		applyOptimizedRoutesToTeams(runningDinner, optimizationId, existingTeams);
 
 		existingTeams = teamRepository.saveAll(existingTeams);
 
@@ -169,7 +169,7 @@ public class DinnerRouteOptimizationService {
 															})
 															.toList();
 
-		var originalOptimizationSettings = applyOptimizedRoutesToTeams(adminId, optimizationId, teamClones);
+		var originalOptimizationSettings = applyOptimizedRoutesToTeams(runningDinner, optimizationId, teamClones);
 
 		DinnerRouteCalculator dinnerRouteCalculator = new DinnerRouteCalculator(runningDinner, dinnerRouteMessageFormatter);
 		List<DinnerRouteTO> optimizedDinnerRoutes = DinnerRouteOptimizationUtil.buildDinnerRoute(teamClones, dinnerRouteCalculator);
@@ -195,13 +195,18 @@ public class DinnerRouteOptimizationService {
 		return result;
 	}
 
-	private RouteOptimizationSettings applyOptimizedRoutesToTeams(String adminId, String optimizationId, List<Team> teams) {
+	private RouteOptimizationSettings applyOptimizedRoutesToTeams(RunningDinner runningDinner, String optimizationId, List<Team> teams) {
 
 		teams.forEach(Team::removeAllTeamReferences);
-		var response = readOptimizedResponse(adminId, optimizationId);
+		var response = readOptimizedResponse(runningDinner.getAdminId(), optimizationId);
 		List<TeamReference> optimizedTeams = response.getDinnerRoutes();
 
-		Map<TeamReference, Team> teamReferencesToTeams = TeamReferenceService.mapTeamReferencesToTeams(optimizedTeams, teams);
+		Map<TeamReference, Team> teamReferencesToTeams;
+		if (response.getOptimizationSettings().ignoreMealAssignments()) {
+			teamReferencesToTeams = TeamReferenceService.mapTeamReferencesToTeamsAndReassignMeals(optimizedTeams, teams, runningDinner.getConfiguration().getMealClasses());
+		} else {
+			teamReferencesToTeams = TeamReferenceService.mapTeamReferencesToTeams(optimizedTeams, teams);
+		}
 
 		// Create Map of optimizedTeams per clusterNumber
 		Map<Integer, List<TeamReference>> teamsByClusterNumber = optimizedTeams
