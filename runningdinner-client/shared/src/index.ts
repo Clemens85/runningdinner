@@ -23,6 +23,7 @@ export * from './admin/redux';
 export * from './afterpartylocation';
 export * from './i18n';
 export * from './landing';
+export * from './portal';
 export * from './query';
 export * from './self';
 export * from './useAsyncCallback.js';

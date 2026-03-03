@@ -6,3 +6,5 @@ export const LANDING_NEWS_PATH = 'news';
 export const LANDING_CREATE_RUNNING_DINNER_PATH = 'create-running-dinner';
 export const IMPRESSUM_PATH = 'impressum';
 export const RUNNING_DINNER_EVENTS_PATH = 'running-dinner-events';
+
+export const MY_EVENTS_PATH = '/my-events';

@@ -94,6 +94,17 @@ public class ParticipantService {
 
     return participantRepository.findByIdInAndAdminIdOrderByParticipantNumber(participantIds, adminId);
   }
+
+  /**
+   * Finds all participants across ALL running dinners whose email address matches the given email.
+   * This is a cross-dinner lookup used by the participant portal.
+   *
+   * @param email the email address to search for (case-insensitive)
+   * @return list of all participants with this email across all dinners (may be empty)
+   */
+  public List<Participant> findParticipantsAcrossAllDinnersByEmail(String email) {
+    return participantRepository.findAllByEmailLower(email.trim().toLowerCase());
+  }
   
   public List<Participant> findParticipants(@ValidateAdminId String adminId, boolean onlyActiveParticipants) { 
 

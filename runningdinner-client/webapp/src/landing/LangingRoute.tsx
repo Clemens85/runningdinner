@@ -7,8 +7,8 @@ import Impressum from './Impressum';
 import { LandingBanner } from './LandingBanner';
 import { LandingStart } from './LandingStart';
 import { LandingWizard } from './LandingWizard';
+import { LegacyActivationRedirectPage } from './LegacyActivationRedirectPage';
 import { NewsPage } from './news/NewsPage';
-import { ParticipantActivationPage } from './ParticipantActivationPage';
 import { PublicDinnerEventRegistrationFinishedPage } from './PublicDinnerEventRegistrationFinishedPage';
 import { PublicDinnerEventRegistrationPage } from './PublicDinnerEventRegistrationPage';
 import { PublicDinnerEventsPage } from './PublicDinnerEventsPage';
@@ -48,8 +48,8 @@ export function LandingRoute() {
         path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/:participantId/activate`}
         element={
           <Container maxWidth={false}>
-            <ParticipantActivationPage />
-            <BrowserTitle namespaces={'landing'} titleI18nKey={'landing:registration_confirm_title'} />
+            {/* Backward-compat redirect: performs legacy activation then sends user to the portal */}
+            <LegacyActivationRedirectPage />
           </Container>
         }
       />

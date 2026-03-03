@@ -43,7 +43,10 @@ public class UrlGenerator {
   
   @Value("${dinner.admin.participants.url}")
   private String adminParticipantsUrl;
-  
+
+  @Value("${dinner.portal.url}")
+  private String dinnerPortalUrlTemplate;
+
 
   /**
    * Builds a valid URL for administrating the running dinner identified by the passed uuid.<br>
@@ -201,6 +204,36 @@ public class UrlGenerator {
   private static String urlEncode(String input) {
 
     return URLEncoder.encode(input, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Constructs the base portal URL for a given portal token: {@code {host}/my-events/{portalToken}}.
+   *
+   * @param portalToken the portal token string
+   * @return the full portal token URL
+   */
+  public String constructPortalTokenUrl(String portalToken) {
+    Assert.hasText(dinnerPortalUrlTemplate, "Dinner Portal URL Template is not configured!");
+    Assert.hasText(portalToken, "portalToken");
+    return dinnerPortalUrlTemplate + "/" + portalToken;
+  }
+
+  /**
+   * Constructs the combined participant confirmation+portal URL.
+   * Format: {@code {host}/my-events/{portalToken}?confirmPublicDinnerId={publicId}&confirmParticipantId={participantId}}
+   */
+  public String constructPortalParticipantConfirmationUrl(String portalToken, String publicDinnerId, UUID participantId) {
+    String baseUrl = constructPortalTokenUrl(portalToken);
+    return baseUrl + "?confirmPublicDinnerId=" + urlEncode(publicDinnerId) + "&confirmParticipantId=" + participantId;
+  }
+
+  /**
+   * Constructs the combined organizer confirmation+portal URL.
+   * Format: {@code {host}/my-events/{portalToken}?confirmAdminId={adminId}}
+   */
+  public String constructPortalOrganizerConfirmationUrl(String portalToken, String adminId) {
+    String baseUrl = constructPortalTokenUrl(portalToken);
+    return baseUrl + "?confirmAdminId=" + urlEncode(adminId);
   }
 
 }
