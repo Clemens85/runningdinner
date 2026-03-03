@@ -4,6 +4,7 @@ import { Box } from '@mui/system';
 import { BaseAdminIdProps, CalculateDinnerRouteOptimizationRequest, isStringNotEmpty, OptimizationImpact, RouteDistanceMetrics } from '@runningdinner/shared';
 import { t } from 'i18next';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import FormCheckbox from '../../common/input/FormCheckbox';
@@ -35,9 +36,18 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
     mode: 'onTouched',
   });
 
-  const { handleSubmit, control, reset, watch } = formMethods;
+  const { handleSubmit, control, reset, watch, setValue } = formMethods;
 
   const minimumDistanceInMeters = watch('minimumDistanceInMeters');
+
+  const optimizationImpact = predictOptimizationQuery.data;
+  const showIgnoreMealAssignments = !!optimizationImpact && optimizationImpact !== 'LOW' && optimizationImpact !== 'NONE';
+
+  useEffect(() => {
+    if (!showIgnoreMealAssignments) {
+      setValue('ignoreMealAssignments', false);
+    }
+  }, [showIgnoreMealAssignments, setValue]);
 
   async function handleTriggerCalculationOptimization(formData: RouteOptimizationSettings) {
     const calculateRequest: CalculateDinnerRouteOptimizationRequest = {
@@ -94,14 +104,16 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
             </Divider>
           </Box>
 
-          <Box my={2}>
-            <FormCheckbox
-              name="ignoreMealAssignments"
-              label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
-              disabled={isPending() || isStringNotEmpty(previewUrl)}
-              helperText={<Trans i18nKey={'admin:dinner_route_optimize_ignore_meal_assignments_help'} />}
-            />
-          </Box>
+          {showIgnoreMealAssignments && (
+            <Box my={2}>
+              <FormCheckbox
+                name="ignoreMealAssignments"
+                label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
+                disabled={isPending() || isStringNotEmpty(previewUrl)}
+                helperText={<Trans i18nKey={'admin:dinner_route_optimize_ignore_meal_assignments_help'} />}
+              />
+            </Box>
+          )}
 
           <Box mb={2} mt={3}>
             <Typography variant="body1">{t('admin:dinner_route_optimize_minimum_distance')}</Typography>
