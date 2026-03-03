@@ -55,6 +55,7 @@ Backend sends dates as number arrays `[2024, 1, 15, 14, 30]`. Interceptors auto-
 - Schemas in [ValidationSchemas.js](shared/src/admin/ValidationSchemas.js) - note: uses Yup v0.28 (old API)
 - Wrap forms with `<FormProvider>` to enable nested field access
 - Example pattern in [ParticipantForm.tsx](webapp/src/admin/participants/form/ParticipantForm.tsx)
+- Try to re-use existing components like e.g. FormTextField and components for validation like useBackendIssueHandler and useNotificationHttpError
 
 ## Shared Component Patterns
 
