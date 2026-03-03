@@ -16,6 +16,7 @@ Backend changes MUST preserve the controller -> service -> repository flow. Rest
 HTTP concerns only and delegate to services. Cross-cutting behavior (emails, activity logs,
 geocoding) MUST be triggered via domain events, not direct calls from controllers.
 Rationale: keeps domain logic testable and avoids leaky infrastructure concerns.
+Incoming web request objects are validated with Jakarta validation constraint annotations (like e.g. @Valid, @Email, @NotBlank, ...).
 
 ### II. Shared-First Frontend Logic
 New client logic MUST live in `runningdinner-client/shared` when it is reusable across apps.
@@ -36,6 +37,8 @@ Rationale: IDs are the access keys for admin and participant workflows.
 Schema changes MUST be expressed as Flyway migrations. Backend DTOs (TOs) remain separate from
 JPA entities; do not expose entities directly through REST. Any data shape change requires
 updating date serialization expectations and related client adapters.
+SQL Tables shall be named like JPA Entities, except there are really very good reasons for not doing so (no separate @Table annotation required).
+Use Java records for Backend DTOs (TOs) when reasonable.
 Rationale: preserves safe migrations and stable API contracts.
 
 ### V. Event-Driven Side Effects
@@ -77,5 +80,11 @@ Rationale: improves consistency and reduces transactional coupling.
 - Compliance is reviewed in code reviews and during spec/plan creation.
 - Runtime guidance lives in AGENTS.md files and README documentation; deviations must be
 	justified in the relevant plan.
+
+### VI. Error handling & Logging
+
+When Exceptions are caught and logged, always log the complete Exception and not only the message.
+Non-recoverable errors from web requests are globally handled by GlobalExceptionHandler (Logging and Error response).
+
 
 **Version**: 0.1.0 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date unknown | **Last Amended**: 2026-02-25
