@@ -99,7 +99,7 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
               name="ignoreMealAssignments"
               label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
               disabled={isPending() || isStringNotEmpty(previewUrl)}
-              helperText={t('admin:dinner_route_optimize_ignore_meal_assignments_help')}
+              helperText={<Trans i18nKey={'admin:dinner_route_optimize_ignore_meal_assignments_help'} />}
             />
           </Box>
 
@@ -118,14 +118,13 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
                     step={50}
                     marks={[
                       { value: 0, label: '0 m' },
-                      { value: 250, label: '250 m' },
+                      { value: 100, label: '100 m' },
+                      { value: 250, label: '200 m' },
                       { value: 500, label: '500 m' },
-                      { value: 750, label: '750 m' },
-                      { value: 1000, label: '1 km' },
                     ]}
                     min={0}
                     valueLabelDisplay="auto"
-                    max={1000}
+                    max={500}
                   />
                 )}
               />
