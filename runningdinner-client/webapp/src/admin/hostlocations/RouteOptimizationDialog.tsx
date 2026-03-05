@@ -41,13 +41,15 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
   const minimumDistanceInMeters = watch('minimumDistanceInMeters');
 
   const optimizationImpact = predictOptimizationQuery.data;
-  const showIgnoreMealAssignments = !!optimizationImpact && optimizationImpact !== 'LOW' && optimizationImpact !== 'NONE';
+  const showRouteOptimizationSettings = !!optimizationImpact && optimizationImpact !== 'LOW' && optimizationImpact !== 'NONE';
 
   useEffect(() => {
-    if (!showIgnoreMealAssignments) {
-      setValue('ignoreMealAssignments', false);
+    if (!showRouteOptimizationSettings) {
+      const tmp = newRouteOptimizationSettings();
+      setValue('ignoreMealAssignments', tmp.ignoreMealAssignments);
+      setValue('minimumDistanceInMeters', tmp.minimumDistanceInMeters);
     }
-  }, [showIgnoreMealAssignments, setValue]);
+  }, [showRouteOptimizationSettings, setValue]);
 
   async function handleTriggerCalculationOptimization(formData: RouteOptimizationSettings) {
     const calculateRequest: CalculateDinnerRouteOptimizationRequest = {
@@ -95,65 +97,69 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
             {predictOptimizationQuery.data && !previewUrl && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
           </Box>
 
-          <Box my={1}>
-            <Divider>
-              {/* , color: 'primary.main'  */}
-              <Typography variant={'body1'} sx={{ fontWeight: 'bold' }}>
-                {t('common:settings')}
-              </Typography>
-            </Divider>
-          </Box>
+          {showRouteOptimizationSettings && (
+            <>
+              <Box my={1}>
+                <Divider>
+                  {/* , color: 'primary.main'  */}
+                  <Typography variant={'body1'} sx={{ fontWeight: 'bold' }}>
+                    {t('common:settings')}
+                  </Typography>
+                </Divider>
+              </Box>
 
-          {showIgnoreMealAssignments && (
-            <Box my={2}>
-              <FormCheckbox
-                name="ignoreMealAssignments"
-                label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
-                disabled={isPending() || isStringNotEmpty(previewUrl)}
-                helperText={<Trans i18nKey={'admin:dinner_route_optimize_ignore_meal_assignments_help'} />}
-              />
-            </Box>
-          )}
+              <Box my={2}>
+                <FormCheckbox
+                  name="ignoreMealAssignments"
+                  label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
+                  disabled={isPending() || isStringNotEmpty(previewUrl)}
+                  helperText={<Trans i18nKey={'admin:dinner_route_optimize_ignore_meal_assignments_help'} />}
+                />
+              </Box>
 
-          <Box mb={2} mt={3}>
-            <Typography variant="body1">{t('admin:dinner_route_optimize_minimum_distance')}</Typography>
-            <Box px={2}>
-              <Controller
-                name="minimumDistanceInMeters"
-                control={control}
-                render={({ field }) => (
-                  <Slider
-                    {...field}
-                    aria-label={t('common:distance')}
-                    disabled={isPending() || isStringNotEmpty(previewUrl)}
-                    getAriaValueText={() => `${field.value} m`}
-                    step={50}
-                    marks={[
-                      { value: 0, label: '0 m' },
-                      { value: 100, label: '100 m' },
-                      { value: 250, label: '200 m' },
-                      { value: 500, label: '500 m' },
-                    ]}
-                    min={0}
-                    valueLabelDisplay="auto"
-                    max={500}
+              <Box mb={2} mt={3}>
+                <Typography variant="body1">{t('admin:dinner_route_optimize_minimum_distance')}</Typography>
+                <Box px={2}>
+                  <Controller
+                    name="minimumDistanceInMeters"
+                    control={control}
+                    render={({ field }) => (
+                      <Slider
+                        {...field}
+                        aria-label={t('common:distance')}
+                        disabled={isPending() || isStringNotEmpty(previewUrl)}
+                        getAriaValueText={() => `${field.value} m`}
+                        step={50}
+                        marks={[
+                          { value: 0, label: '0 m' },
+                          { value: 100, label: '100 m' },
+                          { value: 250, label: '250 m' },
+                          { value: 500, label: '500 m' },
+                        ]}
+                        min={0}
+                        valueLabelDisplay="auto"
+                        max={500}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Box>
-            <FormHelperText>
-              {t('admin:dinner_route_optimize_minimum_distance_help')}
-              <br />
-              <Trans
-                i18nKey={'admin:dinner_route_optimize_minimum_distance_current'}
-                values={{ distance: minimumDistanceInMeters === 0 ? zero_minimum_distance_label : `${minimumDistanceInMeters} m` }}
-              />
-            </FormHelperText>
-          </Box>
+                </Box>
+                <FormHelperText>
+                  <Trans i18nKey={'admin:dinner_route_optimize_minimum_distance_help_1'} />
+                  <br />
+                  <Trans i18nKey={'admin:dinner_route_optimize_minimum_distance_help_2'} />
+                  <br />
+                  <Trans
+                    i18nKey={'admin:dinner_route_optimize_minimum_distance_current'}
+                    values={{ distance: minimumDistanceInMeters === 0 ? zero_minimum_distance_label : `${minimumDistanceInMeters} m` }}
+                  />
+                </FormHelperText>
+              </Box>
 
-          <Box mt={4}>
-            <Divider />
-          </Box>
+              <Box mt={4}>
+                <Divider />
+              </Box>
+            </>
+          )}
 
           <Box mb={2} mt={3}>
             {!routeDistanceMetrics && <ProgressBar showLoadingProgress={true} />}
