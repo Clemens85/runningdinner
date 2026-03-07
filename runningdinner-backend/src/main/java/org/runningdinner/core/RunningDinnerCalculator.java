@@ -1,14 +1,5 @@
 package org.runningdinner.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
@@ -17,6 +8,15 @@ import org.runningdinner.participant.TeamAccessor;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamTO;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Stateless object for calculating running dinner scenarios.<br>
@@ -333,13 +333,29 @@ public class RunningDinnerCalculator {
 		TeamDistributorHosting teamDistributorHosting = new TeamDistributorHosting(participantsToAssign,
 				runningDinnerConfig);
 		List<Team> teams = teamDistributorHosting.calculateTeams();
+		assertUniqueTeamMembers(teams, "TeamDistributorHosting");
 
 		TeamDistributorGender teamDistributorGender = new TeamDistributorGender(teams, runningDinnerConfig);
 		teams = teamDistributorGender.calculateTeams();
+		assertUniqueTeamMembers(teams, "TeamDistributorGender");
 
 		setHostingParticipants(teams, runningDinnerConfig);
+		assertUniqueTeamMembers(teams, "setHostingParticipants");
 
 		return teams;
+	}
+
+	private void assertUniqueTeamMembers(List<Team> teams, String prefix) {
+		List<Integer> usedParticipantNumbers = new ArrayList<>();
+		for (Team t : teams) {
+			List<Integer> participantNumbers = t.getTeamMembers().stream().map(Participant::getParticipantNumber).toList();
+			for (Integer participantNumber : participantNumbers) {
+				if (usedParticipantNumbers.contains(participantNumber)) {
+					throw new IllegalStateException(prefix + ": Participant with number " + participantNumber + " is already assigned to other team. This is not allowed! Current team: " + t);
+				}
+				usedParticipantNumbers.add(participantNumber);
+			}
+		}
 	}
 
 	private void setHostingParticipants(List<Team> teams, RunningDinnerConfig runningDinnerConfig) {
