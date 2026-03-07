@@ -95,6 +95,7 @@ public class RunningDinnerDeletionTest {
   public void setUp() throws NoPossibleRunningDinnerException {
     runningDinner = testHelperService.createClosedRunningDinner(DINNER_DATE.toLocalDate(), CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS);
     teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+    testMessageTaskHelperService.awaitAllMessageTasksSent();
     testMessageTaskHelperService.clearHistoricalMessageTasks();
   }
 
@@ -125,8 +126,7 @@ public class RunningDinnerDeletionTest {
     
     assertExistingRunningDinnerEntities();
     
-    LocalDateTime now = DINNER_DATE;
-    deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);
+    deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(DINNER_DATE);
     
     assertExistingRunningDinnerEntities();
   }
@@ -136,8 +136,7 @@ public class RunningDinnerDeletionTest {
     
     assertExistingRunningDinnerEntities();
     
-    LocalDateTime cancellationDate = DINNER_DATE;
-    runningDinnerService.cancelRunningDinner(runningDinner.getAdminId(), cancellationDate);
+    runningDinnerService.cancelRunningDinner(runningDinner.getAdminId(), DINNER_DATE);
 
     LocalDateTime now = DINNER_DATE.plusDays(5);
     deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);
@@ -152,8 +151,7 @@ public class RunningDinnerDeletionTest {
     // Make dinner public:
     runningDinner = changeClosedToPublic();
     
-    LocalDateTime cancellationDate = DINNER_DATE;
-    runningDinnerService.cancelRunningDinner(runningDinner.getAdminId(), cancellationDate);
+    runningDinnerService.cancelRunningDinner(runningDinner.getAdminId(), DINNER_DATE);
 
     LocalDateTime now = DINNER_DATE.plusDays(5);
     deleteOldRunningDinnersSchedulerService.deleteOldRunningDinnerInstances(now);

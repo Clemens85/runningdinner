@@ -104,14 +104,18 @@ public class TeamPartnerWishService {
     return removeInconsistentTeamPartnerWishTuples(distinctResult);
   }
 
-  // In very rare edge cases it might happen that one participant occurs in multiple team partner-wish tuples. Example:
-  // Participant A registers himself and adds a team partner wish Email to B.
-  // B registers with this email however also himself later, but adds A' as fixed team partner wish (child).
-  // This gives us two team partner wish tuples:
-  // (B | A)
-  // (B | A')
-  // => In this case we remove the team partner wish tuple with (B | A) and keep the fixed team partner wish tuple with the parent (B | A').
-  // It would be better to keep the self registered A, but due to the fixed nature of the latter, we should favor this one:
+  /**
+   * In very rare edge cases it might happen that one participant occurs in multiple team partner-wish tuples. Example:
+   * Participant A registers himself and adds a team partner wish Email to B.
+   * B registers with this email however also himself later, but adds A' as fixed team partner wish (child).
+   * This gives us two team partner wish tuples:
+   * <ul>
+   *   <li>(B | A)</li>
+   *   <li>(B | A')</li>
+   * </ul>
+   * In this case we remove the team partner wish tuple with (B | A) and keep the fixed team partner wish tuple with the parent (B | A').
+   * It would be better to keep the self registered A, but due to the fixed nature of the latter, we should favor this one.
+   */
   private static List<TeamPartnerWishTuple> removeInconsistentTeamPartnerWishTuples(List<TeamPartnerWishTuple> teamPartnerWishTuples) {
     List<TeamPartnerWishTuple> finalResult = new ArrayList<>();
     for (TeamPartnerWishTuple teamPartnerWishTuple : teamPartnerWishTuples) {
