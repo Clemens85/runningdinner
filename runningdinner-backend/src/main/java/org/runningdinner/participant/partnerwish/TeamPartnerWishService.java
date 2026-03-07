@@ -1,12 +1,5 @@
 package org.runningdinner.participant.partnerwish;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.check.ValidateAdminId;
@@ -19,6 +12,14 @@ import org.runningdinner.participant.ParticipantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamPartnerWishService {
@@ -76,7 +77,7 @@ public class TeamPartnerWishService {
     List<Participant> participantsWithTeamPartnerWish = participants
                                                           .stream()
                                                           .filter(p -> StringUtils.isNotEmpty(p.getTeamPartnerWishEmail()))
-                                                          .filter(p -> p.isActivated())
+                                                          .filter(Participant::isActivated)
                                                           .collect(Collectors.toList());
     
     for (Participant participantWithTeamPartnerWish : participantsWithTeamPartnerWish) {
@@ -95,13 +96,45 @@ public class TeamPartnerWishService {
       }
     }
     
-    // With the logic above we created duplicates of teampartner-wishes, now we remove them:
-    return result
-            .stream()
-            .distinct()
-            .collect(Collectors.toList());
+    // With the logic above we created duplicates of team partner-wishes, now we remove them:
+    List<TeamPartnerWishTuple> distinctResult = result
+                                                .stream()
+                                                .distinct()
+                                                .toList();
+    return removeInconsistentTeamPartnerWishTuples(distinctResult);
   }
-  
+
+  // In very rare edge cases it might happen that one participant occurs in multiple team partner-wish tuples. Example:
+  // Participant A registers himself and adds a team partner wish Email to B.
+  // B registers with this email however also himself later, but adds A' as fixed team partner wish (child).
+  // This gives us two team partner wish tuples:
+  // (B | A)
+  // (B | A')
+  // => In this case we remove the team partner wish tuple with (B | A) and keep the fixed team partner wish tuple with the parent (B | A').
+  // It would be better to keep the self registered A, but due to the fixed nature of the latter, we should favor this one:
+  private static List<TeamPartnerWishTuple> removeInconsistentTeamPartnerWishTuples(List<TeamPartnerWishTuple> teamPartnerWishTuples) {
+    List<TeamPartnerWishTuple> finalResult = new ArrayList<>();
+    for (TeamPartnerWishTuple teamPartnerWishTuple : teamPartnerWishTuples) {
+      Set<Participant> participants = teamPartnerWishTuple.getParticipants();
+      boolean isInconsistent = finalResult
+                                .stream()
+                                .anyMatch(other -> CollectionUtils.containsAny(participants, other.getParticipants()));
+      if (!isInconsistent) {
+        // This should always be the default case:
+        finalResult.add(teamPartnerWishTuple);
+        continue;
+      }
+      if (participants.stream().allMatch(p -> p.getTeamPartnerWishOriginatorId() != null)) {
+        // use this team partner wish tuple, because it is the fixed one with parent-child relation:
+        finalResult.removeIf(other -> CollectionUtils.containsAny(participants, other.getParticipants()));
+        finalResult.add(teamPartnerWishTuple);
+      }
+      // else: Don't add this team partner wish tuple, because it is inconsistent and not the fixed one with parent-child relation.
+    }
+
+    return finalResult;
+  }
+
   private static Participant findChildParticipantWithTeamPartnerWishOriginatorId(List<Participant> participants, UUID teamPartnerWishOriginatorId) {
     
     return participants
@@ -122,7 +155,7 @@ public class TeamPartnerWishService {
                                     .filter(other -> !other.equals(participantWithTeamPartnerWish))
                                     .filter(other -> other.getEmail().trim().equalsIgnoreCase(teamPartnerWish))
                                     .filter(other -> other.getTeamPartnerWishEmail().trim().equalsIgnoreCase(participantWithTeamPartnerWish.getEmail().trim()))
-                                    .filter(other -> other.isActivated())
+                                    .filter(Participant::isActivated)
                                     .findFirst();
     return result;
   }

@@ -1,9 +1,5 @@
 package org.runningdinner.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.runningdinner.core.ParticipantGenerator;
@@ -11,7 +7,13 @@ import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
+import org.runningdinner.test.util.PrivateFieldAccessor;
 import org.runningdinner.test.util.TestUtil;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TeamPartnerWishServiceGenerateTuplesTest {
 
@@ -85,7 +87,30 @@ public class TeamPartnerWishServiceGenerateTuplesTest {
     result = TeamPartnerWishService.getTeamPartnerWishTuples(teamMembers, configuration);
     assertThat(result).isEmpty();
   }
-  
+
+  @Test
+  public void fixedTeamPartnerWishTupleOverridesEmailBasedTupleWhenParticipantOccursInBoth() {
+
+    // B (idx 0) and A (idx 1) have a mutual email-based partner wish -> creates email-based tuple (B | A)
+    List<Participant> emailBasedPair = TestUtil.setMatchingTeamPartnerWish(teamMembers, 0, 1, "b@test.de", "a@test.de", true);
+    Participant b = emailBasedPair.getFirst(); // index 0 = B
+
+    // B also invited A' via fixed (parent-child) team-partner-wish registration; B is the registration root
+    UUID bId = UUID.randomUUID();
+    PrivateFieldAccessor.setField(b, "id", bId);
+    b.setTeamPartnerWishOriginatorId(bId);
+
+    // A' is the child participant registered by B
+    Participant aPrime = teamMembers.get(2);
+    PrivateFieldAccessor.setField(aPrime, "id", UUID.randomUUID());
+    aPrime.setTeamPartnerWishOriginatorId(bId);
+
+    // Only the fixed tuple (B | A') should be kept; the email-based tuple (B | A) must be removed
+    List<TeamPartnerWishTuple> result = TeamPartnerWishService.getTeamPartnerWishTuples(teamMembers, configuration);
+    assertThat(result).hasSize(1);
+    assertThat(result.getFirst().getParticipants()).extracting("email").containsExactlyInAnyOrder("b@test.de", aPrime.getEmail());
+  }
+
   private TeamPartnerWishTuple getWithTeamPartnerWish(List<TeamPartnerWishTuple> teamPartnerWishTuples, String teamPartnerWishEmail) {
 
     for (TeamPartnerWishTuple teamPartnerWishTuple : teamPartnerWishTuples) {
