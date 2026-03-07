@@ -1,30 +1,29 @@
 package org.runningdinner.core;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.Team;
+import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
+import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.runningdinner.participant.Participant;
-import org.runningdinner.participant.Team;
-import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
-import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
-
 public class TeamDistributorHosting {
 
-  private List<Participant> participants;
+  private final List<Participant> participants;
   
-  private RunningDinnerConfig configuration;
+  private final RunningDinnerConfig configuration;
 
-  private Multimap<FuzzyBoolean, Participant> hostingMap = ArrayListMultimap.create();
+  private final Multimap<FuzzyBoolean, Participant> hostingMap = ArrayListMultimap.create();
   
-  private Set<Participant> alreadyDistributedParticipants = new HashSet<Participant>();
+  private final Set<Participant> alreadyDistributedParticipants = new HashSet<Participant>();
   
   public TeamDistributorHosting(List<Participant> participants, RunningDinnerConfig configuration) {
 
@@ -131,7 +130,7 @@ public class TeamDistributorHosting {
   
   private static FuzzyBoolean toggleHosting(FuzzyBoolean canHost, boolean forceDistribution) {
     
-    if (FuzzyBoolean.UNKNOWN == canHost || forceDistribution == false) {
+    if (FuzzyBoolean.UNKNOWN == canHost || !forceDistribution) {
       return FuzzyBoolean.UNKNOWN;
     }
     else if (FuzzyBoolean.TRUE == canHost) {
