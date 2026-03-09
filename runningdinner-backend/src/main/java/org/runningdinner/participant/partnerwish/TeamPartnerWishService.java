@@ -87,7 +87,7 @@ public class TeamPartnerWishService {
    
     
     for (Participant p : participants) {
-      if (p.isTeamPartnerWishRegistratonRoot()) {
+      if (p.isTeamPartnerWishRegistrationRoot()) {
         Participant foundTeamPartnerWishParticipant = findChildParticipantWithTeamPartnerWishOriginatorId(participants, p.getTeamPartnerWishOriginatorId());
         if (foundTeamPartnerWishParticipant != null) {
           Assert.state(!Objects.equals(p, foundTeamPartnerWishParticipant), "Cannot build team with only one participant: " + foundTeamPartnerWishParticipant);

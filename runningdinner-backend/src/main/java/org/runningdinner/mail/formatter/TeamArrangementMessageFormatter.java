@@ -88,7 +88,7 @@ public class TeamArrangementMessageFormatter {
       partnerInfo.append(partnerName).append(FormatterUtil.NEWLINE);
       // Root participant will always have same address as child participant => only send partner address if it's not a child registration
       String address = FormatterUtil.generateAddressString(partner);
-      if (!partner.isTeamPartnerWishRegistratonChild()) {
+      if (!partner.isTeamPartnerWishRegistrationChild()) {
         partnerInfo.append(address).append(FormatterUtil.NEWLINE);
       }
       partnerInfo.append(partnerMail).append(FormatterUtil.NEWLINE)
