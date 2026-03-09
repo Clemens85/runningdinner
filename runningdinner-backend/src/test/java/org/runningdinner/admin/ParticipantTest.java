@@ -1,14 +1,14 @@
 package org.runningdinner.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.test.util.PrivateFieldAccessor;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParticipantTest {
   
@@ -50,8 +50,8 @@ public class ParticipantTest {
 
     invitor.setTeamPartnerWishOriginatorId(invitorId);
     invitee.setTeamPartnerWishOriginatorId(invitorId);
-    assertThat(invitor.isTeamPartnerWishRegistratonRoot()).isTrue();
-    assertThat(invitee.isTeamPartnerWishRegistratonRoot()).isFalse();
+    assertThat(invitor.isTeamPartnerWishRegistrationRoot()).isTrue();
+    assertThat(invitee.isTeamPartnerWishRegistrationRoot()).isFalse();
   }
   
   @Test

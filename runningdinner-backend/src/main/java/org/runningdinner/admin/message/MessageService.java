@@ -791,7 +791,7 @@ public class MessageService {
     // Filter out child participants that have same email as parent participant (=> no own message needed)
     var teamPartnerRegistrationChildren = result
       .stream()
-      .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistratonChild)
+      .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistrationChild)
       .toList();
 
     List<T> childrenToRemove = new ArrayList<>();

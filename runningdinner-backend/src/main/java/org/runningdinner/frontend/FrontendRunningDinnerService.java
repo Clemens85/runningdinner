@@ -36,7 +36,11 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class FrontendRunningDinnerService {
@@ -163,7 +167,7 @@ public class FrontendRunningDinnerService {
     LocalDateTime now = LocalDateTime.now();
     RunningDinner runningDinner = findRunningDinnerByPublicId(publicDinnerId, now.toLocalDate());
     Participant activatedParticipant = participantService.updateParticipantSubscription(participantId, now, true, runningDinner);
-    if (activatedParticipant.isTeamPartnerWishRegistratonRoot()) {
+    if (activatedParticipant.isTeamPartnerWishRegistrationRoot()) {
       Participant childParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(runningDinner.getAdminId(), activatedParticipant);
       return new ParticipantActivationResult(new ParticipantTO(activatedParticipant), new TeamPartnerWishRegistrationDataTO(childParticipant.getName()));
     }

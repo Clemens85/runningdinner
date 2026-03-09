@@ -1,11 +1,11 @@
 package org.runningdinner.participant;
 
+import org.runningdinner.core.Identifiable;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.runningdinner.core.Identifiable;
 
 public interface HasTeamPartnerWishOriginator extends Identifiable  {
 
@@ -15,11 +15,11 @@ public interface HasTeamPartnerWishOriginator extends Identifiable  {
     return getTeamPartnerWishOriginatorId() != null;
   }
 
-  default boolean isTeamPartnerWishRegistratonRoot() {
+  default boolean isTeamPartnerWishRegistrationRoot() {
     return getTeamPartnerWishOriginatorId() != null && getId() != null && Objects.equals(getTeamPartnerWishOriginatorId(), getId());
   }
 
-  default boolean isTeamPartnerWishRegistratonChild() {
+  default boolean isTeamPartnerWishRegistrationChild() {
     return getTeamPartnerWishOriginatorId() != null && getId() != null && !Objects.equals(getTeamPartnerWishOriginatorId(), getId());
   }
 
@@ -35,13 +35,13 @@ public interface HasTeamPartnerWishOriginator extends Identifiable  {
   static<T extends HasTeamPartnerWishOriginator> List<T> filterChildPartners(List<T> list) {
     return list
             .stream()
-            .filter(r -> r.isTeamPartnerWishProvided() && !r.isTeamPartnerWishRegistratonRoot())
+            .filter(r -> r.isTeamPartnerWishProvided() && !r.isTeamPartnerWishRegistrationRoot())
             .collect(Collectors.toList());
   }
   static<T extends HasTeamPartnerWishOriginator> List<T> filterRootPartners(List<T> list) {
     return list
             .stream()
-            .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistratonRoot)
+            .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistrationRoot)
             .collect(Collectors.toList());
   }
 
