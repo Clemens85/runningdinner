@@ -21,10 +21,21 @@ import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
-import org.runningdinner.participant.*;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantAddress;
+import org.runningdinner.participant.ParticipantName;
+import org.runningdinner.participant.ParticipantRepository;
+import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamCancellation;
+import org.runningdinner.participant.TeamCancellationResult;
+import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.TeamStatus;
+import org.runningdinner.participant.WaitingListService;
 import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
+import org.runningdinner.participant.rest.TeamPartnerWishRegistrationDataTO;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
@@ -35,7 +46,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -592,6 +608,57 @@ public class TeamPartnerRegistrationTest {
     assertThat(participant.getActivatedBy()).isEqualTo(participant.getEmail());
   }
 
+  @Test
+  public void fixedTeamPartnerWishChildIsNotCreatedWhenEmailInvitationAlreadyExistsMatchingByEmail() {
+
+    // A registers first and sends an email invitation to B
+    RegistrationDataTO aData = TestUtil.createRegistrationData("Anna Alpha", "a@test.de", TestUtil.newAddress(), 6);
+    aData.setTeamPartnerWishEmail("b@test.de");
+    frontendRunningDinnerService.performRegistration(publicDinnerId, aData, false);
+
+    // B registers with fixed team partner wish, specifying A as the child by email.
+    // B also has teamPartnerWishEmail pointing back to A (the edge case scenario).
+    // The assertion in mapParticipantInputToParticipant normally forbids both fields being set simultaneously,
+    // so we override isTeamPartnerWishInvitationEmailAddressProvided() to simulate the edge case:
+    TeamPartnerWishRegistrationDataTO childData = TestUtil.newTeamPartnerWithRegistrationData("Anna", "Alpha");
+    childData.setEmail("a@test.de");
+
+    ParticipantInputDataTO bInput = buildEdgeCaseInput("b@test.de", "Bob", "Beta", "a@test.de", childData);
+    participantService.addParticipant(runningDinner, bInput, false);
+
+    // Edge case detected: no synthetic child was created; only A (unactivated) and B exist
+    assertThat(participantService.findParticipants(runningDinner.getAdminId(), false)).hasSize(2);
+
+    Participant b = participantService.findParticipantByEmail(runningDinner.getAdminId(), "b@test.de").getFirst();
+    assertThat(b.isTeamPartnerWishRegistratonRoot()).isFalse();
+    assertThat(b.getTeamPartnerWishOriginatorId()).isNull();
+  }
+
+  @Test
+  public void fixedTeamPartnerWishChildIsNotCreatedWhenEmailInvitationAlreadyExistsMatchingByName() {
+
+    // A registers first and sends an email invitation to B
+    RegistrationDataTO aData = TestUtil.createRegistrationData("Anna Alpha", "a@test.de", TestUtil.newAddress(), 6);
+    aData.setTeamPartnerWishEmail("b@test.de");
+    frontendRunningDinnerService.performRegistration(publicDinnerId, aData, false);
+
+    // B registers with fixed team partner wish, specifying A as the child by name only (no email).
+    // B also has teamPartnerWishEmail pointing back to A (the edge case scenario).
+    // The assertion in mapParticipantInputToParticipant normally forbids both fields being set simultaneously,
+    // so we override isTeamPartnerWishInvitationEmailAddressProvided() to simulate the edge case:
+    TeamPartnerWishRegistrationDataTO childData = TestUtil.newTeamPartnerWithRegistrationData("Anna", "Alpha"); // name matches A, no email
+
+    ParticipantInputDataTO bInput = buildEdgeCaseInput("b@test.de", "Bob", "Beta", "a@test.de", childData);
+    participantService.addParticipant(runningDinner, bInput, false);
+
+    // Edge case detected: no synthetic child was created; only A (unactivated) and B exist
+    assertThat(participantService.findParticipants(runningDinner.getAdminId(), false)).hasSize(2);
+
+    Participant b = participantService.findParticipantByEmail(runningDinner.getAdminId(), "b@test.de").getFirst();
+    assertThat(b.isTeamPartnerWishRegistratonRoot()).isFalse();
+    assertThat(b.getTeamPartnerWishOriginatorId()).isNull();
+  }
+
   private Participant registerParticipantsAsFixedTeam() {
     return testHelperService.registerParticipantsAsFixedTeam(runningDinner, "Max Mustermann", "max@muster.de", "Maria Musterfrau");
   }
@@ -600,5 +667,37 @@ public class TeamPartnerRegistrationTest {
   private Participant registerOtherParticipantsAsFixedTeam() {
     return testHelperService.registerParticipantsAsFixedTeam(runningDinner, "Foo Bar", "foo@bar.de", "Other Teampartner");
   }
-  
+
+  /**
+   * Builds a ParticipantInputDataTO with both teamPartnerWishEmail and teamPartnerWishRegistrationData set,
+   * simulating the edge case where a participant provides a fixed team partner wish child that matches
+   * a participant who has already registered an email invitation for them.
+   * The isTeamPartnerWishInvitationEmailAddressProvided() method is overridden to bypass the assertion
+   * in mapParticipantInputToParticipant that normally forbids both fields simultaneously.
+   */
+  private ParticipantInputDataTO buildEdgeCaseInput(String email,
+                                                    String firstname,
+                                                    String lastname,
+                                                    String teamPartnerWishEmail,
+                                                    TeamPartnerWishRegistrationDataTO childData) {
+    ParticipantAddress address = TestUtil.newAddress();
+    ParticipantInputDataTO input = new ParticipantInputDataTO() {
+      @Override
+      public boolean isTeamPartnerWishInvitationEmailAddressProvided() {
+        return false; // Bypass the assertion so both fields can be set
+      }
+    };
+    input.setEmail(email);
+    input.setFirstnamePart(firstname);
+    input.setLastname(lastname);
+    input.setNumSeats(6);
+    input.setStreet(address.getStreet());
+    input.setStreetNr(address.getStreetNr());
+    input.setZip(address.getZip());
+    input.setCityName(address.getCityName());
+    input.setTeamPartnerWishEmail(teamPartnerWishEmail);
+    input.setTeamPartnerWishRegistrationData(childData);
+    return input;
+  }
+
 }

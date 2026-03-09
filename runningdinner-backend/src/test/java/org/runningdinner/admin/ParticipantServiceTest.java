@@ -1,15 +1,6 @@
 
 package org.runningdinner.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +15,15 @@ import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -109,7 +109,7 @@ public class ParticipantServiceTest {
   public void standardUpdateParticipant() {
 
     List<Participant> participants = participantService.findParticipants(runningDinner.getAdminId(), true);
-    Participant firstParticipant = participants.get(0);
+    Participant firstParticipant = participants.getFirst();
     firstParticipant.setAge(25);
     Participant result = testHelperService.updateParticipant(firstParticipant);
     assertThat(result.getAge()).isEqualTo(25);

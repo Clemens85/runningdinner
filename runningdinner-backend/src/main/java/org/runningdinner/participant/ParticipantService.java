@@ -603,29 +603,57 @@ public class ParticipantService {
     String email = teamPartnerWishRegistrationData.getEmail();
     String mobileNumber = teamPartnerWishRegistrationData.getMobileNumber();
 
-    Participant teamPartnerWish = participant.createDetachedClone(false);
-    teamPartnerWish.setHost(false); // Not needed, but just to be sure
+    Participant teamPartnerWishChild = participant.createDetachedClone(false);
+    teamPartnerWishChild.setHost(false); // Not needed, but just to be sure
     
-    teamPartnerWish.setName(ParticipantName.newName().withFirstname(StringUtils.trim(firstnamePart)).andLastname(StringUtils.trim(lastname)));
+    teamPartnerWishChild.setName(ParticipantName.newName().withFirstname(StringUtils.trim(firstnamePart)).andLastname(StringUtils.trim(lastname)));
     
-    teamPartnerWish.setAge(Participant.UNDEFINED_AGE);
-    teamPartnerWish.setNumSeats(0);
-    teamPartnerWish.setGender(Gender.UNDEFINED);
+    teamPartnerWishChild.setAge(Participant.UNDEFINED_AGE);
+    teamPartnerWishChild.setNumSeats(0);
+    teamPartnerWishChild.setGender(Gender.UNDEFINED);
 
     if (StringUtils.isNotBlank(email)) {
-      teamPartnerWish.setEmail(email.trim());
+      teamPartnerWishChild.setEmail(email.trim());
     }
     if (StringUtils.isNotBlank(mobileNumber)) {
-      teamPartnerWish.setMobileNumber(mobileNumber.trim());
+      teamPartnerWishChild.setMobileNumber(mobileNumber.trim());
     }
+
+    if (isFixedTeamPartnerWishAlreadySatisfiedByEmailInvitation(participant, teamPartnerWishChild)) {
+      return participant; // No need to create team partner wish child => We just keep the already existing participant with the team partner wish email, because this offers more flexibility and more data than the fixed team partner wish child
+    }
+
+    setParticipantNumberAndRunningDinner(teamPartnerWishChild, participant.getRunningDinner());
     
-    setParticipantNumberAndRunningDinner(teamPartnerWish, participant.getRunningDinner());
-    
-    teamPartnerWish.setTeamPartnerWishOriginatorId(participant.getId());
+    teamPartnerWishChild.setTeamPartnerWishOriginatorId(participant.getId());
     participant.setTeamPartnerWishOriginatorId(participant.getId());
     
-    participantRepository.save(teamPartnerWish);
+    participantRepository.save(teamPartnerWishChild);
     return participantRepository.save(participant);
+  }
+
+  // Handle following edge case:
+  // Participant A registers himself and adds a team partner wish Email to B.
+  // B registers with this email however also himself later, but adds A' as fixed team partner wish (child).
+  // => We try to automatically handle this by don't creating fixed team partner wish child for B,
+  // because A is already registered with the team partner wish email for B, and we just keep the self registered A due to this offers more flexibility and more data.
+  private boolean isFixedTeamPartnerWishAlreadySatisfiedByEmailInvitation(Participant participantRoot, Participant teamPartnerWishChild) {
+    if (StringUtils.isEmpty(participantRoot.getTeamPartnerWishEmail())) {
+      return false; // Default case
+    }
+    final String adminId = participantRoot.getAdminId();
+    List<Participant> foundTeamPartnerWishesByEmail = participantRepository.findByTeamPartnerWishEmailIgnoreCaseAndAdminId(participantRoot.getEmail(), adminId);
+    if (CollectionUtils.isEmpty(foundTeamPartnerWishesByEmail)) {
+      return false; // Still default case
+    }
+
+    Participant foundTeamPartnerWishParticipant = foundTeamPartnerWishesByEmail.getFirst();
+    if (StringUtils.equalsIgnoreCase(foundTeamPartnerWishParticipant.getEmail(), teamPartnerWishChild.getEmail())) {
+      // We have found the edge case described above, so we do not create a new team partner wish participantRoot, but we just return the already existing one
+      return true;
+    }
+    // Check if we have exact match on name => We have also the described edge case
+    return foundTeamPartnerWishParticipant.getName().equals(teamPartnerWishChild.getName());
   }
 
   public static class SyncSettings {
