@@ -25,13 +25,10 @@ public interface HasTeamPartnerWishOriginator extends Identifiable  {
 
   /**
    * Returns true if this is a child of parent
-   * @param parent
+   * @param parent The potential parent
    */
   default boolean isTeamPartnerWishRegistrationChildOf(HasTeamPartnerWishOriginator parent) {
-    return isTeamPartnerWishRegistrationChild() && (
-            Objects.equals(parent.getTeamPartnerWishOriginatorId(), this.getId()) ||
-            Objects.equals(this.getTeamPartnerWishOriginatorId(), parent.getId())
-    );
+    return isTeamPartnerWishRegistrationChild() && Objects.equals(this.getTeamPartnerWishOriginatorId(), parent.getId());
   }
 
   static<T extends HasTeamPartnerWishOriginator> List<T> filterChildPartners(List<T> list) {
