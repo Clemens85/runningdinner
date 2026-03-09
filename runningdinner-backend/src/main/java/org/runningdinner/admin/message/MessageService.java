@@ -798,7 +798,7 @@ public class MessageService {
     for (T childParticipant : teamPartnerRegistrationChildren) {
       T parent = result
                   .stream()
-                  .filter(childParticipant::isTeamPartnerWishRegistrationChildOf)
+                  .filter(parentCandidate -> childParticipant.isTeamPartnerWishRegistrationChildOf(parentCandidate))
                   .findFirst()
                   .orElse(null);
 

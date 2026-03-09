@@ -24,12 +24,14 @@ public interface HasTeamPartnerWishOriginator extends Identifiable  {
   }
 
   /**
-   * Returns true if this is a child of other
-   * @param other
+   * Returns true if this is a child of parent
+   * @param parent
    */
-  default boolean isTeamPartnerWishRegistrationChildOf(HasTeamPartnerWishOriginator other) {
-    return Objects.equals(other.getTeamPartnerWishOriginatorId(), this.getId()) ||
-           Objects.equals(this.getTeamPartnerWishOriginatorId(), other.getId());
+  default boolean isTeamPartnerWishRegistrationChildOf(HasTeamPartnerWishOriginator parent) {
+    return isTeamPartnerWishRegistrationChild() && (
+            Objects.equals(parent.getTeamPartnerWishOriginatorId(), this.getId()) ||
+            Objects.equals(this.getTeamPartnerWishOriginatorId(), parent.getId())
+    );
   }
 
   static<T extends HasTeamPartnerWishOriginator> List<T> filterChildPartners(List<T> list) {

@@ -33,7 +33,7 @@ public class ParticipantTest {
     
     invitor.setTeamPartnerWishOriginatorId(invitorId);
     invitee.setTeamPartnerWishOriginatorId(invitorId);
-    assertThat(invitor.isTeamPartnerWishRegistrationChildOf(invitee)).isTrue();
+    assertThat(invitor.isTeamPartnerWishRegistrationChildOf(invitee)).isFalse();
     assertThat(invitee.isTeamPartnerWishRegistrationChildOf(invitor)).isTrue();
   }
   
