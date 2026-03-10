@@ -11,6 +11,7 @@ import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class TeamReferenceService {
@@ -82,6 +85,35 @@ public class TeamReferenceService {
 		}
 		return result;
 	}
+
+	public static Map<TeamReference, Team> mapTeamReferencesToTeamsAndReassignMeals(List<TeamReference> optimizedTeams,
+																																									List<Team> existingTeams,
+																																									List<MealClass> allMeals) {
+		Map<UUID, MealClass> mealsById = allMeals
+																				.stream()
+																				.collect(HashMap::new, (map, meal) -> map.put(meal.getId(), meal), HashMap::putAll);
+
+		Map<TeamReference, Team> result = new HashMap<>();
+		for (TeamReference teamReference : optimizedTeams) {
+			Team team = existingTeams.stream()
+							.filter(t -> t.isSameId(teamReference.teamId()))
+							.findFirst()
+							.orElseThrow(() -> new IllegalStateException("Could not find team for TeamReference: " + teamReference));
+
+			MealReference mealReference = teamReference.meal();
+			if (!Objects.equals(mealReference.id(), team.getMealClass().getId())) {
+				MealClass mealClass = mealsById.get(mealReference.id());
+				Assert.notNull(mealClass, "Expected meal class to be present for id " + mealReference.id() + " in team " + team);
+				team.setMealClass(mealClass);
+			}
+
+			result.put(teamReference, team);
+		}
+		return result;
+	}
+
+
+
 
 	private static MealReference mapMealReference(MealClass mealClass) {
 		return new MealReference(mealClass.getId(), mealClass.getLabel());

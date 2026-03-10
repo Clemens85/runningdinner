@@ -8,6 +8,7 @@ export * from './Message';
 export * from './Participant';
 export * from './Payment';
 export * from './Registration';
+export * from './RouteOptimizationSettings';
 export * from './RunningDinner';
 export * from './SelfAdmin';
 export * from './Team';

@@ -1,5 +1,6 @@
 import { GeocodingResult } from './Base';
 import { Participant } from './Participant';
+import { RouteOptimizationSettings } from './RouteOptimizationSettings';
 import { AfterPartyLocation } from './RunningDinner';
 import { BaseTeam, Team } from './Team';
 
@@ -15,7 +16,7 @@ export type DinnerRouteTeam = {
   contactInfo: string[];
 } & BaseTeam;
 
-export interface DinnerRouteTeamHost extends Omit<Participant, 'id'> {}
+export type DinnerRouteTeamHost = Omit<Participant, 'id'>;
 
 export interface DinnerRouteList {
   dinnerRoutes: DinnerRoute[];
@@ -113,7 +114,7 @@ export type DinnerRouteOptimizationStatus = {
 export type CalculateDinnerRouteOptimizationRequest = {
   currentSumDistanceInMeters: number;
   currentAverageDistanceInMeters: number;
-};
+} & RouteOptimizationSettings;
 
 export type CalculateDinnerRouteOptimizationResponse = {
   optimizationId: string;
