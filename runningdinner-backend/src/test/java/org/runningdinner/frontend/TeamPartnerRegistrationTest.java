@@ -21,7 +21,16 @@ import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.MailSenderFactory;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
-import org.runningdinner.participant.*;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantName;
+import org.runningdinner.participant.ParticipantRepository;
+import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamCancellation;
+import org.runningdinner.participant.TeamCancellationResult;
+import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.TeamStatus;
+import org.runningdinner.participant.WaitingListService;
 import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.runningdinner.participant.rest.ParticipantTO;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
@@ -35,7 +44,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -131,8 +145,8 @@ public class TeamPartnerRegistrationTest {
     assertThat(childParticipant.getTeamPartnerWishEmail()).isNullOrEmpty();
     
     // Check correlations are properly setup
-    assertThat(rootParticipant.isTeamPartnerWishRegistratonRoot()).isTrue();
-    assertThat(childParticipant.isTeamPartnerWishRegistratonRoot()).isFalse();
+    assertThat(rootParticipant.isTeamPartnerWishRegistrationRoot()).isTrue();
+    assertThat(childParticipant.isTeamPartnerWishRegistrationRoot()).isFalse();
     assertThat(childParticipant.isTeamPartnerWishRegistrationChildOf(rootParticipant)).isTrue();
   }
 

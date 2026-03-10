@@ -14,7 +14,14 @@ import org.runningdinner.common.IssueType;
 import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.common.rest.BaseTO;
 import org.runningdinner.common.service.ValidatorService;
-import org.runningdinner.core.*;
+import org.runningdinner.core.FuzzyBoolean;
+import org.runningdinner.core.GeneratedTeamsResult;
+import org.runningdinner.core.IdentifierUtil;
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
+import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.RunningDinnerCalculator;
+import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.event.MealsSwappedEvent;
@@ -32,7 +39,16 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -683,7 +699,7 @@ public class TeamService {
                                       .orElseThrow(() -> new IllegalStateException("Could not find participant " + participantId + " in " + team));
 
     if (teamMemberToCancel.getTeamPartnerWishOriginatorId() != null) {
-      if (teamMemberToCancel.isTeamPartnerWishRegistratonRoot()) {
+      if (teamMemberToCancel.isTeamPartnerWishRegistrationRoot()) {
         throw new ValidationException(new IssueList(new Issue(IssueKeys.INVALID_TEAM_MEMBER_CANCELLATION_ROOT_TEAMPARTNER, IssueType.VALIDATION)));
       } else {
         participantService.clearTeamPartnerWishOriginatorOfRootParticipant(adminId, teamMemberToCancel.getTeamPartnerWishOriginatorId());
