@@ -1,4 +1,9 @@
 const NewsMessages_en: any = {
+  news_title_20260310: 'Improved Route Optimization',
+  news_content_20260310:
+    'The route optimization has been significantly improved and now provides substantially better results. ' +
+    'The degree of improvement depends on the size of the dinner event: the bigger the event, the more noticeable the optimization gains will be.',
+
   news_title_20251207: 'Bug fixed in route optimization',
   news_content_20251207:
     'Unfortunately, there was a bug in the route optimization feature that could cause some teams to meet multiple times. ' +
