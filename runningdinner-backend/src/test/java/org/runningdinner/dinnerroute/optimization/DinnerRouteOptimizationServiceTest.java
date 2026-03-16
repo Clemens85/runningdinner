@@ -86,12 +86,6 @@ public class DinnerRouteOptimizationServiceTest {
 
 		optimizationDataProviderInMemory = new TestOptimizationDataProvider();
 
-		DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService = new DinnerRouteOptimizationFeedbackService(
-			feedbackService,
-			mailConfig,
-			false
-		);
-
 		this.routeOptimizationService = new DinnerRouteOptimizationService(
 			runningDinnerService,
 			dinnerRouteService,
@@ -102,7 +96,6 @@ public class DinnerRouteOptimizationServiceTest {
 			teamNeighbourClusterCalculationService,
 			dinnerRouteMessageFormatter,
 			teamReferenceService,
-			dinnerRouteOptimizationFeedbackService,
 			eventPublisher
 		);
 

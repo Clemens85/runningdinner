@@ -80,8 +80,6 @@ public class DinnerRouteOptimizationService {
 
 	private final TeamReferenceService teamReferenceService;
 
-	private final DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService;
-	
 	private final EventPublisher eventPublisher;
 
 	public DinnerRouteOptimizationService(RunningDinnerService runningDinnerService,
@@ -93,7 +91,6 @@ public class DinnerRouteOptimizationService {
 																				TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService,
 																				DinnerRouteMessageFormatter dinnerRouteMessageFormatter,
 																				TeamReferenceService teamReferenceService,
-																				DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService,
 																				EventPublisher eventPublisher) {
 
 		this.runningDinnerService = runningDinnerService;
@@ -105,7 +102,6 @@ public class DinnerRouteOptimizationService {
 		this.teamNeighbourClusterCalculationService = teamNeighbourClusterCalculationService;
 		this.dinnerRouteMessageFormatter = dinnerRouteMessageFormatter;
 		this.teamReferenceService = teamReferenceService;
-		this.dinnerRouteOptimizationFeedbackService = dinnerRouteOptimizationFeedbackService;
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -169,7 +165,7 @@ public class DinnerRouteOptimizationService {
 															})
 															.toList();
 
-		var originalOptimizationSettings = applyOptimizedRoutesToTeams(runningDinner, optimizationId, teamClones);
+		applyOptimizedRoutesToTeams(runningDinner, optimizationId, teamClones);
 
 		DinnerRouteCalculator dinnerRouteCalculator = new DinnerRouteCalculator(runningDinner, dinnerRouteMessageFormatter);
 		List<DinnerRouteTO> optimizedDinnerRoutes = DinnerRouteOptimizationUtil.buildDinnerRoute(teamClones, dinnerRouteCalculator);
@@ -180,19 +176,11 @@ public class DinnerRouteOptimizationService {
 
 		DinnerRouteListTO optimizedDinnerRouteList = new DinnerRouteListTO(optimizedDinnerRoutes, teamClusterMappings, new TeamNeighbourClusterListTO(teamNeighbourClusters));
 
-		var result = new DinnerRouteOptimizationResult(optimizationId,
-																									 optimizedDinnerRouteList,
-																									 optimizedDinnerRoutesWithDistances,
-																									 new TeamNeighbourClusterListTO(teamNeighbourClusters));
+		return new DinnerRouteOptimizationResult(optimizationId,
+																						 optimizedDinnerRouteList,
+																						 optimizedDinnerRoutesWithDistances,
+																						 new TeamNeighbourClusterListTO(teamNeighbourClusters));
 
-		try {
-			dinnerRouteOptimizationFeedbackService.sendOptimizationFeedbackAsync(adminId,
-							result, originalOptimizationSettings.currentSumDistanceInMeters(), originalOptimizationSettings.currentAverageDistanceInMeters());
-		} catch (Exception e) {
-			LOGGER.error("Could not call sendOptimizationFeedbackAsync", e);
-		}
-
-		return result;
 	}
 
 	private RouteOptimizationSettings applyOptimizedRoutesToTeams(RunningDinner runningDinner, String optimizationId, List<Team> teams) {
