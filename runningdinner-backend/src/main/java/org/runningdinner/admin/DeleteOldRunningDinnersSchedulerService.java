@@ -1,6 +1,6 @@
 package org.runningdinner.admin;
 
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.core.util.DateTimeUtil;

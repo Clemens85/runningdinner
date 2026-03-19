@@ -209,14 +209,14 @@
 
 			<!-- See https://github.com/lukas-krecan/ShedLock -->
 		<dependency>
-		  <groupId>net.javacrumbs.shedlock</groupId>
-		  <artifactId>shedlock-spring</artifactId>
-		  <version>2.1.0</version>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-spring</artifactId>
+			<version>7.7.0</version>
 		</dependency>
 		<dependency>
-		  <groupId>net.javacrumbs.shedlock</groupId>
-		  <artifactId>shedlock-provider-jdbc-template</artifactId>
-		  <version>2.1.0</version>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-provider-jdbc-template</artifactId>
+			<version>7.7.0</version>
 		</dependency>
 
 		<!-- Excel parsing -->
