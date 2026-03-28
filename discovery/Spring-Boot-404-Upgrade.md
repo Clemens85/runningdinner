@@ -138,5 +138,5 @@ These have nothing specifically to do with Spring Boot 4 but will likely fail to
 7. Migrate tests (`@MockBean` → `@MockitoBean`, add `@AutoConfigureMockMvc`, fix `TestRestTemplate`). => _DONE_
 8. Replace `spring-boot-starter-web` → `spring-boot-starter-webmvc`, add `spring-boot-starter-flyway`. => _DONE_
 9. Upgrade `wiremock`, `logstash-logback-encoder`, `kryo`, `jakarta.mail`. => _DONE_
-10. Remove the classic starters once everything is green.
-11. Add `spring-boot-properties-migrator` temporarily to catch any remaining property renames.
+10. Remove the classic starters once everything is green. => _DONE_
+11. Add `spring-boot-properties-migrator` temporarily to catch any remaining property renames. => _DONE_
