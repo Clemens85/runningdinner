@@ -130,13 +130,13 @@ These have nothing specifically to do with Spring Boot 4 but will likely fail to
 ### Recommended Migration Order
 
 1. Upgrade to **Spring Boot 3.5.x** first, fix all deprecation warnings. => _DONE_
-2. Bump `spring-boot-starter-parent` to `4.0.4`.
-3. Add `spring-boot-starter-classic` + `spring-boot-starter-test-classic` temporarily to get a compiling baseline.
+2. Bump `spring-boot-starter-parent` to `4.0.4`. => _DONE_
+3. Add `spring-boot-starter-classic` + `spring-boot-starter-test-classic` temporarily to get a compiling baseline. => _DONE_
 4. Fix **ShedLock** (2.1.0 → 6.x) — this likely needs a code change to the `LockProvider` setup in ApplicationConfig.java. => _DONE_
-5. Fix **Jackson** (`Jackson2ObjectMapperBuilderCustomizer` → `JsonMapperBuilderCustomizer`), update all Jackson imports.
-6. Fix **`@EntityScan`** import.
-7. Migrate tests (`@MockBean` → `@MockitoBean`, add `@AutoConfigureMockMvc`, fix `TestRestTemplate`).
-8. Replace `spring-boot-starter-web` → `spring-boot-starter-webmvc`, add `spring-boot-starter-flyway`.
+5. Fix **Jackson** (`Jackson2ObjectMapperBuilderCustomizer` → `JsonMapperBuilderCustomizer`), update all Jackson imports. => _DONE_
+6. Fix **`@EntityScan`** import. => _DONE_
+7. Migrate tests (`@MockBean` → `@MockitoBean`, add `@AutoConfigureMockMvc`, fix `TestRestTemplate`). => _DONE_
+8. Replace `spring-boot-starter-web` → `spring-boot-starter-webmvc`, add `spring-boot-starter-flyway`. => _DONE_
 9. Upgrade `wiremock`, `logstash-logback-encoder`, `kryo`, `jakarta.mail`. => _DONE_
 10. Remove the classic starters once everything is green.
 11. Add `spring-boot-properties-migrator` temporarily to catch any remaining property renames.

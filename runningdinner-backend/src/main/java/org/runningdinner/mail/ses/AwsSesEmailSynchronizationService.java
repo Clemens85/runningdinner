@@ -1,7 +1,7 @@
 package org.runningdinner.mail.ses;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.message.MessageService;
@@ -259,7 +259,7 @@ public class AwsSesEmailSynchronizationService {
       }
       LOGGER.error("Parsed notification is null or has no notification type (or event type): {}", LogSanitizer.sanitize(jsonPayload, 3000));
       return Optional.empty();
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       LOGGER.error("Failed to parse JSON payload: {}", LogSanitizer.sanitize(jsonPayload, 3000), e);
       return Optional.empty();
     }

@@ -12,8 +12,8 @@ import org.payment.paypal.PaypalOrderResponseTO;
 import org.payment.paypal.PaypalOrderStatus;
 import org.payment.paypal.PaypalPayerTO;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 public class PaypalMock {
@@ -112,7 +112,7 @@ public class PaypalMock {
   private String writeValueAsJsonString(Object value) {
     try {
       return objectMapper.writeValueAsString(value);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new RuntimeException(e);
     }
   }
