@@ -50,7 +50,7 @@ public class RunningDinnerPublicTO {
     this.date = runningDinner.getDate();
     this.city = runningDinner.getCity();
     this.zip = runningDinner.getZip();
-    this.publicSettings = new PublicSettingsTO(runningDinner.getPublicSettings(), true);
+    this.publicSettings = PublicSettingsTO.of(runningDinner.getPublicSettings(), true);
     this.meals = MealTO.fromMeals(runningDinner.getConfiguration().getMealClasses());
     this.registrationDateExpired = !runningDinner.canRegistrate(now);
     this.adminEmail = runningDinner.getEmail();

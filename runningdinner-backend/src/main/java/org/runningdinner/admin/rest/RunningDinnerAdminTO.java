@@ -68,7 +68,7 @@ public class RunningDinnerAdminTO extends BaseTO implements RunningDinnerInfo, S
     this.email = runningDinner.getEmail();
     this.basicDetails = new BasicDetailsTO(runningDinner);
     this.options = new OptionsTO(runningDinner.getConfiguration());
-    this.publicSettings = new PublicSettingsTO(runningDinner.getPublicSettings(), false);
+    this.publicSettings = PublicSettingsTO.of(runningDinner.getPublicSettings(), false);
     this.cancellationDate = runningDinner.getCancellationDate();
     this.acknowledgedDate = runningDinner.getAcknowledgedDate();
     this.runningDinnerType = runningDinner.getRunningDinnerType();
