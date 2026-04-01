@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.message.dinner.RunningDinnerRelatedMessage;
 import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
+import org.runningdinner.core.MealSpecifics;
+import org.runningdinner.core.PublicSettings;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.payment.paymentoptions.PaymentOptions;
@@ -26,7 +28,12 @@ public class NewParticipantSubscribedFormatter {
   @Autowired
   private LocalizationProviderService localizationProviderService;
   
-  public RunningDinnerRelatedMessage formatNewParticipantSubscribedMessage(final RunningDinner runningDinner, final Participant participant) {
+  @Autowired
+  private MessageFormatterHelperService messageFormatterHelperService;
+  
+  public RunningDinnerRelatedMessage formatNewParticipantSubscribedMessage(final RunningDinner runningDinner, 
+                                                                          final Participant participant,
+                                                                          final Participant teamPartnerWishChild) {
     
     Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
     
@@ -40,11 +47,16 @@ public class NewParticipantSubscribedFormatter {
     message = message.replaceAll(FormatterUtil.LASTNAME, participant.getName().getLastname());
     message = message.replaceAll(FormatterUtil.ACTIVATE_PARTICIPANT_SUBSCRIPTION_LINK, activationUrl);
     message = message.replaceAll(FormatterUtil.PUBLIC_RUNNING_DINNER_TITLE, runningDinner.getPublicSettings().getPublicTitle());
+    message = message.replaceAll(FormatterUtil.REGISTRATION_SUMMARY, buildRegistrationSummary(participant, teamPartnerWishChild, locale));
+    message = message.replaceAll(FormatterUtil.ORGANIZER_CONTACT_HINT, buildOrganizerContactHint(runningDinner, locale));
 
     return new RunningDinnerRelatedMessage(subject, message, runningDinner);
   }
 
-  public RunningDinnerRelatedMessage formatNewParticipantSubscribedWithPaymentMessage(RunningDinner runningDinner, Participant participant, PaymentOptions paymentOptions) {
+  public RunningDinnerRelatedMessage formatNewParticipantSubscribedWithPaymentMessage(RunningDinner runningDinner, 
+                                                                                     Participant participant, 
+                                                                                     PaymentOptions paymentOptions,
+                                                                                     Participant teamPartnerWishChild) {
   
     Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
     
@@ -68,7 +80,87 @@ public class NewParticipantSubscribedFormatter {
       teamPartnerInfo = messageSource.getMessage("message.template.participant.subscribed.teampartnerinfo.registration", null, locale);      
     }
     message = message.replaceAll(FormatterUtil.TEAM_PARTNER_IFNO, teamPartnerInfo);
+    message = message.replaceAll(FormatterUtil.REGISTRATION_SUMMARY, buildRegistrationSummary(participant, teamPartnerWishChild, locale));
+    message = message.replaceAll(FormatterUtil.ORGANIZER_CONTACT_HINT, buildOrganizerContactHint(runningDinner, locale));
     
     return new RunningDinnerRelatedMessage(subject, message, runningDinner);
+  }
+
+  private String buildRegistrationSummary(Participant participant, Participant teamPartnerWishChild, Locale locale) {
+    
+    String header = messageSource.getMessage("message.template.participant.subscribed.registration_summary.header", null, locale);
+    String nameLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.name", null, locale);
+    String emailLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.email", null, locale);
+    String addressLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.address", null, locale);
+    String numSeatsLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.numseats", null, locale);
+    String mealSpecificsLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.mealspecifics", null, locale);
+    String teamPartnerLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.teampartner", null, locale);
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append(header).append(FormatterUtil.NEWLINE);
+    sb.append(nameLabel).append(": ").append(participant.getName().getFullnameFirstnameFirst()).append(FormatterUtil.NEWLINE);
+    sb.append(emailLabel).append(": ").append(participant.getEmail()).append(FormatterUtil.NEWLINE);
+    sb.append(addressLabel).append(": ").append(FormatterUtil.generateAddressString(participant)).append(FormatterUtil.NEWLINE);
+    sb.append(numSeatsLabel).append(": ").append(participant.getNumSeats()).append(FormatterUtil.NEWLINE);
+
+    String mealSpecificsStr = formatMealSpecificsWithNote(participant.getMealSpecifics(), locale);
+    if (StringUtils.isNotBlank(mealSpecificsStr)) {
+      sb.append(mealSpecificsLabel).append(": ").append(mealSpecificsStr).append(FormatterUtil.NEWLINE);
+    }
+    
+    if (StringUtils.isNotBlank(participant.getTeamPartnerWishEmail())) {
+      sb.append(teamPartnerLabel).append(": ").append(participant.getTeamPartnerWishEmail()).append(FormatterUtil.NEWLINE);
+    }
+    
+    if (teamPartnerWishChild != null) {
+      String registeredTeamPartnerLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.registered_teampartner", null, locale);
+      sb.append(registeredTeamPartnerLabel).append(": ").append(teamPartnerWishChild.getName().getFullnameFirstnameFirst());
+      if (StringUtils.isNotBlank(teamPartnerWishChild.getEmail())) {
+        sb.append(" (").append(teamPartnerWishChild.getEmail()).append(")");
+      }
+      sb.append(FormatterUtil.NEWLINE);
+    }
+    
+    return sb.toString();
+  }
+  
+  private String buildOrganizerContactHint(RunningDinner runningDinner, Locale locale) {
+    
+    PublicSettings publicSettings = runningDinner.getPublicSettings();
+    String hint = messageSource.getMessage("message.template.participant.subscribed.organizer_contact_hint", null, locale);
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(hint);
+    if (StringUtils.isNotBlank(publicSettings.getPublicContactName())) {
+      sb.append(publicSettings.getPublicContactName());
+    }
+    if (StringUtils.isNotBlank(publicSettings.getPublicContactEmail())) {
+      if (StringUtils.isNotBlank(publicSettings.getPublicContactName())) {
+        sb.append(", ");
+      }
+      sb.append(publicSettings.getPublicContactEmail());
+    }
+    if (StringUtils.isNotBlank(publicSettings.getPublicContactMobileNumber())) {
+      sb.append(", ").append(publicSettings.getPublicContactMobileNumber());
+    }
+    sb.append(FormatterUtil.TWO_NEWLINES);
+    
+    return sb.toString();
+  }
+
+  private String formatMealSpecificsWithNote(MealSpecifics mealSpecifics, Locale locale) {
+    
+    if (mealSpecifics == null) {
+      return StringUtils.EMPTY;
+    }
+    String items = messageFormatterHelperService.formatMealSpecificItems(mealSpecifics, locale);
+    String note = StringUtils.trimToEmpty(mealSpecifics.getMealSpecificsNote());
+    if (StringUtils.isNotBlank(items) && StringUtils.isNotBlank(note)) {
+      return items + ", " + note;
+    }
+    if (StringUtils.isNotBlank(items)) {
+      return items;
+    }
+    return note;
   }
 }
