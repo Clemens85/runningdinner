@@ -1,7 +1,7 @@
 package org.runningdinner.common.aws;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class SnsMessageMapperService {
 	public SnsMessage mapToMessage(String messageBody) {
 		try {
 			return objectMapper.readValue(messageBody, SnsMessage.class);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}

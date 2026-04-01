@@ -1,6 +1,6 @@
 package org.runningdinner.admin.message.processor;
 
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageTask;

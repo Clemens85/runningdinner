@@ -1,7 +1,7 @@
 package org.runningdinner.dinnerroute.optimization.notification;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.runningdinner.dinnerroute.optimization.data.OptimizationDataProvider;
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstanceStatus;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class DinnerRouteOptimizationNotificationService {
 	public OptimizationFinishedEvent mapOptimizedFinishedEventFromJson(String payload) {
 		try {
 			return objectMapper.readValue(payload, OptimizationFinishedEvent.class);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -33,7 +33,7 @@ public class DinnerRouteOptimizationNotificationService {
 	public String mapOptimizedFinishedEventToJson(OptimizationFinishedEvent evt) {
 		try {
 			return objectMapper.writeValueAsString(evt);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}

@@ -7,8 +7,8 @@ import org.runningdinner.geocoder.base.GeocodeResponse;
 import org.runningdinner.geocoder.base.GeocodeResponsePersistenceService;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
@@ -25,12 +25,12 @@ public class GeocodeResponseHandler {
 		this.objectMapper = objectMapper;
 	}
 
-	public void processMessage(Message message) throws JsonProcessingException {
+	public void processMessage(Message message) {
 		GeocodeResponse response = mapToGeocodeResponse(message);
 		geocodeResponsePersistenceService.persistGeocodeResponse(response);
 	}
 
-	private GeocodeResponse mapToGeocodeResponse(Message message) throws JsonProcessingException {
+	private GeocodeResponse mapToGeocodeResponse(Message message) {
 		
 		Map<String, MessageAttributeValue> messageAttributes = message.messageAttributes();
 		String adminId = getStringAttribute(messageAttributes, "adminId");

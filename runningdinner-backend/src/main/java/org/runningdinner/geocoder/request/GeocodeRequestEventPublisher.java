@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
@@ -104,7 +104,7 @@ public class GeocodeRequestEventPublisher {
   String mapToJson(BaseAddress obj) {
     try {
       return objectMapper.writeValueAsString( new GeocodeRequestBaseBody(obj));
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new TechnicalException(e);
     }
   }

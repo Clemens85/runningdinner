@@ -6,8 +6,9 @@ import org.runningdinner.core.RegistrationType;
 import org.runningdinner.wizard.BasicDetailsTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         "mail.junit.from=dev@runyourdinner.eu"
 })
 @ActiveProfiles({"dev", "junit"})
+@AutoConfigureTestRestTemplate
 public class XssInjectionPreventionTest {
 
   private static final String BASE_URI = "http://localhost";

@@ -207,7 +207,7 @@ public class RunningDinnerDeletionTest {
     runningDinner = runningDinnerService.updateBasicSettings(runningDinner.getAdminId(), basicSettings);
     
     PublicSettings publicSettings = new PublicSettings("publicTitle", "publicDescription", runningDinner.getDate().minusDays(1), false); 
-    runningDinner = runningDinnerService.updatePublicSettings(runningDinner.getAdminId(), new PublicSettingsTO(publicSettings, false));
+    runningDinner = runningDinnerService.updatePublicSettings(runningDinner.getAdminId(), PublicSettingsTO.of(publicSettings, false));
     return runningDinner;
   }
   

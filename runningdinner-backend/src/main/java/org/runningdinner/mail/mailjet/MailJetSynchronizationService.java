@@ -1,8 +1,8 @@
 package org.runningdinner.mail.mailjet;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.message.MessageService;
@@ -155,7 +155,7 @@ public class MailJetSynchronizationService {
 	private List<MailJetNotification> mapToNotificationList(String messageBody) {
 		try {
 			return objectMapper.readValue(messageBody, new TypeReference<List<MailJetNotification>>() {});
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}

@@ -1,8 +1,8 @@
 package org.runningdinner.dinnerroute.optimization;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
@@ -239,7 +239,7 @@ public class DinnerRouteOptimizationService {
 		try {
 			String requestJsonString = objectMapper.writeValueAsString(finalRequest);
 			optimizationDataProvider.writeRequestData(finalRequest.getAdminId(), finalRequest.getOptimizationId(), requestJsonString);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -254,7 +254,7 @@ public class DinnerRouteOptimizationService {
 				throw new IllegalStateException("Error in optimization response: " + errorMessage);
 			}
 			return objectMapper.treeToValue(rootNode, DinnerRouteOptimizationRequest.class);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException("Error while reading optimized response for adminId: " + adminId + " and optimizationId: " + optimizationId, e);
 		}
 	}
