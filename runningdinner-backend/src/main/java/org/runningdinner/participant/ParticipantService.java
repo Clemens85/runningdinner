@@ -559,7 +559,8 @@ public class ParticipantService {
       throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION))); 
     }
     Participant participantWithSameEmail = participants.getFirst();
-    if (!Objects.equals(participant.getTeamPartnerWishOriginatorId(), participantWithSameEmail.getTeamPartnerWishOriginatorId())) {
+    boolean haveTeamPartnerWishOriginatorId = CoreUtil.allNotNull(participant.getTeamPartnerWishOriginatorId(), participantWithSameEmail.getTeamPartnerWishOriginatorId());
+    if (!haveTeamPartnerWishOriginatorId || !Objects.equals(participant.getTeamPartnerWishOriginatorId(), participantWithSameEmail.getTeamPartnerWishOriginatorId())) {
       throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION)));
     }
   }
