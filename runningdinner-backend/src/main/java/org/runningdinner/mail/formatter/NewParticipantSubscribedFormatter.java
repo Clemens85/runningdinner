@@ -104,9 +104,7 @@ public class NewParticipantSubscribedFormatter {
     sb.append(numSeatsLabel).append(": ").append(participant.getNumSeats()).append(FormatterUtil.NEWLINE);
 
     String mealSpecificsStr = formatMealSpecificsWithNote(participant.getMealSpecifics(), locale);
-    if (StringUtils.isNotBlank(mealSpecificsStr)) {
-      sb.append(mealSpecificsLabel).append(": ").append(mealSpecificsStr).append(FormatterUtil.NEWLINE);
-    }
+    sb.append(mealSpecificsLabel).append(": ").append(mealSpecificsStr).append(FormatterUtil.NEWLINE);
     
     if (StringUtils.isNotBlank(participant.getTeamPartnerWishEmail())) {
       sb.append(teamPartnerLabel).append(": ").append(participant.getTeamPartnerWishEmail()).append(FormatterUtil.NEWLINE);
@@ -150,8 +148,9 @@ public class NewParticipantSubscribedFormatter {
 
   private String formatMealSpecificsWithNote(MealSpecifics mealSpecifics, Locale locale) {
     
+    String noMealSpecifics = messageSource.getMessage("message.template.participant.subscribed.registration_summary.mealspecifics.none", null, locale);
     if (mealSpecifics == null) {
-      return StringUtils.EMPTY;
+      return noMealSpecifics;
     }
     String items = messageFormatterHelperService.formatMealSpecificItems(mealSpecifics, locale);
     String note = StringUtils.trimToEmpty(mealSpecifics.getMealSpecificsNote());
@@ -161,6 +160,9 @@ public class NewParticipantSubscribedFormatter {
     if (StringUtils.isNotBlank(items)) {
       return items;
     }
-    return note;
+    if (StringUtils.isNotBlank(note)) {
+      return note;
+    }
+    return noMealSpecifics;
   }
 }
