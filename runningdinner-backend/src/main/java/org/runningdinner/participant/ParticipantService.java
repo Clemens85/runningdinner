@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -303,6 +304,9 @@ public class ParticipantService {
     
     if (checkForDuplicatedEmail) {
       checkDuplicatedRegistration(runningDinner.getAdminId(), incomingParticipantData.getEmail());
+      if (incomingParticipantData.isTeamPartnerWishRegistrationDataProvided()) {
+        checkDuplicatedTeamPartnerRegistrationEmail(runningDinner.getAdminId(), incomingParticipantData.getTeamPartnerWishRegistrationData().getEmail());
+      }
     }
     
     Assert.state(!(incomingParticipantData.isTeamPartnerWishInvitationEmailAddressProvided() && incomingParticipantData.isTeamPartnerWishRegistrationDataProvided()), 
@@ -427,6 +431,17 @@ public class ParticipantService {
     return participantRepository.findByEmailIgnoreCaseAndAdminIdOrderByParticipantNumber(normalizedEmail, adminId);
   }
 
+  private void checkDuplicatedTeamPartnerRegistrationEmail(String dinnerAdminId, String teamPartnerEmail) {
+
+    if (StringUtils.isBlank(teamPartnerEmail)) {
+      return;
+    }
+    List<Participant> existingParticipants = findParticipantByEmail(dinnerAdminId, teamPartnerEmail);
+    if (CollectionUtils.isNotEmpty(existingParticipants)) {
+      throw new ValidationException(new IssueList(new Issue("teamPartnerWishRegistrationData.email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION)));
+    }
+  }
+
   protected void checkDuplicatedRegistration(String dinnerAdminId, String email) {
 
     List<Participant> existingParticipants = findParticipantByEmail(dinnerAdminId, email);
@@ -544,7 +559,8 @@ public class ParticipantService {
       throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION))); 
     }
     Participant participantWithSameEmail = participants.getFirst();
-    if (!participant.isTeamPartnerWishRegistrationChildOf(participantWithSameEmail)) {
+    boolean haveTeamPartnerWishOriginatorId = CoreUtil.allNotNull(participant.getTeamPartnerWishOriginatorId(), participantWithSameEmail.getTeamPartnerWishOriginatorId());
+    if (!haveTeamPartnerWishOriginatorId || !Objects.equals(participant.getTeamPartnerWishOriginatorId(), participantWithSameEmail.getTeamPartnerWishOriginatorId())) {
       throw new ValidationException(new IssueList(new Issue("email", IssueKeys.PARTICIPANT_ALREADY_REGISTERED, IssueType.VALIDATION)));
     }
   }
