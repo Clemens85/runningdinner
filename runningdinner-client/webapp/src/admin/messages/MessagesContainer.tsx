@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Collapse, Grid, Paper, Skeleton, useMediaQuery, useTheme } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import {
   BaseAdminIdProps,
@@ -166,7 +166,7 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
 
   const [autoFilled, setAutoFilled] = useState(false);
 
-  const { data: messageProposal } = useFindMessageProposal(adminId, messageType);
+  const { data: messageProposal, isFetched: isProposalFetched } = useFindMessageProposal(adminId, messageType);
 
   useEffect(() => {
     // Reset all our selection values on mounting this component:
@@ -277,27 +277,36 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                   <Grid container>
                     <Grid size={12}>
                       <MessageHeadline />
-                      {autoFilled && (
-                        <Box mt={1} mb={1}>
-                          <Alert severity="info" onClose={() => setAutoFilled(false)}>
-                            {t('admin:mails_proposal_autofilled')}
-                          </Alert>
-                        </Box>
-                      )}
                     </Grid>
                     <Grid size={12}>
                       <RecipientSelection messageType={messageType} adminId={adminId} />
-                      <MessageSubject onMessageSubjectChange={handleMessageSubjectChange} />
-                      <MessageContent
-                        templates={templates}
-                        onMessageContentChange={handleMessageContentChange}
-                        rows={15}
-                        showTemplatesHelpIcon={true}
-                        name="message"
-                        label={t('common:content')}
-                      />
+                      {!isProposalFetched ? (
+                        <Box mt={1}>
+                          <Skeleton variant="rounded" height={56} sx={{ mb: 2, mt: 1 }} />
+                          <Skeleton variant="rounded" height={300} />
+                        </Box>
+                      ) : (
+                        <>
+                          <MessageSubject onMessageSubjectChange={handleMessageSubjectChange} />
+                          <Collapse in={autoFilled}>
+                            <Box mt={2}>
+                              <Alert severity="info" onClose={() => setAutoFilled(false)}>
+                                {t('admin:mails_proposal_autofilled')}
+                              </Alert>
+                            </Box>
+                          </Collapse>
+                          <MessageContent
+                            templates={templates}
+                            onMessageContentChange={handleMessageContentChange}
+                            rows={15}
+                            showTemplatesHelpIcon={true}
+                            name="message"
+                            label={t('common:content')}
+                          />
+                        </>
+                      )}
                     </Grid>
-                    {messageType === MessageType.MESSAGE_TYPE_TEAMS && (
+                    {isProposalFetched && messageType === MessageType.MESSAGE_TYPE_TEAMS && (
                       <Grid container spacing={1}>
                         <Grid
                           size={{
@@ -334,7 +343,7 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                       </Grid>
                     )}
 
-                    {messageType === MessageType.MESSAGE_TYPE_DINNERROUTE && (
+                    {isProposalFetched && messageType === MessageType.MESSAGE_TYPE_DINNERROUTE && (
                       <Grid container spacing={1}>
                         <Grid
                           size={{
