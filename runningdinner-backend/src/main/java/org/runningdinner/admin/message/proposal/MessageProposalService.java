@@ -1,8 +1,10 @@
 package org.runningdinner.admin.message.proposal;
 
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.message.job.MessageType;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.util.LogSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class MessageProposalService {
 		this.runningDinnerService = runningDinnerService;
 	}
 
-  public Optional<MessageProposalTO> findMessageProposal(String adminId, MessageType messageType) {
+  public Optional<MessageProposalTO> findMessageProposal(@ValidateAdminId  String adminId, MessageType messageType) {
     if (!canFetchMessageProposal(adminId)) {
       return Optional.empty();
     }
@@ -41,7 +43,7 @@ public class MessageProposalService {
       RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
       return ProposalExampleService.isRunningDinnerRelevant(runningDinner);
     } catch (Exception e) {
-      LOGGER.warn("Failed to fetch running dinner for adminId: {}", adminId, e);
+      LOGGER.warn("Failed to fetch running dinner for adminId: {}", LogSanitizer.sanitize(adminId), e);
       return false;
     }
   }
@@ -70,7 +72,7 @@ public class MessageProposalService {
     String currentSection = null;
     StringBuilder currentContent = new StringBuilder();
 
-    for (String line : content.split("\n")) {
+    for (String line : content.split("\\R")) {
       if (line.startsWith("## ")) {
         if (currentSection != null) {
           sections.put(currentSection, currentContent.toString().strip());
