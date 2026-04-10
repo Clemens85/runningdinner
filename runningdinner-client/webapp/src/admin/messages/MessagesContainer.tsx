@@ -1,4 +1,5 @@
 import { Box, Grid, Paper, useMediaQuery, useTheme } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import {
   BaseAdminIdProps,
   BaseMessage,
@@ -30,9 +31,10 @@ import {
   useAdminDispatch,
   useAdminSelector,
   useBackendIssueHandler,
+  useFindMessageProposal,
 } from '@runningdinner/shared';
 import { FetchStatus } from '@runningdinner/shared';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -162,12 +164,17 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
   const { handleSubmit, clearErrors, setError, formState, setValue } = formMethods;
   const { isSubmitting } = formState;
 
+  const [autoFilled, setAutoFilled] = useState(false);
+
+  const { data: messageProposal } = useFindMessageProposal(adminId, messageType);
+
   useEffect(() => {
     // Reset all our selection values on mounting this component:
     // @ts-ignore We get the correct field name...:
     setValue(getRecipientFormFieldName(messageType), '');
     dispatch(setupInitialMessageType({ adminId, messageType }));
     dispatch(setCustomSelectedRecipients([]));
+    setAutoFilled(false);
   }, [dispatch, messageType, adminId, setValue]);
 
   useEffect(() => {
@@ -182,6 +189,48 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
     }
     // eslint-disable-next-line
   }, [JSON.stringify(selectedTeamIds), messageType, recipients.fetchStatus, preselectAllRecipients, setValue]);
+
+  useEffect(() => {
+    if (!messageProposal) {
+      return;
+    }
+    // @ts-ignore subject and message are on BaseMessage
+    setValue('subject', messageProposal.subject);
+    updateMessageSubjectPreviewAsync(messageProposal.subject);
+    // @ts-ignore subject and message are on BaseMessage
+    setValue('message', messageProposal.messageTemplate);
+    updateMessageContentPreviewAsync(messageProposal.messageTemplate);
+
+    const { additionalSections } = messageProposal;
+    if (messageType === MessageType.MESSAGE_TYPE_DINNERROUTE) {
+      const hostsTemplate = additionalSections['HOSTS TEMPLATE'];
+      const selfTemplate = additionalSections['SELF TEMPLATE'];
+      if (hostsTemplate) {
+        // @ts-ignore hostsTemplate only exists on DinnerRouteMessage
+        setValue('hostsTemplate', hostsTemplate);
+        updateDinnerRouteHostsPartTemplatePreviewAsync(hostsTemplate);
+      }
+      if (selfTemplate) {
+        // @ts-ignore selfTemplate only exists on DinnerRouteMessage
+        setValue('selfTemplate', selfTemplate);
+        updateDinnerRouteSelfPartTemplatePreviewAsync(selfTemplate);
+      }
+    } else if (messageType === MessageType.MESSAGE_TYPE_TEAMS) {
+      const hostTemplate = additionalSections['HOST TEMPLATE'];
+      const nonHostTemplate = additionalSections['NON HOST TEMPLATE'];
+      if (hostTemplate) {
+        // @ts-ignore hostMessagePartTemplate only exists on TeamMessage
+        setValue('hostMessagePartTemplate', hostTemplate);
+        updateHostMessagePartTemplatePreviewAsync(hostTemplate);
+      }
+      if (nonHostTemplate) {
+        // @ts-ignore nonHostMessagePartTemplate only exists on TeamMessage
+        setValue('nonHostMessagePartTemplate', nonHostTemplate);
+        updateNonHostMessagePartTemplatePreviewAsync(nonHostTemplate);
+      }
+    }
+    setAutoFilled(true);
+  }, [messageProposal, messageType, setValue]);
 
   const handleSendMessages = async (values: T) => {
     clearErrors();
@@ -220,13 +269,21 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
             <Grid
               size={{
                 xs: 12,
-                lg: 7
-              }}>
+                lg: 7,
+              }}
+            >
               <Paper elevation={3}>
                 <Box p={2}>
                   <Grid container>
                     <Grid size={12}>
                       <MessageHeadline />
+                      {autoFilled && (
+                        <Box mt={1} mb={1}>
+                          <Alert severity="info" onClose={() => setAutoFilled(false)}>
+                            {t('admin:mails_proposal_autofilled')}
+                          </Alert>
+                        </Box>
+                      )}
                     </Grid>
                     <Grid size={12}>
                       <RecipientSelection messageType={messageType} adminId={adminId} />
@@ -245,8 +302,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                         <Grid
                           size={{
                             xs: 12,
-                            md: 6
-                          }}>
+                            md: 6,
+                          }}
+                        >
                           <MessageContent
                             templates={[]}
                             onMessageContentChange={handleHostMessagePartTemplateChange}
@@ -260,8 +318,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                         <Grid
                           size={{
                             xs: 12,
-                            md: 6
-                          }}>
+                            md: 6,
+                          }}
+                        >
                           <MessageContent
                             templates={[]}
                             onMessageContentChange={handleNonHostMessagePartTemplateChange}
@@ -280,8 +339,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                         <Grid
                           size={{
                             xs: 12,
-                            lg: 6
-                          }}>
+                            lg: 6,
+                          }}
+                        >
                           <MessageContent
                             templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{mealspecifics}']}
                             onMessageContentChange={handleDinnerRouteSelfPartTemplateChange}
@@ -295,8 +355,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                         <Grid
                           size={{
                             xs: 12,
-                            lg: 6
-                          }}>
+                            lg: 6,
+                          }}
+                        >
                           <MessageContent
                             templates={['{firstname}', '{lastname}', '{meal}', '{mealtime}', '{hostaddress}', '{mobilenumber}']}
                             onMessageContentChange={handleDinnerRouteHostsPartTemplateChange}
@@ -328,8 +389,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
             <Grid
               size={{
                 xs: 12,
-                lg: 5
-              }}>
+                lg: 5,
+              }}
+            >
               <Grid size={12}>
                 <Box mt={0}>
                   <Paper elevation={3}>
