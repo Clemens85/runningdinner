@@ -29,7 +29,7 @@ public class MessageProposalService {
 		this.runningDinnerService = runningDinnerService;
 	}
 
-  public Optional<MessageProposalTO> findMessageProposal(@ValidateAdminId  String adminId, MessageType messageType) {
+  public Optional<MessageProposalTO> findMessageProposal(@ValidateAdminId String adminId, MessageType messageType) {
     if (!canFetchMessageProposal(adminId)) {
       return Optional.empty();
     }
