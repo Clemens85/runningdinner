@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { exchangeEntityInList,Team } from '../..';
+import { exchangeEntityInList, Team } from '../..';
 import { findTeamsAsync } from '..';
 
 export function useFindTeams(adminId: string) {
@@ -8,6 +8,7 @@ export function useFindTeams(adminId: string) {
     placeholderData: keepPreviousData,
     queryFn: () => findTeamsAsync(adminId),
     queryKey: ['findTeams', adminId],
+    refetchOnMount: 'always',
   });
 }
 
