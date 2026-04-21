@@ -241,7 +241,9 @@ function TeamMember({ teamMember, adminId, team, passedTeamMemberToCancel, onUpd
           <Stack spacing={0.25}>
             <Fullname {...teamMember} />
             <Stack direction="row" spacing={1}>
-              <Typography variant="caption" color="text.secondary">{numSeatsDisplay}</Typography>
+              <Typography variant="caption" color="text.secondary">
+                {numSeatsDisplay}
+              </Typography>
               <Typography variant="caption" color="text.secondary">
                 <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />
               </Typography>

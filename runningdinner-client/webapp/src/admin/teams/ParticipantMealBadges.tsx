@@ -110,16 +110,24 @@ export function ParticipantMealDetails({ participant }: ParticipantMealBadgesPro
       {lactose && <Chip label={t('lactose')} size="small" color="warning" variant="outlined" />}
       {gluten && <Chip label={t('gluten')} size="small" sx={{ borderColor: '#795548', color: '#795548' }} variant="outlined" />}
       {hasMealNote && (
-        <Typography variant="caption" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25, color: 'warning.dark' }}>
-          <StickyNote2OutlinedIcon sx={{ fontSize: '0.85rem' }} />
-          {mealSpecificsNote}
-        </Typography>
+        <Tooltip title={mealSpecificsNote} placement="top">
+          <Typography variant="caption" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25, color: 'warning.dark', maxWidth: 220, overflow: 'hidden' }}>
+            <StickyNote2OutlinedIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+            <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {mealSpecificsNote}
+            </Box>
+          </Typography>
+        </Tooltip>
       )}
       {hasNotes && (
-        <Typography variant="caption" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25, color: 'text.secondary' }}>
-          <InfoOutlinedIcon sx={{ fontSize: '0.85rem' }} />
-          {notes}
-        </Typography>
+        <Tooltip title={notes} placement="top">
+          <Typography variant="caption" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25, color: 'text.secondary', maxWidth: 220, overflow: 'hidden' }}>
+            <InfoOutlinedIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+            <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {notes}
+            </Box>
+          </Typography>
+        </Tooltip>
       )}
     </Box>
   );
