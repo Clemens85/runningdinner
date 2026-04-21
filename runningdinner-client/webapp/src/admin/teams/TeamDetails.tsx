@@ -276,16 +276,12 @@ function TeamHostInfo({ team, sessionData, onOpenChangeTeamHostDialog }: TeamHos
 
   return (
     <Box mt={1}>
-      <Grid container spacing={1} alignContent={'center'}>
-        <Grid>
-          <Paragraph i18n="admin:teams_host" parameters={{ host: hostTeamMemberName }} html={true} />
-        </Grid>
-        <Grid>
-          <LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}>
-            <Span>({t('change')})</Span>
-          </LinkAction>
-        </Grid>
-      </Grid>
+      <Stack direction="row" spacing={0.75} alignItems="baseline">
+        <Paragraph i18n="admin:teams_host" parameters={{ host: hostTeamMemberName }} html={true} sx={{ mb: 0 }} />
+        <LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}>
+          <Span>({t('change')})</Span>
+        </LinkAction>
+      </Stack>
       <NoValidTeamHost team={team} numSeatsNeededForHost={sessionData.numSeatsNeededForHost} />
     </Box>
   );
