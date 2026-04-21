@@ -67,15 +67,31 @@ interface ParticipantMealBadgesProps {
   participant: Participant;
 }
 
-export function ParticipantMealBadges({ participant }: ParticipantMealBadgesProps) {
-  const { t } = useTranslation('common');
+interface ParticipantMealInfo {
+  vegetarian: boolean;
+  vegan: boolean;
+  lactose: boolean;
+  gluten: boolean;
+  mealSpecificsNote: string;
+  notes: string;
+  hasMealNote: boolean;
+  hasNotes: boolean;
+  hasAny: boolean;
+}
 
+function useParticipantMealInfo(participant: Participant): ParticipantMealInfo {
   const { vegetarian, vegan, lactose, gluten, mealSpecificsNote, notes } = participant;
-
   const hasMealNote = isStringNotEmpty(mealSpecificsNote);
   const hasNotes = isStringNotEmpty(notes);
+  const hasAny = vegetarian || vegan || lactose || gluten || hasMealNote || hasNotes;
+  return { vegetarian, vegan, lactose, gluten, mealSpecificsNote, notes, hasMealNote, hasNotes, hasAny };
+}
 
-  if (!vegetarian && !vegan && !lactose && !gluten && !hasMealNote && !hasNotes) {
+export function ParticipantMealBadges({ participant }: ParticipantMealBadgesProps) {
+  const { t } = useTranslation('common');
+  const { vegetarian, vegan, lactose, gluten, mealSpecificsNote, notes, hasMealNote, hasNotes, hasAny } = useParticipantMealInfo(participant);
+
+  if (!hasAny) {
     return null;
   }
 
@@ -93,13 +109,9 @@ export function ParticipantMealBadges({ participant }: ParticipantMealBadgesProp
 
 export function ParticipantMealDetails({ participant }: ParticipantMealBadgesProps) {
   const { t } = useTranslation('common');
+  const { vegetarian, vegan, lactose, gluten, mealSpecificsNote, notes, hasMealNote, hasNotes, hasAny } = useParticipantMealInfo(participant);
 
-  const { vegetarian, vegan, lactose, gluten, mealSpecificsNote, notes } = participant;
-
-  const hasMealNote = isStringNotEmpty(mealSpecificsNote);
-  const hasNotes = isStringNotEmpty(notes);
-
-  if (!vegetarian && !vegan && !lactose && !gluten && !hasMealNote && !hasNotes) {
+  if (!hasAny) {
     return null;
   }
 
@@ -113,7 +125,7 @@ export function ParticipantMealDetails({ participant }: ParticipantMealBadgesPro
         <Tooltip title={mealSpecificsNote} placement="top">
           <Typography variant="caption" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25, color: 'warning.dark', maxWidth: 220, overflow: 'hidden' }}>
             <StickyNote2OutlinedIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
-            <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
               {mealSpecificsNote}
             </Box>
           </Typography>
@@ -123,7 +135,7 @@ export function ParticipantMealDetails({ participant }: ParticipantMealBadgesPro
         <Tooltip title={notes} placement="top">
           <Typography variant="caption" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25, color: 'text.secondary', maxWidth: 220, overflow: 'hidden' }}>
             <InfoOutlinedIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
-            <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
               {notes}
             </Box>
           </Typography>
