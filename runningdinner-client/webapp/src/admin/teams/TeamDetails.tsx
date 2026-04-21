@@ -37,6 +37,7 @@ import { useAdminNavigation } from '../AdminNavigationHook';
 import { TeamCancelDialog } from './cancellation/TeamCancelDialog';
 import { TeamMemberCancelDialog, TeamMemberCancelDialogResult } from './cancellation/TeamMemberCancelDialog';
 import { CancelledTeamMember } from './CancelledTeamMember';
+import { ParticipantMealDetails } from './ParticipantMealBadges';
 import { SwapMealsDialog } from './SwapMealsDialog';
 import { TeamPartnerWishIcon } from './TeamPartnerWishIcon';
 import TeamSchedule from './TeamSchedule';
@@ -271,6 +272,9 @@ function TeamMember({ teamMember, adminId, team, passedTeamMemberToCancel, onUpd
             {t('admin:participant_cancel')}
           </Button>
         </Box>
+      </Grid>
+      <Grid size={12}>
+        <ParticipantMealDetails participant={teamMember} />
       </Grid>
       {isTeamMemberCancelDialogOpen && (
         <TeamMemberCancelDialog isOpen={isTeamMemberCancelDialogOpen} onClose={handleCloseTeamMemberCancelDialog} team={team} adminId={adminId} teamMemberToCancel={teamMember} />
