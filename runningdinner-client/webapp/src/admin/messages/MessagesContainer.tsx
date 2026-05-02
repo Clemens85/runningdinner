@@ -200,35 +200,34 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
     // @ts-ignore subject and message are on BaseMessage
     setValue('message', messageProposal.messageTemplate);
     updateMessageContentPreviewAsync(messageProposal.messageTemplate);
-
-    const { additionalSections } = messageProposal;
-    if (messageType === MessageType.MESSAGE_TYPE_DINNERROUTE) {
-      const hostsTemplate = additionalSections['HOSTS TEMPLATE'];
-      const selfTemplate = additionalSections['SELF TEMPLATE'];
-      if (hostsTemplate) {
-        // @ts-ignore hostsTemplate only exists on DinnerRouteMessage
-        setValue('hostsTemplate', hostsTemplate);
-        updateDinnerRouteHostsPartTemplatePreviewAsync(hostsTemplate);
-      }
-      if (selfTemplate) {
-        // @ts-ignore selfTemplate only exists on DinnerRouteMessage
-        setValue('selfTemplate', selfTemplate);
-        updateDinnerRouteSelfPartTemplatePreviewAsync(selfTemplate);
-      }
-    } else if (messageType === MessageType.MESSAGE_TYPE_TEAMS) {
-      const hostTemplate = additionalSections['HOST TEMPLATE'];
-      const nonHostTemplate = additionalSections['NON HOST TEMPLATE'];
-      if (hostTemplate) {
-        // @ts-ignore hostMessagePartTemplate only exists on TeamMessage
-        setValue('hostMessagePartTemplate', hostTemplate);
-        updateHostMessagePartTemplatePreviewAsync(hostTemplate);
-      }
-      if (nonHostTemplate) {
-        // @ts-ignore nonHostMessagePartTemplate only exists on TeamMessage
-        setValue('nonHostMessagePartTemplate', nonHostTemplate);
-        updateNonHostMessagePartTemplatePreviewAsync(nonHostTemplate);
-      }
-    }
+    // const { additionalSections } = messageProposal;
+    // if (messageType === MessageType.MESSAGE_TYPE_DINNERROUTE) {
+    //   const hostsTemplate = additionalSections['HOSTS TEMPLATE'];
+    //   const selfTemplate = additionalSections['SELF TEMPLATE'];
+    //   if (hostsTemplate) {
+    //     // @ts-ignore hostsTemplate only exists on DinnerRouteMessage
+    //     setValue('hostsTemplate', hostsTemplate);
+    //     updateDinnerRouteHostsPartTemplatePreviewAsync(hostsTemplate);
+    //   }
+    //   if (selfTemplate) {
+    //     // @ts-ignore selfTemplate only exists on DinnerRouteMessage
+    //     setValue('selfTemplate', selfTemplate);
+    //     updateDinnerRouteSelfPartTemplatePreviewAsync(selfTemplate);
+    //   }
+    // } else if (messageType === MessageType.MESSAGE_TYPE_TEAMS) {
+    //   const hostTemplate = additionalSections['HOST TEMPLATE'];
+    //   const nonHostTemplate = additionalSections['NON HOST TEMPLATE'];
+    //   if (hostTemplate) {
+    //     // @ts-ignore hostMessagePartTemplate only exists on TeamMessage
+    //     setValue('hostMessagePartTemplate', hostTemplate);
+    //     updateHostMessagePartTemplatePreviewAsync(hostTemplate);
+    //   }
+    //   if (nonHostTemplate) {
+    //     // @ts-ignore nonHostMessagePartTemplate only exists on TeamMessage
+    //     setValue('nonHostMessagePartTemplate', nonHostTemplate);
+    //     updateNonHostMessagePartTemplatePreviewAsync(nonHostTemplate);
+    //   }
+    // }
     setAutoFilled(true);
   }, [messageProposal, messageType, setValue]);
 
