@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
 
 @Component
 public class DinnerRouteMessageFormatter {
@@ -65,7 +66,8 @@ public class DinnerRouteMessageFormatter {
     theMessage = theMessage.replaceAll(FormatterUtil.LASTNAME, teamMember.getName().getLastname());
     String routeLink = urlGenerator.constructPrivateDinnerRouteUrl(runningDinner.getSelfAdministrationId(),
         parentTeam.getId(), teamMember.getId());
-    theMessage = theMessage.replaceAll(FormatterUtil.ROUTELINK, routeLink);
+    String routeLinkHtml = "<a href='" + routeLink + "' target='_blank' rel='noopener noreferrer'>" + routeLink + "</a>";
+    theMessage = theMessage.replaceAll(FormatterUtil.ROUTELINK, Matcher.quoteReplacement(routeLinkHtml));
 
     theMessage = afterPartyLocationService.replaceAfterPartyLocationTemplate(theMessage, runningDinner);
 
