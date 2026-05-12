@@ -73,7 +73,13 @@ public class MessageProposalService {
     StringBuilder currentContent = new StringBuilder();
 
     for (String line : content.split("\\R")) {
-      if (line.startsWith("## ")) {
+      if (line.startsWith("### ")) {
+        if (currentSection != null) {
+          sections.put(currentSection, currentContent.toString().strip());
+        }
+        currentSection = line.substring(4).strip().toUpperCase();
+        currentContent = new StringBuilder();
+      } else if (line.startsWith("## ")) {
         if (currentSection != null) {
           sections.put(currentSection, currentContent.toString().strip());
         }

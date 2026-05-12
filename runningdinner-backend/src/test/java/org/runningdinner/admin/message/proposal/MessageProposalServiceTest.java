@@ -208,6 +208,60 @@ public class MessageProposalServiceTest {
   }
 
   @Test
+  void parseRealText() {
+
+    givenRelevantRunningDinner();
+    String content = """
+            ## Subject \s
+            Running Dinner Subject \s
+            
+            ## Message Template \s
+            Hallo {firstname} {lastname}, \s
+            
+            dein(e) Kochpartner(in) ist: \s
+            
+            {partner}. \s
+            
+            Ihr seid gemeinsam verantwortlich für den Gang: {meal}. \s
+            Dieser wird um {mealtime} serviert. \s
+            
+            {mealspecifics} \s
+            
+            {host} \s
+            
+            Bitte stimmt euch eigenständig bezüglich der Zubereitung und Organisation ab. Es ist empfehlenswert, das Essen soweit möglich vorzubereiten, damit ihr pünktlich servieren könnt und keine langen Wartezeiten entstehen. Für eine schöne Atmosphäre sorgt auch eine Auswahl an passenden Getränken. \s
+            
+            Die genaue Dinner-Route sowie weitere Informationen erhaltet ihr nach der Registrierung in einer separaten Mail. \s
+            
+            Wir freuen uns auf einen genussvollen Abend voller neuer Begegnungen! \s
+            
+            ### Host Template \s
+            Es wird vorgeschlagen, dass du als Gastgeber fungierst. Falls das nicht passt, sprecht euch bitte mit deinem Partner ab und gebt uns Bescheid, wer stattdessen Gastgeber sein wird. \s
+            
+            ### Non Host Template \s
+            Als Gastgeber wurde {partner} vorgeschlagen.
+            """;
+
+    givenProposalContent(MessageType.TEAM, content);
+
+    Optional<MessageProposalTO> result = messageProposalService.findMessageProposal(ADMIN_ID, MessageType.TEAM);
+
+    assertThat(result).isPresent();
+    MessageProposalTO proposal = result.get();
+    assertThat(proposal.subject()).isEqualTo("Running Dinner Subject");
+
+    assertThat(proposal.messageTemplate()).contains("Hallo {firstname} {lastname},");
+    assertThat(proposal.messageTemplate()).contains("Die genaue Dinner-Route sowie weitere Informationen erhaltet ihr nach der Registrierung in einer separaten Mail. ");
+    assertThat(proposal.messageTemplate()).contains("Wir freuen uns auf einen genussvollen Abend voller neuer Begegnungen!");
+
+    assertThat(proposal.messageTemplate()).doesNotContain("Host Template");
+    assertThat(proposal.messageTemplate()).doesNotContain("Non Host Template");
+
+    assertThat(proposal.additionalSections()).containsKey("HOST TEMPLATE");
+    assertThat(proposal.additionalSections()).containsKey("NON HOST TEMPLATE");
+  }
+
+  @Test
   void buildsCorrectStoragePathForEachMessageType() {
     givenRelevantRunningDinner();
     for (MessageType messageType : new MessageType[]{MessageType.PARTICIPANT, MessageType.TEAM, MessageType.DINNER_ROUTE}) {
