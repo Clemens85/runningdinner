@@ -167,7 +167,7 @@ function MessagesCardContent({ currentMessageType, hasTeams, adminId }: BaseMess
   return (
     <Card sx={{ p: 3, height: isMobileDevice ? '100%' : '50vh' }}>
       <Box sx={{ mb: 3 }}>
-        <Button color={'primary'} variant={'outlined'} size="large" fullWidth to={routerPath} component={RouterLink} disabled={!routeEnabled}>
+        <Button color={'primary'} variant={'contained'} size="large" fullWidth to={routerPath} component={RouterLink} disabled={!routeEnabled}>
           {routerPathTitle}
         </Button>
         {routeEnabled === false && (
