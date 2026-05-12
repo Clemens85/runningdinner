@@ -252,6 +252,21 @@ export const updateDinnerRouteHostsPartTemplatePreviewAsync = debounce((value) =
   getThunkDispatch()(recalculatePreviewMessages());
 }, 150);
 
+/**
+ * Atomically applies all proposal field values to the Redux message object and triggers
+ * exactly ONE preview recalculation. This avoids the race condition that occurs when
+ * subject and message are updated via separate debounced functions, each triggering
+ * an independent preview API call with only partially-updated state.
+ */
+export function applyMessageProposalToPreview(fields: Record<string, string>): AdminThunk {
+  return (dispatch) => {
+    for (const [path, value] of Object.entries(fields)) {
+      adminStore.dispatch(updatePreviewInputData({ value, pathInMessageObject: path }));
+    }
+    dispatch(recalculatePreviewMessages());
+  };
+}
+
 function getThunkDispatch() {
   return adminStore.dispatch as ThunkDispatch<AdminStateType, void, AnyAction>;
 }

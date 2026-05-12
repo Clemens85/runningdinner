@@ -22,6 +22,7 @@ import {
   setCustomSelectedRecipients,
   setupInitialMessageType,
   TEAM_MESSAGE_VALIDATION_SCHEMA,
+  applyMessageProposalToPreview,
   updateDinnerRouteHostsPartTemplatePreviewAsync,
   updateDinnerRouteSelfPartTemplatePreviewAsync,
   updateHostMessagePartTemplatePreviewAsync,
@@ -196,10 +197,13 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
     }
     // @ts-ignore subject and message are on BaseMessage
     setValue('subject', messageProposal.subject);
-    updateMessageSubjectPreviewAsync(messageProposal.subject);
     // @ts-ignore subject and message are on BaseMessage
     setValue('message', messageProposal.messageTemplate);
-    updateMessageContentPreviewAsync(messageProposal.messageTemplate);
+    // Update all proposal fields atomically in Redux and trigger a single preview recalculation.
+    // Using separate debounced update functions per field would cause a race condition: each fires
+    // at ~150ms and triggers its own preview API call with only partially-updated state, so the
+    // first call (subject only) could resolve after the correct one and overwrite the preview.
+    dispatch(applyMessageProposalToPreview({ subject: messageProposal.subject, message: messageProposal.messageTemplate }));
     // const { additionalSections } = messageProposal;
     // if (messageType === MessageType.MESSAGE_TYPE_DINNERROUTE) {
     //   const hostsTemplate = additionalSections['HOSTS TEMPLATE'];
@@ -229,7 +233,7 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
     //   }
     // }
     setAutoFilled(true);
-  }, [messageProposal, messageType, setValue]);
+  }, [messageProposal, messageType, setValue, dispatch]);
 
   const handleSendMessages = async (values: T) => {
     clearErrors();
