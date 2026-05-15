@@ -18,9 +18,9 @@
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
-    "@mui/icons-material": "7.3.6",
-    "@mui/material": "7.3.6",
-    "@mui/system": "7.2.0",
+    "@mui/icons-material": "7.3.11",
+    "@mui/material": "7.3.11",
+    "@mui/system": "7.3.11",
     "@mui/x-date-pickers": "8.21.0",
     "@runningdinner/shared": "workspace:*",
     "@vis.gl/react-google-maps": "1.7.1",
@@ -39,8 +39,6 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@types/google.maps": "^3.58.1",
-    "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
     "globals": "^15.9.0",
     "jsdom": "^26.0.0",
     "prettier": "^3.6.2"
