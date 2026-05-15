@@ -3,6 +3,9 @@ package org.runningdinner.selfservice;
 
 import java.util.UUID;
 
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.SafeHtml;
+
 public class ChangeTeamHost {
 
   private UUID teamId;
@@ -11,6 +14,8 @@ public class ChangeTeamHost {
 
   private UUID newHostingTeamMemberId;
 
+  @SafeHtml
+  @Size(max = 2048)
   private String comment;
 
   public UUID getTeamId() {
