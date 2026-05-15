@@ -2,7 +2,7 @@ package org.runningdinner.mail.mailserversettings;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(as=MailServerSettingsImpl.class)
 public interface MailServerSettings extends Serializable {

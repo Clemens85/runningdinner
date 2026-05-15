@@ -115,6 +115,7 @@ public class MessageFormatterHelperService {
         .stream()
         .map(MealSpecifics::getMealSpecificsNote)
         .filter(StringUtils::isNotBlank)
+        .distinct()
         .toList();
 
     StringBuilder result = new StringBuilder();

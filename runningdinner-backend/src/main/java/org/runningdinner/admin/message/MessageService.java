@@ -43,6 +43,7 @@ import org.runningdinner.mail.formatter.ParticipantMessageFormatter;
 import org.runningdinner.mail.formatter.RunningDinnerDeletionWarningMessageFormatter;
 import org.runningdinner.mail.formatter.RunningDinnerEventCreatedMessageFormatter;
 import org.runningdinner.mail.formatter.TeamArrangementMessageFormatter;
+import org.runningdinner.mail.formatter.TeamHostChangedFormatter;
 import org.runningdinner.participant.HasContactInfo;
 import org.runningdinner.participant.HasTeamPartnerWishOriginator;
 import org.runningdinner.participant.Participant;
@@ -110,6 +111,9 @@ public class MessageService {
 
   @Autowired
   private RunningDinnerDeletionWarningMessageFormatter runningDinnerDeletionWarningMessageFormatter;
+
+  @Autowired
+  private TeamHostChangedFormatter teamHostChangedFormatter;
   
   @Autowired
   private MessageJobProcessorHelperService messageJobProcessorHelperService;
@@ -397,11 +401,10 @@ public class MessageService {
       if (StringUtils.isEmpty(teamMember.getEmail()) || teamMember.equals(executingParticipant)) {
         continue;
       }
-      // TODO: Das sollte ausserhalb dieses Services liegen!!!
-      
       MessageTask messageTask = mailService.newSingleMessageTask(result, runningDinner);
-      String content = "Persönliche Nachricht: " + comment;
-      messageTask.setMessage(new Message("Gastgeber geändert", content, replyTo)); // TODO: Subjekt + Template für Body
+      String subject = teamHostChangedFormatter.formatTeamHostChangeSubject(runningDinner);
+      String content = teamHostChangedFormatter.formatTeamHostChangeMessage(runningDinner, team, teamMember, comment, executingParticipant);
+      messageTask.setMessage(new Message(subject, content, replyTo));
       messageTask.setRecipientEmail(getRecipientEmail(teamMember));
       messageTasks.add(messageTask);
     }
@@ -791,14 +794,14 @@ public class MessageService {
     // Filter out child participants that have same email as parent participant (=> no own message needed)
     var teamPartnerRegistrationChildren = result
       .stream()
-      .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistratonChild)
+      .filter(HasTeamPartnerWishOriginator::isTeamPartnerWishRegistrationChild)
       .toList();
 
     List<T> childrenToRemove = new ArrayList<>();
     for (T childParticipant : teamPartnerRegistrationChildren) {
       T parent = result
                   .stream()
-                  .filter(childParticipant::isTeamPartnerWishRegistrationChildOf)
+                  .filter(parentCandidate -> childParticipant.isTeamPartnerWishRegistrationChildOf(parentCandidate))
                   .findFirst()
                   .orElse(null);
 

@@ -136,12 +136,13 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     if ((optimizationInstanceStatus?.status === 'FINISHED' || optimizationInstanceStatus?.status === 'TIMEOUT') && optimizationRequest) {
       fetchOptimizationPreviewOnOptimizationFinished();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [optimizationInstanceStatus, optimizationRequest, adminId]);
   // --- End of Polling (SSE fallback) ---
 
   // --- SSE EventSource for real-time updates --- //
   function handleEventSourceError(err: Event | any) {
-    setTimeout(async () => {
+    setTimeout(() => {
       console.error('Route optimization SSE seems to be timed out:', err);
       clearEventSource();
       if (!previewUrl) {

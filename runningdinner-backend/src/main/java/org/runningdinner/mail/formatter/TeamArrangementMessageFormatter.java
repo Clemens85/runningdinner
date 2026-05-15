@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 @Component
 public class TeamArrangementMessageFormatter {
@@ -88,7 +89,7 @@ public class TeamArrangementMessageFormatter {
       partnerInfo.append(partnerName).append(FormatterUtil.NEWLINE);
       // Root participant will always have same address as child participant => only send partner address if it's not a child registration
       String address = FormatterUtil.generateAddressString(partner);
-      if (!partner.isTeamPartnerWishRegistratonChild()) {
+      if (!partner.isTeamPartnerWishRegistrationChild()) {
         partnerInfo.append(address).append(FormatterUtil.NEWLINE);
       }
       partnerInfo.append(partnerMail).append(FormatterUtil.NEWLINE)
@@ -109,7 +110,8 @@ public class TeamArrangementMessageFormatter {
     theMessage = theMessage.replaceAll(FormatterUtil.HOST, hostReplacement);
 
     final String manageHostLink = urlGenerator.constructManageTeamHostUrl(runningDinner.getSelfAdministrationId(), parentTeam.getId(), teamMember.getId());
-    theMessage = theMessage.replaceAll(FormatterUtil.MANGE_HOST_LINK, manageHostLink);
+    final String manageHostLinkHtml = "<a href='" + manageHostLink + "' target='_blank' rel='noopener noreferrer'>" + manageHostLink + "</a>";
+    theMessage = theMessage.replaceAll(FormatterUtil.MANGE_HOST_LINK, Matcher.quoteReplacement(manageHostLinkHtml));
 
     return theMessage;
   }

@@ -114,3 +114,9 @@ export interface DinnerRouteMessage extends BaseTeamMessage {
 }
 
 export type Recipient = Team | Participant;
+
+export interface MessageProposal {
+  subject: string;
+  messageTemplate: string;
+  additionalSections: Record<string, string>;
+}

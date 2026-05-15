@@ -1,11 +1,9 @@
 package org.runningdinner;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.TimeZone;
-
-import javax.sql.DataSource;
-
+import ch.qos.logback.classic.helpers.MDCInsertingServletFilter;
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.owasp.AntiSamyFilter;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.impl.DefaultIdGenerator;
@@ -13,10 +11,10 @@ import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.core.util.DateTimeUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.context.ApplicationPidFileWriter;
-import org.springframework.boot.web.context.WebServerPortFileWriter;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
+import org.springframework.boot.web.server.context.WebServerPortFileWriter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,13 +23,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import tools.jackson.databind.cfg.DateTimeFeature;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import ch.qos.logback.classic.helpers.MDCInsertingServletFilter;
-import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
-import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import javax.sql.DataSource;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.TimeZone;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "org.runningdinner", "org.payment.paypal" })
@@ -85,10 +82,10 @@ public class ApplicationConfig /*extends WebMvcConfigurerAdapter*/ {
   }
   
   @Bean
-  public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-    return builder -> {
-      builder.featuresToEnable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    };
+  public JsonMapperBuilderCustomizer jsonCustomizer() {
+    // Explicitly enable WRITE_DATES_AS_TIMESTAMPS to preserve JSON backward compatibility.
+    // Jackson 3 changed this default from true (Jackson 2) to false.
+    return builder -> builder.enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
   }
   
 

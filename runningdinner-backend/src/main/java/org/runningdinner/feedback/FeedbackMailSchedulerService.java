@@ -1,7 +1,6 @@
 package org.runningdinner.feedback;
 
-import java.util.List;
-
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import java.util.List;
 
 @Service
 public class FeedbackMailSchedulerService {
   
-  private static Logger LOGGER = LoggerFactory.getLogger(FeedbackMailSchedulerService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FeedbackMailSchedulerService.class);
 
   @Autowired
   private FeedbackService feedbackService;

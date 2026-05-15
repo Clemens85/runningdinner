@@ -1,5 +1,5 @@
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import { Box, Button, Divider, Grid, Paper } from '@mui/material';
+import { Box, Button, Divider, Grid, Paper, Stack, Typography } from '@mui/material';
 import {
   assertDefined,
   BaseAdminIdProps,
@@ -37,6 +37,7 @@ import { useAdminNavigation } from '../AdminNavigationHook';
 import { TeamCancelDialog } from './cancellation/TeamCancelDialog';
 import { TeamMemberCancelDialog, TeamMemberCancelDialogResult } from './cancellation/TeamMemberCancelDialog';
 import { CancelledTeamMember } from './CancelledTeamMember';
+import { ParticipantMealDetails } from './ParticipantMealBadges';
 import { SwapMealsDialog } from './SwapMealsDialog';
 import { TeamPartnerWishIcon } from './TeamPartnerWishIcon';
 import TeamSchedule from './TeamSchedule';
@@ -158,7 +159,9 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
             <Divider>
               <strong>{t('team_members')}</strong>
             </Divider>
-            {teamMemberNodes}
+            <Stack divider={<Divider sx={{ opacity: 0.4 }} />} sx={{ mt: 0.5 }}>
+              {teamMemberNodes}
+            </Stack>
             <TeamHostInfo sessionData={sessionData} team={team} onOpenChangeTeamHostDialog={onOpenChangeTeamHostDialog} />
           </Box>
         )}
@@ -213,11 +216,9 @@ function TeamMember({ teamMember, adminId, team, passedTeamMemberToCancel, onUpd
 
   if (!teamMember) {
     return (
-      <Grid container>
-        <Grid size={12}>
-          <CancelledTeamMember />
-        </Grid>
-      </Grid>
+      <Box sx={{ py: 1 }}>
+        <CancelledTeamMember />
+      </Box>
     );
   }
 
@@ -234,48 +235,30 @@ function TeamMember({ teamMember, adminId, team, passedTeamMemberToCancel, onUpd
   const numSeatsDisplay = numSeats > -1 ? t('participant_seats', { numSeats }) : t('no_information');
 
   return (
-    <Grid container alignItems="center">
-      <Grid
-        size={{
-          xs: 6,
-          sm: 4,
-        }}
-      >
-        <Fullname {...teamMember} />
-      </Grid>
-      <Grid
-        size={{
-          xs: 2,
-          sm: 2,
-        }}
-      >
-        {numSeatsDisplay}
-      </Grid>
-      <Grid
-        size={{
-          xs: 3,
-          sm: 2,
-        }}
-        sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}
-      >
-        <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />
-      </Grid>
-      <Grid
-        size={{
-          xs: 4,
-          sm: 4,
-        }}
-      >
-        <Box justifyContent="flex-end">
-          <Button color="secondary" onClick={() => openTeamMemberCancelDialog()}>
+    <>
+      <Box sx={{ py: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+          <Stack spacing={0.25}>
+            <Fullname {...teamMember} />
+            <Stack direction="row" spacing={1}>
+              <Typography variant="caption" color="text.secondary">
+                {numSeatsDisplay}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />
+              </Typography>
+            </Stack>
+            <ParticipantMealDetails participant={teamMember} />
+          </Stack>
+          <Button size="small" color="secondary" onClick={() => openTeamMemberCancelDialog()} sx={{ flexShrink: 0 }}>
             {t('admin:participant_cancel')}
           </Button>
         </Box>
-      </Grid>
+      </Box>
       {isTeamMemberCancelDialogOpen && (
         <TeamMemberCancelDialog isOpen={isTeamMemberCancelDialogOpen} onClose={handleCloseTeamMemberCancelDialog} team={team} adminId={adminId} teamMemberToCancel={teamMember} />
       )}
-    </Grid>
+    </>
   );
 }
 
@@ -293,16 +276,12 @@ function TeamHostInfo({ team, sessionData, onOpenChangeTeamHostDialog }: TeamHos
 
   return (
     <Box mt={1}>
-      <Grid container spacing={1} alignContent={'center'}>
-        <Grid>
-          <Paragraph i18n="admin:teams_host" parameters={{ host: hostTeamMemberName }} html={true} />
-        </Grid>
-        <Grid>
-          <LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}>
-            <Span>({t('change')})</Span>
-          </LinkAction>
-        </Grid>
-      </Grid>
+      <Stack direction="row" spacing={0.75} alignItems="baseline">
+        <Paragraph i18n="admin:teams_host" parameters={{ host: hostTeamMemberName }} html={true} sx={{ mb: 0 }} />
+        <LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}>
+          <Span>({t('change')})</Span>
+        </LinkAction>
+      </Stack>
       <NoValidTeamHost team={team} numSeatsNeededForHost={sessionData.numSeatsNeededForHost} />
     </Box>
   );

@@ -1,8 +1,8 @@
 package org.runningdinner.dinnerroute.optimization;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
@@ -80,8 +80,6 @@ public class DinnerRouteOptimizationService {
 
 	private final TeamReferenceService teamReferenceService;
 
-	private final DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService;
-	
 	private final EventPublisher eventPublisher;
 
 	public DinnerRouteOptimizationService(RunningDinnerService runningDinnerService,
@@ -93,7 +91,6 @@ public class DinnerRouteOptimizationService {
 																				TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService,
 																				DinnerRouteMessageFormatter dinnerRouteMessageFormatter,
 																				TeamReferenceService teamReferenceService,
-																				DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService,
 																				EventPublisher eventPublisher) {
 
 		this.runningDinnerService = runningDinnerService;
@@ -105,7 +102,6 @@ public class DinnerRouteOptimizationService {
 		this.teamNeighbourClusterCalculationService = teamNeighbourClusterCalculationService;
 		this.dinnerRouteMessageFormatter = dinnerRouteMessageFormatter;
 		this.teamReferenceService = teamReferenceService;
-		this.dinnerRouteOptimizationFeedbackService = dinnerRouteOptimizationFeedbackService;
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -143,7 +139,7 @@ public class DinnerRouteOptimizationService {
 
 		List<Team> existingTeams = teamService.findTeamArrangements(adminId, false);
 
-		applyOptimizedRoutesToTeams(adminId, optimizationId, existingTeams);
+		applyOptimizedRoutesToTeams(runningDinner, optimizationId, existingTeams);
 
 		existingTeams = teamRepository.saveAll(existingTeams);
 
@@ -169,7 +165,7 @@ public class DinnerRouteOptimizationService {
 															})
 															.toList();
 
-		var originalOptimizationSettings = applyOptimizedRoutesToTeams(adminId, optimizationId, teamClones);
+		applyOptimizedRoutesToTeams(runningDinner, optimizationId, teamClones);
 
 		DinnerRouteCalculator dinnerRouteCalculator = new DinnerRouteCalculator(runningDinner, dinnerRouteMessageFormatter);
 		List<DinnerRouteTO> optimizedDinnerRoutes = DinnerRouteOptimizationUtil.buildDinnerRoute(teamClones, dinnerRouteCalculator);
@@ -180,28 +176,25 @@ public class DinnerRouteOptimizationService {
 
 		DinnerRouteListTO optimizedDinnerRouteList = new DinnerRouteListTO(optimizedDinnerRoutes, teamClusterMappings, new TeamNeighbourClusterListTO(teamNeighbourClusters));
 
-		var result = new DinnerRouteOptimizationResult(optimizationId,
-																									 optimizedDinnerRouteList,
-																									 optimizedDinnerRoutesWithDistances,
-																									 new TeamNeighbourClusterListTO(teamNeighbourClusters));
+		return new DinnerRouteOptimizationResult(optimizationId,
+																						 optimizedDinnerRouteList,
+																						 optimizedDinnerRoutesWithDistances,
+																						 new TeamNeighbourClusterListTO(teamNeighbourClusters));
 
-		try {
-			dinnerRouteOptimizationFeedbackService.sendOptimizationFeedbackAsync(adminId,
-							result, originalOptimizationSettings.currentSumDistanceInMeters(), originalOptimizationSettings.currentAverageDistanceInMeters());
-		} catch (Exception e) {
-			LOGGER.error("Could not call sendOptimizationFeedbackAsync", e);
-		}
-
-		return result;
 	}
 
-	private RouteOptimizationSettings applyOptimizedRoutesToTeams(String adminId, String optimizationId, List<Team> teams) {
+	private RouteOptimizationSettings applyOptimizedRoutesToTeams(RunningDinner runningDinner, String optimizationId, List<Team> teams) {
 
 		teams.forEach(Team::removeAllTeamReferences);
-		var response = readOptimizedResponse(adminId, optimizationId);
+		var response = readOptimizedResponse(runningDinner.getAdminId(), optimizationId);
 		List<TeamReference> optimizedTeams = response.getDinnerRoutes();
 
-		Map<TeamReference, Team> teamReferencesToTeams = TeamReferenceService.mapTeamReferencesToTeams(optimizedTeams, teams);
+		Map<TeamReference, Team> teamReferencesToTeams;
+		if (response.getOptimizationSettings().ignoreMealAssignments()) {
+			teamReferencesToTeams = TeamReferenceService.mapTeamReferencesToTeamsAndReassignMeals(optimizedTeams, teams, runningDinner.getConfiguration().getMealClasses());
+		} else {
+			teamReferencesToTeams = TeamReferenceService.mapTeamReferencesToTeams(optimizedTeams, teams);
+		}
 
 		// Create Map of optimizedTeams per clusterNumber
 		Map<Integer, List<TeamReference>> teamsByClusterNumber = optimizedTeams
@@ -246,7 +239,7 @@ public class DinnerRouteOptimizationService {
 		try {
 			String requestJsonString = objectMapper.writeValueAsString(finalRequest);
 			optimizationDataProvider.writeRequestData(finalRequest.getAdminId(), finalRequest.getOptimizationId(), requestJsonString);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -261,7 +254,7 @@ public class DinnerRouteOptimizationService {
 				throw new IllegalStateException("Error in optimization response: " + errorMessage);
 			}
 			return objectMapper.treeToValue(rootNode, DinnerRouteOptimizationRequest.class);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException("Error while reading optimized response for adminId: " + adminId + " and optimizationId: " + optimizationId, e);
 		}
 	}

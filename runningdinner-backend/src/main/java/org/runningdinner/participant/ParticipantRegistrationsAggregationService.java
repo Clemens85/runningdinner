@@ -109,7 +109,7 @@ public class ParticipantRegistrationsAggregationService {
   private static ParticipantRegistrationInfo findRootRegistration(ParticipantRegistrationInfo childRegistration, List<ParticipantRegistrationInfo> registrations) {
     return registrations
             .stream()
-            .filter(r -> r.isTeamPartnerWishRegistrationChildOf(childRegistration) && r.isTeamPartnerWishRegistratonRoot())
+            .filter(r -> r.isTeamPartnerWishRegistrationChildOf(childRegistration) && r.isTeamPartnerWishRegistrationRoot())
             .findFirst()
             .orElse(null);
   }

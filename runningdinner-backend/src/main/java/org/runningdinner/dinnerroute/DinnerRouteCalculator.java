@@ -48,7 +48,7 @@ public class DinnerRouteCalculator {
 	
 	public static AllDinnerRoutesWithDistancesListTO calculateDistancesForAllDinnerRoutes(List<DinnerRouteTO> allDinnerRoutes) {
 		
-		List<TeamTO> locations = allDinnerRoutes.stream().map(route -> route.getCurrentTeam()).toList();
+		List<TeamTO> locations = allDinnerRoutes.stream().map(DinnerRouteTO::getCurrentTeam).toList();
 		DistanceMatrix distanceMatrix = DistanceCalculator.calculateDistanceMatrix(locations);
 		
     List<DinnerRouteWithDistancesTO> distancesForAllRoutes = new ArrayList<>();

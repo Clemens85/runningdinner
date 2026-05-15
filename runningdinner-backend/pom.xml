@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
+		<version>4.0.4</version>
 		<relativePath/>
 	</parent>
 
@@ -23,7 +23,7 @@
    		<maven.compiler.target>${java.version}</maven.compiler.target>
     	<maven.compiler.source>${java.version}</maven.compiler.source>
 
-		<flyway.version>11.4.0</flyway.version>
+		<flyway.version>12.2.0</flyway.version>
 
 		<!-- Flyway Plugin Settings -->
 		<flyway.user>postgres</flyway.user>
@@ -51,14 +51,14 @@
 	</dependencyManagement>
 
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>jakarta.mail</artifactId>
-			<version>2.0.1</version>
+			<version>2.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
@@ -131,7 +131,11 @@
 			<artifactId>guava</artifactId>
 			<version>32.1.1-jre</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-database-postgresql</artifactId>
@@ -166,22 +170,27 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>com.github.tomakehurst</groupId>
-		    <artifactId>wiremock</artifactId>
-		    <version>3.0.0-beta-1</version>
-		    <scope>test</scope>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-resttestclient</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-restclient</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.wiremock</groupId>
+			<artifactId>wiremock</artifactId>
+			<version>4.0.0-beta.30</version>
+			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
 		    <groupId>org.postgresql</groupId>
 		    <artifactId>postgresql</artifactId>
-		</dependency>
-
-		<!-- Used for serialization -->
-		<dependency>
-			<groupId>com.esotericsoftware.kryo</groupId>
-			<artifactId>kryo</artifactId>
-			<version>2.22</version>
 		</dependency>
 
 		<dependency>
@@ -199,7 +208,7 @@
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>
-			<version>6.2</version>
+			<version>9.0</version>
 		</dependency>
 
 		<dependency>
@@ -209,14 +218,14 @@
 
 			<!-- See https://github.com/lukas-krecan/ShedLock -->
 		<dependency>
-		  <groupId>net.javacrumbs.shedlock</groupId>
-		  <artifactId>shedlock-spring</artifactId>
-		  <version>2.1.0</version>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-spring</artifactId>
+			<version>7.7.0</version>
 		</dependency>
 		<dependency>
-		  <groupId>net.javacrumbs.shedlock</groupId>
-		  <artifactId>shedlock-provider-jdbc-template</artifactId>
-		  <version>2.1.0</version>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-provider-jdbc-template</artifactId>
+			<version>7.7.0</version>
 		</dependency>
 
 		<!-- Excel parsing -->

@@ -10,6 +10,8 @@ import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageJobOverview;
 import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.admin.message.job.MessageType;
+import org.runningdinner.admin.message.proposal.MessageProposalService;
+import org.runningdinner.admin.message.proposal.MessageProposalTO;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.team.TeamMessage;
 import org.runningdinner.core.RunningDinner;
@@ -22,6 +24,7 @@ import org.runningdinner.participant.partnerwish.TeamPartnerWishStateHandlerServ
 import org.runningdinner.participant.rest.ParticipantWithListNumberTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +45,9 @@ public class MessageServiceRest {
   
   @Autowired
   private ParticipantService participantService;
+
+  @Autowired
+  private MessageProposalService messageProposalService;
 
   @GetMapping("/runningdinner/{adminId}/participants")
   public List<ParticipantWithListNumberTO> findParticipantRecipients(@PathVariable String adminId) {
@@ -172,6 +178,15 @@ public class MessageServiceRest {
     return teamPartnerWishStateHandlerService.sendTeamPartnerInvitationMessage(participant, runningDinner);
   }
   
+  @GetMapping("/runningdinner/{adminId}/proposals/{messageType}")
+  @ResponseBody
+  public ResponseEntity<MessageProposalTO> findMessageProposal(@PathVariable String adminId,
+                                                               @PathVariable MessageType messageType) {
+    return messageProposalService.findMessageProposal(adminId, messageType)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.noContent().build());
+  }
+
   protected PreviewMessageList mapToPreviewMessageList(SimpleTextMessage originalTextMessage, List<PreviewMessage> previewMessages) {
     
     previewMessages.forEach(

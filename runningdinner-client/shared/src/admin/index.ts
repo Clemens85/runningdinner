@@ -5,6 +5,7 @@ export * from './messages/ParticipantSelectionOptionsHook';
 export * from './messages/RecipientNameHook';
 export * from './messages/TeamSelectionOptionsHook';
 export * from './messages/useFindMessageJobs';
+export * from './messages/useFindMessageProposal';
 export * from './MessageService';
 export * from './participants';
 export * from './ParticipantService';

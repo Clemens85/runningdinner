@@ -1,9 +1,6 @@
 package org.runningdinner.dataimport;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
+import jakarta.validation.Valid;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
@@ -13,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ParticipantJsonExportImportService {
@@ -50,11 +49,11 @@ public class ParticipantJsonExportImportService {
 	}
 	
 	private static ParticipantInputDataTO mapFromParticipant(Participant participant, List<Participant> allParticipants) {
-		if (participant.isTeamPartnerWishRegistratonChild()) {
+		if (participant.isTeamPartnerWishRegistrationChild()) {
 			return null;
 		}
 		ParticipantInputDataTO result = new ParticipantInputDataTO(participant);
-		if (participant.isTeamPartnerWishRegistratonRoot()) {
+		if (participant.isTeamPartnerWishRegistrationRoot()) {
 			Participant child = allParticipants
 														.stream()
 														.filter(p -> p.isTeamPartnerWishRegistrationChildOf(participant))

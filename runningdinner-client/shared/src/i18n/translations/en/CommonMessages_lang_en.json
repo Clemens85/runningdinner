@@ -202,6 +202,7 @@
   "registrationtype_public_description": "The event is public visible and everybody can register to the event.",
   "remind_me": "Remind me again later",
   "reset": "Reset",
+  "runningdinner_date_expired": "This event has already taken place and can therefore no longer be accessed.",
 
   "save": "Save",
   "schedule": "Schedule",

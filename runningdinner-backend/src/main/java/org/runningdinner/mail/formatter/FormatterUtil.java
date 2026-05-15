@@ -74,6 +74,9 @@ public class FormatterUtil {
   public static final String PAYMENT_OPTIONS_BRAND_NAME = "\\{brandName\\}";
   public static final String TEAM_PARTNER_IFNO = "\\{teampartnerinfo\\}";
   
+  public static final String REGISTRATION_SUMMARY = "\\{registrationSummary\\}";
+  public static final String ORGANIZER_CONTACT_HINT = "\\{organizerContactHint\\}";
+  
   private FormatterUtil() {
     // NOP
   }

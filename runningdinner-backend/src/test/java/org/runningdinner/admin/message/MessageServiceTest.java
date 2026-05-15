@@ -347,6 +347,36 @@ public class MessageServiceTest {
   }
 
   @Test
+  public void testMealSpecificsNoteIsNotDuplicatedForRootParticipant() {
+    teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+
+    TeamMeetingPlan firstTeam = getTeamMeetingPlanOfFirstTeam();
+    Team team = firstTeam.getTeam();
+
+    // Simulate root-child team partner pair: both have identical meal specifics (as synced by syncChangesToChildParticipant)
+    List<Participant> teamMembers = team.getTeamMembersOrdered();
+    MealSpecifics sharedMealSpecifics = new MealSpecifics(true, false, false, false, "Milchallergie");
+    teamMembers.get(0).setMealSpecifics(sharedMealSpecifics);
+    teamMembers.get(1).setMealSpecifics(sharedMealSpecifics);
+    participantRepository.saveAll(teamMembers);
+
+    TeamMessage teamMessage = new TeamMessage();
+    teamMessage.setMessage("{mealspecifics}");
+    teamMessage.setSubject("Subject");
+    teamMessage.setHostMessagePartTemplate("Host");
+    teamMessage.setNonHostMessagePartTemplate("Non-Host");
+    teamMessage.setTeamSelection(TeamSelection.CUSTOM_SELECTION);
+    teamMessage.setCustomSelectedTeamIds(Collections.singletonList(team.getId()));
+
+    PreviewMessage previewMessage = messageService.getTeamPreview(runningDinner.getAdminId(), teamMessage).get(0);
+    String message = previewMessage.getMessage();
+
+    int firstOccurrence = message.indexOf("Milchallergie");
+    assertThat(firstOccurrence).isGreaterThanOrEqualTo(0);
+    assertThat(message.indexOf("Milchallergie", firstOccurrence + 1)).isEqualTo(-1); // note must appear exactly once
+  }
+
+  @Test
   public void sendingQueuedMessagesByScheduler() {
     
     MessageJob messageJob = messageService.findMessageJobs(runningDinner.getAdminId(), MessageType.NEW_RUNNING_DINNER).get(0);

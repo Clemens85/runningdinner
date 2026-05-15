@@ -17,7 +17,11 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class ParticipantSwapNumbersService {
@@ -73,7 +77,7 @@ public class ParticipantSwapNumbersService {
     moveSecondParticipantUpTheListDefaultCase(secondParticipant, firstParticipant, allParticipants, firstNumber, adminId);
     
     // Special case for second participant moving up (which is however a main case from a user's point of a view) 
-    if (!secondParticipant.isTeamPartnerWishRegistratonRoot() && secondParticipant.getTeamPartnerWishOriginatorId() != null) { 
+    if (!secondParticipant.isTeamPartnerWishRegistrationRoot() && secondParticipant.getTeamPartnerWishOriginatorId() != null) {
       // Child shall be moved up (main use case when child is separated from root e.g. by waitinglist)
       Participant rootOfSecondParticipant = participantService.findParticipantById(adminId, secondParticipant.getTeamPartnerWishOriginatorId());
       if (firstParticipant.getTeamPartnerWishOriginatorId() != null) {
@@ -94,12 +98,12 @@ public class ParticipantSwapNumbersService {
                                               int firstParticipantNrOriginal,
                                               String adminId) {
     
-    if (secondParticipant.isTeamPartnerWishRegistratonRoot()) {
+    if (secondParticipant.isTeamPartnerWishRegistrationRoot()) {
       Participant childOfSecondParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(adminId, secondParticipant);
       secondParticipant.setParticipantNumber(firstParticipantNrOriginal);
       childOfSecondParticipant.setParticipantNumber(firstParticipantNrOriginal + 1);
 
-      if (!firstParticipant.isTeamPartnerWishRegistratonRoot()) {
+      if (!firstParticipant.isTeamPartnerWishRegistrationRoot()) {
         List<ParticipantWithListNumberTO> participantListToRewrite = getSublistInParticipantInterval(allParticipants, firstParticipant, secondParticipant);
         int followupParticipantNr = firstParticipantNrOriginal + 2;
         for (ParticipantWithListNumberTO p : participantListToRewrite) {
@@ -123,13 +127,13 @@ public class ParticipantSwapNumbersService {
                                                int secondParticipantNrOriginal,
                                                String adminId) {
 
-    if (firstParticipant.isTeamPartnerWishRegistratonRoot()) {
+    if (firstParticipant.isTeamPartnerWishRegistrationRoot()) {
       Participant childOfFirstParticipant = participantService.findChildParticipantOfTeamPartnerRegistration(adminId, firstParticipant);
       
       firstParticipant.setParticipantNumber(secondParticipantNrOriginal);
       childOfFirstParticipant.setParticipantNumber(secondParticipantNrOriginal + 1);
       
-      if (!secondParticipant.isTeamPartnerWishRegistratonRoot()) {
+      if (!secondParticipant.isTeamPartnerWishRegistrationRoot()) {
         List<ParticipantWithListNumberTO> participantListToRewrite = getSublistInParticipantInterval(allParticipants, secondParticipant, null);
         int followupParticipantNr = secondParticipantNrOriginal + 2;
         for (ParticipantWithListNumberTO p : participantListToRewrite) {
@@ -142,7 +146,7 @@ public class ParticipantSwapNumbersService {
       participantRepository.save(firstParticipant);
       participantRepository.save(childOfFirstParticipant);
     } else if (firstParticipant.getTeamPartnerWishOriginatorId() == null) {
-      int numberToSet = !secondParticipant.isTeamPartnerWishRegistratonRoot() ? secondParticipantNrOriginal : secondParticipantNrOriginal + 1;
+      int numberToSet = !secondParticipant.isTeamPartnerWishRegistrationRoot() ? secondParticipantNrOriginal : secondParticipantNrOriginal + 1;
       firstParticipant.setParticipantNumber(numberToSet);
       participantRepository.save(firstParticipant); 
     } else {

@@ -1,5 +1,6 @@
-import { TableCell, Button } from '@mui/material';
+import { TableCell, Button, Box } from '@mui/material';
 import React from 'react';
+import { ParticipantMealBadges } from './ParticipantMealBadges';
 import NumSeats from '../participants/list/NumSeats';
 import ParticipantGenderTooltip from '../../common/gender/ParticipantGenderTooltip';
 import ParticipantGenderIcon from '../../common/gender/ParticipantGenderIcon';
@@ -91,7 +92,12 @@ function TeamMember({ participant }) {
   if (!participant) {
     return <CancelledTeamMember />;
   }
-  return <Fullname {...participant} />;
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 0.25 }}>
+      <Fullname {...participant} />
+      <ParticipantMealBadges participant={participant} />
+    </Box>
+  );
 }
 
 function DragAnDroppableTeamMember({ participant, onTeamMemberSwap }) {

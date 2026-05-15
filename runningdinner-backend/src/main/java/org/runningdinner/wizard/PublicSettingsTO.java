@@ -55,7 +55,11 @@ public class PublicSettingsTO implements Serializable {
     // Needed for json
   }
 
-  public PublicSettingsTO(PublicSettings publicSettings, boolean htmlFormatContent) {
+  public static PublicSettingsTO of(PublicSettings publicSettings, boolean htmlFormatContent) {
+    return new PublicSettingsTO(publicSettings, htmlFormatContent);
+  }
+
+  private PublicSettingsTO(PublicSettings publicSettings, boolean htmlFormatContent) {
     this.title = publicSettings.getPublicTitle();
     this.description = publicSettings.getPublicDescription();
     this.endOfRegistrationDate = publicSettings.getEndOfRegistrationDate();

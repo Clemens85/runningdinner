@@ -1,11 +1,5 @@
 package org.runningdinner.geocoder;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +16,13 @@ import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -101,7 +100,7 @@ public class GeocodeRequestEventPublisherTest {
   	
   	String body = messageRequest.messageBody();
   	String expectedJson = """
-  			{"street":"%s","streetNr":"1","cityName":"MyCity","zip":"12345"}
+  			{"cityName":"MyCity","street":"%s","streetNr":"1","zip":"12345"}
   			""".formatted(expectedStreet);
   	assertThat(body).isEqualToIgnoringWhitespace(expectedJson);
   }

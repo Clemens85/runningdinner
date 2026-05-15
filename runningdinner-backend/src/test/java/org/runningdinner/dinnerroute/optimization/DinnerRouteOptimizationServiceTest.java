@@ -1,6 +1,6 @@
 package org.runningdinner.dinnerroute.optimization;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,12 +86,6 @@ public class DinnerRouteOptimizationServiceTest {
 
 		optimizationDataProviderInMemory = new TestOptimizationDataProvider();
 
-		DinnerRouteOptimizationFeedbackService dinnerRouteOptimizationFeedbackService = new DinnerRouteOptimizationFeedbackService(
-			feedbackService,
-			mailConfig,
-			false
-		);
-
 		this.routeOptimizationService = new DinnerRouteOptimizationService(
 			runningDinnerService,
 			dinnerRouteService,
@@ -102,7 +96,6 @@ public class DinnerRouteOptimizationServiceTest {
 			teamNeighbourClusterCalculationService,
 			dinnerRouteMessageFormatter,
 			teamReferenceService,
-			dinnerRouteOptimizationFeedbackService,
 			eventPublisher
 		);
 
@@ -114,7 +107,7 @@ public class DinnerRouteOptimizationServiceTest {
 
 		teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
 
-		DinnerRouteOptimizationRequest request = routeOptimizationService.publishOptimizationEvent(runningDinner.getAdminId(), new RouteOptimizationSettings(-1d, -1d));
+		DinnerRouteOptimizationRequest request = routeOptimizationService.publishOptimizationEvent(runningDinner.getAdminId(), new RouteOptimizationSettings(-1d, -1d, false, 0));
 
 		// Assert event is published
 		assertThat(this.optimizationDataProviderInMemory.getRequestData()).isNotBlank();
@@ -133,16 +126,13 @@ public class DinnerRouteOptimizationServiceTest {
 
 		assertThat(request.getOptimizationSettings().currentAverageDistanceInMeters()).isEqualTo(-1d);
 		assertThat(request.getOptimizationSettings().currentSumDistanceInMeters()).isEqualTo(-1d);
+		assertThat(request.getOptimizationSettings().ignoreMealAssignments()).isFalse();
+		assertThat(request.getOptimizationSettings().minimumDistanceInMeters()).isEqualTo(0);
 
 		assertThat(request.getDinnerRoutes()).hasSize(9);
 		List<List<TeamReference>> teamsOnRouteList = request.getDinnerRoutes().stream().map(TeamReference::teamsOnRoute).toList();
 		assertThat(teamsOnRouteList).allMatch(singleList -> singleList.size() == 2);
 
-//		// This de-serializes back our JSON data that we put like a test fixture in request-template-json file
-//		// This is sort of a proof that our JSON serialization is working as expected
-		// TODO: The IDs won't match...
-//		DinnerRouteOptimizationResult optimizationResult = routeOptimizationService.previewOptimizedDinnerRoutes(runningDinner.getAdminId(), request.getOptimizationId());
-//		assertThat(optimizationResult.optimizedDinnerRouteList().getDinnerRoutes()).hasSize(9);
 	}
 
 	// TODO: Add Test for imputation of missing geocodes

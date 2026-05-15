@@ -1,7 +1,5 @@
 package org.runningdinner.dinnerroute.optimization.lock;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.aws.S3ClientProviderService;
 import org.runningdinner.dinnerroute.optimization.data.OptimizationDataUtil;
@@ -15,6 +13,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -108,7 +108,7 @@ public class OptimizationInstanceService {
 			String createdAtFormatted = OptimizationInstance.DATE_TINE_FORMAT.format(optimizationInstance.getCreatedAt());
 			String metadataKey = String.format("%s%s", OptimizationInstance.REQUEST_FILE_PREFIX, createdAtFormatted);
 			metadata.put(metadataKey, instanceAsJsonStr);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			LOGGER.error("Error while mapping OptimizationInstance to JSON: {}. Instance will be ignored", optimizationInstance, e);
 		}
 	}
@@ -131,7 +131,7 @@ public class OptimizationInstanceService {
 			try {
 				OptimizationInstance instance = objectMapper.readValue(value, OptimizationInstance.class);
 				result.add(instance);
-			} catch (JsonProcessingException e) {
+			} catch (JacksonException e) {
 				LOGGER.error("Error while parsing metadata value to OptimizationInstance: {}. Value will be ignored", value, e);
 			}
 		}

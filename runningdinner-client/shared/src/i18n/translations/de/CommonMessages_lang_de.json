@@ -201,6 +201,7 @@
   "registrationtype_public_description": "Das Event ist öffentlich sichtbar und jeder kann an dem Event teilnehmen.",
   "remind_me": "Erinnere mich später noch einmal",
   "reset": "Reset",
+  "runningdinner_date_expired": "Dieses Event hat bereits stattgefunden und kann daher nicht mehr aufgerufen werden.",
 
   "save": "Speichern",
   "schedule": "Ablauf",

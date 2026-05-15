@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { cloneDeep, find,get } from 'lodash-es';
+import { cloneDeep, find, get } from 'lodash-es';
 
 import { BackendConfig } from '../BackendConfig';
 import { CONSTANTS } from '../Constants';
@@ -11,6 +11,7 @@ import {
   FuzzyBoolean,
   MessageJob,
   MessageJobOverview,
+  MessageProposal,
   MessageTask,
   MessageType,
   Participant,
@@ -102,6 +103,13 @@ export async function reSendMessageTaskAsync(adminId: string, messageTask: Messa
   const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/messagetask/${id}`);
   const response = await axios.put(url, messageTask);
   return response.data;
+}
+
+export async function findMessageProposalAsync(adminId: string, messageType: MessageType): Promise<MessageProposal | null> {
+  const url = BackendConfig.buildUrl(`/messageservice/v1/runningdinner/${adminId}/proposals/${messageType}`);
+  const response = await axios.get<MessageProposal>(url);
+  // 204 No Content → response.data is empty
+  return response.data || null;
 }
 
 export function getMailMessageForSelectedRecipient<T extends BaseMessage>(mailMessageTemplate: T, messageType: MessageType, recipientForPreview: BaseEntity) {
