@@ -41,18 +41,9 @@
     "@types/google.maps": "^3.58.1",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
-    "eslint": "^9.39.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.4",
-    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-    "eslint-plugin-react-refresh": "^0.4.11",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "^15.9.0",
     "jsdom": "^26.0.0",
-    "prettier": "^3.6.2",
-    "typescript": "5.2.2",
-    "typescript-eslint": "^8.46.2"
+    "prettier": "^3.6.2"
   },
   "overrides": {
     "react-is": "^18.3.1"
