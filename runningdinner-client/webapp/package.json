@@ -24,7 +24,7 @@
     "@mui/x-date-pickers": "8.21.0",
     "@runningdinner/shared": "workspace:*",
     "@vis.gl/react-google-maps": "1.7.1",
-    "html-react-parser": "4.2.2",
+    "html-react-parser": "6.1.0",
     "material-ui-popup-state": "5.3.6",
     "mui-markdown": "2.0.3",
     "notistack": "3.0.2",
