@@ -56,6 +56,15 @@ public class TeamHostChangedFormatter {
 		return message;
 	}
 
+	public String formatTeamHostChangeSubject(final RunningDinner runningDinner) {
+		Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
+		String subject = messageSource.getMessage("message.subject.team.host.changed", null, locale);
+		String title = runningDinner.getPublicSettings() != null && StringUtils.isNotBlank(runningDinner.getPublicSettings().getPublicTitle())
+				? runningDinner.getPublicSettings().getPublicTitle()
+				: runningDinner.getTitle();
+		return subject + ": " + title;
+	}
+
 	private String getArrangementMessage(final Team team, final Participant participant, Locale locale) {
 
 		String result = null;
