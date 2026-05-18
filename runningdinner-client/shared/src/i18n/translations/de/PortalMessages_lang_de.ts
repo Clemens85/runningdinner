@@ -18,6 +18,8 @@ const PortalMessages_de: any = {
   manage_event: 'Event verwalten',
 
   // AccessRecoveryForm
+  access_recovery_missing_event_link: 'Fehlt ein Event?',
+  access_recovery_missing_event_hint: 'Fordere einen Zugangslink mit der E-Mail-Adresse an, mit der du dich für das Event angemeldet oder es erstellt hast.',
   access_recovery_email_label: 'Deine E-Mail-Adresse',
   access_recovery_email_placeholder: 'email@beispiel.de',
   access_recovery_submit: 'Zugangslink anfordern',

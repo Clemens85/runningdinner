@@ -1,5 +1,8 @@
-import { Alert, Box, CircularProgress, Container, Typography } from '@mui/material';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Alert, Box, CircularProgress, Collapse, Container, Divider, Typography } from '@mui/material';
 import { useMyEvents } from '@runningdinner/shared';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AccessRecoveryForm } from './AccessRecoveryForm';
@@ -10,6 +13,7 @@ import { PageTitle } from '../common/theme/typography/Tags';
 export function MyEventsPage() {
   const { t } = useTranslation('portal');
   const { data, isPending, isError } = useMyEvents();
+  const [showAccessForm, setShowAccessForm] = useState(false);
 
   const events = data?.events ?? [];
   const hasEvents = events.length > 0;
@@ -26,16 +30,43 @@ export function MyEventsPage() {
             </Box>
           )}
 
-          {!isPending && isError && (
-            <Alert severity="error">{t('my_events_error')}</Alert>
-          )}
+          {!isPending && isError && <Alert severity="error">{t('my_events_error')}</Alert>}
 
           {!isPending && !isError && hasEvents && (
             <>
               <MyEventsEntryList events={events} />
-              <Box sx={{ mt: 3 }}>
-                <ForgetMeButton />
+              <Divider sx={{ my: 3 }} />
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box
+                  component="button"
+                  onClick={() => setShowAccessForm((prev) => !prev)}
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                    color: 'primary.main',
+                    typography: 'body2',
+                    fontWeight: 500,
+                    '&:hover': { textDecoration: 'underline' },
+                  }}
+                >
+                  {t('access_recovery_missing_event_link')}
+                  {showAccessForm ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+                </Box>
+                <ForgetMeButton iconOnly />
               </Box>
+              <Collapse in={showAccessForm}>
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {t('access_recovery_missing_event_hint')}
+                  </Typography>
+                  <AccessRecoveryForm />
+                </Box>
+              </Collapse>
             </>
           )}
 
@@ -50,7 +81,7 @@ export function MyEventsPage() {
               <AccessRecoveryForm />
             </Box>
           )}
-          </Container>
+        </Container>
       </Container>
     </>
   );

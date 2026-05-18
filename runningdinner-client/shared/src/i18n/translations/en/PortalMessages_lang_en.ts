@@ -18,6 +18,8 @@ const PortalMessages_en: any = {
   manage_event: 'Manage event',
 
   // AccessRecoveryForm
+  access_recovery_missing_event_link: 'Missing an event?',
+  access_recovery_missing_event_hint: 'Request an access link using the email address you used when registering for or creating the event.',
   access_recovery_email_label: 'Your email address',
   access_recovery_email_placeholder: 'email@example.com',
   access_recovery_submit: 'Send recovery link',
