@@ -23,7 +23,7 @@ export function MyEventsPage() {
       <Container maxWidth={false} sx={{ py: 4 }}>
         <PageTitle>{t('my_events_title')}</PageTitle>
 
-        <Container maxWidth="sm">
+        <Container maxWidth="md">
           {isPending && (
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
               <CircularProgress />
