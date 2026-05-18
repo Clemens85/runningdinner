@@ -1,4 +1,4 @@
-import { Alert, Chip, Link, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Box, Card, CardContent, Chip, Grid, Link, Typography } from '@mui/material';
 import { PortalEventEntry } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 
@@ -10,48 +10,35 @@ export function MyEventsEntryList({ events }: MyEventsEntryListProps) {
   const { t } = useTranslation('portal');
 
   return (
-    <List disablePadding>
+    <Grid container spacing={2}>
       {events.map((event, index) => (
-        <ListItem
-          key={index}
-          divider={index < events.length - 1}
-          alignItems="flex-start"
-          sx={{ py: 2, px: 0 }}
-        >
-          <ListItemText
-            primary={
-              <Typography variant="h6" component="span">
+        <Grid key={index} size={{ xs: 12, sm: 6 }}>
+          <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="h6" gutterBottom>
                 {event.eventName}
               </Typography>
-            }
-            secondaryTypographyProps={{ component: 'div' } as any}
-            secondary={
-              <>
-                <Typography variant="body2" color="text.secondary">
-                  {event.city}
-                  {event.eventDate ? ` · ${new Date(event.eventDate).toLocaleDateString()}` : ''}
-                </Typography>
-                <Chip
-                  label={event.role === 'ORGANIZER' ? t('role_organizer') : t('role_participant')}
-                  size="small"
-                  color={event.role === 'ORGANIZER' ? 'primary' : 'default'}
-                  sx={{ mt: 0.5 }}
-                />
-                {event.role === 'ORGANIZER' && event.adminUrl && (
-                  <Link
-                    href={event.adminUrl}
-                    sx={{ display: 'block', mt: 0.5 }}
-                    underline="hover"
-                    color="primary"
-                  >
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {event.city}
+                {event.eventDate ? ` · ${new Date(event.eventDate).toLocaleDateString()}` : ''}
+              </Typography>
+              <Chip
+                label={event.role === 'ORGANIZER' ? t('role_organizer') : t('role_participant')}
+                size="small"
+                color={event.role === 'ORGANIZER' ? 'primary' : 'default'}
+                sx={{ mt: 0.5 }}
+              />
+              {event.role === 'ORGANIZER' && event.adminUrl && (
+                <Box sx={{ mt: 1.5 }}>
+                  <Link href={event.adminUrl} underline="hover" color="primary" variant="body2">
                     {t('manage_event')}
                   </Link>
-                )}
-              </>
-            }
-          />
-        </ListItem>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
       ))}
-    </List>
+    </Grid>
   );
 }
