@@ -1,4 +1,4 @@
-import { type PortalCredential, type OrganizerPortalCredential, type ParticipantPortalCredential } from './PortalTypes';
+import { type OrganizerPortalCredential, type ParticipantPortalCredential, type PortalCredential } from './PortalTypes';
 
 const STORAGE_KEY = 'runningdinner_portal_credentials';
 
