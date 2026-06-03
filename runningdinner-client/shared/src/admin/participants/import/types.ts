@@ -1,0 +1,88 @@
+export type ExcelImportRowStatus = 'VALID' | 'WARNING' | 'ERROR';
+
+export interface ExcelImportValidationMessage {
+  /** Which field this message belongs to, or null for row-level messages */
+  field: keyof ExcelImportRowData | null;
+  /** Human-readable message */
+  message: string;
+}
+
+/** Raw flat fields parsed from a single Excel row — all strings before type coercion */
+export interface ExcelImportRowData {
+  // Mandatory (columns A-G: 0-6)
+  firstnamePart: string;
+  lastname: string;
+  email: string;
+  street: string;
+  streetNr: string;
+  zip: string;
+  cityName: string;
+  // Optional
+  gender: string; // 'm' | 'w' | 'divers' | ''
+  age: string; // numeric string or ''
+  numSeats: string; // numeric string or ''
+  mobileNumber: string;
+  addressRemarks: string;
+  notes: string;
+  vegetarian: string; // 'ja' | 'yes' | '1' | ''
+  vegan: string;
+  lactose: string;
+  gluten: string;
+  mealSpecificsNote: string;
+  // Team partner wish — email mode takes precedence over name mode
+  teamPartnerWishEmail: string;
+  teamPartnerWishPartnerFirstname: string;
+  teamPartnerWishPartnerLastname: string;
+}
+
+/** A parsed + validated row ready for preview display */
+export interface ExcelImportRow {
+  /** 1-based row number in the Excel file (for user display, accounting for header) */
+  rowNumber: number;
+  data: ExcelImportRowData;
+  /** Aggregated status — worst of all messages */
+  status: ExcelImportRowStatus;
+  validationMessages: ExcelImportValidationMessage[];
+}
+
+/** Aggregate shown to the organizer before confirmation */
+export interface ImportPreview {
+  rows: ExcelImportRow[];
+  counts: {
+    total: number;
+    valid: number;
+    warnings: number;
+    errors: number;
+  };
+}
+
+export interface ImportResult {
+  succeededCount: number;
+  failedRows: Array<{ row: ExcelImportRow; error: string }>;
+}
+
+export function buildImportPreview(rows: ExcelImportRow[]): ImportPreview {
+  const counts = rows.reduce(
+    (acc, row) => {
+      acc.total++;
+      if (row.status === 'VALID') acc.valid++;
+      else if (row.status === 'WARNING') acc.warnings++;
+      else acc.errors++;
+      return acc;
+    },
+    { total: 0, valid: 0, warnings: 0, errors: 0 },
+  );
+  return { rows, counts };
+}
+
+export function getImportableRows(preview: ImportPreview): ExcelImportRow[] {
+  return preview.rows.filter((r) => r.status !== 'ERROR');
+}
+
+export function hasErrors(preview: ImportPreview): boolean {
+  return preview.counts.errors > 0;
+}
+
+export function hasOnlyErrors(preview: ImportPreview): boolean {
+  return preview.counts.errors === preview.counts.total;
+}

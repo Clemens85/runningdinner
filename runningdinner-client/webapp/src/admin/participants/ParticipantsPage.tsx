@@ -29,6 +29,7 @@ import ParticipantsListView from './list/ParticipantsListView';
 import { CREATE_NEW_PARTICIPANT_TEAM_PARTNER_WISH_ACTION } from './teampartnerwish/TeamPartnerWishAction';
 import { TeamPartnerWishDialog } from './teampartnerwish/TeamPartnerWishDialog';
 import { useAdminNavigation } from '../AdminNavigationHook';
+import { ExcelImportDialog } from './import/ExcelImportDialog';
 
 export function ParticipantsPage({ runningDinner }: BaseRunningDinnerProps) {
   const params = useParams();
@@ -99,6 +100,8 @@ function ParticipantsView({
 
   const { isOpen: isTeamPartnerWishDialogOpen, close: closeTeamPartnerWishDialog, open: openTeamPartnerWishDialog, getIsOpenData: getTeamPartnerWishInfo } = useDisclosure(false);
 
+  const { isOpen: isImportDialogOpen, close: closeImportDialog, open: openImportDialog } = useDisclosure(false);
+
   const { showBackToListViewButton, setShowDetailsView, showListView, showDetailsView } = useMasterDetailView();
   const isBigTablet = useIsBigTabletDevice();
 
@@ -167,6 +170,7 @@ function ParticipantsView({
           onShowMiscNotesChange={onShowMiscNotesChange}
           showMiscNotes={showMiscNotes}
           onParticipantSearchChanged={handleParticipantSearchChange}
+          onImportClick={openImportDialog}
         />
       )}
       <Grid container spacing={2}>
@@ -209,6 +213,15 @@ function ParticipantsView({
         </Grid>
       </Grid>
       <StickyActionButton onClick={onNewParticipant} />
+      {isImportDialogOpen && (
+        <ExcelImportDialog
+          open={isImportDialogOpen}
+          onClose={closeImportDialog}
+          onImportComplete={() => { closeImportDialog(); refetch(); }}
+          adminId={adminId}
+          participantList={participantList!}
+        />
+      )}
       {isTeamPartnerWishDialogOpen && (
         <TeamPartnerWishDialog
           runningDinner={runningDinner}
