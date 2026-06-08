@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Dialog, DialogActions, DialogContent, TextField, Theme, UseAutocompleteProps, useMediaQuery } from '@mui/material';
+import { Autocomplete, Box, Checkbox, Dialog, DialogActions, DialogContent, Divider, FormControlLabel, TextField, Theme, UseAutocompleteProps, useMediaQuery } from '@mui/material';
 import {
   assertDefined,
   BaseAdminIdProps,
@@ -20,7 +20,7 @@ import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
-import { DefaultDialogCancelButton,DialogActionsButtons } from '../../common/theme/dialog/DialogActionsButtons';
+import { DefaultDialogCancelButton, DialogActionsButtons } from '../../common/theme/dialog/DialogActionsButtons';
 import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
 import { PrimarySuccessButtonAsync } from '../../common/theme/PrimarySuccessButtonAsync';
 import Paragraph from '../../common/theme/typography/Paragraph';
@@ -28,23 +28,25 @@ import Paragraph from '../../common/theme/typography/Paragraph';
 interface SelectTeamToSwapProps {
   allTeams: Team[];
   srcTeam: Team;
+  includeSameMeal: boolean;
+  onIncludeSameMealChange: (value: boolean) => unknown;
   // @ts-ignore
   selectedTeam: UseAutocompleteProps | null;
   // @ts-ignore
   onSelectedTeamChange: (newVal: UseAutocompleteProps | null) => unknown;
 }
 
-function SelectTeamToSwap({ allTeams, srcTeam, selectedTeam, onSelectedTeamChange }: SelectTeamToSwapProps) {
+function SelectTeamToSwap({ allTeams, srcTeam, includeSameMeal, onIncludeSameMealChange, selectedTeam, onSelectedTeamChange }: SelectTeamToSwapProps) {
   const { t } = useTranslation(['admin', 'common']);
   const { getTeamNameMembers } = useTeamNameMembers();
 
   const smDownDevice = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
-  const getTeamSelectionOptions = (allTeams: Team[], srcTeam: Team) => {
+  const getTeamSelectionOptions = (allTeams: Team[], srcTeam: Team, includeSameMeal: boolean) => {
     const result = removeEntityFromList(allTeams, srcTeam)!;
     return result
       .filter((t) => t.status !== TeamStatus.CANCELLED)
-      .filter((t) => !isSameEntity(t.meal, srcTeam.meal))
+      .filter((t) => includeSameMeal || !isSameEntity(t.meal, srcTeam.meal))
       .map((t) => {
         return {
           label: `${t.meal.label} - ${getTeamNameMembers(t)}`,
@@ -53,7 +55,7 @@ function SelectTeamToSwap({ allTeams, srcTeam, selectedTeam, onSelectedTeamChang
       });
   };
 
-  const teamOptions = useMemo(() => getTeamSelectionOptions(allTeams, srcTeam), [allTeams, srcTeam]);
+  const teamOptions = useMemo(() => getTeamSelectionOptions(allTeams, srcTeam, includeSameMeal), [allTeams, srcTeam, includeSameMeal]);
 
   const minWidth = smDownDevice ? 250 : 400;
 
@@ -68,6 +70,21 @@ function SelectTeamToSwap({ allTeams, srcTeam, selectedTeam, onSelectedTeamChang
         sx={{ minWidth: minWidth }}
         renderInput={(params) => <TextField {...params} label={t('admin:meals_swap_team_team_choose')} autoFocus={true} />}
       />
+      <Box mt={2}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={includeSameMeal}
+              onChange={(evt) => {
+                onIncludeSameMealChange(evt.target.checked);
+                onSelectedTeamChange(null);
+              }}
+              size="small"
+            />
+          }
+          label={t('admin:meals_swap_include_same_meal')}
+        />
+      </Box>
     </>
   );
 }
@@ -86,6 +103,7 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
 
   // @ts-ignore
   const [selectedTeam, setSelectedTeam] = useState<UseAutocompleteProps | null>(null);
+  const [includeSameMeal, setIncludeSameMeal] = useState(false);
   const smDownDevice = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
   const { getIssuesTranslated } = useBackendIssueHandler({
@@ -136,10 +154,17 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
           <br />
         </Box>
         <Box>
-          <SelectTeamToSwap srcTeam={srcTeam} allTeams={allTeams} selectedTeam={selectedTeam} onSelectedTeamChange={setSelectedTeam} />
+          <SelectTeamToSwap
+            srcTeam={srcTeam}
+            allTeams={allTeams}
+            selectedTeam={selectedTeam}
+            onSelectedTeamChange={setSelectedTeam}
+            includeSameMeal={includeSameMeal}
+            onIncludeSameMealChange={setIncludeSameMeal}
+          />
         </Box>
         {selectedTeam && (
-          <Box mt={4}>
+          <Box mt={3}>
             <Paragraph>
               <Trans
                 i18nKey="admin:meals_swap_team_after_swap_src"
@@ -161,6 +186,14 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
                 }}
               />
             </Paragraph>
+            {isSameEntity(srcTeam.meal, getSelectedTeam(selectedTeam).meal) && (
+              <Box>
+                <Divider variant="middle" sx={{ my: 3 }} />
+                <Paragraph>
+                  <Trans i18nKey="admin:meals_swap_team_after_swap_same_meal_note" />
+                </Paragraph>
+              </Box>
+            )}
           </Box>
         )}
       </DialogContent>

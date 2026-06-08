@@ -223,6 +223,8 @@
   "meals_swap_team_description": "{{team}} kocht aktuell folgende Speise: <strong>{{meal}}</strong>",
   "meals_swap_team_after_swap_src": "Team mit {{team}} wird zu Team {{newTeamNumber}} mit folgender Speise: <strong>{{meal}}</strong>.",
   "meals_swap_team_after_swap_selected": "Team mit {{team}} wird zu Team {{newTeamNumber}} mit folgender Speise: <strong>{{meal}}</strong>.",
+  "meals_swap_include_same_meal": "Auch Teams mit gleicher Speise anzeigen",
+  "meals_swap_team_after_swap_same_meal_note": "<strong>Hinweis:</strong> Beide Teams kochen dieselbe Speise – es wechseln nur die Gastgeber-Orte.",
   "meals_update_cause_drop_teams": "Durch das Entfernen bzw. Hinzufügen von Speisen werden alle bestehenden Teameinteilungen aufgehoben. Du kannst danach neue Teams generieren.",
   "mealtimes_save_success": "Zeitplan erfolgreich gespeichert!",
 

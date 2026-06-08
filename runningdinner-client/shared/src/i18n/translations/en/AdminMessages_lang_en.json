@@ -221,6 +221,8 @@
   "meals_swap_team_description": "{{team}} is currently cooking the following meal: <strong>{{meal}}</strong>",
   "meals_swap_team_after_swap_src": "Team with {{team}} will be the new team {{newTeamNumber}} with following meal assigned: <strong>{{meal}}</strong>.",
   "meals_swap_team_after_swap_selected": "Team with {{team}} will be the new team {{newTeamNumber}} with following meal assigned: <strong>{{meal}}</strong>.",
+  "meals_swap_include_same_meal": "Also show teams with same course",
+  "meals_swap_team_after_swap_same_meal_note": "<strong>Note:</strong> Both teams cook the same course – only the hosting locations are exchanged.",
   "meals_update_cause_drop_teams": "By removing and/or adding meals, all existing team arrangements will be dropped. You can generate new team arrangements afterwards.",
   "mealtimes_save_success": "Meal schedule saved successfully!",
 
