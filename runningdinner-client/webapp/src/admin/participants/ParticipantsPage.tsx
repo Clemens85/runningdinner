@@ -217,7 +217,9 @@ function ParticipantsView({
         <ExcelImportDialog
           open={isImportDialogOpen}
           onClose={closeImportDialog}
-          onImportComplete={() => { closeImportDialog(); refetch(); }}
+          onImportComplete={() => {
+            refetch();
+          }}
           adminId={adminId}
           participantList={participantList!}
         />

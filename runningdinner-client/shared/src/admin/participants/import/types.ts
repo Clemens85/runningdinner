@@ -18,7 +18,7 @@ export interface ExcelImportRowData {
   zip: string;
   cityName: string;
   // Optional
-  gender: string; // 'm' | 'w' | 'divers' | ''
+  gender: string; // 'm' | 'w' | ''
   age: string; // numeric string or ''
   numSeats: string; // numeric string or ''
   mobileNumber: string;
@@ -77,10 +77,6 @@ export function buildImportPreview(rows: ExcelImportRow[]): ImportPreview {
 
 export function getImportableRows(preview: ImportPreview): ExcelImportRow[] {
   return preview.rows.filter((r) => r.status !== 'ERROR');
-}
-
-export function hasErrors(preview: ImportPreview): boolean {
-  return preview.counts.errors > 0;
 }
 
 export function hasOnlyErrors(preview: ImportPreview): boolean {

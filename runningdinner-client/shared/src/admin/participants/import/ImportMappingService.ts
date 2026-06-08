@@ -1,6 +1,6 @@
 import { CONSTANTS } from '../../../Constants';
-import { newEmptyParticipantInstance } from '../../../types/Participant';
-import { ParticipantFormModel } from '../../../types/Participant';
+import { ParticipantFormModel } from '../../../types';
+import { newEmptyParticipantInstance } from '../../../types';
 import { ExcelImportRowData } from './types';
 
 /** Values treated as boolean `true` when parsing flag columns (e.g. vegetarian, vegan, etc.) */
@@ -22,7 +22,6 @@ function parseIntColumn(raw: string, fallback = -1): number {
  *
  * Accepted: 'm', 'männlich', 'male' → MALE
  *           'w', 'weiblich', 'female' → FEMALE
- *           'divers', 'd', 'diverse' → UNDEFINED
  *           unknown / empty → UNDEFINED
  */
 export function mapGender(raw: string): string {
@@ -35,9 +34,7 @@ export function mapGender(raw: string): string {
     case 'weiblich':
     case 'female':
       return CONSTANTS.GENDER.FEMALE;
-    case 'divers':
-    case 'd':
-    case 'diverse':
+    case '':
     default:
       return CONSTANTS.GENDER.UNDEFINED;
   }
@@ -80,9 +77,7 @@ export function buildParticipantFromImportRow(row: ExcelImportRowData): Particip
 
   // If email wish not provided but name columns are filled → unresolved name wish
   const hasEmailWish = participant.teamPartnerWishEmail !== '';
-  const hasNameWish =
-    row.teamPartnerWishPartnerFirstname.trim() !== '' ||
-    row.teamPartnerWishPartnerLastname.trim() !== '';
+  const hasNameWish = row.teamPartnerWishPartnerFirstname.trim() !== '' || row.teamPartnerWishPartnerLastname.trim() !== '';
 
   if (!hasEmailWish && hasNameWish) {
     participant.teamPartnerWishRegistrationData = {

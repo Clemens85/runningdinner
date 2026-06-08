@@ -1,9 +1,9 @@
-import { Participant } from '../../../types/Participant';
+import { Participant } from '../../../types';
 import { ExcelImportRow, ExcelImportRowData, ExcelImportRowStatus, ExcelImportValidationMessage } from './types';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const VALID_GENDER_VALUES = new Set(['m', 'w', 'divers', 'd', 'männlich', 'weiblich', 'male', 'female', 'diverse']);
+const VALID_GENDER_VALUES = new Set(['m', 'w', '', 'männlich', 'weiblich', 'male', 'female']);
 
 function isValidEmail(email: string): boolean {
   return EMAIL_REGEX.test(email);
@@ -28,11 +28,7 @@ interface ValidationContext {
   existingEmails: Set<string>;
 }
 
-function validateSingleRow(
-  data: ExcelImportRowData,
-  rowNumber: number,
-  ctx: ValidationContext,
-): { messages: ExcelImportValidationMessage[]; status: ExcelImportRowStatus } {
+function validateSingleRow(data: ExcelImportRowData, rowNumber: number, ctx: ValidationContext): { messages: ExcelImportValidationMessage[]; status: ExcelImportRowStatus } {
   const messages: ExcelImportValidationMessage[] = [];
   let status: ExcelImportRowStatus = 'VALID';
 
@@ -127,10 +123,7 @@ function validateSingleRow(
  * 1. Per-row structural checks (mandatory fields, format, intra-file duplicates, existing dupes)
  * 2. Cross-row check: team partner email wish → partner exists in file or among existing participants
  */
-export function validateImportRows(
-  rows: ExcelImportRowData[],
-  existingParticipants: Participant[],
-): ExcelImportRow[] {
+export function validateImportRows(rows: ExcelImportRowData[], existingParticipants: Participant[]): ExcelImportRow[] {
   const existingEmails = new Set(existingParticipants.map((p) => p.email.trim().toLowerCase()));
   const inFileEmails = new Map<string, number>();
 

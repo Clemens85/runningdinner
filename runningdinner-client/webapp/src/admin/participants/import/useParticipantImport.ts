@@ -1,4 +1,4 @@
-import { buildImportPreview, buildParticipantFromImportRow, getImportableRows, ImportPreview, ImportResult } from '@runningdinner/shared';
+import { buildImportPreview, buildParticipantFromImportRow, getImportableRows, ImportPreview, ImportResult, isFileExtensionAllowed } from '@runningdinner/shared';
 import { ExcelImportRow, ExcelImportRowData } from '@runningdinner/shared';
 import { Participant, saveParticipantAsync } from '@runningdinner/shared';
 import { ImportError, parseExcelFile } from '@runningdinner/shared';
@@ -32,7 +32,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
 
   const handleFileSelected = React.useCallback(
     async (file: File) => {
-      if (!file.name.endsWith('.xlsx')) {
+      if (!isFileExtensionAllowed(file)) {
         setFileError('import_invalid_file_type');
         return;
       }

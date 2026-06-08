@@ -1,5 +1,36 @@
 import { ExcelImportRowData } from './types';
 
+export const ALLOWED_IMPORT_FILE_EXTENSIONS = ['.xlsx', '.xls'];
+
+type Accept = {
+  [key: string]: string[];
+};
+
+export const ALLOWED_IMPORT_FILE_TYPES: Accept = {
+  'application/vnd.ms-excel': ALLOWED_IMPORT_FILE_EXTENSIONS,
+  'application/msexcel': ALLOWED_IMPORT_FILE_EXTENSIONS,
+  'application/x-msexcel': ALLOWED_IMPORT_FILE_EXTENSIONS,
+  'application/x-ms-excel': ALLOWED_IMPORT_FILE_EXTENSIONS,
+  'application/x-excel': ALLOWED_IMPORT_FILE_EXTENSIONS,
+  'application/xls': ALLOWED_IMPORT_FILE_EXTENSIONS,
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [ALLOWED_IMPORT_FILE_EXTENSIONS[0]],
+};
+
+export function getAllowedImportFileTypesAcceptString(): string {
+  const mimeTypes = Object.keys(ALLOWED_IMPORT_FILE_TYPES);
+  return mimeTypes.join(', ');
+}
+
+export function isFileExtensionAllowed(file: File): boolean {
+  const fileName = (file.name || '').toLowerCase();
+  for (const name of ALLOWED_IMPORT_FILE_EXTENSIONS) {
+    if (fileName.endsWith(name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /** Fixed column index → ExcelImportRowData field mapping (0-based, matches data-model.md) */
 const COL_MAP: Array<keyof ExcelImportRowData> = [
   'firstnamePart', // 0  A  Vorname

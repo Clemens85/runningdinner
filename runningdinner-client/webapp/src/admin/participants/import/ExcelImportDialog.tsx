@@ -1,14 +1,14 @@
-import React from 'react';
-import { Alert, Box, Collapse, Dialog, DialogContent, LinearProgress, List, ListItem, ListItemText, Typography } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
+import { Alert, Box, Collapse, Dialog, DialogContent, LinearProgress, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { concatParticipantList, generateImportTemplate, getAllowedImportFileTypesAcceptString, hasOnlyErrors, ParticipantList } from '@runningdinner/shared';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { concatParticipantList, generateImportTemplate, hasErrors, hasOnlyErrors, ParticipantList } from '@runningdinner/shared';
-import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
+
 import { useIsMobileDevice } from '../../../common/theme/CustomMediaQueryHook';
+import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
 import DialogActionsPanel from '../../../common/theme/DialogActionsPanel';
 import { DialogTitleCloseable } from '../../../common/theme/DialogTitleCloseable';
 import SecondaryButton from '../../../common/theme/SecondaryButton';
-import { ConfirmationDialog } from '../../../common/theme/dialog/ConfirmationDialog';
 import { ImportPreviewTable } from './ImportPreviewTable';
 import { useParticipantImport } from './useParticipantImport';
 
@@ -27,7 +27,6 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
   const existingParticipants = concatParticipantList(participantList);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [expandedErrors, setExpandedErrors] = React.useState(false);
-  const [showSkipConfirm, setShowSkipConfirm] = React.useState(false);
   const isMobileDevice = useIsMobileDevice('md');
 
   const { step, importPreview, importProgress, importResult, fileError, handleFileSelected, handleConfirmImport, handleReset } = useParticipantImport(
@@ -44,15 +43,8 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
         onImportComplete();
         handleClose();
       } else if (importResult.succeededCount > 0) {
-        // Partial success — notify parent (list updated) but stay open to show error rows
-        showError(
-          t('admin:import_partial_success', {
-            success: importResult.succeededCount,
-            failed: importResult.failedRows.length,
-          }),
-        );
+        // Partial success — notify parent (list updated) but stay open to show error rows inline
         onImportComplete();
-        // Dialog stays open in 'done' step to show the failed row list
       }
       // If everything failed, just show the error summary inline (no snackbar needed)
     }
@@ -60,7 +52,7 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
   }, [step, importResult]);
 
   function handleClose() {
-    setShowSkipConfirm(false);
+    // setShowSkipConfirm(false);
     handleReset();
     onClose();
   }
@@ -94,23 +86,34 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
                 borderColor: 'divider',
                 borderRadius: 1,
                 display: 'flex',
-                alignItems: { xs: 'flex-start', sm: 'center' },
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: 2,
+                flexDirection: 'column',
+                gap: 1.5,
               }}
             >
-              <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-                {t('admin:import_template_info')}
-              </Typography>
-              <SecondaryButton
-                startIcon={<DownloadIcon />}
-                onClick={generateImportTemplate}
-                data-testid="import-download-template-btn"
-                size="small"
-                sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  gap: 2,
+                }}
               >
-                {t('admin:import_download_template')}
-              </SecondaryButton>
+                <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+                  {t('admin:import_template_info')}
+                </Typography>
+                <SecondaryButton
+                  startIcon={<DownloadIcon />}
+                  onClick={generateImportTemplate}
+                  data-testid="import-download-template-btn"
+                  size="small"
+                  sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                >
+                  {t('admin:import_download_template')}
+                </SecondaryButton>
+              </Box>
+              <Alert severity="info" variant="outlined" sx={{ py: 0.5 }}>
+                {t('admin:import_template_hints_sheet')}
+              </Alert>
             </Box>
             {fileError && (
               <Typography color="error" variant="body2" sx={{ mt: 2 }}>
@@ -121,7 +124,7 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
             <input
               ref={fileInputRef}
               type="file"
-              accept=".xlsx"
+              accept={getAllowedImportFileTypesAcceptString()}
               style={{ display: 'none' }}
               id="excel-import-file-input"
               onChange={handleFileInputChange}
@@ -143,7 +146,6 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
   // --- Step: previewing ---
   if (step === 'previewing' && importPreview) {
     const noImportableRows = hasOnlyErrors(importPreview);
-    const hasErrorRows = hasErrors(importPreview);
     const importableCount = importPreview.rows.filter((r) => r.status !== 'ERROR').length;
 
     return (
@@ -154,34 +156,13 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
             <ImportPreviewTable preview={importPreview} />
           </DialogContent>
           <DialogActionsPanel
-            onOk={() => {
-              if (hasErrorRows) {
-                setShowSkipConfirm(true);
-              } else {
-                handleConfirmImport();
-              }
-            }}
+            onOk={() => handleConfirmImport()}
             okLabel={t('admin:import_preview_confirm', { count: importableCount })}
             onCancel={handleClose}
             cancelLabel={t('common:cancel')}
             okButtonDisabled={noImportableRows}
           />
         </Dialog>
-        {showSkipConfirm && (
-          <ConfirmationDialog
-            open={true}
-            onClose={(confirmed) => {
-              setShowSkipConfirm(false);
-              if (confirmed) {
-                handleConfirmImport();
-              }
-            }}
-            dialogTitle={t('admin:import_participants_title')}
-            dialogContent={<Alert severity="warning">{t('admin:import_skipped_rows_summary', { count: importPreview.counts.errors })}</Alert>}
-            buttonConfirmText={t('admin:import_preview_confirm', { count: importableCount })}
-            buttonCancelText={t('common:cancel')}
-          />
-        )}
       </>
     );
   }

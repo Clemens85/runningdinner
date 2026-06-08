@@ -1,23 +1,11 @@
-import React from 'react';
-import { Alert, Box, Chip, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Alert, Box, Chip, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { buildParticipantFromImportRow, ExcelImportRow, ExcelImportRowStatus, Fullname, ImportPreview } from '@runningdinner/shared';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExcelImportRow, ExcelImportRowData, ExcelImportRowStatus, ImportPreview } from '@runningdinner/shared';
 
-function isMealTruthy(val: string): boolean {
-  const v = (val || '').toLowerCase().trim();
-  return v === 'ja' || v === 'yes' || v === '1' || v === 'true';
-}
-
-function formatMealSpecifics(data: ExcelImportRowData): string {
-  const parts: string[] = [];
-  if (isMealTruthy(data.vegan)) parts.push('Vegan');
-  else if (isMealTruthy(data.vegetarian)) parts.push('Veg');
-  if (isMealTruthy(data.lactose)) parts.push('Lak');
-  if (isMealTruthy(data.gluten)) parts.push('Glu');
-  return parts.length > 0 ? parts.join(' · ') : '—';
-}
+import { ParticipantMealBadges } from '../meal/ParticipantMealBadges.tsx';
 
 function formatSeats(numSeats: string): string {
   const n = parseInt(numSeats, 10);
@@ -60,18 +48,11 @@ function MobileRow({ row }: RowProps) {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography variant="body2" fontWeight="medium">
-            #{row.rowNumber} — {row.data.firstnamePart} {row.data.lastname}
+            #{row.rowNumber} — <Fullname firstnamePart={row.data.firstnamePart} lastname={row.data.lastname} />
           </Typography>
           <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-all' }}>
             {row.data.email}
           </Typography>
-          {(formatSeats(row.data.numSeats) !== '—' || formatMealSpecifics(row.data) !== '—') && (
-            <Typography variant="caption" color="text.secondary">
-              {[formatSeats(row.data.numSeats) !== '—' ? formatSeats(row.data.numSeats) : null, formatMealSpecifics(row.data) !== '—' ? formatMealSpecifics(row.data) : null]
-                .filter(Boolean)
-                .join(' · ')}
-            </Typography>
-          )}
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
           <Chip label={statusLabel(row.status, t)} color={statusColor(row.status)} size="small" />
@@ -124,13 +105,13 @@ function DesktopRow({ row }: RowProps) {
         </TableCell>
         <TableCell>#{row.rowNumber}</TableCell>
         <TableCell>
-          {row.data.firstnamePart} {row.data.lastname}
+          <Fullname firstnamePart={row.data.firstnamePart} lastname={row.data.lastname} />
         </TableCell>
         <TableCell sx={{ display: { md: 'none', lg: 'table-cell' } }}>{fullAddress}</TableCell>
         <TableCell>{row.data.email}</TableCell>
         <TableCell align="center">{formatSeats(row.data.numSeats)}</TableCell>
         <TableCell sx={{ display: { md: 'none', lg: 'table-cell' } }}>
-          <Typography variant="caption">{formatMealSpecifics(row.data)}</Typography>
+          <MealSpecificsPreview {...row} />
         </TableCell>
         <TableCell>
           <Chip label={statusLabel(row.status, t)} color={statusColor(row.status)} size="small" />
@@ -156,12 +137,22 @@ function DesktopRow({ row }: RowProps) {
   );
 }
 
+function MealSpecificsPreview({ data }: ExcelImportRow) {
+  try {
+    const participant = buildParticipantFromImportRow(data);
+    return <ParticipantMealBadges participant={participant} />;
+  } catch (error) {
+    // This can happen if the row cannot be parsed to a participant after all
+    return null;
+  }
+}
+
 interface ImportPreviewTableProps {
   preview: ImportPreview;
 }
 
 export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
-  const { t } = useTranslation(['admin']);
+  const { t } = useTranslation(['admin', 'common']);
   const { counts } = preview;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -190,9 +181,9 @@ export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
                 <TableCell>{t('admin:import_column_row')}</TableCell>
                 <TableCell>{t('admin:import_column_name')}</TableCell>
                 <TableCell sx={{ display: { md: 'none', lg: 'table-cell' } }}>{t('admin:import_column_address')}</TableCell>
-                <TableCell>{t('admin:import_column_email')}</TableCell>
-                <TableCell align="center">{t('admin:import_column_seats')}</TableCell>
-                <TableCell sx={{ display: { md: 'none', lg: 'table-cell' } }}>{t('admin:import_column_meal')}</TableCell>
+                <TableCell>{t('common:email')}</TableCell>
+                <TableCell align="center">{t('common:number_seats')}</TableCell>
+                <TableCell sx={{ display: { md: 'none', lg: 'table-cell' } }}>{t('common:mealspecifics')}</TableCell>
                 <TableCell>{t('admin:import_column_status')}</TableCell>
               </TableRow>
             </TableHead>
