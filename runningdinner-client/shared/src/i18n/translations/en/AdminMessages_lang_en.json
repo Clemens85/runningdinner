@@ -242,6 +242,8 @@
   "participant_deletion_success_text": "{{ fullname }} was successfully deleted!",
   "participant_empty_selection": "Please select a participant for viewing and/or editing his details!",
   "participant_new": "New participant",
+  "participant_open_in_google_maps": "Open location in Google Maps",
+  "participant_open_in_google_maps_tooltip": "Check if the resolved address is correctly shown on the map. This link is only available if the address could be geocoded successfully.",
   "participant_save_success": "{{ fullname }} successfully saved!",
   "participant_search_placeholder": "Search for name, email, or address",
   "participant_selection_all": "All participants",
