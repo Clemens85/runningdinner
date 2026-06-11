@@ -286,6 +286,8 @@ export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, 
   const isHovered = false; // Maybe we add this in future
 
   const zIndexUnselected = zIndex + 1;
+  const teamNumberLabel = team.teamNumber < 100 ? `#${team.teamNumber}` : `${team.teamNumber}`;
+
   return (
     <>
       <AdvancedMarker
@@ -304,7 +306,7 @@ export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, 
           {/* @ts-ignore */}
           <MapEntryPin teamColor={useSecondaryClusterColor ? secondaryClusterColor : team.color}>
             <>{getMealTypeIcon(team.mealType)}</>
-            {DinnerRouteMapCalculator.getMarkerLabel(`#${team.teamNumber}`)}
+            {DinnerRouteMapCalculator.getMarkerLabel(teamNumberLabel)}
           </MapEntryPin>
         </Box>
       </AdvancedMarker>
