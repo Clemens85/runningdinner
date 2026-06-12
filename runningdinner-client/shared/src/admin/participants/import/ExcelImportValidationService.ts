@@ -83,6 +83,11 @@ export class ExcelImportValidationService {
     result.status = worseStatus(result.status, 'WARNING');
   }
 
+  private addInfo(result: SingleRowValidationResult, field: keyof ExcelImportRowData | null, message: string) {
+    result.messages.push(info(field, message));
+    result.status = worseStatus(result.status, 'INFO');
+  }
+
   public validateImportRows(rows: ExcelImportRowData[]): ExcelImportRow[] {
     const validatedRows: ExcelImportRow[] = rows.map((data, index) => {
       const rowNumber = index + 1; // 1-based
@@ -183,8 +188,7 @@ export class ExcelImportValidationService {
       if (this.ctx.incomingEmailsByRowNumber.has(teamPartnerWishEmail)) {
         continue;
       }
-      row.validationResult.messages.push(info('teamPartnerWishEmail', 'Teamwunsch-E-Mail nicht gefunden'));
-      row.validationResult.status = worseStatus(row.validationResult.status, 'INFO');
+      this.addInfo(row.validationResult, 'teamPartnerWishEmail', 'Teamwunsch-E-Mail nicht gefunden');
     }
   }
 
@@ -210,11 +214,9 @@ export class ExcelImportValidationService {
       const teamPartnerWishEmail = getNormalizedEmail(row.data.teamPartnerWishEmail);
       if (this.ctx.existingTeamPartnerWishEmails.has(teamPartnerWishEmail)) {
         this.addWarn(row.validationResult, 'teamPartnerWishEmail', 'Diese Teamwunsch-E-Mail wird bereits von einem bestehenden Teilnehmer als Wunsch angegeben');
-        row.validationResult.status = worseStatus(row.validationResult.status, 'WARNING');
       }
       if (teamPartnerWishEmailsInFileCount.has(teamPartnerWishEmail) && teamPartnerWishEmailsInFileCount.get(teamPartnerWishEmail)! > 1) {
         this.addWarn(row.validationResult, 'teamPartnerWishEmail', 'Diese Teamwunsch-E-Mail kommt mehrfach in der Datei vor');
-        row.validationResult.status = worseStatus(row.validationResult.status, 'WARNING');
       }
     }
   }

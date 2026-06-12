@@ -32,7 +32,6 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
 
   const handleFileSelected = React.useCallback(
     async (file: File) => {
-      const validationService = new ExcelImportValidationService(existingParticipants);
       if (!isFileExtensionAllowed(file)) {
         setFileError('import_invalid_file_type');
         return;
@@ -40,6 +39,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
       setFileError(null);
       setStep('parsing');
       try {
+        const validationService = new ExcelImportValidationService(existingParticipants);
         const rawRows: ExcelImportRowData[] = await parseExcelFile(file);
         const validatedRows: ExcelImportRow[] = validationService.validateImportRows(rawRows);
         const preview = buildImportPreview(validatedRows);
