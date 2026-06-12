@@ -473,6 +473,7 @@
   "import_select_file": "Select Excel file (.xlsx)",
   "import_preview_valid": "Valid",
   "import_preview_warning": "Warning",
+  "import_preview_info": "Info",
   "import_preview_error": "Error",
   "import_preview_errors_hint": "{{count}} entries with errors will be skipped during import.",
   "import_preview_confirm": "Import {{count}} participants",

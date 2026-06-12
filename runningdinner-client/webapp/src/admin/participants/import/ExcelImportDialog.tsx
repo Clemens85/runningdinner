@@ -22,7 +22,7 @@ interface ExcelImportDialogProps {
 
 export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, participantList }: ExcelImportDialogProps) {
   const { t } = useTranslation(['admin', 'common']);
-  const { showSuccess, showError } = useCustomSnackbar();
+  const { showSuccess } = useCustomSnackbar();
 
   const existingParticipants = concatParticipantList(participantList);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -146,7 +146,7 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
   // --- Step: previewing ---
   if (step === 'previewing' && importPreview) {
     const noImportableRows = hasOnlyErrors(importPreview);
-    const importableCount = importPreview.rows.filter((r) => r.status !== 'ERROR').length;
+    const importableCount = importPreview.rows.filter((r) => r.validationResult.status !== 'ERROR').length;
 
     return (
       <>

@@ -1,7 +1,7 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Alert, Box, Chip, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { buildParticipantFromImportRow, ExcelImportRow, ExcelImportRowStatus, Fullname, ImportPreview } from '@runningdinner/shared';
+import { ExcelImportMappingService, ExcelImportRow, ExcelImportRowStatus, ExcelImportValidationMessage, Fullname, ImportPreview } from '@runningdinner/shared';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,14 +12,22 @@ function formatSeats(numSeats: string): string {
   return n > 0 ? String(n) : '—';
 }
 
-function statusColor(status: ExcelImportRowStatus): 'success' | 'warning' | 'error' | 'default' {
+function statusColor(status: ExcelImportRowStatus): 'success' | 'info' | 'warning' | 'error' | 'default' {
   if (status === 'VALID') return 'success';
+  if (status === 'INFO') return 'info';
   if (status === 'WARNING') return 'warning';
   return 'error';
 }
 
+function messageColor(severity: ExcelImportValidationMessage['severity']): string {
+  if (severity === 'ERROR') return 'error.dark';
+  if (severity === 'WARNING') return 'warning.dark';
+  return 'info.main';
+}
+
 function statusLabel(status: ExcelImportRowStatus, t: (k: string) => string): string {
   if (status === 'VALID') return t('admin:import_preview_valid');
+  if (status === 'INFO') return t('admin:import_preview_info');
   if (status === 'WARNING') return t('admin:import_preview_warning');
   return t('admin:import_preview_error');
 }
@@ -31,7 +39,7 @@ interface RowProps {
 function MobileRow({ row }: RowProps) {
   const { t } = useTranslation(['admin']);
   const [open, setOpen] = React.useState(false);
-  const hasMessages = row.validationMessages.length > 0;
+  const hasMessages = row.validationResult.messages.length > 0;
 
   return (
     <Box
@@ -40,9 +48,23 @@ function MobileRow({ row }: RowProps) {
         mb: 1,
         borderRadius: 1,
         border: '1px solid',
-        borderColor: row.status === 'ERROR' ? 'error.main' : row.status === 'WARNING' ? 'warning.main' : 'divider',
-        bgcolor: row.status === 'ERROR' ? 'error.light' : row.status === 'WARNING' ? 'warning.light' : undefined,
-        opacity: row.status === 'ERROR' ? 0.85 : 1,
+        borderColor:
+          row.validationResult.status === 'ERROR'
+            ? 'error.main'
+            : row.validationResult.status === 'WARNING'
+              ? 'warning.main'
+              : row.validationResult.status === 'INFO'
+                ? 'info.main'
+                : 'divider',
+        bgcolor:
+          row.validationResult.status === 'ERROR'
+            ? 'error.light'
+            : row.validationResult.status === 'WARNING'
+              ? 'warning.light'
+              : row.validationResult.status === 'INFO'
+                ? 'info.light'
+                : undefined,
+        opacity: row.validationResult.status === 'ERROR' ? 0.85 : 1,
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
@@ -55,7 +77,7 @@ function MobileRow({ row }: RowProps) {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
-          <Chip label={statusLabel(row.status, t)} color={statusColor(row.status)} size="small" />
+          <Chip label={statusLabel(row.validationResult.status, t)} color={statusColor(row.validationResult.status)} size="small" />
           {hasMessages && (
             <IconButton size="small" onClick={() => setOpen((v) => !v)} aria-label="expand row">
               {open ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
@@ -66,8 +88,8 @@ function MobileRow({ row }: RowProps) {
       {hasMessages && (
         <Collapse in={open} timeout="auto" unmountOnExit>
           <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
-            {row.validationMessages.map((msg, idx) => (
-              <Typography key={idx} variant="caption" color={row.status === 'ERROR' ? 'error.dark' : 'warning.dark'} display="block">
+            {row.validationResult.messages.map((msg, idx) => (
+              <Typography key={idx} variant="caption" color={messageColor(msg.severity)} display="block">
                 {msg.field ? `[${msg.field}] ` : ''}
                 {msg.message}
               </Typography>
@@ -82,7 +104,7 @@ function MobileRow({ row }: RowProps) {
 function DesktopRow({ row }: RowProps) {
   const { t } = useTranslation(['admin']);
   const [open, setOpen] = React.useState(false);
-  const hasMessages = row.validationMessages.length > 0;
+  const hasMessages = row.validationResult.messages.length > 0;
 
   const address = [row.data.street, row.data.streetNr].filter(Boolean).join(' ');
   const cityLine = [row.data.zip, row.data.cityName].filter(Boolean).join(' ');
@@ -92,8 +114,15 @@ function DesktopRow({ row }: RowProps) {
     <>
       <TableRow
         sx={{
-          bgcolor: row.status === 'ERROR' ? 'error.light' : row.status === 'WARNING' ? 'warning.light' : undefined,
-          opacity: row.status === 'ERROR' ? 0.85 : 1,
+          bgcolor:
+            row.validationResult.status === 'ERROR'
+              ? 'error.light'
+              : row.validationResult.status === 'WARNING'
+                ? 'warning.light'
+                : row.validationResult.status === 'INFO'
+                  ? 'info.light'
+                  : undefined,
+          opacity: row.validationResult.status === 'ERROR' ? 0.85 : 1,
         }}
       >
         <TableCell sx={{ width: 40, p: 0.5 }}>
@@ -114,7 +143,7 @@ function DesktopRow({ row }: RowProps) {
           <MealSpecificsPreview {...row} />
         </TableCell>
         <TableCell>
-          <Chip label={statusLabel(row.status, t)} color={statusColor(row.status)} size="small" />
+          <Chip label={statusLabel(row.validationResult.status, t)} color={statusColor(row.validationResult.status)} size="small" />
         </TableCell>
       </TableRow>
       {hasMessages && (
@@ -122,8 +151,8 @@ function DesktopRow({ row }: RowProps) {
           <TableCell colSpan={8} sx={{ py: 0, pl: 6 }}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ py: 1 }}>
-                {row.validationMessages.map((msg, idx) => (
-                  <Typography key={idx} variant="body2" color={row.status === 'ERROR' ? 'error.dark' : 'warning.dark'} sx={{ mb: 0.25 }}>
+                {row.validationResult.messages.map((msg, idx) => (
+                  <Typography key={idx} variant="body2" color={messageColor(msg.severity)} sx={{ mb: 0.25 }}>
                     {msg.field ? `[${msg.field}] ` : ''}
                     {msg.message}
                   </Typography>
@@ -139,7 +168,7 @@ function DesktopRow({ row }: RowProps) {
 
 function MealSpecificsPreview({ data }: ExcelImportRow) {
   try {
-    const participant = buildParticipantFromImportRow(data);
+    const participant = ExcelImportMappingService.buildParticipantFromImportRow(data);
     return <ParticipantMealBadges participant={participant} />;
   } catch (error) {
     // This can happen if the row cannot be parsed to a participant after all
@@ -162,6 +191,7 @@ export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
       <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
         <Chip label={`${t('admin:import_total')}: ${counts.total}`} size="small" />
         {counts.valid > 0 && <Chip label={`${t('admin:import_preview_valid')}: ${counts.valid}`} color="success" size="small" />}
+        {counts.infos > 0 && <Chip label={`${t('admin:import_preview_info')}: ${counts.infos}`} color="info" size="small" />}
         {counts.warnings > 0 && <Chip label={`${t('admin:import_preview_warning')}: ${counts.warnings}`} color="warning" size="small" />}
         {counts.errors > 0 && <Chip label={`${t('admin:import_preview_error')}: ${counts.errors}`} color="error" size="small" />}
       </Box>

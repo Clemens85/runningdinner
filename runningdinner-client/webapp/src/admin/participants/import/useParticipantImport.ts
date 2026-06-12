@@ -1,8 +1,8 @@
-import { buildImportPreview, buildParticipantFromImportRow, getImportableRows, ImportPreview, ImportResult, isFileExtensionAllowed } from '@runningdinner/shared';
+import { buildImportPreview, ExcelImportMappingService, getImportableRows, ImportPreview, ImportResult, isFileExtensionAllowed } from '@runningdinner/shared';
 import { ExcelImportRow, ExcelImportRowData } from '@runningdinner/shared';
 import { Participant, saveParticipantAsync } from '@runningdinner/shared';
 import { ImportError, parseExcelFile } from '@runningdinner/shared';
-import { validateImportRows } from '@runningdinner/shared';
+import { ExcelImportValidationService } from '@runningdinner/shared';
 import React from 'react';
 
 export type ImportStep = 'idle' | 'parsing' | 'previewing' | 'importing' | 'done';
@@ -32,6 +32,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
 
   const handleFileSelected = React.useCallback(
     async (file: File) => {
+      const validationService = new ExcelImportValidationService(existingParticipants);
       if (!isFileExtensionAllowed(file)) {
         setFileError('import_invalid_file_type');
         return;
@@ -40,7 +41,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
       setStep('parsing');
       try {
         const rawRows: ExcelImportRowData[] = await parseExcelFile(file);
-        const validatedRows: ExcelImportRow[] = validateImportRows(rawRows, existingParticipants);
+        const validatedRows: ExcelImportRow[] = validationService.validateImportRows(rawRows);
         const preview = buildImportPreview(validatedRows);
         setImportPreview(preview);
         setStep('previewing');
@@ -67,7 +68,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         try {
-          const participant = buildParticipantFromImportRow(row.data);
+          const participant = ExcelImportMappingService.buildParticipantFromImportRow(row.data);
           await saveParticipantAsync(adminId, participant);
           succeededCount++;
         } catch (e: unknown) {

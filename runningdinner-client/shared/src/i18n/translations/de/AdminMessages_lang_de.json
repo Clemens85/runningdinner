@@ -475,6 +475,7 @@
   "import_select_file": "Excel-Datei auswählen (.xlsx)",
   "import_preview_valid": "Gültig",
   "import_preview_warning": "Warnung",
+  "import_preview_info": "Hinweis",
   "import_preview_error": "Fehler",
   "import_preview_errors_hint": "{{count}} fehlerhafte Einträge werden beim Import übersprungen.",
   "import_preview_confirm": "{{count}} Teilnehmer importieren",
