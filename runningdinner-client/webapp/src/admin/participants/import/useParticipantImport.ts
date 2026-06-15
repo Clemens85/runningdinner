@@ -1,9 +1,10 @@
 import { buildImportPreview, ExcelImportMappingService, getImportableRows, ImportPreview, ImportResult, isFileExtensionAllowed } from '@runningdinner/shared';
 import { ExcelImportRow, ExcelImportRowData } from '@runningdinner/shared';
-import { Participant, saveParticipantAsync } from '@runningdinner/shared';
+import { isHttpError, Participant, saveParticipantAsync, useBackendIssueHandler } from '@runningdinner/shared';
 import { ImportError, parseExcelFile } from '@runningdinner/shared';
 import { ExcelImportValidationService } from '@runningdinner/shared';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type ImportStep = 'idle' | 'parsing' | 'previewing' | 'importing' | 'done';
 
@@ -24,6 +25,8 @@ export interface UseParticipantImportResult {
 }
 
 export function useParticipantImport(adminId: string, existingParticipants: Participant[]): UseParticipantImportResult {
+  const { t } = useTranslation(['admin']);
+  const { getIssuesTranslated } = useBackendIssueHandler({ defaultTranslationResolutionSettings: { namespaces: ['admin'] } });
   const [step, setStep] = React.useState<ImportStep>('idle');
   const [importPreview, setImportPreview] = React.useState<ImportPreview | null>(null);
   const [importProgress, setImportProgress] = React.useState<ImportProgress | null>(null);
@@ -39,7 +42,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
       setFileError(null);
       setStep('parsing');
       try {
-        const validationService = new ExcelImportValidationService(existingParticipants);
+        const validationService = new ExcelImportValidationService(existingParticipants, t);
         const rawRows: ExcelImportRowData[] = await parseExcelFile(file);
         const validatedRows: ExcelImportRow[] = validationService.validateImportRows(rawRows);
         const preview = buildImportPreview(validatedRows);
@@ -54,7 +57,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
         setStep('idle');
       }
     },
-    [existingParticipants],
+    [existingParticipants, t],
   );
 
   const doImport = React.useCallback(
@@ -72,7 +75,14 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
           await saveParticipantAsync(adminId, participant);
           succeededCount++;
         } catch (e: unknown) {
-          const errMsg = e instanceof Error ? e.message : String(e);
+          let errMsg: string;
+          if (isHttpError(e)) {
+            const issues = getIssuesTranslated(e);
+            const allMessages = [...issues.issuesWithoutField, ...issues.issuesFieldRelated].map((issue) => issue.error.message).filter(Boolean);
+            errMsg = allMessages.length > 0 ? allMessages.join(', ') : t('admin:import_partial_success', { success: 0, failed: 1 });
+          } else {
+            errMsg = e instanceof Error ? e.message : String(e);
+          }
           failedRows.push({ row, error: errMsg });
         }
         setImportProgress({ current: i + 1, total: rows.length });
@@ -82,7 +92,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
       setImportResult(result);
       setStep('done');
     },
-    [adminId],
+    [adminId, getIssuesTranslated, t],
   );
 
   const handleConfirmImport = React.useCallback(async () => {

@@ -31,10 +31,13 @@ export interface ExcelImportRowData {
   lactose: string;
   gluten: string;
   mealSpecificsNote: string;
-  // Team partner wish — email mode takes precedence over name mode
+  // Option 1: Team partner wish by invitation email — points to an existing or incoming participant
   teamPartnerWishEmail: string;
+  // Option 2: Fixed team partner registration — the partner is co-registered with minimal data
   teamPartnerWishPartnerFirstname: string;
   teamPartnerWishPartnerLastname: string;
+  teamPartnerWishPartnerEmail: string; // partner's own email (optional, used for their registration)
+  teamPartnerWishPartnerMobileNumber: string; // partner's mobile (optional)
 }
 
 export type SingleRowValidationResult = {

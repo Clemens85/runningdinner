@@ -51,9 +51,11 @@ const COL_MAP: Array<keyof ExcelImportRowData> = [
   'gluten', // 15 P  Glutenfrei
   'mealSpecificsNote', // 16 Q  Essenswünsche (Notiz)
   'notes', // 17 R  Sonstige Anmerkungen
-  'teamPartnerWishEmail', // 18 S  Teamwunsch E-Mail
-  'teamPartnerWishPartnerFirstname', // 19 T  Teamwunsch Vorname
-  'teamPartnerWishPartnerLastname', // 20 U  Teamwunsch Nachname
+  'teamPartnerWishEmail', // 18 S  Teamwunsch E-Mail (Einladung, Option 1)
+  'teamPartnerWishPartnerFirstname', // 19 T  Fester Teampartner: Vorname (Option 2)
+  'teamPartnerWishPartnerLastname', // 20 U  Fester Teampartner: Nachname (Option 2)
+  'teamPartnerWishPartnerEmail', // 21 V  Fester Teampartner: E-Mail (Option 2)
+  'teamPartnerWishPartnerMobileNumber', // 22 W  Fester Teampartner: Handy-Nr (Option 2)
 ];
 
 /** Template column headers (German) in fixed order */
@@ -76,9 +78,11 @@ const TEMPLATE_HEADERS = [
   'Glutenfrei',
   'Essenswünsche (Notiz)',
   'Sonstige Anmerkungen',
-  'Teamwunsch E-Mail',
-  'Teamwunsch Vorname',
-  'Teamwunsch Nachname',
+  'Teamwunsch E-Mail (Einladung)',
+  'Fester Teampartner: Vorname',
+  'Fester Teampartner: Nachname',
+  'Fester Teampartner: E-Mail',
+  'Fester Teampartner: Handy-Nr',
 ];
 
 const TEMPLATE_INSTRUCTIONS: Array<[string, string, string, string]> = [
@@ -92,7 +96,12 @@ const TEMPLATE_INSTRUCTIONS: Array<[string, string, string, string]> = [
   ['PLZ', 'zip', 'Ja', 'Postleitzahl'],
   ['Stadt', 'cityName', 'Ja', 'Stadtname'],
   ['Adresszusatz', 'addressRemarks', 'Nein', 'Optionale Adressdetails (z.B. Etage, Wohnungsnr.)'],
-  ['Anzahl Sitzplätze', 'numSeats', 'Nein', 'Nicht-negative ganze Zahl oder leer lassen'],
+  [
+    'Anzahl Sitzplätze',
+    'numSeats',
+    'Nein*',
+    'Nicht-negative ganze Zahl oder leer lassen. Pflichtfeld (positive ganze Zahl), wenn ein fester Teampartner (Option 2) angegeben wird.',
+  ],
   ['Handy-Nr', 'mobileNumber', 'Nein', 'Handynummer als Text'],
   ['Vegetarisch', 'vegetarian', 'Nein', 'ja / yes / 1 = vegetarisch; sonst leer lassen'],
   ['Vegan', 'vegan', 'Nein', 'ja / yes / 1 = vegan; sonst leer lassen'],
@@ -100,9 +109,26 @@ const TEMPLATE_INSTRUCTIONS: Array<[string, string, string, string]> = [
   ['Glutenfrei', 'gluten', 'Nein', 'ja / yes / 1 = glutenfrei; sonst leer lassen'],
   ['Essenswünsche (Notiz)', 'mealSpecificsNote', 'Nein', 'Freitext für weitere Essenswünsche'],
   ['Sonstige Anmerkungen', 'notes', 'Nein', 'Weitere Hinweise zum Teilnehmer'],
-  ['Teamwunsch E-Mail', 'teamPartnerWishEmail', 'Nein', 'E-Mail des gewünschten Team-Partners (hat Vorrang vor Vorname/Nachname)'],
-  ['Teamwunsch Vorname', 'teamPartnerWishPartnerFirstname', 'Nein', 'Vorname des Team-Partners (nur wenn keine E-Mail angegeben)'],
-  ['Teamwunsch Nachname', 'teamPartnerWishPartnerLastname', 'Nein', 'Nachname des Team-Partners (nur wenn keine E-Mail angegeben)'],
+  [
+    'Teamwunsch E-Mail (Einladung)',
+    'teamPartnerWishEmail',
+    'Nein',
+    'Option 1 – Einladung: E-Mail eines anderen (Mit-)Teilnehmers, mit dem man zusammen eingeteilt werden möchte. Nicht gleichzeitig mit den "Fester Teampartner"-Spalten (Option 2) verwenden.',
+  ],
+  [
+    'Fester Teampartner: Vorname',
+    'teamPartnerWishPartnerFirstname',
+    'Nein',
+    'Option 2 – Feste Partnerregistrierung: Vorname des Partners, der zusammen mitregistriert wird. Nur verwenden, wenn keine Einladungs-E-Mail (Option 1) angegeben. Der Hauptteilnehmer muss genügend Sitzplätze als Gastgeber haben.',
+  ],
+  ['Fester Teampartner: Nachname', 'teamPartnerWishPartnerLastname', 'Nein', 'Option 2 – Feste Partnerregistrierung: Nachname des Partners (Pflichtfeld, wenn Vorname angegeben).'],
+  [
+    'Fester Teampartner: E-Mail',
+    'teamPartnerWishPartnerEmail',
+    'Nein',
+    'Option 2 – Feste Partnerregistrierung: E-Mail-Adresse des Partners (optional). Wird für die Partnerregistrierung hinterlegt, nicht zur Zuordnung anderer Teilnehmer verwendet.',
+  ],
+  ['Fester Teampartner: Handy-Nr', 'teamPartnerWishPartnerMobileNumber', 'Nein', 'Option 2 – Feste Partnerregistrierung: Handynummer des Partners (optional).'],
 ];
 
 function getCellString(row: unknown[], index: number): string {

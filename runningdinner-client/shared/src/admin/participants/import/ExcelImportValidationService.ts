@@ -6,6 +6,20 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const VALID_GENDER_VALUES = new Set(['m', 'w', '', 'männlich', 'weiblich', 'male', 'female']);
 
+/** Minimal translate function type — keeps this service decoupled from react-i18next */
+type TFunc = (key: string, options?: Record<string, unknown>) => string;
+
+/** Maps ExcelImportRowData mandatory fields to their admin-namespace i18n label keys */
+const FIELD_LABEL_KEY: Partial<Record<keyof ExcelImportRowData, string>> = {
+  firstnamePart: 'import_field_firstname',
+  lastname: 'import_field_lastname',
+  email: 'import_field_email',
+  street: 'import_field_street',
+  streetNr: 'import_field_streetNr',
+  zip: 'import_field_zip',
+  cityName: 'import_field_cityName',
+};
+
 function isValidEmail(email: string): boolean {
   return EMAIL_REGEX.test(email);
 }
@@ -48,20 +62,14 @@ interface ValidationContext {
 }
 
 // --- Mandatory string fields ---
-const MANDATORY_FIELDS: Array<{ field: keyof ExcelImportRowData; label: string }> = [
-  { field: 'firstnamePart', label: 'Vorname' },
-  { field: 'lastname', label: 'Nachname' },
-  { field: 'email', label: 'E-Mail' },
-  { field: 'street', label: 'Straße' },
-  { field: 'streetNr', label: 'Hausnummer' },
-  { field: 'zip', label: 'PLZ' },
-  { field: 'cityName', label: 'Stadt' },
-];
+const MANDATORY_FIELDS: Array<keyof ExcelImportRowData> = ['firstnamePart', 'lastname', 'email', 'street', 'streetNr', 'zip', 'cityName'];
 
 export class ExcelImportValidationService {
   private ctx: ValidationContext;
+  private t: TFunc;
 
-  constructor(existingParticipants: Participant[]) {
+  constructor(existingParticipants: Participant[], t: TFunc) {
+    this.t = t;
     const existingEmails = new Set(existingParticipants.map((p) => getNormalizedEmail(p.email)));
     const existingTeamPartnerWishEmails = new Set(
       existingParticipants.filter((p) => isStringNotEmpty(p.teamPartnerWishEmail)).map((p) => getNormalizedEmail(p.teamPartnerWishEmail!)),
@@ -111,16 +119,18 @@ export class ExcelImportValidationService {
       messages: [],
     };
 
-    for (const { field, label } of MANDATORY_FIELDS) {
+    for (const field of MANDATORY_FIELDS) {
       if ((data[field] as string).trim() === '') {
-        this.addErr(result, field, `Pflichtfeld fehlt: ${label}`);
+        const labelKey = FIELD_LABEL_KEY[field];
+        const fieldLabel = labelKey ? this.t(`admin:${labelKey}`) : String(field);
+        this.addErr(result, field, this.t('admin:import_error_missing_field', { field: fieldLabel }));
       }
     }
 
     // --- Email format ---
     const emailNorm = getNormalizedEmail(data.email);
     if (emailNorm !== '' && !isValidEmail(emailNorm)) {
-      this.addErr(result, 'email', 'Ungültige E-Mail-Adresse');
+      this.addErr(result, 'email', this.t('admin:import_error_invalid_email'));
     }
 
     // --- Duplicate in file ---
@@ -129,19 +139,19 @@ export class ExcelImportValidationService {
       if (firstSeen === undefined) {
         this.ctx.incomingEmailsByRowNumber.set(emailNorm, rowNumber);
       } else if (firstSeen !== rowNumber) {
-        this.addErr(result, 'email', `E-Mail doppelt in der Datei (zuerst in Zeile ${firstSeen})`);
+        this.addErr(result, 'email', this.t('admin:import_error_duplicate_infile', { row: firstSeen }));
       }
     }
 
     // --- Duplicate against existing participants ---
     if (emailNorm !== '' && this.ctx.existingEmails.has(emailNorm)) {
-      this.addErr(result, 'email', 'E-Mail bereits registriert');
+      this.addErr(result, 'email', this.t('admin:import_error_duplicate_existing'));
     }
 
     // --- Gender ---
     const genderRaw = data.gender.trim().toLowerCase();
     if (genderRaw !== '' && !VALID_GENDER_VALUES.has(genderRaw)) {
-      this.addWarn(result, 'gender', 'Ungültiger Geschlechtswert (erwartet: m, w, divers)');
+      this.addWarn(result, 'gender', this.t('admin:import_warning_invalid_gender'));
     }
 
     // --- numSeats ---
@@ -149,7 +159,7 @@ export class ExcelImportValidationService {
     if (numSeatsRaw !== '') {
       const parsed = parseInt(numSeatsRaw, 10);
       if (!Number.isFinite(parsed) || parsed < 0 || String(parsed) !== numSeatsRaw) {
-        this.addWarn(result, 'numSeats', 'Ungültige Anzahl Sitzplätze (muss eine nicht-negative ganze Zahl sein)');
+        this.addWarn(result, 'numSeats', this.t('admin:import_warning_invalid_numseats'));
       }
     }
 
@@ -158,19 +168,46 @@ export class ExcelImportValidationService {
     if (ageRaw !== '') {
       const parsed = parseInt(ageRaw, 10);
       if (!Number.isFinite(parsed) || parsed <= 0 || String(parsed) !== ageRaw) {
-        this.addWarn(result, 'age', 'Ungültiges Alter (muss eine positive ganze Zahl sein)');
+        this.addWarn(result, 'age', this.t('admin:import_warning_invalid_age'));
       }
     }
 
-    // --- Team partner wish: email ---
+    // --- Team partner wish: Option 1 (invitation by email) ---
     const wishEmail = getNormalizedEmail(data.teamPartnerWishEmail);
+    const hasPartnerName = data.teamPartnerWishPartnerFirstname.trim() !== '' || data.teamPartnerWishPartnerLastname.trim() !== '';
+
     if (wishEmail !== '') {
       if (!isValidEmail(wishEmail)) {
-        this.addErr(result, 'teamPartnerWishEmail', 'Ungültige Teamwunsch-E-Mail');
+        this.addErr(result, 'teamPartnerWishEmail', this.t('admin:import_error_invalid_email'));
       } else if (wishEmail === emailNorm) {
-        this.addErr(result, 'teamPartnerWishEmail', 'Teamwunsch-E-Mail darf nicht die eigene E-Mail sein');
+        this.addErr(result, 'teamPartnerWishEmail', this.t('admin:import_error_self_reference'));
+      }
+      if (hasPartnerName) {
+        this.addErr(result, null, this.t('admin:import_error_option1_option2_conflict'));
       }
       // "partner not found" is checked in a second pass (all rows needed)
+    }
+
+    // --- Team partner wish: Option 2 (fixed partner co-registration) ---
+    if (!wishEmail && hasPartnerName) {
+      if (data.teamPartnerWishPartnerLastname.trim() === '') {
+        this.addErr(result, 'teamPartnerWishPartnerLastname', this.t('admin:import_error_partner_lastname_missing'));
+      }
+      if (data.teamPartnerWishPartnerFirstname.trim() === '') {
+        this.addErr(result, 'teamPartnerWishPartnerFirstname', this.t('admin:import_error_partner_firstname_missing'));
+      }
+      const partnerEmail = getNormalizedEmail(data.teamPartnerWishPartnerEmail);
+      if (partnerEmail !== '' && !isValidEmail(partnerEmail)) {
+        this.addErr(result, 'teamPartnerWishPartnerEmail', this.t('admin:import_error_partner_invalid_email'));
+      }
+      if (partnerEmail !== '' && partnerEmail === emailNorm) {
+        this.addErr(result, 'teamPartnerWishPartnerEmail', this.t('admin:import_error_partner_self_reference'));
+      }
+      // The registrant must be able to host for both → numSeats must be a positive integer
+      const numSeatsForPartner = parseInt(data.numSeats.trim(), 10);
+      if (!Number.isFinite(numSeatsForPartner) || numSeatsForPartner <= 0) {
+        this.addErr(result, 'numSeats', this.t('admin:import_error_partner_numseats_required'));
+      }
     }
 
     return result;
@@ -188,7 +225,7 @@ export class ExcelImportValidationService {
       if (this.ctx.incomingEmailsByRowNumber.has(teamPartnerWishEmail)) {
         continue;
       }
-      this.addInfo(row.validationResult, 'teamPartnerWishEmail', 'Teamwunsch-E-Mail nicht gefunden');
+      this.addInfo(row.validationResult, 'teamPartnerWishEmail', this.t('admin:import_warning_partner_not_found'));
     }
   }
 
@@ -213,10 +250,10 @@ export class ExcelImportValidationService {
       }
       const teamPartnerWishEmail = getNormalizedEmail(row.data.teamPartnerWishEmail);
       if (this.ctx.existingTeamPartnerWishEmails.has(teamPartnerWishEmail)) {
-        this.addWarn(row.validationResult, 'teamPartnerWishEmail', 'Diese Teamwunsch-E-Mail wird bereits von einem bestehenden Teilnehmer als Wunsch angegeben');
+        this.addWarn(row.validationResult, 'teamPartnerWishEmail', this.t('admin:import_warning_partner_wish_already_used'));
       }
       if (teamPartnerWishEmailsInFileCount.has(teamPartnerWishEmail) && teamPartnerWishEmailsInFileCount.get(teamPartnerWishEmail)! > 1) {
-        this.addWarn(row.validationResult, 'teamPartnerWishEmail', 'Diese Teamwunsch-E-Mail kommt mehrfach in der Datei vor');
+        this.addWarn(row.validationResult, 'teamPartnerWishEmail', this.t('admin:import_warning_partner_wish_duplicate_infile'));
       }
     }
   }

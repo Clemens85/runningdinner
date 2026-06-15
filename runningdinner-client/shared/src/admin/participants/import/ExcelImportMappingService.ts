@@ -76,16 +76,20 @@ export class ExcelImportMappingService {
       teamPartnerWishEmail: row.teamPartnerWishEmail.trim().toLowerCase(),
     };
 
-    // If email wish not provided but name columns are filled → unresolved name wish
+    // If email wish not provided but name columns are filled → fixed partner registration (Option 2)
     const hasEmailWish = participant.teamPartnerWishEmail !== '';
     const hasNameWish = row.teamPartnerWishPartnerFirstname.trim() !== '' || row.teamPartnerWishPartnerLastname.trim() !== '';
 
     if (!hasEmailWish && hasNameWish) {
+      const partnerEmail = row.teamPartnerWishPartnerEmail.trim().toLowerCase();
+      const partnerMobile = row.teamPartnerWishPartnerMobileNumber.trim();
       participant.teamPartnerWishRegistrationData = {
         firstnamePart: row.teamPartnerWishPartnerFirstname.trim(),
         lastname: row.teamPartnerWishPartnerLastname.trim(),
+        ...(partnerEmail !== '' && { email: partnerEmail }),
+        ...(partnerMobile !== '' && { mobileNumber: partnerMobile }),
       };
-      // Ensure email wish is cleared
+      // Ensure Option 1 email wish is cleared
       participant.teamPartnerWishEmail = '';
     }
 
