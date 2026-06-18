@@ -2,20 +2,19 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Alert, Button, Dialog, DialogContent, Divider, FormHelperText, Slider, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { BaseAdminIdProps, CalculateDinnerRouteOptimizationRequest, isStringNotEmpty, OptimizationImpact, RouteDistanceMetrics } from '@runningdinner/shared';
+import { newRouteOptimizationSettings, RouteOptimizationSettings } from '@runningdinner/shared';
 import { t } from 'i18next';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useEffect } from 'react';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import FormCheckbox from '../../common/input/FormCheckbox';
-
 import { FetchProgressBar } from '../../common/FetchProgressBar';
+import FormCheckbox from '../../common/input/FormCheckbox';
 import { ProgressBar } from '../../common/ProgressBar';
 import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
 import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
 import Paragraph from '../../common/theme/typography/Paragraph';
 import { Span } from '../../common/theme/typography/Tags';
-import { newRouteOptimizationSettings, RouteOptimizationSettings } from '@runningdinner/shared';
 import { usePredictOptimizationImpact } from './usePredictOptimizationImpact';
 import { useRouteOptimization } from './useRouteOptimization';
 

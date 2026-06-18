@@ -1,6 +1,7 @@
 import { Box, Collapse, Grid, Paper, Skeleton, useMediaQuery, useTheme } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import {
+  applyMessageProposalToPreview,
   BaseAdminIdProps,
   BaseMessage,
   BaseRunningDinnerProps,
@@ -22,7 +23,6 @@ import {
   setCustomSelectedRecipients,
   setupInitialMessageType,
   TEAM_MESSAGE_VALIDATION_SCHEMA,
-  applyMessageProposalToPreview,
   updateDinnerRouteHostsPartTemplatePreviewAsync,
   updateDinnerRouteSelfPartTemplatePreviewAsync,
   updateHostMessagePartTemplatePreviewAsync,
