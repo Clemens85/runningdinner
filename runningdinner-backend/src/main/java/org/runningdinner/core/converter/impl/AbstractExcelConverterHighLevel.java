@@ -12,7 +12,6 @@ import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.*;
 import org.runningdinner.core.util.CoreUtil;
-import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
 import org.runningdinner.participant.ParticipantName;
@@ -148,61 +147,68 @@ public class AbstractExcelConverterHighLevel {
 
 		createHeaderRow(sheet);
 
-      MessageFormatterHelperService messageFormatterHelperService = converterWriteContext
-          .getMessageFormatterHelperService();
-      Locale locale = converterWriteContext.getLocale();
-
 		int rowIndex = 1;
 		for (Participant p : participants) {
 			Row row = sheet.createRow(rowIndex++);
 			int cellIndex = 0;
 			LOGGER.debug("Writing row number {}", rowIndex);
 
-			writeNumberToCell(row, cellIndex++, p.getParticipantNumber());
-			writeStringToCell(row, cellIndex++, p.getName().getFullnameFirstnameFirst());
-			writeStringToCell(row, cellIndex++, p.getEmail());
+			// Columns match import template order (ExcelParserService.ts COL_MAP)
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getName().getFirstnamePart()));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getName().getLastname()));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getEmail()));
 			writeStringToCell(row, cellIndex++, formatGenderString(p.getGender()));
 			writeNumberToCell(row, cellIndex++, p.getAge() <= 0 ? -1 : p.getAge());
-			String address = p.getAddress().toString();
-			if (StringUtils.isNotEmpty(p.getAddress().getRemarks())) {
-				address += " (" + p.getAddress().getRemarks() + ")";
-			}
-			writeStringToCell(row, cellIndex++, StringUtils.trim(address));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getAddress().getStreet()));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getAddress().getStreetNr()));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getAddress().getZip()));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getAddress().getCityName()));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getAddress().getRemarks()));
 			writeNumberToCell(row, cellIndex++, p.getNumSeats());
-			writeStringToCell(row, cellIndex++, p.getMobileNumber());
-			writeStringToCell(row, cellIndex++, p.getNotes());
-            String mealSpecifics = messageFormatterHelperService.formatMealSpecificItems(p.getMealSpecifics(), locale);
-			if (StringUtils.isNotEmpty(p.getMealSpecifics().getMealSpecificsNote())) {
-				mealSpecifics += " (" + p.getMealSpecifics().getMealSpecificsNote() + ")";
-			}
-			writeStringToCell(row, cellIndex, StringUtils.trim(mealSpecifics));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getMobileNumber()));
+			writeStringToCell(row, cellIndex++, p.getMealSpecifics().isVegetarian() ? "ja" : "");
+			writeStringToCell(row, cellIndex++, p.getMealSpecifics().isVegan() ? "ja" : "");
+			writeStringToCell(row, cellIndex++, p.getMealSpecifics().isLactose() ? "ja" : "");
+			writeStringToCell(row, cellIndex++, p.getMealSpecifics().isGluten() ? "ja" : "");
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getMealSpecifics().getMealSpecificsNote()));
+			writeStringToCell(row, cellIndex, StringUtils.trimToEmpty(p.getNotes()));
+			// Team-partner wish columns intentionally omitted from export
 		}
 	}
 
 	private String formatGenderString(Gender gender) {
-		String result = "Unbekannt";
 		if (gender == Gender.FEMALE) {
-			result = "Weiblich";
+			return "w";
 		} else if (gender == Gender.MALE) {
-			result = "Männlich";
+			return "m";
 		}
-		return result;
+		return "";
 	}
 
 	private void createHeaderRow(Sheet sheet) {
 
 		Row row = sheet.createRow(0);
 		int cellIndex = 0;
-		writeStringToCell(row, cellIndex++, "Nr");
-		writeStringToCell(row, cellIndex++, "Name");
+		// Columns match the import template order (ExcelParserService.ts COL_MAP)
+		writeStringToCell(row, cellIndex++, "Vorname");
+		writeStringToCell(row, cellIndex++, "Nachname");
 		writeStringToCell(row, cellIndex++, "E-Mail-Adresse");
 		writeStringToCell(row, cellIndex++, "Geschlecht");
 		writeStringToCell(row, cellIndex++, "Alter");
-		writeStringToCell(row, cellIndex++, "Adresse");
-		writeStringToCell(row, cellIndex++, "Anzahl Plätze");
+		writeStringToCell(row, cellIndex++, "Straße");
+		writeStringToCell(row, cellIndex++, "Hausnummer");
+		writeStringToCell(row, cellIndex++, "PLZ");
+		writeStringToCell(row, cellIndex++, "Stadt");
+		writeStringToCell(row, cellIndex++, "Adresszusatz");
+		writeStringToCell(row, cellIndex++, "Anzahl Sitzplätze");
 		writeStringToCell(row, cellIndex++, "Handy-Nr");
-		writeStringToCell(row, cellIndex++, "Sonstige Anmerkungen");
-		writeStringToCell(row, cellIndex, "Essenswünsche");
+		writeStringToCell(row, cellIndex++, "Vegetarisch");
+		writeStringToCell(row, cellIndex++, "Vegan");
+		writeStringToCell(row, cellIndex++, "Laktosefrei");
+		writeStringToCell(row, cellIndex++, "Glutenfrei");
+		writeStringToCell(row, cellIndex++, "Essenswünsche (Notiz)");
+		writeStringToCell(row, cellIndex, "Sonstige Anmerkungen");
+		// Team-partner wish columns are intentionally omitted from export
 	}
 
 	private void writeNumberToCell(Row row, int cellIndex, int number) {

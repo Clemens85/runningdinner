@@ -1,31 +1,47 @@
 // Run with: node generate-test-import.cjs
 // Generates test-participants.xlsx with 80 sample participants matching the import column layout.
+// Columns match ExcelParserService.ts COL_MAP exactly (23 columns, indices 0-22).
+//
+// Partner wish strategy:
+//   Option 1 (invitation, col 18 only):  participants 0-9   – mutual invitation pairs (0↔1, 2↔3, …)
+//   Option 2 (fixed partner, cols 19-22): participants 10-14 – root row embeds partner data directly
+//   No partner wish:                     participants 15-79
 'use strict';
-const XLSX = require('xlsx');
+// xlsx is provided by the pnpm workspace; resolve it from the monorepo root if not found locally
+let XLSX;
+try {
+  XLSX = require('xlsx');
+} catch {
+  XLSX = require('../node_modules/.pnpm/xlsx@0.18.5/node_modules/xlsx');
+}
 const path = require('path');
 
+const MAX_PARTICIPANTS = 80;
+
 const HEADERS = [
-  'Vorname',
-  'Nachname',
-  'E-Mail-Adresse',
-  'Geschlecht',
-  'Alter',
-  'Straße',
-  'Hausnummer',
-  'PLZ',
-  'Stadt',
-  'Adresszusatz',
-  'Anzahl Sitzplätze',
-  'Handy-Nr',
-  'Vegetarisch',
-  'Vegan',
-  'Laktosefrei',
-  'Glutenfrei',
-  'Essenswünsche (Notiz)',
-  'Sonstige Anmerkungen',
-  'Teamwunsch E-Mail',
-  'Teamwunsch Vorname',
-  'Teamwunsch Nachname',
+  'Vorname', // 0
+  'Nachname', // 1
+  'E-Mail-Adresse', // 2
+  'Geschlecht', // 3
+  'Alter', // 4
+  'Straße', // 5
+  'Hausnummer', // 6
+  'PLZ', // 7
+  'Stadt', // 8
+  'Adresszusatz', // 9
+  'Anzahl Sitzplätze', // 10
+  'Handy-Nr', // 11
+  'Vegetarisch', // 12
+  'Vegan', // 13
+  'Laktosefrei', // 14
+  'Glutenfrei', // 15
+  'Essenswünsche (Notiz)', // 16
+  'Sonstige Anmerkungen', // 17
+  'Teamwunsch E-Mail (Einladung)', // 18 – Option 1: invite an existing/other participant
+  'Fester Teampartner: Vorname', // 19 – Option 2: register a new fixed partner in the same row
+  'Fester Teampartner: Nachname', // 20 – Option 2
+  'Fester Teampartner: E-Mail', // 21 – Option 2 (optional)
+  'Fester Teampartner: Handy-Nr', // 22 – Option 2 (optional)
 ];
 
 const firstnames = [
@@ -185,15 +201,16 @@ function pick(arr, i) {
 function bool(i, mod) {
   return i % mod === 0 ? 'ja' : '';
 }
+function buildEmail(i) {
+  return `${pick(firstnames, i).toLowerCase()}.${pick(lastnames, i).toLowerCase()}${i}@example.com`;
+}
 
 const rows = [HEADERS];
 
-// Build partner pairs (participants 0&1, 2&3, ... up to index 19 = 10 pairs)
-// Remaining 60 have no partner wish.
-for (let i = 0; i < 80; i++) {
+for (let i = 0; i < MAX_PARTICIPANTS; i++) {
   const fn = pick(firstnames, i);
   const ln = pick(lastnames, i);
-  const email = `${fn.toLowerCase()}.${ln.toLowerCase()}${i}@example.com`;
+  const email = buildEmail(i);
   const gender = i % 3 === 0 ? 'm' : i % 3 === 1 ? 'w' : '';
   const age = String(22 + (i % 40));
   const street = pick(streets, i);
@@ -202,7 +219,6 @@ for (let i = 0; i < 80; i++) {
   const zip = zips[cityIdx];
   const city = cities[cityIdx];
   const addressRemarks = i % 7 === 0 ? `Wohnung ${i + 1}` : '';
-  const numSeats = i % 5 === 0 ? '' : String(2 + (i % 4));
   const mobile = i % 4 === 0 ? `+49 17${i % 10} ${1000000 + i * 7}` : '';
   const vegetarian = bool(i, 6);
   const vegan = bool(i, 11);
@@ -211,21 +227,44 @@ for (let i = 0; i < 80; i++) {
   const mealNote = vegan === 'ja' ? 'Bitte kein Fleisch und keine tierischen Produkte' : lactose === 'ja' ? 'Kein Käse bitte' : '';
   const notes = i % 9 === 0 ? 'Komme etwas später' : '';
 
-  // Team partner wish: pairs among first 20 participants
-  let partnerEmail = '';
+  // Option 1 and Option 2 are mutually exclusive on the same row.
+  // Option 2 root participants require a positive numSeats value.
+  let numSeats;
+  if (i >= 10 && i < 15) {
+    numSeats = '6'; // Option 2 root: must have enough seats for two
+  } else {
+    numSeats = i % 5 === 0 ? '' : String(2 + (i % 4));
+  }
+
+  // col 18: Option 1 – invitation email (leave empty when using Option 2 or no wish)
+  let invitationEmail = '';
+  // cols 19-22: Option 2 – fixed partner registration (leave empty when using Option 1 or no wish)
   let partnerFirstname = '';
   let partnerLastname = '';
-  if (i < 20) {
+  let partnerEmail = '';
+  let partnerMobile = '';
+
+  if (i < 10) {
+    // Option 1: mutual invitation pairs (0↔1, 2↔3, 4↔5, 6↔7, 8↔9)
     const partnerId = i % 2 === 0 ? i + 1 : i - 1;
-    const pfn = pick(firstnames, partnerId);
-    const pln = pick(lastnames, partnerId);
-    partnerEmail = `${pfn.toLowerCase()}.${pln.toLowerCase()}${partnerId}@example.com`;
-    // Only populate name fields for odd partners (even partners rely on email)
-    if (i % 2 !== 0) {
-      partnerFirstname = pfn;
-      partnerLastname = pln;
+    invitationEmail = buildEmail(partnerId);
+  } else if (i >= 10 && i < 15) {
+    // Option 2: embed a new fixed partner directly in this row.
+    // Use a synthetic index (200+i) to generate unique partner names/emails
+    // that don't collide with other participant rows.
+    const pIdx = 200 + i;
+    partnerFirstname = pick(firstnames, pIdx);
+    partnerLastname = pick(lastnames, pIdx);
+    if (i % 2 === 0) {
+      // Optionally provide partner email
+      partnerEmail = `${partnerFirstname.toLowerCase()}.${partnerLastname.toLowerCase()}${pIdx}@example.com`;
+    }
+    if (i % 3 === 0) {
+      // Optionally provide partner mobile
+      partnerMobile = `+49 176 ${8000000 + pIdx * 3}`;
     }
   }
+  // i >= 15: no partner wish – all partner columns stay empty
 
   rows.push([
     fn,
@@ -246,9 +285,11 @@ for (let i = 0; i < 80; i++) {
     gluten,
     mealNote,
     notes,
-    partnerEmail,
-    partnerFirstname,
-    partnerLastname,
+    invitationEmail, // col 18 – Option 1
+    partnerFirstname, // col 19 – Option 2
+    partnerLastname, // col 20 – Option 2
+    partnerEmail, // col 21 – Option 2
+    partnerMobile, // col 22 – Option 2
   ]);
 }
 

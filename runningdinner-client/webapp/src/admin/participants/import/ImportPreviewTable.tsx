@@ -32,6 +32,10 @@ function statusLabel(status: ExcelImportRowStatus, t: (k: string) => string): st
   return t('admin:import_preview_error');
 }
 
+function hasFixedPartner(row: ExcelImportRow): boolean {
+  return row.data.teamPartnerWishPartnerFirstname.trim() !== '';
+}
+
 interface RowProps {
   row: ExcelImportRow;
 }
@@ -75,6 +79,12 @@ function MobileRow({ row }: RowProps) {
           <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-all' }}>
             {row.data.email}
           </Typography>
+          {hasFixedPartner(row) && (
+            <Typography variant="caption" color="text.secondary" display="block">
+              +&nbsp;
+              <Fullname firstnamePart={row.data.teamPartnerWishPartnerFirstname} lastname={row.data.teamPartnerWishPartnerLastname} />
+            </Typography>
+          )}
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
           <Chip label={statusLabel(row.validationResult.status, t)} color={statusColor(row.validationResult.status)} size="small" />
@@ -135,6 +145,12 @@ function DesktopRow({ row }: RowProps) {
         <TableCell>#{row.rowNumber}</TableCell>
         <TableCell>
           <Fullname firstnamePart={row.data.firstnamePart} lastname={row.data.lastname} />
+          {hasFixedPartner(row) && (
+            <Typography variant="caption" color="text.secondary" display="block">
+              +&nbsp;
+              <Fullname firstnamePart={row.data.teamPartnerWishPartnerFirstname} lastname={row.data.teamPartnerWishPartnerLastname} />
+            </Typography>
+          )}
         </TableCell>
         <TableCell sx={{ display: { md: 'none', lg: 'table-cell' } }}>{fullAddress}</TableCell>
         <TableCell>{row.data.email}</TableCell>
@@ -186,6 +202,8 @@ export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
+  const autoPartnersCount = preview.rows.filter((r) => r.validationResult.status !== 'ERROR' && r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
+
   return (
     <Box>
       <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
@@ -194,6 +212,7 @@ export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
         {counts.infos > 0 && <Chip label={`${t('admin:import_preview_info')}: ${counts.infos}`} color="info" size="small" />}
         {counts.warnings > 0 && <Chip label={`${t('admin:import_preview_warning')}: ${counts.warnings}`} color="warning" size="small" />}
         {counts.errors > 0 && <Chip label={`${t('admin:import_preview_error')}: ${counts.errors}`} color="error" size="small" />}
+        {autoPartnersCount > 0 && <Chip label={t('admin:import_preview_fixed_partners_chip', { count: autoPartnersCount })} size="small" variant="outlined" />}
       </Box>
 
       {isMobile ? (

@@ -1,5 +1,5 @@
 import DownloadIcon from '@mui/icons-material/Download';
-import { Alert, Box, Collapse, Dialog, DialogContent, LinearProgress, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Alert, Box, CircularProgress, Collapse, Dialog, DialogContent, LinearProgress, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { concatParticipantList, generateImportTemplate, getAllowedImportFileTypesAcceptString, hasOnlyErrors, ParticipantList } from '@runningdinner/shared';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,7 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
   const existingParticipants = concatParticipantList(participantList);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [expandedErrors, setExpandedErrors] = React.useState(false);
+  const [isSelectingFile, setIsSelectingFile] = React.useState(false);
   const isMobileDevice = useIsMobileDevice('md');
 
   const { step, importPreview, importProgress, importResult, fileError, handleFileSelected, handleConfirmImport, handleReset } = useParticipantImport(
@@ -57,7 +58,20 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
     onClose();
   }
 
+  function handleSelectFileClick() {
+    setIsSelectingFile(true);
+    // Detect when the OS file picker closes (with or without a selection)
+    const handleWindowFocus = () => {
+      window.removeEventListener('focus', handleWindowFocus);
+      // Small delay so onChange fires before we clear the state
+      setTimeout(() => setIsSelectingFile(false), 300);
+    };
+    window.addEventListener('focus', handleWindowFocus);
+    fileInputRef.current?.click();
+  }
+
   function handleFileInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setIsSelectingFile(false);
     const file = e.target.files?.[0];
     if (file) {
       handleFileSelected(file);
@@ -133,11 +147,20 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
           </Box>
         </DialogContent>
         <DialogActionsPanel
-          onOk={() => fileInputRef.current?.click()}
-          okLabel={t('admin:import_select_file')}
+          onOk={handleSelectFileClick}
+          okLabel={
+            isSelectingFile ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={16} color="inherit" />
+                {t('admin:import_select_file')}
+              </Box>
+            ) : (
+              t('admin:import_select_file')
+            )
+          }
           onCancel={handleClose}
           cancelLabel={t('common:cancel')}
-          okButtonDisabled={step === 'parsing'}
+          okButtonDisabled={step === 'parsing' || isSelectingFile}
         />
       </Dialog>
     );
@@ -146,13 +169,20 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
   // --- Step: previewing ---
   if (step === 'previewing' && importPreview) {
     const noImportableRows = hasOnlyErrors(importPreview);
-    const importableCount = importPreview.rows.filter((r) => r.validationResult.status !== 'ERROR').length;
+    const importableRows = importPreview.rows.filter((r) => r.validationResult.status !== 'ERROR');
+    const autoPartnersCount = importableRows.filter((r) => r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
+    const importableCount = importableRows.length + autoPartnersCount;
 
     return (
       <>
         <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth fullScreen={isMobileDevice}>
           <DialogTitleCloseable onClose={handleClose}>{t('admin:import_preview_step_title')}</DialogTitleCloseable>
           <DialogContent>
+            {!isMobileDevice && (
+              <Alert severity="info" variant="outlined" sx={{ mb: 2, py: 0.5 }}>
+                {t('admin:import_preview_columns_hint')}
+              </Alert>
+            )}
             <ImportPreviewTable preview={importPreview} />
           </DialogContent>
           <DialogActionsPanel
