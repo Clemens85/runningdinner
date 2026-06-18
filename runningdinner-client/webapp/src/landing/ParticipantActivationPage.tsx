@@ -77,7 +77,7 @@ export function ParticipantActivationSucceededView({ publicRunningDinnerResult, 
             <Trans
               i18nKey={'landing:registration_activation_with_teampartner_congratulation_text'}
               components={{
-                // @ts-ignore
+                // @ts-expect-error -- type suppression
                 anchor: <LinkExtern />,
               }}
               values={{
@@ -91,7 +91,7 @@ export function ParticipantActivationSucceededView({ publicRunningDinnerResult, 
             <Trans
               i18nKey={'landing:registration_activation_congratulation_text'}
               components={{
-                // @ts-ignore
+                // @ts-expect-error -- type suppression
                 anchor: <LinkExtern />,
               }}
               values={{
@@ -149,7 +149,7 @@ export function ParticipantActivationFailedView({ publicRunningDinnerResult, pub
           <Span>
             <Trans
               i18nKey={'landing:registration_activation_error_text'}
-              // @ts-ignore
+              // @ts-expect-error -- type suppression
               components={{ anchor: <LinkExtern /> }}
               values={{ adminEmail: activationErrorEmail }}
             />

@@ -94,7 +94,7 @@ export const MainNavigation = ({
   function createLink(navigationItem: NavigationItem) {
     return (
       <MenuLink
-        // @ts-ignore
+        // @ts-expect-error -- type suppression
         to={`${navigationItem.routePath}`}
         component={RouterLink}
         color="inherit"
@@ -129,7 +129,7 @@ export const MainNavigation = ({
                       {showHomeLink && (
                         <Grid>
                           <HomeLink
-                            // @ts-ignore
+                            // @ts-expect-error -- type suppression
                             to={`${navigationItems[0].routePath}`}
                             component={RouterLink}
                             color="inherit"
@@ -182,7 +182,7 @@ function MobileNavigation({ navigationItems, mobileDrawerNavigationOpen, onToggl
   function createLink(navigationItem: NavigationItem) {
     const link = (
       <MenuLink
-        // @ts-ignore
+        // @ts-expect-error -- type suppression
         to={`${navigationItem.routePath}`}
         component={RouterLink}
         color="inherit"

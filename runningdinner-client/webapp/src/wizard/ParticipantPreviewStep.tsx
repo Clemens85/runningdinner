@@ -26,8 +26,8 @@ export default function ParticipantPreviewStep() {
     // eslint-disable-next-line
   }, [dispatch]);
 
-  const submitAsync = async () => {
-    return true;
+  const submitAsync = (): Promise<boolean> => {
+    return Promise.resolve(true);
   };
 
   return (

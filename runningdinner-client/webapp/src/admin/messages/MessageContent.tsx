@@ -47,7 +47,9 @@ export default function MessageContent({ templates, onMessageContentChange, name
     }
 
     setValue(name, updatedValue);
-    onMessageContentChange && onMessageContentChange(updatedValue);
+    if (onMessageContentChange) {
+      onMessageContentChange(updatedValue);
+    }
 
     setTimeout(() => {
       inputField.selectionEnd = newCursorPosition; // Add at end of current cursor pos, so that user can straight continue typing
@@ -57,7 +59,9 @@ export default function MessageContent({ templates, onMessageContentChange, name
 
   const handleMessageContentChange = (changeEvt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const changedValue = changeEvt.target.value;
-    onMessageContentChange && onMessageContentChange(changedValue);
+    if (onMessageContentChange) {
+      onMessageContentChange(changedValue);
+    }
   };
 
   /**
@@ -73,7 +77,6 @@ export default function MessageContent({ templates, onMessageContentChange, name
 
   const getInputField = (): HTMLInputElement | undefined => {
     if (contentRef && contentRef.current) {
-      // @ts-ignore
       return contentRef.current as HTMLInputElement;
     }
     return undefined;

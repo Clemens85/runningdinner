@@ -157,7 +157,7 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
   const { headline, selectedTeamIds, preselectAllRecipients } = useMessagesQueryHandler(messageType);
 
   const formMethods = useForm({
-    // @ts-ignore
+    // @ts-expect-error -- type suppression
     defaultValues: exampleMessage,
     // resolver: yupResolver(validationSchema), // Currently I use only backend validation...
     mode: 'onBlur',
@@ -171,7 +171,7 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
 
   useEffect(() => {
     // Reset all our selection values on mounting this component:
-    // @ts-ignore We get the correct field name...:
+    // @ts-expect-error We get the correct field name...:
     setValue(getRecipientFormFieldName(messageType), '');
     dispatch(setupInitialMessageType({ adminId, messageType }));
     dispatch(setCustomSelectedRecipients([]));
@@ -181,11 +181,11 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
   useEffect(() => {
     if (messageType !== MessageType.MESSAGE_TYPE_PARTICIPANTS && isArrayNotEmpty(selectedTeamIds) && recipients.fetchStatus === FetchStatus.SUCCEEDED) {
       const preSelectedTeams = selectedTeamIds.map((id) => findEntityById(recipients.data, id)).filter((elem) => elem);
-      // @ts-ignore When running in this case, we have always teamSelection
+      // @ts-expect-error When running in this case, we have always teamSelection
       setValue('teamSelection', CONSTANTS.RECIPIENT_SELECTION_COMMON.CUSTOM_SELECTION);
       dispatch(setCustomSelectedRecipients(preSelectedTeams));
     } else if (preselectAllRecipients && recipients.fetchStatus === FetchStatus.SUCCEEDED) {
-      // @ts-ignore We get the correct field name...:
+      // @ts-expect-error We get the correct field name...:
       setValue(getRecipientFormFieldName(messageType), CONSTANTS.RECIPIENT_SELECTION_COMMON.ALL);
     }
     // eslint-disable-next-line
@@ -195,9 +195,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
     if (!messageProposal) {
       return;
     }
-    // @ts-ignore subject and message are on BaseMessage
+    // @ts-expect-error subject and message are on BaseMessage
     setValue('subject', messageProposal.subject);
-    // @ts-ignore subject and message are on BaseMessage
+    // @ts-expect-error subject and message are on BaseMessage
     setValue('message', messageProposal.messageTemplate);
     // Update all proposal fields atomically in Redux and trigger a single preview recalculation.
     // Using separate debounced update functions per field would cause a race condition: each fires
@@ -209,12 +209,12 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
     //   const hostsTemplate = additionalSections['HOSTS TEMPLATE'];
     //   const selfTemplate = additionalSections['SELF TEMPLATE'];
     //   if (hostsTemplate) {
-    //     // @ts-ignore hostsTemplate only exists on DinnerRouteMessage
+    //     // @ts-expect-error hostsTemplate only exists on DinnerRouteMessage
     //     setValue('hostsTemplate', hostsTemplate);
     //     updateDinnerRouteHostsPartTemplatePreviewAsync(hostsTemplate);
     //   }
     //   if (selfTemplate) {
-    //     // @ts-ignore selfTemplate only exists on DinnerRouteMessage
+    //     // @ts-expect-error selfTemplate only exists on DinnerRouteMessage
     //     setValue('selfTemplate', selfTemplate);
     //     updateDinnerRouteSelfPartTemplatePreviewAsync(selfTemplate);
     //   }
@@ -222,12 +222,12 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
     //   const hostTemplate = additionalSections['HOST TEMPLATE'];
     //   const nonHostTemplate = additionalSections['NON HOST TEMPLATE'];
     //   if (hostTemplate) {
-    //     // @ts-ignore hostMessagePartTemplate only exists on TeamMessage
+    //     // @ts-expect-error hostMessagePartTemplate only exists on TeamMessage
     //     setValue('hostMessagePartTemplate', hostTemplate);
     //     updateHostMessagePartTemplatePreviewAsync(hostTemplate);
     //   }
     //   if (nonHostTemplate) {
-    //     // @ts-ignore nonHostMessagePartTemplate only exists on TeamMessage
+    //     // @ts-expect-error nonHostMessagePartTemplate only exists on TeamMessage
     //     setValue('nonHostMessagePartTemplate', nonHostTemplate);
     //     updateNonHostMessagePartTemplatePreviewAsync(nonHostTemplate);
     //   }
@@ -258,7 +258,6 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
   const handleDinnerRouteHostsPartTemplateChange = (changedValue: string) => updateDinnerRouteHostsPartTemplatePreviewAsync(changedValue);
   const handleDinnerRouteSelfPartTemplateChange = (changedValue: string) => updateDinnerRouteSelfPartTemplatePreviewAsync(changedValue);
 
-  // @ts-ignore
   return (
     <>
       <Grid container>
@@ -386,7 +385,6 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                     <Grid container justifyContent="flex-end">
                       <Grid>
                         <Box mt={3}>
-                          {/* @ts-ignore */}
                           <PrimaryButton onClick={handleSubmit(handleSendMessages)} disabled={isSubmitting} size="large">
                             {t('messages_send_general')}
                           </PrimaryButton>

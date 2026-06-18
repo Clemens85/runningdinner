@@ -1,4 +1,3 @@
- 
 import { GoogleMapsContext } from '@vis.gl/react-google-maps';
 import type { Ref } from 'react';
 import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
@@ -24,7 +23,7 @@ export type PolylineProps = google.maps.PolylineOptions & PolylineEventProps & P
 export type PolylineRef = Ref<google.maps.Polyline | null>;
 
 function usePolyline(props: PolylineProps) {
-  const { onClick, onDrag, onDragStart, onDragEnd, onMouseOver, onMouseOut, encodedPath, path, ...polylineOptions } = props;
+  const { onClick, onDrag, onDragStart, onDragEnd, onMouseOver, onMouseOut, encodedPath: _encodedPath, path, ...polylineOptions } = props;
   // This is here to avoid triggering the useEffect below when the callbacks change (which happen if the user didn't memoize them)
   const callbacks = useRef<Record<string, (e: unknown) => void>>({});
   Object.assign(callbacks.current, {

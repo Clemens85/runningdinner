@@ -140,8 +140,9 @@ function SettingsViewController({ runningDinner, registrationTypes }: SettingsVi
           sx={{ pr: paddingRightOfLeftCol }}
           size={{
             xs: 12,
-            md: 7
-          }}>
+            md: 7,
+          }}
+        >
           <BasicDinnerSettingsView registrationTypes={registrationTypes} runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
           <AfterPartyLocationSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
         </Grid>
@@ -149,8 +150,9 @@ function SettingsViewController({ runningDinner, registrationTypes }: SettingsVi
           <Grid
             size={{
               xs: 12,
-              md: 5
-            }}>
+              md: 5,
+            }}
+          >
             <PublicDinnerSettingsView runningDinner={currentRunningDinner} onSettingsSaved={handleRunningDinnerUpdated} />
           </Grid>
         )}
@@ -425,7 +427,7 @@ function AfterPartyLocationSettingsView({ runningDinner, onSettingsSaved }: Base
 
   const { open: openDeleteConfirmationDialog, isOpen: isDeleteConfirmationDialogOpen, close: closeDeleteConfirmationDialog } = useDisclosure();
 
-  async function handleToggleAfterPartyLocation(enable: boolean) {
+  function handleToggleAfterPartyLocation(enable: boolean) {
     if (enable) {
       setCurrentAfterPartyLocation(isAfterPartyLocationDefined(runningDinner.afterPartyLocation) ? runningDinner.afterPartyLocation : newAfterPartyLocation(runningDinner));
     } else {
@@ -490,7 +492,6 @@ function AfterPartyLocationFormView({ adminId, afterPartyLocation, onSettingsSav
       });
     }
     clearErrors();
-     
   }, [afterPartyLocation, reset, clearErrors]);
 
   const { applyValidationIssuesToForm } = useBackendIssueHandler();

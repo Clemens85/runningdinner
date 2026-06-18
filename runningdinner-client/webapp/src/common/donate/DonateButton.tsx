@@ -177,7 +177,7 @@ function NoPaypalLink() {
       <cite>
         <Trans
           i18nKey={'common:donate_no_paypal_contact'}
-          // @ts-ignore
+          // @ts-expect-error -- type suppression
           components={{ anchor: <LinkExtern /> }}
           values={{ email: CONSTANTS.GLOBAL_ADMIN_EMAIL }}
         />

@@ -58,7 +58,6 @@ const NumberTextInputEmptyValue = React.forwardRef(({ onChange, emptyValue = -1,
   const handleDisplayValueChange = (changeEvt: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = changeEvt.target.value;
     onChange(parse(newValue));
-    // @ts-ignore
     setDisplayValue(format(newValue));
   };
 
@@ -98,11 +97,9 @@ const NumberTextInputEmptyValue = React.forwardRef(({ onChange, emptyValue = -1,
     [emptyValue],
   );
 
-  // @ts-ignore
   const [displayValue, setDisplayValue] = React.useState(format(value));
   // const { errors } = useFormContext();
   useEffect(() => {
-    // @ts-ignore
     setDisplayValue(format(value));
   }, [value, setDisplayValue, format]);
 

@@ -44,7 +44,7 @@ const recalculatePreviewMessagesSucceeded = createAction<PreviewMessage[]>('reca
 const updatePreviewInputDataValid = createAction<boolean>('updatePreviewInputDataValid');
 
 export function updateRecipientForPreviewById(newRecipientId: string): AdminThunk {
-  return async (dispatch) => {
+  return (dispatch) => {
     dispatch(updateRecipientForPreviewByIdInternal(newRecipientId));
     dispatch(recalculatePreviewMessages());
   };
@@ -73,7 +73,7 @@ export const sendMessages = createAsyncThunk('sendMessages', async (baseMessageO
 });
 
 export function fetchInitialMessageData(adminId: string, messageType: MessageType): AdminThunk {
-  return async (dispatch) => {
+  return (dispatch) => {
     dispatch(setupInitialMessageType({ adminId, messageType }));
     dispatch(fetchRecipients({ adminId, messageType }));
   };

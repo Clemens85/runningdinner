@@ -29,7 +29,7 @@ export function ContactFormView() {
             <Trans
               i18nKey={'common:feedback_privacy_text'}
               values={{ impressumLink: `/${IMPRESSUM_PATH}` }}
-              // @ts-ignore
+              // @ts-expect-error -- type suppression
               components={{ anchor: <LinkExtern /> }}
             />
           </small>

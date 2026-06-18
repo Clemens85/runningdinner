@@ -187,7 +187,7 @@ function ParticipantsView({
               selectedParticipant={selectedParticipant}
               participantSearchResult={participantSearchResult}
               showMiscNotes={showMiscNotes}
-              // @ts-ignore
+              // @ts-expect-error -- type suppression
               onReFetch={() => refetch()}
               onClick={editParticipant}
             />

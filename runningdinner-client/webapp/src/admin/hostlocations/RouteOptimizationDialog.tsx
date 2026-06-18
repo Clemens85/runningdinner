@@ -50,7 +50,7 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
     }
   }, [showRouteOptimizationSettings, setValue]);
 
-  async function handleTriggerCalculationOptimization(formData: RouteOptimizationSettings) {
+  function handleTriggerCalculationOptimization(formData: RouteOptimizationSettings) {
     const calculateRequest: CalculateDinnerRouteOptimizationRequest = {
       currentAverageDistanceInMeters: routeDistanceMetrics?.averageDistanceInMeters || -1,
       currentSumDistanceInMeters: routeDistanceMetrics?.sumDistanceInMeters || -1,

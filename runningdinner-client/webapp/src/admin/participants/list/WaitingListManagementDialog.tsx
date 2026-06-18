@@ -50,7 +50,7 @@ import SelectableEntity from '../../common/SelectableEntity';
 import { CancelledTeamMember } from '../../teams/CancelledTeamMember';
 
 const Transition = React.forwardRef(function Transition(props: TransitionProps & { children?: React.ReactElement }, ref: React.Ref<unknown>) {
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
@@ -121,7 +121,7 @@ function WaitingListManagementDialogContentView(props: CloseCallback & BaseRunni
   const { runningDinner, onClose } = props;
   const { teamsGenerated } = waitingListInfo;
 
-  async function handleSave(waitingListActionResult: WaitingListActionResult) {
+  function handleSave(waitingListActionResult: WaitingListActionResult) {
     const { affectedTeams } = waitingListActionResult;
     const showNotificationView = (waitingListActionResult.dinnerRouteMessagesAlreadySent || waitingListActionResult.teamMessagesAlreadySent) && isArrayNotEmpty(affectedTeams);
     if (!showNotificationView) {
