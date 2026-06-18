@@ -147,6 +147,9 @@ public class AbstractExcelConverterHighLevel {
 
 		createHeaderRow(sheet);
 
+		Map<UUID, Participant> participantsById = participants.stream()
+				.collect(java.util.stream.Collectors.toMap(Participant::getId, p -> p));
+
 		int rowIndex = 1;
 		for (Participant p : participants) {
 			Row row = sheet.createRow(rowIndex++);
@@ -171,8 +174,9 @@ public class AbstractExcelConverterHighLevel {
 			writeStringToCell(row, cellIndex++, p.getMealSpecifics().isLactose() ? "ja" : "");
 			writeStringToCell(row, cellIndex++, p.getMealSpecifics().isGluten() ? "ja" : "");
 			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getMealSpecifics().getMealSpecificsNote()));
-			writeStringToCell(row, cellIndex, StringUtils.trimToEmpty(p.getNotes()));
-			// Team-partner wish columns intentionally omitted from export
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getNotes()));
+			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getTeamPartnerWishEmail()));
+			writeStringToCell(row, cellIndex, registeredByFullname(p, participantsById));
 		}
 	}
 
@@ -207,8 +211,20 @@ public class AbstractExcelConverterHighLevel {
 		writeStringToCell(row, cellIndex++, "Laktosefrei");
 		writeStringToCell(row, cellIndex++, "Glutenfrei");
 		writeStringToCell(row, cellIndex++, "Essenswünsche (Notiz)");
-		writeStringToCell(row, cellIndex, "Sonstige Anmerkungen");
-		// Team-partner wish columns are intentionally omitted from export
+		writeStringToCell(row, cellIndex++, "Sonstige Anmerkungen");
+		writeStringToCell(row, cellIndex++, "Teamwunsch E-Mail (Einladung)");
+		writeStringToCell(row, cellIndex, "Angemeldet durch");
+	}
+
+	private String registeredByFullname(Participant p, Map<UUID, Participant> participantsById) {
+		if (!p.isTeamPartnerWishRegistrationChild()) {
+			return "";
+		}
+		Participant root = participantsById.get(p.getTeamPartnerWishOriginatorId());
+		if (root == null) {
+			return "";
+		}
+		return StringUtils.trimToEmpty(root.getName().getFirstnamePart()) + " " + StringUtils.trimToEmpty(root.getName().getLastname());
 	}
 
 	private void writeNumberToCell(Row row, int cellIndex, int number) {
