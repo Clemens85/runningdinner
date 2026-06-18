@@ -8,6 +8,7 @@ export * from './messages/useFindMessageJobs';
 export * from './messages/useFindMessageProposal';
 export * from './MessageService';
 export * from './participants';
+export * from './participants/import';
 export * from './ParticipantService';
 export * from './PaymentOptionsService';
 export * from './RunningDinnerService';

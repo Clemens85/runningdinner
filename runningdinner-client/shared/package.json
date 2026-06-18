@@ -16,8 +16,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "yup": "^0.28.3",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.0",
+    "xlsx": "^0.18.5",
+    "yup": "^0.28.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",

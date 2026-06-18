@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash-es';
 
 import { BackendConfig } from '../BackendConfig';
 import { Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo } from '../types';
-import { isSameEntity } from '../Utils';
+import { isArrayNotEmpty, isSameEntity } from '../Utils';
 import { getFullname } from './ParticipantService';
 
 export async function findTeamsAsync(adminId: string): Promise<Array<Team>> {
@@ -58,7 +58,11 @@ export async function updateTeamHostAsync(adminId: string, team: Team, newHostin
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/teamhosts`);
   const response = await axios.put(url, requestData);
   const result = response.data;
-  return result.teams ? result.teams[0] : null;
+  if (result.teams && isArrayNotEmpty(result.teams)) {
+    return result.teams[0];
+  } else {
+    throw new Error('Unexpected response from backend: ' + JSON.stringify(result));
+  }
 }
 
 export async function findTeamMeetingPlanAsync(adminId: string, teamId: string): Promise<TeamMeetingPlan> {
