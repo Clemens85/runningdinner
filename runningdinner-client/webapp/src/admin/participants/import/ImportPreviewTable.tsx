@@ -202,7 +202,7 @@ export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const autoPartnersCount = preview.rows.filter((r) => r.validationResult.status !== 'ERROR' && r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
+  const fixedTeamPartnerRegistrationsCount = preview.rows.filter((r) => r.validationResult.status !== 'ERROR' && r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
 
   return (
     <Box>
@@ -212,7 +212,9 @@ export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
         {counts.infos > 0 && <Chip label={`${t('admin:import_preview_info')}: ${counts.infos}`} color="info" size="small" />}
         {counts.warnings > 0 && <Chip label={`${t('admin:import_preview_warning')}: ${counts.warnings}`} color="warning" size="small" />}
         {counts.errors > 0 && <Chip label={`${t('admin:import_preview_error')}: ${counts.errors}`} color="error" size="small" />}
-        {autoPartnersCount > 0 && <Chip label={t('admin:import_preview_fixed_partners_chip', { count: autoPartnersCount })} size="small" variant="outlined" />}
+        {fixedTeamPartnerRegistrationsCount > 0 && (
+          <Chip label={t('admin:import_preview_fixed_partners_chip', { count: fixedTeamPartnerRegistrationsCount })} size="small" variant="outlined" />
+        )}
       </Box>
 
       {isMobile ? (
