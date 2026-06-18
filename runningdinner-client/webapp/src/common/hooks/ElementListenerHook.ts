@@ -13,12 +13,11 @@ function useEventListener<KW extends keyof WindowEventMap, KH extends keyof HTML
   element?: RefObject<T>,
 ) {
   // Create a ref that stores handler
-  const savedHandler = useRef<typeof handler>();
+  const savedHandler = useRef<typeof handler | undefined>(undefined);
 
   useEffect(() => {
     // Define the listening target
     const targetElement: T | Window = element?.current || window;
-    // @ts-ignore
     if (!(targetElement && (targetElement as HTMLElement).addEventListener)) {
       return;
     }
@@ -36,12 +35,10 @@ function useEventListener<KW extends keyof WindowEventMap, KH extends keyof HTML
       }
     };
 
-    // @ts-ignore
     (targetElement as HTMLElement).addEventListener(eventName, eventListener);
 
     // Remove event listener on cleanup
     return () => {
-      // @ts-ignore
       targetElement.removeEventListener(eventName, eventListener);
     };
   }, [eventName, element, handler]);

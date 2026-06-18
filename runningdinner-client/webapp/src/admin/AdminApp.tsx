@@ -38,7 +38,7 @@ function AdminAppPage({ adminId }: BaseAdminIdProps) {
   const fetchError = useAdminSelector(getFetchDataErrorSelector);
 
   React.useEffect(() => {
-    // @ts-ignore
+    // @ts-expect-error -- type suppression
     dispatch(fetchRunningDinner(adminId));
   }, [dispatch, adminId]);
 

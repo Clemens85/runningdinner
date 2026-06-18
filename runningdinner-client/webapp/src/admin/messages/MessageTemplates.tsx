@@ -30,7 +30,7 @@ function MessageTemplates({ templates, onTemplateClick, showTemplatesHelpIcon }:
     return null;
   }
 
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   const messageTemplateNodes = templates.map((template) => (
     <Grid key={template}>
       <MessageTemplate template={template} onClick={onTemplateClick} />

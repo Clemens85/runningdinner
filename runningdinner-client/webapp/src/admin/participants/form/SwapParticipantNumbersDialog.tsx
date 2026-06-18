@@ -29,9 +29,9 @@ import { useAdminNavigation } from '../../AdminNavigationHook';
 
 interface SelectParticiantToSwitchProps extends BaseAdminIdProps {
   srcParticipant: Participant;
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   selectedParticipant: UseAutocompleteProps | null;
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   onSelectedParticipantChange: (newVal: UseAutocompleteProps | null) => unknown;
 }
 
@@ -44,13 +44,7 @@ interface SwitchParticipantNumbersDialogProps extends BaseAdminIdProps {
 function ExistingTeamInfoMessage({ adminId }: BaseAdminIdProps) {
   const { generateDropTeamsPath } = useAdminNavigation();
 
-  return (
-    <Trans
-      i18nKey="admin:participants_swap_number_teams_existing_info"
-      // @ts-ignore
-      components={{ anchor: <LinkIntern pathname={generateDropTeamsPath(adminId)} /> }}
-    />
-  );
+  return <Trans i18nKey="admin:participants_swap_number_teams_existing_info" components={{ anchor: <LinkIntern pathname={generateDropTeamsPath(adminId)} /> }} />;
 }
 
 function HasTeamAlert({ adminId }: BaseAdminIdProps) {
@@ -125,7 +119,7 @@ export function SwapParticipantNumbersDialog({ onCancel, onParticipantsSwapped, 
   const hasTeam = isStringNotEmpty(srcParticipant.teamId);
   const fullname = getFullname(srcParticipant);
 
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   const [selectedParticipant, setSelectedParticipant] = useState<UseAutocompleteProps | null>(null);
 
   const handleSwapParticipantNumbers = async () => {

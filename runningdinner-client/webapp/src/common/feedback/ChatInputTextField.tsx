@@ -1,5 +1,5 @@
-import { IconButton, Paper, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import { IconButton, Paper, TextField } from '@mui/material';
 import { CallbackHandler } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 

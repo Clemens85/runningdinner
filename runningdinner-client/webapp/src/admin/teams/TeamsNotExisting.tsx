@@ -1,4 +1,4 @@
-import { Box, Grid,Paper } from '@mui/material';
+import { Box, Grid, Paper } from '@mui/material';
 import { AlertTitle } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import {
@@ -15,7 +15,7 @@ import {
   useTeamsNotExisting,
   useUpdateFindTeamsQueryData,
 } from '@runningdinner/shared';
-import { Trans,useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import HtmlTranslate from '../../common/i18n/HtmlTranslate';
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
@@ -40,7 +40,7 @@ const TeamsNotExisting = ({ runningDinner }: BaseRunningDinnerProps) => {
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
   if (loading || error || teamsNotExistingInfo === null) {
-    // @ts-ignore
+    // @ts-expect-error -- type suppression
     return <ProgressBar showLoadingProgress={loading} fetchError={error} />;
   }
 
@@ -101,19 +101,16 @@ function NotActivatedParticipantsAlert({ teamsNotExistingInfo, adminId }: TeamsN
         <AlertTitle>{t('attention')}</AlertTitle>
         {t('admin:registrations_not_yet_confirmed_teams_not_existing_info_1')}
         <br />
-        <Trans
-          i18nKey={'admin:registrations_not_yet_confirmed_teams_not_existing_info_2'}
-          // @ts-ignore
-          components={{ anchor: <LinkIntern pathname={generateDashboardPath(adminId)} /> }}
-        />
+        <Trans i18nKey={'admin:registrations_not_yet_confirmed_teams_not_existing_info_2'} components={{ anchor: <LinkIntern pathname={generateDashboardPath(adminId)} /> }} />
       </Alert>
       <Grid container>
         <Grid
           size={{
             xs: 12,
             md: 8,
-            lg: 6
-          }}>
+            lg: 6,
+          }}
+        >
           {teamsNotExistingInfo.notActivatedParticipants?.map((nap) => (
             <Box key={nap.id} sx={{ mt: 3 }}>
               <MissingParticipantActivationItem {...nap} />

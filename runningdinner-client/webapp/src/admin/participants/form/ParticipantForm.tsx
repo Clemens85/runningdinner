@@ -1,10 +1,8 @@
-import { Box, Grid, LinearProgress, Paper, Tooltip } from '@mui/material';
-import RoomIcon from '@mui/icons-material/Room';
+import { Box, Grid, LinearProgress, Paper } from '@mui/material';
 import {
   CallbackHandler,
   getFullname,
   HttpError,
-  isGeocodingResultValid,
   isNewEntity,
   isTeamPartnerWishChild,
   mapNullFieldsToEmptyStrings,
@@ -27,11 +25,11 @@ import { DeleteParticipantDialog } from '../delete/DeleteParticipantDialog';
 import AddressSection from './AddressSection';
 import MealSpecificsSection from './MealSpecificsSection';
 import MiscSection from './MiscSection';
+import { OpenAddressInGoogleMapsLink } from './OpenAddressInGoogleMapsLink';
 import { ParticipantFormContextMenu } from './ParticipantFormContextMenu';
 import ParticipantFormHeadline from './ParticipantFormHeadline';
 import { PersonalDataSection } from './PersonalDataSection';
 import { TeamPartnerWishSectionAdmin } from './TeamPartnerWishSectionAdmin';
-import { OpenAddressInGoogleMapsLink } from './OpenAddressInGoogleMapsLink';
 
 export interface ParticipantFormProps {
   participant: ParticipantListable;

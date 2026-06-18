@@ -32,7 +32,7 @@ function ImportParticipantsFromJsonView({ runningDinner }: BaseRunningDinnerProp
   const [errorMsg, setErrorMsg] = useState<string>();
   const [failedParticipantsAfterImport, setFailedParticipantsAfterImport] = useState<Participant[]>();
 
-  async function handleUpload(file: File) {
+  function handleUpload(file: File) {
     reset();
     const reader = new FileReader();
     reader.onload = async (event) => {

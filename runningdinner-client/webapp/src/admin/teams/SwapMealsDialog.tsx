@@ -30,9 +30,9 @@ interface SelectTeamToSwapProps {
   srcTeam: Team;
   includeSameMeal: boolean;
   onIncludeSameMealChange: (value: boolean) => unknown;
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   selectedTeam: UseAutocompleteProps | null;
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   onSelectedTeamChange: (newVal: UseAutocompleteProps | null) => unknown;
 }
 
@@ -101,7 +101,7 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
   const { data: allTeams } = useFindTeams(adminId);
   assertDefined(allTeams);
 
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   const [selectedTeam, setSelectedTeam] = useState<UseAutocompleteProps | null>(null);
   const [includeSameMeal, setIncludeSameMeal] = useState(false);
   const smDownDevice = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
@@ -113,7 +113,7 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
   });
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   function getSelectedTeam(selectedTeam: UseAutocompleteProps): Team {
     const result = findEntityById(allTeams, selectedTeam.id)!;
     return result;

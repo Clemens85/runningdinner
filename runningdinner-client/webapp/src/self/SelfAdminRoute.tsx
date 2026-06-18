@@ -59,7 +59,7 @@ export function SelfAdminRoute() {
                 <Trans
                   i18nKey={'selfadmin:invalid_url'}
                   values={{ adminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL }}
-                  // @ts-ignore
+                  // @ts-expect-error -- type suppression
                   components={{ anchor: <LinkExtern /> }}
                 />
               </Span>

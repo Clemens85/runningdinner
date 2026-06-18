@@ -1,5 +1,5 @@
-import deLocale from 'date-fns/locale/de';
-import enLocale from 'date-fns/locale/en-US';
+import { de as deLocale } from 'date-fns/locale/de';
+import { enUS as enLocale } from 'date-fns/locale/en-US';
 import { useTranslation } from 'react-i18next';
 
 const localeMap: Record<string, any> = {

@@ -129,7 +129,6 @@ export function ParticipantRegistrations({ runningDinner }: BaseRunningDinnerPro
           )}
           {hasNextPage && (
             <Box pb={2}>
-              {/* @ts-ignore */}
               <Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage} variant={'outlined'} fullWidth color={'primary'}>
                 {t('common:show_more')}
               </Button>

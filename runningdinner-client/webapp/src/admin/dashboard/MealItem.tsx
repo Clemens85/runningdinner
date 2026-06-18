@@ -1,7 +1,7 @@
-import { ListItem, ListItemSecondaryAction,ListItemText } from '@mui/material';
+import { ListItem, ListItemSecondaryAction, ListItemText } from '@mui/material';
 import { Meal, Time } from '@runningdinner/shared';
 
-export interface MealItemProps extends Meal {}
+export type MealItemProps = Meal;
 
 export default function MealItem({ label, time }: MealItemProps) {
   return (

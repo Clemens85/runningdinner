@@ -43,7 +43,7 @@ function calculateTeamOrderNumbers(dinnerRoute: DinnerRoute): Record<number, num
 }
 
 function MapView({ dinnerRouteMapData, dinnerRoute }: MapViewProps) {
-  const mapContainerRef = useRef(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400);
 
   const { dinnerRouteMapEntries, afterPartyLocationMapEntry, centerPosition, teamsWithUnresolvedGeocodings } = dinnerRouteMapData;

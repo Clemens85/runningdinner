@@ -125,7 +125,7 @@ export function RegistrationPaymentDialog({ onCancel, registrationDataCollection
               <cite>
                 <Trans
                   i18nKey={'landing:payment_no_paypal_contact'}
-                  // @ts-ignore
+                  // @ts-expect-error -- type suppression
                   components={{ anchor: <LinkExtern /> }}
                   values={{ publicContactEmail: publicRunningDinner.publicSettings.publicContactEmail }}
                 />

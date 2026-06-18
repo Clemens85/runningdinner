@@ -18,7 +18,7 @@ export default function FormCheckbox({ name, label, helperText, defaultValue, us
   } = useFormContext();
 
   const hasErrors = !!errors[name];
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   const errorMessage = hasErrors ? errors[name].message : undefined;
   const helperTextToDisplay = (hasErrors ? errorMessage : helperText) as string;
 

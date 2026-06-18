@@ -67,7 +67,6 @@ function ChildTeamPartnerWishInfo({ childTeamPartnerWish, adminId }: TeamPartner
             <Trans
               i18nKey={'admin:team_partner_wish_registration_child_participant_child_info_1'}
               values={{ fullname: getFullname(childTeamPartnerWish!) }}
-              // @ts-ignore
               components={{ anchor: <LinkExtern href={childParticipantUrl} self={true} /> }}
             />
           </Span>
@@ -95,7 +94,6 @@ function RootTeamPartnerWishInfo({ rootTeamPartnerWish, teamPartnerWishOriginato
             <Trans
               i18nKey={'admin:team_partner_wish_registration_child_participant_root_info_2'}
               values={{ fullname: getFullname(rootTeamPartnerWish!) }}
-              // @ts-ignore
               components={{ anchor: <LinkExtern href={rootParticipantUrl} self={true} /> }}
             />
           </Span>

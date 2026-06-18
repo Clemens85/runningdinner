@@ -13,7 +13,7 @@ import {
   useUpdateFindTeamsQueryData,
 } from '@runningdinner/shared';
 import { useEffect } from 'react';
-import { Trans,useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { useUrlQuery } from '../../common/hooks/useUrlQuery';
 import { useNotificationHttpError } from '../../common/NotificationHttpErrorHook';
@@ -25,7 +25,7 @@ import DropdownButtonItem from '../../common/theme/dropdown/DropdownButtonItem';
 import Paragraph from '../../common/theme/typography/Paragraph';
 import { OPEN_DROP_TEAMS_DIALOG_QUERY_PARAM } from '../AdminNavigationHook';
 
-export interface TeamArrangementActionsButtonProps extends BaseAdminIdProps {}
+export type TeamArrangementActionsButtonProps = BaseAdminIdProps;
 
 interface TeamArrangementActionConfirmationData {
   showTeamArrangementMailsSentWarning?: boolean;
