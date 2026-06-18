@@ -13,7 +13,7 @@ function useEventListener<KW extends keyof WindowEventMap, KH extends keyof HTML
   element?: RefObject<T>,
 ) {
   // Create a ref that stores handler
-  const savedHandler = useRef<typeof handler>();
+  const savedHandler = useRef<typeof handler | undefined>(undefined);
 
   useEffect(() => {
     // Define the listening target

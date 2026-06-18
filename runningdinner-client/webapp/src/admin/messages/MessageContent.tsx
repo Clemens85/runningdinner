@@ -22,7 +22,7 @@ export default function MessageContent({ templates, onMessageContentChange, name
     formState: { errors },
   } = useFormContext();
 
-  const contentRef = useRef();
+  const contentRef = useRef<HTMLInputElement | null>(null);
 
   function handleTemplateClick(template: string) {
     const inputField = getInputField();

@@ -82,7 +82,7 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
 
   const { dinnerRouteMapEntries, centerPosition, afterPartyLocationMapEntry, teamsWithUnresolvedGeocodings, numberOfClusters } = dinnerRouteMapData;
 
-  const mapContainerRef = useRef(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapHeight = useDynamicFullscreenHeight(mapContainerRef, 400, true);
 
   const { data: routeDistancesList } = useCalculateRouteDistances(adminId);
