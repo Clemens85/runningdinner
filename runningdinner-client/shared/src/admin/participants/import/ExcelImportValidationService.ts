@@ -156,11 +156,9 @@ export class ExcelImportValidationService {
 
     // --- numSeats ---
     const numSeatsRaw = data.numSeats.trim();
-    if (numSeatsRaw !== '') {
-      const parsed = parseInt(numSeatsRaw, 10);
-      if (!Number.isFinite(parsed) || parsed < 0 || String(parsed) !== numSeatsRaw) {
-        this.addWarn(result, 'numSeats', this.t('admin:import_warning_invalid_numseats'));
-      }
+    const numSeatsNum = Number(numSeatsRaw);
+    if (numSeatsRaw === '' || !Number.isInteger(numSeatsNum) || numSeatsNum < 0) {
+      this.addErr(result, 'numSeats', this.t('admin:import_error_invalid_numseats'));
     }
 
     // --- age ---

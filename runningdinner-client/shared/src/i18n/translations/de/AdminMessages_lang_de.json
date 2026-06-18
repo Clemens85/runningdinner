@@ -508,7 +508,7 @@
   "import_warning_partner_wish_already_used": "Diese Teamwunsch-E-Mail wird bereits von einem bestehenden Teilnehmer als Wunsch angegeben",
   "import_warning_partner_wish_duplicate_infile": "Diese Teamwunsch-E-Mail kommt mehrfach in der Datei vor",
   "import_warning_invalid_gender": "Ungültiger Geschlechtswert (erwartet: m, w, divers)",
-  "import_warning_invalid_numseats": "Ungültige Anzahl Sitzplätze (muss eine nicht-negative ganze Zahl sein)",
+  "import_error_invalid_numseats": "Anzahl Sitzplätze ist erforderlich und muss eine nicht-negative ganze Zahl sein (0 oder mehr)",
   "import_warning_invalid_age": "Ungültiges Alter (muss eine positive ganze Zahl sein)",
   "import_no_data_rows": "Die Excel-Datei enthält keine Datenzeilen.",
   "import_invalid_file_type": "Bitte eine .xlsx-Datei oder .xls-Datei auswählen.",

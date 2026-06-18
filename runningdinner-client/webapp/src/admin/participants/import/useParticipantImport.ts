@@ -73,7 +73,8 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
         try {
           const participant = ExcelImportMappingService.buildParticipantFromImportRow(row.data);
           await saveParticipantAsync(adminId, participant);
-          succeededCount++;
+          // Fixed partner registration creates an additional participant on the backend side
+          succeededCount += participant.teamPartnerWishRegistrationData ? 2 : 1;
         } catch (e: unknown) {
           let errMsg: string;
           if (isHttpError(e)) {

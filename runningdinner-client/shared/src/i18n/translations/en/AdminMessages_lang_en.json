@@ -506,7 +506,7 @@
   "import_warning_partner_wish_already_used": "This team partner wish email is already specified by an existing participant",
   "import_warning_partner_wish_duplicate_infile": "This team partner wish email appears multiple times in the file",
   "import_warning_invalid_gender": "Invalid gender value (expected: m, w, divers)",
-  "import_warning_invalid_numseats": "Invalid number of seats (must be a non-negative integer)",
+  "import_error_invalid_numseats": "Number of seats is required and must be a non-negative integer (0 or more)",
   "import_warning_invalid_age": "Invalid age (must be a positive integer)",
   "import_no_data_rows": "The Excel file contains no data rows.",
   "import_invalid_file_type": "Please select a .xlsx or .xls file.",

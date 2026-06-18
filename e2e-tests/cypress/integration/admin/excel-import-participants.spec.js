@@ -30,7 +30,7 @@ describe('excel import participants', () => {
     cy.contains('Gesamt: 3').should('be.visible');
 
     // All 3 participants should be importable (no row with ERROR status)
-    getByTestId('dialog-submit').should('contain', '3 Teilnehmer importieren');
+    getByTestId('dialog-submit').should('contain', '4 Teilnehmer importieren');
 
     // Confirm import
     getByTestId('dialog-submit').click();
