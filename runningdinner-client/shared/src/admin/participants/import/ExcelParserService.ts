@@ -164,7 +164,13 @@ export async function parseExcelFile(file: File): Promise<ExcelImportRowData[]> 
   const XLSX = await import('xlsx');
   const buffer = await file.arrayBuffer();
   const workbook = XLSX.read(buffer, { type: 'array' });
+  if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+    throw new ImportError('The Excel file contains no sheets.', 'NO_DATA_ROWS');
+  }
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  if (!sheet) {
+    throw new ImportError('The Excel file contains no readable sheet.', 'NO_DATA_ROWS');
+  }
   const raw: unknown[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
 
   // raw[0] is header row — skip it

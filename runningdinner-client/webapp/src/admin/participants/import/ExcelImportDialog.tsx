@@ -17,7 +17,7 @@ interface ExcelImportDialogProps {
   onClose: () => void;
   onImportComplete: () => void;
   adminId: string;
-  participantList: ParticipantList;
+  participantList?: ParticipantList;
 }
 
 export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, participantList }: ExcelImportDialogProps) {

@@ -5,7 +5,7 @@ import { ExcelImportMappingService, ExcelImportRow, ExcelImportRowStatus, ExcelI
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ParticipantMealBadges } from '../meal/ParticipantMealBadges.tsx';
+import { ParticipantMealBadges } from '../meal/ParticipantMealBadges';
 
 function formatSeats(numSeats: string): string {
   const n = parseInt(numSeats, 10);

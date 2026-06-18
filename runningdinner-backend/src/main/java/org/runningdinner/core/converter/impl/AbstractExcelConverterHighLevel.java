@@ -3,14 +3,24 @@ package org.runningdinner.core.converter.impl;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
-import org.runningdinner.core.converter.config.*;
+import org.runningdinner.core.converter.config.AbstractColumnConfig;
+import org.runningdinner.core.converter.config.AddressColumnConfig;
+import org.runningdinner.core.converter.config.GenderColumnConfig;
+import org.runningdinner.core.converter.config.NameColumnConfig;
+import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
+import org.runningdinner.core.converter.config.ParsingConfiguration;
+import org.runningdinner.core.converter.config.SequenceColumnConfig;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantAddress;
@@ -18,7 +28,12 @@ import org.runningdinner.participant.ParticipantName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Abstract class for parsing excel files which contains the main logic.<br>
@@ -147,8 +162,10 @@ public class AbstractExcelConverterHighLevel {
 
 		createHeaderRow(sheet);
 
-		Map<UUID, Participant> participantsById = participants.stream()
-				.collect(java.util.stream.Collectors.toMap(Participant::getId, p -> p));
+		Map<UUID, Participant> participantsById = participants
+						.stream()
+						.filter(p -> p.getId() != null)
+						.collect(java.util.stream.Collectors.toMap(Participant::getId, p -> p));
 
 		int rowIndex = 1;
 		for (Participant p : participants) {
@@ -218,11 +235,11 @@ public class AbstractExcelConverterHighLevel {
 
 	private String registeredByFullname(Participant p, Map<UUID, Participant> participantsById) {
 		if (!p.isTeamPartnerWishRegistrationChild()) {
-			return "";
+			return StringUtils.EMPTY;
 		}
 		Participant root = participantsById.get(p.getTeamPartnerWishOriginatorId());
-		if (root == null) {
-			return "";
+		if (root == null || root.getName() == null) {
+			return StringUtils.EMPTY;
 		}
 		return StringUtils.trimToEmpty(root.getName().getFirstnamePart()) + " " + StringUtils.trimToEmpty(root.getName().getLastname());
 	}

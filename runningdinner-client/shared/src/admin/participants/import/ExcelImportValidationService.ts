@@ -1,5 +1,5 @@
 import { Participant } from '../../../types';
-import { isStringNotEmpty } from '../../../Utils.ts';
+import { isStringNotEmpty } from '../../../Utils';
 import { ExcelImportRow, ExcelImportRowData, ExcelImportRowStatus, ExcelImportValidationMessage, SingleRowValidationResult } from './types';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,7 +44,10 @@ function info(field: keyof ExcelImportRowData | null, message: string): ExcelImp
 }
 
 function getNormalizedEmail(email: string) {
-  return email.trim().toLowerCase();
+  if (isStringNotEmpty(email)) {
+    return email.trim().toLowerCase();
+  }
+  return email;
 }
 
 function isSameEmail(a: string, b: string) {

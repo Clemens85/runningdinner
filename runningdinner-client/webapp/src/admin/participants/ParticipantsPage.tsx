@@ -221,7 +221,7 @@ function ParticipantsView({
             refetch();
           }}
           adminId={adminId}
-          participantList={participantList!}
+          participantList={participantList}
         />
       )}
       {isTeamPartnerWishDialogOpen && (
