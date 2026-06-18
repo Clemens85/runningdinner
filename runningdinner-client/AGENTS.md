@@ -72,6 +72,22 @@ Complex features use React Context for local state (not Redux). Example: [Dinner
 - Custom typography components: `Paragraph`, `Headline`, etc.
 - Use `useCustomSnackbar()` hook for notifications (wraps notistack)
 
+## Module Export Rules
+
+### Never use explicit `.ts` extensions in re-exports
+
+In `index.ts` barrel files, always omit the file extension:
+
+```typescript
+// correct
+export * from './ExcelImportMappingService';
+
+// wrong — breaks production builds (Vite/Rollup resolve .ts extensions in dev but not in prod)
+export * from './ExcelImportMappingService.ts';
+```
+
+This applies to every `export * from` and `export { ... } from` statement across both `shared/` and `webapp/`.
+
 ## TypeScript Conventions
 
 ### Type Organization
