@@ -1,4 +1,4 @@
-export * from './ExcelImportMappingService.ts';
-export * from './ExcelImportValidationService.ts';
-export * from './ExcelParserService.ts';
+export * from './ExcelImportMappingService';
+export * from './ExcelImportValidationService';
+export * from './ExcelParserService';
 export * from './types';
