@@ -73,6 +73,22 @@ Complex features use React Context for local state (not Redux). Example: [Dinner
 - Custom typography components: `Paragraph`, `Headline`, etc.
 - Use `useCustomSnackbar()` hook for notifications (wraps notistack)
 
+## Module Export Rules
+
+### Never use explicit `.ts` extensions in re-exports
+
+In `index.ts` barrel files, always omit the file extension:
+
+```typescript
+// correct
+export * from './ExcelImportMappingService';
+
+// wrong — breaks production builds (Vite/Rollup resolve .ts extensions in dev but not in prod)
+export * from './ExcelImportMappingService.ts';
+```
+
+This applies to every `export * from` and `export { ... } from` statement across both `shared/` and `webapp/`.
+
 ## TypeScript Conventions
 
 ### Type Organization
@@ -143,6 +159,15 @@ Key rules:
 3. **AdminId everywhere** - All admin API calls require `adminId: string` param
 4. **Translation keys** - Use i18next with namespaces: `t('key', { ns: 'admin' })`
 5. **File naming** - PascalCase for components, camelCase for hooks/utils
+6. **Return types** - Use own type definitions instead of inline coded types
+
+## Code Quality & Reusage
+
+Check always if we have some common logic / util functions already there before writing your own.
+We have in shared module a lot existing code (e.g. DateUtils, Utils, and many other functions to be just used).
+In webapp module we have a common folder which provides lot of resuable components (input provides e.g. formular components, theme provides e.g. lot of customized MUI components etc.)
+
+Try to divide code into small functions for each single small concern. Try also to create smaller React components if possible following best practices.
 
 ## Google Maps Integration
 

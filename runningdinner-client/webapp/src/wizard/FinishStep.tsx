@@ -128,7 +128,7 @@ function ContractSettings({ contract }: ContractProps) {
             <Paragraph>
               <Trans
                 i18nKey="wizard:adv_text_help"
-                // @ts-ignore
+                // @ts-expect-error -- type suppression
                 components={{ anchor: <LinkExtern /> }}
               />
             </Paragraph>
@@ -181,7 +181,7 @@ function ContractSettings({ contract }: ContractProps) {
 }
 
 // By accident our email field in Contract has same name as our email field in RunningDinner, hence we can just use this interface as our model
-interface FinishFormModel extends Contract {}
+type FinishFormModel = Contract;
 
 /**
  * Unfortunately our backend deliver contract-issues not with "contract." prefix, but just as flat attribute name.

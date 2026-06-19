@@ -13,7 +13,7 @@ export default function LinkIntern({ pathname, color, href, target, children }: 
   const colorToSet = isStringEmpty(color) ? 'primary' : color;
 
   return (
-    // @ts-ignore
+    // @ts-expect-error -- type suppression
     <Link to={pathname} component={RouterLink} color={colorToSet} href={href} target={target} underline="hover">
       {children}
     </Link>

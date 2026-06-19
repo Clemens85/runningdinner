@@ -1,4 +1,4 @@
-import { Box, Grid, LinearProgress,Paper } from '@mui/material';
+import { Box, Grid, LinearProgress, Paper } from '@mui/material';
 import {
   CallbackHandler,
   getFullname,
@@ -25,6 +25,7 @@ import { DeleteParticipantDialog } from '../delete/DeleteParticipantDialog';
 import AddressSection from './AddressSection';
 import MealSpecificsSection from './MealSpecificsSection';
 import MiscSection from './MiscSection';
+import { OpenAddressInGoogleMapsLink } from './OpenAddressInGoogleMapsLink';
 import { ParticipantFormContextMenu } from './ParticipantFormContextMenu';
 import ParticipantFormHeadline from './ParticipantFormHeadline';
 import { PersonalDataSection } from './PersonalDataSection';
@@ -116,16 +117,18 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
               <Grid
                 size={{
                   xs: 12,
-                  md: 8
-                }}>
+                  md: 8,
+                }}
+              >
                 <ParticipantFormHeadline />
               </Grid>
               <Grid
                 sx={commonStyles.textAlignRight}
                 size={{
                   xs: 12,
-                  md: 4
-                }}>
+                  md: 4,
+                }}
+              >
                 <ParticipantFormContextMenu
                   participant={participant}
                   teamPartnerWishChild={teamPartnerWishChild}
@@ -142,6 +145,7 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
               <>
                 <Box mb={3}>
                   <AddressSection isNumSeatsRequired={true} />
+                  <OpenAddressInGoogleMapsLink geocodingResult={participant?.geocodingResult} />
                 </Box>
                 <Box mb={3}>
                   <MealSpecificsSection />

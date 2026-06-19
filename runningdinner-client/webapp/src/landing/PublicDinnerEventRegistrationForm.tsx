@@ -223,7 +223,7 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
                           <Trans
                             i18nKey="landing:data_processing_acknowledge_hint"
                             values={{ privacyLink: `/${IMPRESSUM_PATH}` }}
-                            // @ts-ignore
+                            // @ts-expect-error -- type suppression
                             components={{ anchor: <LinkExtern /> }}
                           />
                         </>

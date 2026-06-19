@@ -26,7 +26,6 @@ export default function AddressSection(props: AddressSectionProps) {
 
   const { isNumSeatsRequired } = props;
 
-  // @ts-ignore
   return (
     <>
       <FormFieldset>{headline}</FormFieldset>

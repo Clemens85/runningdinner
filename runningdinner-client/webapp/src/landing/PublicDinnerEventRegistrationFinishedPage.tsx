@@ -27,7 +27,6 @@ function PublicDinnerEventRegistrationFinishedView({ publicRunningDinner }: Base
 
   React.useEffect(() => {
     if (isStringNotEmpty(publicRunningDinner?.paymentOptions?.redirectAfterPurchaseLink)) {
-      // @ts-ignore
       window.location.href = publicRunningDinner.paymentOptions.redirectAfterPurchaseLink;
     }
   }, [publicRunningDinner?.paymentOptions?.redirectAfterPurchaseLink]);
@@ -40,7 +39,7 @@ function PublicDinnerEventRegistrationFinishedView({ publicRunningDinner }: Base
         <Span>
           <Trans
             i18nKey={i18nKey}
-            // @ts-ignore
+            // @ts-expect-error -- type suppression
             components={{ anchor: <LinkExtern /> }}
             values={{ adminEmail: publicRunningDinner.adminEmail }}
           />

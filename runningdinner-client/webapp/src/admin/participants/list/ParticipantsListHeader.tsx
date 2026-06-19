@@ -1,10 +1,8 @@
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Grid, InputAdornment,TextField, Typography } from '@mui/material';
-import Button from '@mui/material/Button';
+import { Box, Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import {
   BaseAdminIdProps,
   concatParticipantList,
-  getParticipantsExportUrl,
   isArrayNotEmpty,
   isStringEmpty,
   ParticipantList,
@@ -21,6 +19,7 @@ import HtmlTranslate from '../../../common/i18n/HtmlTranslate';
 import { FormCheckboxSimple } from '../../../common/input/FormCheckboxSimple';
 import { commonStyles } from '../../../common/theme/CommonStyles';
 import { PageTitle } from '../../../common/theme/typography/Tags';
+import { ExcelActionsButton } from './ExcelActionsButton';
 
 export type ParticipantSearchResult = {
   filteredParticipants: ParticipantListable[];
@@ -37,11 +36,12 @@ export type ParticipantShowMiscNotesCallback = {
 
 type ParticipantsListHeaderProps = {
   showMiscNotes: boolean;
+  onImportClick: () => void;
 } & BaseAdminIdProps &
   ParticipantSearchChangeCallback &
   ParticipantShowMiscNotesCallback;
 
-export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, showMiscNotes, onShowMiscNotesChange }: ParticipantsListHeaderProps) {
+export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, showMiscNotes, onShowMiscNotesChange, onImportClick }: ParticipantsListHeaderProps) {
   const { data: participantList } = useFindParticipants(adminId);
 
   const [search, setSearch] = useState({ searchText: '', isSearching: false });
@@ -80,8 +80,9 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
             size={{
               xs: 12,
               sm: 7,
-              lg: 3
-            }}>
+              lg: 3,
+            }}
+          >
             <TextField
               variant="standard"
               onChange={handleSearchTextChange}
@@ -105,8 +106,9 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
             size={{
               xs: 12,
               sm: 5,
-              lg: 2
-            }}>
+              lg: 2,
+            }}
+          >
             <Typography variant={'subtitle1'}>
               <NumberOfParticipants participantList={participantList!} />
             </Typography>
@@ -116,33 +118,32 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
             size={{
               xs: 12,
               sm: 12,
-              lg: 2
-            }}>
+              lg: 2,
+            }}
+          >
             {/* <Button color={"primary"} variant={"outlined"}
                     to={generateParticipantMessagesPath(adminId)}
                     component={RouterLink}>{t('messages_send_participants')}</Button> */}
           </Grid>
 
-          {isArrayNotEmpty(searchableParticipants) && (
-            <Grid
-              sx={commonStyles.textAlignRight}
-              size={{
-                xs: 12,
-                lg: 5
-              }}>
-              <Button href={getParticipantsExportUrl(adminId)} rel="noopener noreferrer" color="primary" target="_blank">
-                {t('admin:export')}
-              </Button>
-            </Grid>
-          )}
+          <Grid
+            sx={commonStyles.textAlignRight}
+            size={{
+              xs: 12,
+              lg: 5,
+            }}
+          >
+            <ExcelActionsButton adminId={adminId} onImportClick={onImportClick} showExport={isArrayNotEmpty(searchableParticipants)} />
+          </Grid>
         </Grid>
 
         <Grid container direction={'row'} spacing={2} alignItems={'center'} justifyContent={'flex-start'}>
           <Grid
             size={{
               xs: 12,
-              sm: 7
-            }}>
+              sm: 7,
+            }}
+          >
             <FormCheckboxSimple
               name={'showMiscNotes'}
               label={t('admin:participants_show_misc_notes')}

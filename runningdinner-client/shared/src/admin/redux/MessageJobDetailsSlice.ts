@@ -11,7 +11,7 @@ export interface MessageJobIdAdminIdPayload extends BaseAdminIdProps {
 }
 
 export function fetchMessageJobDetailsData(adminId: string, messageJobId: string): AdminThunk {
-  return async (dispatch) => {
+  return (dispatch) => {
     dispatch(fetchMessageTasks({ adminId, messageJobId }));
     dispatch(fetchMessageJob({ adminId, messageJobId }));
   };

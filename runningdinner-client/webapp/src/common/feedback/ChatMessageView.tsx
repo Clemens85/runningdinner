@@ -1,5 +1,5 @@
-import { Paper, Box, Stack } from '@mui/material';
-import { MuiMarkdown, defaultOverrides } from 'mui-markdown';
+import { Box, Paper, Stack } from '@mui/material';
+import { defaultOverrides,MuiMarkdown } from 'mui-markdown';
 
 type ChatMessageProps = {
   text: string;

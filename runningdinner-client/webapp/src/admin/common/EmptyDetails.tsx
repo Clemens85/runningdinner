@@ -12,7 +12,7 @@ type EmptyDetailsProps = {
 export const EmptyDetails = ({ labelI18n }: EmptyDetailsProps) => {
   const { t } = useTranslation('admin');
 
-  const paperRef = useRef(null);
+  const paperRef = useRef<HTMLDivElement>(null);
   const paperHeight = useDynamicFullscreenHeight(paperRef, 300);
 
   const { showDetailsView } = useMasterDetailView();

@@ -1,5 +1,5 @@
 import { getAsHttpErrorOrDefault } from '..';
-import { HttpError,newHttpError } from '../types';
+import { HttpError, newHttpError } from '../types';
 
 export enum FetchStatus {
   IDLE = 'IDLE',
@@ -36,7 +36,6 @@ function mapFetchErrorState(fetchStatus: FetchStatus, action?: any): HttpError |
   let result = undefined;
   if (fetchStatus === FetchStatus.FAILED) {
     result = getAsHttpErrorOrDefault(action?.payload, GENERIC_HTTP_ERROR);
-    // @ts-ignore
     console.log(`Fetch error: ${JSON.stringify(action)}`);
   }
   return result;

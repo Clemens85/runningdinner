@@ -1,6 +1,6 @@
 import { TableCell, Button, Box } from '@mui/material';
 import React from 'react';
-import { ParticipantMealBadges } from './ParticipantMealBadges';
+import { ParticipantMealBadges } from '../participants/meal/ParticipantMealBadges.tsx';
 import NumSeats from '../participants/list/NumSeats';
 import ParticipantGenderTooltip from '../../common/gender/ParticipantGenderTooltip';
 import ParticipantGenderIcon from '../../common/gender/ParticipantGenderIcon';

@@ -52,7 +52,7 @@ export default function Acknowledge({ runningDinner }: BaseRunningDinnerProps) {
             <Trans
               i18nKey={'admin:runningdinner_acknowledge_error_text'}
               values={{ adminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL }}
-              // @ts-ignore
+              // @ts-expect-error -- type suppression
               components={{ anchor: <LinkExtern /> }}
             />
           </Span>

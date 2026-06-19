@@ -207,7 +207,7 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
                 <Box mb={1}>
                   <Trans
                     i18nKey={'landing:currentuser_already_registered_cancel'}
-                    // @ts-ignore
+                    // @ts-expect-error -- type suppression
                     components={{ anchor: <LinkExtern /> }}
                     values={{ email: publicSettings.publicContactEmail }}
                   />

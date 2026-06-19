@@ -53,7 +53,7 @@ export interface ConfirmationDialogProps extends Partial<DialogProps> {
  * @constructor
  */
 export function ConfirmationDialog({ dialogTitle, dialogContent, buttonConfirmText, buttonCancelText, onClose, danger = false, ...remainderDialogProps }: ConfirmationDialogProps) {
-  const handleCloseInternal = async (confirmed: boolean) => {
+  const handleCloseInternal = (confirmed: boolean) => {
     onClose(confirmed);
   };
 
@@ -76,9 +76,7 @@ export function ConfirmationDialog({ dialogTitle, dialogContent, buttonConfirmTe
       <DialogActions sx={dialogActionsCenteredStyle}>
         <Box px={2} pt={1} pb={2}>
           <Grid container justifyContent="flex-end" direction={buttonFlexDirection} alignContent="center">
-            <Grid style={{ alignSelf: 'center' }}>
-              {buttonCancelText && <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>}
-            </Grid>
+            <Grid style={{ alignSelf: 'center' }}>{buttonCancelText && <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>}</Grid>
             <Grid style={{ alignSelf: 'center' }}>
               {danger ? (
                 <Button sx={{ ml: isSmallDevice ? 0 : 1 }} color="secondary" variant="contained" onClick={() => handleCloseInternal(true)} autoFocus>

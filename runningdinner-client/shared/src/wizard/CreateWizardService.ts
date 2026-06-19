@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { isClosedDinner } from '../admin';
 import { BackendConfig } from '../BackendConfig';
 import { CONSTANTS } from '../Constants';
-import { getHoursOfDate, getMinutesOfDate, isAfterInDays,isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute } from '../date';
+import { getHoursOfDate, getMinutesOfDate, isAfterInDays, isSameDay, minusDays, plusDays, plusHours, toLocalDateQueryString, withHourAndMinute } from '../date';
 import { FetchData, FetchStatus } from '../redux/';
 import {
   AfterPartyLocation,
@@ -129,9 +129,9 @@ export function fillDemoDinnerValues(runningDinner: CreateRunningDinnerWizardMod
     'Das ist die Beschreibung für das öffentliche Demo Dinner Event. ' + 'Da Demo Events nicht auffindbar sind, spielt es keine Rolle was hier steht.';
 }
 
-export interface NavigationStep extends LabelValue {}
+export type NavigationStep = LabelValue;
 
-export interface CreateRunningDinnerWizardModel extends Omit<RunningDinner, 'sessionData'> {}
+export type CreateRunningDinnerWizardModel = Omit<RunningDinner, 'sessionData'>;
 
 export interface WizardState {
   runningDinner: CreateRunningDinnerWizardModel;

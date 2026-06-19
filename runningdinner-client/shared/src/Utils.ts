@@ -125,15 +125,7 @@ export function removeEntitiesFromList<T extends BaseEntity>(entityList: Array<T
   return result;
 }
 
-// @ts-ignore
-export const isClient = !!(
-  // @ts-ignore
-  (
-    typeof window !== 'undefined' && // @ts-ignore
-    window.document && // @ts-ignore
-    window.document.createElement
-  ) // @ts-ignore
-);
+export const isClient = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 
 /**
  * Extracts attributes from the passed object and pass them in an array with following format:<br>
@@ -193,7 +185,7 @@ export function getTruncatedText(text: string, limit: number) {
 }
 
 export function mapNewLineToHtmlLineBreaks(str: string) {
-  return str.replace(new RegExp('\r?\n', 'g'), '<br />');
+  return str.replace(/\r?\n/g, '<br />');
 }
 
 export function newObjectWithDefaultValuesIfNotSet<T>(incomingObj: T, defaultValues: T): T {
@@ -218,7 +210,6 @@ export function stringToColor(string: string) {
   let hash = 0;
   let i;
 
-   
   for (i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }

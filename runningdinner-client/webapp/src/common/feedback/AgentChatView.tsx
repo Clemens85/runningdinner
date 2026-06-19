@@ -1,12 +1,13 @@
+import EmailIcon from '@mui/icons-material/Email';
 import { Alert, AlertTitle, Box, Grid } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { ChatMessageView } from './ChatMessageView.tsx';
-import { TypingIndicator } from './TypingIndicator';
-import { useEffect, useRef, useState } from 'react';
 import { Feedback, isStringNotEmpty, newUuid, querySupportBot, SupportBotQueryResponse } from '@runningdinner/shared';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { ChatInputTextField } from './ChatInputTextField.tsx';
 import { ChatMessage, chatMessageFromFeedback, filterNonPendingMessages, hasAtLeastOnePendingMessage } from './ChatMessage.ts';
-import EmailIcon from '@mui/icons-material/Email';
+import { ChatMessageView } from './ChatMessageView.tsx';
+import { TypingIndicator } from './TypingIndicator';
 
 type AgentChatViewProps = {
   sentFeedback: Feedback;

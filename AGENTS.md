@@ -144,3 +144,14 @@ All open and public events can be accessed via a public event link. This link is
 ### Participant Self-Service
 
 Participants can access some functionality like Dinner Routes, Managing Team Hosts etc. via a self-service link sent to them after registration. This link is unique to each participant and should be kept confidential.
+
+### Team Partner Wish Handling
+
+There are two independent options for expressing a team partner wish:
+
+**Option 1 — Email invitation** (`teamPartnerWishEmail`): A participant stores the email address of their desired partner. The partner must also be registered (or imported) as a separate participant. Both participants simply carry each other's email in `teamPartnerWishEmail`; no additional records are created. This is the lightweight option — no structural linkage beyond the email field.
+
+**Option 2 — Fixed partner registration**: A participant co-registers a partner (e.g. spouse) with minimal data. This creates two linked participant records sharing a `teamPartnerWishOriginatorId`:
+
+- **Root** (`teamPartnerWishRegistrationRoot = true`): the registering participant; their own entity `id` equals `teamPartnerWishOriginatorId`.
+- **Child** (`teamPartnerWishRegistrationChild = true`): the auto-created partner record; its `teamPartnerWishOriginatorId` points to the root's `id`.

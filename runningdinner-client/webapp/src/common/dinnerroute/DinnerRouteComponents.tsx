@@ -241,7 +241,7 @@ type TeamHostMarkerProps = {
 
 const MapEntryPin = styled('div', {
   shouldForwardProp: (prop) => prop !== 'teamColor',
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
 })(({ teamColor }) => ({
   backgroundColor: teamColor,
   borderColor: '#000',
@@ -286,6 +286,8 @@ export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, 
   const isHovered = false; // Maybe we add this in future
 
   const zIndexUnselected = zIndex + 1;
+  const teamNumberLabel = team.teamNumber < 100 ? `#${team.teamNumber}` : `${team.teamNumber}`;
+
   return (
     <>
       <AdvancedMarker
@@ -301,10 +303,10 @@ export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, 
             transition: 'transform 0.7s ease',
           }}
         >
-          {/* @ts-ignore */}
+          {/* @ts-expect-error -- type suppression */}
           <MapEntryPin teamColor={useSecondaryClusterColor ? secondaryClusterColor : team.color}>
             <>{getMealTypeIcon(team.mealType)}</>
-            {DinnerRouteMapCalculator.getMarkerLabel(`#${team.teamNumber}`)}
+            {DinnerRouteMapCalculator.getMarkerLabel(teamNumberLabel)}
           </MapEntryPin>
         </Box>
       </AdvancedMarker>
@@ -326,7 +328,7 @@ export function AfterPartyLocationMarker(afterPartyLocationMapEntry: AfterPartyL
   return (
     <>
       <AdvancedMarker ref={markerRef} title={title} onClick={() => setOpen(!open)} position={{ lat: position.lat!, lng: position.lng! }}>
-        {/* @ts-ignore */}
+        {/* @ts-expect-error -- type suppression */}
         <MapEntryPin teamColor={color}>
           {getAfterPartyLocationIcon()}
           {DinnerRouteMapCalculator.getMarkerLabel(title)}

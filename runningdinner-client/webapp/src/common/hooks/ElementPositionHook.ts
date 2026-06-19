@@ -13,7 +13,6 @@ function getOffset(el: any) {
   const rect = el.getBoundingClientRect();
   const doc = el.ownerDocument;
   if (!doc) throw new Error('Unexpectedly missing <document>.');
-  // @ts-ignore
   const win = doc.defaultView || doc.parentWindow;
 
   const winX = win.pageXOffset !== undefined ? win.pageXOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollLeft;
@@ -42,7 +41,7 @@ function getPosition(el: HTMLElement | null) {
     let offsetParent = el.offsetParent || doc.documentElement;
 
     while (offsetParent && (offsetParent === doc.body || offsetParent === doc.documentElement)) {
-      // @ts-ignore
+      // @ts-expect-error -- type suppression
       offsetParent = offsetParent.parentNode;
     }
 
@@ -59,7 +58,7 @@ function getPosition(el: HTMLElement | null) {
   };
 }
 
-export function useElementPosition(ref: RefObject<HTMLElement>) {
+export function useElementPosition(ref: RefObject<HTMLElement | null>) {
   const { top, left } = getPosition(ref.current);
   const [ElementPosition, setElementPosition] = useState({
     top: top,

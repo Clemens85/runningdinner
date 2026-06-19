@@ -73,10 +73,8 @@ const InitialAsyncLoadingState: AsyncState<any> = {
   error: undefined,
 };
 
- 
 const defaultSetLoading: SetLoading<any> = (_asyncState) => InitialAsyncLoadingState;
 
- 
 const defaultSetResult: SetResult<any> = (result, _asyncState) => ({
   status: 'success',
   loading: false,
@@ -84,7 +82,6 @@ const defaultSetResult: SetResult<any> = (result, _asyncState) => ({
   error: undefined,
 });
 
- 
 const defaultSetError: SetError<any> = (error, _asyncState) => ({
   status: 'error',
   loading: false,
@@ -197,14 +194,16 @@ const useAsyncInternal = <R = UnknownResult, Args extends any[] = UnknownArgs>(
 ): UseAsyncReturn<R, Args> => {
   // Fallback missing params, only for JS users forgetting the deps array, to prevent infinite loops
   // https://github.com/slorber/react-async-hook/issues/27
-  // @ts-ignore
-  !params && (params = []);
+  // @ts-expect-error -- type suppression
+  if (!params) {
+    params = [];
+  }
 
   const normalizedOptions = normalizeOptions<R>(options);
 
   const [currentParams, setCurrentParams] = useState<Args | null>(null);
 
-  // @ts-ignore
+  // @ts-expect-error -- type suppression
   const AsyncState = useAsyncState<R>(normalizedOptions);
 
   const isMounted = useIsMounted();
@@ -252,8 +251,12 @@ const useAsyncInternal = <R = UnknownResult, Args extends any[] = UnknownArgs>(
   const isMounting = !isMounted();
   useEffect(() => {
     const execute = () => getLatestExecuteAsyncOperation()(...params);
-    isMounting && normalizedOptions.executeOnMount && execute();
-    !isMounting && normalizedOptions.executeOnUpdate && execute();
+    if (isMounting && normalizedOptions.executeOnMount) {
+      execute();
+    }
+    if (!isMounting && normalizedOptions.executeOnUpdate) {
+      execute();
+    }
   }, params);
 
   return {

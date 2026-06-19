@@ -5,13 +5,12 @@ export * from './Constants';
 export * from './date';
 export * from './DebounceHook';
 export * from './DisclosureHook';
+export * from './feedback';
 export { Fullname } from './Fullname.jsx';
 export * from './GeocodeUtil.js';
 export * from './HttpInterceptorConfig';
 export * from './issue';
 export * from './masterdata';
-export * from './feedback';
-
 export * from './redux';
 export * from './TeamNr';
 export * from './types';

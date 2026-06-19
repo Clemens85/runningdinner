@@ -2,7 +2,7 @@ import { Checkbox, FormControl, FormControlLabel, FormHelperText } from '@mui/ma
 
 import { FormCheckboxProps } from './FormCheckbox';
 
-export function FormCheckboxSimple({ name, label, helperText, defaultValue, useTableDisplay, checked, ...rest }: FormCheckboxProps) {
+export function FormCheckboxSimple({ name, label, helperText, defaultValue: _defaultValue, useTableDisplay, checked, ...rest }: FormCheckboxProps) {
   return (
     <FormControl variant="standard">
       <FormControlLabel

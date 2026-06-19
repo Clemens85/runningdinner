@@ -4,7 +4,7 @@ import { RefObject } from 'react';
 import { useElementPosition } from './ElementPositionHook';
 import { useWindowSize } from './WindowSizeHook';
 
-export function useDynamicFullscreenHeight(containerRef: RefObject<HTMLElement>, minHeight: number, calculateForSmallDevice: boolean = false) {
+export function useDynamicFullscreenHeight(containerRef: RefObject<HTMLElement | null>, minHeight: number, calculateForSmallDevice: boolean = false) {
   const browserOffset = 20; // Add 20 px offset for browser
 
   const { innerHeight } = useWindowSize();

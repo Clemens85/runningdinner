@@ -11,7 +11,7 @@ export const gray = {
   200: '#D6E2EB',
 };
 
-export const CardRoundedClickable = styled(Card)(({}) => ({
+export const CardRoundedClickable = styled(Card)((_props) => ({
   backgroundColor: gray[50],
   borderRadius: 10,
   border: `1px solid ${alpha(gray[200], 0.8)}`,
