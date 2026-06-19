@@ -1,67 +1,26 @@
-import { type OrganizerPortalCredential, type ParticipantPortalCredential, type PortalCredential } from './PortalTypes';
-
-const STORAGE_KEY = 'runningdinner_portal_credentials';
+const STORAGE_KEY = 'runningdinner_portal_token';
 
 /**
- * Returns all portal credentials currently stored in localStorage.
- * Returns an empty array if nothing is stored or the stored value is invalid.
+ * Returns the portal token stored in localStorage, or null if none is stored.
+ * The token is the single credential the frontend holds. All event data is resolved
+ * server-side by submitting this token — no raw adminIds or participant UUIDs are stored.
  */
-export function getStoredCredentials(): PortalCredential[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return [];
-    }
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-    return parsed as PortalCredential[];
-  } catch {
-    return [];
-  }
+export function getStoredPortalToken(): string | null {
+  return localStorage.getItem(STORAGE_KEY);
 }
 
 /**
- * Merges incoming credentials into localStorage, deduplicating by the natural key:
- * - PARTICIPANT: composite key of selfAdminId + participantId
- * - ORGANIZER: adminId
+ * Persists the portal token in localStorage.
+ * Overwrites any previously stored token (one token per browser, covering all events for the email).
  */
-export function mergeCredentials(incoming: PortalCredential[]): void {
-  const existing = getStoredCredentials();
-  const merged = [...existing];
-
-  for (const cred of incoming) {
-    const isDuplicate = merged.some((existing) => isSameCredential(existing, cred));
-    if (!isDuplicate) {
-      merged.push(cred);
-    }
-  }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+export function storePortalToken(token: string): void {
+  localStorage.setItem(STORAGE_KEY, token);
 }
 
 /**
- * Removes the portal credentials key from localStorage entirely.
+ * Removes the portal token from localStorage entirely.
  * Used by the "forget me on this device" action.
  */
-export function clearAllCredentials(): void {
+export function clearStoredPortalToken(): void {
   localStorage.removeItem(STORAGE_KEY);
-}
-
-function isSameCredential(a: PortalCredential, b: PortalCredential): boolean {
-  if (a.role !== b.role) {
-    return false;
-  }
-  if (a.role === 'PARTICIPANT' && b.role === 'PARTICIPANT') {
-    const pa = a as ParticipantPortalCredential;
-    const pb = b as ParticipantPortalCredential;
-    return pa.selfAdminId === pb.selfAdminId && pa.participantId === pb.participantId;
-  }
-  if (a.role === 'ORGANIZER' && b.role === 'ORGANIZER') {
-    const oa = a as OrganizerPortalCredential;
-    const ob = b as OrganizerPortalCredential;
-    return oa.adminId === ob.adminId;
-  }
-  return false;
 }

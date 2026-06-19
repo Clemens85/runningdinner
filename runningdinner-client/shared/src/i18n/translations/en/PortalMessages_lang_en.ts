@@ -29,7 +29,10 @@ const PortalMessages_en: any = {
   // ForgetMeButton
   forget_me_button: 'Forget me on this device',
   forget_me_dialog_title: 'Forget me on this device',
-  forget_me_dialog_text: 'This will remove all locally stored event links from this device. ' + 'Your registrations and event data on the server are NOT affected.',
+  forget_me_dialog_text:
+    'This will remove your portal access from this device and permanently invalidate your portal link. ' +
+    'Your registrations and event data on the server are NOT affected. ' +
+    'You can request a new access link at any time via the access recovery form.',
   forget_me_dialog_confirm: 'Forget me',
   forget_me_dialog_cancel: 'Cancel',
 };

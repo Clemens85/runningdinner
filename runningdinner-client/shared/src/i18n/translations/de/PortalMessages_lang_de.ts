@@ -29,7 +29,10 @@ const PortalMessages_de: any = {
   // ForgetMeButton
   forget_me_button: 'Auf diesem Gerät vergessen',
   forget_me_dialog_title: 'Auf diesem Gerät vergessen',
-  forget_me_dialog_text: 'Dies entfernt alle lokal gespeicherten Event-Links von diesem Gerät. ' + 'Deine Anmeldungen und Event-Daten auf dem Server sind NICHT betroffen.',
+  forget_me_dialog_text:
+    'Dies entfernt deinen Portalzugang von diesem Gerät und invalidiert deinen Portallink dauerhaft. ' +
+    'Deine Anmeldungen und Event-Daten auf dem Server sind NICHT betroffen. ' +
+    'Du kannst jederzeit einen neuen Zugangslink über das Wiederherstellungsformular anfordern.',
   forget_me_dialog_confirm: 'Vergessen',
   forget_me_dialog_cancel: 'Abbrechen',
 };

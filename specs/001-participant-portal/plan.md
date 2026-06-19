@@ -5,15 +5,17 @@
 
 ## Summary
 
-Add a Participant Portal that gives any registered participant or event organizer a centralized, browser-stored view of all their associated running dinner events — accessible without a traditional login. The first phase covers: replacing both the participant double opt-in email and the organizer creation email with combined confirmation+portal-access emails; persisting portal credentials in `localStorage`; a new `/my-events` route in the landing app listing all stored events (live-fetched from the backend); a "My Events" nav entry; an inline access-recovery flow reusing the same persistent portal token (no separate recovery token); organizer admin-jump links; and a device-local "forget me" action.
+Add a Participant Portal that gives any registered participant or event organizer a centralized, browser-stored view of all their associated running dinner events — accessible without a traditional login. The first phase covers: replacing both the participant double opt-in email and the organizer creation email with combined confirmation+portal-access emails; persisting the portal token in `localStorage`; a new `/my-events` route in the landing app listing all events (live-fetched from the backend by submitting the token); a "My Events" nav entry; an inline access-recovery flow reusing the same persistent portal token; organizer admin-jump links; and a device-local "forget me" action.
 
-**Technical approach**: New `portal/` package on the backend (`ParticipantPortalServiceRest` → `ParticipantPortalService` → existing participant/dinner repositories); new Flyway migration `V2.11` for the `PortalToken` entity (one persistent token per email, reused for both initial access and recovery); portal credential types and API call logic in `shared/src/portal/`; UI in `webapp/src/landing/portal/`. Existing confirmation email formatters and frontend activation page are modified to incorporate portal entry; no existing API contracts are broken.
+**Security design**: The portal token is the sole credential stored in `localStorage`. Individual event credentials (`adminId`, `selfAdminId`, `participantId`) are never written to browser storage. On portal activation the frontend calls `GET /token/{portalToken}` (side-effect-free — safe against email scanner prefetch) and, only if confirmation params are present, a separate `POST /token/{portalToken}/confirm`. The `POST /my-events` endpoint accepts only the portal token and resolves all events server-side.
+
+**Technical approach**: New `portal/` package on the backend (`ParticipantPortalServiceRest` → `ParticipantPortalService` → existing participant/dinner repositories); new Flyway migration `V2.11` for the `PortalToken` entity (one persistent token per email, reused for both initial access and recovery); portal token storage and API call logic in `shared/src/portal/`; UI in `webapp/src/portal/`. Existing confirmation email formatters and frontend activation page are modified to incorporate portal entry; no existing API contracts are broken.
 
 ## Technical Context
 
 **Language/Version**: Java 21 (backend), TypeScript 5.x / React 18 (frontend)  
 **Primary Dependencies**: Spring Boot 3.4+, Spring Data JPA, Spring Mail; React 18 + Vite + Material-UI v5, Axios, `@tanstack/react-query`, `react-hook-form` + Yup, `react-i18next`  
-**Storage**: PostgreSQL — new `portal_token` table via Flyway `V2.11` migration; browser `localStorage` for portal credentials (credentials only, not event data)  
+**Storage**: PostgreSQL — new `portal_token` table via Flyway `V2.11` migration; browser `localStorage` for the portal token string (token only, not credentials or event data)  
 **Testing**: `@ApplicationTest` + existing Spring test helpers (backend); Vitest + Testing Library (frontend)  
 **Target Platform**: Web — JVM server (Spring Boot on port 9090) + browser client (React SPA)  
 **Project Type**: Full-stack web application (extension of existing monorepo)  
@@ -55,15 +57,14 @@ specs/001-participant-portal/
 # Backend (Spring Boot)
 runningdinner-backend/src/main/java/org/runningdinner/
 ├── portal/                                         # NEW package
-│   ├── ParticipantPortalServiceRest.java           # REST controller — POST /my-events, POST /access-recovery, GET /access-recovery/{token}, GET /participant-access/{publicDinnerId}/{participantId}, GET /organizer-access/{adminId}
-│   ├── ParticipantPortalService.java               # Business logic — resolves events by credentials, email lookup, token CRUD
-│   ├── PortalToken.java                             # JPA entity — id, email, token (String, UUID+suffix format), lastRecoveryEmailSentAt (createdAt/modifiedAt inherited from AbstractEntity)
+│   ├── ParticipantPortalServiceRest.java           # REST controller — GET /token/{t} (validate), POST /token/{t}/confirm, POST /my-events, POST /access-recovery
+│   ├── ParticipantPortalService.java               # Business logic — validatePortalToken, performEventConfirmation, resolveMyEvents (by token), requestAccessRecovery, getOrCreatePortalToken
+│   ├── PortalToken.java                             # JPA entity — id, email, token, lastRecoveryEmailSentAt
 │   ├── PortalTokenRepository.java                   # Spring Data JPA repository
-│   └── to/
-│       ├── PortalEventEntryTO.java                 # Response DTO — eventName, eventDate, city, role (PARTICIPANT/ORGANIZER), adminUrl (organizer only)
-│       ├── PortalCredentialTO.java                 # Request DTO — type + credential fields
-│       ├── PortalMyEventsRequestTO.java             # POST /my-events body — list of PortalCredentialTOs
-│       └── PortalAccessResponseTO.java             # Credential set returned after link redemption — list of PortalCredentialTOs
+│   ├── PortalConfirmRequestTO.java                  # POST /token/{t}/confirm body — confirmPublicDinnerId, confirmParticipantId, confirmAdminId (all optional)
+│   ├── PortalMyEventsRequestTO.java                 # POST /my-events body — portalToken string
+│   ├── PortalEventEntryTO.java                     # Response DTO — eventName, eventDate, city, role, adminUrl
+│   └── PortalCredentialTO.java                     # Internal helper only (not part of API contract)
 ├── mail/
 │   ├── PortalTokenProvider.java                     # NEW interface (neutral location) — getOrCreatePortalToken(email): String; implemented by ParticipantPortalService
 │   └── formatter/
@@ -75,9 +76,10 @@ runningdinner-backend/src/main/resources/db/migration/
 
 # Frontend shared library (reusable logic, no DOM)
 runningdinner-client/shared/src/portal/             # NEW module
-├── PortalTypes.ts                                  # TypeScript types: PortalCredential, PortalEventEntry, PortalRole
-├── PortalService.ts                                # API calls via BackendConfig + axios; React Query hooks
-└── PortalStorageService.ts                         # localStorage R/W for PortalCredential[]
+├── PortalTypes.ts                                  # TypeScript types: PortalEventEntry, PortalRole (no credential types — token only stored)
+├── PortalService.ts                                # API calls: validatePortalToken (GET), confirmPortalEvent (POST), fetchMyEvents (POST), requestAccessRecovery (POST)
+├── PortalStorageService.ts                         # localStorage R/W for portal token string (key: runningdinner_portal_token)
+└── useMyEvents.ts                                  # React Query hook — reads stored token, calls fetchMyEvents
 
 # Frontend webapp (UI components)
 runningdinner-client/webapp/src/landing/portal/     # NEW directory

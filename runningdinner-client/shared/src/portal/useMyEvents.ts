@@ -1,20 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchMyEvents } from './PortalService';
-import { getStoredCredentials } from './PortalStorageService';
+import { getStoredPortalToken } from './PortalStorageService';
 import { PortalMyEventsResponseTO } from './PortalTypes';
 
 export const MY_EVENTS_QUERY_KEY = ['portalMyEvents'] as const;
 
 export function useMyEvents() {
-  const credentials = getStoredCredentials();
+  const portalToken = getStoredPortalToken();
 
   return useQuery<PortalMyEventsResponseTO>({
-    queryKey: [...MY_EVENTS_QUERY_KEY, credentials],
-    queryFn: () => fetchMyEvents(credentials),
-    enabled: credentials.length > 0,
+    queryKey: [...MY_EVENTS_QUERY_KEY, portalToken],
+    queryFn: () => fetchMyEvents(portalToken!),
+    enabled: portalToken !== null,
     placeholderData: { events: [] },
-    // cached events are still valid until credentials change
     staleTime: 30_000,
   });
 }

@@ -42,7 +42,11 @@ public class PortalToken extends AbstractEntity {  // or plain @Entity with @Id
         ↓
 [every subsequent portal email] → same row reused, same token embedded in link
         ↓
-[user clicks any portal link]   → GET /token/{token} → credentials resolved (no row change)
+[user clicks any portal link]   → GET /token/{token}    → token validated (no row change)
+                                   POST /token/{token}/confirm → confirmation performed if params present
+                                   frontend stores token string in localStorage
+        ↓
+[user opens /my-events]         → POST /my-events {portalToken} → events resolved server-side
         ↓
 [user requests recovery email]  → POST /access-recovery → email sent (if cooldown elapsed)
                                    → last_recovery_email_sent_at updated
@@ -71,25 +75,23 @@ CREATE TABLE portal_token (
 
 ## Backend — Transfer Objects (DTOs)
 
-### `PortalCredentialTO` (request, inbound)
-
-Used in `POST /my-events` body and returned from portal access + recovery endpoints.
+### `PortalConfirmRequestTO` (request body for POST `/token/{portalToken}/confirm`)
 
 ```java
-// Discriminated by `role` field
-public class PortalCredentialTO {
-    private PortalRole role;       // PARTICIPANT | ORGANIZER
-    private String selfAdminId;    // UUID string — required when role = PARTICIPANT
-    private String participantId;  // UUID string — required when role = PARTICIPANT
-    private String adminId;        // String — required when role = ORGANIZER
+public class PortalConfirmRequestTO {
+    private String confirmPublicDinnerId;  // required for participant confirmation
+    private UUID   confirmParticipantId;   // required for participant confirmation
+    private String confirmAdminId;         // required for organizer confirmation
+    // all fields optional; at most one confirmation context per request
 }
 ```
 
-### `PortalMyEventsRequestTO`
+### `PortalMyEventsRequestTO` (request body for POST `/my-events`)
 
 ```java
 public class PortalMyEventsRequestTO {
-    private List<PortalCredentialTO> credentials;
+    @NotBlank @Size(max = 128)
+    private String portalToken;   // the only credential the frontend holds
 }
 ```
 
@@ -107,16 +109,12 @@ public class PortalEventEntryTO {
 }
 ```
 
-### `PortalAccessResponseTO`
+> **Note**: `PortalCredentialTO` exists as an internal backend helper used between service
+> methods. It is **not** part of the REST API contract and is not sent to or received from
+> the frontend.
 
-Returned by `GET /token/{portalToken}` and is also the shape returned by
-`GET /access-recovery/{token}` (removed; both cases now use the single token endpoint).
-
-```java
-public class PortalAccessResponseTO {
-    private List<PortalCredentialTO> credentials;  // all credentials for the email
-}
-```
+> **Note**: `PortalAccessResponseTO` was removed — the token endpoint returns `204 No Content`
+> and the frontend stores the token string it already has from the URL.
 
 ### `PortalRole` (enum)
 
@@ -148,19 +146,6 @@ Located in `runningdinner-client/shared/src/portal/PortalTypes.ts`.
 ```typescript
 export type PortalRole = "PARTICIPANT" | "ORGANIZER";
 
-export interface ParticipantPortalCredential {
-  role: "PARTICIPANT";
-  selfAdminId: string;        // UUID — matches RunningDinner.selfAdministrationId
-  participantId: string;      // UUID — Participant.id
-}
-
-export interface OrganizerPortalCredential {
-  role: "ORGANIZER";
-  adminId: string;            // RunningDinner.adminId
-}
-
-export type PortalCredential = ParticipantPortalCredential | OrganizerPortalCredential;
-
 export interface PortalEventEntry {
   eventName: string;
   eventDate: string;          // ISO date string (LocalDate serialized)
@@ -168,29 +153,40 @@ export interface PortalEventEntry {
   role: PortalRole;
   adminUrl: string | null;    // null for participants
 }
+
+export interface PortalMyEventsResponseTO {
+  events: PortalEventEntry[];
+}
 ```
+
+> **Note**: `ParticipantPortalCredential`, `OrganizerPortalCredential`, `PortalCredential`,
+> and `PortalAccessResponseTO` were removed from the frontend types. The frontend never holds
+> or transmits raw `adminId`, `selfAdminId`, or `participantId` values — only the `portalToken`
+> string.
 
 ---
 
 ## Frontend — Browser Storage Model
 
-**Key**: `runningdinner_portal_credentials`  
+**Key**: `runningdinner_portal_token`  
 **Store**: `localStorage`  
-**Value type**: `PortalCredential[]` serialized as JSON  
+**Value type**: Plain `string` (the portal token)  
 **Library**: Wrapped by `PortalStorageService.ts` in `shared/src/portal/`
 
 ```typescript
 // PortalStorageService.ts public interface
-export function getStoredCredentials(): PortalCredential[];
-export function mergeCredentials(incoming: PortalCredential[]): void;
-  // Adds new credentials; deduplicates by (selfAdminId+participantId) or adminId
-export function clearAllCredentials(): void;
+export function getStoredPortalToken(): string | null;
+export function storePortalToken(token: string): void;
+  // Overwrites any existing token (one token per browser covers all events for the email)
+export function clearStoredPortalToken(): void;
   // Used by "forget me on this device" — removes the storage key entirely
 ```
 
-**Deduplication key**:
-- `PARTICIPANT`: composite of `selfAdminId + participantId`
-- `ORGANIZER`: `adminId`
+**Design rationale**: The `portalToken` is the sole session credential for the portal.
+Storing only the token (not the individual `adminId`/`selfAdminId`/`participantId` values)
+limits localStorage exposure — a credential that grants portal read-only access through a
+revocable token is significantly less dangerous than a permanently valid `adminId` that grants
+full event administration.
 
 **No event data is persisted.** The `PortalEventEntry[]` objects returned by `POST /my-events` are
 held in React Query cache only and are always re-fetched on page load.
