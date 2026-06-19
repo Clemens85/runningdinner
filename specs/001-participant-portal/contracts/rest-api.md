@@ -12,80 +12,73 @@
 
 ### GET `/token/{portalToken}`
 
-**Purpose**: Resolve all portal credentials for the email address associated with this token.
-Optionally performs an idempotent event confirmation on the same request if confirmation
-query parameters are provided.
+**Purpose**: Validate that the portal token exists. **No side effects** — confirmation is
+deliberately absent from this endpoint so that email link-preview scanners and security bots
+(which issue GET requests to every URL in an email before the user clicks) cannot trigger
+participant or organizer confirmation without user intent.
 
-This is the target of **all** portal email links — participant confirmation emails, organizer
-confirmation emails, and recovery emails all point here (same path shape, optional query params
-distinguish confirmation context).
+This is the initial GET that the browser performs when the user clicks a portal email link.
+All portal email links point here (same path, no query params on the GET). After validation
+the frontend issues a separate POST to `/confirm` if confirmation is required.
 
 **Path parameters**:
 | Name | Type | Description |
 |---|---|---|
-| `portalToken` | `String` | The portal token embedded in the email link (UUID + random string suffix, same format as `adminId`) |
+| `portalToken` | `String` | The portal token embedded in the email link |
 
-**Optional query parameters** (only present in combined confirmation+portal emails):
+**Response `204 No Content`**: Token is valid. No body.
+
+**Response `404 Not Found`**: Token does not exist.
+
+---
+
+### POST `/token/{portalToken}/confirm`
+
+**Purpose**: Perform an idempotent event confirmation (participant activation or organizer
+email acknowledgement). Separated from the GET so only real browser JavaScript — not
+email scanner bots — can trigger this side effect.
+
+**Path parameters**:
 | Name | Type | Description |
 |---|---|---|
-| `confirmPublicDinnerId` | `String` | Public event ID — triggers participant registration confirmation |
-| `confirmParticipantId` | `UUID` | Participant ID — required together with `confirmPublicDinnerId` |
-| `confirmAdminId` | `String` | Organizer admin ID — triggers organizer email confirmation |
+| `portalToken` | `String` | The portal token |
 
-At most one confirmation context is valid per request (`confirmPublicDinnerId`+`confirmParticipantId`
-**or** `confirmAdminId`, never both).
-
-**Response `200 OK`**:
+**Request body** (all fields optional — only the relevant ones are sent):
 ```json
 {
-  "credentials": [
-    {
-      "role": "PARTICIPANT",
-      "selfAdminId": "550e8400-e29b-41d4-a716-446655440000",
-      "participantId": "a0b1c2d3-e4f5-6789-ab01-234567890abc"
-    },
-    {
-      "role": "ORGANIZER",
-      "adminId": "org-1234-abcd"
-    }
-  ]
+  "confirmPublicDinnerId": "some-public-dinner-id",
+  "confirmParticipantId": "a0b1c2d3-e4f5-6789-ab01-234567890abc",
+  "confirmAdminId": null
 }
 ```
 
-Returns **all** credential pairs (PARTICIPANT and ORGANIZER) for all events associated with the
-email address tied to the portal token.
+At most one confirmation context is valid per request:
+- `confirmPublicDinnerId` + `confirmParticipantId` → participant registration confirmation
+- `confirmAdminId` → organizer email confirmation
+
+**Response `204 No Content`**: Confirmation performed (or was already done — idempotent).
 
 **Response `404 Not Found`**: Token does not exist.
 
 **Notes**:
-- If confirmation params are present, the corresponding confirmation is performed first
-  (idempotent — safe to call multiple times without side effects beyond the first call).
-- Organizer confirmation (`confirmAdminId`) confirms the email address only; it does NOT activate
-  or publish the event (FR-002).
-- If confirmation params are absent (plain portal access or recovery), no confirmation
-  side-effect occurs — credentials are resolved and returned as-is.
+- Confirmation is idempotent — safe to call multiple times; subsequent calls after the first
+  are no-ops.
+- Organizer confirmation (`confirmAdminId`) sets the acknowledged date only; it does NOT
+  activate or publish the event (FR-002).
 
 ---
 
 ### POST `/my-events`
 
-**Purpose**: Accept a list of portal credentials and return live event summaries for all
-resolvable events.
+**Purpose**: Accept the portal token and return live event summaries for all events associated
+with the email address bound to that token. The token is the only credential the frontend
+holds — no raw `adminId`, `selfAdminId`, or `participantId` values are stored in or sent from
+the browser.
 
 **Request body**:
 ```json
 {
-  "credentials": [
-    {
-      "role": "PARTICIPANT",
-      "selfAdminId": "550e8400-e29b-41d4-a716-446655440000",
-      "participantId": "a0b1c2d3-e4f5-6789-ab01-234567890abc"
-    },
-    {
-      "role": "ORGANIZER",
-      "adminId": "org-1234-abcd"
-    }
-  ]
+  "portalToken": "550e8400-e29b-41d4-a716-446655440000-aB3kZ"
 }
 ```
 
@@ -111,10 +104,13 @@ resolvable events.
 }
 ```
 
+**Response `404 Not Found`**: Token does not exist.
+
 **Behavior**:
 - Events that cannot be resolved (deleted, ID mismatch) are **silently omitted** — no error
   is returned (FR-012).
-- Empty credentials list → `events: []`.
+- The backend resolves all events for the email bound to the token server-side; the client
+  never submits individual credential IDs.
 
 ---
 
@@ -165,6 +161,13 @@ recovery email containing the portal link, if at least one event is associated w
 
 The `portalToken` is retrieved (or created) via `ParticipantPortalService.getOrCreatePortalToken(participant.email)`.
 
+The confirmation params are passed as query strings so they survive email forwarding and plain-text
+display. When the page loads, the frontend:
+1. Calls `GET /token/{portalToken}` to validate (no side effects).
+2. Calls `POST /token/{portalToken}/confirm` with `{confirmPublicDinnerId, confirmParticipantId}` in the body.
+
+This two-step split prevents email scanner bots from triggering confirmation via the GET prefetch.
+
 ### Organizer Event Creation Email
 
 | Link | Before | After |
@@ -173,6 +176,8 @@ The `portalToken` is retrieved (or created) via `ParticipantPortalService.getOrC
 | Admin management link | `{host}/admin/{adminId}` | **unchanged** |
 
 The `portalToken` is retrieved (or created) via `ParticipantPortalService.getOrCreatePortalToken(organizer.email)`.
+
+Same two-step split applies: the page first GETs to validate, then POSTs `{confirmAdminId}` to confirm.
 
 ---
 

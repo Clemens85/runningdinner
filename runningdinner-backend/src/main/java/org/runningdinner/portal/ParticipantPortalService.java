@@ -5,6 +5,7 @@ import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.util.LogSanitizer;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.PortalTokenProvider;
@@ -73,60 +74,73 @@ public class ParticipantPortalService implements PortalTokenProvider {
   // ─── Portal access via token ─────────────────────────────────────────────
 
   /**
-   * Resolves all portal credentials for the email associated with this portal token.
-   * Optionally performs an idempotent event confirmation:
+   * Validates that the portal token exists. No side effects.
+   * Safe to call from a GET endpoint — used by the activation page on first load.
+   *
+   * @throws PortalTokenNotFoundException if the token is unknown
+   */
+  @Transactional(readOnly = true)
+  public void validatePortalToken(String portalToken) {
+    portalTokenRepository.findByToken(portalToken)
+        .orElseThrow(() -> new PortalTokenNotFoundException("Portal token not found"));
+  }
+
+  /**
+   * Permanently deletes the portal token, invalidating all portal links for this email address.
+   * Called by the "forget me" action. If the token is not found, this is a no-op — the user's
+   * intent (revocation) is satisfied either way.
+   * After this call the user must request a new access link via the recovery flow.
+   */
+  @Transactional
+  public void revokePortalToken(String portalToken) {
+    portalTokenRepository.findByToken(portalToken)
+        .ifPresent(portalTokenRepository::delete);
+  }
+
+  /**
+   * Validates the portal token and performs an idempotent event confirmation.
+   * Must only be called from a POST endpoint so that email link-preview scanners
+   * (which issue GET requests) cannot trigger confirmation without user intent.
    * <ul>
    *   <li>If {@code confirmPublicDinnerId} + {@code confirmParticipantId} are present →
    *       participant registration confirmation.</li>
    *   <li>If {@code confirmAdminId} is present → organizer email confirmation (acknowledged date).</li>
    * </ul>
    *
-   * @throws PortalTokenNotFoundException if the token does not exist
+   * @throws PortalTokenNotFoundException if the token is unknown
    */
   @Transactional
-  public PortalAccessResponseTO resolveCredentialsByToken(String portalToken,
-                                                          String confirmPublicDinnerId,
-                                                          UUID confirmParticipantId,
-                                                          String confirmAdminId) {
-    PortalToken token = portalTokenRepository.findByToken(portalToken)
-        .orElseThrow(() -> new PortalTokenNotFoundException("No portal token found: " + portalToken));
+  public void performEventConfirmation(String portalToken,
+                                       String confirmPublicDinnerId,
+                                       UUID confirmParticipantId,
+                                       String confirmAdminId) {
+    portalTokenRepository.findByToken(portalToken)
+        .orElseThrow(() -> new PortalTokenNotFoundException("Portal token not found"));
 
-    String email = token.getEmail();
-
-    // Perform optional idempotent confirmation
     if (StringUtils.isNotBlank(confirmPublicDinnerId) && confirmParticipantId != null) {
       performParticipantConfirmation(confirmPublicDinnerId, confirmParticipantId);
     } else if (StringUtils.isNotBlank(confirmAdminId)) {
       performOrganizerConfirmation(confirmAdminId);
     }
-
-    return buildCredentialsForEmail(email);
   }
 
   // ─── My Events ────────────────────────────────────────────────────────────
 
   /**
-   * Resolves credentials from the request to live event summaries.
-   * Unresolvable entries (deleted events, wrong IDs) are silently omitted.
+   * Resolves all live event summaries for the email address bound to the given portal token.
+   * The token is the only credential the client needs to hold — no raw adminIds or selfAdminIds
+   * are stored or submitted by the frontend.
+   * Unresolvable events (deleted, mismatched) are silently omitted.
+   *
+   * @throws PortalTokenNotFoundException if the token is unknown
    */
   @Transactional(readOnly = true)
   public PortalMyEventsResponseTO resolveMyEvents(PortalMyEventsRequestTO request) {
-    if (request == null || request.getCredentials() == null || request.getCredentials().isEmpty()) {
-      return new PortalMyEventsResponseTO(new ArrayList<>());
-    }
-
-    List<PortalEventEntryTO> events = new ArrayList<>();
-
-    for (PortalCredentialTO credential : request.getCredentials()) {
-      if (credential.getRole() == PortalRole.PARTICIPANT) {
-        resolveParticipantEventEntry(credential).ifPresent(events::add);
-      } else if (credential.getRole() == PortalRole.ORGANIZER) {
-        resolveOrganizerEventEntry(credential).ifPresent(events::add);
-      }
-    }
-
-    return new PortalMyEventsResponseTO(events);
+    PortalToken token = portalTokenRepository.findByToken(request.getPortalToken())
+        .orElseThrow(() -> new PortalTokenNotFoundException("Portal token not found"));
+    return buildEventEntriesForEmail(token.getEmail());
   }
+
 
   // ─── Access Recovery ─────────────────────────────────────────────────────
 
@@ -197,7 +211,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
       frontendRunningDinnerService.activateSubscribedParticipant(publicDinnerId, participantId);
     } catch (Exception e) {
       // Idempotent — log but do not fail the portal access
-      LOGGER.warn("Participant confirmation failed (may be already confirmed or invalid): publicDinnerId={}, participantId={}", publicDinnerId, participantId, e);
+      LOGGER.warn("Participant confirmation failed: publicDinnerId={}, participantId={}", publicDinnerId, participantId, e);
     }
   }
 
@@ -209,34 +223,33 @@ public class ParticipantPortalService implements PortalTokenProvider {
       }
     } catch (Exception e) {
       // Idempotent — log but do not fail the portal access
-      LOGGER.warn("Organizer confirmation failed (may be already confirmed or invalid): adminId={}", adminId, e);
+      LOGGER.warn("Organizer confirmation failed: adminId={}", LogSanitizer.sanitize(adminId), e);
     }
   }
 
-  private PortalAccessResponseTO buildCredentialsForEmail(String email) {
-    List<PortalCredentialTO> credentials = new ArrayList<>();
+  private PortalMyEventsResponseTO buildEventEntriesForEmail(String email) {
+    List<PortalEventEntryTO> events = new ArrayList<>();
 
-    // Participant credentials: find all participants with this email across all dinners
+    // Participant events
     List<Participant> participants = participantService.findParticipantsAcrossAllDinnersByEmail(email);
     for (Participant participant : participants) {
       try {
         RunningDinner dinner = runningDinnerService.findRunningDinnerByAdminId(participant.getAdminId());
-        credentials.add(PortalCredentialTO.forParticipant(
-            dinner.getSelfAdministrationId(),
-            participant.getId()
-        ));
+        PortalCredentialTO cred = PortalCredentialTO.forParticipant(dinner.getSelfAdministrationId(), participant.getId());
+        resolveParticipantEventEntry(cred).ifPresent(events::add);
       } catch (Exception e) {
         LOGGER.warn("Could not resolve RunningDinner for participant {}: {}", participant.getId(), e.getMessage());
       }
     }
 
-    // Organizer credentials: find all dinners organized by this email
+    // Organizer events
     List<RunningDinner> organizedDinners = runningDinnerService.findRunningDinnersByOrganizerEmail(email);
     for (RunningDinner dinner : organizedDinners) {
-      credentials.add(PortalCredentialTO.forOrganizer(dinner.getAdminId()));
+      PortalCredentialTO cred = PortalCredentialTO.forOrganizer(dinner.getAdminId());
+      resolveOrganizerEventEntry(cred).ifPresent(events::add);
     }
 
-    return new PortalAccessResponseTO(credentials);
+    return new PortalMyEventsResponseTO(events);
   }
 
   private Optional<PortalEventEntryTO> resolveParticipantEventEntry(PortalCredentialTO credential) {

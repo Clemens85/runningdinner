@@ -1,10 +1,10 @@
 package org.runningdinner.portal;
 
 import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 /**
  * REST controller for the Participant Portal.
@@ -23,24 +23,46 @@ public class ParticipantPortalServiceRest {
   /**
    * GET /rest/participant-portal/v1/token/{portalToken}
    * <p>
-   * Resolves all portal credentials for the email tied to this token.
-   * Optionally performs an idempotent event confirmation when confirmation params are present.
-   *
-   * @param portalToken         the portal token embedded in the email link
-   * @param confirmPublicDinnerId  optional — triggers participant confirmation
-   * @param confirmParticipantId   optional — required together with confirmPublicDinnerId
-   * @param confirmAdminId         optional — triggers organizer email confirmation
-   * @return all portal credentials for the email
+   * Validates the portal token. No side effects — confirmation is intentionally absent so that
+   * email link-preview scanners (which issue GET requests) cannot trigger confirmation
+   * without user intent.
+   * Returns 204 No Content on success; 404 if the token is unknown.
    */
   @GetMapping("/token/{portalToken}")
-  public PortalAccessResponseTO resolveByToken(
-      @PathVariable String portalToken,
-      @RequestParam(required = false) String confirmPublicDinnerId,
-      @RequestParam(required = false) UUID confirmParticipantId,
-      @RequestParam(required = false) String confirmAdminId) {
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void validateToken(@PathVariable String portalToken) {
+    participantPortalService.validatePortalToken(portalToken);
+  }
 
-    return participantPortalService.resolveCredentialsByToken(
-        portalToken, confirmPublicDinnerId, confirmParticipantId, confirmAdminId);
+  /**
+   * DELETE /rest/participant-portal/v1/token/{portalToken}
+   * <p>
+   * Permanently revokes the portal token, invalidating all portal links for this email address.
+   * Called by the "forget me on this device" action. Always returns 204 — no-op if already gone.
+   * After revocation the user must request a new link via the access recovery flow.
+   */
+  @DeleteMapping("/token/{portalToken}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void revokeToken(@PathVariable String portalToken) {
+    participantPortalService.revokePortalToken(portalToken);
+  }
+
+  /**
+   * POST /rest/participant-portal/v1/token/{portalToken}/confirm
+   * <p>
+   * Performs an idempotent event confirmation (participant activation or organizer acknowledgement).
+   * Separated from the GET so that email link-preview scanners cannot trigger it.
+   * Returns 204 No Content; 404 if the token is unknown.
+   */
+  @PostMapping("/token/{portalToken}/confirm")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void confirmEvent(@PathVariable String portalToken,
+                           @Valid @RequestBody PortalConfirmRequestTO request) {
+    participantPortalService.performEventConfirmation(
+        portalToken,
+        request.getConfirmPublicDinnerId(),
+        request.getConfirmParticipantId(),
+        request.getConfirmAdminId());
   }
 
   /**
@@ -66,7 +88,7 @@ public class ParticipantPortalServiceRest {
    * @param request JSON body containing the email address
    */
   @PostMapping("/access-recovery")
-  @ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
   public void requestAccessRecovery(@Valid @RequestBody AccessRecoveryRequestTO request) {
     participantPortalService.requestAccessRecovery(request.getEmail());
   }

@@ -53,21 +53,22 @@ on port `9090`.
 
 1. Register for an existing open running dinner event on the public event list page.
 2. Check the received email (dev mailbox / MailHog / Mailjet sandbox).
-3. The email now contains one link: the participant portal URL  
-   `http://localhost:5173/my-events/participant/{publicDinnerId}/{participantId}`
-4. Click the link. The `PortalActivationPage` opens, confirms the registration, and  
-   navigates to `/my-events` showing the event.
+3. The email contains one link with the portal token and confirmation params in the query string:  
+   `http://localhost:5173/my-events/{portalToken}?confirmPublicDinnerId={publicId}&confirmParticipantId={participantId}`
+4. Click the link. The `PortalActivationPage` loads, calls `GET /token/{portalToken}` (validates,
+   no side effects), then calls `POST /token/{portalToken}/confirm` with the confirmation params.
+   The registration is confirmed and the page navigates to `/my-events` showing the event.
 5. Close the browser tab, open `/my-events` directly — the event is still listed  
-   (credentials persisted in `localStorage`).
+   (portal token persisted in `localStorage` under key `runningdinner_portal_token`).
 
 ### Flow B — Organizer: Combined Confirmation + Portal Entry
 
 1. Create a new running dinner via the wizard.
 2. Open the received event creation email.
-3. The email contains a portal URL:  
-   `http://localhost:5173/my-events/organizer/{adminId}`
-4. Click the link. The email is confirmed (idempotent), portal opens, event shown with  
-   "Manage event" action.
+3. The email contains a portal URL with the admin ID as a confirmation param:  
+   `http://localhost:5173/my-events/{portalToken}?confirmAdminId={adminId}`
+4. Click the link. The page validates (GET, no side effects), then confirms organizer email
+   (POST with `confirmAdminId`). Portal opens, event shown with "Manage event" action.
 5. Click "Manage event" — verify it navigates to the admin area for that dinner.
 
 ### Flow C — My Events Navigation (Empty State + Recovery)
@@ -77,16 +78,16 @@ on port `9090`.
 3. See "My Events" in the main navigation (must not appear in admin or wizard areas).
 4. Click "My Events" — empty state + access recovery form are shown inline.
 5. Enter a known registered email and submit.
-6. Check the received recovery email — one link:  
-   `http://localhost:5173/my-events/recover/{token}`
-7. Click the link — all events for that email appear in the portal + stored in localStorage.
+6. Check the received recovery email — one link (no confirmation params — plain portal access):  
+   `http://localhost:5173/my-events/{portalToken}`
+7. Click the link — all events for that email appear in the portal + token stored in localStorage.
 
 ### Flow D — Forget Me on This Device
 
 1. With events stored in the portal, find the "Forget me on this device" action.
 2. Confirm the dialog.
 3. Portal is cleared; empty state + recovery form are shown.
-4. Inspect `localStorage` in browser DevTools — `runningdinner_portal_credentials` key absent.
+4. Inspect `localStorage` in browser DevTools — `runningdinner_portal_token` key absent.
 
 ### Flow E — Backward Compatibility Check
 

@@ -1,5 +1,5 @@
 import { Alert, Box, CircularProgress, Container, Typography } from '@mui/material';
-import { mergeCredentials, resolvePortalToken } from '@runningdinner/shared';
+import { confirmPortalEvent, validatePortalToken, storePortalToken } from '@runningdinner/shared';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -23,9 +23,19 @@ export function PortalActivationPage() {
     const confirmParticipantId = searchParams.get('confirmParticipantId') ?? undefined;
     const confirmAdminId = searchParams.get('confirmAdminId') ?? undefined;
 
-    resolvePortalToken(portalToken, { confirmPublicDinnerId, confirmParticipantId, confirmAdminId })
-      .then((response) => {
-        mergeCredentials(response.credentials);
+    const hasConfirmParams = confirmPublicDinnerId || confirmParticipantId || confirmAdminId;
+
+    // Step 1: validate the token via GET (no side effects — safe against email scanner prefetching).
+    // Step 2: if confirmation params are present, POST them separately so only a real browser
+    //         page load (not a link-preview bot) can trigger participant/organizer confirmation.
+    validatePortalToken(portalToken)
+      .then(() => {
+        if (hasConfirmParams) {
+          return confirmPortalEvent(portalToken, { confirmPublicDinnerId, confirmParticipantId, confirmAdminId });
+        }
+      })
+      .then(() => {
+        storePortalToken(portalToken);
         navigate(`${MY_EVENTS_PATH}`, { replace: true });
       })
       .catch(() => {

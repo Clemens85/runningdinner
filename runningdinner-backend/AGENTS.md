@@ -251,3 +251,7 @@ Non-recoverable errors from web requests are globally handled by GlobalException
 - **Mail architecture:** `MailSenderFactory`, `MailService`, `MailConfig`
 - **Test base:** `ApplicationTest` annotation, `TestHelperService`
 - **Example REST controller:** `org.runningdinner.admin.rest.RunningDinnerServiceRest`
+
+## Imports
+
+Don't use inline imports in code like org.springframework.http.HttpStatus, but rather import the class and use HttpStatus in the code. This is for better readability and maintainability of the code.

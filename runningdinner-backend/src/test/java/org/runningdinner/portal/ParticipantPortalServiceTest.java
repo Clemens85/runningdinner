@@ -61,25 +61,22 @@ class ParticipantPortalServiceTest {
   }
 
   @Test
-  void resolveCredentialsByToken_returnsCredentials_afterParticipantRegistration() {
+  void validatePortalToken_succeeds_afterParticipantRegistration() {
     RegistrationDataTO registrationData = TestUtil.createRegistrationData("Max Mustermann", PARTICIPANT_EMAIL, TestUtil.newAddress(), 6);
     frontendRunningDinnerService.performRegistration(runningDinner.getPublicSettings().getPublicId(), registrationData, false);
 
     String portalToken = participantPortalService.getOrCreatePortalToken(PARTICIPANT_EMAIL);
 
-    // Resolve credentials — without confirmation params (participant is already subscribed but not yet activated)
-    PortalAccessResponseTO response = participantPortalService.resolveCredentialsByToken(portalToken, null, null, null);
+    // Validation is side-effect-free; event should be resolvable afterwards
+    participantPortalService.validatePortalToken(portalToken);
 
-    assertThat(response).isNotNull();
-    assertThat(response.getCredentials()).isNotEmpty();
-    assertThat(response.getCredentials())
-        .anyMatch(c -> c.getRole() == PortalRole.PARTICIPANT
-            && PARTICIPANT_EMAIL.equalsIgnoreCase(
-                findParticipantEmail(c)));
+    PortalMyEventsResponseTO myEvents = participantPortalService.resolveMyEvents(new PortalMyEventsRequestTO(portalToken));
+    assertThat(myEvents.getEvents()).isNotEmpty();
+    assertThat(myEvents.getEvents()).anyMatch(e -> e.getRole() == PortalRole.PARTICIPANT);
   }
 
   @Test
-  void resolveCredentialsByToken_withConfirmationParams_activatesParticipant() {
+  void performEventConfirmation_withConfirmationParams_activatesParticipant() {
     RegistrationDataTO registrationData = TestUtil.createRegistrationData("Anna Test", PARTICIPANT_EMAIL, TestUtil.newAddress(), 6);
     var registrationSummary = frontendRunningDinnerService.performRegistration(
         runningDinner.getPublicSettings().getPublicId(), registrationData, false);
@@ -89,25 +86,25 @@ class ParticipantPortalServiceTest {
     String publicId = runningDinner.getPublicSettings().getPublicId();
 
     // First call: confirms the participant
-    PortalAccessResponseTO response1 = participantPortalService.resolveCredentialsByToken(
-        portalToken, publicId, participant.getId(), null);
-    assertThat(response1.getCredentials()).isNotEmpty();
+    participantPortalService.performEventConfirmation(portalToken, publicId, participant.getId(), null);
+    PortalMyEventsResponseTO myEvents1 = participantPortalService.resolveMyEvents(new PortalMyEventsRequestTO(portalToken));
+    assertThat(myEvents1.getEvents()).isNotEmpty();
 
     // Second call: idempotent — should not throw
-    PortalAccessResponseTO response2 = participantPortalService.resolveCredentialsByToken(
-        portalToken, publicId, participant.getId(), null);
-    assertThat(response2.getCredentials()).isNotEmpty();
+    participantPortalService.performEventConfirmation(portalToken, publicId, participant.getId(), null);
+    PortalMyEventsResponseTO myEvents2 = participantPortalService.resolveMyEvents(new PortalMyEventsRequestTO(portalToken));
+    assertThat(myEvents2.getEvents()).isNotEmpty();
   }
 
   @Test
-  void resolveCredentialsByToken_unknownToken_throws404() {
+  void validatePortalToken_unknownToken_throws404() {
     assertThrows(PortalTokenNotFoundException.class,
-        () -> participantPortalService.resolveCredentialsByToken("unknown-token-xyz", null, null, null));
+        () -> participantPortalService.validatePortalToken("unknown-token-xyz"));
   }
 
-  // Helper: find participant email from credential by looking up in the response
-  private String findParticipantEmail(PortalCredentialTO credential) {
-    // Credentials only carry IDs, not email — we just verify role here
-    return PARTICIPANT_EMAIL; // assertions already check role; email is implied by token lookup
+  @Test
+  void resolveMyEvents_unknownToken_throws404() {
+    assertThrows(PortalTokenNotFoundException.class,
+        () -> participantPortalService.resolveMyEvents(new PortalMyEventsRequestTO("unknown-token-xyz")));
   }
 }

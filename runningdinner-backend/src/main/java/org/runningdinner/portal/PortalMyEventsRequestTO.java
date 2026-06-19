@@ -1,26 +1,26 @@
 package org.runningdinner.portal;
 
-import jakarta.validation.Valid;
-
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class PortalMyEventsRequestTO {
 
-  @Valid
-  private List<PortalCredentialTO> credentials;
+  @NotBlank
+  @Size(max = 128)
+  private String portalToken;
 
   public PortalMyEventsRequestTO() {
   }
 
-  public PortalMyEventsRequestTO(List<PortalCredentialTO> credentials) {
-    this.credentials = credentials;
+  public PortalMyEventsRequestTO(String portalToken) {
+    this.portalToken = portalToken;
   }
 
-  public List<PortalCredentialTO> getCredentials() {
-    return credentials;
+  public String getPortalToken() {
+    return portalToken;
   }
 
-  public void setCredentials(List<PortalCredentialTO> credentials) {
-    this.credentials = credentials;
+  public void setPortalToken(String portalToken) {
+    this.portalToken = portalToken;
   }
 }
