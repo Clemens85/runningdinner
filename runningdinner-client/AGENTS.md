@@ -115,6 +115,7 @@ type MyComponentProps = BaseRunningDinnerProps & { extraProp: string };
 - Uses jsdom, junit reporter outputs to `reports/`
 - Setup file: `setupTests.js` (imports `@testing-library/jest-dom`)
 - Run via: `pnpm test` (runs all workspaces), `pnpm -r test` (recursive)
+- Test files are named `*.spec.ts` or `*.spec.tsx` and located next to components (e.g. `AddressLocation.spec.jsx`)
 
 ### Testing Library
 
