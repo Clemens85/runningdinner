@@ -16,11 +16,11 @@ function EventRoleChip({ role }: PortalEventEntry) {
 }
 
 function EventInfo({ city, eventDate }: PortalEventEntry) {
-  const eventDateFromatted = formatLocalDate(eventDate);
+  const eventDateFormatted = formatLocalDate(eventDate);
   return (
     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
       {city}
-      {eventDate ? ` · ${eventDateFromatted}` : ''}
+      {eventDate ? ` · ${eventDateFormatted}` : ''}
     </Typography>
   );
 }
