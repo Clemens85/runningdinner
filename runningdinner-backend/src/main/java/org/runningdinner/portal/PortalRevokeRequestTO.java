@@ -1,21 +1,20 @@
 package org.runningdinner.portal;
 
-import com.google.common.base.MoreObjects;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-public class PortalMyEventsRequestTO {
+public class PortalRevokeRequestTO {
 
   @NotNull
   @Size(max = 20)
   private List<@NotNull @Size(max = 128) String> portalTokens;
 
-  public PortalMyEventsRequestTO() {
+  public PortalRevokeRequestTO() {
   }
 
-  public PortalMyEventsRequestTO(List<String> portalTokens) {
+  public PortalRevokeRequestTO(List<String> portalTokens) {
     this.portalTokens = portalTokens;
   }
 
@@ -29,8 +28,6 @@ public class PortalMyEventsRequestTO {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-            .add("portalTokens", portalTokens)
-            .toString();
+    return portalTokens != null ? portalTokens.toString() : "null";
   }
 }

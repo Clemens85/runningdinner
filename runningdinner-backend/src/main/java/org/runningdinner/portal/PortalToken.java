@@ -1,8 +1,8 @@
 package org.runningdinner.portal;
 
+import com.google.common.base.MoreObjects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import org.runningdinner.core.AbstractEntity;
 
 import java.time.LocalDateTime;
@@ -42,5 +42,13 @@ public class PortalToken extends AbstractEntity {
 
   public void setLastRecoveryEmailSentAt(LocalDateTime lastRecoveryEmailSentAt) {
     this.lastRecoveryEmailSentAt = lastRecoveryEmailSentAt;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("email", email)
+            .add("token", token)
+            .toString();
   }
 }

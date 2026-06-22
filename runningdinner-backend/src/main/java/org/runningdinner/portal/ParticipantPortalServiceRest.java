@@ -35,16 +35,16 @@ public class ParticipantPortalServiceRest {
   }
 
   /**
-   * DELETE /rest/participant-portal/v1/token/{portalToken}
+   * POST /rest/participant-portal/v1/token/revoke
    * <p>
-   * Permanently revokes the portal token, invalidating all portal links for this email address.
-   * Called by the "forget me on this device" action. Always returns 204 — no-op if already gone.
-   * After revocation the user must request a new link via the access recovery flow.
+   * Permanently revokes all supplied portal tokens, invalidating portal links for the associated
+   * email addresses. Called by the "forget me on this device" action.
+   * Always returns 204 — tokens not found are silently ignored.
    */
-  @DeleteMapping("/token/{portalToken}")
+  @PostMapping("/token/revoke")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void revokeToken(@PathVariable String portalToken) {
-    participantPortalService.revokePortalToken(portalToken);
+  public void revokeTokens(@Valid @RequestBody PortalRevokeRequestTO request) {
+    participantPortalService.revokePortalTokens(request.getPortalTokens());
   }
 
   /**

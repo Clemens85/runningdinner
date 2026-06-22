@@ -8,11 +8,17 @@ interface MyEventsEntryListProps {
   events: PortalEventEntry[];
 }
 
-function EventRoleChip({ role }: PortalEventEntry) {
+function EventRoleChip({ roles }: PortalEventEntry) {
   const { t } = useTranslation('portal');
-  const isOrganizer = role === 'ORGANIZER';
-  const label = isOrganizer ? t('role_organizer') : t('role_participant');
-  return <Chip label={label} size="small" color={isOrganizer ? 'primary' : 'default'} sx={{ flexShrink: 0, mt: 0.25 }} />;
+  return (
+    <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+      {roles.map((role) => {
+        const isOrganizer = role === 'ORGANIZER';
+        const label = isOrganizer ? t('role_organizer') : t('role_participant');
+        return <Chip key={role} label={label} size="small" color={isOrganizer ? 'primary' : 'default'} sx={{ flexShrink: 0, mt: 0.25 }} />;
+      })}
+    </Box>
+  );
 }
 
 function EventInfo({ city, eventDate }: PortalEventEntry) {
@@ -25,9 +31,9 @@ function EventInfo({ city, eventDate }: PortalEventEntry) {
   );
 }
 
-function ManageEventButton({ adminUrl, role }: PortalEventEntry) {
+function ManageEventButton({ adminUrl, roles }: PortalEventEntry) {
   const { t } = useTranslation('portal');
-  if (isStringEmpty(adminUrl) || role !== 'ORGANIZER') {
+  if (isStringEmpty(adminUrl) || !roles.includes('ORGANIZER')) {
     return null;
   }
   return (

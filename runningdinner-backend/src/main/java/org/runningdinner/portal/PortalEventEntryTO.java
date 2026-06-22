@@ -1,26 +1,33 @@
 package org.runningdinner.portal;
 
+import com.google.common.base.MoreObjects;
+
 import java.time.LocalDate;
+import java.util.List;
 
 public class PortalEventEntryTO {
 
   private String eventName;
   private LocalDate eventDate;
   private String city;
-  private PortalRole role;
-  /** null for PARTICIPANT; full admin URL for ORGANIZER */
+  private List<PortalRole> roles;
+  /**
+   * null for PARTICIPANT; full admin URL for ORGANIZER
+   */
   private String adminUrl;
-  /** Public event page URL, available for all roles */
+  /**
+   * Public event page URL, available for all roles
+   */
   private String publicUrl;
 
   public PortalEventEntryTO() {
   }
 
-  public PortalEventEntryTO(String eventName, LocalDate eventDate, String city, PortalRole role, String adminUrl, String publicUrl) {
+  public PortalEventEntryTO(String eventName, LocalDate eventDate, String city, List<PortalRole> roles, String adminUrl, String publicUrl) {
     this.eventName = eventName;
     this.eventDate = eventDate;
     this.city = city;
-    this.role = role;
+    this.roles = roles;
     this.adminUrl = adminUrl;
     this.publicUrl = publicUrl;
   }
@@ -49,12 +56,12 @@ public class PortalEventEntryTO {
     this.city = city;
   }
 
-  public PortalRole getRole() {
-    return role;
+  public List<PortalRole> getRoles() {
+    return roles;
   }
 
-  public void setRole(PortalRole role) {
-    this.role = role;
+  public void setRoles(List<PortalRole> roles) {
+    this.roles = roles;
   }
 
   public String getAdminUrl() {
@@ -72,4 +79,15 @@ public class PortalEventEntryTO {
   public void setAdminUrl(String adminUrl) {
     this.adminUrl = adminUrl;
   }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("eventName", eventName)
+            .add("publicUrl", publicUrl)
+            .add("adminUrl", adminUrl)
+            .add("roles", roles)
+            .toString();
+  }
 }
+

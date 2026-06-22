@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { BackendConfig, isStringEmpty } from '..';
+import { BackendConfig, isArrayEmpty } from '..';
 import { PortalMyEventsResponseTO } from './PortalTypes';
 
 export interface ConfirmPortalEventParams {
@@ -30,15 +30,15 @@ export async function confirmPortalEvent(portalToken: string, params: ConfirmPor
 }
 
 /**
- * Fetches live event summaries for all events bound to the given portal token.
- * The token is the only credential sent — no raw adminIds or participant UUIDs leave the browser.
+ * Fetches live event summaries for all events bound to the given portal tokens.
+ * The backend resolves events for all supplied tokens and deduplicates by dinner.
  */
-export async function fetchMyEvents(portalToken?: string | null): Promise<PortalMyEventsResponseTO> {
-  if (isStringEmpty(portalToken)) {
+export async function fetchMyEvents(portalTokens: string[]): Promise<PortalMyEventsResponseTO> {
+  if (isArrayEmpty(portalTokens)) {
     return { events: [] };
   }
   const url = BackendConfig.buildUrl(`/participant-portal/v1/my-events`);
-  const response = await axios.post<PortalMyEventsResponseTO>(url, { portalToken });
+  const response = await axios.post<PortalMyEventsResponseTO>(url, { portalTokens });
   return response.data;
 }
 
@@ -48,11 +48,14 @@ export async function requestAccessRecovery(email: string): Promise<void> {
 }
 
 /**
- * Permanently revokes the portal token on the backend, invalidating all portal email links
- * for this email address. Called by the "forget me on this device" action.
+ * Permanently revokes all portal tokens on the backend, invalidating portal email links
+ * for all associated email addresses. Called by the "forget me on this device" action.
  * Best-effort — callers should clear localStorage regardless of the outcome.
  */
-export async function revokePortalToken(portalToken: string): Promise<void> {
-  const url = BackendConfig.buildUrl(`/participant-portal/v1/token/${portalToken}`);
-  await axios.delete(url);
+export async function revokePortalTokens(portalTokens: string[]): Promise<void> {
+  if (isArrayEmpty(portalTokens)) {
+    return;
+  }
+  const url = BackendConfig.buildUrl(`/participant-portal/v1/token/revoke`);
+  await axios.post(url, { portalTokens });
 }

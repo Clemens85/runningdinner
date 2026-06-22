@@ -1,6 +1,6 @@
 import PhonelinkEraseIcon from '@mui/icons-material/PhonelinkErase';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip } from '@mui/material';
-import { clearStoredPortalToken, getStoredPortalToken, revokePortalToken } from '@runningdinner/shared';
+import { clearAllPortalTokens, getStoredPortalTokens, revokePortalTokens } from '@runningdinner/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,16 +17,13 @@ export function ForgetMeButton({ iconOnly = false }: ForgetMeButtonProps) {
 
   const handleConfirm = async () => {
     setOpen(false);
-    const token = getStoredPortalToken();
-    if (token) {
-      try {
-        await revokePortalToken(token);
-      } catch {
-        // Best-effort — revoke may fail if token was already gone or network is unavailable.
-        // We still clear local storage so the user's intent is fulfilled on this device.
-      }
+    try {
+      await revokePortalTokens(getStoredPortalTokens());
+    } catch {
+      // Best-effort — revoke may fail if tokens were already gone or network is unavailable.
+      // We still clear local storage so the user's intent is fulfilled on this device.
     }
-    clearStoredPortalToken();
+    clearAllPortalTokens();
     window.location.replace(MY_EVENTS_PATH);
   };
 

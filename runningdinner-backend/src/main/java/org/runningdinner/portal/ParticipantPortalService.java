@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.UrlGenerator;
+import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.LogSanitizer;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
@@ -20,9 +21,12 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ParticipantPortalService implements PortalTokenProvider {
@@ -86,15 +90,14 @@ public class ParticipantPortalService implements PortalTokenProvider {
   }
 
   /**
-   * Permanently deletes the portal token, invalidating all portal links for this email address.
-   * Called by the "forget me" action. If the token is not found, this is a no-op — the user's
-   * intent (revocation) is satisfied either way.
-   * After this call the user must request a new access link via the recovery flow.
+   * Permanently deletes all supplied portal tokens. Tokens not found are silently ignored.
+   * Called by the "forget me" action.
    */
   @Transactional
-  public void revokePortalToken(String portalToken) {
-    portalTokenRepository.findByToken(portalToken)
-        .ifPresent(portalTokenRepository::delete);
+  public void revokePortalTokens(List<String> portalTokens) {
+    for (String token : portalTokens) {
+      portalTokenRepository.findByToken(token).ifPresent(portalTokenRepository::delete);
+    }
   }
 
   /**
@@ -136,11 +139,54 @@ public class ParticipantPortalService implements PortalTokenProvider {
    */
   @Transactional(readOnly = true)
   public PortalMyEventsResponseTO resolveMyEvents(PortalMyEventsRequestTO request) {
-    PortalToken token = portalTokenRepository.findByToken(request.getPortalToken())
-        .orElseThrow(() -> new PortalTokenNotFoundException("Portal token not found"));
-    return buildEventEntriesForEmail(token.getEmail());
+    // Accumulate by adminId across ALL tokens so same dinner from two different email/token
+    // combinations (e.g. one participant token + one organizer token) gets merged into one entry.
+    Map<String, List<PortalEventEntryTO>> eventsByAdminId = new LinkedHashMap<>();
+
+    for (String tokenStr : request.getPortalTokens()) {
+      Optional<PortalToken> tokenOpt = portalTokenRepository.findByToken(tokenStr);
+      if (tokenOpt.isEmpty()) {
+        LOGGER.debug("Skipping unknown portal token during my-events resolution");
+        continue;
+      }
+      Map<String, List<PortalEventEntryTO>> resolvedForToken = buildEventEntriesForEmail(tokenOpt.get().getEmail());
+      for (var entry : resolvedForToken.entrySet()) {
+        eventsByAdminId.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).addAll(entry.getValue());
+      }
+    }
+
+    List<PortalEventEntryTO> events = new ArrayList<>();
+    for (var entry : eventsByAdminId.entrySet()) {
+      List<PortalEventEntryTO> entriesForDinner = entry.getValue();
+      events.add(entriesForDinner.size() > 1 ? mergePortalEventEntries(entriesForDinner) : entriesForDinner.getFirst());
+    }
+    return new PortalMyEventsResponseTO(events);
   }
 
+	private PortalEventEntryTO mergePortalEventEntries(List<PortalEventEntryTO> portalEventEntries) {
+    String adminUrl = portalEventEntries.stream()
+        .map(PortalEventEntryTO::getAdminUrl)
+        .filter(StringUtils::isNotBlank)
+        .findFirst()
+        .orElse(null);
+    String publicUrl = portalEventEntries.stream()
+        .map(PortalEventEntryTO::getPublicUrl)
+        .filter(StringUtils::isNotBlank)
+        .findFirst()
+        .orElse(null);
+    List<PortalRole> roles = portalEventEntries.stream()
+        .flatMap(e -> e.getRoles().stream())
+        .distinct()
+        .collect(Collectors.toList());
+    return new PortalEventEntryTO(
+        portalEventEntries.getFirst().getEventName(),
+        portalEventEntries.getFirst().getEventDate(),
+        portalEventEntries.getFirst().getCity(),
+        roles,
+        adminUrl,
+        publicUrl
+    );
+	}
 
   // ─── Access Recovery ─────────────────────────────────────────────────────
 
@@ -227,16 +273,23 @@ public class ParticipantPortalService implements PortalTokenProvider {
     }
   }
 
-  private PortalMyEventsResponseTO buildEventEntriesForEmail(String email) {
-    List<PortalEventEntryTO> events = new ArrayList<>();
+  private  Map<String, List<PortalEventEntryTO>> buildEventEntriesForEmail(String email) {
+    Map<String, List<PortalEventEntryTO>> result = new LinkedHashMap<>();
 
     // Participant events
     List<Participant> participants = participantService.findParticipantsAcrossAllDinnersByEmail(email);
     for (Participant participant : participants) {
       try {
+        if (!participant.isActivated()) {
+          LOGGER.warn("For security reasons we won't resolve not activated participants in portal. Email was {} for participant-id {}",
+                      LogSanitizer.sanitize(email), participant.getId());
+          continue;
+        }
         RunningDinner dinner = runningDinnerService.findRunningDinnerByAdminId(participant.getAdminId());
         PortalCredentialTO cred = PortalCredentialTO.forParticipant(dinner.getSelfAdministrationId(), participant.getId());
-        resolveParticipantEventEntry(cred).ifPresent(events::add);
+        resolveParticipantEventEntry(cred, dinner).ifPresent(portalEventEntry -> {
+          result.computeIfAbsent(dinner.getAdminId(), k -> new ArrayList<>()).add(portalEventEntry);
+        });
       } catch (Exception e) {
         LOGGER.warn("Could not resolve RunningDinner for participant {}: {}", participant.getId(), e.getMessage());
       }
@@ -244,51 +297,58 @@ public class ParticipantPortalService implements PortalTokenProvider {
 
     // Organizer events
     List<RunningDinner> organizedDinners = runningDinnerService.findRunningDinnersByOrganizerEmail(email);
-    for (RunningDinner dinner : organizedDinners) {
-      PortalCredentialTO cred = PortalCredentialTO.forOrganizer(dinner.getAdminId());
-      resolveOrganizerEventEntry(cred).ifPresent(events::add);
+    for (RunningDinner runningDinner : organizedDinners) {
+      if (!runningDinner.isAcknowledged()) {
+        LOGGER.warn("For security reasons we won't resolve not acknowledged organizers in portal. Email was {} for admin-id {}",
+                    LogSanitizer.sanitize(email), runningDinner.getAdminId());
+        continue;
+      }
+      PortalCredentialTO cred = PortalCredentialTO.forOrganizer(runningDinner.getAdminId());
+      resolveOrganizerEventEntry(cred, runningDinner).ifPresent(portalEventEntry -> {
+        result.computeIfAbsent(runningDinner.getAdminId(), k -> new ArrayList<>()).add(portalEventEntry);
+      });
     }
 
-    return new PortalMyEventsResponseTO(events);
+    return result;
   }
 
-  private Optional<PortalEventEntryTO> resolveParticipantEventEntry(PortalCredentialTO credential) {
+  private Optional<PortalEventEntryTO> resolveParticipantEventEntry(PortalCredentialTO credential, RunningDinner runningDinner) {
+    String publicUrl = null;
     try {
-      RunningDinner dinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(credential.getSelfAdminId());
-      // Verify participant exists
-      participantService.findParticipantById(dinner.getAdminId(), credential.getParticipantId());
-      String publicUrl = urlGenerator.constructPublicDinnerUrl(dinner.getPublicSettings().getPublicId());
+      if (runningDinner.getRegistrationType() != RegistrationType.CLOSED) {
+        publicUrl = urlGenerator.constructPublicDinnerUrl(runningDinner.getPublicSettings().getPublicId());
+      }
       return Optional.of(new PortalEventEntryTO(
-          dinner.getTitle(),
-          dinner.getDate(),
-          dinner.getCity(),
-          PortalRole.PARTICIPANT,
+          runningDinner.getTitle(),
+          runningDinner.getDate(),
+          runningDinner.getCity(),
+          List.of(PortalRole.PARTICIPANT),
           null,
           publicUrl
       ));
     } catch (Exception e) {
-      LOGGER.debug("Silently omitting unresolvable participant credential selfAdminId={}: {}",
-          credential.getSelfAdminId(), e.getMessage());
+      LOGGER.error("Silently omitting unresolvable participant credential selfAdminId={}", credential.getSelfAdminId(), e);
       return Optional.empty();
     }
   }
 
-  private Optional<PortalEventEntryTO> resolveOrganizerEventEntry(PortalCredentialTO credential) {
+  private Optional<PortalEventEntryTO> resolveOrganizerEventEntry(PortalCredentialTO credential, RunningDinner runningDinner) {
+    String publicUrl = null;
     try {
-      RunningDinner dinner = runningDinnerService.findRunningDinnerByAdminId(credential.getAdminId());
-      String adminUrl = urlGenerator.constructAdministrationUrl(dinner.getAdminId());
-      String publicUrl = urlGenerator.constructPublicDinnerUrl(dinner.getPublicSettings().getPublicId());
+      String adminUrl = urlGenerator.constructAdministrationUrl(runningDinner.getAdminId());
+      if (runningDinner.getRegistrationType() != RegistrationType.CLOSED) {
+        publicUrl = urlGenerator.constructPublicDinnerUrl(runningDinner.getPublicSettings().getPublicId());
+      }
       return Optional.of(new PortalEventEntryTO(
-          dinner.getTitle(),
-          dinner.getDate(),
-          dinner.getCity(),
-          PortalRole.ORGANIZER,
+          runningDinner.getTitle(),
+          runningDinner.getDate(),
+          runningDinner.getCity(),
+          List.of(PortalRole.ORGANIZER),
           adminUrl,
           publicUrl
       ));
     } catch (Exception e) {
-      LOGGER.debug("Silently omitting unresolvable organizer credential adminId={}: {}",
-          credential.getAdminId(), e.getMessage());
+      LOGGER.error("Silently omitting unresolvable organizer credential adminId={}", credential.getAdminId(), e);
       return Optional.empty();
     }
   }

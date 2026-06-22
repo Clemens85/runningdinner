@@ -1,5 +1,7 @@
 package org.runningdinner.portal;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.List;
 
 public class PortalMyEventsResponseTO {
@@ -19,5 +21,12 @@ public class PortalMyEventsResponseTO {
 
   public void setEvents(List<PortalEventEntryTO> events) {
     this.events = events;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("events", events)
+            .toString();
   }
 }

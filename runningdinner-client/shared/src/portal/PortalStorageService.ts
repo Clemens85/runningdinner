@@ -1,26 +1,52 @@
-const STORAGE_KEY = 'runningdinner_portal_token';
+const STORAGE_KEY = 'runningdinner_portal_tokens';
+const LEGACY_STORAGE_KEY = 'runningdinner_portal_token';
 
-/**
- * Returns the portal token stored in localStorage, or null if none is stored.
- * The token is the single credential the frontend holds. All event data is resolved
- * server-side by submitting this token — no raw adminIds or participant UUIDs are stored.
- */
-export function getStoredPortalToken(): string | null {
-  return localStorage.getItem(STORAGE_KEY);
+function readTokensRaw(): string[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 /**
- * Persists the portal token in localStorage.
- * Overwrites any previously stored token (one token per browser, covering all events for the email).
+ * Returns all portal tokens stored on this device.
+ * Automatically migrates a legacy single-token entry to the new array format on first call.
+ */
+export function getStoredPortalTokens(): string[] {
+  const current = readTokensRaw();
+  const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+  if (!legacy) {
+    return current;
+  }
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
+  if (current.includes(legacy)) {
+    return current;
+  }
+  const merged = [...current, legacy];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+  return merged;
+}
+
+/**
+ * Adds a portal token to the device storage.
+ * Has no effect if the token is already stored (idempotent).
  */
 export function storePortalToken(token: string): void {
-  localStorage.setItem(STORAGE_KEY, token);
+  const current = getStoredPortalTokens();
+  if (!current.includes(token)) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...current, token]));
+  }
 }
 
 /**
- * Removes the portal token from localStorage entirely.
+ * Removes all portal tokens from this device.
  * Used by the "forget me on this device" action.
  */
-export function clearStoredPortalToken(): void {
+export function clearAllPortalTokens(): void {
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
 }

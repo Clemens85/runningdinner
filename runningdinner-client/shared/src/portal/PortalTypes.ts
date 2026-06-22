@@ -4,7 +4,7 @@ export interface PortalEventEntry {
   eventName: string;
   eventDate: Date;
   city: string;
-  role: PortalRole;
+  roles: PortalRole[];
   /** null for participants; full admin URL for organizers */
   adminUrl: string | null;
   /** Public event page URL, available for all roles */

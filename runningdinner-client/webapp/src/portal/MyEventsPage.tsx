@@ -84,9 +84,7 @@ function FirstUsageInfo() {
 export function MyEventsPage() {
   const { t } = useTranslation('portal');
   const myEventsQuery = useMyEvents();
-
   const events = myEventsQuery.data?.events ?? [];
-  const hasEvents = events.length > 0;
 
   if (!isQuerySucceeded(myEventsQuery)) {
     return (
@@ -100,7 +98,7 @@ export function MyEventsPage() {
   return (
     <Container maxWidth={false} sx={{ py: 4 }}>
       <PageTitle>{t('my_events_title')}</PageTitle>
-      <Container maxWidth="md">{hasEvents ? <MyEventsView events={events} /> : <FirstUsageInfo />}</Container>
+      <Container maxWidth="md">{events.length > 0 ? <MyEventsView events={events} /> : <FirstUsageInfo />}</Container>
     </Container>
   );
 }
