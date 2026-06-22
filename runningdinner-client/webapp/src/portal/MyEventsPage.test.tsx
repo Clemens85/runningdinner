@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { MyEventsPage } from './MyEventsPage';
 
 // Mock shared module for useMyEvents and storage functions

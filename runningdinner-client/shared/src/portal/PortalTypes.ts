@@ -2,8 +2,7 @@ export type PortalRole = 'PARTICIPANT' | 'ORGANIZER';
 
 export interface PortalEventEntry {
   eventName: string;
-  /** ISO date string (LocalDate serialized, e.g. "2026-05-15") */
-  eventDate: string;
+  eventDate: Date;
   city: string;
   role: PortalRole;
   /** null for participants; full admin URL for organizers */
