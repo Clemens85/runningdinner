@@ -51,15 +51,7 @@ export function MyEventsEntryList({ events }: MyEventsEntryListProps) {
                 </Button>
               )}
               {event.role === 'ORGANIZER' && event.adminUrl && (
-                <Button
-                  size="small"
-                  variant="text"
-                  color="primary"
-                  href={event.adminUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  startIcon={<SettingsIcon fontSize="inherit" />}
-                >
+                <Button size="small" variant="text" color="primary" href={event.adminUrl} target="_blank" rel="noopener noreferrer" startIcon={<SettingsIcon fontSize="inherit" />}>
                   {t('manage_event')}
                 </Button>
               )}
