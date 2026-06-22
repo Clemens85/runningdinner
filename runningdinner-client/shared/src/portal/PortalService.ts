@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { BackendConfig } from '..';
+import { BackendConfig, isStringEmpty } from '..';
 import { PortalMyEventsResponseTO } from './PortalTypes';
 
 export interface ConfirmPortalEventParams {
@@ -33,7 +33,10 @@ export async function confirmPortalEvent(portalToken: string, params: ConfirmPor
  * Fetches live event summaries for all events bound to the given portal token.
  * The token is the only credential sent — no raw adminIds or participant UUIDs leave the browser.
  */
-export async function fetchMyEvents(portalToken: string): Promise<PortalMyEventsResponseTO> {
+export async function fetchMyEvents(portalToken?: string | null): Promise<PortalMyEventsResponseTO> {
+  if (isStringEmpty(portalToken)) {
+    return { events: [] };
+  }
   const url = BackendConfig.buildUrl(`/participant-portal/v1/my-events`);
   const response = await axios.post<PortalMyEventsResponseTO>(url, { portalToken });
   return response.data;

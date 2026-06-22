@@ -11,9 +11,8 @@ export function useMyEvents() {
 
   return useQuery<PortalMyEventsResponseTO>({
     queryKey: [...MY_EVENTS_QUERY_KEY, portalToken],
-    queryFn: () => fetchMyEvents(portalToken!),
-    enabled: portalToken !== null,
-    placeholderData: { events: [] },
+    queryFn: () => fetchMyEvents(portalToken),
+    // enabled: portalToken !== null,
     staleTime: 30_000,
   });
 }
