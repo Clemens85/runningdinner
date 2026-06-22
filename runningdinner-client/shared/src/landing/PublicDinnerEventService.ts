@@ -57,8 +57,11 @@ async function executePerformRegistrationRequest(publicDinnerId: string, registr
   return response.data;
 }
 
-export async function activateSubscribedParticipant(publicDinnerId: string, participantId: string): Promise<ParticipantActivationResult> {
-  const url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/${participantId}/activate`);
+export async function activateSubscribedParticipant(publicDinnerId: string, participantId: string, email?: string): Promise<ParticipantActivationResult> {
+  let url = BackendConfig.buildUrl(`/frontend/v1/runningdinner/${publicDinnerId}/${participantId}/activate`);
+  if (email) {
+    url += `?email=${encodeURIComponent(email)}`;
+  }
   try {
     const response = await axios.put<ParticipantActivationResult>(url, {});
     return response.data;

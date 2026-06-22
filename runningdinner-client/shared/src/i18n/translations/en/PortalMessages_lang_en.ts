@@ -8,14 +8,19 @@ const PortalMessages_en: any = {
 
   // MyEventsPage
   my_events_title: 'My Events',
-  my_events_empty: 'No events found on this device.',
-  my_events_empty_hint: 'Enter your email address to recover your events:',
+  my_events_empty: 'No events linked to this device yet — that is perfectly normal!',
+  my_events_empty_intro: 'This page shows all running dinner events you are part of, either as a participant or as an organizer.',
+  my_events_empty_how_to_get_access: 'How do I get access to my events?',
+  my_events_empty_how_to_hint:
+    'If you have already registered for or created a running dinner, simply enter your email address below. ' +
+    'We will send you a personal access link to view your events on this device.',
   my_events_error: 'Your events could not be loaded. Please try again.',
 
   // PortalEventEntry / role badges
   role_participant: 'Participant',
   role_organizer: 'Organizer',
   manage_event: 'Manage event',
+  view_event_page: 'View event page',
 
   // AccessRecoveryForm
   access_recovery_missing_event_link: 'Missing an event?',

@@ -10,16 +10,19 @@ public class PortalEventEntryTO {
   private PortalRole role;
   /** null for PARTICIPANT; full admin URL for ORGANIZER */
   private String adminUrl;
+  /** Public event page URL, available for all roles */
+  private String publicUrl;
 
   public PortalEventEntryTO() {
   }
 
-  public PortalEventEntryTO(String eventName, LocalDate eventDate, String city, PortalRole role, String adminUrl) {
+  public PortalEventEntryTO(String eventName, LocalDate eventDate, String city, PortalRole role, String adminUrl, String publicUrl) {
     this.eventName = eventName;
     this.eventDate = eventDate;
     this.city = city;
     this.role = role;
     this.adminUrl = adminUrl;
+    this.publicUrl = publicUrl;
   }
 
   public String getEventName() {
@@ -56,6 +59,14 @@ public class PortalEventEntryTO {
 
   public String getAdminUrl() {
     return adminUrl;
+  }
+
+  public String getPublicUrl() {
+    return publicUrl;
+  }
+
+  public void setPublicUrl(String publicUrl) {
+    this.publicUrl = publicUrl;
   }
 
   public void setAdminUrl(String adminUrl) {

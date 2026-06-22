@@ -7,7 +7,7 @@ import Impressum from './Impressum';
 import { LandingBanner } from './LandingBanner';
 import { LandingStart } from './LandingStart';
 import { LandingWizard } from './LandingWizard';
-import { LegacyActivationRedirectPage } from './LegacyActivationRedirectPage';
+import { ParticipantActivationPage } from './ParticipantActivationPage';
 import { NewsPage } from './news/NewsPage';
 import { PublicDinnerEventRegistrationFinishedPage } from './PublicDinnerEventRegistrationFinishedPage';
 import { PublicDinnerEventRegistrationPage } from './PublicDinnerEventRegistrationPage';
@@ -48,8 +48,7 @@ export function LandingRoute() {
         path={`${RUNNING_DINNER_EVENTS_PATH}/:publicDinnerId/:participantId/activate`}
         element={
           <Container maxWidth={false}>
-            {/* Backward-compat redirect: performs legacy activation then sends user to the portal */}
-            <LegacyActivationRedirectPage />
+            <ParticipantActivationPage />
           </Container>
         }
       />

@@ -7,7 +7,6 @@ import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.PublicSettings;
 import org.runningdinner.core.RunningDinner;
-import org.runningdinner.mail.PortalTokenProvider;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.payment.paymentoptions.PaymentOptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.Locale;
-import java.util.Optional;
 
 @Component
 public class NewParticipantSubscribedFormatter {
@@ -29,13 +27,6 @@ public class NewParticipantSubscribedFormatter {
   
   @Autowired
   private LocalizationProviderService localizationProviderService;
-
-  /**
-   * Injected optionally to avoid core→portal coupling.
-   * When present, the combined confirmation+portal link replaces the legacy activation link.
-   */
-  @Autowired
-  private Optional<PortalTokenProvider> portalTokenProvider;
 
   @Autowired
   private MessageFormatterHelperService messageFormatterHelperService;
@@ -64,19 +55,12 @@ public class NewParticipantSubscribedFormatter {
   }
 
   /**
-   * Builds the activation URL.
-   * If a {@link PortalTokenProvider} is available, returns the combined portal+confirmation link.
-   * Otherwise falls back to the legacy standalone activation link.
+   * Builds the activation URL for the participant using the legacy standalone activation link,
+   * including the participant's email as a query parameter so the client can create a portal token on activation.
    */
   private String buildActivationUrl(RunningDinner runningDinner, Participant participant) {
-    return portalTokenProvider
-        .map(provider -> {
-          String portalToken = provider.getOrCreatePortalToken(participant.getEmail());
-          String publicId = runningDinner.getPublicSettings().getPublicId();
-          return urlGenerator.constructPortalParticipantConfirmationUrl(portalToken, publicId, participant.getId());
-        })
-        .orElseGet(() -> urlGenerator.constructParticipantActivationUrl(
-            runningDinner.getPublicSettings().getPublicId(), participant.getId()));
+    return urlGenerator.constructParticipantActivationUrl(
+        runningDinner.getPublicSettings().getPublicId(), participant.getId(), participant.getEmail());
   }
 
   public RunningDinnerRelatedMessage formatNewParticipantSubscribedWithPaymentMessage(RunningDinner runningDinner,

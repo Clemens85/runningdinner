@@ -1,4 +1,4 @@
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert, AlertTitle, Box, Button } from '@mui/material';
 import {
   activateSubscribedParticipant,
   BackendIssue,
@@ -9,26 +9,36 @@ import {
   isStringNotEmpty,
   ParticipantActivationResult,
   PublicRunningDinner,
+  storePortalToken,
   useBackendIssueHandler,
   useFindPublicDinner,
 } from '@runningdinner/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 
 import LinkExtern from '../common/theme/LinkExtern';
 import { PageTitle, Span } from '../common/theme/typography/Tags';
+import { MY_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
 
 export function ParticipantActivationPage() {
   const { t } = useTranslation('landing');
 
   const params = useParams<Record<string, string>>();
+  const [searchParams] = useSearchParams();
   const publicDinnerId = params.publicDinnerId || '';
   const participantId = params.participantId || '';
+  const email = searchParams.get('email') ?? undefined;
 
   const activationQuery = useQuery({
-    queryKey: ['activateSubscribedParticipant', publicDinnerId, participantId],
-    queryFn: () => activateSubscribedParticipant(publicDinnerId, participantId),
+    queryKey: ['activateSubscribedParticipant', publicDinnerId, participantId, email],
+    queryFn: async () => {
+      const result = await activateSubscribedParticipant(publicDinnerId, participantId, email);
+      if (result.portalToken) {
+        storePortalToken(result.portalToken);
+      }
+      return result;
+    },
   });
   const findPublicDinnerQuery = useFindPublicDinner(publicDinnerId);
 
@@ -36,12 +46,14 @@ export function ParticipantActivationPage() {
     return <ParticipantActivationFailedView publicRunningDinnerLoading={false} />;
   }
 
+  const hasPortalToken = isStringNotEmpty(activationQuery.data?.portalToken);
+
   return (
     <div>
       <PageTitle>{t('landing:registration_activation_title')}</PageTitle>
 
       {!activationQuery.isPending && isParticipantActivationSuccessful(activationQuery.data) && (
-        <ParticipantActivationSucceededView activationResult={activationQuery.data!} publicRunningDinnerResult={findPublicDinnerQuery.data} />
+        <ParticipantActivationSucceededView activationResult={activationQuery.data!} publicRunningDinnerResult={findPublicDinnerQuery.data} hasPortalToken={hasPortalToken} />
       )}
 
       {!activationQuery.isPending && !isParticipantActivationSuccessful(activationQuery.data) && (
@@ -58,9 +70,10 @@ export function ParticipantActivationPage() {
 interface PublicDinnerLoadingProps {
   publicRunningDinnerResult?: PublicRunningDinner;
   activationResult: ParticipantActivationResult;
+  hasPortalToken: boolean;
 }
 
-export function ParticipantActivationSucceededView({ publicRunningDinnerResult, activationResult }: PublicDinnerLoadingProps) {
+export function ParticipantActivationSucceededView({ publicRunningDinnerResult, activationResult, hasPortalToken }: PublicDinnerLoadingProps) {
   const { t } = useTranslation('landing');
 
   if (!publicRunningDinnerResult) {
@@ -103,6 +116,18 @@ export function ParticipantActivationSucceededView({ publicRunningDinnerResult, 
           )}
         </Span>
       </Alert>
+
+      {hasPortalToken && (
+        <Alert severity={'info'} variant={'outlined'} sx={{ mt: 2 }}>
+          <AlertTitle>{t('landing:registration_activation_portal_title')}</AlertTitle>
+          <Span>{t('landing:registration_activation_portal_hint')}</Span>
+          <Box sx={{ mt: 1 }}>
+            <Button component={Link} to={MY_EVENTS_PATH} variant="outlined" size="small">
+              {t('landing:registration_activation_portal_link')}
+            </Button>
+          </Box>
+        </Alert>
+      )}
     </div>
   );
 }

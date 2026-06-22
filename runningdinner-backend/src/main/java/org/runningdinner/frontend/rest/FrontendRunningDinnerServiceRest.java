@@ -1,16 +1,25 @@
 package org.runningdinner.frontend.rest;
 
+import jakarta.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerSessionData;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.frontend.FrontendRunningDinnerPaymentService;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.frontend.ParticipantActivationResult;
 import org.runningdinner.frontend.RegistrationSummary;
+import org.runningdinner.mail.PortalTokenProvider;
 import org.runningdinner.payment.RegistrationOrder;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -24,11 +33,15 @@ public class FrontendRunningDinnerServiceRest {
 
   private final FrontendRunningDinnerPaymentService frontendRunningDinnerPaymentService;
 
-  public FrontendRunningDinnerServiceRest(FrontendRunningDinnerService frontendRunningDinnerService, 
-                                          FrontendRunningDinnerPaymentService frontendRunningDinnerPaymentService) {
+  private final PortalTokenProvider portalTokenProvider;
+
+  public FrontendRunningDinnerServiceRest(FrontendRunningDinnerService frontendRunningDinnerService,
+                                          FrontendRunningDinnerPaymentService frontendRunningDinnerPaymentService,
+                                          PortalTokenProvider portalTokenProvider) {
     
     this.frontendRunningDinnerService = frontendRunningDinnerService;
     this.frontendRunningDinnerPaymentService = frontendRunningDinnerPaymentService;
+    this.portalTokenProvider = portalTokenProvider;
   }
 
   @GetMapping(value = "/runningdinner/{publicDinnerId}")
@@ -93,9 +106,14 @@ public class FrontendRunningDinnerServiceRest {
   @PutMapping(value = "/runningdinner/{publicDinnerId}/{participantId}/activate", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ParticipantActivationResult activateSubscribedParticipant(
       @PathVariable String publicDinnerId,
-      @PathVariable UUID participantId) {
+      @PathVariable UUID participantId,
+      @RequestParam(required = false) String email) {
 
-    return frontendRunningDinnerService.activateSubscribedParticipant(publicDinnerId, participantId);
+    ParticipantActivationResult result = frontendRunningDinnerService.activateSubscribedParticipant(publicDinnerId, participantId);
+    if (StringUtils.isNotBlank(email)) {
+      result.setPortalToken(portalTokenProvider.getOrCreatePortalToken(email));
+    }
+    return result;
   }
 
   @GetMapping("/runningdinner/{publicDinnerId}/sessiondata")
@@ -107,3 +125,4 @@ public class FrontendRunningDinnerServiceRest {
   }
 
 }
+

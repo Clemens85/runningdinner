@@ -257,12 +257,14 @@ public class ParticipantPortalService implements PortalTokenProvider {
       RunningDinner dinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(credential.getSelfAdminId());
       // Verify participant exists
       participantService.findParticipantById(dinner.getAdminId(), credential.getParticipantId());
+      String publicUrl = urlGenerator.constructPublicDinnerUrl(dinner.getPublicSettings().getPublicId());
       return Optional.of(new PortalEventEntryTO(
           dinner.getTitle(),
           dinner.getDate(),
           dinner.getCity(),
           PortalRole.PARTICIPANT,
-          null
+          null,
+          publicUrl
       ));
     } catch (Exception e) {
       LOGGER.debug("Silently omitting unresolvable participant credential selfAdminId={}: {}",
@@ -275,12 +277,14 @@ public class ParticipantPortalService implements PortalTokenProvider {
     try {
       RunningDinner dinner = runningDinnerService.findRunningDinnerByAdminId(credential.getAdminId());
       String adminUrl = urlGenerator.constructAdministrationUrl(dinner.getAdminId());
+      String publicUrl = urlGenerator.constructPublicDinnerUrl(dinner.getPublicSettings().getPublicId());
       return Optional.of(new PortalEventEntryTO(
           dinner.getTitle(),
           dinner.getDate(),
           dinner.getCity(),
           PortalRole.ORGANIZER,
-          adminUrl
+          adminUrl,
+          publicUrl
       ));
     } catch (Exception e) {
       LOGGER.debug("Silently omitting unresolvable organizer credential adminId={}: {}",

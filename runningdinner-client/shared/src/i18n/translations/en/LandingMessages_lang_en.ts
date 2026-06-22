@@ -32,6 +32,11 @@ const LandingMessages_en: any = {
     'Please try it again later. <br/> ' +
     'If the error still occurs, please send an email to <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
+  registration_activation_portal_title: 'Access your event on this device',
+  registration_activation_portal_hint:
+    'Your registration has been linked to this device. You can now view your event details, dinner route and team information at any time via My Events.',
+  registration_activation_portal_link: 'Go to My Events',
+
   registration_not_possible: 'Registration not possible',
   registration_not_possible_zip_restriction:
     'Unfortunately, your address seems to be too far away to participate in  <strong>{{title}}</strong>.<br/>' +

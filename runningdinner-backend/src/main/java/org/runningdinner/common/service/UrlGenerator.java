@@ -143,6 +143,11 @@ public class UrlGenerator {
     return result;
   }
 
+  public String constructParticipantActivationUrl(String publicId, UUID participantId, String email) {
+    String baseUrl = constructParticipantActivationUrl(publicId, participantId);
+    return baseUrl + "?email=" + urlEncode(email);
+  }
+
   public String constructAdministrationAcknowledgeUrl(RunningDinner runningDinner) {
     
     String result = constructAdministrationUrl(runningDinner.getAdminId());

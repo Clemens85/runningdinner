@@ -8,14 +8,19 @@ const PortalMessages_de: any = {
 
   // MyEventsPage
   my_events_title: 'Meine Events',
-  my_events_empty: 'Keine Events auf diesem Gerät gefunden.',
-  my_events_empty_hint: 'Gib deine E-Mail-Adresse ein, um deine Events wiederherzustellen:',
+  my_events_empty: 'Noch keine Events auf diesem Gerät verknüpft – das ist völlig normal!',
+  my_events_empty_intro: 'Diese Seite zeigt dir alle Running-Dinner-Events, an denen du als Teilnehmer:in oder Veranstalter:in beteiligt bist.',
+  my_events_empty_how_to_get_access: 'Wie bekomme ich Zugang zu meinen Events?',
+  my_events_empty_how_to_hint:
+    'Falls du dich bereits für ein Running Dinner angemeldet oder eines erstellt hast, gib einfach deine E-Mail-Adresse ein. ' +
+    'Wir schicken dir dann einen persönlichen Zugangslink, um deine Events auf diesem Gerät einzusehen.',
   my_events_error: 'Deine Events konnten nicht geladen werden. Bitte versuche es erneut.',
 
   // PortalEventEntry / role badges
   role_participant: 'Teilnehmer:in',
   role_organizer: 'Veranstalter:in',
   manage_event: 'Event verwalten',
+  view_event_page: 'Event-Seite ansehen',
 
   // AccessRecoveryForm
   access_recovery_missing_event_link: 'Fehlt ein Event?',

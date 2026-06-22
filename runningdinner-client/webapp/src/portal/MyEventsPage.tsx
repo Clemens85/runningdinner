@@ -72,13 +72,22 @@ export function MyEventsPage() {
 
           {!isPending && !isError && !hasEvents && (
             <Box>
-              <Typography variant="body1" color="text.secondary" gutterBottom>
-                {t('my_events_empty')}
+              <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  {t('my_events_empty')}
+                </Typography>
+                <Typography variant="body2">{t('my_events_empty_intro')}</Typography>
+              </Alert>
+
+              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                {t('my_events_empty_how_to_get_access')}
               </Typography>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                {t('my_events_empty_hint')}
+                {t('my_events_empty_how_to_hint')}
               </Typography>
-              <AccessRecoveryForm />
+              <Box sx={{ mt: 2 }}>
+                <AccessRecoveryForm />
+              </Box>
             </Box>
           )}
         </Container>

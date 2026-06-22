@@ -31,6 +31,11 @@ const LandingMessages_de: any = {
     'Versuche es bitte später erneut. <br/>' +
     'Falls der Fehler immer noch auftritt wende dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
+  registration_activation_portal_title: 'Auf diesem Gerät auf dein Event zugreifen',
+  registration_activation_portal_hint:
+    'Deine Anmeldung wurde mit diesem Gerät verknüpft. Du kannst nun jederzeit deine Event-Details, ' + 'die Dinner-Route und Team-Infos über "Meine Events" abrufen.',
+  registration_activation_portal_link: 'Zu Meine Events',
+
   registration_not_possible: 'Anmeldung nicht möglich',
   registration_not_possible_zip_restriction:
     'Deine Adresse scheint leider zu weit entfernt für eine Teilnahme an <strong>{{title}}</strong> zu sein.<br/>' +
