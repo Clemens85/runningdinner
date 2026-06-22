@@ -21,20 +21,6 @@ public class ParticipantPortalServiceRest {
   }
 
   /**
-   * GET /rest/participant-portal/v1/token/{portalToken}
-   * <p>
-   * Validates the portal token. No side effects — confirmation is intentionally absent so that
-   * email link-preview scanners (which issue GET requests) cannot trigger confirmation
-   * without user intent.
-   * Returns 204 No Content on success; 404 if the token is unknown.
-   */
-  @GetMapping("/token/{portalToken}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void validateToken(@PathVariable String portalToken) {
-    participantPortalService.validatePortalToken(portalToken);
-  }
-
-  /**
    * POST /rest/participant-portal/v1/token/revoke
    * <p>
    * Permanently revokes all supplied portal tokens, invalidating portal links for the associated
@@ -45,24 +31,6 @@ public class ParticipantPortalServiceRest {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void revokeTokens(@Valid @RequestBody PortalRevokeRequestTO request) {
     participantPortalService.revokePortalTokens(request.getPortalTokens());
-  }
-
-  /**
-   * POST /rest/participant-portal/v1/token/{portalToken}/confirm
-   * <p>
-   * Performs an idempotent event confirmation (participant activation or organizer acknowledgement).
-   * Separated from the GET so that email link-preview scanners cannot trigger it.
-   * Returns 204 No Content; 404 if the token is unknown.
-   */
-  @PostMapping("/token/{portalToken}/confirm")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void confirmEvent(@PathVariable String portalToken,
-                           @Valid @RequestBody PortalConfirmRequestTO request) {
-    participantPortalService.performEventConfirmation(
-        portalToken,
-        request.getConfirmPublicDinnerId(),
-        request.getConfirmParticipantId(),
-        request.getConfirmAdminId());
   }
 
   /**

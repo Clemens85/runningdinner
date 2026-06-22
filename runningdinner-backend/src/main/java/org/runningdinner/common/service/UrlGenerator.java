@@ -223,22 +223,4 @@ public class UrlGenerator {
     return dinnerPortalUrlTemplate + "/" + portalToken;
   }
 
-  /**
-   * Constructs the combined participant confirmation+portal URL.
-   * Format: {@code {host}/my-events/{portalToken}?confirmPublicDinnerId={publicId}&confirmParticipantId={participantId}}
-   */
-  public String constructPortalParticipantConfirmationUrl(String portalToken, String publicDinnerId, UUID participantId) {
-    String baseUrl = constructPortalTokenUrl(portalToken);
-    return baseUrl + "?confirmPublicDinnerId=" + urlEncode(publicDinnerId) + "&confirmParticipantId=" + participantId;
-  }
-
-  /**
-   * Constructs the combined organizer confirmation+portal URL.
-   * Format: {@code {host}/my-events/{portalToken}?confirmAdminId={adminId}}
-   */
-  public String constructPortalOrganizerConfirmationUrl(String portalToken, String adminId) {
-    String baseUrl = constructPortalTokenUrl(portalToken);
-    return baseUrl + "?confirmAdminId=" + urlEncode(adminId);
-  }
-
 }

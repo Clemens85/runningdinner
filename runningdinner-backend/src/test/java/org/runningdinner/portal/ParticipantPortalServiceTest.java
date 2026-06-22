@@ -6,9 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.frontend.FrontendRunningDinnerService;
-import org.runningdinner.frontend.rest.RegistrationDataTO;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
-import org.runningdinner.participant.Participant;
 import org.runningdinner.test.util.ApplicationTest;
 import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.test.util.TestUtil;
@@ -64,7 +62,7 @@ class ParticipantPortalServiceTest {
   }
 
   @Test
-  void validatePortalToken_succeeds_afterParticipantRegistration() {
+  void resolveMyEvents_showsActivatedParticipant() {
     var registrationSummary = frontendRunningDinnerService.performRegistration(
         runningDinner.getPublicSettings().getPublicId(),
         TestUtil.createRegistrationData("Max Mustermann", PARTICIPANT_EMAIL, TestUtil.newAddress(), 6), false);
@@ -72,8 +70,6 @@ class ParticipantPortalServiceTest {
         runningDinner.getPublicSettings().getPublicId(), registrationSummary.getParticipant().getId());
 
     String portalToken = participantPortalService.getOrCreatePortalToken(PARTICIPANT_EMAIL);
-    participantPortalService.validatePortalToken(portalToken);
-
     PortalMyEventsResponseTO myEvents = participantPortalService.resolveMyEvents(new PortalMyEventsRequestTO(List.of(portalToken)));
     String publicId = runningDinner.getPublicSettings().getPublicId();
     PortalEventEntryTO event = myEvents.getEvents().stream()
@@ -95,27 +91,6 @@ class ParticipantPortalServiceTest {
     // PARTICIPANT_EMAIL has no other dinners — assert none of the returned entries are for this dinner
     String publicId = runningDinner.getPublicSettings().getPublicId();
     assertThat(myEvents.getEvents()).noneMatch(e -> e.getPublicUrl() != null && e.getPublicUrl().contains(publicId));
-  }
-
-  @Test
-  void performEventConfirmation_withConfirmationParams_activatesParticipant() {
-    RegistrationDataTO registrationData = TestUtil.createRegistrationData("Anna Test", PARTICIPANT_EMAIL, TestUtil.newAddress(), 6);
-    var registrationSummary = frontendRunningDinnerService.performRegistration(
-        runningDinner.getPublicSettings().getPublicId(), registrationData, false);
-    Participant participant = registrationSummary.getParticipant();
-
-    String portalToken = participantPortalService.getOrCreatePortalToken(PARTICIPANT_EMAIL);
-    String publicId = runningDinner.getPublicSettings().getPublicId();
-
-    // First call: confirms the participant
-    participantPortalService.performEventConfirmation(portalToken, publicId, participant.getId(), null);
-    PortalMyEventsResponseTO myEvents1 = participantPortalService.resolveMyEvents(new PortalMyEventsRequestTO(List.of(portalToken)));
-    assertThat(myEvents1.getEvents()).isNotEmpty();
-
-    // Second call: idempotent — should not throw
-    participantPortalService.performEventConfirmation(portalToken, publicId, participant.getId(), null);
-    PortalMyEventsResponseTO myEvents2 = participantPortalService.resolveMyEvents(new PortalMyEventsRequestTO(List.of(portalToken)));
-    assertThat(myEvents2.getEvents()).isNotEmpty();
   }
 
   @Test

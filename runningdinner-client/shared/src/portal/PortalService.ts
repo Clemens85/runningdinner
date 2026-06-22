@@ -3,32 +3,6 @@ import axios from 'axios';
 import { BackendConfig, isArrayEmpty } from '..';
 import { PortalMyEventsResponseTO } from './PortalTypes';
 
-export interface ConfirmPortalEventParams {
-  confirmPublicDinnerId?: string;
-  confirmParticipantId?: string;
-  confirmAdminId?: string;
-}
-
-/**
- * Validates the portal token (GET, no side effects).
- * Safe to call on page load — email link-preview scanners issue GETs and must not
- * be able to trigger confirmation as a side effect.
- */
-export async function validatePortalToken(portalToken: string): Promise<void> {
-  const url = BackendConfig.buildUrl(`/participant-portal/v1/token/${portalToken}`);
-  await axios.get(url);
-}
-
-/**
- * Performs an idempotent event confirmation via POST.
- * Only called after the user has actually loaded the activation page (i.e. shown intent),
- * not reachable by email scanner prefetching.
- */
-export async function confirmPortalEvent(portalToken: string, params: ConfirmPortalEventParams): Promise<void> {
-  const url = BackendConfig.buildUrl(`/participant-portal/v1/token/${portalToken}/confirm`);
-  await axios.post(url, params);
-}
-
 /**
  * Fetches live event summaries for all events bound to the given portal tokens.
  * The backend resolves events for all supplied tokens and deduplicates by dinner.

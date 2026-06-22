@@ -7,7 +7,6 @@ import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.LogSanitizer;
-import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.PortalTokenProvider;
 import org.runningdinner.mail.formatter.ParticipantPortalAccessRecoveryMessageFormatter;
@@ -25,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +37,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
   private final PortalTokenRepository portalTokenRepository;
   private final ParticipantService participantService;
   private final RunningDinnerService runningDinnerService;
-  private final FrontendRunningDinnerService frontendRunningDinnerService;
   private final IdGenerator idGenerator;
   private final UrlGenerator urlGenerator;
   private final MailService mailService;
@@ -48,7 +45,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
   public ParticipantPortalService(PortalTokenRepository portalTokenRepository,
                                   ParticipantService participantService,
                                   RunningDinnerService runningDinnerService,
-                                  FrontendRunningDinnerService frontendRunningDinnerService,
                                   IdGenerator idGenerator,
                                   UrlGenerator urlGenerator,
                                   MailService mailService,
@@ -56,7 +52,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
     this.portalTokenRepository = portalTokenRepository;
     this.participantService = participantService;
     this.runningDinnerService = runningDinnerService;
-    this.frontendRunningDinnerService = frontendRunningDinnerService;
     this.idGenerator = idGenerator;
     this.urlGenerator = urlGenerator;
     this.mailService = mailService;
@@ -75,19 +70,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
         .orElseGet(() -> createAndSaveNewToken(normalizedEmail));
   }
 
-  // ─── Portal access via token ─────────────────────────────────────────────
-
-  /**
-   * Validates that the portal token exists. No side effects.
-   * Safe to call from a GET endpoint — used by the activation page on first load.
-   *
-   * @throws PortalTokenNotFoundException if the token is unknown
-   */
-  @Transactional(readOnly = true)
-  public void validatePortalToken(String portalToken) {
-    portalTokenRepository.findByToken(portalToken)
-        .orElseThrow(() -> new PortalTokenNotFoundException("Portal token not found"));
-  }
+  // ─── Portal token revocation ─────────────────────────────────────────────
 
   /**
    * Permanently deletes all supplied portal tokens. Tokens not found are silently ignored.
@@ -100,33 +83,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
     }
   }
 
-  /**
-   * Validates the portal token and performs an idempotent event confirmation.
-   * Must only be called from a POST endpoint so that email link-preview scanners
-   * (which issue GET requests) cannot trigger confirmation without user intent.
-   * <ul>
-   *   <li>If {@code confirmPublicDinnerId} + {@code confirmParticipantId} are present →
-   *       participant registration confirmation.</li>
-   *   <li>If {@code confirmAdminId} is present → organizer email confirmation (acknowledged date).</li>
-   * </ul>
-   *
-   * @throws PortalTokenNotFoundException if the token is unknown
-   */
-  @Transactional
-  public void performEventConfirmation(String portalToken,
-                                       String confirmPublicDinnerId,
-                                       UUID confirmParticipantId,
-                                       String confirmAdminId) {
-    portalTokenRepository.findByToken(portalToken)
-        .orElseThrow(() -> new PortalTokenNotFoundException("Portal token not found"));
-
-    if (StringUtils.isNotBlank(confirmPublicDinnerId) && confirmParticipantId != null) {
-      performParticipantConfirmation(confirmPublicDinnerId, confirmParticipantId);
-    } else if (StringUtils.isNotBlank(confirmAdminId)) {
-      performOrganizerConfirmation(confirmAdminId);
-    }
-  }
-
   // ─── My Events ────────────────────────────────────────────────────────────
 
   /**
@@ -134,8 +90,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
    * The token is the only credential the client needs to hold — no raw adminIds or selfAdminIds
    * are stored or submitted by the frontend.
    * Unresolvable events (deleted, mismatched) are silently omitted.
-   *
-   * @throws PortalTokenNotFoundException if the token is unknown
    */
   @Transactional(readOnly = true)
   public PortalMyEventsResponseTO resolveMyEvents(PortalMyEventsRequestTO request) {
@@ -250,27 +204,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
     PortalToken portalToken = new PortalToken(normalizedEmail, token);
     portalTokenRepository.save(portalToken);
     return token;
-  }
-
-  private void performParticipantConfirmation(String publicDinnerId, UUID participantId) {
-    try {
-      frontendRunningDinnerService.activateSubscribedParticipant(publicDinnerId, participantId);
-    } catch (Exception e) {
-      // Idempotent — log but do not fail the portal access
-      LOGGER.warn("Participant confirmation failed: publicDinnerId={}, participantId={}", publicDinnerId, participantId, e);
-    }
-  }
-
-  private void performOrganizerConfirmation(String adminId) {
-    try {
-      RunningDinner dinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
-      if (!dinner.isAcknowledged()) {
-        runningDinnerService.acknowledgeRunningDinner(adminId, dinner.getObjectId(), LocalDateTime.now());
-      }
-    } catch (Exception e) {
-      // Idempotent — log but do not fail the portal access
-      LOGGER.warn("Organizer confirmation failed: adminId={}", LogSanitizer.sanitize(adminId), e);
-    }
   }
 
   private  Map<String, List<PortalEventEntryTO>> buildEventEntriesForEmail(String email) {
