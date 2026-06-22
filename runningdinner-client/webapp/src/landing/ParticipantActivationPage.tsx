@@ -15,11 +15,11 @@ import {
 } from '@runningdinner/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
-import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 
+import { MY_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
 import LinkExtern from '../common/theme/LinkExtern';
 import { PageTitle, Span } from '../common/theme/typography/Tags';
-import { MY_EVENTS_PATH } from '../common/mainnavigation/NavigationPaths';
 
 export function ParticipantActivationPage() {
   const { t } = useTranslation('landing');
