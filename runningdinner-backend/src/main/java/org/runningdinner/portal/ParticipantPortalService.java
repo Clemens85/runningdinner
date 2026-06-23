@@ -246,13 +246,10 @@ public class ParticipantPortalService implements PortalTokenProvider {
   }
 
   private Optional<PortalEventEntryTO> resolveParticipantEventEntry(PortalCredentialTO credential, RunningDinner runningDinner) {
-    String publicUrl = null;
     try {
-      if (runningDinner.getRegistrationType() != RegistrationType.CLOSED) {
-        publicUrl = urlGenerator.constructPublicDinnerUrl(runningDinner.getPublicSettings().getPublicId());
-      }
+      String publicUrl = getPublicUrl(runningDinner);
       return Optional.of(new PortalEventEntryTO(
-          runningDinner.getTitle(),
+          getTitle(runningDinner),
           runningDinner.getDate(),
           runningDinner.getCity(),
           List.of(PortalRole.PARTICIPANT),
@@ -266,14 +263,11 @@ public class ParticipantPortalService implements PortalTokenProvider {
   }
 
   private Optional<PortalEventEntryTO> resolveOrganizerEventEntry(PortalCredentialTO credential, RunningDinner runningDinner) {
-    String publicUrl = null;
     try {
       String adminUrl = urlGenerator.constructAdministrationUrl(runningDinner.getAdminId());
-      if (runningDinner.getRegistrationType() != RegistrationType.CLOSED) {
-        publicUrl = urlGenerator.constructPublicDinnerUrl(runningDinner.getPublicSettings().getPublicId());
-      }
+      String publicUrl = getPublicUrl(runningDinner);
       return Optional.of(new PortalEventEntryTO(
-          runningDinner.getTitle(),
+          getTitle(runningDinner),
           runningDinner.getDate(),
           runningDinner.getCity(),
           List.of(PortalRole.ORGANIZER),
@@ -285,6 +279,22 @@ public class ParticipantPortalService implements PortalTokenProvider {
       return Optional.empty();
     }
   }
+
+  private String getPublicUrl(RunningDinner runningDinner) {
+    if (runningDinner.getRegistrationType() != RegistrationType.CLOSED) {
+      return urlGenerator.constructPublicDinnerUrl(runningDinner.getPublicSettings().getPublicId());
+    }
+    return null;
+  }
+
+
+  private String getTitle(RunningDinner runningDinner) {
+    if (runningDinner.getRegistrationType() != RegistrationType.CLOSED) {
+        return runningDinner.getPublicSettings().getPublicTitle();
+    }
+    return runningDinner.getTitle();
+  }
+
 
   private boolean hasAnyEventsForEmail(String email) {
     List<Participant> participants = participantService.findParticipantsAcrossAllDinnersByEmail(email);
