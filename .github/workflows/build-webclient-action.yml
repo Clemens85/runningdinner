@@ -35,6 +35,16 @@ jobs:
           cd runningdinner-client
           pnpm i --frozen-lockfile
 
+      - name: Check Typescript
+        run: |
+          cd runningdinner-client
+          pnpm typecheck
+
+      - name: Run ESLint
+        run: |
+          cd runningdinner-client
+          pnpm lint
+
       - name: Test
         run: |
           cd runningdinner-client

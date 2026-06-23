@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "pnpm -r --no-bail test"
+    "test": "pnpm -r --no-bail test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint"
   },
   "keywords": [],
   "author": "",
