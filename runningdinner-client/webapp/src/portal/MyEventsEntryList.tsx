@@ -59,14 +59,16 @@ export function MyEventsEntryList({ events }: MyEventsEntryListProps) {
   return (
     <Grid container spacing={2}>
       {events.map((event, index) => (
-        <Grid key={index} size={{ xs: 12, sm: 6 }}>
+        <Grid key={index} size={{ xs: 12 }}>
           <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
-                <Typography variant="h6" sx={{ lineHeight: 1.3 }}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'flex-start' }, gap: { sm: 1 } }}>
+                <Typography variant="h6" sx={{ lineHeight: 1.3, flex: { sm: 1 }, minWidth: 0 }}>
                   {event.eventName}
                 </Typography>
-                <EventRoleChip {...event} />
+                <Box sx={{ mt: { xs: 0.75, sm: 0 }, flexShrink: 0 }}>
+                  <EventRoleChip {...event} />
+                </Box>
               </Box>
               <EventInfo {...event} />
             </CardContent>
