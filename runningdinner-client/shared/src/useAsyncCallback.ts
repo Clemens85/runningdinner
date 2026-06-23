@@ -194,8 +194,8 @@ const useAsyncInternal = <R = UnknownResult, Args extends any[] = UnknownArgs>(
 ): UseAsyncReturn<R, Args> => {
   // Fallback missing params, only for JS users forgetting the deps array, to prevent infinite loops
   // https://github.com/slorber/react-async-hook/issues/27
-  // @ts-expect-error -- type suppression
   if (!params) {
+    // @ts-expect-error -- type suppression
     params = [];
   }
 
