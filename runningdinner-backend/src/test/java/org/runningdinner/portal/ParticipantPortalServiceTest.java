@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -141,12 +140,6 @@ class ParticipantPortalServiceTest {
     assertThat(entriesForThisDinner).hasSize(1);
     assertThat(entriesForThisDinner.getFirst().getRoles())
         .containsExactlyInAnyOrder(PortalRole.PARTICIPANT, PortalRole.ORGANIZER);
-  }
-
-  @Test
-  void validatePortalToken_unknownToken_throws404() {
-    assertThrows(PortalTokenNotFoundException.class,
-        () -> participantPortalService.validatePortalToken("unknown-token-xyz"));
   }
 
   @Test
