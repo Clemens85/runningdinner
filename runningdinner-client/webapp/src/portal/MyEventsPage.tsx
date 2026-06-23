@@ -6,10 +6,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FetchProgressBar } from '../common/FetchProgressBar';
+import { PageTitle } from '../common/theme/typography/Tags';
 import { AccessRecoveryForm } from './AccessRecoveryForm';
 import { ForgetMeButton } from './ForgetMeButton';
 import { MyEventsEntryList } from './MyEventsEntryList';
-import { PageTitle } from '../common/theme/typography/Tags';
 
 type MyEventsViewProps = {
   events: PortalEventEntry[];

@@ -1,6 +1,6 @@
 import { GlobalNotificationBanner, GlobalNotificationBannerApp } from '../common/global-notification';
-import { LandingMainNavigation } from '../common/theme/LandingMainNavigation';
 import { TeaserPopup } from '../common/teaserpopup';
+import { LandingMainNavigation } from '../common/theme/LandingMainNavigation';
 import { LandingRoute } from './LangingRoute';
 
 export default function LandingApp() {
