@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class PortalEventEntryTO {
 
@@ -12,9 +13,10 @@ public class PortalEventEntryTO {
   private String city;
   private List<PortalRole> roles;
   /**
-   * null for PARTICIPANT; full admin URL for ORGANIZER
+   * Holds for each role the credentials needed for accessing the event
    */
-  private String adminUrl;
+  private Map<PortalRole, PortalCredentialTO> credentials;
+
   /**
    * Public event page URL, available for all roles
    */
@@ -23,13 +25,18 @@ public class PortalEventEntryTO {
   public PortalEventEntryTO() {
   }
 
-  public PortalEventEntryTO(String eventName, LocalDate eventDate, String city, List<PortalRole> roles, String adminUrl, String publicUrl) {
+  public PortalEventEntryTO(String eventName,
+                            LocalDate eventDate,
+                            String city,
+                            String publicUrl,
+                            List<PortalRole> roles,
+                            Map<PortalRole, PortalCredentialTO> credentials) {
     this.eventName = eventName;
     this.eventDate = eventDate;
     this.city = city;
-    this.roles = roles;
-    this.adminUrl = adminUrl;
     this.publicUrl = publicUrl;
+    this.roles = roles;
+    this.credentials = credentials;
   }
 
   public String getEventName() {
@@ -64,10 +71,6 @@ public class PortalEventEntryTO {
     this.roles = roles;
   }
 
-  public String getAdminUrl() {
-    return adminUrl;
-  }
-
   public String getPublicUrl() {
     return publicUrl;
   }
@@ -76,8 +79,19 @@ public class PortalEventEntryTO {
     this.publicUrl = publicUrl;
   }
 
-  public void setAdminUrl(String adminUrl) {
-    this.adminUrl = adminUrl;
+  public Map<PortalRole, PortalCredentialTO> getCredentials() {
+    return credentials;
+  }
+
+  public void setCredentials(Map<PortalRole, PortalCredentialTO> credentials) {
+    this.credentials = credentials;
+  }
+
+  /** Convenience accessor — returns the admin URL from the ORGANIZER credential, or null. */
+  public String getAdminUrl() {
+    if (credentials == null) return null;
+    PortalCredentialTO organizerCred = credentials.get(PortalRole.ORGANIZER);
+    return organizerCred != null ? organizerCred.getAdminUrl() : null;
   }
 
   @Override
@@ -85,7 +99,6 @@ public class PortalEventEntryTO {
     return MoreObjects.toStringHelper(this)
             .add("eventName", eventName)
             .add("publicUrl", publicUrl)
-            .add("adminUrl", adminUrl)
             .add("roles", roles)
             .toString();
   }

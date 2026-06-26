@@ -1,10 +1,18 @@
 package org.runningdinner.portal;
 
 import jakarta.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 /**
  * REST controller for the Participant Portal.
@@ -12,11 +20,11 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping(value = "/rest/participant-portal/v1", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ParticipantPortalServiceRest {
+public class ParticipantPortalRestController {
 
   private final ParticipantPortalService participantPortalService;
 
-  public ParticipantPortalServiceRest(ParticipantPortalService participantPortalService) {
+  public ParticipantPortalRestController(ParticipantPortalService participantPortalService) {
     this.participantPortalService = participantPortalService;
   }
 
@@ -59,5 +67,23 @@ public class ParticipantPortalServiceRest {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void requestAccessRecovery(@Valid @RequestBody AccessRecoveryRequestTO request) {
     participantPortalService.requestAccessRecovery(request.getEmail());
+  }
+
+  /**
+   * GET /rest/participant-portal/v1/{selfAdminId}/{participantId}/self-service-info?portalToken=...
+   * <p>
+   * Returns self-service availability flags for the given participant.
+   * The portalToken is validated against the participant's email before any data is returned.
+   *
+   * @param selfAdminId   RunningDinner.selfAdministrationId
+   * @param participantId Participant.id
+   * @param portalToken   portal token — used as a safety guard to confirm the caller owns this participant
+   */
+  @GetMapping("/{selfAdminId}/{participantId}/self-service-info")
+  public ParticipantSelfServiceInfoTO getParticipantSelfServiceInfo(
+      @PathVariable UUID selfAdminId,
+      @PathVariable UUID participantId,
+      @RequestParam String portalToken) {
+    return participantPortalService.resolveParticipantSelfServiceInfo(selfAdminId, participantId, portalToken);
   }
 }

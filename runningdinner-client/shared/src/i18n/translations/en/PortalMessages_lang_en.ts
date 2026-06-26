@@ -40,6 +40,31 @@ const PortalMessages_en: any = {
     'You can request a new access link at any time via the access recovery form.',
   forget_me_dialog_confirm: 'Forget me',
   forget_me_dialog_cancel: 'Cancel',
+
+  // Participant event card action
+  view_participation: 'My Participation',
+
+  // ParticipantSelfServicePage — general
+  participant_event_back: 'Back to My Events',
+
+  // ParticipantSelfServicePage — My Team section
+  participant_event_section_team: 'My Team',
+  participant_event_team_pending: 'Teams are currently being arranged. Once you have been assigned to a team, more information will appear here.',
+  participant_event_changeteamhost_pending: 'The option to change the team host becomes available after you have received your team assignment from the organizer.',
+  participant_event_change_teamhost: 'Change Team Host',
+
+  // ParticipantSelfServicePage — Dinner Route section
+  participant_event_section_dinnerroute: 'Dinner Route',
+  participant_event_dinnerroute_pending: 'Dinner routes have not been sent yet. Your personal route will appear here once the organizer distributes them.',
+  participant_event_view_dinnerroute: 'View My Dinner Route',
+
+  // ParticipantSelfServicePage — Messages section
+  participant_event_section_messages: 'Messages',
+  participant_event_messages_empty: 'No messages from the organizer yet.',
+  participant_event_messages_intro: 'All emails the organizer sends to you — such as your team assignment and dinner route — will also be available here.',
+  participant_event_msg_type_participant: 'Participant Info',
+  participant_event_msg_type_team: 'Team Info',
+  participant_event_msg_type_dinnerroute: 'Dinner Route',
 };
 
 export default PortalMessages_en;

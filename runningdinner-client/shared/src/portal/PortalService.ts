@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { BackendConfig, isArrayEmpty } from '..';
-import { PortalMyEventsResponseTO } from './PortalTypes';
+import { PortalMyEventsResponseTO, PortalParticipantInfo } from './PortalTypes';
 
 /**
  * Fetches live event summaries for all events bound to the given portal tokens.
@@ -32,4 +32,15 @@ export async function revokePortalTokens(portalTokens: string[]): Promise<void> 
   }
   const url = BackendConfig.buildUrl(`/participant-portal/v1/token/revoke`);
   await axios.post(url, { portalTokens });
+}
+
+/**
+ * Fetches participant self-service availability info for a specific event.
+ * The portalToken is passed as a safety guard — the backend validates that the token
+ * belongs to the participant before returning data.
+ */
+export async function fetchParticipantSelfServiceInfo(selfAdminId: string, participantId: string, portalToken: string): Promise<PortalParticipantInfo> {
+  const url = BackendConfig.buildUrl(`/participant-portal/v1/${selfAdminId}/${participantId}/self-service-info`);
+  const response = await axios.get<PortalParticipantInfo>(url, { params: { portalToken } });
+  return response.data;
 }

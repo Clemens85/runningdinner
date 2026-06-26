@@ -14,6 +14,9 @@ public class PortalCredentialTO {
   @NotNull
   private PortalRole role;
 
+  @NotNull
+  private String portalToken;
+
   /** UUID — matches RunningDinner.selfAdministrationId. Only set when role=PARTICIPANT. */
   private UUID selfAdminId;
 
@@ -23,21 +26,27 @@ public class PortalCredentialTO {
   /** RunningDinner.adminId. Only set when role=ORGANIZER. */
   private String adminId;
 
-  public PortalCredentialTO() {
+  /** AdminUrl. Only set when role=ORGANIZER. */
+  private String adminUrl;
+
+  protected PortalCredentialTO() {
   }
 
-  public static PortalCredentialTO forParticipant(UUID selfAdminId, UUID participantId) {
+  public static PortalCredentialTO forParticipant(String portalToken, UUID selfAdminId, UUID participantId) {
     PortalCredentialTO to = new PortalCredentialTO();
     to.role = PortalRole.PARTICIPANT;
+    to.portalToken = portalToken;
     to.selfAdminId = selfAdminId;
     to.participantId = participantId;
     return to;
   }
 
-  public static PortalCredentialTO forOrganizer(String adminId) {
+  public static PortalCredentialTO forOrganizer(String portalToken, String adminId, String adminUrl) {
     PortalCredentialTO to = new PortalCredentialTO();
     to.role = PortalRole.ORGANIZER;
+    to.portalToken = portalToken;
     to.adminId = adminId;
+    to.adminUrl = adminUrl;
     return to;
   }
 
@@ -71,5 +80,21 @@ public class PortalCredentialTO {
 
   public void setAdminId(String adminId) {
     this.adminId = adminId;
+  }
+
+  public String getPortalToken() {
+    return portalToken;
+  }
+
+  public void setPortalToken(String portalToken) {
+    this.portalToken = portalToken;
+  }
+
+  public String getAdminUrl() {
+    return adminUrl;
+  }
+
+  public void setAdminUrl(String adminUrl) {
+    this.adminUrl = adminUrl;
   }
 }

@@ -1,8 +1,10 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Box, Button, Card, CardActions, CardContent, Chip, Divider, Grid, Typography } from '@mui/material';
 import { formatLocalDate, isStringEmpty, PortalEventEntry } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface MyEventsEntryListProps {
   events: PortalEventEntry[];
@@ -31,8 +33,9 @@ function EventInfo({ city, eventDate }: PortalEventEntry) {
   );
 }
 
-function ManageEventButton({ adminUrl, roles }: PortalEventEntry) {
+function ManageEventButton({ credentials, roles }: PortalEventEntry) {
   const { t } = useTranslation('portal');
+  const adminUrl = credentials?.ORGANIZER?.adminUrl;
   if (isStringEmpty(adminUrl) || !roles.includes('ORGANIZER')) {
     return null;
   }
@@ -51,6 +54,31 @@ function OpenPublicEventPageButton({ publicUrl }: PortalEventEntry) {
   return (
     <Button size="small" variant="outlined" color="primary" href={publicUrl!} target="_blank" rel="noopener noreferrer" endIcon={<OpenInNewIcon fontSize="inherit" />}>
       {t('view_event_page')}
+    </Button>
+  );
+}
+
+interface MyParticipationButtonProps {
+  event: PortalEventEntry;
+}
+
+function MyParticipationButton({ event }: MyParticipationButtonProps) {
+  const { t } = useTranslation('portal');
+  const navigate = useNavigate();
+  const participantCred = event.credentials?.PARTICIPANT;
+  if (!event.roles.includes('PARTICIPANT') || !participantCred) {
+    return null;
+  }
+  const { selfAdminId, participantId } = participantCred;
+  return (
+    <Button
+      size="small"
+      variant="contained"
+      color="primary"
+      startIcon={<PersonIcon fontSize="inherit" />}
+      onClick={() => navigate(`event/${selfAdminId}/${participantId}`, { state: { event } })}
+    >
+      {t('view_participation')}
     </Button>
   );
 }
@@ -76,6 +104,7 @@ export function MyEventsEntryList({ events }: MyEventsEntryListProps) {
             <Divider />
 
             <CardActions sx={{ px: 2, py: 1.5, gap: 1, flexWrap: 'wrap' }}>
+              <MyParticipationButton event={event} />
               <OpenPublicEventPageButton {...event} />
               <ManageEventButton {...event} />
             </CardActions>
