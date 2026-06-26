@@ -14,12 +14,16 @@ import { PageTitle } from '../common/theme/typography/Tags';
 // ---------------------------------------------------------------------------
 
 function buildDinnerRouteUrl(selfAdminId: string, participantId: string, teamId: string | null): string | null {
-  if (!teamId) return null;
+  if (!teamId) {
+    return null;
+  }
   return `/self/${selfAdminId}/dinnerroute/${participantId}/${teamId}`;
 }
 
 function buildChangeTeamHostUrl(selfAdminId: string, participantId: string, teamId: string | null): string | null {
-  if (!teamId) return null;
+  if (!teamId) {
+    return null;
+  }
   return `/self/${selfAdminId}/teamhost/${participantId}/${teamId}`;
 }
 
