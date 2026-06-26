@@ -2,7 +2,7 @@ import DirectionsIcon from '@mui/icons-material/Directions';
 import EmailIcon from '@mui/icons-material/Email';
 import GroupIcon from '@mui/icons-material/Group';
 import { Alert, Box, Button, Card, CardContent, Chip, CircularProgress, Divider, Grid, Stack, Typography } from '@mui/material';
-import { formatLocalDate, isStringNotEmpty, PortalEventEntry, PortalParticipantInfo, useParticipantSelfServiceInfo } from '@runningdinner/shared';
+import { formatLocalDate, isStringNotEmpty, PortalEventEntry, PortalParticipantInfo, useParticipantSelfServiceInfo, usePortalEventEntry } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -187,12 +187,13 @@ export function ParticipantSelfServicePage() {
   const { selfAdminId = '', participantId = '' } = useParams<{ selfAdminId: string; participantId: string }>();
 
   const state = location.state as ParticipantEventPageState | null;
-  const event = state?.event ?? null;
+  const stateEvent = state?.event ?? null;
 
-  // portalToken lives on the credentials that were passed via navigation state
-  const portalToken = event?.credentials?.PARTICIPANT?.portalToken ?? null;
+  const { event, portalToken, isLoading: isLoadingEvent } = usePortalEventEntry(selfAdminId, participantId, stateEvent);
 
-  const { data: participantInfo, isLoading } = useParticipantSelfServiceInfo(selfAdminId, participantId, portalToken);
+  // portalToken lives on the credentials that were passed via navigation state or resolved via fallback fetch
+  const { data: participantInfo, isLoading: isLoadingInfo } = useParticipantSelfServiceInfo(selfAdminId, participantId, portalToken);
+  const isLoading = isLoadingEvent || isLoadingInfo;
 
   // If we arrive here without URL params (shouldn't happen normally), go back to list
   if (!selfAdminId || !participantId) {
@@ -211,7 +212,7 @@ export function ParticipantSelfServicePage() {
         </Button>
       </Box>
 
-      {/* Event header — comes from navigation state; gracefully absent on hard refresh */}
+      {/* Event header — resolved from navigation state (fast path) or from the my-events fallback fetch */}
       {event && (
         <Box sx={{ mb: 3 }}>
           <PageTitle sx={{ mb: 0.5 }}>{event.eventName}</PageTitle>
