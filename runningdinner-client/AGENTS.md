@@ -98,6 +98,7 @@ All shared types in `shared/src/types/` with barrel exports. Naming:
 - Interfaces for data: `Team`, `Participant`, `RunningDinner`
 - Enums for constants: `TeamStatus`, `ActivityType`, `FetchStatus`
 - Type aliases for compositions: `BaseTeam`, `HostTeam extends Team`
+- Type definitions shall have no TO suffix (even if the backing type in backend has this. Use `Team` instead of `TeamTO`)
 
 ### Prop Types
 
