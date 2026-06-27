@@ -122,7 +122,12 @@ function TeamDetails({ info }: { info: TeamSelfServiceInfo }) {
   return (
     <Box sx={{ mb: 2 }}>
       <MealDetails {...info} />
-      {info.teamPartnerName && (
+      {info.teamPartnerCancelled && (
+        <Alert severity="warning" sx={{ mb: 1 }}>
+          {t('participant_event_team_partner_cancelled')}
+        </Alert>
+      )}
+      {!info.teamPartnerCancelled && info.teamPartnerName && (
         <TeamInfoRow
           label={t('participant_event_team_partner')}
           value={
@@ -178,7 +183,7 @@ export function MyTeamSection({ participantInfo, isLoading }: MyTeamSectionProps
           <>
             <TeamDetails info={teamSelfServiceInfo} />
             {/* Hide "Manage hosting" for fixed partners — they share a home, no host decision needed */}
-            {!teamSelfServiceInfo.fixedTeamPartner && (
+            {!teamSelfServiceInfo.fixedTeamPartner && !teamSelfServiceInfo.teamPartnerCancelled && (
               <Button variant="outlined" size="small" href={teamSelfServiceInfo.manageTeamHostingUrl} target="_blank" rel="noopener noreferrer">
                 {t('participant_event_manage_team_hosting')}
               </Button>
