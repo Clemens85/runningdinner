@@ -1,3 +1,5 @@
+import { MealSpecifics } from '../types';
+
 export type PortalRole = 'PARTICIPANT' | 'ORGANIZER';
 
 /**
@@ -41,6 +43,15 @@ export interface TeamSelfServiceInfo {
   manageTeamHostingUrl: string;
   /** True when the viewing participant is themselves the proposed host of this team. */
   selfIsHost: boolean;
+  /** True when the partner was co-registered alongside the viewer (fixed-partner-registration). */
+  fixedTeamPartner: boolean;
+  /**
+   * Dietary restrictions + free-text note of the team partner.
+   * Only populated when fixedTeamPartner is false and a partner exists. Null otherwise.
+   */
+  teamPartnerMealSpecifics: MealSpecifics | null;
+
+  teamPartnerCancelled: boolean;
 }
 
 /**

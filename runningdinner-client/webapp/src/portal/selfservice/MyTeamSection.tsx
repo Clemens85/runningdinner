@@ -1,8 +1,8 @@
 import EmailIcon from '@mui/icons-material/Email';
 import GroupIcon from '@mui/icons-material/Group';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
-import { Alert, Box, Button, Card, CardContent, Chip, Stack, Typography } from '@mui/material';
-import { isStringEmpty, PortalParticipantInfo, TeamSelfServiceInfo, Time } from '@runningdinner/shared';
+import { Alert, Box, Button, Card, CardContent, Chip, Stack, Tooltip, Typography } from '@mui/material';
+import { isStringEmpty, isStringNotEmpty, MealSpecifics, PortalParticipantInfo, TeamSelfServiceInfo, Time } from '@runningdinner/shared';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -51,6 +51,34 @@ function TeamPartnerMobileNumberLink({ teamPartnerMobileNumber }: TeamSelfServic
   );
 }
 
+/** Compact dietary restriction chips + optional free-text note for the team partner. */
+function TeamPartnerMealSpecifics({ mealSpecifics }: { mealSpecifics: MealSpecifics }) {
+  const { t } = useTranslation('common');
+  const { vegan, vegetarian, lactose, gluten, mealSpecificsNote } = mealSpecifics;
+  const hasDiet = vegan || vegetarian || lactose || gluten;
+  const hasNote = isStringNotEmpty(mealSpecificsNote);
+
+  if (!hasDiet && !hasNote) {
+    return null;
+  }
+
+  return (
+    <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap alignItems="center" sx={{ mt: 0.5 }}>
+      {vegan && <Chip label={t('vegan')} size="small" color="success" variant="outlined" />}
+      {!vegan && vegetarian && <Chip label={t('vegetarian')} size="small" color="success" variant="outlined" />}
+      {lactose && <Chip label={t('lactose')} size="small" color="warning" variant="outlined" />}
+      {gluten && <Chip label={t('gluten')} size="small" color="warning" variant="outlined" />}
+      {hasNote && (
+        <Tooltip title={mealSpecificsNote} placement="top">
+          <Typography variant="caption" color="text.secondary" sx={{ cursor: 'default', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {mealSpecificsNote}
+          </Typography>
+        </Tooltip>
+      )}
+    </Stack>
+  );
+}
+
 function TeamHostInfo({ selfIsHost, hostName }: TeamSelfServiceInfo) {
   const { t } = useTranslation('portal');
   return (
@@ -78,21 +106,35 @@ function MealDetails({ mealTime, mealLabel }: TeamSelfServiceInfo) {
   );
 }
 
+function TeamPartnerName({ teamPartnerName, fixedTeamPartner }: TeamSelfServiceInfo) {
+  const { t } = useTranslation('portal');
+  return (
+    <Stack direction="row" alignItems="center" spacing={0.75} flexWrap="wrap">
+      <span>{teamPartnerName}</span>
+      {fixedTeamPartner && <Chip label={t('participant_event_team_partner_fixed_badge')} size="small" color="info" variant="outlined" sx={{ height: 18, fontSize: '0.65rem' }} />}
+    </Stack>
+  );
+}
+
 function TeamDetails({ info }: { info: TeamSelfServiceInfo }) {
   const { t } = useTranslation('portal');
+
   return (
     <Box sx={{ mb: 2 }}>
       <MealDetails {...info} />
-      <TeamInfoRow
-        label={t('participant_event_team_partner')}
-        value={
-          <Stack direction="column" spacing={0.25}>
-            <span>{info.teamPartnerName}</span>
-            <TeamPartnerEmailLink {...info} />
-            <TeamPartnerMobileNumberLink {...info} />
-          </Stack>
-        }
-      />
+      {info.teamPartnerName && (
+        <TeamInfoRow
+          label={t('participant_event_team_partner')}
+          value={
+            <Stack direction="column" spacing={0.25}>
+              <TeamPartnerName {...info} />
+              <TeamPartnerEmailLink {...info} />
+              <TeamPartnerMobileNumberLink {...info} />
+              {info.teamPartnerMealSpecifics && <TeamPartnerMealSpecifics mealSpecifics={info.teamPartnerMealSpecifics} />}
+            </Stack>
+          }
+        />
+      )}
       <TeamInfoRow
         label={t('participant_event_team_host')}
         value={
@@ -135,9 +177,12 @@ export function MyTeamSection({ participantInfo, isLoading }: MyTeamSectionProps
         {teamSelfServiceInfo && (
           <>
             <TeamDetails info={teamSelfServiceInfo} />
-            <Button variant="outlined" size="small" href={teamSelfServiceInfo.manageTeamHostingUrl} target="_blank" rel="noopener noreferrer">
-              {t('participant_event_manage_team_hosting')}
-            </Button>
+            {/* Hide "Manage hosting" for fixed partners — they share a home, no host decision needed */}
+            {!teamSelfServiceInfo.fixedTeamPartner && (
+              <Button variant="outlined" size="small" href={teamSelfServiceInfo.manageTeamHostingUrl} target="_blank" rel="noopener noreferrer">
+                {t('participant_event_manage_team_hosting')}
+              </Button>
+            )}
           </>
         )}
       </CardContent>

@@ -1,6 +1,7 @@
 package org.runningdinner.portal;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.activity.ActivityType;
@@ -378,21 +379,47 @@ public class ParticipantPortalService implements PortalTokenProvider {
     }
 
     Team team = teamOpt.get();
-    String manageTeamHostingUrl = urlGenerator.constructManageTeamHostUrl(selfAdminId, team.getId(), participantId);
-
     String mealLabel = team.getMealClass().getLabel();
-    java.time.LocalDateTime mealTime = team.getMealClass().getTime();
+    LocalDateTime mealTime = team.getMealClass().getTime();
 
+    Participant viewingParticipant = team.getTeamMemberByParticipantId(participantId);
     Participant host = team.getHostTeamMember();
     String hostName = host.getName().getFullnameFirstnameFirst();
     boolean selfIsHost = host.getId().equals(participantId);
 
-    Set<Participant> partners = team.getTeamMembersExcluding(team.getTeamMemberByParticipantId(participantId));
+    Set<Participant> partners = team.getTeamMembersExcluding(viewingParticipant);
     Participant teamPartner = partners.stream().findFirst().orElse(null);
-    String teamPartnerName = teamPartner != null ? teamPartner.getName().getFullnameFirstnameFirst() : null;
-    String teamPartnerEmail = teamPartner != null ? StringUtils.trimToNull(teamPartner.getEmail()) : null;
-    String teamPartnerMobileNumber = teamPartner != null ? StringUtils.trimToNull(teamPartner.getMobileNumber()) : null;
 
-    return new TeamSelfServiceInfo(mealLabel, mealTime, teamPartnerName, teamPartnerEmail, teamPartnerMobileNumber, hostName, manageTeamHostingUrl, selfIsHost);
+    TeamSelfServiceInfo result = new TeamSelfServiceInfo();
+    result.setMealLabel(mealLabel);
+    result.setMealTime(mealTime);
+    result.setHostName(hostName);
+    result.setSelfIsHost(selfIsHost);
+
+    if (teamPartner == null) {
+      result.setTeamPartnerCancelled(true);
+      return result; // Special case when there is no team partner (which means it is likely cancelled)
+    }
+
+    boolean fixedTeamPartner = teamPartner.isTeamPartnerWishRegistrationChildOf(viewingParticipant);
+
+    String teamPartnerEmail = StringUtils.trimToNull(teamPartner.getEmail());
+    String teamPartnerMobileNumber = StringUtils.trimToNull(teamPartner.getMobileNumber());
+    if (fixedTeamPartner) {
+      // For fixed partners: only show email and/or mobile phone when it differs from the viewing participant's own data:
+      teamPartnerEmail = Strings.CI.equals(StringUtils.trim(viewingParticipant.getEmail()), StringUtils.trim(teamPartnerEmail)) ? null : teamPartnerEmail;
+      teamPartnerMobileNumber = Strings.CI.equals(StringUtils.trim(viewingParticipant.getMobileNumber()), StringUtils.trim(teamPartnerMobileNumber)) ? null : teamPartnerMobileNumber;
+    }
+
+    result.setManageTeamHostingUrl(urlGenerator.constructManageTeamHostUrl(selfAdminId, team.getId(), participantId));
+    result.setTeamPartnerName(teamPartner.getName().getFullnameFirstnameFirst());
+    result.setTeamPartnerEmail(teamPartnerEmail);
+    result.setTeamPartnerMobileNumber(teamPartnerMobileNumber);
+    result.setFixedTeamPartner(fixedTeamPartner);
+    if (!fixedTeamPartner) {
+      result.setTeamPartnerMealSpecifics(teamPartner.getMealSpecifics().createDetachedClone());
+    }
+
+    return result;
   }
 }

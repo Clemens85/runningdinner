@@ -54,6 +54,7 @@ const PortalMessages_de: any = {
   participant_event_team_host: 'Gastgeber',
   participant_event_team_host_self_badge: 'Du bist der Gastgeber',
   participant_event_team_partner: 'Team-Partner',
+  participant_event_team_partner_fixed_badge: 'Fester Team-Partner',
   participant_event_manage_team_hosting: 'Gastgeber verwalten',
 
   // ParticipantSelfServicePage — Dinner Route section

@@ -1,5 +1,7 @@
 package org.runningdinner.portal;
 
+import org.runningdinner.core.MealSpecifics;
+
 import java.time.LocalDateTime;
 
 /**
@@ -33,20 +35,24 @@ public class TeamSelfServiceInfo {
   /** True when the viewing participant is themselves the proposed host of this team. */
   private boolean selfIsHost;
 
-  public TeamSelfServiceInfo() {
-  }
+  /**
+   * True when the team partner was co-registered by (or alongside) the viewing participant via the
+   * fixed-partner-registration mechanism ({@code teamPartnerWishRegistrationRoot/Child}).
+   * In this case only name (and conditionally email) are shown; mobile and "Manage hosting" button
+   * are hidden.
+   */
+  private boolean fixedTeamPartner;
 
-  public TeamSelfServiceInfo(String mealLabel, LocalDateTime mealTime,
-                              String teamPartnerName, String teamPartnerEmail, String teamPartnerMobileNumber,
-                              String hostName, String manageTeamHostingUrl, boolean selfIsHost) {
-    this.mealLabel = mealLabel;
-    this.mealTime = mealTime;
-    this.teamPartnerName = teamPartnerName;
-    this.teamPartnerEmail = teamPartnerEmail;
-    this.teamPartnerMobileNumber = teamPartnerMobileNumber;
-    this.hostName = hostName;
-    this.manageTeamHostingUrl = manageTeamHostingUrl;
-    this.selfIsHost = selfIsHost;
+  /**
+   * Dietary restrictions and meal notes of the team partner.
+   * Only populated when {@code fixedTeamPartner} is false and a partner exists.
+   * Null otherwise.
+   */
+  private MealSpecifics teamPartnerMealSpecifics;
+
+  private boolean teamPartnerCancelled;
+
+  public TeamSelfServiceInfo() {
   }
 
   public String getMealLabel() {
@@ -112,4 +118,29 @@ public class TeamSelfServiceInfo {
   public void setSelfIsHost(boolean selfIsHost) {
     this.selfIsHost = selfIsHost;
   }
+
+  public boolean isFixedTeamPartner() {
+    return fixedTeamPartner;
+  }
+
+  public void setFixedTeamPartner(boolean fixedTeamPartner) {
+    this.fixedTeamPartner = fixedTeamPartner;
+  }
+
+  public MealSpecifics getTeamPartnerMealSpecifics() {
+    return teamPartnerMealSpecifics;
+  }
+
+  public void setTeamPartnerMealSpecifics(MealSpecifics teamPartnerMealSpecifics) {
+    this.teamPartnerMealSpecifics = teamPartnerMealSpecifics;
+  }
+
+  public boolean isTeamPartnerCancelled() {
+    return teamPartnerCancelled;
+  }
+
+  public void setTeamPartnerCancelled(boolean teamPartnerCancelled) {
+    this.teamPartnerCancelled = teamPartnerCancelled;
+  }
 }
+
