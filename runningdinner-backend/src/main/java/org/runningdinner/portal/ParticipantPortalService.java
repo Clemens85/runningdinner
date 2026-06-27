@@ -344,18 +344,33 @@ public class ParticipantPortalService implements PortalTokenProvider {
     Assert.state(participantEmail.equals(tokenEmail),
         "Portal token email does not match participant email for participantId=" + participantId);
 
-    boolean dinnerRouteAvailable = isDinnerRouteAvailable(runningDinner.getAdminId(), participantEmail);
+    Optional<Team> teamOpt = teamService.findTeamByParticipantId(runningDinner.getAdminId(), participantId);
+    if (teamOpt.isEmpty()) {
+      return null;
+    }
+    Team team = teamOpt.get();
 
-    TeamSelfServiceInfo teamSelfServiceInfo = resolveTeamSelfServiceInfo(runningDinner, selfAdminId, participantId);
-    return new ParticipantSelfServiceInfoTO(teamSelfServiceInfo, dinnerRouteAvailable);
+    TeamSelfServiceInfo teamSelfServiceInfo = resolveTeamSelfServiceInfo(runningDinner, team, selfAdminId, participantId);
+    String dinnerRouteUrl = resolveDinnerRouteUrl(runningDinner, team, selfAdminId, participantId);
+
+    return new ParticipantSelfServiceInfoTO(teamSelfServiceInfo, dinnerRouteUrl);
   }
 
-  private boolean isDinnerRouteAvailable(String adminId, String participantEmailLowerCased) {
+  /**
+   * Returns the full URL to the participant's personal dinner route page, or null when not yet available.
+   * The URL is only constructed when at least one DINNERROUTE_MAIL_SENT activity exists AND the
+   * participant is assigned to a team (needed to build the route link).
+   */
+  private String resolveDinnerRouteUrl(RunningDinner runningDinner, Team team, UUID selfAdminId, UUID participantId) {
 
-    return activityService.findActivitiesByTypes(adminId, ActivityType.DINNERROUTE_MAIL_SENT)
+    boolean dinnerRouteMailsSent = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.DINNERROUTE_MAIL_SENT)
         .stream()
         .findAny()
         .isPresent();
+    if (!dinnerRouteMailsSent) {
+      return null;
+    }
+    return urlGenerator.constructPrivateDinnerRouteUrl(selfAdminId, team.getId(), participantId);
   }
 
   /**
@@ -363,7 +378,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
    * Returns non-null only if the participant is assigned to a team AND at least one TEAM mail
    * was sent to all recipients (indicated by a {@link ActivityType#TEAMARRANGEMENT_MAIL_SENT} activity).
    */
-  private TeamSelfServiceInfo resolveTeamSelfServiceInfo(RunningDinner runningDinner, UUID selfAdminId, UUID participantId) {
+  private TeamSelfServiceInfo resolveTeamSelfServiceInfo(RunningDinner runningDinner, Team team, UUID selfAdminId, UUID participantId) {
 
     boolean teamMailsSent = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.TEAMARRANGEMENT_MAIL_SENT)
         .stream()
@@ -373,12 +388,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
       return null;
     }
 
-    Optional<Team> teamOpt = teamService.findTeamByParticipantId(runningDinner.getAdminId(), participantId);
-    if (teamOpt.isEmpty()) {
-      return null;
-    }
-
-    Team team = teamOpt.get();
     String mealLabel = team.getMealClass().getLabel();
     LocalDateTime mealTime = team.getMealClass().getTime();
 

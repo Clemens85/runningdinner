@@ -62,6 +62,7 @@ const PortalMessages_en: any = {
   participant_event_section_dinnerroute: 'Dinner Route',
   participant_event_dinnerroute_pending: 'Dinner routes have not been sent yet. Your personal route will appear here once the organizer distributes them.',
   participant_event_view_dinnerroute: 'View My Dinner Route',
+  participant_event_dinnerroute_mealspecifics_hint: 'In the dinner route view you can also find information about the dietary preferences of your guests for your course.',
 
   // ParticipantSelfServicePage — Messages section
   participant_event_section_messages: 'Messages',

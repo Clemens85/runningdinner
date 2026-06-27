@@ -65,8 +65,11 @@ export interface PortalParticipantInfo {
    * team arrangement mails have been sent. Null until both conditions are met.
    */
   teamSelfServiceInfo: TeamSelfServiceInfo | null;
-  /** true when at least one DINNER_ROUTE message has been sent to this participant */
-  dinnerRouteAvailable: boolean;
+  /**
+   * Full URL to the participant's personal dinner route page.
+   * Non-null only when dinner route mails have been sent AND the participant is assigned to a team.
+   */
+  dinnerRouteUrl: string | null;
 }
 
 export interface PortalEventEntry {

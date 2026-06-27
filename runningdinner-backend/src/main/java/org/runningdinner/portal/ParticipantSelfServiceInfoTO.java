@@ -14,20 +14,24 @@ public class ParticipantSelfServiceInfoTO {
    */
   private TeamSelfServiceInfo teamSelfServiceInfo;
 
-  /** True when at least one DINNER_ROUTE message has been sent to this participant. */
-  private boolean dinnerRouteAvailable;
+  /**
+   * Full URL to the participant's personal dinner route page.
+   * Non-null only when at least one DINNER_ROUTE mail has been sent AND the participant
+   * is assigned to a team (so the route URL can be constructed). Null until both conditions are met.
+   */
+  private String dinnerRouteUrl;
 
   public ParticipantSelfServiceInfoTO() {
   }
 
-  public ParticipantSelfServiceInfoTO(TeamSelfServiceInfo teamSelfServiceInfo, boolean dinnerRouteAvailable) {
+  public ParticipantSelfServiceInfoTO(TeamSelfServiceInfo teamSelfServiceInfo, String dinnerRouteUrl) {
     this.teamSelfServiceInfo = teamSelfServiceInfo;
-    this.dinnerRouteAvailable = dinnerRouteAvailable;
+    this.dinnerRouteUrl = dinnerRouteUrl;
   }
 
   /** Factory for the default "nothing available yet" response. */
   public static ParticipantSelfServiceInfoTO defaultPending() {
-    return new ParticipantSelfServiceInfoTO(null, false);
+    return new ParticipantSelfServiceInfoTO(null, null);
   }
 
   public TeamSelfServiceInfo getTeamSelfServiceInfo() {
@@ -38,11 +42,11 @@ public class ParticipantSelfServiceInfoTO {
     this.teamSelfServiceInfo = teamSelfServiceInfo;
   }
 
-  public boolean isDinnerRouteAvailable() {
-    return dinnerRouteAvailable;
+  public String getDinnerRouteUrl() {
+    return dinnerRouteUrl;
   }
 
-  public void setDinnerRouteAvailable(boolean dinnerRouteAvailable) {
-    this.dinnerRouteAvailable = dinnerRouteAvailable;
+  public void setDinnerRouteUrl(String dinnerRouteUrl) {
+    this.dinnerRouteUrl = dinnerRouteUrl;
   }
 }

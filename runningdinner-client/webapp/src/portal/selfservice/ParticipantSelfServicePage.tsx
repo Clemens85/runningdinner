@@ -97,7 +97,7 @@ function ParticipantSelfServiceView({ event, credential }: ParticipantSelfServic
         <Grid size={{ xs: 12, md: 7 }}>
           <Stack spacing={2}>
             <MyTeamSection participantInfo={participantInfo} isLoading={isTeamInfoLoading} />
-            <DinnerRouteSection selfAdminId={selfAdminId!} participantId={participantId!} participantInfo={participantInfo} isLoading={isTeamInfoLoading} />
+            <DinnerRouteSection participantInfo={participantInfo} isLoading={isTeamInfoLoading} />
           </Stack>
         </Grid>
 
