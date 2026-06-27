@@ -3,8 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 
 import { LandingMainNavigation } from '../common/theme/LandingMainNavigation';
 import { MyEventsPage } from './MyEventsPage';
-import { ParticipantSelfServicePage } from './ParticipantSelfServicePage.tsx';
 import { PortalActivationPage } from './PortalActivationPage';
+import { ParticipantSelfServicePage } from './selfservice/ParticipantSelfServicePage.tsx';
 
 export default function PortalApp() {
   return (

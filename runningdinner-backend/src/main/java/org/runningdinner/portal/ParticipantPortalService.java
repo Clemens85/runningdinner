@@ -2,6 +2,8 @@ package org.runningdinner.portal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.activity.ActivityService;
+import org.runningdinner.admin.activity.ActivityType;
 import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RegistrationType;
@@ -12,6 +14,8 @@ import org.runningdinner.mail.PortalTokenProvider;
 import org.runningdinner.mail.formatter.ParticipantPortalAccessRecoveryMessageFormatter;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +47,8 @@ public class ParticipantPortalService implements PortalTokenProvider {
   private final UrlGenerator urlGenerator;
   private final MailService mailService;
   private final ParticipantPortalAccessRecoveryMessageFormatter recoveryMessageFormatter;
+  private final TeamService teamService;
+  private final ActivityService activityService;
 
   public ParticipantPortalService(PortalTokenRepository portalTokenRepository,
                                   ParticipantService participantService,
@@ -48,7 +56,9 @@ public class ParticipantPortalService implements PortalTokenProvider {
                                   IdGenerator idGenerator,
                                   UrlGenerator urlGenerator,
                                   MailService mailService,
-                                  ParticipantPortalAccessRecoveryMessageFormatter recoveryMessageFormatter) {
+                                  ParticipantPortalAccessRecoveryMessageFormatter recoveryMessageFormatter,
+                                  TeamService teamService,
+                                  ActivityService activityService) {
     this.portalTokenRepository = portalTokenRepository;
     this.participantService = participantService;
     this.runningDinnerService = runningDinnerService;
@@ -56,6 +66,8 @@ public class ParticipantPortalService implements PortalTokenProvider {
     this.urlGenerator = urlGenerator;
     this.mailService = mailService;
     this.recoveryMessageFormatter = recoveryMessageFormatter;
+    this.teamService = teamService;
+    this.activityService = activityService;
   }
 
   // ─── PortalTokenProvider (used by email formatters) ────────────────────────
@@ -309,16 +321,16 @@ public class ParticipantPortalService implements PortalTokenProvider {
   /**
    * Returns self-service availability info for a specific participant.
    * The portalToken is validated against the participant's email before any data is returned.
+   * {@link TeamSelfServiceInfo} is only populated when the participant is assigned to a team AND
+   * at least one TEAM mail was sent to all recipients (signalling the team arrangement is fixed).
    *
    * @param selfAdminId   RunningDinner.selfAdministrationId
    * @param participantId Participant.id
    * @param portalToken   the caller's portal token (safety guard)
-   * @return skeleton response (all pending) — real availability flags will be populated in a later iteration
    * @throws IllegalArgumentException when the token does not match the participant's email
    */
   @Transactional(readOnly = true)
-  public ParticipantSelfServiceInfoTO resolveParticipantSelfServiceInfo(
-      java.util.UUID selfAdminId, java.util.UUID participantId, String portalToken) {
+  public ParticipantSelfServiceInfoTO resolveParticipantSelfServiceInfo(UUID selfAdminId, UUID participantId, String portalToken) {
 
     PortalToken token = portalTokenRepository.findByToken(portalToken)
         .orElseThrow(() -> new IllegalArgumentException("Unknown portal token"));
@@ -331,7 +343,56 @@ public class ParticipantPortalService implements PortalTokenProvider {
     Assert.state(participantEmail.equals(tokenEmail),
         "Portal token email does not match participant email for participantId=" + participantId);
 
-    // TODO: populate teamId, dinnerRouteAvailable and changeTeamHostAvailable from real data
-    return ParticipantSelfServiceInfoTO.defaultPending();
+    boolean dinnerRouteAvailable = isDinnerRouteAvailable(runningDinner.getAdminId(), participantEmail);
+
+    TeamSelfServiceInfo teamSelfServiceInfo = resolveTeamSelfServiceInfo(runningDinner, selfAdminId, participantId);
+    return new ParticipantSelfServiceInfoTO(teamSelfServiceInfo, dinnerRouteAvailable);
+  }
+
+  private boolean isDinnerRouteAvailable(String adminId, String participantEmailLowerCased) {
+
+    return activityService.findActivitiesByTypes(adminId, ActivityType.DINNERROUTE_MAIL_SENT)
+        .stream()
+        .findAny()
+        .isPresent();
+  }
+
+  /**
+   * Resolves {@link TeamSelfServiceInfo} for the given participant.
+   * Returns non-null only if the participant is assigned to a team AND at least one TEAM mail
+   * was sent to all recipients (indicated by a {@link ActivityType#TEAMARRANGEMENT_MAIL_SENT} activity).
+   */
+  private TeamSelfServiceInfo resolveTeamSelfServiceInfo(RunningDinner runningDinner, UUID selfAdminId, UUID participantId) {
+
+    boolean teamMailsSent = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.TEAMARRANGEMENT_MAIL_SENT)
+        .stream()
+        .findAny()
+        .isPresent();
+    if (!teamMailsSent) {
+      return null;
+    }
+
+    Optional<Team> teamOpt = teamService.findTeamByParticipantId(runningDinner.getAdminId(), participantId);
+    if (teamOpt.isEmpty()) {
+      return null;
+    }
+
+    Team team = teamOpt.get();
+    String manageTeamHostingUrl = urlGenerator.constructManageTeamHostUrl(selfAdminId, team.getId(), participantId);
+
+    String mealLabel = team.getMealClass().getLabel();
+    java.time.LocalDateTime mealTime = team.getMealClass().getTime();
+
+    Participant host = team.getHostTeamMember();
+    String hostName = host.getName().getFullnameFirstnameFirst();
+    boolean selfIsHost = host.getId().equals(participantId);
+
+    Set<Participant> partners = team.getTeamMembersExcluding(team.getTeamMemberByParticipantId(participantId));
+    Participant teamPartner = partners.stream().findFirst().orElse(null);
+    String teamPartnerName = teamPartner != null ? teamPartner.getName().getFullnameFirstnameFirst() : null;
+    String teamPartnerEmail = teamPartner != null ? StringUtils.trimToNull(teamPartner.getEmail()) : null;
+    String teamPartnerMobileNumber = teamPartner != null ? StringUtils.trimToNull(teamPartner.getMobileNumber()) : null;
+
+    return new TeamSelfServiceInfo(mealLabel, mealTime, teamPartnerName, teamPartnerEmail, teamPartnerMobileNumber, hostName, manageTeamHostingUrl, selfIsHost);
   }
 }

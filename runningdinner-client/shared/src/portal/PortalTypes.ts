@@ -20,17 +20,42 @@ export interface PortalCredential {
 }
 
 /**
+ * Team self-service info returned as part of PortalParticipantInfo.
+ * Only present when the participant is assigned to a team AND team arrangement mails
+ * have been sent to all recipients (signalling the arrangement is fixed).
+ */
+export interface TeamSelfServiceInfo {
+  /** Label of the meal this team is cooking (e.g. "Hauptgang"). */
+  mealLabel: string;
+  /** Time at which this team cooks / serves their meal (ISO date-time string). */
+  mealTime: Date;
+  /** Full name of the team partner, null when no partner exists. */
+  teamPartnerName: string | null;
+  /** Email of the team partner, null when no partner exists. */
+  teamPartnerEmail: string | null;
+  /** Mobile number of the team partner, null/empty when not provided. */
+  teamPartnerMobileNumber: string | null;
+  /** Full name of the proposed/current host of this team. */
+  hostName: string;
+  /** Full URL to the self-service page for managing team hosting. */
+  manageTeamHostingUrl: string;
+  /** True when the viewing participant is themselves the proposed host of this team. */
+  selfIsHost: boolean;
+}
+
+/**
  * Full participant self-service availability info, fetched on demand
  * from GET /participant-portal/v1/{selfAdminId}/{participantId}/self-service-info.
  * Decoupled from PortalEventEntry — not part of the my-events response.
  */
 export interface PortalParticipantInfo {
-  /** null when the participant has not yet been assigned to a team */
-  teamId: string | null;
+  /**
+   * Team self-service info — only populated when the participant is assigned to a team AND
+   * team arrangement mails have been sent. Null until both conditions are met.
+   */
+  teamSelfServiceInfo: TeamSelfServiceInfo | null;
   /** true when at least one DINNER_ROUTE message has been sent to this participant */
   dinnerRouteAvailable: boolean;
-  /** true when at least one TEAM message has been sent to this participant */
-  changeTeamHostAvailable: boolean;
 }
 
 export interface PortalEventEntry {

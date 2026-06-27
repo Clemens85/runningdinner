@@ -49,9 +49,12 @@ const PortalMessages_de: any = {
 
   // ParticipantSelfServicePage — My Team section
   participant_event_section_team: 'Mein Team',
-  participant_event_team_pending: 'Die Teams werden gerade eingeteilt. Sobald du einem Team zugewiesen bist, erscheinen hier weitere Informationen.',
-  participant_event_changeteamhost_pending: 'Die Möglichkeit, den Gastgeber zu wechseln, wird verfügbar, sobald du deine Team-Zuteilung vom Veranstalter erhalten hast.',
-  participant_event_change_teamhost: 'Gastgeber wechseln',
+  participant_event_team_pending: 'Die Teams wurden noch nicht eingeteilt. Sobald du einem Team zugewiesen bist, erscheinen hier weitere Informationen.',
+  participant_event_team_meal: 'Speise',
+  participant_event_team_host: 'Gastgeber',
+  participant_event_team_host_self_badge: 'Du bist der Gastgeber',
+  participant_event_team_partner: 'Team-Partner',
+  participant_event_manage_team_hosting: 'Gastgeber verwalten',
 
   // ParticipantSelfServicePage — Dinner Route section
   participant_event_section_dinnerroute: 'Dinner Route',

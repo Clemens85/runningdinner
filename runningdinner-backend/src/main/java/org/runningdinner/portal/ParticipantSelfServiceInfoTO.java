@@ -7,35 +7,35 @@ package org.runningdinner.portal;
  */
 public class ParticipantSelfServiceInfoTO {
 
-  /** UUID string of the participant's team, or null when not yet assigned to a team. */
-  private String teamId;
+  /**
+   * Team self-service info, only populated when the participant is assigned to a team AND
+   * at least one TEAM mail was sent to all recipients (signalling the team arrangement is fixed).
+   * Null until those conditions are met.
+   */
+  private TeamSelfServiceInfo teamSelfServiceInfo;
 
   /** True when at least one DINNER_ROUTE message has been sent to this participant. */
   private boolean dinnerRouteAvailable;
 
-  /** True when at least one TEAM message has been sent to this participant. */
-  private boolean changeTeamHostAvailable;
-
   public ParticipantSelfServiceInfoTO() {
   }
 
-  public ParticipantSelfServiceInfoTO(String teamId, boolean dinnerRouteAvailable, boolean changeTeamHostAvailable) {
-    this.teamId = teamId;
+  public ParticipantSelfServiceInfoTO(TeamSelfServiceInfo teamSelfServiceInfo, boolean dinnerRouteAvailable) {
+    this.teamSelfServiceInfo = teamSelfServiceInfo;
     this.dinnerRouteAvailable = dinnerRouteAvailable;
-    this.changeTeamHostAvailable = changeTeamHostAvailable;
   }
 
   /** Factory for the default "nothing available yet" response. */
   public static ParticipantSelfServiceInfoTO defaultPending() {
-    return new ParticipantSelfServiceInfoTO(null, false, false);
+    return new ParticipantSelfServiceInfoTO(null, false);
   }
 
-  public String getTeamId() {
-    return teamId;
+  public TeamSelfServiceInfo getTeamSelfServiceInfo() {
+    return teamSelfServiceInfo;
   }
 
-  public void setTeamId(String teamId) {
-    this.teamId = teamId;
+  public void setTeamSelfServiceInfo(TeamSelfServiceInfo teamSelfServiceInfo) {
+    this.teamSelfServiceInfo = teamSelfServiceInfo;
   }
 
   public boolean isDinnerRouteAvailable() {
@@ -44,13 +44,5 @@ public class ParticipantSelfServiceInfoTO {
 
   public void setDinnerRouteAvailable(boolean dinnerRouteAvailable) {
     this.dinnerRouteAvailable = dinnerRouteAvailable;
-  }
-
-  public boolean isChangeTeamHostAvailable() {
-    return changeTeamHostAvailable;
-  }
-
-  public void setChangeTeamHostAvailable(boolean changeTeamHostAvailable) {
-    this.changeTeamHostAvailable = changeTeamHostAvailable;
   }
 }

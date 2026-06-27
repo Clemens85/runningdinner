@@ -47,6 +47,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -158,9 +159,10 @@ public class TeamService {
     return teamRepository.findWithTeamMembersAndMealClassDistinctByIdInAndAdminIdOrderByTeamNumber(teamIds, adminId);
   }
 
-  public List<Team> findTeamsWithMembersOrderedByTeamNumbers(@ValidateAdminId String adminId, Collection<Integer> teamNumbers) {
+  public Optional<Team> findTeamByParticipantId(@ValidateAdminId String adminId, UUID participantId) {
 
-    return teamRepository.findWithTeamMembersAndMealClassDistinctByTeamNumberInAndAdminIdOrderByTeamNumber(teamNumbers, adminId);
+    List<Team> teams = teamRepository.findTeamsByParticipantIds(Set.of(participantId), adminId);
+    return teams.stream().findFirst();
   }
 
   /**

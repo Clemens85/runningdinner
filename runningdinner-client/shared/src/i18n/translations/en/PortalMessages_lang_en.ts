@@ -49,9 +49,12 @@ const PortalMessages_en: any = {
 
   // ParticipantSelfServicePage — My Team section
   participant_event_section_team: 'My Team',
-  participant_event_team_pending: 'Teams are currently being arranged. Once you have been assigned to a team, more information will appear here.',
-  participant_event_changeteamhost_pending: 'The option to change the team host becomes available after you have received your team assignment from the organizer.',
-  participant_event_change_teamhost: 'Change Team Host',
+  participant_event_team_pending: 'Teams have not been arranged yet. Once you have been assigned to a team, more information will appear here.',
+  participant_event_team_meal: 'Meal',
+  participant_event_team_host: 'Host',
+  participant_event_team_host_self_badge: "You're the host",
+  participant_event_team_partner: 'Team Partner',
+  participant_event_manage_team_hosting: 'Manage Team Hosting',
 
   // ParticipantSelfServicePage — Dinner Route section
   participant_event_section_dinnerroute: 'Dinner Route',
