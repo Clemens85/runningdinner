@@ -29,7 +29,7 @@ export function DinnerRouteSection({ participantInfo, isLoading }: DinnerRouteSe
 
         {isStringNotEmpty(dinnerRouteUrl) ? (
           <Stack spacing={1.5}>
-            <Button variant="contained" size="small" href={dinnerRouteUrl!} target="_blank" rel="noopener noreferrer" sx={{ alignSelf: 'flex-start' }}>
+            <Button variant="contained" size="small" href={dinnerRouteUrl!} target="_blank" rel="noopener noreferrer" sx={{ width: { xs: '100%', sm: 'auto' } }}>
               {t('participant_event_view_dinnerroute')}
             </Button>
             <Typography variant="body2" color="text.secondary">

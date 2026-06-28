@@ -184,7 +184,14 @@ export function MyTeamSection({ participantInfo, isLoading }: MyTeamSectionProps
             <TeamDetails info={teamSelfServiceInfo} />
             {/* Hide "Manage hosting" for fixed partners — they share a home, no host decision needed */}
             {!teamSelfServiceInfo.fixedTeamPartner && !teamSelfServiceInfo.teamPartnerCancelled && (
-              <Button variant="outlined" size="small" href={teamSelfServiceInfo.manageTeamHostingUrl} target="_blank" rel="noopener noreferrer" sx={{ width: { xs: '100%', sm: 'auto' } }}>
+              <Button
+                variant="outlined"
+                size="small"
+                href={teamSelfServiceInfo.manageTeamHostingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
+              >
                 {t('participant_event_manage_team_hosting')}
               </Button>
             )}

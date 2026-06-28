@@ -52,7 +52,19 @@ function OpenPublicEventPageButton({ publicUrl }: PortalEventEntry) {
     return null;
   }
   return (
-    <Button size="small" variant="outlined" color="primary" href={publicUrl!} target="_blank" rel="noopener noreferrer" endIcon={<OpenInNewIcon fontSize="inherit" />}>
+    <Button
+      size="small"
+      variant="outlined"
+      color="primary"
+      href={publicUrl!}
+      target="_blank"
+      rel="noopener noreferrer"
+      endIcon={<OpenInNewIcon fontSize="inherit" />}
+      sx={{
+        width: { xs: '100%', sm: 'auto' },
+        marginLeft: { xs: '0 !important' },
+      }}
+    >
       {t('view_event_page')}
     </Button>
   );
@@ -77,6 +89,7 @@ function MyParticipationButton({ event }: MyParticipationButtonProps) {
       color="primary"
       startIcon={<PersonIcon fontSize="inherit" />}
       onClick={() => navigate(`event/${selfAdminId}/${participantId}`, { state: { event } })}
+      sx={{ width: { xs: '100%', sm: 'auto' } }}
     >
       {t('view_participation')}
     </Button>
@@ -103,7 +116,17 @@ export function MyEventsEntryList({ events }: MyEventsEntryListProps) {
 
             <Divider />
 
-            <CardActions sx={{ px: 2, py: 1.5, gap: 1, flexWrap: 'wrap' }}>
+            <CardActions
+              sx={{
+                px: 2,
+                py: 1.5,
+                gap: 1,
+                flexWrap: 'wrap',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: 'stretch',
+                // '& > :not(:first-of-type)': { marginLeft: '0 !important' },
+              }}
+            >
               <MyParticipationButton event={event} />
               <OpenPublicEventPageButton {...event} />
               <ManageEventButton {...event} />
