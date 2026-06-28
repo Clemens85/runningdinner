@@ -350,8 +350,9 @@ public class ParticipantPortalService implements PortalTokenProvider {
     }
     Team team = teamOpt.get();
 
-    TeamSelfServiceInfo teamSelfServiceInfo = resolveTeamSelfServiceInfo(runningDinner, team, selfAdminId, participantId);
     String dinnerRouteUrl = resolveDinnerRouteUrl(runningDinner, team, selfAdminId, participantId);
+    boolean dinnerRouteMailsSent = StringUtils.isNotBlank(dinnerRouteUrl);
+    TeamSelfServiceInfo teamSelfServiceInfo = resolveTeamSelfServiceInfo(runningDinner, team, selfAdminId, participantId, dinnerRouteMailsSent);
 
     return new ParticipantSelfServiceInfoTO(teamSelfServiceInfo, dinnerRouteUrl);
   }
@@ -378,7 +379,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
    * Returns non-null only if the participant is assigned to a team AND at least one TEAM mail
    * was sent to all recipients (indicated by a {@link ActivityType#TEAMARRANGEMENT_MAIL_SENT} activity).
    */
-  private TeamSelfServiceInfo resolveTeamSelfServiceInfo(RunningDinner runningDinner, Team team, UUID selfAdminId, UUID participantId) {
+  private TeamSelfServiceInfo resolveTeamSelfServiceInfo(RunningDinner runningDinner, Team team, UUID selfAdminId, UUID participantId, boolean dinnerRouteMailsSent) {
 
     boolean teamMailsSent = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.TEAMARRANGEMENT_MAIL_SENT)
         .stream()
@@ -428,6 +429,12 @@ public class ParticipantPortalService implements PortalTokenProvider {
     if (!fixedTeamPartner) {
       result.setTeamPartnerMealSpecifics(teamPartner.getMealSpecifics().createDetachedClone());
     }
+
+
+    if (!dinnerRouteMailsSent) {
+      teamService.findAggregatedGuestMealSpecificsForTeam(runningDinner.getAdminId(), team.getId())
+              .ifPresent(result::setLikelyGuestMealSpecifics);
+    } // else final meal specifics of guest is now available in dinner route (and must not be displayed in teams widget)
 
     return result;
   }

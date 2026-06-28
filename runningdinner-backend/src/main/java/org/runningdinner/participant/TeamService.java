@@ -18,6 +18,7 @@ import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.GeneratedTeamsResult;
 import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.MealClass;
+import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerCalculator;
@@ -163,6 +164,26 @@ public class TeamService {
 
     List<Team> teams = teamRepository.findTeamsByParticipantIds(Set.of(participantId), adminId);
     return teams.stream().findFirst();
+  }
+
+  /**
+   * Returns the aggregated (union) dietary restrictions of all guest teams that will likely visit the given team.
+   * Returns empty when no guest teams are planned or no guests have dietary restrictions.
+   * This uses the internal visitation plan and is available once dinner routes are constructed,
+   * even before route mails have been sent.
+   */
+  public Optional<MealSpecifics> findAggregatedGuestMealSpecificsForTeam(@ValidateAdminId String adminId, UUID teamId) {
+
+    Team teamWithPlan = teamRepository.findWithVisitationPlanByIdAndAdminId(teamId, adminId);
+    List<MealSpecifics> guestSpecifics = teamWithPlan.getMealSpecificsOfGuestTeams();
+    if (guestSpecifics.isEmpty()) {
+      return Optional.empty();
+    }
+    MealSpecifics union = new MealSpecifics();
+    for (MealSpecifics ms : guestSpecifics) {
+      union.unionWith(ms);
+    }
+    return Optional.of(union);
   }
 
   /**

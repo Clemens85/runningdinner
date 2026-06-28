@@ -1,12 +1,73 @@
 import EmailIcon from '@mui/icons-material/Email';
 import GroupIcon from '@mui/icons-material/Group';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
-import { Alert, Box, Button, Card, CardContent, Chip, Stack, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, Chip, Divider, Stack, Tooltip, Typography } from '@mui/material';
 import { isStringEmpty, isStringNotEmpty, MealSpecifics, PortalParticipantInfo, TeamSelfServiceInfo, Time } from '@runningdinner/shared';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FetchProgressBar } from '../../common/FetchProgressBar.tsx';
+
+type MealSpecificsChipsProps = {
+  enabled: boolean;
+};
+
+function VeganChip({ enabled }: MealSpecificsChipsProps) {
+  const { t } = useTranslation('portal');
+  if (!enabled) {
+    return null;
+  }
+  return <Chip label={t('vegan', { ns: 'common' })} size="small" color="success" variant="outlined" />;
+}
+
+function VegetarianChip({ enabled }: MealSpecificsChipsProps) {
+  const { t } = useTranslation('portal');
+  if (!enabled) {
+    return null;
+  }
+  return <Chip label={t('vegetarian', { ns: 'common' })} size="small" color="success" variant="outlined" />;
+}
+
+function LactoseChip({ enabled }: MealSpecificsChipsProps) {
+  const { t } = useTranslation('portal');
+  if (!enabled) {
+    return null;
+  }
+  return <Chip label={t('lactose', { ns: 'common' })} size="small" color="warning" variant="outlined" />;
+}
+
+function GlutenChip({ enabled }: MealSpecificsChipsProps) {
+  const { t } = useTranslation('portal');
+  if (!enabled) {
+    return null;
+  }
+  return <Chip label={t('gluten')} size="small" color="warning" variant="outlined" />;
+}
+
+function MealSpecificsInfo({ vegan, vegetarian, lactose, gluten, mealSpecificsNote }: MealSpecifics) {
+  const hasNote = isStringNotEmpty(mealSpecificsNote);
+  const hasAny = vegan || vegetarian || lactose || gluten || hasNote;
+
+  if (!hasAny) {
+    return null;
+  }
+  return (
+    <>
+      <VeganChip enabled={vegan} />
+      <VegetarianChip enabled={!vegan && vegetarian} />
+      <LactoseChip enabled={lactose} />
+      <GlutenChip enabled={gluten} />
+      {hasNote && (
+        <Tooltip title={mealSpecificsNote} placement="top">
+          <Typography variant="caption" color="text.secondary" sx={{ cursor: 'default', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {mealSpecificsNote}
+          </Typography>
+        </Tooltip>
+      )}
+    </>
+  );
+}
 
 function TeamInfoRow({ label, value }: { label: string; value: ReactNode }) {
   return (
@@ -53,28 +114,9 @@ function TeamPartnerMobileNumberLink({ teamPartnerMobileNumber }: TeamSelfServic
 
 /** Compact dietary restriction chips + optional free-text note for the team partner. */
 function TeamPartnerMealSpecifics({ mealSpecifics }: { mealSpecifics: MealSpecifics }) {
-  const { t } = useTranslation('common');
-  const { vegan, vegetarian, lactose, gluten, mealSpecificsNote } = mealSpecifics;
-  const hasDiet = vegan || vegetarian || lactose || gluten;
-  const hasNote = isStringNotEmpty(mealSpecificsNote);
-
-  if (!hasDiet && !hasNote) {
-    return null;
-  }
-
   return (
     <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap alignItems="center" sx={{ mt: 0.5 }}>
-      {vegan && <Chip label={t('vegan')} size="small" color="success" variant="outlined" />}
-      {!vegan && vegetarian && <Chip label={t('vegetarian')} size="small" color="success" variant="outlined" />}
-      {lactose && <Chip label={t('lactose')} size="small" color="warning" variant="outlined" />}
-      {gluten && <Chip label={t('gluten')} size="small" color="warning" variant="outlined" />}
-      {hasNote && (
-        <Tooltip title={mealSpecificsNote} placement="top">
-          <Typography variant="caption" color="text.secondary" sx={{ cursor: 'default', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {mealSpecificsNote}
-          </Typography>
-        </Tooltip>
-      )}
+      <MealSpecificsInfo {...mealSpecifics} />
     </Stack>
   );
 }
@@ -148,7 +190,38 @@ function TeamDetails({ info }: { info: TeamSelfServiceInfo }) {
           </Stack>
         }
       />
+      {info.likelyGuestMealSpecifics && <LikelyGuestMealSpecifics mealSpecifics={info.likelyGuestMealSpecifics} />}
     </Box>
+  );
+}
+
+function LikelyGuestMealSpecifics({ mealSpecifics }: { mealSpecifics: MealSpecifics }) {
+  const { t } = useTranslation('portal');
+  const { vegan, vegetarian, lactose, gluten, mealSpecificsNote } = mealSpecifics;
+  const hasNote = isStringNotEmpty(mealSpecificsNote);
+  const hasAny = vegan || vegetarian || lactose || gluten || hasNote;
+
+  if (!hasAny) {
+    return null;
+  }
+  return (
+    <>
+      <Divider sx={{ my: 1.5 }} />
+      <Stack direction="row" alignItems="flex-start" spacing={0.75} sx={{ mt: 1 }}>
+        <InfoOutlinedIcon sx={{ fontSize: 16, mt: 0.25, color: 'text.secondary', flexShrink: 0 }} />
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.75 }}>
+            {t('participant_event_team_likely_guest_specifics_title')}
+          </Typography>
+          <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mb: 0.75 }}>
+            <MealSpecificsInfo {...mealSpecifics} />
+          </Stack>
+          <Typography variant="caption" color="text.secondary">
+            {t('participant_event_team_likely_guest_specifics_hint')}
+          </Typography>
+        </Box>
+      </Stack>
+    </>
   );
 }
 

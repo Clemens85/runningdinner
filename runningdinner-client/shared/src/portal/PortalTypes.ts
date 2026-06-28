@@ -52,6 +52,14 @@ export interface TeamSelfServiceInfo {
   teamPartnerMealSpecifics: MealSpecifics | null;
 
   teamPartnerCancelled: boolean;
+
+  /**
+   * Aggregated (union) dietary restrictions of all likely guest teams.
+   * Available once dinner routes are internally constructed, even before route mails are sent.
+   * Subject to change until dinner routes are officially sent.
+   * Null when no guests have dietary restrictions or dinner routes are not yet planned.
+   */
+  likelyGuestMealSpecifics: MealSpecifics | null;
 }
 
 /**

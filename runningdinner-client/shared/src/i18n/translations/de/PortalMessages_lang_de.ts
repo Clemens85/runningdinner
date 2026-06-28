@@ -58,6 +58,10 @@ const PortalMessages_de: any = {
   participant_event_team_partner_cancelled: 'Dein Team-Partner hat seine Teilnahme abgesagt.',
   participant_event_manage_team_hosting: 'Gastgeber verwalten',
 
+  // ParticipantSelfServicePage — Wahrscheinliche Essenswünsche der Gäste
+  participant_event_team_likely_guest_specifics_title: 'Voraussichtliche Essenswünsche eurer Gäste',
+  participant_event_team_likely_guest_specifics_hint: 'Basiert auf der aktuellen Planung – kann sich noch ändern, bis die Dinner Routen offiziell verschickt werden.',
+
   // ParticipantSelfServicePage — Dinner Route section
   participant_event_section_dinnerroute: 'Dinner Route',
   participant_event_dinnerroute_pending: 'Die Dinner Routen wurden noch nicht verschickt. Deine persönliche Route erscheint hier, sobald der Veranstalter sie verteilt hat.',

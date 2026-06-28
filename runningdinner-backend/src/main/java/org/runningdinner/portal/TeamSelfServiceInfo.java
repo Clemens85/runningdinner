@@ -52,6 +52,14 @@ public class TeamSelfServiceInfo {
 
   private boolean teamPartnerCancelled;
 
+  /**
+   * Aggregated (union) dietary restrictions of all likely guest teams.
+   * Available once dinner routes are internally constructed, even before route mails are sent.
+   * Null when no guests have dietary restrictions or when dinner routes are not yet planned.
+   * Subject to change until dinner routes are officially sent.
+   */
+  private MealSpecifics likelyGuestMealSpecifics;
+
   public TeamSelfServiceInfo() {
   }
 
@@ -141,6 +149,14 @@ public class TeamSelfServiceInfo {
 
   public void setTeamPartnerCancelled(boolean teamPartnerCancelled) {
     this.teamPartnerCancelled = teamPartnerCancelled;
+  }
+
+  public MealSpecifics getLikelyGuestMealSpecifics() {
+    return likelyGuestMealSpecifics;
+  }
+
+  public void setLikelyGuestMealSpecifics(MealSpecifics likelyGuestMealSpecifics) {
+    this.likelyGuestMealSpecifics = likelyGuestMealSpecifics;
   }
 }
 

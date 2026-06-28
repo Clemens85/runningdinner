@@ -58,6 +58,10 @@ const PortalMessages_en: any = {
   participant_event_team_partner_cancelled: 'Your team partner has cancelled their participation.',
   participant_event_manage_team_hosting: 'Manage Team Hosting',
 
+  // ParticipantSelfServicePage — Likely guest dietary restrictions
+  participant_event_team_likely_guest_specifics_title: 'Likely dietary restrictions of your guests',
+  participant_event_team_likely_guest_specifics_hint: 'Based on current event planning — may change until dinner routes are officially sent.',
+
   // ParticipantSelfServicePage — Dinner Route section
   participant_event_section_dinnerroute: 'Dinner Route',
   participant_event_dinnerroute_pending: 'Dinner routes have not been sent yet. Your personal route will appear here once the organizer distributes them.',
