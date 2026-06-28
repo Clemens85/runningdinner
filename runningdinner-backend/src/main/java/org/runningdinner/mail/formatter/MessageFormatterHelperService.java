@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -107,6 +108,26 @@ public class MessageFormatterHelperService {
     String cancelledMealTimeInfo = messageSource.getMessage("teamhost.cancelled.mealtime.info",
         new String[] { FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText) }, locale);
     return mealLabel + " " + cancelledMealTimeInfo;
+  }
+
+  /**
+   * Aggregates a list of {@link MealSpecifics} into a single instance by union-ing all boolean
+   * flags and concatenating distinct non-blank free-text notes.
+   * Returns empty when the list is null/empty or none of the entries has any flag or note set.
+   */
+  public Optional<MealSpecifics> aggregateMealSpecifics(List<MealSpecifics> mealSpecificsList) {
+
+    if (CollectionUtils.isEmpty(mealSpecificsList)) {
+      return Optional.empty();
+    }
+    MealSpecifics union = new MealSpecifics();
+    for (MealSpecifics ms : mealSpecificsList) {
+      union.unionWith(ms);
+    }
+    String combinedNotes = getMealSpecificsNotes(mealSpecificsList);
+    union.setNote(combinedNotes);
+    boolean hasContent = union.isOneSelected() || StringUtils.isNotEmpty(combinedNotes);
+    return hasContent ? Optional.of(union) : Optional.empty();
   }
 
   private static String getMealSpecificsNotes(List<MealSpecifics> mealSpecificsList) {
