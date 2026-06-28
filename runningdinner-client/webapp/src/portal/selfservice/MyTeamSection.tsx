@@ -2,7 +2,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import GroupIcon from '@mui/icons-material/Group';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
-import { Alert, Box, Button, Card, CardContent, Chip, Divider, Stack, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, Chip, Divider, Stack, Typography } from '@mui/material';
 import { isStringEmpty, isStringNotEmpty, MealSpecifics, PortalParticipantInfo, TeamSelfServiceInfo, Time } from '@runningdinner/shared';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,7 @@ function GlutenChip({ enabled }: MealSpecificsChipsProps) {
   if (!enabled) {
     return null;
   }
-  return <Chip label={t('gluten')} size="small" color="warning" variant="outlined" />;
+  return <Chip label={t('gluten', { ns: 'common' })} size="small" color="warning" variant="outlined" />;
 }
 
 function MealSpecificsInfo({ vegan, vegetarian, lactose, gluten, mealSpecificsNote }: MealSpecifics) {
@@ -53,19 +53,19 @@ function MealSpecificsInfo({ vegan, vegetarian, lactose, gluten, mealSpecificsNo
     return null;
   }
   return (
-    <>
-      <VeganChip enabled={vegan} />
-      <VegetarianChip enabled={!vegan && vegetarian} />
-      <LactoseChip enabled={lactose} />
-      <GlutenChip enabled={gluten} />
+    <Stack direction="column" spacing={0.5}>
+      <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap alignItems="center">
+        <VeganChip enabled={vegan} />
+        <VegetarianChip enabled={!vegan && vegetarian} />
+        <LactoseChip enabled={lactose} />
+        <GlutenChip enabled={gluten} />
+      </Stack>
       {hasNote && (
-        <Tooltip title={mealSpecificsNote} placement="top">
-          <Typography variant="caption" color="text.secondary" sx={{ cursor: 'default', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {mealSpecificsNote}
-          </Typography>
-        </Tooltip>
+        <Typography variant="caption" color="text.secondary">
+          {mealSpecificsNote}
+        </Typography>
       )}
-    </>
+    </Stack>
   );
 }
 
@@ -115,9 +115,9 @@ function TeamPartnerMobileNumberLink({ teamPartnerMobileNumber }: TeamSelfServic
 /** Compact dietary restriction chips + optional free-text note for the team partner. */
 function TeamPartnerMealSpecifics({ mealSpecifics }: { mealSpecifics: MealSpecifics }) {
   return (
-    <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap alignItems="center" sx={{ mt: 0.5 }}>
+    <Box sx={{ mt: 0.5 }}>
       <MealSpecificsInfo {...mealSpecifics} />
-    </Stack>
+    </Box>
   );
 }
 
@@ -207,20 +207,28 @@ function LikelyGuestMealSpecifics({ mealSpecifics }: { mealSpecifics: MealSpecif
   return (
     <>
       <Divider sx={{ my: 1.5 }} />
-      <Stack direction="row" alignItems="flex-start" spacing={0.75} sx={{ mt: 1 }}>
-        <InfoOutlinedIcon sx={{ fontSize: 16, mt: 0.25, color: 'text.secondary', flexShrink: 0 }} />
-        <Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.75 }}>
+      <Box sx={{ borderLeft: '3px solid', borderColor: 'info.light', pl: 1.5, py: 0.5 }}>
+        <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 0.75 }}>
+          <InfoOutlinedIcon sx={{ fontSize: 16, color: 'info.main', flexShrink: 0 }} />
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
             {t('participant_event_team_likely_guest_specifics_title')}
           </Typography>
-          <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mb: 0.75 }}>
-            <MealSpecificsInfo {...mealSpecifics} />
-          </Stack>
-          <Typography variant="caption" color="text.secondary">
-            {t('participant_event_team_likely_guest_specifics_hint')}
+        </Stack>
+        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mb: hasNote ? 0.75 : 0.5 }}>
+          <VeganChip enabled={vegan} />
+          <VegetarianChip enabled={!vegan && vegetarian} />
+          <LactoseChip enabled={lactose} />
+          <GlutenChip enabled={gluten} />
+        </Stack>
+        {hasNote && (
+          <Typography variant="body2" sx={{ mb: 0.75 }}>
+            {mealSpecificsNote}
           </Typography>
-        </Box>
-      </Stack>
+        )}
+        <Typography variant="caption" color="text.secondary">
+          {t('participant_event_team_likely_guest_specifics_hint')}
+        </Typography>
+      </Box>
     </>
   );
 }
