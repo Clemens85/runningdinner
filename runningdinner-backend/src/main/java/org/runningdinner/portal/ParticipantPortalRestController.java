@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -85,5 +86,24 @@ public class ParticipantPortalRestController {
       @PathVariable UUID participantId,
       @RequestParam String portalToken) {
     return participantPortalService.resolveParticipantSelfServiceInfo(selfAdminId, participantId, portalToken);
+  }
+
+  /**
+   * GET /rest/participant-portal/v1/{selfAdminId}/{participantId}/messages?portalToken=...
+   * <p>
+   * Returns organizer-sent messages (PARTICIPANT, TEAM, DINNER_ROUTE) for the given participant,
+   * ordered by sent date descending (newest first).
+   * The portalToken is validated against the participant's email before any data is returned.
+   *
+   * @param selfAdminId   RunningDinner.selfAdministrationId
+   * @param participantId Participant.id
+   * @param portalToken   portal token — used as a safety guard to confirm the caller owns this participant
+   */
+  @GetMapping("/{selfAdminId}/{participantId}/messages")
+  public List<PortalMessageTO> getParticipantMessages(
+      @PathVariable UUID selfAdminId,
+      @PathVariable UUID participantId,
+      @RequestParam String portalToken) {
+    return participantPortalService.resolveParticipantMessages(selfAdminId, participantId, portalToken);
   }
 }

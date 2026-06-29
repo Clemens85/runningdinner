@@ -98,3 +98,18 @@ export interface PortalEventEntry {
 export interface PortalMyEventsResponseTO {
   events: PortalEventEntry[];
 }
+
+/** Mirrors the backend MessageType enum values relevant for the participant portal. */
+export type PortalMessageType = 'PARTICIPANT' | 'TEAM' | 'DINNER_ROUTE';
+
+/**
+ * A single organizer-sent message as returned by the participant portal messages endpoint.
+ * Content is HTML (same format the email was delivered in).
+ */
+export interface PortalMessage {
+  messageType: PortalMessageType;
+  subject: string;
+  content: string;
+  sentDateTime: Date;
+  replyTo: string | null;
+}

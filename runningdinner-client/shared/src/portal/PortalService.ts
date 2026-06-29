@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { BackendConfig, isArrayEmpty } from '..';
-import { PortalMyEventsResponseTO, PortalParticipantInfo } from './PortalTypes';
+import { PortalMessage, PortalMyEventsResponseTO, PortalParticipantInfo } from './PortalTypes';
 
 /**
  * Fetches live event summaries for all events bound to the given portal tokens.
@@ -42,5 +42,16 @@ export async function revokePortalTokens(portalTokens: string[]): Promise<void> 
 export async function fetchParticipantSelfServiceInfo(selfAdminId: string, participantId: string, portalToken: string): Promise<PortalParticipantInfo> {
   const url = BackendConfig.buildUrl(`/participant-portal/v1/${selfAdminId}/${participantId}/self-service-info`);
   const response = await axios.get<PortalParticipantInfo>(url, { params: { portalToken } });
+  return response.data;
+}
+
+/**
+ * Fetches the organizer-sent messages (PARTICIPANT, TEAM, DINNER_ROUTE) for the given participant,
+ * ordered by sent date descending.
+ * The portalToken is validated server-side against the participant's email.
+ */
+export async function fetchParticipantMessages(selfAdminId: string, participantId: string, portalToken: string): Promise<PortalMessage[]> {
+  const url = BackendConfig.buildUrl(`/participant-portal/v1/${selfAdminId}/${participantId}/messages`);
+  const response = await axios.get<PortalMessage[]>(url, { params: { portalToken } });
   return response.data;
 }

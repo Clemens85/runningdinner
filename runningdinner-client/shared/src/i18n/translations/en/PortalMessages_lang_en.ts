@@ -75,6 +75,10 @@ const PortalMessages_en: any = {
   participant_event_msg_type_participant: 'Participant Info',
   participant_event_msg_type_team: 'Team Info',
   participant_event_msg_type_dinnerroute: 'Dinner Route',
+  participant_event_message_sent_on: 'Sent',
+  participant_event_message_view_close: 'Close',
+  participant_event_message_drawer_title: 'Message Details',
+  participant_event_message_organizer: 'Event Organizer',
 };
 
 export default PortalMessages_en;

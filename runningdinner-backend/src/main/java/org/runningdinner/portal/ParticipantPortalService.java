@@ -5,7 +5,11 @@ import org.apache.commons.lang3.Strings;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.activity.ActivityType;
+import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.admin.message.job.MessageTaskRepository;
+import org.runningdinner.admin.message.job.MessageType;
 import org.runningdinner.common.service.IdGenerator;
+import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
@@ -36,6 +40,8 @@ import java.util.stream.Collectors;
 @Service
 public class ParticipantPortalService implements PortalTokenProvider {
 
+  public static final List<MessageType> PORTAL_MESSAGE_TYPES = List.of(MessageType.PARTICIPANT, MessageType.TEAM, MessageType.DINNER_ROUTE);
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantPortalService.class);
 
   /** Minimum cooldown between recovery emails for the same address (1 hour). */
@@ -50,6 +56,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
   private final ParticipantPortalAccessRecoveryMessageFormatter recoveryMessageFormatter;
   private final TeamService teamService;
   private final ActivityService activityService;
+  private final MessageTaskRepository messageTaskRepository;
 
   public ParticipantPortalService(PortalTokenRepository portalTokenRepository,
                                   ParticipantService participantService,
@@ -59,7 +66,8 @@ public class ParticipantPortalService implements PortalTokenProvider {
                                   MailService mailService,
                                   ParticipantPortalAccessRecoveryMessageFormatter recoveryMessageFormatter,
                                   TeamService teamService,
-                                  ActivityService activityService) {
+                                  ActivityService activityService,
+                                  MessageTaskRepository messageTaskRepository) {
     this.portalTokenRepository = portalTokenRepository;
     this.participantService = participantService;
     this.runningDinnerService = runningDinnerService;
@@ -69,6 +77,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
     this.recoveryMessageFormatter = recoveryMessageFormatter;
     this.teamService = teamService;
     this.activityService = activityService;
+    this.messageTaskRepository = messageTaskRepository;
   }
 
   // ─── PortalTokenProvider (used by email formatters) ────────────────────────
@@ -437,5 +446,42 @@ public class ParticipantPortalService implements PortalTokenProvider {
     } // else final meal specifics of guest is now available in dinner route (and must not be displayed in teams widget)
 
     return result;
+  }
+
+  // ─── Participant Portal Messages ─────────────────────────────────────────
+
+  /**
+   * Returns the organizer-sent messages (PARTICIPANT, TEAM, DINNER_ROUTE type) for the given participant,
+   * ordered by sent date descending.
+   * The portalToken is validated against the participant's email before any data is returned.
+   *
+   * @param selfAdminId   RunningDinner.selfAdministrationId
+   * @param participantId Participant.id
+   * @param portalToken   the caller's portal token (safety guard)
+   */
+  @Transactional(readOnly = true)
+  public List<PortalMessageTO> resolveParticipantMessages(UUID selfAdminId, UUID participantId, String portalToken) {
+
+    PortalToken token = portalTokenRepository.findByToken(portalToken)
+        .orElseThrow(() -> new IllegalArgumentException("Unknown portal token"));
+
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(selfAdminId);
+    Participant participant = participantService.findParticipantById(runningDinner.getAdminId(), participantId);
+
+    String participantEmail = StringUtils.trimToEmpty(participant.getEmail()).toLowerCase();
+    String tokenEmail = StringUtils.trimToEmpty(token.getEmail()).toLowerCase();
+    Assert.state(participantEmail.equals(tokenEmail),
+        "Portal token email does not match participant email for participantId=" + participantId);
+
+    List<MessageTask> tasks = messageTaskRepository.findPortalMessagesForParticipant(runningDinner.getAdminId(), participantEmail, PORTAL_MESSAGE_TYPES);
+
+    return tasks.stream()
+        .map(task -> new PortalMessageTO(
+            task.getParentJob().getMessageType(),
+            task.getMessage().getSubject(),
+            FormatterUtil.getHtmlFormattedMessage(task.getMessage().getContent()),
+            task.getSendingStartTime(),
+            task.getMessage().getReplyTo()))
+        .toList();
   }
 }
