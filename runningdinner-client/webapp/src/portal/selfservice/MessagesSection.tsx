@@ -23,24 +23,26 @@ function getMessageSnippet(htmlContent: string): string {
 // ---------------------------------------------------------------------------
 
 function MessageAvatar({ type }: { type: PortalMessageType }) {
+  const iconSize = 36;
   const iconSx = { fontSize: 18 };
+
   if (type === 'TEAM') {
     return (
-      <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36 }}>
+      <Avatar sx={{ bgcolor: 'primary.main', width: iconSize, height: iconSize }}>
         <GroupIcon sx={iconSx} />
       </Avatar>
     );
   }
   if (type === 'DINNER_ROUTE') {
     return (
-      <Avatar sx={{ bgcolor: 'secondary.main', width: 36, height: 36 }}>
+      <Avatar sx={{ bgcolor: 'secondary.main', width: iconSize, height: iconSize }}>
         <DirectionsIcon sx={iconSx} />
       </Avatar>
     );
   }
   // PARTICIPANT
   return (
-    <Avatar sx={{ bgcolor: 'text.disabled', width: 36, height: 36 }}>
+    <Avatar sx={{ bgcolor: 'text.disabled', width: iconSize, height: iconSize }}>
       <PersonIcon sx={iconSx} />
     </Avatar>
   );
