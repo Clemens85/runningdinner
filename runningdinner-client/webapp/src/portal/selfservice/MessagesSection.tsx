@@ -138,7 +138,13 @@ function MessageList({ messages, onSelect }: MessageListProps) {
       {messages.map((msg, idx) => (
         <Box key={idx}>
           {idx > 0 && <Divider component="li" />}
-          <ListItemButton onClick={() => onSelect(msg)} sx={{ px: 1, py: 0.75, borderRadius: 1, '&:hover': { bgcolor: 'action.hover' } }}>
+          <ListItemButton
+            onClick={() => {
+              (document.activeElement as HTMLElement)?.blur();
+              onSelect(msg);
+            }}
+            sx={{ px: 1, py: 0.75, borderRadius: 1, '&:hover': { bgcolor: 'action.hover' } }}
+          >
             <ListItemAvatar sx={{ minWidth: 48 }}>
               <MessageAvatar type={msg.messageType} />
             </ListItemAvatar>
