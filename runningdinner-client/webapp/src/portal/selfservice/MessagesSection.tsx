@@ -59,7 +59,7 @@ function MessageDetailDrawer({ message, onClose }: MessageDetailDrawerProps) {
   const { t } = useTranslation('portal');
 
   return (
-    <Drawer anchor="right" open={!!message} onClose={onClose} PaperProps={{ sx: { width: { xs: '100%', sm: 600, md: 720 }, maxWidth: '100%', p: 0 } }}>
+    <Drawer anchor="right" open={!!message} onClose={onClose} slotProps={{ paper: { sx: { width: { xs: '100%', sm: 600, md: 720 }, maxWidth: '100%', p: 0 } } }}>
       {message && (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Top bar: subject + close */}
