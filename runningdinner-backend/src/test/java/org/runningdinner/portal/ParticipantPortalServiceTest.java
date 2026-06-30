@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -59,6 +60,9 @@ class ParticipantPortalServiceTest {
 
   @Autowired
   private ParticipantService participantService;
+
+  @Autowired
+  private PortalMessageReadReceiptRepository readReceiptRepository;
 
   private MailSenderMockInMemory mailSenderInMemory;
 
@@ -208,6 +212,10 @@ class ParticipantPortalServiceTest {
     frontendRunningDinnerService.activateSubscribedParticipant(
         runningDinner.getPublicSettings().getPublicId(), registrationSummary.getParticipant().getId());
 
+    // Reset any portal token left by other tests (e.g. cooldown test) to avoid cross-test contamination
+    portalTokenRepository.findByEmail(PARTICIPANT_EMAIL.toLowerCase()).ifPresent(portalTokenRepository::delete);
+
+    mailSenderInMemory.removeAllMessages();
     participantPortalService.requestAccessRecovery(PARTICIPANT_EMAIL);
 
     Optional<PortalToken> token = portalTokenRepository.findByEmail(PARTICIPANT_EMAIL.toLowerCase());
@@ -331,6 +339,110 @@ class ParticipantPortalServiceTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getDinnerRouteUrl()).isNotBlank();
+  }
+
+  // ─── resolveParticipantMessages / markMessageAsRead ─────────────────────
+
+  @Test
+  void resolveParticipantMessages_returnsUnreadMessages_afterTeamMailsSent() {
+    RunningDinner closedDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
+    teamService.createTeamAndVisitationPlans(closedDinner.getAdminId());
+    sendTeamMessages(closedDinner);
+
+    List<Participant> participants = participantService.findParticipants(closedDinner.getAdminId(), true);
+    Participant first = participants.getFirst();
+    String portalToken = participantPortalService.getOrCreatePortalToken(first.getEmail());
+
+    List<PortalMessageTO> messages = participantPortalService.resolveParticipantMessages(
+        closedDinner.getSelfAdministrationId(), first.getId(), portalToken);
+
+    assertThat(messages).isNotEmpty();
+    assertThat(messages).allMatch(m -> !m.isRead());
+  }
+
+  @Test
+  void markMessageAsRead_marksMessageAsRead() {
+    RunningDinner closedDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
+    teamService.createTeamAndVisitationPlans(closedDinner.getAdminId());
+    sendTeamMessages(closedDinner);
+
+    List<Participant> participants = participantService.findParticipants(closedDinner.getAdminId(), true);
+    Participant first = participants.getFirst();
+    String portalToken = participantPortalService.getOrCreatePortalToken(first.getEmail());
+
+    List<PortalMessageTO> messagesBefore = participantPortalService.resolveParticipantMessages(
+        closedDinner.getSelfAdministrationId(), first.getId(), portalToken);
+    assertThat(messagesBefore).isNotEmpty();
+    UUID messageTaskId = messagesBefore.getFirst().getMessageTaskId();
+
+    participantPortalService.markMessageAsRead(
+        closedDinner.getSelfAdministrationId(), first.getId(), portalToken, messageTaskId);
+
+    List<PortalMessageTO> messagesAfter = participantPortalService.resolveParticipantMessages(
+        closedDinner.getSelfAdministrationId(), first.getId(), portalToken);
+    assertThat(messagesAfter)
+        .filteredOn(m -> m.getMessageTaskId().equals(messageTaskId))
+        .allMatch(PortalMessageTO::isRead);
+  }
+
+  @Test
+  void markMessageAsRead_isIdempotent() {
+    RunningDinner closedDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
+    teamService.createTeamAndVisitationPlans(closedDinner.getAdminId());
+    sendTeamMessages(closedDinner);
+
+    List<Participant> participants = participantService.findParticipants(closedDinner.getAdminId(), true);
+    Participant first = participants.getFirst();
+    String portalToken = participantPortalService.getOrCreatePortalToken(first.getEmail());
+
+    UUID messageTaskId = participantPortalService.resolveParticipantMessages(
+        closedDinner.getSelfAdministrationId(), first.getId(), portalToken).getFirst().getMessageTaskId();
+
+    // Second call must not throw or create a duplicate receipt
+    participantPortalService.markMessageAsRead(
+        closedDinner.getSelfAdministrationId(), first.getId(), portalToken, messageTaskId);
+    participantPortalService.markMessageAsRead(
+        closedDinner.getSelfAdministrationId(), first.getId(), portalToken, messageTaskId);
+
+    assertThat(readReceiptRepository.existsByParticipantIdAndMessageTaskId(first.getId(), messageTaskId)).isTrue();
+  }
+
+  @Test
+  void markMessageAsRead_throwsForUnknownToken() {
+    RunningDinner closedDinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
+    List<Participant> participants = participantService.findParticipants(closedDinner.getAdminId(), true);
+    Participant first = participants.getFirst();
+
+    assertThrows(IllegalArgumentException.class, () ->
+        participantPortalService.markMessageAsRead(
+            closedDinner.getSelfAdministrationId(), first.getId(), "unknown-token-xyz", UUID.randomUUID()));
+  }
+
+  @Test
+  void markMessageAsRead_ignoresMessage_whenTaskDoesNotBelongToParticipant() {
+    RunningDinner dinnerA = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
+    teamService.createTeamAndVisitationPlans(dinnerA.getAdminId());
+    sendTeamMessages(dinnerA);
+
+    RunningDinner dinnerB = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
+    teamService.createTeamAndVisitationPlans(dinnerB.getAdminId());
+    sendTeamMessages(dinnerB);
+
+    Participant participantA = participantService.findParticipants(dinnerA.getAdminId(), true).getFirst();
+    Participant participantB = participantService.findParticipants(dinnerB.getAdminId(), true).getFirst();
+    String tokenA = participantPortalService.getOrCreatePortalToken(participantA.getEmail());
+    String tokenB = participantPortalService.getOrCreatePortalToken(participantB.getEmail());
+
+    // Get a task ID from dinner B
+    UUID messageTaskIdFromB = participantPortalService.resolveParticipantMessages(
+        dinnerB.getSelfAdministrationId(), participantB.getId(), tokenB).getFirst().getMessageTaskId();
+
+    // Attempt to mark it as read using participant A's credentials — must be silently ignored
+    participantPortalService.markMessageAsRead(
+        dinnerA.getSelfAdministrationId(), participantA.getId(), tokenA, messageTaskIdFromB);
+
+    assertThat(readReceiptRepository.existsByParticipantIdAndMessageTaskId(
+        participantA.getId(), messageTaskIdFromB)).isFalse();
   }
 
   // ─── private helpers ─────────────────────────────────────────────────────
