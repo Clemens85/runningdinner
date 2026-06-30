@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { BackendConfig, isArrayEmpty } from '..';
+import { BackendConfig, isArrayEmpty, PortalCredential } from '..';
 import { PortalMessage, PortalMyEventsResponseTO, PortalParticipantInfo } from './PortalTypes';
 
 /**
@@ -39,7 +39,8 @@ export async function revokePortalTokens(portalTokens: string[]): Promise<void> 
  * The portalToken is passed as a safety guard — the backend validates that the token
  * belongs to the participant before returning data.
  */
-export async function fetchParticipantSelfServiceInfo(selfAdminId: string, participantId: string, portalToken: string): Promise<PortalParticipantInfo> {
+export async function fetchParticipantSelfServiceInfo(portalCredential: PortalCredential): Promise<PortalParticipantInfo> {
+  const { selfAdminId, participantId, portalToken } = portalCredential;
   const url = BackendConfig.buildUrl(`/participant-portal/v1/${selfAdminId}/${participantId}/self-service-info`);
   const response = await axios.get<PortalParticipantInfo>(url, { params: { portalToken } });
   return response.data;
@@ -50,8 +51,19 @@ export async function fetchParticipantSelfServiceInfo(selfAdminId: string, parti
  * ordered by sent date descending.
  * The portalToken is validated server-side against the participant's email.
  */
-export async function fetchParticipantMessages(selfAdminId: string, participantId: string, portalToken: string): Promise<PortalMessage[]> {
+export async function fetchParticipantMessages(portalCredential: PortalCredential): Promise<PortalMessage[]> {
+  const { selfAdminId, participantId, portalToken } = portalCredential;
   const url = BackendConfig.buildUrl(`/participant-portal/v1/${selfAdminId}/${participantId}/messages`);
   const response = await axios.get<PortalMessage[]>(url, { params: { portalToken } });
   return response.data;
+}
+
+/**
+ * Records that the participant has opened (read) the given message.
+ * Fire-and-forget — errors are intentionally swallowed by the caller.
+ */
+export async function markMessageAsRead(messageTaskId: string, portalCredential: PortalCredential): Promise<void> {
+  const { selfAdminId, participantId, portalToken } = portalCredential;
+  const url = BackendConfig.buildUrl(`/participant-portal/v1/${selfAdminId}/${participantId}/messages/${messageTaskId}/read`);
+  await axios.post(url, null, { params: { portalToken } });
 }

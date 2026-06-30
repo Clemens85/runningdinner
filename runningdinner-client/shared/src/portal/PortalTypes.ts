@@ -112,4 +112,6 @@ export interface PortalMessage {
   content: string;
   sentDateTime: Date;
   replyTo: string | null;
+  messageTaskId: string;
+  read: boolean;
 }

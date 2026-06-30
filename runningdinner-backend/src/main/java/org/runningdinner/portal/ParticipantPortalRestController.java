@@ -106,4 +106,26 @@ public class ParticipantPortalRestController {
       @RequestParam String portalToken) {
     return participantPortalService.resolveParticipantMessages(selfAdminId, participantId, portalToken);
   }
+
+  /**
+   * POST /rest/participant-portal/v1/{selfAdminId}/{participantId}/messages/{messageTaskId}/read?portalToken=...
+   * <p>
+   * Records that the participant has read the given message. Idempotent — safe to call multiple times.
+   * Fire-and-forget: always returns 204 No Content. If the message doesn't belong to this participant
+   * the call is silently ignored.
+   *
+   * @param selfAdminId   RunningDinner.selfAdministrationId
+   * @param participantId Participant.id
+   * @param messageTaskId MessageTask.id
+   * @param portalToken   portal token — used as a safety guard to confirm the caller owns this participant
+   */
+  @PostMapping("/{selfAdminId}/{participantId}/messages/{messageTaskId}/read")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void markMessageAsRead(
+      @PathVariable UUID selfAdminId,
+      @PathVariable UUID participantId,
+      @PathVariable UUID messageTaskId,
+      @RequestParam String portalToken) {
+    participantPortalService.markMessageAsRead(selfAdminId, participantId, portalToken, messageTaskId);
+  }
 }

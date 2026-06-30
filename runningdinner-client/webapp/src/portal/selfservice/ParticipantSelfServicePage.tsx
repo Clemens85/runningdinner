@@ -25,12 +25,9 @@ type ParticipantSelfServiceViewProps = {
 };
 
 function ParticipantSelfServiceView({ event, credential }: ParticipantSelfServiceViewProps) {
-  const { selfAdminId, participantId, portalToken } = credential;
-  const { data: participantInfo, isLoading: isTeamInfoLoading } = useParticipantSelfServiceInfo(selfAdminId!, participantId!, portalToken);
-  const { data: messages, isLoading: isMessagesLoading } = useParticipantMessages(selfAdminId!, participantId!, portalToken);
-
+  const { data: participantInfo, isLoading: isTeamInfoLoading } = useParticipantSelfServiceInfo(credential);
+  const { data: messages, isLoading: isMessagesLoading } = useParticipantMessages(credential);
   const eventDateFormatted = formatLocalDate(event.eventDate);
-
   return (
     <>
       {/* Event header */}
@@ -53,7 +50,7 @@ function ParticipantSelfServiceView({ event, credential }: ParticipantSelfServic
 
         {/* Right column: Messages */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <MessagesSection messages={messages} isLoading={isMessagesLoading} />
+          <MessagesSection messages={messages} isLoading={isMessagesLoading} credential={credential} />
         </Grid>
       </Grid>
     </>

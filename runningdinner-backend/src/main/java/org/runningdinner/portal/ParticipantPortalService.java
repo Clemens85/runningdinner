@@ -9,13 +9,13 @@ import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.admin.message.job.MessageTaskRepository;
 import org.runningdinner.admin.message.job.MessageType;
 import org.runningdinner.common.service.IdGenerator;
-import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.LogSanitizer;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.PortalTokenProvider;
+import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.mail.formatter.ParticipantPortalAccessRecoveryMessageFormatter;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.ParticipantService;
@@ -57,6 +57,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
   private final TeamService teamService;
   private final ActivityService activityService;
   private final MessageTaskRepository messageTaskRepository;
+  private final PortalMessageReadReceiptRepository readReceiptRepository;
 
   public ParticipantPortalService(PortalTokenRepository portalTokenRepository,
                                   ParticipantService participantService,
@@ -67,7 +68,8 @@ public class ParticipantPortalService implements PortalTokenProvider {
                                   ParticipantPortalAccessRecoveryMessageFormatter recoveryMessageFormatter,
                                   TeamService teamService,
                                   ActivityService activityService,
-                                  MessageTaskRepository messageTaskRepository) {
+                                  MessageTaskRepository messageTaskRepository,
+                                  PortalMessageReadReceiptRepository readReceiptRepository) {
     this.portalTokenRepository = portalTokenRepository;
     this.participantService = participantService;
     this.runningDinnerService = runningDinnerService;
@@ -78,6 +80,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
     this.teamService = teamService;
     this.activityService = activityService;
     this.messageTaskRepository = messageTaskRepository;
+    this.readReceiptRepository = readReceiptRepository;
   }
 
   // ─── PortalTokenProvider (used by email formatters) ────────────────────────
@@ -475,13 +478,57 @@ public class ParticipantPortalService implements PortalTokenProvider {
 
     List<MessageTask> tasks = messageTaskRepository.findPortalMessagesForParticipant(runningDinner.getAdminId(), participantEmail, PORTAL_MESSAGE_TYPES);
 
+    Set<UUID> taskIds = tasks.stream().map(MessageTask::getId).collect(Collectors.toSet());
+    Set<UUID> readTaskIds = taskIds.isEmpty() ? Set.of() : readReceiptRepository.findReadMessageTaskIds(participantId, taskIds);
+
     return tasks.stream()
         .map(task -> new PortalMessageTO(
             task.getParentJob().getMessageType(),
             task.getMessage().getSubject(),
             FormatterUtil.getHtmlFormattedMessage(task.getMessage().getContent()),
             task.getSendingStartTime(),
-            task.getMessage().getReplyTo()))
+            task.getMessage().getReplyTo(),
+            task.getId(),
+            readTaskIds.contains(task.getId())))
         .toList();
+  }
+
+  /**
+   * Records that the given participant has read the given message task.
+   * Idempotent: a second call for the same pair is silently ignored.
+   * The portalToken is validated against the participant's email before any write.
+   *
+   * @param selfAdminId   RunningDinner.selfAdministrationId
+   * @param participantId Participant.id
+   * @param messageTaskId MessageTask.id
+   * @param portalToken   the caller's portal token (safety guard)
+   */
+  @Transactional
+  public void markMessageAsRead(UUID selfAdminId, UUID participantId, String portalToken, UUID messageTaskId) {
+
+    PortalToken token = portalTokenRepository.findByToken(portalToken)
+        .orElseThrow(() -> new IllegalArgumentException("Unknown portal token"));
+
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(selfAdminId);
+    Participant participant = participantService.findParticipantById(runningDinner.getAdminId(), participantId);
+
+    String participantEmail = StringUtils.trimToEmpty(participant.getEmail()).toLowerCase();
+    String tokenEmail = StringUtils.trimToEmpty(token.getEmail()).toLowerCase();
+    Assert.state(participantEmail.equals(tokenEmail),
+        "Portal token email does not match participant email for participantId=" + participantId);
+
+    // Verify the message task actually belongs to this participant's dinner (prevents cross-participant write)
+    boolean taskBelongsToParticipant = messageTaskRepository
+        .findPortalMessagesForParticipant(runningDinner.getAdminId(), participantEmail, PORTAL_MESSAGE_TYPES)
+        .stream()
+        .anyMatch(t -> t.getId().equals(messageTaskId));
+    if (!taskBelongsToParticipant) {
+      LOGGER.warn("markMessageAsRead: messageTaskId {} does not belong to participantId {}", messageTaskId, participantId);
+      return;
+    }
+
+    if (!readReceiptRepository.existsByParticipantIdAndMessageTaskId(participantId, messageTaskId)) {
+      readReceiptRepository.save(new PortalMessageReadReceipt(participantId, messageTaskId));
+    }
   }
 }

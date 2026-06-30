@@ -3,8 +3,8 @@ import DirectionsIcon from '@mui/icons-material/Directions';
 import EmailIcon from '@mui/icons-material/Email';
 import GroupIcon from '@mui/icons-material/Group';
 import PersonIcon from '@mui/icons-material/Person';
-import { Alert, Avatar, Box, Card, CardContent, Divider, Drawer, IconButton, List, ListItemAvatar, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
-import { formatLocalDate, formatLocalDateWithSeconds, PortalMessage, PortalMessageType } from '@runningdinner/shared';
+import { Alert, Avatar, Badge, Box, Card, CardContent, Divider, Drawer, IconButton, List, ListItemAvatar, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
+import { formatLocalDate, formatLocalDateWithSeconds, markMessageAsRead, PortalCredential, PortalMessage, PortalMessageType } from '@runningdinner/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,29 +22,32 @@ function getMessageSnippet(htmlContent: string): string {
 // Message type avatar
 // ---------------------------------------------------------------------------
 
-function MessageAvatar({ type }: { type: PortalMessageType }) {
+function MessageAvatar({ type, unread = false }: { type: PortalMessageType; unread?: boolean }) {
   const iconSize = 36;
   const iconSx = { fontSize: 18 };
 
-  if (type === 'TEAM') {
-    return (
+  const avatar =
+    type === 'TEAM' ? (
       <Avatar sx={{ bgcolor: 'primary.main', width: iconSize, height: iconSize }}>
         <GroupIcon sx={iconSx} />
       </Avatar>
-    );
-  }
-  if (type === 'DINNER_ROUTE') {
-    return (
+    ) : type === 'DINNER_ROUTE' ? (
       <Avatar sx={{ bgcolor: 'secondary.main', width: iconSize, height: iconSize }}>
         <DirectionsIcon sx={iconSx} />
       </Avatar>
+    ) : (
+      <Avatar sx={{ bgcolor: 'text.disabled', width: iconSize, height: iconSize }}>
+        <PersonIcon sx={iconSx} />
+      </Avatar>
     );
+
+  if (!unread) {
+    return avatar;
   }
-  // PARTICIPANT
   return (
-    <Avatar sx={{ bgcolor: 'text.disabled', width: iconSize, height: iconSize }}>
-      <PersonIcon sx={iconSx} />
-    </Avatar>
+    <Badge overlap="circular" anchorOrigin={{ vertical: 'top', horizontal: 'right' }} variant="dot" color="primary">
+      {avatar}
+    </Badge>
   );
 }
 
@@ -132,43 +135,47 @@ function MessageDetailDrawer({ message, onClose }: MessageDetailDrawerProps) {
 interface MessageListProps {
   messages: PortalMessage[];
   onSelect: (message: PortalMessage) => void;
+  locallyReadIds: Set<string>;
 }
 
-function MessageList({ messages, onSelect }: MessageListProps) {
+function MessageList({ messages, onSelect, locallyReadIds }: MessageListProps) {
   return (
     <List disablePadding>
-      {messages.map((msg, idx) => (
-        <Box key={idx}>
-          {idx > 0 && <Divider component="li" />}
-          <ListItemButton
-            onClick={() => {
-              (document.activeElement as HTMLElement)?.blur();
-              onSelect(msg);
-            }}
-            sx={{ px: 1, py: 0.75, borderRadius: 1, '&:hover': { bgcolor: 'action.hover' } }}
-          >
-            <ListItemAvatar sx={{ minWidth: 48 }}>
-              <MessageAvatar type={msg.messageType} />
-            </ListItemAvatar>
-            <ListItemText
-              sx={{ minWidth: 0, overflow: 'hidden' }}
-              primary={
-                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }} noWrap>
-                  {msg.subject}
-                </Typography>
-              }
-              secondary={
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {getMessageSnippet(msg.content)}
-                </Typography>
-              }
-            />
-            <Typography variant="caption" color="text.secondary" sx={{ ml: 1, flexShrink: 0, whiteSpace: 'nowrap' }}>
-              {formatLocalDate(msg.sentDateTime)}
-            </Typography>
-          </ListItemButton>
-        </Box>
-      ))}
+      {messages.map((msg, idx) => {
+        const unread = !msg.read && !locallyReadIds.has(msg.messageTaskId);
+        return (
+          <Box key={idx}>
+            {idx > 0 && <Divider component="li" />}
+            <ListItemButton
+              onClick={() => {
+                (document.activeElement as HTMLElement)?.blur();
+                onSelect(msg);
+              }}
+              sx={{ px: 1, py: 0.75, borderRadius: 1, '&:hover': { bgcolor: 'action.hover' }, bgcolor: unread ? 'action.selected' : undefined }}
+            >
+              <ListItemAvatar sx={{ minWidth: 48 }}>
+                <MessageAvatar type={msg.messageType} unread={unread} />
+              </ListItemAvatar>
+              <ListItemText
+                sx={{ minWidth: 0, overflow: 'hidden' }}
+                primary={
+                  <Typography variant="body2" sx={{ fontWeight: unread ? 700 : 500, color: 'text.primary' }} noWrap>
+                    {msg.subject}
+                  </Typography>
+                }
+                secondary={
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    {getMessageSnippet(msg.content)}
+                  </Typography>
+                }
+              />
+              <Typography variant="caption" color={unread ? 'primary.main' : 'text.secondary'} sx={{ ml: 1, flexShrink: 0, whiteSpace: 'nowrap', fontWeight: unread ? 700 : 400 }}>
+                {formatLocalDate(msg.sentDateTime)}
+              </Typography>
+            </ListItemButton>
+          </Box>
+        );
+      })}
     </List>
   );
 }
@@ -180,11 +187,22 @@ function MessageList({ messages, onSelect }: MessageListProps) {
 export interface MessagesSectionProps {
   messages: PortalMessage[] | undefined;
   isLoading: boolean;
+  credential: PortalCredential;
 }
 
-export function MessagesSection({ messages, isLoading }: MessagesSectionProps) {
+export function MessagesSection({ messages, isLoading, credential }: MessagesSectionProps) {
   const { t } = useTranslation('portal');
   const [selectedMessage, setSelectedMessage] = useState<PortalMessage | null>(null);
+  const [locallyReadIds, setLocallyReadIds] = useState<Set<string>>(new Set());
+
+  const handleSelect = (msg: PortalMessage) => {
+    setSelectedMessage(msg);
+    if (!msg.read && !locallyReadIds.has(msg.messageTaskId)) {
+      setLocallyReadIds((prev) => new Set(prev).add(msg.messageTaskId));
+      // Fire-and-forget: errors are intentionally ignored
+      markMessageAsRead(msg.messageTaskId, credential).catch(() => {});
+    }
+  };
 
   if (isLoading) {
     return <FetchProgressBar isPending={isLoading} error={undefined} />;
@@ -214,7 +232,7 @@ export function MessagesSection({ messages, isLoading }: MessagesSectionProps) {
           {hasMessages && (
             <>
               <Divider sx={{ mb: 0.5 }} />
-              <MessageList messages={messages} onSelect={setSelectedMessage} />
+              <MessageList messages={messages} onSelect={handleSelect} locallyReadIds={locallyReadIds} />
             </>
           )}
         </CardContent>

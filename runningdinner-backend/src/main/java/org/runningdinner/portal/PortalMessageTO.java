@@ -3,6 +3,7 @@ package org.runningdinner.portal;
 import org.runningdinner.admin.message.job.MessageType;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Represents a single message (email) sent by the organizer to the participant,
@@ -15,16 +16,20 @@ public class PortalMessageTO {
   private String content;
   private LocalDateTime sentDateTime;
   private String replyTo;
+  private UUID messageTaskId;
+  private boolean read;
 
   protected PortalMessageTO() {
   }
 
-  public PortalMessageTO(MessageType messageType, String subject, String content, LocalDateTime sentDateTime, String replyTo) {
+  public PortalMessageTO(MessageType messageType, String subject, String content, LocalDateTime sentDateTime, String replyTo, UUID messageTaskId, boolean read) {
     this.messageType = messageType;
     this.subject = subject;
     this.content = content;
     this.sentDateTime = sentDateTime;
     this.replyTo = replyTo;
+    this.messageTaskId = messageTaskId;
+    this.read = read;
   }
 
   public MessageType getMessageType() {
@@ -65,5 +70,21 @@ public class PortalMessageTO {
 
   public void setReplyTo(String replyTo) {
     this.replyTo = replyTo;
+  }
+
+  public UUID getMessageTaskId() {
+    return messageTaskId;
+  }
+
+  public void setMessageTaskId(UUID messageTaskId) {
+    this.messageTaskId = messageTaskId;
+  }
+
+  public boolean isRead() {
+    return read;
+  }
+
+  public void setRead(boolean read) {
+    this.read = read;
   }
 }
