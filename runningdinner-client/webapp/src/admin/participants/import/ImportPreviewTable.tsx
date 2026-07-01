@@ -1,7 +1,7 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Alert, Box, Chip, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { ExcelImportMappingService, ExcelImportRow, ExcelImportRowStatus, ExcelImportValidationMessage, Fullname, ImportPreview } from '@runningdinner/shared';
+import { ExcelImportMappingService, ExcelImportRow, ExcelImportRowStatus, ExcelImportValidationMessage, Fullname, getImportableRows, ImportPreview } from '@runningdinner/shared';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +23,21 @@ function messageColor(severity: ExcelImportValidationMessage['severity']): strin
   if (severity === 'ERROR') return 'error.dark';
   if (severity === 'WARNING') return 'warning.dark';
   return 'info.main';
+}
+
+function rowBgColor(status: ExcelImportRowStatus, isUpdating: boolean | undefined): string | undefined {
+  if (isUpdating) return undefined;
+  if (status === 'ERROR') return 'error.light';
+  if (status === 'WARNING') return 'warning.light';
+  if (status === 'INFO') return 'info.light';
+  return undefined;
+}
+
+function rowBorderColor(status: ExcelImportRowStatus, isUpdating: boolean | undefined): string {
+  if (status === 'ERROR' && !isUpdating) return 'error.main';
+  if (status === 'WARNING') return 'warning.main';
+  if (status === 'INFO') return 'info.main';
+  return 'divider';
 }
 
 function statusLabel(status: ExcelImportRowStatus, t: (k: string) => string): string {
@@ -53,22 +68,8 @@ function MobileRow({ row, isUpdating }: RowProps) {
         mb: 1,
         borderRadius: 1,
         border: '1px solid',
-        borderColor:
-          row.validationResult.status === 'ERROR' && !isUpdating
-            ? 'error.main'
-            : row.validationResult.status === 'WARNING'
-              ? 'warning.main'
-              : row.validationResult.status === 'INFO'
-                ? 'info.main'
-                : 'divider',
-        bgcolor:
-          row.validationResult.status === 'ERROR' && !isUpdating
-            ? 'error.light'
-            : row.validationResult.status === 'WARNING'
-              ? 'warning.light'
-              : row.validationResult.status === 'INFO'
-                ? 'info.light'
-                : undefined,
+        borderColor: rowBorderColor(row.validationResult.status, isUpdating),
+        bgcolor: rowBgColor(row.validationResult.status, isUpdating),
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
@@ -126,18 +127,7 @@ function DesktopRow({ row, isUpdating }: RowProps) {
 
   return (
     <>
-      <TableRow
-        sx={{
-          bgcolor:
-            row.validationResult.status === 'ERROR' && !isUpdating
-              ? 'error.light'
-              : row.validationResult.status === 'WARNING'
-                ? 'warning.light'
-                : row.validationResult.status === 'INFO'
-                  ? 'info.light'
-                  : undefined,
-        }}
-      >
+      <TableRow sx={{ bgcolor: rowBgColor(row.validationResult.status, isUpdating) }}>
         <TableCell sx={{ width: 40, p: 0.5 }}>
           {hasMessages ? (
             <IconButton size="small" onClick={() => setOpen((prev) => !prev)} aria-label="expand row">
@@ -226,7 +216,7 @@ export function ImportPreviewTable({ preview, updatingRowNumbers }: ImportPrevie
     { valid: 0, infos: 0, warnings: 0, errors: 0 },
   );
 
-  const fixedTeamPartnerRegistrationsCount = preview.rows.filter((r) => r.validationResult.status !== 'ERROR' && r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
+  const fixedTeamPartnerRegistrationsCount = getImportableRows(preview).filter((r) => r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
 
   return (
     <Box>

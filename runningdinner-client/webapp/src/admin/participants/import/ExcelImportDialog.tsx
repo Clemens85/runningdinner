@@ -24,7 +24,7 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
   const { t } = useTranslation(['admin', 'common']);
   const { showSuccess } = useCustomSnackbar();
 
-  const existingParticipants = concatParticipantList(participantList);
+  const existingParticipants = React.useMemo(() => concatParticipantList(participantList), [participantList]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [expandedErrors, setExpandedErrors] = React.useState(false);
   const [isSelectingFile, setIsSelectingFile] = React.useState(false);
