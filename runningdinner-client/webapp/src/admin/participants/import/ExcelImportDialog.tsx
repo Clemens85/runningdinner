@@ -1,6 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
-import { Alert, Box, CircularProgress, Collapse, Dialog, DialogContent, LinearProgress, List, ListItem, ListItemText, Typography } from '@mui/material';
-import { concatParticipantList, generateImportTemplate, getAllowedImportFileTypesAcceptString, hasOnlyErrors, ParticipantList } from '@runningdinner/shared';
+import { Alert, Box, Checkbox, CircularProgress, Collapse, Dialog, DialogContent, FormControlLabel, LinearProgress, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { concatParticipantList, generateImportTemplate, getAllowedImportFileTypesAcceptString, getUpdatableRows, hasOnlyErrors, ParticipantList } from '@runningdinner/shared';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,10 +30,8 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
   const [isSelectingFile, setIsSelectingFile] = React.useState(false);
   const isMobileDevice = useIsMobileDevice('md');
 
-  const { step, importPreview, importProgress, importResult, fileError, handleFileSelected, handleConfirmImport, handleReset } = useParticipantImport(
-    adminId,
-    existingParticipants,
-  );
+  const { step, importPreview, importProgress, importResult, fileError, allowUpdateExisting, setAllowUpdateExisting, handleFileSelected, handleConfirmImport, handleReset } =
+    useParticipantImport(adminId, existingParticipants);
 
   // When import is done, show snackbar and notify parent
   React.useEffect(() => {
@@ -171,7 +169,11 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
     const noImportableRows = hasOnlyErrors(importPreview);
     const importableRows = importPreview.rows.filter((r) => r.validationResult.status !== 'ERROR');
     const autoPartnersCount = importableRows.filter((r) => r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
-    const importableCount = importableRows.length + autoPartnersCount;
+    const updatableRows = getUpdatableRows(importPreview);
+    const updatableRowNumbers = new Set(updatableRows.map((r) => r.rowNumber));
+    const updatableCount = allowUpdateExisting ? updatableRows.length : 0;
+    const importableCount = importableRows.length + autoPartnersCount + updatableCount;
+    const noRowsToImport = noImportableRows && (!allowUpdateExisting || updatableRows.length === 0);
 
     return (
       <>
@@ -183,14 +185,25 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
                 {t('admin:import_preview_columns_hint')}
               </Alert>
             )}
-            <ImportPreviewTable preview={importPreview} />
+            <ImportPreviewTable preview={importPreview} updatingRowNumbers={allowUpdateExisting ? updatableRowNumbers : undefined} />
+            {updatableRows.length > 0 && (
+              <Box sx={{ mt: 1.5 }}>
+                <FormControlLabel
+                  control={<Checkbox checked={allowUpdateExisting} onChange={(e) => setAllowUpdateExisting(e.target.checked)} data-testid="import-update-existing-checkbox" />}
+                  label={t('admin:import_update_existing_label', { count: updatableRows.length })}
+                />
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', ml: 4, mt: -0.5 }}>
+                  {t('admin:import_update_existing_hint')}
+                </Typography>
+              </Box>
+            )}
           </DialogContent>
           <DialogActionsPanel
             onOk={() => handleConfirmImport()}
             okLabel={t('admin:import_preview_confirm', { count: importableCount })}
             onCancel={handleClose}
             cancelLabel={t('common:cancel')}
-            okButtonDisabled={noImportableRows}
+            okButtonDisabled={noRowsToImport}
           />
         </Dialog>
       </>

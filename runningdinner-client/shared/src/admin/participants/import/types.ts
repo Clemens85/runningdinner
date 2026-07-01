@@ -51,6 +51,12 @@ export interface ExcelImportRow {
   rowNumber: number;
   data: ExcelImportRowData;
   validationResult: SingleRowValidationResult;
+  /**
+   * Set when the row's email matches an existing (non-child) participant.
+   * The row is still marked as ERROR by default, but it can be opted into an update
+   * via the "update existing" checkbox — provided no other errors are present.
+   */
+  existingParticipantId?: string;
 }
 
 /** Aggregate shown to the organizer before confirmation */
@@ -88,6 +94,21 @@ export function buildImportPreview(rows: ExcelImportRow[]): ImportPreview {
 
 export function getImportableRows(preview: ImportPreview): ExcelImportRow[] {
   return preview.rows.filter((r) => r.validationResult.status !== 'ERROR');
+}
+
+/**
+ * Returns rows that are eligible for an "update existing participant" operation:
+ * - The row matched an existing participant by email (`existingParticipantId` is set)
+ * - The only ERROR-severity message is the duplicate-existing one (no other field errors)
+ */
+export function getUpdatableRows(preview: ImportPreview): ExcelImportRow[] {
+  return preview.rows.filter((r) => {
+    if (!r.existingParticipantId) {
+      return false;
+    }
+    const errorMessages = r.validationResult.messages.filter((m) => m.severity === 'ERROR');
+    return errorMessages.length === 1 && errorMessages[0].field === 'email';
+  });
 }
 
 export function hasOnlyErrors(preview: ImportPreview): boolean {
