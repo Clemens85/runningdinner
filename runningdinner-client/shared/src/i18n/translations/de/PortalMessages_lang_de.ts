@@ -29,6 +29,7 @@ const PortalMessages_de: any = {
   access_recovery_email_placeholder: 'email@beispiel.de',
   access_recovery_submit: 'Zugangslink anfordern',
   access_recovery_success: 'Falls unter dieser E-Mail-Adresse Events registriert sind, erhältst du in Kürze einen Wiederherstellungslink.',
+  access_recovery_rate_limit: 'Du hast zu oft einen Wiederherstellungslink angefordert. Bitte warte eine Weile und versuche es dann erneut.',
   access_recovery_error: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.',
 
   // ForgetMeButton

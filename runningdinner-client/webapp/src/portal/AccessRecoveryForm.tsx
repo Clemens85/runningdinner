@@ -14,25 +14,40 @@ interface AccessRecoveryFormData {
 export function AccessRecoveryForm() {
   const { t } = useTranslation('portal');
   const [submitted, setSubmitted] = useState(false);
+  const [rateLimited, setRateLimited] = useState(false);
 
   const { applyValidationIssuesToForm, getIssuesTranslated } = useBackendIssueHandler();
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
   const formMethods = useForm<AccessRecoveryFormData>({ defaultValues: { email: '' } });
-  const { handleSubmit, setError, formState: { isSubmitting } } = formMethods;
+  const {
+    handleSubmit,
+    setError,
+    formState: { isSubmitting },
+  } = formMethods;
 
   const onSubmit = async (data: AccessRecoveryFormData) => {
+    setRateLimited(false);
     try {
       await requestAccessRecovery(data.email);
       setSubmitted(true);
     } catch (e) {
-      applyValidationIssuesToForm(e as HttpError, setError);
-      showHttpErrorDefaultNotification(e as HttpError);
+      const httpError = e as HttpError;
+      if (httpError?.response?.status === 429) {
+        setRateLimited(true);
+      } else {
+        applyValidationIssuesToForm(httpError, setError);
+        showHttpErrorDefaultNotification(httpError);
+      }
     }
   };
 
   if (submitted) {
     return <Alert severity="success">{t('access_recovery_success')}</Alert>;
+  }
+
+  if (rateLimited) {
+    return <Alert severity="warning">{t('access_recovery_rate_limit')}</Alert>;
   }
 
   return (

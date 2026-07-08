@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -220,33 +219,8 @@ class ParticipantPortalServiceTest {
 
     Optional<PortalToken> token = portalTokenRepository.findByEmail(PARTICIPANT_EMAIL.toLowerCase());
     assertThat(token).isPresent();
-    assertThat(token.get().getLastRecoveryEmailSentAt()).isNotNull();
     assertThat(mailSenderInMemory.getMessages())
         .anyMatch(m -> PARTICIPANT_EMAIL.equalsIgnoreCase(m.getTo()[0]));
-  }
-
-  @Test
-  void requestAccessRecovery_respectsCooldown_onSubsequentRequest() {
-    var registrationSummary = frontendRunningDinnerService.performRegistration(
-        runningDinner.getPublicSettings().getPublicId(),
-        TestUtil.createRegistrationData("Cooldown User", PARTICIPANT_EMAIL, TestUtil.newAddress(), 6), false);
-    frontendRunningDinnerService.activateSubscribedParticipant(
-        runningDinner.getPublicSettings().getPublicId(), registrationSummary.getParticipant().getId());
-
-    // First call — email is sent
-    participantPortalService.requestAccessRecovery(PARTICIPANT_EMAIL);
-    LocalDateTime firstSentAt = portalTokenRepository.findByEmail(PARTICIPANT_EMAIL.toLowerCase())
-        .orElseThrow().getLastRecoveryEmailSentAt();
-    assertThat(firstSentAt).isNotNull();
-
-    // Second call within cooldown — should be a no-op
-    mailSenderInMemory.removeAllMessages();
-    participantPortalService.requestAccessRecovery(PARTICIPANT_EMAIL);
-
-    LocalDateTime secondSentAt = portalTokenRepository.findByEmail(PARTICIPANT_EMAIL.toLowerCase())
-        .orElseThrow().getLastRecoveryEmailSentAt();
-    assertThat(secondSentAt).isEqualTo(firstSentAt); // timestamp unchanged
-    assertThat(mailSenderInMemory.getMessages()).isEmpty();
   }
 
   // ─── resolveParticipantSelfServiceInfo ────────────────────────────────────

@@ -44,9 +44,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantPortalService.class);
 
-  /** Minimum cooldown between recovery emails for the same address (1 hour). */
-  private static final long RECOVERY_EMAIL_COOLDOWN_MINUTES = 60;
-
   private final PortalTokenRepository portalTokenRepository;
   private final ParticipantService participantService;
   private final RunningDinnerService runningDinnerService;
@@ -177,10 +174,10 @@ public class ParticipantPortalService implements PortalTokenProvider {
    * <ul>
    *   <li>If no events (participant or organizer) exist for the email, silently returns — no token
    *       is created and no email is sent (prevents token pollution and email enumeration).</li>
-   *   <li>If events exist, a portal token is looked up or created, cooldown is checked, and
-   *       the recovery email is sent within the same transaction.</li>
+   *   <li>If events exist, a portal token is looked up or created, and the recovery email is sent.</li>
    * </ul>
    * Always behaves generically to callers to prevent email enumeration.
+   * Rate limiting is enforced at the HTTP layer by {@link org.runningdinner.portal.AccessRecoveryRateLimitFilter}.
    *
    * @param email the email to send recovery to
    */
@@ -204,12 +201,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
           return portalTokenRepository.save(new PortalToken(normalizedEmail, newToken));
         });
 
-    // Check cooldown
-    if (isCooldownActive(token)) {
-      LOGGER.warn("Recovery email cooldown active for email {}", normalizedEmail);
-      return;
-    }
-
     // Send recovery email
     try {
       String recoveryUrl = urlGenerator.constructPortalTokenUrl(token.getToken());
@@ -218,11 +209,8 @@ public class ParticipantPortalService implements PortalTokenProvider {
       mailService.sendMessage(messageTask);
     } catch (Exception e) {
       LOGGER.error("Failed to send recovery email to {}", normalizedEmail, e);
-      return;
     }
 
-    token.setLastRecoveryEmailSentAt(LocalDateTime.now());
-    portalTokenRepository.save(token);
   }
 
   // ─── Internal helpers ────────────────────────────────────────────────────
@@ -319,14 +307,6 @@ public class ParticipantPortalService implements PortalTokenProvider {
     }
     List<RunningDinner> organizedDinners = runningDinnerService.findRunningDinnersByOrganizerEmail(email);
     return !organizedDinners.isEmpty();
-  }
-
-  private static boolean isCooldownActive(PortalToken token) {
-    LocalDateTime lastSent = token.getLastRecoveryEmailSentAt();
-    if (lastSent == null) {
-      return false;
-    }
-    return lastSent.plusMinutes(RECOVERY_EMAIL_COOLDOWN_MINUTES).isAfter(LocalDateTime.now());
   }
 
   // ─── Participant Self-Service Info ────────────────────────────────────────

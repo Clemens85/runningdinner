@@ -9,6 +9,8 @@ import org.runningdinner.common.service.IdGenerator;
 import org.runningdinner.common.service.impl.DefaultIdGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.core.util.DateTimeUtil;
+import org.runningdinner.portal.AccessRecoveryRateLimitFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
@@ -89,12 +91,28 @@ public class ApplicationConfig /*extends WebMvcConfigurerAdapter*/ {
   }
   
 
+  @Value("${portal.access-recovery.rate-limit.capacity:5}")
+  private int accessRecoveryRateLimitCapacity;
+
+  @Value("${portal.access-recovery.rate-limit.period-minutes:60}")
+  private int accessRecoveryRateLimitPeriodMinutes;
+
   @Bean
   public FilterRegistrationBean<AntiSamyFilter> antiSamyFilter() {
 
     FilterRegistrationBean<AntiSamyFilter> registrationBean = new FilterRegistrationBean<>();
     registrationBean.setFilter(new AntiSamyFilter());
     registrationBean.addUrlPatterns("/rest/*");
+    return registrationBean;
+  }
+
+  @Bean
+  public FilterRegistrationBean<AccessRecoveryRateLimitFilter> accessRecoveryRateLimitFilter() {
+
+    FilterRegistrationBean<AccessRecoveryRateLimitFilter> registrationBean = new FilterRegistrationBean<>();
+    registrationBean.setFilter(new AccessRecoveryRateLimitFilter(accessRecoveryRateLimitCapacity, accessRecoveryRateLimitPeriodMinutes));
+    registrationBean.addUrlPatterns("/rest/participant-portal/v1/access-recovery");
+    registrationBean.setOrder(1); // run before AntiSamy
     return registrationBean;
   }
 

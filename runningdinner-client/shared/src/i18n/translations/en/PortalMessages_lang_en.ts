@@ -29,6 +29,7 @@ const PortalMessages_en: any = {
   access_recovery_email_placeholder: 'email@example.com',
   access_recovery_submit: 'Send recovery link',
   access_recovery_success: 'If events are registered with this email address you will receive a recovery link shortly.',
+  access_recovery_rate_limit: 'You have requested a recovery link too many times. Please wait a while before trying again.',
   access_recovery_error: 'Something went wrong. Please try again.',
 
   // ForgetMeButton

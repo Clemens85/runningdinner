@@ -59,8 +59,9 @@ public class ParticipantPortalRestController {
   /**
    * POST /rest/participant-portal/v1/access-recovery
    * <p>
-   * Triggers a recovery email for the given email address (if events exist and cooldown elapsed).
+   * Triggers a recovery email for the given email address (if events exist).
    * Always returns 204 No Content to prevent email enumeration.
+   * Rate limiting is enforced by {@link AccessRecoveryRateLimitFilter} — returns 429 when exceeded.
    *
    * @param request JSON body containing the email address
    */
