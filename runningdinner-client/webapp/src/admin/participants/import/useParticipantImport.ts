@@ -1,4 +1,4 @@
-import { buildImportPreview, ExcelImportMappingService, getImportableRows, ImportPreview, ImportResult, isFileExtensionAllowed } from '@runningdinner/shared';
+import { buildImportPreview, ExcelImportMappingService, getImportableRows, getUpdatableRows, ImportPreview, ImportResult, isFileExtensionAllowed } from '@runningdinner/shared';
 import { ExcelImportRow, ExcelImportRowData } from '@runningdinner/shared';
 import { isHttpError, Participant, saveParticipantAsync, useBackendIssueHandler } from '@runningdinner/shared';
 import { ImportError, parseExcelFile } from '@runningdinner/shared';
@@ -19,6 +19,8 @@ export interface UseParticipantImportResult {
   importProgress: ImportProgress | null;
   importResult: ImportResult | null;
   fileError: string | null;
+  allowUpdateExisting: boolean;
+  setAllowUpdateExisting: (value: boolean) => void;
   handleFileSelected: (file: File) => Promise<void>;
   handleConfirmImport: () => Promise<void>;
   handleReset: () => void;
@@ -32,6 +34,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
   const [importProgress, setImportProgress] = React.useState<ImportProgress | null>(null);
   const [importResult, setImportResult] = React.useState<ImportResult | null>(null);
   const [fileError, setFileError] = React.useState<string | null>(null);
+  const [allowUpdateExisting, setAllowUpdateExisting] = React.useState(false);
 
   const handleFileSelected = React.useCallback(
     async (file: File) => {
@@ -72,9 +75,16 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
         const row = rows[i];
         try {
           const participant = ExcelImportMappingService.buildParticipantFromImportRow(row.data);
+          // If this row targets an existing participant, set its id so saveParticipantAsync
+          // issues a PUT. Also clear teamPartnerWishRegistrationData — on update we only
+          // update the root participant and leave the child record untouched.
+          if (row.existingParticipantId) {
+            participant.id = row.existingParticipantId;
+            participant.teamPartnerWishRegistrationData = undefined;
+          }
           await saveParticipantAsync(adminId, participant);
           // Fixed partner registration creates an additional participant on the backend side
-          succeededCount += participant.teamPartnerWishRegistrationData ? 2 : 1;
+          succeededCount += !row.existingParticipantId && participant.teamPartnerWishRegistrationData ? 2 : 1;
         } catch (e: unknown) {
           let errMsg: string;
           if (isHttpError(e)) {
@@ -98,9 +108,9 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
 
   const handleConfirmImport = React.useCallback(async () => {
     if (!importPreview) return;
-    const rows = getImportableRows(importPreview);
+    const rows = [...getImportableRows(importPreview), ...(allowUpdateExisting ? getUpdatableRows(importPreview) : [])];
     await doImport(rows);
-  }, [importPreview, doImport]);
+  }, [importPreview, allowUpdateExisting, doImport]);
 
   const handleReset = React.useCallback(() => {
     setStep('idle');
@@ -108,6 +118,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
     setImportProgress(null);
     setImportResult(null);
     setFileError(null);
+    setAllowUpdateExisting(false);
   }, []);
 
   return {
@@ -116,6 +127,8 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
     importProgress,
     importResult,
     fileError,
+    allowUpdateExisting,
+    setAllowUpdateExisting,
     handleFileSelected,
     handleConfirmImport,
     handleReset,

@@ -51,6 +51,12 @@ export interface ExcelImportRow {
   rowNumber: number;
   data: ExcelImportRowData;
   validationResult: SingleRowValidationResult;
+  /**
+   * Set when the row's email matches an existing (non-child) participant.
+   * The row is still marked as ERROR by default, but it can be opted into an update
+   * via the "update existing" checkbox — provided no other errors are present.
+   */
+  existingParticipantId?: string;
 }
 
 /** Aggregate shown to the organizer before confirmation */
@@ -68,28 +74,4 @@ export interface ImportPreview {
 export interface ImportResult {
   succeededCount: number;
   failedRows: Array<{ row: ExcelImportRow; error: string }>;
-}
-
-export function buildImportPreview(rows: ExcelImportRow[]): ImportPreview {
-  const counts = rows.reduce(
-    (acc, row) => {
-      acc.total++;
-      const status = row.validationResult.status;
-      if (status === 'VALID') acc.valid++;
-      else if (status === 'INFO') acc.infos++;
-      else if (status === 'WARNING') acc.warnings++;
-      else acc.errors++;
-      return acc;
-    },
-    { total: 0, valid: 0, infos: 0, warnings: 0, errors: 0 },
-  );
-  return { rows, counts };
-}
-
-export function getImportableRows(preview: ImportPreview): ExcelImportRow[] {
-  return preview.rows.filter((r) => r.validationResult.status !== 'ERROR');
-}
-
-export function hasOnlyErrors(preview: ImportPreview): boolean {
-  return preview.counts.errors === preview.counts.total;
 }

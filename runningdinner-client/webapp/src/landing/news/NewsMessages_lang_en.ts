@@ -1,4 +1,8 @@
 const NewsMessages_en: any = {
+  news_title_20260708: 'Excel Import',
+  news_content_20260708:
+    'It is now possible to add participants via Excel import. ' + 'This allows participant lists to be imported into a Running Dinner event easily and quickly.',
+
   news_title_20260310: 'Improved Route Optimization',
   news_content_20260310:
     'The route optimization has been significantly improved and now provides substantially better results. ' +

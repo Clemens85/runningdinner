@@ -1,7 +1,7 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Alert, Box, Chip, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { ExcelImportMappingService, ExcelImportRow, ExcelImportRowStatus, ExcelImportValidationMessage, Fullname, ImportPreview } from '@runningdinner/shared';
+import { ExcelImportMappingService, ExcelImportRow, ExcelImportRowStatus, ExcelImportValidationMessage, Fullname, getImportableRows, ImportPreview } from '@runningdinner/shared';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +25,21 @@ function messageColor(severity: ExcelImportValidationMessage['severity']): strin
   return 'info.main';
 }
 
+function rowBgColor(status: ExcelImportRowStatus, isUpdating: boolean | undefined): string | undefined {
+  if (isUpdating) return undefined;
+  if (status === 'ERROR') return 'error.light';
+  if (status === 'WARNING') return 'warning.light';
+  if (status === 'INFO') return 'info.light';
+  return undefined;
+}
+
+function rowBorderColor(status: ExcelImportRowStatus, isUpdating: boolean | undefined): string {
+  if (status === 'ERROR' && !isUpdating) return 'error.main';
+  if (status === 'WARNING') return 'warning.main';
+  if (status === 'INFO') return 'info.main';
+  return 'divider';
+}
+
 function statusLabel(status: ExcelImportRowStatus, t: (k: string) => string): string {
   if (status === 'VALID') return t('admin:import_preview_valid');
   if (status === 'INFO') return t('admin:import_preview_info');
@@ -38,12 +53,13 @@ function hasFixedPartner(row: ExcelImportRow): boolean {
 
 interface RowProps {
   row: ExcelImportRow;
+  isUpdating?: boolean;
 }
 
-function MobileRow({ row }: RowProps) {
+function MobileRow({ row, isUpdating }: RowProps) {
   const { t } = useTranslation(['admin']);
   const [open, setOpen] = React.useState(false);
-  const hasMessages = row.validationResult.messages.length > 0;
+  const hasMessages = !isUpdating && row.validationResult.messages.length > 0;
 
   return (
     <Box
@@ -52,23 +68,8 @@ function MobileRow({ row }: RowProps) {
         mb: 1,
         borderRadius: 1,
         border: '1px solid',
-        borderColor:
-          row.validationResult.status === 'ERROR'
-            ? 'error.main'
-            : row.validationResult.status === 'WARNING'
-              ? 'warning.main'
-              : row.validationResult.status === 'INFO'
-                ? 'info.main'
-                : 'divider',
-        bgcolor:
-          row.validationResult.status === 'ERROR'
-            ? 'error.light'
-            : row.validationResult.status === 'WARNING'
-              ? 'warning.light'
-              : row.validationResult.status === 'INFO'
-                ? 'info.light'
-                : undefined,
-        opacity: row.validationResult.status === 'ERROR' ? 0.85 : 1,
+        borderColor: rowBorderColor(row.validationResult.status, isUpdating),
+        bgcolor: rowBgColor(row.validationResult.status, isUpdating),
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
@@ -87,7 +88,11 @@ function MobileRow({ row }: RowProps) {
           )}
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
-          <Chip label={statusLabel(row.validationResult.status, t)} color={statusColor(row.validationResult.status)} size="small" />
+          {isUpdating ? (
+            <Chip label={t('admin:import_preview_update')} color="success" size="small" />
+          ) : (
+            <Chip label={statusLabel(row.validationResult.status, t)} color={statusColor(row.validationResult.status)} size="small" />
+          )}
           {hasMessages && (
             <IconButton size="small" onClick={() => setOpen((v) => !v)} aria-label="expand row">
               {open ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
@@ -111,10 +116,10 @@ function MobileRow({ row }: RowProps) {
   );
 }
 
-function DesktopRow({ row }: RowProps) {
+function DesktopRow({ row, isUpdating }: RowProps) {
   const { t } = useTranslation(['admin']);
   const [open, setOpen] = React.useState(false);
-  const hasMessages = row.validationResult.messages.length > 0;
+  const hasMessages = !isUpdating && row.validationResult.messages.length > 0;
 
   const address = [row.data.street, row.data.streetNr].filter(Boolean).join(' ');
   const cityLine = [row.data.zip, row.data.cityName].filter(Boolean).join(' ');
@@ -122,19 +127,7 @@ function DesktopRow({ row }: RowProps) {
 
   return (
     <>
-      <TableRow
-        sx={{
-          bgcolor:
-            row.validationResult.status === 'ERROR'
-              ? 'error.light'
-              : row.validationResult.status === 'WARNING'
-                ? 'warning.light'
-                : row.validationResult.status === 'INFO'
-                  ? 'info.light'
-                  : undefined,
-          opacity: row.validationResult.status === 'ERROR' ? 0.85 : 1,
-        }}
-      >
+      <TableRow sx={{ bgcolor: rowBgColor(row.validationResult.status, isUpdating) }}>
         <TableCell sx={{ width: 40, p: 0.5 }}>
           {hasMessages ? (
             <IconButton size="small" onClick={() => setOpen((prev) => !prev)} aria-label="expand row">
@@ -159,7 +152,11 @@ function DesktopRow({ row }: RowProps) {
           <MealSpecificsPreview {...row} />
         </TableCell>
         <TableCell>
-          <Chip label={statusLabel(row.validationResult.status, t)} color={statusColor(row.validationResult.status)} size="small" />
+          {isUpdating ? (
+            <Chip label={t('admin:import_preview_update')} color="success" size="small" />
+          ) : (
+            <Chip label={statusLabel(row.validationResult.status, t)} color={statusColor(row.validationResult.status)} size="small" />
+          )}
         </TableCell>
       </TableRow>
       {hasMessages && (
@@ -194,24 +191,42 @@ function MealSpecificsPreview({ data }: ExcelImportRow) {
 
 interface ImportPreviewTableProps {
   preview: ImportPreview;
+  /** Row numbers that should be displayed as "will be updated" instead of as errors */
+  updatingRowNumbers?: Set<number>;
 }
 
-export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
+export function ImportPreviewTable({ preview, updatingRowNumbers }: ImportPreviewTableProps) {
   const { t } = useTranslation(['admin', 'common']);
-  const { counts } = preview;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const fixedTeamPartnerRegistrationsCount = preview.rows.filter((r) => r.validationResult.status !== 'ERROR' && r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
+  const updatingCount = updatingRowNumbers?.size ?? 0;
+
+  // Counts for the summary chips — updating rows are counted separately, not as errors
+  const displayCounts = preview.rows.reduce(
+    (acc, row) => {
+      if (updatingRowNumbers?.has(row.rowNumber)) return acc;
+      const status = row.validationResult.status;
+      if (status === 'VALID') acc.valid++;
+      else if (status === 'INFO') acc.infos++;
+      else if (status === 'WARNING') acc.warnings++;
+      else acc.errors++;
+      return acc;
+    },
+    { valid: 0, infos: 0, warnings: 0, errors: 0 },
+  );
+
+  const fixedTeamPartnerRegistrationsCount = getImportableRows(preview).filter((r) => r.data.teamPartnerWishPartnerFirstname.trim() !== '').length;
 
   return (
     <Box>
       <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
-        <Chip label={`${t('admin:import_total')}: ${counts.total}`} size="small" />
-        {counts.valid > 0 && <Chip label={`${t('admin:import_preview_valid')}: ${counts.valid}`} color="success" size="small" />}
-        {counts.infos > 0 && <Chip label={`${t('admin:import_preview_info')}: ${counts.infos}`} color="info" size="small" />}
-        {counts.warnings > 0 && <Chip label={`${t('admin:import_preview_warning')}: ${counts.warnings}`} color="warning" size="small" />}
-        {counts.errors > 0 && <Chip label={`${t('admin:import_preview_error')}: ${counts.errors}`} color="error" size="small" />}
+        <Chip label={`${t('admin:import_total')}: ${preview.counts.total}`} size="small" />
+        {displayCounts.valid > 0 && <Chip label={`${t('admin:import_preview_valid')}: ${displayCounts.valid}`} color="success" size="small" />}
+        {displayCounts.infos > 0 && <Chip label={`${t('admin:import_preview_info')}: ${displayCounts.infos}`} color="info" size="small" />}
+        {displayCounts.warnings > 0 && <Chip label={`${t('admin:import_preview_warning')}: ${displayCounts.warnings}`} color="warning" size="small" />}
+        {displayCounts.errors > 0 && <Chip label={`${t('admin:import_preview_error')}: ${displayCounts.errors}`} color="error" size="small" />}
+        {updatingCount > 0 && <Chip label={t('admin:import_preview_updating_chip', { count: updatingCount })} color="success" size="small" variant="outlined" />}
         {fixedTeamPartnerRegistrationsCount > 0 && (
           <Chip label={t('admin:import_preview_fixed_partners_chip', { count: fixedTeamPartnerRegistrationsCount })} size="small" variant="outlined" />
         )}
@@ -220,7 +235,7 @@ export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
       {isMobile ? (
         <Box sx={{ maxHeight: '50vh', overflowY: 'auto', pr: 0.5 }}>
           {preview.rows.map((row) => (
-            <MobileRow key={row.rowNumber} row={row} />
+            <MobileRow key={row.rowNumber} row={row} isUpdating={updatingRowNumbers?.has(row.rowNumber)} />
           ))}
         </Box>
       ) : (
@@ -240,16 +255,16 @@ export function ImportPreviewTable({ preview }: ImportPreviewTableProps) {
             </TableHead>
             <TableBody>
               {preview.rows.map((row) => (
-                <DesktopRow key={row.rowNumber} row={row} />
+                <DesktopRow key={row.rowNumber} row={row} isUpdating={updatingRowNumbers?.has(row.rowNumber)} />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       )}
 
-      {counts.errors > 0 && (
+      {displayCounts.errors > 0 && (
         <Alert severity="warning" sx={{ mt: 1.5 }}>
-          {t('admin:import_preview_errors_hint', { count: counts.errors })}
+          {t('admin:import_preview_errors_hint', { count: displayCounts.errors })}
         </Alert>
       )}
     </Box>

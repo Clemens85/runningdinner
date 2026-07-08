@@ -60,7 +60,10 @@ function hasValidTeamPartnerWishEmail(row: ExcelImportRowData) {
 
 interface ValidationContext {
   incomingEmailsByRowNumber: Map<string, number>; // email → first row number that has it
-  existingEmails: Set<string>;
+  /** email → participant id; only non-child participants (child = teamPartnerWishOriginatorId set to someone else's id) */
+  existingParticipantIdsByEmail: Map<string, string>;
+  /** all existing participant emails — used to resolve team-partner-wish email references */
+  allExistingEmails: Set<string>;
   existingTeamPartnerWishEmails: Set<string>;
 }
 
@@ -73,13 +76,16 @@ export class ExcelImportValidationService {
 
   constructor(existingParticipants: Participant[], t: TFunc) {
     this.t = t;
-    const existingEmails = new Set(existingParticipants.map((p) => getNormalizedEmail(p.email)));
+    // Child participants (fixed partner auto-created records) are intentionally excluded from update candidates
+    const nonChildParticipants = existingParticipants.filter((p) => !p.teamPartnerWishOriginatorId || p.teamPartnerWishOriginatorId === p.id);
+    const existingParticipantIdsByEmail = new Map(nonChildParticipants.map((p) => [getNormalizedEmail(p.email), p.id!] as [string, string]));
     const existingTeamPartnerWishEmails = new Set(
       existingParticipants.filter((p) => isStringNotEmpty(p.teamPartnerWishEmail)).map((p) => getNormalizedEmail(p.teamPartnerWishEmail!)),
     );
     this.ctx = {
       incomingEmailsByRowNumber: new Map(),
-      existingEmails,
+      existingParticipantIdsByEmail,
+      allExistingEmails: new Set(existingParticipants.map((p) => getNormalizedEmail(p.email))),
       existingTeamPartnerWishEmails,
     };
   }
@@ -102,11 +108,12 @@ export class ExcelImportValidationService {
   public validateImportRows(rows: ExcelImportRowData[]): ExcelImportRow[] {
     const validatedRows: ExcelImportRow[] = rows.map((data, index) => {
       const rowNumber = index + 1; // 1-based
-      const validationResult = this.validateSingleRow(data, rowNumber);
+      const { result: validationResult, existingParticipantId } = this.validateSingleRow(data, rowNumber);
       return {
         rowNumber,
         data,
         validationResult,
+        ...(existingParticipantId !== undefined && { existingParticipantId }),
       };
     });
 
@@ -116,12 +123,16 @@ export class ExcelImportValidationService {
     return validatedRows;
   }
 
-  private validateSingleRow(data: ExcelImportRowData, rowNumber: number): SingleRowValidationResult {
-    const result: SingleRowValidationResult = {
-      status: 'VALID',
-      messages: [],
-    };
+  private validateSingleRow(data: ExcelImportRowData, rowNumber: number): { result: SingleRowValidationResult; existingParticipantId?: string } {
+    const result: SingleRowValidationResult = { status: 'VALID', messages: [] };
+    this.validateMandatoryFields(data, result);
+    const existingParticipantId = this.validateEmailField(data, rowNumber, result);
+    this.validateOptionalFields(data, result);
+    this.validateTeamPartnerWishFields(data, result);
+    return { result, existingParticipantId };
+  }
 
+  private validateMandatoryFields(data: ExcelImportRowData, result: SingleRowValidationResult): void {
     for (const field of MANDATORY_FIELDS) {
       if ((data[field] as string).trim() === '') {
         const labelKey = FIELD_LABEL_KEY[field];
@@ -129,14 +140,16 @@ export class ExcelImportValidationService {
         this.addErr(result, field, this.t('admin:import_error_missing_field', { field: fieldLabel }));
       }
     }
+  }
 
-    // --- Email format ---
+  private validateEmailField(data: ExcelImportRowData, rowNumber: number, result: SingleRowValidationResult): string | undefined {
     const emailNorm = getNormalizedEmail(data.email);
+    let existingParticipantId: string | undefined;
+
     if (emailNorm !== '' && !isValidEmail(emailNorm)) {
       this.addErr(result, 'email', this.t('admin:import_error_invalid_email'));
     }
 
-    // --- Duplicate in file ---
     if (emailNorm !== '' && isValidEmail(emailNorm)) {
       const firstSeen = this.ctx.incomingEmailsByRowNumber.get(emailNorm);
       if (firstSeen === undefined) {
@@ -146,25 +159,26 @@ export class ExcelImportValidationService {
       }
     }
 
-    // --- Duplicate against existing participants ---
-    if (emailNorm !== '' && this.ctx.existingEmails.has(emailNorm)) {
+    if (emailNorm !== '' && this.ctx.existingParticipantIdsByEmail.has(emailNorm)) {
+      existingParticipantId = this.ctx.existingParticipantIdsByEmail.get(emailNorm);
       this.addErr(result, 'email', this.t('admin:import_error_duplicate_existing'));
     }
 
-    // --- Gender ---
+    return existingParticipantId;
+  }
+
+  private validateOptionalFields(data: ExcelImportRowData, result: SingleRowValidationResult): void {
     const genderRaw = data.gender.trim().toLowerCase();
     if (genderRaw !== '' && !VALID_GENDER_VALUES.has(genderRaw)) {
       this.addWarn(result, 'gender', this.t('admin:import_warning_invalid_gender'));
     }
 
-    // --- numSeats ---
     const numSeatsRaw = data.numSeats.trim();
     const numSeatsNum = Number(numSeatsRaw);
     if (numSeatsRaw === '' || !Number.isInteger(numSeatsNum) || numSeatsNum < 0) {
       this.addErr(result, 'numSeats', this.t('admin:import_error_invalid_numseats'));
     }
 
-    // --- age ---
     const ageRaw = data.age.trim();
     if (ageRaw !== '') {
       const parsed = parseInt(ageRaw, 10);
@@ -172,11 +186,14 @@ export class ExcelImportValidationService {
         this.addWarn(result, 'age', this.t('admin:import_warning_invalid_age'));
       }
     }
+  }
 
-    // --- Team partner wish: Option 1 (invitation by email) ---
+  private validateTeamPartnerWishFields(data: ExcelImportRowData, result: SingleRowValidationResult): void {
+    const emailNorm = getNormalizedEmail(data.email);
     const wishEmail = getNormalizedEmail(data.teamPartnerWishEmail);
     const hasPartnerName = data.teamPartnerWishPartnerFirstname.trim() !== '' || data.teamPartnerWishPartnerLastname.trim() !== '';
 
+    // --- Option 1: invitation by email ---
     if (wishEmail !== '') {
       if (!isValidEmail(wishEmail)) {
         this.addErr(result, 'teamPartnerWishEmail', this.t('admin:import_error_invalid_email'));
@@ -189,7 +206,7 @@ export class ExcelImportValidationService {
       // "partner not found" is checked in a second pass (all rows needed)
     }
 
-    // --- Team partner wish: Option 2 (fixed partner co-registration) ---
+    // --- Option 2: fixed partner co-registration ---
     if (!wishEmail && hasPartnerName) {
       if (data.teamPartnerWishPartnerLastname.trim() === '') {
         this.addErr(result, 'teamPartnerWishPartnerLastname', this.t('admin:import_error_partner_lastname_missing'));
@@ -210,8 +227,6 @@ export class ExcelImportValidationService {
         this.addErr(result, 'numSeats', this.t('admin:import_error_partner_numseats_required'));
       }
     }
-
-    return result;
   }
 
   private validateTeamPartnerWishEmailsFulfilled(rows: ExcelImportRow[]) {
@@ -220,7 +235,7 @@ export class ExcelImportValidationService {
         continue;
       }
       const teamPartnerWishEmail = getNormalizedEmail(row.data.teamPartnerWishEmail);
-      if (this.ctx.existingEmails.has(teamPartnerWishEmail)) {
+      if (this.ctx.allExistingEmails.has(teamPartnerWishEmail)) {
         continue;
       }
       if (this.ctx.incomingEmailsByRowNumber.has(teamPartnerWishEmail)) {
