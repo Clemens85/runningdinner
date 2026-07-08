@@ -88,7 +88,7 @@ export function MyEventsPage() {
 
   if (!isQuerySucceeded(myEventsQuery)) {
     return (
-      <Container maxWidth={false} sx={{ py: 4 }}>
+      <Container maxWidth={false} sx={{ pb: 4 }}>
         <PageTitle>{t('my_events_title')}</PageTitle>
         <FetchProgressBar {...myEventsQuery} />
       </Container>
@@ -96,7 +96,7 @@ export function MyEventsPage() {
   }
 
   return (
-    <Container maxWidth={false} sx={{ py: 4 }}>
+    <Container maxWidth={false} sx={{ pb: 4 }}>
       <PageTitle>{t('my_events_title')}</PageTitle>
       <Container maxWidth="md">{events.length > 0 ? <MyEventsView events={events} /> : <FirstUsageInfo />}</Container>
     </Container>

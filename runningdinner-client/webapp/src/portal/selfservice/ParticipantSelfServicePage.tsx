@@ -92,7 +92,7 @@ export function ParticipantSelfServicePage() {
   };
 
   return (
-    <Box sx={{ py: 4 }}>
+    <Box sx={{ pb: 4 }}>
       <Box sx={{ mb: 2 }}>
         <Button size="small" variant="text" onClick={() => navigate(MY_EVENTS_PATH)} sx={{ textTransform: 'none', pl: 0 }}>
           ← {t('participant_event_back')}

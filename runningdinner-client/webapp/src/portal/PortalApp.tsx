@@ -17,7 +17,7 @@ export default function PortalApp() {
         <Route
           path="event/:selfAdminId/:participantId"
           element={
-            <Container maxWidth={false} sx={{ py: 4 }}>
+            <Container maxWidth={false} sx={{ pb: 4 }}>
               <Container maxWidth="lg">
                 <ParticipantSelfServicePage />
               </Container>

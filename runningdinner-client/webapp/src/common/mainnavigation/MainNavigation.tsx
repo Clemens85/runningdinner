@@ -8,7 +8,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { DonateButton } from '../donate/DonateButton';
 import { FeedbackButtonContainerRightAligned } from '../feedback/FeedbackButton';
 import { LanguageSwitch } from '../i18n/LanguageSwitch';
-import { LANDING_CREATE_RUNNING_DINNER_PATH, RUNNING_DINNER_EVENTS_PATH } from './NavigationPaths';
+import { LANDING_CREATE_RUNNING_DINNER_PATH, MY_EVENTS_PATH, RUNNING_DINNER_EVENTS_PATH } from './NavigationPaths';
 
 const HomeTitle = styled(Typography)(({ theme }) => ({
   marginRight: theme.spacing(4),
@@ -171,7 +171,7 @@ function isShowFeedbackButton() {
     return false;
   }
 
-  return pathName.indexOf('/admin/') >= 0 || pathName.indexOf(LANDING_CREATE_RUNNING_DINNER_PATH) >= 0 || pathName.indexOf(RUNNING_DINNER_EVENTS_PATH) >= 0;
+  return pathName.indexOf('/admin/') >= 0 || pathName.indexOf(LANDING_CREATE_RUNNING_DINNER_PATH) >= 0 || pathName.indexOf(RUNNING_DINNER_EVENTS_PATH) >= 0 || pathName.indexOf(MY_EVENTS_PATH) >= 0;
 }
 
 interface MobileNavigationProps extends MainNavigationProps {
