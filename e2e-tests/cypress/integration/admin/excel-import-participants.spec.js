@@ -113,4 +113,68 @@ describe('excel import participants', () => {
       expect(fixFox.teamPartnerWishRegistrationRoot).to.be.false;
     });
   });
+  it('updates existing participants when update checkbox is enabled', () => {
+    navigateParticipantsList(adminId);
+
+    // --- First import: create the initial 3 participants (+ Fix Fox as auto-partner) ---
+    getByTestId('excel-actions-btn').click();
+    getByTestId('excel-import-menu-item').click();
+    getByTestId('import-file-input').selectFile('cypress/fixtures/import/e2e.xlsx', { force: true });
+    getByTestId('import-preview-table').should('exist');
+    getByTestId('dialog-submit').click();
+    getByTestId('import-preview-table').should('not.exist');
+    assertParticipantListLength(4);
+
+    // --- Second import: update existing participants via e2e-update.xlsx ---
+    getByTestId('excel-actions-btn').click();
+    getByTestId('excel-import-menu-item').click();
+    getByTestId('import-file-input').selectFile('cypress/fixtures/import/e2e-update.xlsx', { force: true });
+    getByTestId('import-preview-table').should('exist');
+
+    // All 3 rows match existing participants → button must be disabled, update checkbox must appear
+    getByTestId('dialog-submit').should('be.disabled');
+    getByTestId('import-update-existing-checkbox').should('exist');
+
+    // Enable update mode — button should now show 3 participants
+    getByTestId('import-update-existing-checkbox').click();
+    getByTestId('dialog-submit').should('contain', '3 Teilnehmer importieren');
+    getByTestId('dialog-submit').click();
+
+    // Wait for the importing progress bar to appear (import started) and then disappear
+    // (all PUT requests have completed and setStep('done') was called).
+    getByTestId('import-progress-bar').should('exist');
+    getByTestId('import-progress-bar').should('not.exist');
+
+    // Dialog closes; participant count stays at 4 (Fix Fox must not be affected)
+    getByTestId('import-preview-table').should('not.exist');
+    assertParticipantListLength(4);
+
+    // --- Verify updated data via API ---
+    cy.request(`/rest/participantservice/v1/runningdinner/${adminId}/participants`).then((response) => {
+      const { participants } = response.body;
+      expect(participants).to.have.length(4);
+
+      // Anna: firstname and numSeats updated
+      const anna = participants.find((p) => p.email === 'anna.müller0@example.com');
+      expect(anna, 'Anna should still exist').to.exist;
+      expect(anna.firstnamePart).to.eq('AnnaUpdate');
+      expect(anna.numSeats).to.eq(2);
+
+      // Ben: firstname updated
+      const ben = participants.find((p) => p.email === 'ben.schmidt1@example.com');
+      expect(ben, 'Ben should still exist').to.exist;
+      expect(ben.firstnamePart).to.eq('BenUpdate');
+
+      // Clara: numSeats updated
+      const clara = participants.find((p) => p.email === 'clara.schneider2@example.com');
+      expect(clara, 'Clara should still exist').to.exist;
+      expect(clara.numSeats).to.eq(11);
+
+      // Fix Fox: untouched — still the child partner of Clara
+      const fixFox = participants.find((p) => p.email === 'fix@fox.de');
+      expect(fixFox, 'Fix Fox should be untouched').to.exist;
+      expect(fixFox.teamPartnerWishRegistrationChild).to.be.true;
+      expect(fixFox.teamPartnerWishOriginatorId).to.eq(clara.teamPartnerWishOriginatorId);
+    });
+  });
 });
