@@ -171,7 +171,12 @@ function isShowFeedbackButton() {
     return false;
   }
 
-  return pathName.indexOf('/admin/') >= 0 || pathName.indexOf(LANDING_CREATE_RUNNING_DINNER_PATH) >= 0 || pathName.indexOf(RUNNING_DINNER_EVENTS_PATH) >= 0 || pathName.indexOf(MY_EVENTS_PATH) >= 0;
+  return (
+    pathName.indexOf('/admin/') >= 0 ||
+    pathName.indexOf(LANDING_CREATE_RUNNING_DINNER_PATH) >= 0 ||
+    pathName.indexOf(RUNNING_DINNER_EVENTS_PATH) >= 0 ||
+    pathName.indexOf(MY_EVENTS_PATH) >= 0
+  );
 }
 
 interface MobileNavigationProps extends MainNavigationProps {
