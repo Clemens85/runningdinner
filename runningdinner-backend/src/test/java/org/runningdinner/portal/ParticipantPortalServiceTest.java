@@ -254,7 +254,11 @@ class ParticipantPortalServiceTest {
         registrationSummary.getParticipant().getId(),
         portalToken);
 
-    assertThat(result).isNull();
+    assertThat(result).isNotNull();
+    assertThat(result.getParticipantName()).isEqualTo("Test User");
+    assertThat(result.getParticipantEmail()).isEqualTo(PARTICIPANT_EMAIL);
+    assertThat(result.getTeamSelfServiceInfo()).isNull();
+    assertThat(result.getDinnerRouteUrl()).isNull();
   }
 
   @Test
