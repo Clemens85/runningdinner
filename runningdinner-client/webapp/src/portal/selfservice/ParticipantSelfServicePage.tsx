@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Grid, Stack, Typography } from '@mui/material';
 import {
   formatLocalDate,
   isStringEmpty,
@@ -98,7 +98,14 @@ export function ParticipantSelfServicePage() {
     return <FetchProgressBar isPending={isLoadingEvent} error={undefined} />;
   }
   if (!event || isStringEmpty(portalToken)) {
-    return null;
+    return (
+      <Alert severity="error" variant="outlined">
+        <Typography variant="subtitle2" gutterBottom>
+          {t('participant_event_not_found_title')}
+        </Typography>
+        <Typography variant="body2">{t('participant_event_not_found_description')}</Typography>
+      </Alert>
+    );
   }
 
   const credential: PortalCredential = {

@@ -45,6 +45,11 @@ const PortalMessages_de: any = {
   // Participant event card action
   view_participation: 'Meine Teilnahme',
 
+  // ParticipantSelfServicePage — error state
+  participant_event_not_found_title: 'Event nicht verfügbar',
+  participant_event_not_found_description:
+    'Dieses Event konnte nicht geöffnet werden. Das kann passieren, wenn dein Team abgesagt wurde oder der Link nicht mehr gültig ist. Bitte wende dich an den Veranstalter, falls du denkst, dass dies ein Fehler ist.',
+
   // ParticipantSelfServicePage — general
   participant_event_back: 'Zurück zu Meine Events',
   participant_event_registered_as: 'Angemeldet als {{name}} mit Email {{email}}',
