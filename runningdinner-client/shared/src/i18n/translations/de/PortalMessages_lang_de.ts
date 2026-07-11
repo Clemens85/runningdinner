@@ -47,6 +47,7 @@ const PortalMessages_de: any = {
 
   // ParticipantSelfServicePage — general
   participant_event_back: 'Zurück zu Meine Events',
+  participant_event_registered_as: 'Angemeldet als {{name}} mit Email {{email}}',
 
   // ParticipantSelfServicePage — My Team section
   participant_event_section_team: 'Mein Team',

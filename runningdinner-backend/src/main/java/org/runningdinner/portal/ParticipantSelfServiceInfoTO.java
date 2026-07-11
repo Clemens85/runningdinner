@@ -21,6 +21,12 @@ public class ParticipantSelfServiceInfoTO {
    */
   private String dinnerRouteUrl;
 
+  /** Full name of the participant as registered (first name first). */
+  private String participantName;
+
+  /** Email address the participant registered with. */
+  private String participantEmail;
+
   public ParticipantSelfServiceInfoTO() {
   }
 
@@ -48,5 +54,21 @@ public class ParticipantSelfServiceInfoTO {
 
   public void setDinnerRouteUrl(String dinnerRouteUrl) {
     this.dinnerRouteUrl = dinnerRouteUrl;
+  }
+
+  public String getParticipantName() {
+    return participantName;
+  }
+
+  public void setParticipantName(String participantName) {
+    this.participantName = participantName;
+  }
+
+  public String getParticipantEmail() {
+    return participantEmail;
+  }
+
+  public void setParticipantEmail(String participantEmail) {
+    this.participantEmail = participantEmail;
   }
 }

@@ -337,16 +337,20 @@ public class ParticipantPortalService implements PortalTokenProvider {
         "Portal token email does not match participant email for participantId=" + participantId);
 
     Optional<Team> teamOpt = teamService.findTeamByParticipantId(runningDinner.getAdminId(), participantId);
+
+    ParticipantSelfServiceInfoTO infoTO;
     if (teamOpt.isEmpty()) {
-      return null;
+      infoTO = new ParticipantSelfServiceInfoTO(null, null);
+    } else {
+      Team team = teamOpt.get();
+      String dinnerRouteUrl = resolveDinnerRouteUrl(runningDinner, team, selfAdminId, participantId);
+      boolean dinnerRouteMailsSent = StringUtils.isNotBlank(dinnerRouteUrl);
+      TeamSelfServiceInfo teamSelfServiceInfo = resolveTeamSelfServiceInfo(runningDinner, team, selfAdminId, participantId, dinnerRouteMailsSent);
+      infoTO = new ParticipantSelfServiceInfoTO(teamSelfServiceInfo, dinnerRouteUrl);
     }
-    Team team = teamOpt.get();
-
-    String dinnerRouteUrl = resolveDinnerRouteUrl(runningDinner, team, selfAdminId, participantId);
-    boolean dinnerRouteMailsSent = StringUtils.isNotBlank(dinnerRouteUrl);
-    TeamSelfServiceInfo teamSelfServiceInfo = resolveTeamSelfServiceInfo(runningDinner, team, selfAdminId, participantId, dinnerRouteMailsSent);
-
-    return new ParticipantSelfServiceInfoTO(teamSelfServiceInfo, dinnerRouteUrl);
+    infoTO.setParticipantName(participant.getName().getFullnameFirstnameFirst());
+    infoTO.setParticipantEmail(StringUtils.trimToNull(participant.getEmail()));
+    return infoTO;
   }
 
   /**

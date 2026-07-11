@@ -1,10 +1,11 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Box, Button, Card, CardActions, CardContent, Chip, Divider, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardActionArea, CardActions, CardContent, Chip, Divider, Grid, Typography } from '@mui/material';
 import { formatLocalDate, isStringEmpty, PortalEventEntry } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useEventCardClickHandler } from './useEventCardClickHandler';
 
 interface MyEventsEntryListProps {
   events: PortalEventEntry[];
@@ -97,43 +98,49 @@ function MyParticipationButton({ event }: MyParticipationButtonProps) {
 }
 
 export function MyEventsEntryList({ events }: MyEventsEntryListProps) {
+  const getCardClickHandler = useEventCardClickHandler();
+
   return (
     <Grid container spacing={2}>
-      {events.map((event, index) => (
-        <Grid key={index} size={{ xs: 12 }}>
-          <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'flex-start' }, gap: { sm: 1 } }}>
-                <Typography variant="h6" sx={{ lineHeight: 1.3, flex: { sm: 1 }, minWidth: 0 }}>
-                  {event.eventName}
-                </Typography>
-                <Box sx={{ mt: { xs: 0.75, sm: 0 }, flexShrink: 0 }}>
-                  <EventRoleChip {...event} />
-                </Box>
-              </Box>
-              <EventInfo {...event} />
-            </CardContent>
+      {events.map((event, index) => {
+        const handleCardClick = getCardClickHandler(event);
+        return (
+          <Grid key={index} size={{ xs: 12 }}>
+            <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardActionArea onClick={handleCardClick} disabled={!handleCardClick} sx={{ flexGrow: 1 }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'flex-start' }, gap: { sm: 1 } }}>
+                    <Typography variant="h6" sx={{ lineHeight: 1.3, flex: { sm: 1 }, minWidth: 0 }}>
+                      {event.eventName}
+                    </Typography>
+                    <Box sx={{ mt: { xs: 0.75, sm: 0 }, flexShrink: 0 }}>
+                      <EventRoleChip {...event} />
+                    </Box>
+                  </Box>
+                  <EventInfo {...event} />
+                </CardContent>
+              </CardActionArea>
 
-            <Divider />
+              <Divider />
 
-            <CardActions
-              sx={{
-                px: 2,
-                py: 1.5,
-                gap: 1,
-                flexWrap: 'wrap',
-                flexDirection: { xs: 'column', sm: 'row' },
-                alignItems: 'stretch',
-                // '& > :not(:first-of-type)': { marginLeft: '0 !important' },
-              }}
-            >
-              <MyParticipationButton event={event} />
-              <OpenPublicEventPageButton {...event} />
-              <ManageEventButton {...event} />
-            </CardActions>
-          </Card>
-        </Grid>
-      ))}
+              <CardActions
+                sx={{
+                  px: 2,
+                  py: 1.5,
+                  gap: 1,
+                  flexWrap: 'wrap',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  alignItems: 'stretch',
+                }}
+              >
+                <MyParticipationButton event={event} />
+                <OpenPublicEventPageButton {...event} />
+                <ManageEventButton {...event} />
+              </CardActions>
+            </Card>
+          </Grid>
+        );
+      })}
     </Grid>
   );
 }

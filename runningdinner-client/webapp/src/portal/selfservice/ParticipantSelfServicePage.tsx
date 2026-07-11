@@ -5,6 +5,7 @@ import {
   isStringNotEmpty,
   PortalCredential,
   PortalEventEntry,
+  PortalParticipantInfo,
   useParticipantMessages,
   useParticipantSelfServiceInfo,
   usePortalEventEntry,
@@ -24,6 +25,21 @@ type ParticipantSelfServiceViewProps = {
   credential: PortalCredential;
 };
 
+type ParticipantInfoViewProps = {
+  participantInfo: PortalParticipantInfo | undefined;
+};
+function ParticipantRegistrationInfo({ participantInfo }: ParticipantInfoViewProps) {
+  const { t } = useTranslation('portal');
+  if (isStringNotEmpty(participantInfo?.participantName) && isStringNotEmpty(participantInfo?.participantEmail)) {
+    return (
+      <Typography variant="caption" color="text.disabled" sx={{ mt: 0.75, display: 'block' }}>
+        {t('participant_event_registered_as', { name: participantInfo!.participantName, email: participantInfo!.participantEmail })}
+      </Typography>
+    );
+  }
+  return null;
+}
+
 function ParticipantSelfServiceView({ event, credential }: ParticipantSelfServiceViewProps) {
   const { data: participantInfo, isLoading: isTeamInfoLoading } = useParticipantSelfServiceInfo(credential);
   const { data: messages, isLoading: isMessagesLoading } = useParticipantMessages(credential);
@@ -37,6 +53,7 @@ function ParticipantSelfServiceView({ event, credential }: ParticipantSelfServic
           {event.city}
           {isStringNotEmpty(eventDateFormatted) ? ` · ${eventDateFormatted}` : ''}
         </Typography>
+        <ParticipantRegistrationInfo participantInfo={participantInfo} />
       </Box>
 
       <Grid container spacing={2}>

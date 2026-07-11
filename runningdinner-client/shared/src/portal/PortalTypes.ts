@@ -78,6 +78,10 @@ export interface PortalParticipantInfo {
    * Non-null only when dinner route mails have been sent AND the participant is assigned to a team.
    */
   dinnerRouteUrl: string | null;
+  /** Full name of the participant as registered (first name first). */
+  participantName: string | null;
+  /** Email address the participant registered with. */
+  participantEmail: string | null;
 }
 
 export interface PortalEventEntry {
