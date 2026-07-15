@@ -20,7 +20,6 @@ import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
-import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerCalculator;
 import org.runningdinner.core.RunningDinnerConfig;
@@ -28,6 +27,7 @@ import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.event.MealsSwappedEvent;
 import org.runningdinner.event.publisher.EventPublisher;
+import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
@@ -177,8 +177,11 @@ public class TeamService {
    * even before route mails have been sent.
    */
   public Optional<MealSpecifics> findAggregatedGuestMealSpecificsForTeam(@ValidateAdminId String adminId, UUID teamId) {
-
     Team teamWithPlan = teamRepository.findWithVisitationPlanByIdAndAdminId(teamId, adminId);
+    if (teamWithPlan == null) {
+      LOGGER.error("Could not find team with id {} for running dinner adminId {} when executing findAggregatedGuestMealSpecificsForTeam", teamId, adminId);
+      return Optional.empty();
+    }
     List<MealSpecifics> guestSpecifics = teamWithPlan.getMealSpecificsOfGuestTeams();
     return messageFormatterHelperService.aggregateMealSpecifics(guestSpecifics);
   }
