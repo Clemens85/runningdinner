@@ -12,6 +12,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.core.util.LogSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -86,14 +87,14 @@ public class AccessRecoveryRateLimitFilter implements Filter {
       bucket = bucketsByIp.get(clientIp, this::buildBucket);
     } catch (ExecutionException e) {
       // buildBucket never throws — this cannot happen in practice
-      LOGGER.error("Failed to initialise rate-limit bucket for IP {}", clientIp, e);
+      LOGGER.error("Failed to initialise rate-limit bucket for IP {}", LogSanitizer.sanitize(clientIp), e);
       throw new ServletException("Failed to initialise rate-limit bucket", e);
     }
 
     if (bucket.tryConsume(1)) {
       chain.doFilter(servletRequest, servletResponse);
     } else {
-      LOGGER.warn("Rate limit exceeded for access-recovery request from IP {}", clientIp);
+      LOGGER.warn("Rate limit exceeded for access-recovery request from IP {}", LogSanitizer.sanitize(clientIp));
       HttpServletResponse response = (HttpServletResponse) servletResponse;
       response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -121,7 +122,7 @@ public class AccessRecoveryRateLimitFilter implements Filter {
       if (colonIdx > 0) {
         clientIpFromCloudFront = cfViewerAddress.substring(0, colonIdx);
       }
-      LOGGER.info("Resolved client IP from CloudFront {}", clientIpFromCloudFront);
+      LOGGER.info("Resolved client IP from CloudFront {}", LogSanitizer.sanitize(clientIpFromCloudFront));
       return clientIpFromCloudFront;
     }
 
@@ -130,12 +131,12 @@ public class AccessRecoveryRateLimitFilter implements Filter {
     if (StringUtils.isNotBlank(xff)) {
       int commaIdx = xff.indexOf(',');
       String clientIpFromXff = (commaIdx > 0 ? xff.substring(0, commaIdx) : xff).strip();
-      LOGGER.info("Resolved client IP from X-Forwarded-For {}", clientIpFromXff);
+      LOGGER.info("Resolved client IP from X-Forwarded-For {}", LogSanitizer.sanitize(clientIpFromXff));
       return clientIpFromXff;
     }
 
     String clientIp = request.getRemoteAddr();
-    LOGGER.info("Resolved client IP from remote address as fallback {}", clientIp);
+    LOGGER.info("Resolved client IP from remote address as fallback {}", LogSanitizer.sanitize(clientIp));
     return clientIp;
   }
 

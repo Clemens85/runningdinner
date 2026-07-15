@@ -190,7 +190,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
 
     // Only proceed if this email is actually associated with events
     if (!hasAnyEventsForEmail(normalizedEmail)) {
-      LOGGER.warn("No events found for email {}, skipping recovery email", normalizedEmail);
+      LOGGER.warn("No events found for email {}, skipping recovery email", LogSanitizer.sanitize(normalizedEmail));
       return;
     }
 
@@ -208,7 +208,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
       var messageTask = mailService.newVirtualMessageTask(normalizedEmail, message);
       mailService.sendMessage(messageTask);
     } catch (Exception e) {
-      LOGGER.error("Failed to send recovery email to {}", normalizedEmail, e);
+      LOGGER.error("Failed to send recovery email to {}", LogSanitizer.sanitize(normalizedEmail), e);
     }
 
   }
@@ -238,7 +238,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
         PortalCredentialTO cred = PortalCredentialTO.forParticipant(portalToken, dinner.getSelfAdministrationId(), participant.getId());
         result.computeIfAbsent(dinner.getAdminId(), k -> new ArrayList<>()).add(newParticipantEventEntry(cred, dinner));
       } catch (Exception e) {
-        LOGGER.warn("Could not resolve RunningDinner for participant {}: {}", participant.getId(), e.getMessage());
+        LOGGER.warn("Could not resolve RunningDinner for participant {}", participant.getId(), e);
       }
     }
 
