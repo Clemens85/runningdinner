@@ -1,5 +1,6 @@
 package org.runningdinner.portal;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.runningdinner.admin.RunningDinnerService;
@@ -140,17 +141,21 @@ public class ParticipantPortalService implements PortalTokenProvider {
   }
 
 	private PortalEventEntryTO mergePortalEventEntries(List<PortalEventEntryTO> portalEventEntries) {
-    String publicUrl = portalEventEntries.stream()
+    String publicUrl = portalEventEntries
+        .stream()
         .map(PortalEventEntryTO::getPublicUrl)
         .filter(StringUtils::isNotBlank)
         .findFirst()
         .orElse(null);
-    List<PortalRole> roles = portalEventEntries.stream()
-        .flatMap(e -> e.getRoles().stream())
+    List<PortalRole> roles = portalEventEntries
+        .stream()
+        .flatMap(e -> ListUtils.emptyIfNull(e.getRoles()).stream())
         .distinct()
         .collect(Collectors.toList());
 
-    Map<PortalRole, PortalCredentialTO> credentials = portalEventEntries.stream()
+    Map<PortalRole, PortalCredentialTO> credentials = portalEventEntries
+        .stream()
+        .filter(e -> e.getCredentials() != null)
         .flatMap(e -> e.getCredentials().entrySet().stream())
         .collect(Collectors.toMap(
             Map.Entry::getKey,
