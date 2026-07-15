@@ -12,6 +12,9 @@ import { FetchProgressBar } from '../../common/FetchProgressBar.tsx';
 import { TextViewHtml } from '../../common/TextViewHtml.tsx';
 
 function getMessageSnippet(htmlContent: string): string {
+  if (!htmlContent) {
+    return '';
+  }
   return htmlContent
     .replace(/<[^>]*>/g, ' ')
     .replace(/\s+/g, ' ')
