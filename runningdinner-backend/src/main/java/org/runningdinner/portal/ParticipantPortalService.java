@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
@@ -206,16 +208,27 @@ public class ParticipantPortalService implements PortalTokenProvider {
           return portalTokenRepository.save(new PortalToken(normalizedEmail, newToken));
         });
 
-    // Send recovery email
-    try {
-      String recoveryUrl = urlGenerator.constructPortalTokenUrl(token.getToken());
-      var message = recoveryMessageFormatter.formatRecoveryMessage(normalizedEmail, recoveryUrl);
-      var messageTask = mailService.newVirtualMessageTask(normalizedEmail, message);
-      mailService.sendMessage(messageTask);
-    } catch (Exception e) {
-      LOGGER.error("Failed to send recovery email to {}", LogSanitizer.sanitize(normalizedEmail), e);
-    }
+    // Send recovery email after the token has been committed to DB
+    String recoveryUrl = urlGenerator.constructPortalTokenUrl(token.getToken());
+    sendRecoveryEmailAfterCommit(normalizedEmail, recoveryUrl);
+  }
 
+  private void sendRecoveryEmailAfterCommit(String email, String recoveryUrl) {
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+      @Override
+      public void afterCompletion(int status) {
+        if (status != TransactionSynchronization.STATUS_COMMITTED) {
+          return;
+        }
+        try {
+          var message = recoveryMessageFormatter.formatRecoveryMessage(email, recoveryUrl);
+          var messageTask = mailService.newVirtualMessageTask(email, message);
+          mailService.sendMessage(messageTask);
+        } catch (Exception e) {
+          LOGGER.error("Failed to send recovery email to {}", LogSanitizer.sanitize(email), e);
+        }
+      }
+    });
   }
 
   // ─── Internal helpers ────────────────────────────────────────────────────
