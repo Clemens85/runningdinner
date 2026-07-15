@@ -17,7 +17,7 @@ import java.util.Locale;
 @Component
 public class ParticipantPortalAccessRecoveryMessageFormatter {
 
-  private static final String PORTAL_LINK_PLACEHOLDER = "\\{portalLink\\}";
+  private static final String PORTAL_LINK_PLACEHOLDER = "{portalLink}";
 
   private final MessageSource messageSource;
 
@@ -45,7 +45,7 @@ public class ParticipantPortalAccessRecoveryMessageFormatter {
     Assert.hasText(subject, "Portal recovery email subject must not be empty");
     Assert.hasText(content, "Portal recovery email template must not be empty");
 
-    content = content.replaceAll(PORTAL_LINK_PLACEHOLDER, portalLink);
+    content = content.replace(PORTAL_LINK_PLACEHOLDER, portalLink);
 
     return new Message(subject, content, recipientEmail);
   }
