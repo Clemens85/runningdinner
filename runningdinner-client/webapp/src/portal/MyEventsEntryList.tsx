@@ -5,6 +5,7 @@ import { Box, Button, Card, CardActionArea, CardActions, CardContent, Chip, Divi
 import { formatLocalDate, isStringEmpty, PortalEventEntry } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
 import { useEventCardClickHandler } from './useEventCardClickHandler';
 
 interface MyEventsEntryListProps {
@@ -91,6 +92,7 @@ function MyParticipationButton({ event }: MyParticipationButtonProps) {
       startIcon={<PersonIcon fontSize="inherit" />}
       onClick={() => navigate(`event/${selfAdminId}/${participantId}`, { state: { event } })}
       sx={{ width: { xs: '100%', sm: 'auto' } }}
+      data-testid="portal-view-participation-btn"
     >
       {t('view_participation')}
     </Button>
@@ -106,11 +108,11 @@ export function MyEventsEntryList({ events }: MyEventsEntryListProps) {
         const handleCardClick = getCardClickHandler(event);
         return (
           <Grid key={index} size={{ xs: 12 }}>
-            <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Card data-testid="portal-event-card" variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardActionArea onClick={handleCardClick} disabled={!handleCardClick} sx={{ flexGrow: 1 }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'flex-start' }, gap: { sm: 1 } }}>
-                    <Typography variant="h6" sx={{ lineHeight: 1.3, flex: { sm: 1 }, minWidth: 0 }}>
+                    <Typography data-testid="portal-event-name" variant="h6" sx={{ lineHeight: 1.3, flex: { sm: 1 }, minWidth: 0 }}>
                       {event.eventName}
                     </Typography>
                     <Box sx={{ mt: { xs: 0.75, sm: 0 }, flexShrink: 0 }}>
