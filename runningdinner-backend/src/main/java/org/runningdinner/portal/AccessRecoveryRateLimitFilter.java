@@ -1,5 +1,7 @@
 package org.runningdinner.portal;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.Filter;
@@ -17,13 +19,18 @@ import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Servlet filter that rate-limits the access-recovery endpoint (POST /rest/participant-portal/v1/access-recovery)
  * on a per-client-IP basis using the Bucket4j token-bucket algorithm.
  *
- * <p>Default limit: {@value #DEFAULT_CAPACITY} requests per {@value #REFILL_PERIOD_MINUTES} minutes per IP.</p>
+ *
+ * <h3>Memory safety</h3>
+ * Buckets are stored in a Guava {@link Cache} bounded by {@value #MAX_CACHE_SIZE} entries and
+ * evicted after refillPeriodMinutes minutes of inactivity, preventing unbounded memory
+ * growth under IP-spoofing or distributed-attack scenarios.
  *
  * <h3>IP detection behind AWS CloudFront</h3>
  * CloudFront forwards the real viewer IP in the {@code CloudFront-Viewer-Address} header
@@ -36,11 +43,11 @@ public class AccessRecoveryRateLimitFilter implements Filter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AccessRecoveryRateLimitFilter.class);
 
-  /** Maximum number of requests allowed in the refill window. */
-  static final int DEFAULT_CAPACITY = 5;
-
-  /** Refill window in minutes — all {@value #DEFAULT_CAPACITY} tokens are restored after this duration. */
-  static final int REFILL_PERIOD_MINUTES = 60;
+  /**
+   * Maximum number of distinct IPs tracked simultaneously.
+   * Oldest / least-recently-used entries are evicted once this limit is reached.
+   */
+  private static final long MAX_CACHE_SIZE = 4_000;
 
   /**
    * Header set by CloudFront containing the real viewer address in {@code <ip>:<port>} format.
@@ -50,7 +57,7 @@ public class AccessRecoveryRateLimitFilter implements Filter {
 
   private static final String X_FORWARDED_FOR_HEADER = "X-Forwarded-For";
 
-  private final ConcurrentHashMap<String, Bucket> bucketsByIp = new ConcurrentHashMap<>();
+  private final Cache<String, Bucket> bucketsByIp;
 
   private final int capacity;
   private final int refillPeriodMinutes;
@@ -58,6 +65,10 @@ public class AccessRecoveryRateLimitFilter implements Filter {
   public AccessRecoveryRateLimitFilter(int capacity, int refillPeriodMinutes) {
     this.capacity = capacity;
     this.refillPeriodMinutes = refillPeriodMinutes;
+    this.bucketsByIp = CacheBuilder.newBuilder()
+        .maximumSize(MAX_CACHE_SIZE)
+        .expireAfterAccess(refillPeriodMinutes, TimeUnit.MINUTES)
+        .build();
   }
 
   @Override
@@ -70,7 +81,14 @@ public class AccessRecoveryRateLimitFilter implements Filter {
     }
 
     String clientIp = resolveClientIp(request);
-    Bucket bucket = bucketsByIp.computeIfAbsent(clientIp, ip -> buildBucket());
+    Bucket bucket;
+    try {
+      bucket = bucketsByIp.get(clientIp, this::buildBucket);
+    } catch (ExecutionException e) {
+      // buildBucket never throws — this cannot happen in practice
+      LOGGER.error("Failed to initialise rate-limit bucket for IP {}", clientIp, e);
+      throw new ServletException("Failed to initialise rate-limit bucket", e);
+    }
 
     if (bucket.tryConsume(1)) {
       chain.doFilter(servletRequest, servletResponse);
