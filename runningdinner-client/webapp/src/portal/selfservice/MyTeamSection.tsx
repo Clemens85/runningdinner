@@ -14,7 +14,7 @@ type MealSpecificsChipsProps = {
 };
 
 function VeganChip({ enabled }: MealSpecificsChipsProps) {
-  const { t } = useTranslation('portal');
+  const { t } = useTranslation('common');
   if (!enabled) {
     return null;
   }
@@ -22,7 +22,7 @@ function VeganChip({ enabled }: MealSpecificsChipsProps) {
 }
 
 function VegetarianChip({ enabled }: MealSpecificsChipsProps) {
-  const { t } = useTranslation('portal');
+  const { t } = useTranslation('common');
   if (!enabled) {
     return null;
   }
@@ -30,7 +30,7 @@ function VegetarianChip({ enabled }: MealSpecificsChipsProps) {
 }
 
 function LactoseChip({ enabled }: MealSpecificsChipsProps) {
-  const { t } = useTranslation('portal');
+  const { t } = useTranslation('common');
   if (!enabled) {
     return null;
   }
@@ -38,7 +38,7 @@ function LactoseChip({ enabled }: MealSpecificsChipsProps) {
 }
 
 function GlutenChip({ enabled }: MealSpecificsChipsProps) {
-  const { t } = useTranslation('portal');
+  const { t } = useTranslation('common');
   if (!enabled) {
     return null;
   }
