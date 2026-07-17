@@ -128,6 +128,11 @@ const LandingMessages_en: any = {
 
   for_participants_headline: 'For Participants',
 
+  participant_portal_headline: 'Participant Portal',
+  participant_portal_description:
+    'The new participant portal gives you an overview of all your running dinner events at a glance – no login required. ' +
+    'Just follow your personal access link (from your registration confirmation email) to open the portal and see all events you are registered for.',
+
   discover_public_events_headline: 'Discover public events',
   discover_public_events_description:
     'Find public events close to you and registrate straightforward! ' +

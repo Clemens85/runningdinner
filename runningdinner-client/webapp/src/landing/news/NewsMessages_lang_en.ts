@@ -1,4 +1,11 @@
 const NewsMessages_en: any = {
+  news_title_20260717: 'New Participant Portal',
+  news_content_20260717:
+    'A new participant portal with helpful features is now available! ' +
+    'After a long focus on organizers, participants are now finally taking center stage: ' +
+    'The portal gives participants a personal overview of all their registered events – no login required, just a personal access link. ' +
+    'This marks the beginning of a dedicated effort to continuously improve the participant experience on this platform.',
+
   news_title_20260708: 'Excel Import',
   news_content_20260708:
     'It is now possible to add participants via Excel import. ' + 'This allows participant lists to be imported into a Running Dinner event easily and quickly.',

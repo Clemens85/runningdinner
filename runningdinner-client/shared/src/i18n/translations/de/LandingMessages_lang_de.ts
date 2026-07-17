@@ -129,6 +129,11 @@ const LandingMessages_de: any = {
 
   for_participants_headline: 'Für Teilnehmer',
 
+  participant_portal_headline: 'Teilnehmer-Portal',
+  participant_portal_description:
+    'Mit dem neuen Teilnehmer-Portal hast du alle deine Running Dinner Events auf einen Blick – ganz ohne separaten Login. ' +
+    'Über deinen persönlichen Zugangslink (aus der Anmelde-Bestätigungs-E-Mail) gelangst du direkt ins Portal und siehst alle Events, für die du angemeldet bist.',
+
   discover_public_events_headline: 'Entdecke öffentliche Events',
   discover_public_events_description:
     'Finde öffentliche Running Dinner Events in deiner Nähe und melde dich unkompliziert hierfür an!\n' +

@@ -19,6 +19,7 @@ import Paragraph from '../common/theme/typography/Paragraph';
 import { PageTitle, Span } from '../common/theme/typography/Tags';
 import dashboardImg from './images/dashboard.png';
 import dinnerRouteImg from './images/dinner-route.png';
+import participantPortalImg from './images/participant-portal-placeholder.svg';
 import participantsImg from './images/participants.png';
 import registrationImg from './images/registration.png';
 import selfServiceImg from './images/selfservice-team-host.png';
@@ -193,6 +194,20 @@ export function LandingStart() {
               md: 6
             }}>
             <PageTitle>{t('for_participants_headline')}</PageTitle>
+
+            <Box mb={mbTeaser}>
+              <TeaserCard titleI18nKey={'landing:participant_portal_headline'}>
+                <Span i18n={'landing:participant_portal_description'} />
+                <Grid container justifyContent="space-evenly" alignItems={imageAlignItems} sx={{ py: 2 }} spacing={imageSpacing} direction={imageRowDirection}>
+                  <Grid>
+                    <Zoom>
+                      {/* TODO: Replace participant-portal-placeholder.svg with a real screenshot */}
+                      <img src={participantPortalImg} alt="Participant Portal – My Events Overview" width={imageWidth * 2} loading="lazy" />
+                    </Zoom>
+                  </Grid>
+                </Grid>
+              </TeaserCard>
+            </Box>
 
             <Box mb={mbTeaser}>
               <TeaserCard titleI18nKey={'landing:discover_public_events_headline'}>
