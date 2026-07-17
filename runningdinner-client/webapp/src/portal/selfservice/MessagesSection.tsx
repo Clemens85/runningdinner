@@ -150,6 +150,7 @@ function MessageList({ messages, onSelect, locallyReadIds }: MessageListProps) {
           <Box key={idx}>
             {idx > 0 && <Divider component="li" />}
             <ListItemButton
+              data-testid="portal-message-item"
               onClick={() => {
                 (document.activeElement as HTMLElement)?.blur();
                 onSelect(msg);
@@ -215,7 +216,7 @@ export function MessagesSection({ messages, isLoading, credential }: MessagesSec
 
   return (
     <>
-      <Card variant="outlined">
+      <Card data-testid="portal-messages-section" variant="outlined">
         <CardContent>
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
             <EmailIcon color="primary" />
@@ -227,7 +228,7 @@ export function MessagesSection({ messages, isLoading, credential }: MessagesSec
           </Typography>
 
           {!hasMessages && (
-            <Alert severity="info" icon={false}>
+            <Alert data-testid="portal-messages-empty" severity="info" icon={false}>
               {t('participant_event_messages_empty')}
             </Alert>
           )}

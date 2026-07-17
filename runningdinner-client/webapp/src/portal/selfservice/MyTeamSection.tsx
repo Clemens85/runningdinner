@@ -135,6 +135,7 @@ function MealDetails({ mealTime, mealLabel }: TeamSelfServiceInfo) {
   return (
     <Box sx={{ mb: 1.5 }}>
       <Chip
+        data-testid="portal-meal-chip"
         label={
           <>
             <Time date={mealTime} /> — {mealLabel}
@@ -247,7 +248,7 @@ export function MyTeamSection({ participantInfo, isLoading }: MyTeamSectionProps
   }
 
   return (
-    <Card variant="outlined">
+    <Card data-testid="portal-team-section" variant="outlined">
       <CardContent>
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
           <GroupIcon color="primary" />
@@ -255,13 +256,13 @@ export function MyTeamSection({ participantInfo, isLoading }: MyTeamSectionProps
         </Stack>
 
         {!teamSelfServiceInfo && (
-          <Alert severity="info" icon={false}>
+          <Alert data-testid="portal-team-pending" severity="info" icon={false}>
             {t('participant_event_team_pending')}
           </Alert>
         )}
 
         {teamSelfServiceInfo && (
-          <>
+          <div data-testid="portal-team-details">
             <TeamDetails info={teamSelfServiceInfo} />
             {/* Hide "Manage hosting" for fixed partners — they share a home, no host decision needed */}
             {!teamSelfServiceInfo.fixedTeamPartner && !teamSelfServiceInfo.teamPartnerCancelled && (
@@ -276,7 +277,7 @@ export function MyTeamSection({ participantInfo, isLoading }: MyTeamSectionProps
                 {t('participant_event_manage_team_hosting')}
               </Button>
             )}
-          </>
+          </div>
         )}
       </CardContent>
     </Card>

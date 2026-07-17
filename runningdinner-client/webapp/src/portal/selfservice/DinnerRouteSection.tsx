@@ -20,7 +20,7 @@ export function DinnerRouteSection({ participantInfo, isLoading }: DinnerRouteSe
   const dinnerRouteUrl = participantInfo?.dinnerRouteUrl ?? null;
 
   return (
-    <Card variant="outlined">
+    <Card data-testid="portal-dinnerroute-section" variant="outlined">
       <CardContent>
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
           <DirectionsIcon color="primary" />
@@ -37,7 +37,7 @@ export function DinnerRouteSection({ participantInfo, isLoading }: DinnerRouteSe
             </Typography>
           </Stack>
         ) : (
-          <Alert severity="info" icon={false}>
+          <Alert data-testid="portal-dinnerroute-pending" severity="info" icon={false}>
             {t('participant_event_dinnerroute_pending')}
           </Alert>
         )}

@@ -61,7 +61,7 @@ function MyEventsView({ events }: MyEventsViewProps) {
 function FirstUsageInfo() {
   const { t } = useTranslation('portal');
   return (
-    <Box>
+    <Box data-testid="portal-first-usage-info">
       <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
         <Typography variant="subtitle1" fontWeight={600} gutterBottom>
           {t('my_events_empty')}
