@@ -30,14 +30,11 @@ public class ParticipantPortalAccessRecoveryMessageFormatter {
    *
    * @param recipientEmail the email address of the recipient (used as the reply-to address)
    * @param portalLink     the full portal recovery URL ({host}/my-events/{portalToken})
+   * @param locale         the locale to use for the email (derived from the user's browser language)
    * @return a {@link Message} ready to be sent via {@link org.runningdinner.mail.MailService}
    */
-  public Message formatRecoveryMessage(String recipientEmail, String portalLink) {
+  public Message formatRecoveryMessage(String recipientEmail, String portalLink, Locale locale) {
     Assert.hasText(portalLink, "portalLink must not be empty");
-
-    // Use a neutral/default locale (EN) for recovery emails since we do not know
-    // the user's locale at recovery time (no RunningDinner context available).
-    Locale locale = Locale.ENGLISH;
 
     String subject = messageSource.getMessage("message.subject.portal.access.recovery", null, locale);
     String content = messageSource.getMessage("message.template.portal.access.recovery", null, locale);

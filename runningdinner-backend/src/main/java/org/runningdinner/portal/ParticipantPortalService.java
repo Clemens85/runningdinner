@@ -10,6 +10,7 @@ import org.runningdinner.admin.message.job.MessageTask;
 import org.runningdinner.admin.message.job.MessageTaskRepository;
 import org.runningdinner.admin.message.job.MessageType;
 import org.runningdinner.common.service.IdGenerator;
+import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
@@ -32,6 +33,7 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
   private final ActivityService activityService;
   private final MessageTaskRepository messageTaskRepository;
   private final PortalMessageReadReceiptRepository readReceiptRepository;
+  private final LocalizationProviderService localizationProviderService;
 
   public ParticipantPortalService(PortalTokenRepository portalTokenRepository,
                                   ParticipantService participantService,
@@ -69,7 +72,8 @@ public class ParticipantPortalService implements PortalTokenProvider {
                                   TeamService teamService,
                                   ActivityService activityService,
                                   MessageTaskRepository messageTaskRepository,
-                                  PortalMessageReadReceiptRepository readReceiptRepository) {
+                                  PortalMessageReadReceiptRepository readReceiptRepository,
+                                  LocalizationProviderService localizationProviderService) {
     this.portalTokenRepository = portalTokenRepository;
     this.participantService = participantService;
     this.runningDinnerService = runningDinnerService;
@@ -81,6 +85,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
     this.activityService = activityService;
     this.messageTaskRepository = messageTaskRepository;
     this.readReceiptRepository = readReceiptRepository;
+    this.localizationProviderService = localizationProviderService;
   }
 
   // ─── PortalTokenProvider (used by email formatters) ────────────────────────
@@ -208,12 +213,15 @@ public class ParticipantPortalService implements PortalTokenProvider {
           return portalTokenRepository.save(new PortalToken(normalizedEmail, newToken));
         });
 
+    // Capture the user's locale now while the HTTP request context is still active
+    Locale userLocale = localizationProviderService.getUserLocale();
+
     // Send recovery email after the token has been committed to DB
     String recoveryUrl = urlGenerator.constructPortalTokenUrl(token.getToken());
-    sendRecoveryEmailAfterCommit(normalizedEmail, recoveryUrl);
+    sendRecoveryEmailAfterCommit(normalizedEmail, recoveryUrl, userLocale);
   }
 
-  private void sendRecoveryEmailAfterCommit(String email, String recoveryUrl) {
+  private void sendRecoveryEmailAfterCommit(String email, String recoveryUrl, Locale locale) {
     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
       @Override
       public void afterCompletion(int status) {
@@ -221,7 +229,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
           return;
         }
         try {
-          var message = recoveryMessageFormatter.formatRecoveryMessage(email, recoveryUrl);
+          var message = recoveryMessageFormatter.formatRecoveryMessage(email, recoveryUrl, locale);
           var messageTask = mailService.newVirtualMessageTask(email, message);
           mailService.sendMessage(messageTask);
         } catch (Exception e) {
