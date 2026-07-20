@@ -18,6 +18,7 @@ import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.GeneratedTeamsResult;
 import org.runningdinner.core.IdentifierUtil;
 import org.runningdinner.core.MealClass;
+import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerCalculator;
@@ -26,6 +27,7 @@ import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.event.MealsSwappedEvent;
 import org.runningdinner.event.publisher.EventPublisher;
+import org.runningdinner.mail.formatter.MessageFormatterHelperService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishService;
 import org.runningdinner.participant.partnerwish.TeamPartnerWishTuple;
 import org.runningdinner.participant.rest.TeamArrangementListTO;
@@ -47,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -76,6 +79,9 @@ public class TeamService {
 
   @Autowired
   private RunningDinnerService runningDinnerService;
+
+  @Autowired
+  private MessageFormatterHelperService messageFormatterHelperService;
 
   private final RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
   
@@ -158,9 +164,26 @@ public class TeamService {
     return teamRepository.findWithTeamMembersAndMealClassDistinctByIdInAndAdminIdOrderByTeamNumber(teamIds, adminId);
   }
 
-  public List<Team> findTeamsWithMembersOrderedByTeamNumbers(@ValidateAdminId String adminId, Collection<Integer> teamNumbers) {
+  public Optional<Team> findTeamByParticipantId(@ValidateAdminId String adminId, UUID participantId) {
 
-    return teamRepository.findWithTeamMembersAndMealClassDistinctByTeamNumberInAndAdminIdOrderByTeamNumber(teamNumbers, adminId);
+    List<Team> teams = teamRepository.findTeamsByParticipantIds(Set.of(participantId), adminId);
+    return teams.stream().findFirst();
+  }
+
+  /**
+   * Returns the aggregated (union) dietary restrictions of all guest teams that will likely visit the given team.
+   * Returns empty when no guest teams are planned or no guests have dietary restrictions or notes.
+   * This uses the internal visitation plan and is available once dinner routes are constructed,
+   * even before route mails have been sent.
+   */
+  public Optional<MealSpecifics> findAggregatedGuestMealSpecificsForTeam(@ValidateAdminId String adminId, UUID teamId) {
+    Team teamWithPlan = teamRepository.findWithVisitationPlanByIdAndAdminId(teamId, adminId);
+    if (teamWithPlan == null) {
+      LOGGER.error("Could not find team with id {} for running dinner adminId {} when executing findAggregatedGuestMealSpecificsForTeam", teamId, adminId);
+      return Optional.empty();
+    }
+    List<MealSpecifics> guestSpecifics = teamWithPlan.getMealSpecificsOfGuestTeams();
+    return messageFormatterHelperService.aggregateMealSpecifics(guestSpecifics);
   }
 
   /**

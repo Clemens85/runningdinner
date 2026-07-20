@@ -31,6 +31,11 @@ const LandingMessages_de: any = {
     'Versuche es bitte später erneut. <br/>' +
     'Falls der Fehler immer noch auftritt wende dich bitte an <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
+  registration_activation_portal_title: 'Auf diesem Gerät auf dein Event zugreifen',
+  registration_activation_portal_hint:
+    'Deine Anmeldung wurde mit diesem Gerät verknüpft. Du kannst nun jederzeit deine Event-Details, ' + 'die Dinner-Route und Team-Infos über "Meine Events" abrufen.',
+  registration_activation_portal_link: 'Zu Meine Events',
+
   registration_not_possible: 'Anmeldung nicht möglich',
   registration_not_possible_zip_restriction:
     'Deine Adresse scheint leider zu weit entfernt für eine Teilnahme an <strong>{{title}}</strong> zu sein.<br/>' +
@@ -123,6 +128,11 @@ const LandingMessages_de: any = {
     'Viel Spaß!',
 
   for_participants_headline: 'Für Teilnehmer',
+
+  participant_portal_headline: 'Teilnehmer-Portal',
+  participant_portal_description:
+    'Mit dem neuen Teilnehmer-Portal hast du alle deine Running Dinner Events auf einen Blick – ganz ohne separaten Login. ' +
+    'Über deinen persönlichen Zugangslink (aus der Anmelde-Bestätigungs-E-Mail) gelangst du direkt ins Portal und siehst alle Events, für die du angemeldet bist.',
 
   discover_public_events_headline: 'Entdecke öffentliche Events',
   discover_public_events_description:
@@ -222,6 +232,7 @@ const LandingMessages_de: any = {
   participant_feature_self_registrate: 'Selbst-Registrierung bei nicht-geschlossenen Events',
   participant_feature_change_host: 'Teams können Gastgeber-Zuweisung selbst ändern',
   participant_feature_live_dinnerroute: 'Live Dinner-Routen-Sicht',
+  participant_feature_portal: 'Persönliches Teilnehmer-Portal mit Übersicht über alle angemeldeten Events',
 
   misc_feature_dashboard: 'Dashboard mit Aktivitäten-Verfolgung, Checkliste uvm.',
   misc_feature_new_participants: 'Überblick über neu registrierte Teilnehmer',

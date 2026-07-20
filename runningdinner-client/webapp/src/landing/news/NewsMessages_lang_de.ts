@@ -1,4 +1,11 @@
 const NewsMessages_de: any = {
+  news_title_20260717: 'Neues Teilnehmer-Portal',
+  news_content_20260717:
+    'Ab sofort steht ein neues Teilnehmer-Portal mit hilfreichen Funktionen bereit! ' +
+    'Endlich rücken auch die Teilnehmer stärker in den Fokus: Im Portal können Teilnehmer alle ihre angemeldeten Events auf einen Blick sehen – ' +
+    'ganz ohne separaten Login, über einen persönlichen Zugangslink. ' +
+    'Dies ist der erste Schritt zur kontinuierlichen Verbesserung des Erlebnisses für Teilnehmer auf dieser Plattform.',
+
   news_title_20260708: 'Excel Import',
   news_content_20260708:
     'Ab sofort ist es möglich, Teilnehmer per Excel-Import hinzuzufügen. ' + 'Damit können Teilnehmerlisten einfach und schnell in ein Running Dinner Event importiert werden.',

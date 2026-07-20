@@ -27,17 +27,18 @@ public class NewParticipantSubscribedFormatter {
   
   @Autowired
   private LocalizationProviderService localizationProviderService;
-  
+
   @Autowired
   private MessageFormatterHelperService messageFormatterHelperService;
-  
-  public RunningDinnerRelatedMessage formatNewParticipantSubscribedMessage(final RunningDinner runningDinner, 
+
+  public RunningDinnerRelatedMessage formatNewParticipantSubscribedMessage(final RunningDinner runningDinner,
                                                                           final Participant participant,
                                                                           final Participant teamPartnerWishChild) {
     
     Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
-    
-    final String activationUrl = urlGenerator.constructParticipantActivationUrl(runningDinner.getPublicSettings().getPublicId(), participant.getId());
+
+    final String activationUrl = buildActivationUrl(runningDinner, participant);
+
     String subject = messageSource.getMessage("message.subject.participant.subscribed", null, locale);
     String message = messageSource.getMessage("message.template.participant.subscribed", null, locale);
     Assert.state(StringUtils.isNotEmpty(message), "Message template must not be empty!");
@@ -53,10 +54,19 @@ public class NewParticipantSubscribedFormatter {
     return new RunningDinnerRelatedMessage(subject, message, runningDinner);
   }
 
-  public RunningDinnerRelatedMessage formatNewParticipantSubscribedWithPaymentMessage(RunningDinner runningDinner, 
-                                                                                     Participant participant, 
-                                                                                     PaymentOptions paymentOptions,
-                                                                                     Participant teamPartnerWishChild) {
+  /**
+   * Builds the activation URL for the participant using the legacy standalone activation link,
+   * including the participant's email as a query parameter so the client can create a portal token on activation.
+   */
+  private String buildActivationUrl(RunningDinner runningDinner, Participant participant) {
+    return urlGenerator.constructParticipantActivationUrl(
+        runningDinner.getPublicSettings().getPublicId(), participant.getId(), participant.getEmail());
+  }
+
+  public RunningDinnerRelatedMessage formatNewParticipantSubscribedWithPaymentMessage(RunningDinner runningDinner,
+																																											Participant participant,
+																																											PaymentOptions paymentOptions,
+																																											Participant teamPartnerWishChild) {
   
     Locale locale = localizationProviderService.getLocaleOfDinner(runningDinner);
     
@@ -82,12 +92,12 @@ public class NewParticipantSubscribedFormatter {
     message = message.replaceAll(FormatterUtil.TEAM_PARTNER_IFNO, teamPartnerInfo);
     message = message.replaceAll(FormatterUtil.REGISTRATION_SUMMARY, buildRegistrationSummary(participant, teamPartnerWishChild, locale));
     message = message.replaceAll(FormatterUtil.ORGANIZER_CONTACT_HINT, buildOrganizerContactHint(runningDinner, locale));
-    
+
     return new RunningDinnerRelatedMessage(subject, message, runningDinner);
   }
 
   private String buildRegistrationSummary(Participant participant, Participant teamPartnerWishChild, Locale locale) {
-    
+
     String header = messageSource.getMessage("message.template.participant.subscribed.registration_summary.header", null, locale);
     String nameLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.name", null, locale);
     String emailLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.email", null, locale);
@@ -95,7 +105,7 @@ public class NewParticipantSubscribedFormatter {
     String numSeatsLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.numseats", null, locale);
     String mealSpecificsLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.mealspecifics", null, locale);
     String teamPartnerLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.teampartner", null, locale);
-    
+
     StringBuilder sb = new StringBuilder();
     sb.append(header).append(FormatterUtil.NEWLINE);
     sb.append(nameLabel).append(": ").append(participant.getName().getFullnameFirstnameFirst()).append(FormatterUtil.NEWLINE);
@@ -105,11 +115,11 @@ public class NewParticipantSubscribedFormatter {
 
     String mealSpecificsStr = formatMealSpecificsWithNote(participant.getMealSpecifics(), locale);
     sb.append(mealSpecificsLabel).append(": ").append(mealSpecificsStr).append(FormatterUtil.NEWLINE);
-    
+
     if (StringUtils.isNotBlank(participant.getTeamPartnerWishEmail())) {
       sb.append(teamPartnerLabel).append(": ").append(participant.getTeamPartnerWishEmail()).append(FormatterUtil.NEWLINE);
     }
-    
+
     if (teamPartnerWishChild != null) {
       String registeredTeamPartnerLabel = messageSource.getMessage("message.template.participant.subscribed.registration_summary.registered_teampartner", null, locale);
       sb.append(registeredTeamPartnerLabel).append(": ").append(teamPartnerWishChild.getName().getFullnameFirstnameFirst());
@@ -118,12 +128,12 @@ public class NewParticipantSubscribedFormatter {
       }
       sb.append(FormatterUtil.NEWLINE);
     }
-    
+
     return sb.toString();
   }
-  
+
   private String buildOrganizerContactHint(RunningDinner runningDinner, Locale locale) {
-    
+
     PublicSettings publicSettings = runningDinner.getPublicSettings();
     String hint = messageSource.getMessage("message.template.participant.subscribed.organizer_contact_hint", null, locale);
 
@@ -142,12 +152,12 @@ public class NewParticipantSubscribedFormatter {
       sb.append(", ").append(publicSettings.getPublicContactMobileNumber());
     }
     sb.append(FormatterUtil.TWO_NEWLINES);
-    
+
     return sb.toString();
   }
 
   private String formatMealSpecificsWithNote(MealSpecifics mealSpecifics, Locale locale) {
-    
+
     String noMealSpecifics = messageSource.getMessage("message.template.participant.subscribed.registration_summary.mealspecifics.none", null, locale);
     if (mealSpecifics == null) {
       return noMealSpecifics;

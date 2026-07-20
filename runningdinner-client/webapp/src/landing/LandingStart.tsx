@@ -19,7 +19,10 @@ import Paragraph from '../common/theme/typography/Paragraph';
 import { PageTitle, Span } from '../common/theme/typography/Tags';
 import dashboardImg from './images/dashboard.png';
 import dinnerRouteImg from './images/dinner-route.png';
+import myEventsImg from './images/my-events-1.png';
+import myEventsRecoveryImg from './images/my-events-recovery.png';
 import participantsImg from './images/participants.png';
+import participantPortalSelfServiceImg from './images/portal-self-service.png';
 import registrationImg from './images/registration.png';
 import selfServiceImg from './images/selfservice-team-host.png';
 import teamMailsImg from './images/team-mails.png';
@@ -67,8 +70,9 @@ export function LandingStart() {
           <Grid
             size={{
               xs: 12,
-              md: 6
-            }}>
+              md: 6,
+            }}
+          >
             <Box my={2} display="flex" alignItems={'center'}>
               <GroupIcon color="primary" sx={{ mr: 2 }} fontSize="large" />
               <Paragraph i18n="landing:teaser_workflow_team_generation" />
@@ -97,8 +101,9 @@ export function LandingStart() {
           <Grid
             size={{
               xs: 12,
-              md: 6
-            }}>
+              md: 6,
+            }}
+          >
             <Typography variant={'h4'} component="h4" gutterBottom>
               {t('common:example')}
             </Typography>
@@ -123,8 +128,9 @@ export function LandingStart() {
             ref={columnRef}
             size={{
               xs: 12,
-              md: 6
-            }}>
+              md: 6,
+            }}
+          >
             <PageTitle>{t('for_organizers_headline')}</PageTitle>
             <Box mb={mbTeaser}>
               <TeaserCard titleI18nKey={'landing:create_event_headline'}>
@@ -190,9 +196,33 @@ export function LandingStart() {
           <Grid
             size={{
               xs: 12,
-              md: 6
-            }}>
+              md: 6,
+            }}
+          >
             <PageTitle>{t('for_participants_headline')}</PageTitle>
+
+            <Box mb={mbTeaser}>
+              <TeaserCard titleI18nKey={'landing:participant_portal_headline'}>
+                <Span i18n={'landing:participant_portal_description'} />
+                <Grid container justifyContent="space-evenly" alignItems={imageAlignItems} sx={{ py: 2 }} spacing={imageSpacing} direction={imageRowDirection}>
+                  <Grid>
+                    <Zoom>
+                      <img src={myEventsImg} alt="Participant Portal – My Events Overview" width={imageWidth} loading="lazy" />
+                    </Zoom>
+                  </Grid>
+                  <Grid>
+                    <Zoom>
+                      <img src={participantPortalSelfServiceImg} alt="Participant Portal – Self Service" width={imageWidth} loading="lazy" />
+                    </Zoom>
+                  </Grid>
+                  <Grid>
+                    <Zoom>
+                      <img src={myEventsRecoveryImg} alt="Participant Portal – Event Recovery" width={imageWidth} loading="lazy" />
+                    </Zoom>
+                  </Grid>
+                </Grid>
+              </TeaserCard>
+            </Box>
 
             <Box mb={mbTeaser}>
               <TeaserCard titleI18nKey={'landing:discover_public_events_headline'}>

@@ -49,7 +49,6 @@ export function LandingRoute() {
         element={
           <Container maxWidth={false}>
             <ParticipantActivationPage />
-            <BrowserTitle namespaces={'landing'} titleI18nKey={'landing:registration_confirm_title'} />
           </Container>
         }
       />

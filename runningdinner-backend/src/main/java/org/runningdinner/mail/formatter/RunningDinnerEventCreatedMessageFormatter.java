@@ -17,7 +17,7 @@ public class RunningDinnerEventCreatedMessageFormatter {
   private MessageSource messageSource;
 
   private LocalizationProviderService localizationProviderService;
-  
+
   public RunningDinnerEventCreatedMessageFormatter(UrlGenerator urlGenerator, MessageSource messageSource,
       LocalizationProviderService localizationProviderService) {
     this.urlGenerator = urlGenerator;

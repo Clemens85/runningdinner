@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { WIZARD_ROOT_PATH } from './common/mainnavigation/NavigationPaths';
+import { MY_EVENTS_PATH } from './common/mainnavigation/NavigationPaths';
 import { ProgressBar } from './common/ProgressBar';
 import { runningDinnerTheme } from './common/theme/RunningDinnerTheme';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -19,6 +20,7 @@ const SelfAdminApp = React.lazy(() => import('./self/SelfAdminApp'));
 const WizardApp = React.lazy(() => import('./wizard/WizardApp'));
 const LandingApp = React.lazy(() => import('./landing/LandingApp'));
 const AdminApp = React.lazy(() => import('./admin/AdminApp'));
+const PortalApp = React.lazy(() => import('./portal/PortalApp'));
 
 function App() {
   if (isBackendCall()) {
@@ -60,6 +62,14 @@ function App() {
                 element={
                   <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
                     <SelfAdminApp />
+                  </Suspense>
+                }
+              />
+              <Route
+                path={`${MY_EVENTS_PATH}/*`}
+                element={
+                  <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
+                    <PortalApp />
                   </Suspense>
                 }
               />

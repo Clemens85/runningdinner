@@ -10,6 +10,11 @@ RunYourDinner is a full-stack web application for creating and managing running 
   - `shared/`: Shared components, services, types, and Redux state
 - **E2E Testing**: Cypress tests (`e2e-tests/`)
 
+You will find respective AGENTS.md files in each of the packages:
+
+- `runningdinner-backend/` contains an AGENTS.md file which contains enhanced backend instructions
+- `runningdinner-client/` contains an AGENTS.md file as overview for frontend instructions. Both sub-packages (`shared/` and `webapp/`) contain even more enhanced instructions
+
 ## Development Workflow
 
 ### Backend Development

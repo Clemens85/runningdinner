@@ -64,4 +64,22 @@ public interface MessageTaskRepository extends RunningDinnerRelatedRepository<Me
           @Param("endOfMonth") LocalDateTime endOfMonth
   );
 
+  /**
+   * Returns successfully delivered message tasks for a specific participant's portal inbox.
+   * Only tasks belonging to a MessageJob of one of the supplied types are returned,
+   * ordered by sending time descending (newest first).
+   */
+  @Query("""
+      SELECT mt FROM MessageTask mt
+      JOIN FETCH mt.parentJob pj
+      WHERE mt.adminId = :adminId
+        AND LOWER(mt.recipientEmail) = LOWER(:recipientEmail)
+        AND pj.messageType IN :messageTypes
+        AND mt.sendingResult.delieveryFailed = false
+      ORDER BY mt.sendingStartTime DESC
+      """)
+  List<MessageTask> findPortalMessagesForParticipant(@Param("adminId") String adminId,
+                                                     @Param("recipientEmail") String recipientEmail,
+                                                     @Param("messageTypes") Collection<MessageType> messageTypes);
+
 }

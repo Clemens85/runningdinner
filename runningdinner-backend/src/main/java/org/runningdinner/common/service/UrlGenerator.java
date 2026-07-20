@@ -43,7 +43,10 @@ public class UrlGenerator {
   
   @Value("${dinner.admin.participants.url}")
   private String adminParticipantsUrl;
-  
+
+  @Value("${dinner.portal.url}")
+  private String dinnerPortalUrlTemplate;
+
 
   /**
    * Builds a valid URL for administrating the running dinner identified by the passed uuid.<br>
@@ -140,6 +143,11 @@ public class UrlGenerator {
     return result;
   }
 
+  public String constructParticipantActivationUrl(String publicId, UUID participantId, String email) {
+    String baseUrl = constructParticipantActivationUrl(publicId, participantId);
+    return baseUrl + "?email=" + urlEncode(email);
+  }
+
   public String constructAdministrationAcknowledgeUrl(RunningDinner runningDinner) {
     
     String result = constructAdministrationUrl(runningDinner.getAdminId());
@@ -201,6 +209,18 @@ public class UrlGenerator {
   private static String urlEncode(String input) {
 
     return URLEncoder.encode(input, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Constructs the base portal URL for a given portal token: {@code {host}/my-events/{portalToken}}.
+   *
+   * @param portalToken the portal token string
+   * @return the full portal token URL
+   */
+  public String constructPortalTokenUrl(String portalToken) {
+    Assert.hasText(dinnerPortalUrlTemplate, "Dinner Portal URL Template is not configured!");
+    Assert.hasText(portalToken, "portalToken");
+    return dinnerPortalUrlTemplate + "/" + portalToken;
   }
 
 }

@@ -1,0 +1,544 @@
+package org.runningdinner.portal;
+
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.activity.ActivityService;
+import org.runningdinner.admin.activity.ActivityType;
+import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.admin.message.job.MessageTaskRepository;
+import org.runningdinner.admin.message.job.MessageType;
+import org.runningdinner.common.service.IdGenerator;
+import org.runningdinner.common.service.LocalizationProviderService;
+import org.runningdinner.common.service.UrlGenerator;
+import org.runningdinner.core.RegistrationType;
+import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.util.LogSanitizer;
+import org.runningdinner.mail.MailService;
+import org.runningdinner.mail.PortalTokenProvider;
+import org.runningdinner.mail.formatter.FormatterUtil;
+import org.runningdinner.mail.formatter.ParticipantPortalAccessRecoveryMessageFormatter;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.Assert;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+public class ParticipantPortalService implements PortalTokenProvider {
+
+  public static final List<MessageType> PORTAL_MESSAGE_TYPES = List.of(MessageType.PARTICIPANT, MessageType.TEAM, MessageType.DINNER_ROUTE);
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantPortalService.class);
+
+  private final PortalTokenRepository portalTokenRepository;
+  private final ParticipantService participantService;
+  private final RunningDinnerService runningDinnerService;
+  private final IdGenerator idGenerator;
+  private final UrlGenerator urlGenerator;
+  private final MailService mailService;
+  private final ParticipantPortalAccessRecoveryMessageFormatter recoveryMessageFormatter;
+  private final TeamService teamService;
+  private final ActivityService activityService;
+  private final MessageTaskRepository messageTaskRepository;
+  private final PortalMessageReadReceiptRepository readReceiptRepository;
+  private final LocalizationProviderService localizationProviderService;
+
+  public ParticipantPortalService(PortalTokenRepository portalTokenRepository,
+                                  ParticipantService participantService,
+                                  RunningDinnerService runningDinnerService,
+                                  IdGenerator idGenerator,
+                                  UrlGenerator urlGenerator,
+                                  MailService mailService,
+                                  ParticipantPortalAccessRecoveryMessageFormatter recoveryMessageFormatter,
+                                  TeamService teamService,
+                                  ActivityService activityService,
+                                  MessageTaskRepository messageTaskRepository,
+                                  PortalMessageReadReceiptRepository readReceiptRepository,
+                                  LocalizationProviderService localizationProviderService) {
+    this.portalTokenRepository = portalTokenRepository;
+    this.participantService = participantService;
+    this.runningDinnerService = runningDinnerService;
+    this.idGenerator = idGenerator;
+    this.urlGenerator = urlGenerator;
+    this.mailService = mailService;
+    this.recoveryMessageFormatter = recoveryMessageFormatter;
+    this.teamService = teamService;
+    this.activityService = activityService;
+    this.messageTaskRepository = messageTaskRepository;
+    this.readReceiptRepository = readReceiptRepository;
+    this.localizationProviderService = localizationProviderService;
+  }
+
+  // ─── PortalTokenProvider (used by email formatters) ────────────────────────
+
+  @Override
+  @Transactional
+  public String getOrCreatePortalToken(String email) {
+    Assert.hasText(email, "email must not be empty");
+    String normalizedEmail = StringUtils.trimToEmpty(email).toLowerCase();
+    return portalTokenRepository.findByEmail(normalizedEmail)
+        .map(PortalToken::getToken)
+        .orElseGet(() -> createAndSaveNewToken(normalizedEmail));
+  }
+
+  // ─── Portal token revocation ─────────────────────────────────────────────
+
+  /**
+   * Permanently deletes all supplied portal tokens. Tokens not found are silently ignored.
+   * Called by the "forget me" action.
+   */
+  @Transactional
+  public void revokePortalTokens(List<String> portalTokens) {
+    for (String token : portalTokens) {
+      portalTokenRepository.findByToken(token).ifPresent(portalTokenRepository::delete);
+    }
+  }
+
+  // ─── My Events ────────────────────────────────────────────────────────────
+
+  /**
+   * Resolves all live event summaries for the email address bound to the given portal token.
+   * The token is the only credential the client needs to hold — no raw adminIds or selfAdminIds
+   * are stored or submitted by the frontend.
+   * Unresolvable events (deleted, mismatched) are silently omitted.
+   */
+  @Transactional(readOnly = true)
+  public PortalMyEventsResponseTO resolveMyEvents(PortalMyEventsRequestTO request) {
+    // Accumulate by adminId across ALL tokens so same dinner from two different email/token
+    // combinations (e.g. one participant token + one organizer token) gets merged into one entry.
+    Map<String, List<PortalEventEntryTO>> eventsByAdminId = new LinkedHashMap<>();
+
+    for (String tokenStr : request.getPortalTokens()) {
+      Optional<PortalToken> tokenOpt = portalTokenRepository.findByToken(tokenStr);
+      if (tokenOpt.isEmpty()) {
+        LOGGER.debug("Skipping unknown portal token during my-events resolution");
+        continue;
+      }
+      Map<String, List<PortalEventEntryTO>> resolvedForToken = buildEventEntriesForEmail(tokenOpt.get().getEmail(), tokenStr);
+      for (var entry : resolvedForToken.entrySet()) {
+        eventsByAdminId.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).addAll(entry.getValue());
+      }
+    }
+
+    List<PortalEventEntryTO> events = new ArrayList<>();
+    for (var entry : eventsByAdminId.entrySet()) {
+      List<PortalEventEntryTO> entriesForDinner = entry.getValue();
+      events.add(entriesForDinner.size() > 1 ? mergePortalEventEntries(entriesForDinner) : entriesForDinner.getFirst());
+    }
+    return new PortalMyEventsResponseTO(events);
+  }
+
+	private PortalEventEntryTO mergePortalEventEntries(List<PortalEventEntryTO> portalEventEntries) {
+    String publicUrl = portalEventEntries
+        .stream()
+        .map(PortalEventEntryTO::getPublicUrl)
+        .filter(StringUtils::isNotBlank)
+        .findFirst()
+        .orElse(null);
+    List<PortalRole> roles = portalEventEntries
+        .stream()
+        .flatMap(e -> ListUtils.emptyIfNull(e.getRoles()).stream())
+        .distinct()
+        .collect(Collectors.toList());
+
+    Map<PortalRole, PortalCredentialTO> credentials = portalEventEntries
+        .stream()
+        .filter(e -> e.getCredentials() != null)
+        .flatMap(e -> e.getCredentials().entrySet().stream())
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue,
+            (existing, replacement) -> existing
+        ));
+    return new PortalEventEntryTO(
+        portalEventEntries.getFirst().getEventName(),
+        portalEventEntries.getFirst().getEventDate(),
+        portalEventEntries.getFirst().getCity(),
+        publicUrl,
+        roles,
+        credentials
+    );
+	}
+
+  // ─── Access Recovery ─────────────────────────────────────────────────────
+
+  /**
+   * Sends a portal access recovery email if the given email is associated with any events.
+   * <ul>
+   *   <li>If no events (participant or organizer) exist for the email, silently returns — no token
+   *       is created and no email is sent (prevents token pollution and email enumeration).</li>
+   *   <li>If events exist, a portal token is looked up or created, and the recovery email is sent.</li>
+   * </ul>
+   * Always behaves generically to callers to prevent email enumeration.
+   * Rate limiting is enforced at the HTTP layer by {@link org.runningdinner.portal.AccessRecoveryRateLimitFilter}.
+   *
+   * @param email the email to send recovery to
+   */
+  @Transactional
+  public void requestAccessRecovery(String email) {
+    if (StringUtils.isBlank(email)) {
+      return;
+    }
+    String normalizedEmail = StringUtils.trimToEmpty(email).toLowerCase();
+
+    // Only proceed if this email is actually associated with events
+    if (!hasAnyEventsForEmail(normalizedEmail)) {
+      LOGGER.warn("No events found for email {}, skipping recovery email", LogSanitizer.sanitize(normalizedEmail));
+      return;
+    }
+
+    // Look up or create the token (only now that we know events exist)
+    PortalToken token = portalTokenRepository.findByEmail(normalizedEmail)
+        .orElseGet(() -> {
+          String newToken = idGenerator.generateAdminId();
+          return portalTokenRepository.save(new PortalToken(normalizedEmail, newToken));
+        });
+
+    // Capture the user's locale now while the HTTP request context is still active
+    Locale userLocale = localizationProviderService.getUserLocale();
+
+    // Send recovery email after the token has been committed to DB
+    String recoveryUrl = urlGenerator.constructPortalTokenUrl(token.getToken());
+    sendRecoveryEmailAfterCommit(normalizedEmail, recoveryUrl, userLocale);
+  }
+
+  private void sendRecoveryEmailAfterCommit(String email, String recoveryUrl, Locale locale) {
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+      @Override
+      public void afterCompletion(int status) {
+        if (status != TransactionSynchronization.STATUS_COMMITTED) {
+          return;
+        }
+        try {
+          var message = recoveryMessageFormatter.formatRecoveryMessage(email, recoveryUrl, locale);
+          var messageTask = mailService.newVirtualMessageTask(email, message);
+          mailService.sendMessage(messageTask);
+        } catch (Exception e) {
+          LOGGER.error("Failed to send recovery email to {}", LogSanitizer.sanitize(email), e);
+        }
+      }
+    });
+  }
+
+  // ─── Internal helpers ────────────────────────────────────────────────────
+
+  private String createAndSaveNewToken(String normalizedEmail) {
+    String token = idGenerator.generateAdminId();
+    PortalToken portalToken = new PortalToken(normalizedEmail, token);
+    portalTokenRepository.save(portalToken);
+    return token;
+  }
+
+  private Map<String, List<PortalEventEntryTO>> buildEventEntriesForEmail(String email, String portalToken) {
+    Map<String, List<PortalEventEntryTO>> result = new LinkedHashMap<>();
+
+    // Participant events
+    List<Participant> participants = participantService.findParticipantsAcrossAllDinnersByEmail(email);
+    for (Participant participant : participants) {
+      try {
+        if (!participant.isActivated()) {
+          LOGGER.warn("For security reasons we won't resolve not activated participants in portal. Email was {} for participant-id {}",
+                      LogSanitizer.sanitize(email), participant.getId());
+          continue;
+        }
+        RunningDinner dinner = runningDinnerService.findRunningDinnerByAdminId(participant.getAdminId());
+        PortalCredentialTO cred = PortalCredentialTO.forParticipant(portalToken, dinner.getSelfAdministrationId(), participant.getId());
+        result.computeIfAbsent(dinner.getAdminId(), k -> new ArrayList<>()).add(newParticipantEventEntry(cred, dinner));
+      } catch (Exception e) {
+        LOGGER.warn("Could not resolve RunningDinner for participant {}", participant.getId(), e);
+      }
+    }
+
+    // Organizer events
+    List<RunningDinner> organizedDinners = runningDinnerService.findRunningDinnersByOrganizerEmail(email);
+    for (RunningDinner runningDinner : organizedDinners) {
+      if (!runningDinner.isAcknowledged()) {
+        LOGGER.warn("For security reasons we won't resolve not acknowledged organizers in portal. Email was {} for admin-id {}",
+                    LogSanitizer.sanitize(email), runningDinner.getAdminId());
+        continue;
+      }
+      String adminUrl = getAdminUrl(runningDinner);
+      PortalCredentialTO cred = PortalCredentialTO.forOrganizer(portalToken, runningDinner.getAdminId(), adminUrl);
+      result.computeIfAbsent(runningDinner.getAdminId(), k -> new ArrayList<>()).add(newOrganizerEventEntry(cred, runningDinner));
+    }
+
+    return result;
+  }
+
+  private PortalEventEntryTO newParticipantEventEntry(PortalCredentialTO credential, RunningDinner runningDinner) {
+    String publicUrl = getPublicUrl(runningDinner);
+    return new PortalEventEntryTO(
+            getTitle(runningDinner),
+            runningDinner.getDate(),
+            runningDinner.getCity(),
+            publicUrl,
+            List.of(PortalRole.PARTICIPANT),
+            Map.of(PortalRole.PARTICIPANT, credential)
+    );
+  }
+
+  private PortalEventEntryTO newOrganizerEventEntry(PortalCredentialTO credential, RunningDinner runningDinner) {
+    String publicUrl = getPublicUrl(runningDinner);
+    return new PortalEventEntryTO(
+            getTitle(runningDinner),
+            runningDinner.getDate(),
+            runningDinner.getCity(),
+            publicUrl,
+            List.of(PortalRole.ORGANIZER),
+            Map.of(PortalRole.ORGANIZER, credential)
+    );
+  }
+
+  private String getPublicUrl(RunningDinner runningDinner) {
+    if (runningDinner.getRegistrationType() != RegistrationType.CLOSED) {
+      return urlGenerator.constructPublicDinnerUrl(runningDinner.getPublicSettings().getPublicId());
+    }
+    return null;
+  }
+
+  private String getAdminUrl(RunningDinner runningDinner) {
+    return urlGenerator.constructAdministrationUrl(runningDinner.getAdminId());
+  }
+
+  private String getTitle(RunningDinner runningDinner) {
+    if (runningDinner.getRegistrationType() != RegistrationType.CLOSED) {
+        return runningDinner.getPublicSettings().getPublicTitle();
+    }
+    return runningDinner.getTitle();
+  }
+
+  private boolean hasAnyEventsForEmail(String email) {
+    List<Participant> participants = participantService.findParticipantsAcrossAllDinnersByEmail(email);
+    if (!participants.isEmpty()) {
+      return true;
+    }
+    List<RunningDinner> organizedDinners = runningDinnerService.findRunningDinnersByOrganizerEmail(email);
+    return !organizedDinners.isEmpty();
+  }
+
+  // ─── Participant Self-Service Info ────────────────────────────────────────
+
+  /**
+   * Returns self-service availability info for a specific participant.
+   * The portalToken is validated against the participant's email before any data is returned.
+   * {@link TeamSelfServiceInfo} is only populated when the participant is assigned to a team AND
+   * at least one TEAM mail was sent to all recipients (signalling the team arrangement is fixed).
+   *
+   * @param selfAdminId   RunningDinner.selfAdministrationId
+   * @param participantId Participant.id
+   * @param portalToken   the caller's portal token (safety guard)
+   * @throws IllegalArgumentException when the token does not match the participant's email
+   */
+  @Transactional(readOnly = true)
+  public ParticipantSelfServiceInfoTO resolveParticipantSelfServiceInfo(UUID selfAdminId, UUID participantId, String portalToken) {
+
+    PortalToken token = portalTokenRepository.findByToken(portalToken)
+        .orElseThrow(() -> new IllegalArgumentException("Unknown portal token"));
+
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(selfAdminId);
+    Participant participant = participantService.findParticipantById(runningDinner.getAdminId(), participantId);
+
+    String participantEmail = StringUtils.trimToEmpty(participant.getEmail()).toLowerCase();
+    String tokenEmail = StringUtils.trimToEmpty(token.getEmail()).toLowerCase();
+    Assert.state(participantEmail.equals(tokenEmail),
+        "Portal token email does not match participant email for participantId=" + participantId);
+
+    Optional<Team> teamOpt = teamService.findTeamByParticipantId(runningDinner.getAdminId(), participantId);
+
+    ParticipantSelfServiceInfoTO infoTO;
+    if (teamOpt.isEmpty()) {
+      infoTO = new ParticipantSelfServiceInfoTO(null, null);
+    } else {
+      Team team = teamOpt.get();
+      String dinnerRouteUrl = resolveDinnerRouteUrl(runningDinner, team, selfAdminId, participantId);
+      boolean dinnerRouteMailsSent = StringUtils.isNotBlank(dinnerRouteUrl);
+      TeamSelfServiceInfo teamSelfServiceInfo = resolveTeamSelfServiceInfo(runningDinner, team, selfAdminId, participantId, dinnerRouteMailsSent);
+      infoTO = new ParticipantSelfServiceInfoTO(teamSelfServiceInfo, dinnerRouteUrl);
+    }
+    infoTO.setParticipantName(participant.getName().getFullnameFirstnameFirst());
+    infoTO.setParticipantEmail(StringUtils.trimToNull(participant.getEmail()));
+    return infoTO;
+  }
+
+  /**
+   * Returns the full URL to the participant's personal dinner route page, or null when not yet available.
+   * The URL is only constructed when at least one DINNERROUTE_MAIL_SENT activity exists AND the
+   * participant is assigned to a team (needed to build the route link).
+   */
+  private String resolveDinnerRouteUrl(RunningDinner runningDinner, Team team, UUID selfAdminId, UUID participantId) {
+
+    boolean dinnerRouteMailsSent = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.DINNERROUTE_MAIL_SENT)
+        .stream()
+        .findAny()
+        .isPresent();
+    if (!dinnerRouteMailsSent) {
+      return null;
+    }
+    return urlGenerator.constructPrivateDinnerRouteUrl(selfAdminId, team.getId(), participantId);
+  }
+
+  /**
+   * Resolves {@link TeamSelfServiceInfo} for the given participant.
+   * Returns non-null only if the participant is assigned to a team AND at least one TEAM mail
+   * was sent to all recipients (indicated by a {@link ActivityType#TEAMARRANGEMENT_MAIL_SENT} activity).
+   */
+  private TeamSelfServiceInfo resolveTeamSelfServiceInfo(RunningDinner runningDinner, Team team, UUID selfAdminId, UUID participantId, boolean dinnerRouteMailsSent) {
+
+    boolean teamMailsSent = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.TEAMARRANGEMENT_MAIL_SENT)
+        .stream()
+        .findAny()
+        .isPresent();
+    if (!teamMailsSent) {
+      return null;
+    }
+
+    String mealLabel = team.getMealClass().getLabel();
+    LocalDateTime mealTime = team.getMealClass().getTime();
+
+    Participant viewingParticipant = team.getTeamMemberByParticipantId(participantId);
+    Participant host = team.getHostTeamMember();
+    String hostName = host.getName().getFullnameFirstnameFirst();
+    boolean selfIsHost = host.getId().equals(participantId);
+
+    Set<Participant> partners = team.getTeamMembersExcluding(viewingParticipant);
+    Participant teamPartner = partners.stream().findFirst().orElse(null);
+
+    TeamSelfServiceInfo result = new TeamSelfServiceInfo();
+    result.setMealLabel(mealLabel);
+    result.setMealTime(mealTime);
+    result.setHostName(hostName);
+    result.setSelfIsHost(selfIsHost);
+
+    if (teamPartner == null) {
+      result.setTeamPartnerCancelled(true);
+      return result; // Special case when there is no team partner (which means it is likely cancelled)
+    }
+
+    boolean fixedTeamPartner = teamPartner.isTeamPartnerWishRegistrationChildOf(viewingParticipant);
+
+    String teamPartnerEmail = StringUtils.trimToNull(teamPartner.getEmail());
+    String teamPartnerMobileNumber = StringUtils.trimToNull(teamPartner.getMobileNumber());
+    if (fixedTeamPartner) {
+      // For fixed partners: only show email and/or mobile phone when it differs from the viewing participant's own data:
+      teamPartnerEmail = Strings.CI.equals(StringUtils.trim(viewingParticipant.getEmail()), StringUtils.trim(teamPartnerEmail)) ? null : teamPartnerEmail;
+      teamPartnerMobileNumber = Strings.CI.equals(StringUtils.trim(viewingParticipant.getMobileNumber()), StringUtils.trim(teamPartnerMobileNumber)) ? null : teamPartnerMobileNumber;
+    }
+
+    result.setManageTeamHostingUrl(urlGenerator.constructManageTeamHostUrl(selfAdminId, team.getId(), participantId));
+    result.setTeamPartnerName(teamPartner.getName().getFullnameFirstnameFirst());
+    result.setTeamPartnerEmail(teamPartnerEmail);
+    result.setTeamPartnerMobileNumber(teamPartnerMobileNumber);
+    result.setFixedTeamPartner(fixedTeamPartner);
+    if (!fixedTeamPartner) {
+      result.setTeamPartnerMealSpecifics(teamPartner.getMealSpecifics().createDetachedClone());
+    }
+
+
+    if (!dinnerRouteMailsSent) {
+      teamService.findAggregatedGuestMealSpecificsForTeam(runningDinner.getAdminId(), team.getId())
+              .ifPresent(result::setLikelyGuestMealSpecifics);
+    } // else final meal specifics of guest is now available in dinner route (and must not be displayed in teams widget)
+
+    return result;
+  }
+
+  // ─── Participant Portal Messages ─────────────────────────────────────────
+
+  /**
+   * Returns the organizer-sent messages (PARTICIPANT, TEAM, DINNER_ROUTE type) for the given participant,
+   * ordered by sent date descending.
+   * The portalToken is validated against the participant's email before any data is returned.
+   *
+   * @param selfAdminId   RunningDinner.selfAdministrationId
+   * @param participantId Participant.id
+   * @param portalToken   the caller's portal token (safety guard)
+   */
+  @Transactional(readOnly = true)
+  public List<PortalMessageTO> resolveParticipantMessages(UUID selfAdminId, UUID participantId, String portalToken) {
+
+    PortalToken token = portalTokenRepository.findByToken(portalToken)
+        .orElseThrow(() -> new IllegalArgumentException("Unknown portal token"));
+
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(selfAdminId);
+    Participant participant = participantService.findParticipantById(runningDinner.getAdminId(), participantId);
+
+    String participantEmail = StringUtils.trimToEmpty(participant.getEmail()).toLowerCase();
+    String tokenEmail = StringUtils.trimToEmpty(token.getEmail()).toLowerCase();
+    Assert.state(participantEmail.equals(tokenEmail),
+        "Portal token email does not match participant email for participantId=" + participantId);
+
+    List<MessageTask> tasks = messageTaskRepository.findPortalMessagesForParticipant(runningDinner.getAdminId(), participantEmail, PORTAL_MESSAGE_TYPES);
+
+    Set<UUID> taskIds = tasks.stream().map(MessageTask::getId).collect(Collectors.toSet());
+    Set<UUID> readTaskIds = taskIds.isEmpty() ? Set.of() : readReceiptRepository.findReadMessageTaskIds(participantId, taskIds);
+
+    return tasks.stream()
+        .map(task -> new PortalMessageTO(
+            task.getParentJob().getMessageType(),
+            task.getMessage().getSubject(),
+            FormatterUtil.getHtmlFormattedMessage(task.getMessage().getContent()),
+            task.getSendingStartTime(),
+            task.getMessage().getReplyTo(),
+            task.getId(),
+            readTaskIds.contains(task.getId())))
+        .toList();
+  }
+
+  /**
+   * Records that the given participant has read the given message task.
+   * Idempotent: a second call for the same pair is silently ignored.
+   * The portalToken is validated against the participant's email before any write.
+   *
+   * @param selfAdminId   RunningDinner.selfAdministrationId
+   * @param participantId Participant.id
+   * @param messageTaskId MessageTask.id
+   * @param portalToken   the caller's portal token (safety guard)
+   */
+  @Transactional
+  public void markMessageAsRead(UUID selfAdminId, UUID participantId, String portalToken, UUID messageTaskId) {
+
+    PortalToken token = portalTokenRepository.findByToken(portalToken)
+        .orElseThrow(() -> new IllegalArgumentException("Unknown portal token"));
+
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerBySelfAdministrationId(selfAdminId);
+    Participant participant = participantService.findParticipantById(runningDinner.getAdminId(), participantId);
+
+    String participantEmail = StringUtils.trimToEmpty(participant.getEmail()).toLowerCase();
+    String tokenEmail = StringUtils.trimToEmpty(token.getEmail()).toLowerCase();
+    Assert.state(participantEmail.equals(tokenEmail),
+        "Portal token email does not match participant email for participantId=" + participantId);
+
+    // Verify the message task actually belongs to this participant's dinner (prevents cross-participant write)
+    boolean taskBelongsToParticipant = messageTaskRepository
+        .findPortalMessagesForParticipant(runningDinner.getAdminId(), participantEmail, PORTAL_MESSAGE_TYPES)
+        .stream()
+        .anyMatch(t -> t.getId().equals(messageTaskId));
+    if (!taskBelongsToParticipant) {
+      LOGGER.warn("markMessageAsRead: messageTaskId {} does not belong to participantId {}", messageTaskId, participantId);
+      return;
+    }
+
+    if (!readReceiptRepository.existsByParticipantIdAndMessageTaskId(participantId, messageTaskId)) {
+      readReceiptRepository.save(new PortalMessageReadReceipt(participantId, messageTaskId));
+    }
+  }
+}

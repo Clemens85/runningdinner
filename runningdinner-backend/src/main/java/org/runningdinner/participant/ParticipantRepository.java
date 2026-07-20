@@ -17,6 +17,11 @@ public interface ParticipantRepository extends RunningDinnerRelatedRepository<Pa
 
   List<Participant> findByEmailIgnoreCaseAndAdminIdOrderByParticipantNumber(String email, String adminId);
 	
+  /** Find all participants across all dinners by email (for portal token resolution).
+   * Caller must pass a pre-lowercased email; the functional index on LOWER(email) is then used. */
+  @Query("SELECT p FROM Participant p WHERE LOWER(p.email) = :email")
+  List<Participant> findAllByEmailLower(@Param("email") String lowerCaseEmail);
+	
   Optional<Participant> findFirstByAdminIdOrderByParticipantNumberDesc(String adminId);
 	
   List<Participant> findByEmailIgnoreCaseAndIdNotAndAdminId(String email, UUID participantId, String adminId);

@@ -66,3 +66,4 @@ export * from './admin/teamsHelper';
 export * from './admin/waitingListHelper';
 export * from './admin/participantListHelper';
 export * from './admin/messagesHelper';
+export * from './portal/portalHelper';

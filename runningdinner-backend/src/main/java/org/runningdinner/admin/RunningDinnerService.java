@@ -98,6 +98,17 @@ public class RunningDinnerService implements ApplicationContextAware {
     validatorService.checkRunningDinnerNotNull(runningDinner);
     return urlGenerator.addPublicDinnerUrl(runningDinner);
   }
+
+  /**
+   * Finds all running dinners that have been created by an organizer with the given email address
+   * (cross-dinner lookup, used by the participant portal).
+   *
+   * @param email the organizer email to search for (case-insensitive)
+   * @return list of all running dinners for the organizer (may be empty)
+   */
+  public List<RunningDinner> findRunningDinnersByOrganizerEmail(String email) {
+    return runningDinnerRepository.findAllByEmailLower(email.trim().toLowerCase());
+  }
   
   /**
    * Creates a new persistent running dinner instance

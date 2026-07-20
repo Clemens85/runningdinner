@@ -55,6 +55,7 @@ Backend sends dates as number arrays `[2024, 1, 15, 14, 30]`. Interceptors auto-
 - Schemas in [ValidationSchemas.js](shared/src/admin/ValidationSchemas.js) - note: uses Yup v0.28 (old API)
 - Wrap forms with `<FormProvider>` to enable nested field access
 - Example pattern in [ParticipantForm.tsx](webapp/src/admin/participants/form/ParticipantForm.tsx)
+- Try to re-use existing components like e.g. FormTextField and components for validation like useBackendIssueHandler and useNotificationHttpError
 
 ## Shared Component Patterns
 
@@ -97,6 +98,7 @@ All shared types in `shared/src/types/` with barrel exports. Naming:
 - Interfaces for data: `Team`, `Participant`, `RunningDinner`
 - Enums for constants: `TeamStatus`, `ActivityType`, `FetchStatus`
 - Type aliases for compositions: `BaseTeam`, `HostTeam extends Team`
+- Type definitions shall have no TO suffix (even if the backing type in backend has this. Use `Team` instead of `TeamTO`)
 
 ### Prop Types
 
@@ -114,6 +116,7 @@ type MyComponentProps = BaseRunningDinnerProps & { extraProp: string };
 - Uses jsdom, junit reporter outputs to `reports/`
 - Setup file: `setupTests.js` (imports `@testing-library/jest-dom`)
 - Run via: `pnpm test` (runs all workspaces), `pnpm -r test` (recursive)
+- Test files are named `*.spec.ts` or `*.spec.tsx` and located next to components (e.g. `AddressLocation.spec.jsx`)
 
 ### Testing Library
 

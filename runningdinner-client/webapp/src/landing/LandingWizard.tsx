@@ -183,6 +183,9 @@ export function LandingWizard() {
             <TeaserCard titleI18nKey={'landing:participant_features'}>
               <ul>
                 <li>
+                  <span>{t('landing:participant_feature_portal')}</span>
+                </li>
+                <li>
                   <span>{t('landing:participant_feature_self_registrate')}</span>
                 </li>
                 <li>

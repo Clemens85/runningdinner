@@ -1,5 +1,5 @@
 import { isStringNotEmpty, TeamPartnerWishRegistrationData } from '..';
-import { BackendIssue, MealSpecifics, newEmptyParticipantInstance, Participant, ParticipantFormModel, ParticipantName, PaymentOptions,TeamPartnerWishState } from '.';
+import { BackendIssue, MealSpecifics, newEmptyParticipantInstance, Participant, ParticipantFormModel, ParticipantName, PaymentOptions, TeamPartnerWishState } from '.';
 
 export interface RegistrationData extends ParticipantFormModel {
   dataProcessingAcknowledged: boolean;
@@ -35,6 +35,7 @@ export interface ParticipantActivationResult {
   activatedParticipant?: Participant;
   activatedTeamPartnerRegistration?: ParticipantName;
   validationIssue?: BackendIssue;
+  portalToken?: string;
 }
 
 export interface RegistrationDataCollection {

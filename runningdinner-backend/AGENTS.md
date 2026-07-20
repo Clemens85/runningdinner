@@ -120,6 +120,8 @@ Uses Flyway for versioned migrations in `src/main/resources/db/migration/`:
 
 **Migration naming:** `V{major}.{minor}__{Description}.sql` (e.g., `V2.5__AddZipRestrictions.sql`)
 
+SQL Tables shall be named like JPA Entities, except there are really very good reasons for not doing so (no separate @Table annotation required).
+
 ### Testing Patterns
 
 Tests use `@ApplicationTest` meta-annotation for consistent configuration:
@@ -189,7 +191,9 @@ org.runningdinner/
 
 - **XSS Protection:** `AntiSamyFilter` on `/rest/*` endpoints sanitizes HTML inputs
 - **Admin ID Validation:** `@ValidateAdminId` annotation ensures valid admin access
-- **DTOs:** Transfer Objects (ending in `TO`) for API contracts, separate from JPA entities
+- **DTOs:** Transfer Objects (ending in `TO`) for API contracts, separate from JPA entities (use Java records for Backend DTOs (TOs) when reasonable)
+
+Incoming web request objects are validated with Jakarta validation constraint annotations (like e.g. @Valid, @Email, @NotBlank, ...).
 
 ### Scheduled Tasks
 
@@ -227,6 +231,11 @@ deliver.feedback.mail.scheduler.enabled=true
 # Pass: -DMailMockDir=/path/to/folder
 ```
 
+## Error handling & Logging
+
+When Exceptions are caught and logged, always log the complete Exception and not only the message.
+Non-recoverable errors from web requests are globally handled by GlobalExceptionHandler (Logging and Error response).
+
 ## Common Pitfalls & Solutions
 
 1. **Event listeners not executing:** Check transaction boundaries - use `TransactionSynchronization.afterCommit()` if event needs committed data
@@ -242,3 +251,7 @@ deliver.feedback.mail.scheduler.enabled=true
 - **Mail architecture:** `MailSenderFactory`, `MailService`, `MailConfig`
 - **Test base:** `ApplicationTest` annotation, `TestHelperService`
 - **Example REST controller:** `org.runningdinner.admin.rest.RunningDinnerServiceRest`
+
+## Imports
+
+Don't use inline imports in code like org.springframework.http.HttpStatus, but rather import the class and use HttpStatus in the code. This is for better readability and maintainability of the code.

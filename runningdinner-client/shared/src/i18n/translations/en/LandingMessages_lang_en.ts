@@ -32,6 +32,11 @@ const LandingMessages_en: any = {
     'Please try it again later. <br/> ' +
     'If the error still occurs, please send an email to <anchor href="mailto:{{ adminEmail }}">{{ adminEmail }}</anchor>.',
 
+  registration_activation_portal_title: 'Access your event on this device',
+  registration_activation_portal_hint:
+    'Your registration has been linked to this device. You can now view your event details, dinner route and team information at any time via My Events.',
+  registration_activation_portal_link: 'Go to My Events',
+
   registration_not_possible: 'Registration not possible',
   registration_not_possible_zip_restriction:
     'Unfortunately, your address seems to be too far away to participate in  <strong>{{title}}</strong>.<br/>' +
@@ -122,6 +127,11 @@ const LandingMessages_en: any = {
     'The responsibility for the whole event per se is however still at you.<br/><br/>Have fun!',
 
   for_participants_headline: 'For Participants',
+
+  participant_portal_headline: 'Participant Portal',
+  participant_portal_description:
+    'The new participant portal gives you an overview of all your running dinner events at a glance – no login required. ' +
+    'Just follow your personal access link (from your registration confirmation email) to open the portal and see all events you are registered for.',
 
   discover_public_events_headline: 'Discover public events',
   discover_public_events_description:
@@ -222,6 +232,7 @@ const LandingMessages_en: any = {
   participant_feature_self_registrate: 'Self registrate to non-closed events',
   participant_feature_change_host: 'Team can change the host assignment by themself',
   participant_feature_live_dinnerroute: 'Live view of dinner route',
+  participant_feature_portal: 'Personal participant portal with an overview of all registered events',
 
   misc_feature_dashboard: 'Dashboard with activity stream, checklist, etc.',
   misc_feature_new_participants: 'See new registrations at once',

@@ -8,6 +8,8 @@ public class ParticipantActivationResult {
   private ParticipantTO activatedParticipant;
   
   private TeamPartnerWishRegistrationDataTO activatedTeamPartnerRegistration;
+
+  private String portalToken;
   
   protected ParticipantActivationResult() {
     // Needed for JSON
@@ -36,6 +38,14 @@ public class ParticipantActivationResult {
 
   public void setActivatedTeamPartnerRegistration(TeamPartnerWishRegistrationDataTO activatedTeamPartnerRegistration) {
     this.activatedTeamPartnerRegistration = activatedTeamPartnerRegistration;
+  }
+
+  public String getPortalToken() {
+    return portalToken;
+  }
+
+  public void setPortalToken(String portalToken) {
+    this.portalToken = portalToken;
   }
   
 }
