@@ -232,6 +232,7 @@ const LandingMessages_de: any = {
   participant_feature_self_registrate: 'Selbst-Registrierung bei nicht-geschlossenen Events',
   participant_feature_change_host: 'Teams können Gastgeber-Zuweisung selbst ändern',
   participant_feature_live_dinnerroute: 'Live Dinner-Routen-Sicht',
+  participant_feature_portal: 'Persönliches Teilnehmer-Portal mit Übersicht über alle angemeldeten Events',
 
   misc_feature_dashboard: 'Dashboard mit Aktivitäten-Verfolgung, Checkliste uvm.',
   misc_feature_new_participants: 'Überblick über neu registrierte Teilnehmer',

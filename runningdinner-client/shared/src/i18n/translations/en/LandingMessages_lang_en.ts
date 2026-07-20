@@ -232,6 +232,7 @@ const LandingMessages_en: any = {
   participant_feature_self_registrate: 'Self registrate to non-closed events',
   participant_feature_change_host: 'Team can change the host assignment by themself',
   participant_feature_live_dinnerroute: 'Live view of dinner route',
+  participant_feature_portal: 'Personal participant portal with an overview of all registered events',
 
   misc_feature_dashboard: 'Dashboard with activity stream, checklist, etc.',
   misc_feature_new_participants: 'See new registrations at once',
