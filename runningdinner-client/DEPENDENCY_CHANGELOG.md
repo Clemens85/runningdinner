@@ -22,6 +22,12 @@
 | vite | root devDep | 8.0.13 | 8.1.5 | Patch bump |
 | @vitejs/plugin-react | root devDep | 6.0.2 | 6.0.4 | Patch bump |
 | vitest | root devDep | 4.1.6 | 4.1.10 | Patch bump |
+| @reduxjs/toolkit | root dep | 2.11.1 | 2.12.0 | Minor bump |
+| react-redux | root dep | 9.2.0 | 9.3.0 | Minor bump |
+| @tanstack/react-query | root dep | 5.90.12 | 5.101.4 | Minor bump; no breaking changes in 5.91–5.101 range |
+| i18next | root dep | 26.2.0 | 26.3.6 | Minor bump |
+| react-i18next | root dep | 17.0.8 | 17.0.10 | Patch bump |
+| react-hook-form | root dep | 7.75.0 | 7.82.0 | Minor bump |
 | @testing-library/react | shared + webapp devDep | ^16.2.0 | ^16.3.2 | Minor bump |
 | globals | root + webapp devDep | ^15.9.0 | ^17.7.0 | Major bump; globals.node/browser API unchanged |
 | @testing-library/jest-dom | shared + webapp devDep | ^6.6.3 | ^7.0.0 | Major bump; no deprecated matchers in use, vitest import pattern unchanged |
