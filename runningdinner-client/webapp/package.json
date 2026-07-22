@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
+    "@testing-library/react": "^16.3.2",
     "@types/google.maps": "^3.65.3",
     "globals": "^15.9.0",
     "jsdom": "^26.0.0",
