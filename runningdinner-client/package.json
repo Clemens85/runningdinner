@@ -47,9 +47,9 @@
     "globals": "^15.9.0",
     "prettier": "^3.9.6",
     "typescript": "6.0.2",
-    "typescript-eslint": "8.59.3",
-    "@typescript-eslint/eslint-plugin": "8.59.3",
-    "@typescript-eslint/parser": "8.59.3",
+    "typescript-eslint": "8.65.0",
+    "@typescript-eslint/eslint-plugin": "8.65.0",
+    "@typescript-eslint/parser": "8.65.0",
     "vite": "8.0.13",
     "vitest": "4.1.6"
   }
