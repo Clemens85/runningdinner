@@ -38,6 +38,13 @@
 | react-virtuoso | webapp dep | 4.17.0 | 4.18.11 | Minor bump |
 | @vis.gl/react-google-maps | webapp dep | 1.7.1 | 1.9.0 | Minor bump |
 | react-router-dom | webapp dep | 6.30.2 | 7.18.1 | Major bump. v7 maintains full backward-compatible re-exports from `react-router-dom`; all imports (BrowserRouter, Routes, Route, Link, Navigate, useParams, useNavigate, useLocation, useSearchParams) work unchanged. No code changes needed. |
+| @mui/material | webapp dep | 7.3.11 | 9.2.0 | 2 major bumps. Applied MUI v9 system-props codemod (100 files). Minor manual fixes: Grid direction→Stack, inputProps→slotProps, HelpOutline→HelpOutlined. |
+| @mui/icons-material | webapp dep | 7.3.11 | 9.2.0 | Coupled with @mui/material |
+| @mui/system | webapp dep | 7.3.11 | 9.2.0 | Coupled with @mui/material |
+| @mui/x-date-pickers | webapp dep | 8.21.0 | 9.10.0 | Major bump; date-fns v4 compatible |
+| mui-markdown | webapp dep | 2.0.3 | 3.0.1 | Major bump; MUI v9 compatible |
+| react | root dep | 19.2.6 | 19.2.8 | Patch bump |
+| react-dom | root dep | 19.2.6 | 19.2.8 | Patch bump |
 
 ### Skipped / Blocked
 
@@ -53,4 +60,7 @@
 | eslint-plugin-react-hooks | v5→v7 introduces 33 new lint errors from React Compiler rules (react-hooks/no-use-state-in-render-callbacks, react-hooks/no-access-refs-in-render). Requires code fixes before upgrading. |
 | eslint | v9→v10 blocked: eslint-plugin-react-hooks@5.2.0 only supports eslint ≤9. Upgrade react-hooks to v7 first, then re-attempt. |
 | @eslint/js | v9→v10 coupled with eslint; blocked for same reason. |
-| @mui/material, @mui/icons-material, @mui/system (7→9), @mui/x-date-pickers (8→9), mui-markdown (2→3) | MUI v9 removes all system shorthand props (`mt`, `my`, `mb`, `justifyContent`, `alignItems`, etc.) from Box, Stack, Grid, Typography. Tested upgrade produced **296 TypeScript errors across 84 files**. Peer deps are all compatible (emotion v11 fine, date-fns v4 fine, material-ui-popup-state 5.3.7 fine, @mui/material-pigment-css optional). Additional smaller changes also needed: (1) Grid `direction="column"/"column-reverse"` removed — use Stack instead (3 files); (2) `inputProps`/`inputRef` removed from Select/Input — use `slotProps` (5 files); (3) `TransitionComponent` removed from Dialog — use `slots.transition` (1 file); (4) `HelpOutline` icon removed — rename to `HelpOutlined` (2 files). **Migration path**: run `npx @mui/codemod@latest v9.0.0/system-props webapp/src` to auto-migrate system props to `sx={...}`, then manually fix the ~11 remaining files for the other changes. |
+
+### E2E Tests
+
+Cypress wizard smoke test (`wizard.spec.js`): **1/1 passing** ✔
