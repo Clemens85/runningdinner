@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@reduxjs/toolkit": "2.11.1",
+    "@reduxjs/toolkit": "2.12.0",
     "@tanstack/react-query": "5.90.12",
     "axios": "1.18.1",
     "date-fns": "4.4.0",
@@ -24,7 +24,7 @@
     "react-dom": "19.2.6",
     "react-hook-form": "7.75.0",
     "react-i18next": "17.0.8",
-    "react-redux": "9.2.0",
+    "react-redux": "9.3.0",
     "redux": "5.0.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "3.1.0"
