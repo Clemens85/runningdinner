@@ -37,6 +37,7 @@
 | react-medium-image-zoom | webapp dep | 5.4.0 | 5.4.8 | Minor bump |
 | react-virtuoso | webapp dep | 4.17.0 | 4.18.11 | Minor bump |
 | @vis.gl/react-google-maps | webapp dep | 1.7.1 | 1.9.0 | Minor bump |
+| react-router-dom | webapp dep | 6.30.2 | 7.18.1 | Major bump. v7 maintains full backward-compatible re-exports from `react-router-dom`; all imports (BrowserRouter, Routes, Route, Link, Navigate, useParams, useNavigate, useLocation, useSearchParams) work unchanged. No code changes needed. |
 
 ### Skipped / Blocked
 
