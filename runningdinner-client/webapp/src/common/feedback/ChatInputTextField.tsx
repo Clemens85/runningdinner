@@ -53,8 +53,10 @@ export function ChatInputTextField({ inputMessage, onInputMessageChange, onSendM
         onChange={(e) => onInputMessageChange(e.target.value)}
         onKeyDown={handleKeyPress}
         placeholder={t('feedback_agent_input_placeholder')}
-        InputProps={{
-          disableUnderline: true,
+        slotProps={{
+          input: {
+            disableUnderline: true,
+          },
         }}
         sx={{
           ml: 1,

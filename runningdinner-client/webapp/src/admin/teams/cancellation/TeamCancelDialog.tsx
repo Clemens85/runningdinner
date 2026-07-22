@@ -170,7 +170,9 @@ function TeamCancelOverview({ runningDinner, team, onCancelDialog, onShowPreview
         <Box>
           <Span i18n="admin:team_cancel_info_text" />
         </Box>
-        <Box mt={3}>
+        <Box sx={{
+          mt: 3
+        }}>
           <TeamCancelOverviewContent
             team={team}
             runningDinner={runningDinner}
@@ -247,7 +249,9 @@ function TeamCancelOverviewContent({ team, runningDinner, notAssignedParticipant
     <>
       {hasEnoughNotAssignedParticipantsToReplaceTeam && renderEnoughParticipantsInfo()}
       {!hasEnoughNotAssignedParticipantsToReplaceTeam && renderTooFewParticipantsAlert()}
-      <Box mt={1}>{selectableParticipantsToReplace}</Box>
+      <Box sx={{
+        mt: 1
+      }}>{selectableParticipantsToReplace}</Box>
     </>
   );
 }
@@ -289,7 +293,9 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
 
   const renderReplacementInfo = () => {
     return (
-      <Box mb={1}>
+      <Box sx={{
+        mb: 1
+      }}>
         <Grid container>
           <Grid size={6}>
             <SmallTitle i18n="admin:team_cancel_remove_text" parameters={{ teamName: teamName }} />
@@ -344,7 +350,9 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
           {renderAffectedTeamsList(affectedGuestTeams)}
         </Grid>
         {showNotificationHint && (
-          <Box mt={2}>
+          <Box sx={{
+            mt: 2
+          }}>
             <SmallTitle i18n="admin:attention" />
             {dinnerRouteMessagesSent && (
               <em>
@@ -378,7 +386,9 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
           {!isReplacement && <Paragraph i18n="admin:team_cancel_complete_message" parameters={{ teamNumber: teamNumber, meal: team.meal.label }} html={true} />}
           {isReplacement && renderReplacementInfo()}
         </Box>
-        <Box mt={2}>{renderAffectedTeamsInfo()}</Box>
+        <Box sx={{
+          mt: 2
+        }}>{renderAffectedTeamsInfo()}</Box>
       </DialogContent>
       <DialogActionsPanel onOk={handleOk} onCancel={onCancelDialog} okLabel={okLabel} cancelLabel={t('common:cancel')} danger={true} />
     </Dialog>

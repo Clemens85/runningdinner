@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, Stack, useMediaQuery, useTheme } from '@mui/material';
 import React from 'react';
 
 import { DialogTitleCloseable } from '../DialogTitleCloseable';
@@ -74,10 +74,20 @@ export function ConfirmationDialog({ dialogTitle, dialogContent, buttonConfirmTe
         )}
       </DialogContent>
       <DialogActions sx={dialogActionsCenteredStyle}>
-        <Box px={2} pt={1} pb={2}>
-          <Grid container justifyContent="flex-end" direction={buttonFlexDirection} alignContent="center">
-            <Grid style={{ alignSelf: 'center' }}>{buttonCancelText && <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>}</Grid>
-            <Grid style={{ alignSelf: 'center' }}>
+        <Box
+          sx={{
+            px: 2,
+            pt: 1,
+            pb: 2
+          }}>
+          <Stack
+            direction={buttonFlexDirection}
+            sx={{
+              justifyContent: "flex-end",
+              alignContent: "center"
+            }}>
+            <Box style={{ alignSelf: 'center' }}>{buttonCancelText && <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>}</Box>
+            <Box style={{ alignSelf: 'center' }}>
               {danger ? (
                 <Button sx={{ ml: isSmallDevice ? 0 : 1 }} color="secondary" variant="contained" onClick={() => handleCloseInternal(true)} autoFocus>
                   {buttonConfirmText}
@@ -87,8 +97,8 @@ export function ConfirmationDialog({ dialogTitle, dialogContent, buttonConfirmTe
                   {buttonConfirmText}
                 </PrimaryButton>
               )}
-            </Grid>
-          </Grid>
+            </Box>
+          </Stack>
         </Box>
       </DialogActions>
     </Dialog>

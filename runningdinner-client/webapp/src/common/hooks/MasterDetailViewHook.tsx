@@ -35,7 +35,11 @@ export function BackToListButton({ onBackToList, mt, mb }: BackToListButtonProps
   const mbToSet = mb ? mb : 1;
 
   return (
-    <Box mt={mtToSet} mb={mbToSet}>
+    <Box
+      sx={{
+        mt: mtToSet,
+        mb: mbToSet
+      }}>
       <Button startIcon={<ChevronLeftIcon />} style={{ paddingLeft: 0 }} color={'inherit'} onClick={onBackToList}>
         {t('back')}
       </Button>

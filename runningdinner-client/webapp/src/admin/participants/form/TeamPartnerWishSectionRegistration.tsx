@@ -62,7 +62,9 @@ function TeamPartnerWishSectionRegistrationView({ invitingParticipantEmail, runn
   }, [hasEmailInvitation]);
 
   return (
-    <Box mt={3}>
+    <Box sx={{
+      mt: 3
+    }}>
       <FormFieldset>{t('landing:teampartner_wish_section_title')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid
@@ -71,12 +73,18 @@ function TeamPartnerWishSectionRegistrationView({ invitingParticipantEmail, runn
             md: 12
           }}>
           {teamPartnerOption === TeamPartnerOption.NONE && (
-            <Box mb={2}>
+            <Box sx={{
+              mb: 2
+            }}>
               <Span i18n={'landing:teampartner_wish_section_subtitle'} />
             </Box>
           )}
           {hasEmailInvitation && (
-            <Box mb={3} mt={1}>
+            <Box
+              sx={{
+                mb: 3,
+                mt: 1
+              }}>
               <Alert severity={'success'} variant="outlined" data-testid={'email-invitation-info-box'}>
                 {t('landing:teampartner_wish_invitation_info', { invitingParticipantEmail: invitingParticipantEmail })}
               </Alert>
@@ -162,7 +170,9 @@ function ToggleTeamPartnerOptionsButton({
 
   return (
     <>
-      <Grid container justifyContent={'flex-start'}>
+      <Grid container sx={{
+        justifyContent: 'flex-start'
+      }}>
         <Grid>
           {currentTeamPartnerOption === TeamPartnerOption.NONE && (
             <SecondaryButton color={'primary'} variant={'outlined'} data-testid={'add-teampartner-wish-action'} onClick={() => openDialog()}>
@@ -170,7 +180,11 @@ function ToggleTeamPartnerOptionsButton({
             </SecondaryButton>
           )}
           {currentTeamPartnerOption !== TeamPartnerOption.NONE && (
-            <Box mb={1} mt={2}>
+            <Box
+              sx={{
+                mb: 1,
+                mt: 2
+              }}>
               <Button variant={'outlined'} onClick={() => handleToggleTeamPartnerOptionDialogClose(TeamPartnerOption.NONE)}>
                 {t('common:teampartner_wish_option_remove')}
               </Button>
@@ -202,7 +216,9 @@ function AddTeamPartnerOptionsDialog({ onCancel, handleTeamPartnerOptionChange }
       <DialogContent>
         <Grid size={12}>
           <FormControl variant="standard" component="fieldset">
-            <Box mb={1}>
+            <Box sx={{
+              mb: 1
+            }}>
               <Paragraph>{t('common:teampartner_wish_options_label')}</Paragraph>
             </Box>
             <RadioGroup
@@ -211,13 +227,17 @@ function AddTeamPartnerOptionsDialog({ onCancel, handleTeamPartnerOptionChange }
               value={teamPartnerOption}
               onChange={(evt) => handleRadioChange(evt.target.value)}
             >
-              <Box my={1}>
+              <Box sx={{
+                my: 1
+              }}>
                 <FormControlLabel value={TeamPartnerOption.REGISTRATION} control={<Radio color={'primary'} />} label={t('common:teampartner_wish_options_registration')} />
                 <FormHelperText>
                   <Trans i18nKey={'common:teampartner_registration_info_1'} />
                 </FormHelperText>
               </Box>
-              <Box my={1}>
+              <Box sx={{
+                my: 1
+              }}>
                 <FormControlLabel value={TeamPartnerOption.INVITATION} control={<Radio color={'primary'} />} label={t('common:teampartner_wish_options_invitation')} />
                 <FormHelperText>{t('landing:team_partner_wish_help')}</FormHelperText>
               </Box>

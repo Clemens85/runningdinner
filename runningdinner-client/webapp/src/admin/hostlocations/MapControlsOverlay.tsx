@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DirectionsOutlinedIcon from '@mui/icons-material/DirectionsOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import Groups2Icon from '@mui/icons-material/Groups2';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import { Box, SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
 import { FabProps } from '@mui/material/Fab';
@@ -90,9 +90,9 @@ export function MapControlsOverlay() {
         {actions.map((action) => (
           <SpeedDialAction
             icon={action.icon}
-            tooltipTitle={action.name}
-            tooltipOpen={isMobileDevice}
-            tooltipPlacement={'right'}
+            title={action.name}
+            open={isMobileDevice}
+            placement={'right'}
             key={action.name}
             onClick={() => {
               action.onClick();

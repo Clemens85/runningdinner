@@ -48,9 +48,13 @@ export default function SendToMeButton({ adminId, messageObj, messageType, selec
   }
 
   return (
-    <Grid container justifyContent={'flex-end'}>
+    <Grid container sx={{
+      justifyContent: 'flex-end'
+    }}>
       <Grid>
-        <Box mt={1}>
+        <Box sx={{
+          mt: 1
+        }}>
           <SecondaryButtonAsync onClick={handleSendToMe} color="primary">
             {t('message_send_to_me')}
           </SecondaryButtonAsync>

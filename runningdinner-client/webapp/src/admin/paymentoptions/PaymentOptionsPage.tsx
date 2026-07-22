@@ -62,7 +62,12 @@ function NewPaymentOptionsView({ adminId }: BaseAdminIdProps) {
     <>
       <PageTitle>{t('admin:payment_options')}</PageTitle>
       <Paragraph i18n={'admin:payment_options_help'} />
-      <Grid container justifyContent={'flex-start'} sx={{ mt: 3 }}>
+      <Grid
+        container
+        sx={{
+          justifyContent: 'flex-start',
+          mt: 3
+        }}>
         <Grid>
           <PrimaryButton onClick={handleCreate} size="large">
             {t('admin:payment_options_create')}
@@ -196,7 +201,12 @@ function PaymentOptionsFormView({ paymentOptions, adminId }: PaymentOptionsFormV
             </Grid>
           </Grid>
 
-          <Grid container justifyContent={'flex-start'} sx={{ mt: 3 }}>
+          <Grid
+            container
+            sx={{
+              justifyContent: 'flex-start',
+              mt: 3
+            }}>
             <Grid
               size={{
                 xs: 12,

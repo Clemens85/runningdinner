@@ -82,7 +82,9 @@ function TeamCard({ dinnerRouteTeam, mealType, isCurrentTeam }: TeamCardProps) {
       <PageTitle color={teamTitleColor}>
         {getMealTypeIcon(mealType, 24)} {dinnerRouteTeam.meal.label}
         {isCurrentTeam && (
-          <Box component={'span'} pl={1}>
+          <Box component={'span'} sx={{
+            pl: 1
+          }}>
             <Typography variant={'body2'} component={'span'}>
               {t('common:with_you')}
             </Typography>

@@ -47,8 +47,15 @@ export function TypingIndicator({ sx }: TypingIndicatorProps) {
 
   return (
     <Box sx={sxToUse}>
-      <Box display="flex" alignItems="center" gap={1}>
-        <Typography variant="subtitle1" color="text.secondary">
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1
+        }}>
+        <Typography variant="subtitle1" sx={{
+          color: "text.secondary"
+        }}>
           {label}
         </Typography>
         <Box sx={{ display: 'flex' }}>

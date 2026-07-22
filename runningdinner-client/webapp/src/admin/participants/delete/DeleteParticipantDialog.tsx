@@ -93,7 +93,9 @@ function TeamPartnerWishRegistrationInfo(participant: ParticipantListable) {
 
   if (isTeamPartnerWishChild(participant)) {
     return (
-      <Box mt={2}>
+      <Box sx={{
+        mt: 2
+      }}>
         <Alert severity={'info'} variant="outlined">
           <Trans
             i18nKey={'admin:team_partner_wish_registration_delete_child'}
@@ -104,7 +106,9 @@ function TeamPartnerWishRegistrationInfo(participant: ParticipantListable) {
     );
   } else if (isTeamPartnerWishRoot(participant)) {
     return (
-      <Box mt={2}>
+      <Box sx={{
+        mt: 2
+      }}>
         <Alert severity={'warning'} variant="outlined">
           <Trans
             i18nKey={'admin:team_partner_wish_registration_delete_root'}

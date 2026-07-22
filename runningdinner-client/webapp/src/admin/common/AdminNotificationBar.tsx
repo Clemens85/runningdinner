@@ -105,7 +105,13 @@ function ReSendRunningDinnerCreatedMessageContainer({ runningDinner }: BaseRunni
 
   return (
     <>
-      <Grid container spacing={1} alignContent={'center'} justifyContent={'center'}>
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          alignContent: 'center',
+          justifyContent: 'center'
+        }}>
         <Grid>
           <Span>{t('notification_dinner_acknowledge_required')}</Span>
         </Grid>
@@ -178,8 +184,12 @@ function ReSendRunningDinnerCreatedMessageDialog({ onClose, runningDinner }: ReS
             <FormTextField name="newEmailAddress" label={t('common:email')} variant="outlined" fullWidth />
           </form>
         </FormProvider>
-        <Box mt={3}>
-          <Grid container alignContent={'center'} spacing={1}>
+        <Box sx={{
+          mt: 3
+        }}>
+          <Grid container spacing={1} sx={{
+            alignContent: 'center'
+          }}>
             <Grid>
               <Span>{t('admin:acknowledge_link_resend_change_email_contact')}</Span>
             </Grid>

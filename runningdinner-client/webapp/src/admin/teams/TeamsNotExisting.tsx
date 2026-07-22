@@ -60,7 +60,9 @@ const TeamsNotExisting = ({ runningDinner }: BaseRunningDinnerProps) => {
 
   return (
     <Paper>
-      <Box p={3}>
+      <Box sx={{
+        p: 3
+      }}>
         {closedDinner ? (
           <Paragraph i18n="admin:participants_count_closed_event" parameters={{ numParticipants }} html={true} />
         ) : (
@@ -74,7 +76,9 @@ const TeamsNotExisting = ({ runningDinner }: BaseRunningDinnerProps) => {
         <RegistrationStillRunningAlert teamsNotExistingInfo={teamsNotExistingInfo} />
         <NotActivatedParticipantsAlert teamsNotExistingInfo={teamsNotExistingInfo} adminId={runningDinner.adminId} />
       </Box>
-      <Box p={3}>
+      <Box sx={{
+        p: 3
+      }}>
         <PrimarySuccessButtonAsync disabled={!canGenerateTeams} onClick={handleGenerateTeams} data-testid={'generate-teams-action'}>
           {t('teams_generate')}
         </PrimarySuccessButtonAsync>
@@ -96,7 +100,9 @@ function NotActivatedParticipantsAlert({ teamsNotExistingInfo, adminId }: TeamsN
   }
 
   return (
-    <Box mt={3}>
+    <Box sx={{
+      mt: 3
+    }}>
       <Alert severity={'warning'}>
         <AlertTitle>{t('attention')}</AlertTitle>
         {t('admin:registrations_not_yet_confirmed_teams_not_existing_info_1')}
@@ -134,7 +140,9 @@ function RegistrationStillRunningAlert({ teamsNotExistingInfo }: TeamsNotExistin
   const message = `teams_generate_deadline_open_${severity}`;
 
   return (
-    <Box mt={3}>
+    <Box sx={{
+      mt: 3
+    }}>
       <Alert severity={severity}>
         <AlertTitle>{t('attention')}</AlertTitle>
         <HtmlTranslate i18n={message} parameters={{ endOfRegistrationDate }} ns="admin" />

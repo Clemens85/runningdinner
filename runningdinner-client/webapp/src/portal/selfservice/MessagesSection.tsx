@@ -105,7 +105,7 @@ function MessageDetailDrawer({ message, onClose }: MessageDetailDrawerProps) {
 
           {/* Email meta header */}
           <Box sx={{ px: 2, py: 1.5, bgcolor: 'action.hover' }}>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+            <Stack direction="row" spacing={1} sx={{ mb: 0.5, alignItems: 'center' }}>
               <MessageAvatar type={message.messageType} />
               <Box>
                 <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
@@ -218,7 +218,7 @@ export function MessagesSection({ messages, isLoading, credential }: MessagesSec
     <>
       <Card data-testid="portal-messages-section" variant="outlined">
         <CardContent>
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+          <Stack direction="row" spacing={1} sx={{ mb: 1, alignItems: 'center' }}>
             <EmailIcon color="primary" />
             <Typography variant="h6">{t('participant_event_section_messages')}</Typography>
           </Stack>

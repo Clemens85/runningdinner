@@ -111,15 +111,23 @@ function MessageJobDetailsListView({ messageTasks, messageJob, triggerReload }: 
       <PageTitle>
         {t('admin:protocols_transfer_headline_prefix')} {t(messageTypeI18nKey)}
       </PageTitle>
-      <Box mt={-1} mb={2}>
-        <Grid container alignItems={'baseline'}>
+      <Box
+        sx={{
+          mt: -1,
+          mb: 2
+        }}>
+        <Grid container sx={{
+          alignItems: 'baseline'
+        }}>
           <Grid>
             <Subtitle gutterBottom={false}>
               <LocalDate date={messageJob.createdAt} /> {t('common:at_time')} <Time date={messageJob.createdAt} includeSeconds={true} />
             </Subtitle>
           </Grid>
           <Grid>
-            <Box ml={1}>
+            <Box sx={{
+              ml: 1
+            }}>
               <HelpIconTooltip title={<Paragraph i18n={'admin:synchronize_messagejobs_help'} />} fontSize={'small'} />
             </Box>
           </Grid>
@@ -229,14 +237,18 @@ function MessageTaskDetailsView({ messageTask, onReSendMessageTask }: MessageTas
 
   return (
     <Paper elevation={3}>
-      <Box p={2}>
+      <Box sx={{
+        p: 2
+      }}>
         <Grid container>
           <Grid size={12}>
             <Subtitle>{messageTask.recipientEmail}</Subtitle>
           </Grid>
         </Grid>
 
-        <Box mt={2}>
+        <Box sx={{
+          mt: 2
+        }}>
           <Grid container>
             <Grid size={12}>
               <FormFieldset>{t('admin:transfer')}</FormFieldset>
@@ -248,7 +260,9 @@ function MessageTaskDetailsView({ messageTask, onReSendMessageTask }: MessageTas
             </Grid>
           </Grid>
         </Box>
-        <Box mt={3}>
+        <Box sx={{
+          mt: 3
+        }}>
           <Grid container>
             <Grid size={12}>
               <FormFieldset>{t('common:content')}</FormFieldset>
@@ -256,8 +270,12 @@ function MessageTaskDetailsView({ messageTask, onReSendMessageTask }: MessageTas
             </Grid>
           </Grid>
         </Box>
-        <Box mt={2}>
-          <Grid container justifyContent={'flex-end'}>
+        <Box sx={{
+          mt: 2
+        }}>
+          <Grid container sx={{
+            justifyContent: 'flex-end'
+          }}>
             <Grid>
               <SecondaryButtonAsync onClick={onReSendMessageTask} color="primary" variant={'outlined'} size={'small'}>
                 {t('admin:send_again')}...
@@ -272,7 +290,9 @@ function MessageTaskDetailsView({ messageTask, onReSendMessageTask }: MessageTas
 
 function MessageTaskDetailsRow({ label, value }: LabelValue) {
   return (
-    <Grid container justifyContent={'space-between'}>
+    <Grid container sx={{
+      justifyContent: 'space-between'
+    }}>
       <Grid>
         <span>{label}</span>
       </Grid>
@@ -335,7 +355,9 @@ function ReSendMessageTaskDialog({ messageTask, onClose }: ReSendMessageTaskDial
           <DialogTitleCloseable onClose={onClose}>{t('admin:send_again')}</DialogTitleCloseable>
           <DialogContent>
             <Span i18n={'admin:send_again_help_text'} />
-            <Box mt={3}>
+            <Box sx={{
+              mt: 3
+            }}>
               <Grid container>
                 <Grid size={12}>
                   <FormTextField name="recipientEmail" label={t('admin:recipient_email')} variant={'outlined'} fullWidth sx={{ mb: 2 }} />

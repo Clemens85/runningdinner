@@ -30,7 +30,12 @@ function TeamNeighbourClustersLoadingView() {
   const { t } = useTranslation('common');
 
   return (
-    <Grid container alignItems="center" sx={{ my: 2 }}>
+    <Grid
+      container
+      sx={{
+        alignItems: "center",
+        my: 2
+      }}>
       <Grid>
         <CircularProgress size={20} />
       </Grid>
@@ -85,7 +90,12 @@ function TeamNeighbourClusterView({ teamNeighbourClusters, distanceRange, loadin
 
 function SingleTeamNeighbourClusterView({ a, b, distance }: TeamNeighbourCluster) {
   return (
-    <Grid container justifyContent="space-between" alignItems={'center'}>
+    <Grid
+      container
+      sx={{
+        justifyContent: "space-between",
+        alignItems: 'center'
+      }}>
       <Grid>
         <TeamNeighbourClusterItem {...a} />
       </Grid>
@@ -147,7 +157,9 @@ export function NearbyHostsAnalysis({ adminId }: BaseAdminIdProps) {
   return (
     <Box>
       <SmallTitle>{t('admin:dinner_route_hosts_near_distance')}</SmallTitle>
-      <Box px={2}>
+      <Box sx={{
+        px: 2
+      }}>
         <Slider
           aria-label={t('common:distance')}
           value={distanceRange}
@@ -171,9 +183,7 @@ export function NearbyHostsAnalysis({ adminId }: BaseAdminIdProps) {
         {!teamNeighbourClusters && <TeamNeighbourClustersLoadingView />}
         {teamNeighbourClusters && <TeamNeighbourClusterView teamNeighbourClusters={teamNeighbourClusters} loading={teamNeighbourClustersLoading} distanceRange={distanceRange} />}
       </Box>
-
       <Divider sx={{ mb: 4, mt: 4 }} />
-
       <MealsRouteFilterView />
     </Box>
   );

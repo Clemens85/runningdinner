@@ -14,7 +14,9 @@ export default function ParticipantGenderSelection(props: LabelValue) {
 
   return (
     <div id="gender">
-      <Typography variant="caption" display="block">
+      <Typography variant="caption" sx={{
+        display: "block"
+      }}>
         {label}
       </Typography>
       <Controller
@@ -40,7 +42,9 @@ function ParticipantGenderSelectionFormController({ onChange, value }: Participa
   };
 
   return (
-    <Grid container alignItems={'center'}>
+    <Grid container sx={{
+      alignItems: 'center'
+    }}>
       <Grid>
         <Box>
           <ParticipantGenderTooltip gender={CONSTANTS.GENDER.MALE}>
@@ -64,7 +68,9 @@ function ParticipantGenderSelectionFormController({ onChange, value }: Participa
       </Grid>
       {gender && (
         <Grid>
-          <Box ml={2}>
+          <Box sx={{
+            ml: 2
+          }}>
             <Typography variant={'caption'}>
               <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />
             </Typography>

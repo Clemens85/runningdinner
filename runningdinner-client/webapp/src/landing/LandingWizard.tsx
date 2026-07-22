@@ -13,10 +13,16 @@ export function LandingWizard() {
   const gridSpacing = 6;
 
   return (
-    <Box pl={3} pr={3}>
+    <Box
+      sx={{
+        pl: 3,
+        pr: 3
+      }}>
       <PageTitle>{t('create_your_own_event_hedline')}</PageTitle>
       <div>
-        <Grid container spacing={gridSpacing} alignItems="stretch">
+        <Grid container spacing={gridSpacing} sx={{
+          alignItems: "stretch"
+        }}>
           <Grid
             size={{
               xs: 12,
@@ -25,7 +31,9 @@ export function LandingWizard() {
           >
             <TeaserCard titleI18nKey={'quickstart'}>
               <Span i18n={'landing:quickstart_description'} />
-              <Box pt={2}>
+              <Box sx={{
+                pt: 2
+              }}>
                 <PrimaryButton href={WIZARD_ROOT_PATH} target="_blank" data-testid={'wizard-open-action'}>
                   {t('common:open_wizard')}
                 </PrimaryButton>
@@ -42,7 +50,9 @@ export function LandingWizard() {
               <Span>
                 <Trans i18nKey={'landing:uncertain_description'} />
               </Span>
-              <Box pt={2}>
+              <Box sx={{
+                pt: 2
+              }}>
                 <PrimaryButton href={DEMO_WIZARD_ROOT_PATH} target="_blank" data-testid={'wizard-open-action-demo'}>
                   {t('landing:create_demo_dinner_link')}
                 </PrimaryButton>
@@ -51,11 +61,15 @@ export function LandingWizard() {
           </Grid>
         </Grid>
       </div>
-      <Box pt={2}>
+      <Box sx={{
+        pt: 2
+      }}>
         <PageTitle>{t('common:features')}</PageTitle>
       </Box>
       <TeaserCardRow>
-        <Grid container spacing={gridSpacing} alignItems={'stretch'}>
+        <Grid container spacing={gridSpacing} sx={{
+          alignItems: 'stretch'
+        }}>
           <Grid
             size={{
               xs: 12,
@@ -132,7 +146,9 @@ export function LandingWizard() {
         </Grid>
       </TeaserCardRow>
       <TeaserCardRow>
-        <Grid container spacing={gridSpacing} alignItems={'stretch'}>
+        <Grid container spacing={gridSpacing} sx={{
+          alignItems: 'stretch'
+        }}>
           <Grid
             size={{
               xs: 12,
@@ -200,7 +216,9 @@ export function LandingWizard() {
         </Grid>
       </TeaserCardRow>
       <TeaserCardRow>
-        <Grid container spacing={gridSpacing} alignItems={'stretch'}>
+        <Grid container spacing={gridSpacing} sx={{
+          alignItems: 'stretch'
+        }}>
           <Grid
             size={{
               xs: 12,

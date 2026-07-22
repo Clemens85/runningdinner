@@ -51,7 +51,12 @@ export function ZipRestrictionsFormControl({ currentRegistrationType, currentZip
   return (
     <>
       <Grid sx={{ mt: 1, mb: 2 }} size={12}>
-        <Stack direction={isMobileDevice ? 'column' : 'row'} gap={1} alignItems={isMobileDevice ? 'flex-start' : 'center'}>
+        <Stack
+          direction={isMobileDevice ? 'column' : 'row'}
+          sx={{
+            gap: 1,
+            alignItems: isMobileDevice ? 'flex-start' : 'center'
+          }}>
           <Box>
             {hasZipRestrictions && (
               <Typography variant="body2">
@@ -121,7 +126,9 @@ function EditZipRestrictionsDialog({ onCancel, onSave, currentZipRestrictions }:
     <Dialog open={true} onClose={onCancel} aria-labelledby={title}>
       <DialogTitleCloseable onClose={onCancel}>{title}</DialogTitleCloseable>
       <DialogContent>
-        <Box pt={2}>
+        <Box sx={{
+          pt: 2
+        }}>
           {!hasZipRestrictions && (
             <Alert severity="info" variant="outlined">
               <Trans i18nKey="common:zip_restrictions_add_info" />
@@ -134,20 +141,24 @@ function EditZipRestrictionsDialog({ onCancel, onSave, currentZipRestrictions }:
             </Alert>
           )}
 
-          <Box my={2}>
+          <Box sx={{
+            my: 2
+          }}>
             <TextField
               helperText={t('common:zip_restrictions_input_help')}
               label={t('zip_restrictions_input_label')}
               onChange={(evt) => handleZipRestrictionsChange(evt.target.value)}
               value={zipRestrictions}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={() => handleZipRestrictionsChange('')}>
-                      <ClearIcon fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton size="small" onClick={() => handleZipRestrictionsChange('')}>
+                        <ClearIcon fontSize="small" />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
               fullWidth
             />

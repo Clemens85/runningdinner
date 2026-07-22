@@ -71,11 +71,16 @@ function ImportParticipantsFromJsonView({ runningDinner }: BaseRunningDinnerProp
   return (
     <Box sx={{ mt: 4 }}>
       <PageTitle>Import</PageTitle>
-      <Stack direction="column" gap={1} alignItems="center" justifyContent={'flex-start'}>
+      <Stack
+        direction="column"
+        sx={{
+          gap: 1,
+          alignItems: "center",
+          justifyContent: 'flex-start'
+        }}>
         <InputFileUpload onUpload={handleUpload} disabled={isUploading} />
         {isUploading && <CircularProgress size={20} />}
       </Stack>
-
       <Box sx={{ mt: 2 }}>
         {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
         {failedParticipantsAfterImport && (

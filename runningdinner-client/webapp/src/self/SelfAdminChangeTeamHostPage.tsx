@@ -136,14 +136,18 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
       <form>
         <PageTitle>{t('selfadmin:change_team_host_title')}</PageTitle>
         <Paragraph>{t('selfadmin:change_team_host_help')}</Paragraph>
-        <Box mt={3}>
+        <Box sx={{
+          mt: 3
+        }}>
           <Grid container spacing={2}>
             <Grid size={12}>
               <List dense={isSmallDevice}>
                 {team.teamMembers.map((teamMember) => (
                   <ListItemButton divider onClick={() => handleTeamMemberChange(teamMember, !isTeamHost(teamMember))} key={teamMember.id}>
                     <ListItemIcon>
-                      <Box p={isSmallDevice ? 2 : 3}>
+                      <Box sx={{
+                        p: isSmallDevice ? 2 : 3
+                      }}>
                         <TeamMemberHostCheckboxIcon onChange={(newState) => handleTeamMemberChange(teamMember, newState)} checked={isTeamHost(teamMember)} />
                       </Box>
                     </ListItemIcon>
@@ -163,7 +167,9 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
             </Grid>
           </Grid>
         </Box>
-        <Box mt={1}>
+        <Box sx={{
+          mt: 1
+        }}>
           <Grid container spacing={2}>
             <Grid size={12}>
               <FormTextField
@@ -180,8 +186,12 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
           </Grid>
         </Box>
 
-        <Box my={3}>
-          <Grid container justifyContent={'flex-end'} direction={'row'}>
+        <Box sx={{
+          my: 3
+        }}>
+          <Grid container direction={'row'} sx={{
+            justifyContent: 'flex-end'
+          }}>
             <Grid size={isSmallDevice ? 12 : undefined}>
               <PrimaryButton onClick={handleSubmit(updateTeamHost)} sx={fullWidthProps} disabled={isSubmitting || !isTeamHostChanged()} size={'large'}>
                 {t('common:save')}
@@ -215,7 +225,9 @@ function SelfAdminChangeTeamHostNotPossibleView() {
     <>
       <PageTitle>{t('selfadmin:change_team_host_title')}</PageTitle>
       <Paragraph>{t('selfadmin:change_team_host_help')}</Paragraph>
-      <Box mt={3}>
+      <Box sx={{
+        mt: 3
+      }}>
         <Grid container spacing={2}>
           <Grid size={12}>
             <Alert severity={'info'} variant={'outlined'}>

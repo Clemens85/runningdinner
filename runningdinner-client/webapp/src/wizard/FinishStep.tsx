@@ -119,12 +119,16 @@ function ContractSettings({ contract }: ContractProps) {
           <Paragraph>
             <Trans i18nKey="wizard:adv_text_question" />
           </Paragraph>
-          <Box mt={1}>
+          <Box sx={{
+            mt: 1
+          }}>
             <Paragraph>
               <Trans i18nKey="wizard:adv_text_answer" />
             </Paragraph>
           </Box>
-          <Box mt={1}>
+          <Box sx={{
+            mt: 1
+          }}>
             <Paragraph>
               <Trans
                 i18nKey="wizard:adv_text_help"
@@ -133,7 +137,9 @@ function ContractSettings({ contract }: ContractProps) {
               />
             </Paragraph>
           </Box>
-          <Box mt={1}>
+          <Box sx={{
+            mt: 1
+          }}>
             <Paragraph mt={1}>
               <Trans i18nKey="wizard:adv_text_address_help" />
             </Paragraph>

@@ -38,10 +38,18 @@ function MessageTemplates({ templates, onTemplateClick, showTemplatesHelpIcon }:
   ));
   return (
     <>
-      <Grid container alignItems={'center'} justifyContent={'flex-start'} sx={{ mb: 2 }}>
+      <Grid
+        container
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          mb: 2
+        }}>
         {smUpDevice && (
           <Grid>
-            <Box component={'span'} pr={1}>
+            <Box component={'span'} sx={{
+              pr: 1
+            }}>
               {t('admin:mails_template_help')}:{' '}
             </Box>
           </Grid>

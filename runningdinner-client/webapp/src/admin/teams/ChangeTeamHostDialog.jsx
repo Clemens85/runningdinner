@@ -42,7 +42,9 @@ export const ChangeTeamHostDialog = ({ adminId, team, isOpen, onClose, onTeamHos
         <DialogTitleCloseable onClose={onClose}>{t('teams_host_change')}</DialogTitleCloseable>
         <DialogContent>
           <Subtitle i18n="admin:team" parameters={{ teamNumber }} />
-          <Box mt={2}>
+          <Box sx={{
+            mt: 2
+          }}>
             <Alert severity={'info'} variant="outlined">
               {t('admin:team_partner_wish_registration_change_teamhost_not_possible')}
             </Alert>
@@ -63,7 +65,9 @@ export const ChangeTeamHostDialog = ({ adminId, team, isOpen, onClose, onTeamHos
             {hostsToSelect}
           </Select>
         </FormControl>
-        <Box mt={2}>
+        <Box sx={{
+          mt: 2
+        }}>
           <Paragraph i18n="admin:teams_host" parameters={{ host: selectedHostTeamMemberFullname }} html={true} />
         </Box>
       </DialogContent>

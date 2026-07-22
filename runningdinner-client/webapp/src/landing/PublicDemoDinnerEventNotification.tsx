@@ -10,7 +10,9 @@ export function PublicDemoDinnerEventNotification({ publicRunningDinner }: BaseP
   return (
     <>
       {isDemoEvent && (
-        <Box mt={1}>
+        <Box sx={{
+          mt: 1
+        }}>
           <AlertCentered severity={'info'} icon={false}>
             <Paragraph i18n={'landing:notification_demo_no_registration_text'} />
           </AlertCentered>

@@ -96,7 +96,11 @@ function RecipientSelection({ messageType }: MessageTypeAdminIdPayload) {
   const recipientSelectionOptions = messageType === MessageType.MESSAGE_TYPE_PARTICIPANTS ? participantSelectionOptions : teamSelectionOptions;
 
   return (
-    <Box mb={3} mt={2}>
+    <Box
+      sx={{
+        mb: 3,
+        mt: 2
+      }}>
       <FormSelect name={name} onChange={handleRecipientSelectionChange} label={label} variant={'outlined'} displayEmpty fullWidth>
         {recipientSelectionOptions.map((selectionOption) => (
           <MenuItem value={selectionOption.value} key={selectionOption.value}>

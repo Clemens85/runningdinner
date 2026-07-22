@@ -32,7 +32,13 @@ function ParticipantRegistrationInfo({ participantInfo }: ParticipantInfoViewPro
   const { t } = useTranslation('portal');
   if (isStringNotEmpty(participantInfo?.participantName) && isStringNotEmpty(participantInfo?.participantEmail)) {
     return (
-      <Typography variant="caption" color="text.disabled" sx={{ mt: 0.75, display: 'block' }}>
+      <Typography
+        variant="caption"
+        sx={{
+          color: "text.disabled",
+          mt: 0.75,
+          display: 'block'
+        }}>
         {t('participant_event_registered_as', { name: participantInfo!.participantName, email: participantInfo!.participantEmail })}
       </Typography>
     );
@@ -49,13 +55,14 @@ function ParticipantSelfServiceView({ event, credential }: ParticipantSelfServic
       {/* Event header */}
       <Box sx={{ mb: 3 }}>
         <PageTitle sx={{ mb: 0.5 }}>{event.eventName}</PageTitle>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{
+          color: "text.secondary"
+        }}>
           {event.city}
           {isStringNotEmpty(eventDateFormatted) ? ` · ${eventDateFormatted}` : ''}
         </Typography>
         <ParticipantRegistrationInfo participantInfo={participantInfo} />
       </Box>
-
       <Grid container spacing={2}>
         {/* Left column: Team + Dinner Route */}
         <Grid size={{ xs: 12, md: 6 }}>

@@ -86,9 +86,10 @@ export default function MessageContent({ templates, onMessageContentChange, name
   const helperTextToDisplay = (hasErrors ? errors[name]?.message : helperText) as string;
 
   return (
-    <Box mt={3}>
+    <Box sx={{
+      mt: 3
+    }}>
       <MessageTemplates templates={templates} onTemplateClick={handleTemplateClick} showTemplatesHelpIcon={showTemplatesHelpIcon} />
-
       <Controller
         control={control}
         name={name}

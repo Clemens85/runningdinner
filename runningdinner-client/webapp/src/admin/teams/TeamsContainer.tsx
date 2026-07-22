@@ -268,7 +268,12 @@ function DinnerRouteOverviewLinkButton({ adminId }: DinnerRouteOverviewLinkButto
   const isMobileDevice = useIsMobileDevice();
 
   return (
-    <Stack alignItems={'center'} justifyContent={'flex-end'} direction="row">
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'flex-end'
+      }}>
       <Button color={'primary'} variant={'outlined'} to={generateHostLocationsPath(adminId)} target="_blank" fullWidth={isMobileDevice} component={RouterLink}>
         {t('admin:hostlocations_overview')}
       </Button>

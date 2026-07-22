@@ -32,7 +32,9 @@ function TeamPartnerWishEmailInvitationFormInput() {
   const { t } = useTranslation('common');
 
   return (
-    <Box mt={3}>
+    <Box sx={{
+      mt: 3
+    }}>
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid
@@ -59,7 +61,9 @@ function ChildTeamPartnerWishInfo({ childTeamPartnerWish, adminId }: TeamPartner
   const lastname = watch('lastname');
 
   return (
-    <Box mt={3}>
+    <Box sx={{
+      mt: 3
+    }}>
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid size={12}>
@@ -85,7 +89,9 @@ function RootTeamPartnerWishInfo({ rootTeamPartnerWish, teamPartnerWishOriginato
   const rootParticipantUrl = `${generateParticipantPath(adminId, rootParticipantId)}?t=${Date.now().toString()}`;
 
   return (
-    <Box mt={3}>
+    <Box sx={{
+      mt: 3
+    }}>
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid size={12}>

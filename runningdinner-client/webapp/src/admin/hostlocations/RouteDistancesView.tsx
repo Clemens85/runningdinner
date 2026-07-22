@@ -76,8 +76,8 @@ export function RouteDistancesView({ routeDistancesList }: RouteDistancesViewPro
       <RouteDistancesSummary routeDistancesList={routeDistancesList} />
       <Divider sx={{ my: 2 }}>Entfernungen pro Team</Divider>
       {routeDistances.map((routeDistance, index) => (
-        <Box pr={1} sx={{ borderBottom: '1px dotted' }} key={index}>
-          <Grid container justifyContent="space-between" alignItems={'center'}>
+        <Box sx={{ pr: 1, borderBottom: '1px dotted' }} key={index}>
+          <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
             {routeDistance.teams.map((team, index) => (
               <React.Fragment key={index}>
                 <Grid sx={{ my: 2 }}>

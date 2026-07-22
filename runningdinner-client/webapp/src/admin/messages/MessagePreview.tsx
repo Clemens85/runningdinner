@@ -48,7 +48,9 @@ export function MessagePreview({ adminId, messageType }: MessageTypeAdminIdPaylo
   if (!isMailMessageValid) {
     return (
       <Box>
-        <Box mb={2}>
+        <Box sx={{
+          mb: 2
+        }}>
           <Subtitle i18n="common:preview" />
         </Box>
         {isArrayNotEmpty(previewIssues) ? (
@@ -61,9 +63,13 @@ export function MessagePreview({ adminId, messageType }: MessageTypeAdminIdPaylo
   }
 
   const previewMessageNodes = previewMessages.map((previewMessage: PreviewMessage, index: number) => (
-    <Box mt={1} key={index}>
+    <Box key={index} sx={{
+      mt: 1
+    }}>
       <PaperGrey variant={'outlined'} square>
-        <Box p={1} style={{ overflowX: 'scroll' }}>
+        <Box style={{ overflowX: 'scroll' }} sx={{
+          p: 1
+        }}>
           <Title>{messageObject.subject}</Title>
           <Span>
             <TextViewHtml text={previewMessage.message} />
@@ -75,14 +81,14 @@ export function MessagePreview({ adminId, messageType }: MessageTypeAdminIdPaylo
 
   return (
     <Box>
-      <Box mb={2}>
+      <Box sx={{
+        mb: 2
+      }}>
         <Subtitle i18n="common:preview" />
       </Box>
-
       <PreviewSelection recipients={recipientsForPreview} selectedRecipient={selectedRecipientForPreview} onSelectionChange={handleSelectionChange} />
       {(previewLoading || recipients.fetchStatus === FetchStatus.LOADING) && <LinearProgress color="secondary" />}
       {previewMessageNodes}
-
       <SendToMeButton adminId={adminId} messageObj={messageObject} selectedRecipient={selectedRecipientForPreview!} messageType={messageType} />
     </Box>
   );

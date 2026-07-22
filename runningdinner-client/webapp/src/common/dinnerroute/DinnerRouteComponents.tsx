@@ -141,7 +141,9 @@ export function WarningAlert({ teamsWithUnresolvedGeocodings, hideCloseButton }:
   return (
     <>
       {isOpen && (
-        <Box mb={2}>
+        <Box sx={{
+          mb: 2
+        }}>
           <Alert severity="warning" variant="outlined" onClose={hideCloseButton ? undefined : close}>
             {t('dinner_route_geocoding_warning')}
             <ul>
@@ -221,7 +223,9 @@ type TeamMarkerInfoWindowContentProps = {
 
 export function TeamMarkerInfoWindowContent({ team, isCurrentTeam }: TeamMarkerInfoWindowContentProps) {
   return (
-    <Box p={1} style={{ backgroundColor: '#fff', opacity: 0.75 }}>
+    <Box style={{ backgroundColor: '#fff', opacity: 0.75 }} sx={{
+      p: 1
+    }}>
       <Subtitle>
         {team.meal.label} - <TeamNr {...team} />
       </Subtitle>
@@ -336,7 +340,9 @@ export function AfterPartyLocationMarker(afterPartyLocationMapEntry: AfterPartyL
       </AdvancedMarker>
       {open && (
         <InfoWindow anchor={marker} maxWidth={300} onCloseClick={() => setOpen(false)}>
-          <Box p={1} style={{ backgroundColor: '#fff', opacity: 0.75 }}>
+          <Box style={{ backgroundColor: '#fff', opacity: 0.75 }} sx={{
+            p: 1
+          }}>
             <AfterPartyLocationCard {...afterPartyLocationMapEntry} />
           </Box>
         </InfoWindow>

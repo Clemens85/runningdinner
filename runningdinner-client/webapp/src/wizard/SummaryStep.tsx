@@ -30,7 +30,9 @@ export default function SummaryStep() {
           <Paragraph>
             <strong>{administrationUrl}</strong>
           </Paragraph>
-          <Box my={1}>
+          <Box sx={{
+            my: 1
+          }}>
             <Span i18n="wizard:administration_link_help" />
           </Box>
         </Grid>

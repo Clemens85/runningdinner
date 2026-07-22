@@ -27,7 +27,6 @@ export function SelfAdminRoute() {
           </Suspense>
         }
       />
-
       <Route
         path={`:selfAdminId/dinnerroute/:participantId/:teamId`}
         element={
@@ -38,7 +37,6 @@ export function SelfAdminRoute() {
           </Suspense>
         }
       />
-
       <Route
         path={`:selfAdminId/teampartnerwish/:participantId`}
         element={
@@ -49,11 +47,12 @@ export function SelfAdminRoute() {
           </Suspense>
         }
       />
-
       <Route
         path="*"
         element={
-          <Box my={3}>
+          <Box sx={{
+            my: 3
+          }}>
             <Alert severity={'error'} variant={'outlined'}>
               <Span>
                 <Trans

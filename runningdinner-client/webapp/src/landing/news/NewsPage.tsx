@@ -13,7 +13,7 @@ export function NewsPage() {
   return (
     <Box sx={{ mb: 3 }}>
       <PageTitle mt={4}>{t('common:news')}</PageTitle>
-      <Grid container direction={'column'} spacing={3}>
+      <Grid container spacing={3}>
         {newsItems.map((newsItem) => (
           <Grid
             key={newsItem.title}

@@ -75,7 +75,9 @@ function SelectParticiantToSwitch({ adminId, srcParticipant, selectedParticipant
 
   return (
     <>
-      <Box mb={3}>
+      <Box sx={{
+        mb: 3
+      }}>
         <Paragraph>
           <Trans i18nKey="admin:participants_swap_number_choose_text" values={{ fullname: getFullname(srcParticipant) }} />
         </Paragraph>
@@ -88,7 +90,6 @@ function SelectParticiantToSwitch({ adminId, srcParticipant, selectedParticipant
           <Trans i18nKey="admin:participants_swap_number_note_waitinglist" />
         </Paragraph>
       </Box>
-
       <Autocomplete
         options={participantOptions}
         value={selectedParticipant}

@@ -68,8 +68,10 @@ export function RegistrationPaymentDialog({ onCancel, registrationDataCollection
               <PaymentCardHeader
                 title={publicRunningDinner.publicSettings.title}
                 subheader={renderSubHeader()}
-                subheaderTypographyProps={{ align: 'center' }}
-                titleTypographyProps={{ align: 'center' }}
+                slotProps={{
+                  title: { align: 'center' },
+                  subheader: { align: 'center' },
+                }}
               />
               <CardContent>
                 <PaymentCardPricing>

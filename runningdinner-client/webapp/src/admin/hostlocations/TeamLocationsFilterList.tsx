@@ -136,7 +136,9 @@ export function TeamLocationsFilterList({ dinnerRouteMapEntries }: TeamLocations
 
   return (
     <Box>
-      <Box pb={1}>
+      <Box sx={{
+        pb: 1
+      }}>
         <Span i18n="admin:hostlocations_team_filter" />
       </Box>
       {dinnerRouteMapEntries.map((team) => (

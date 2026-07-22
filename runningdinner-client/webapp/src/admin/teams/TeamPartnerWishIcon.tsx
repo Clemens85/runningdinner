@@ -29,7 +29,12 @@ export function TeamPartnerWishIcon({ team, showLabelAsTooltip, mt }: TeamPartne
   } else {
     return (
       <>
-        <Grid container alignItems={'center'} sx={{ mt: mt }}>
+        <Grid
+          container
+          sx={{
+            alignItems: 'center',
+            mt: mt
+          }}>
           <Grid>
             <FavoriteBorderIcon color={'primary'} />
           </Grid>

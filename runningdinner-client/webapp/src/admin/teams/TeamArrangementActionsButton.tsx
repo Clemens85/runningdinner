@@ -131,18 +131,20 @@ export function TeamArrangementActionsButton({ adminId }: TeamArrangementActions
         <Paragraph i18n={message} />
         <br />
         <Paragraph html={true} i18n={'admin:teams_reset_hint_team_partner_wish'} />
-
         {showTeamArrangementMailsSentWarning && (
-          <Box my={2}>
+          <Box sx={{
+            my: 2
+          }}>
             <Alert severity={'warning'}>
               <AlertTitle>{t('common:attention')}</AlertTitle>
               <Trans i18nKey="admin:teams_reset_hint_team_messages_sent" />
             </Alert>
           </Box>
         )}
-
         {showDinnerRouteMailsSentWarning && (
-          <Box my={2}>
+          <Box sx={{
+            my: 2
+          }}>
             <Alert severity={'warning'}>
               <AlertTitle>{t('common:attention')}</AlertTitle>
               <Trans i18nKey="admin:teams_reset_hint_dinnerroute_messages_sent" />

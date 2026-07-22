@@ -110,10 +110,17 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
 
   return (
     <Paper elevation={3}>
-      <Box p={2}>
+      <Box sx={{
+        p: 2
+      }}>
         <FormProvider {...formMethods}>
           <form>
-            <Grid container justifyContent={'space-between'} alignItems={'baseline'}>
+            <Grid
+              container
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'baseline'
+              }}>
               <Grid
                 size={{
                   xs: 12,
@@ -138,30 +145,44 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
               </Grid>
             </Grid>
 
-            <Box mb={3} mt={3}>
+            <Box
+              sx={{
+                mb: 3,
+                mt: 3
+              }}>
               <PersonalDataSection isTeamPartnerWishChild={teamPartnerWishChild} />
             </Box>
             {!teamPartnerWishChild && (
               <>
-                <Box mb={3}>
+                <Box sx={{
+                  mb: 3
+                }}>
                   <AddressSection isNumSeatsRequired={true} />
                   <OpenAddressInGoogleMapsLink geocodingResult={participant?.geocodingResult} />
                 </Box>
-                <Box mb={3}>
+                <Box sx={{
+                  mb: 3
+                }}>
                   <MealSpecificsSection />
                 </Box>
               </>
             )}
-            <Box mb={3}>{!teamPartnerWishDisabled && <TeamPartnerWishSectionAdmin {...participant} adminId={adminId} />}</Box>
+            <Box sx={{
+              mb: 3
+            }}>{!teamPartnerWishDisabled && <TeamPartnerWishSectionAdmin {...participant} adminId={adminId} />}</Box>
             {!teamPartnerWishChild && (
-              <Box mb={3}>
+              <Box sx={{
+                mb: 3
+              }}>
                 <MiscSection activationDate={participant?.activationDate} />
               </Box>
             )}
 
             {isSubmitting && <LinearProgress />}
 
-            <Grid container justifyContent={'flex-end'}>
+            <Grid container sx={{
+              justifyContent: 'flex-end'
+            }}>
               <Grid>
                 {showDeleteBtn && (
                   <SecondaryButton onClick={() => setOpenDeleteDialog(true)} data-testid={'delete-participant-dialog-action'}>

@@ -1,4 +1,4 @@
-import { Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Stack, useMediaQuery, useTheme } from '@mui/material';
 import {
   AfterPartyLocation,
   enableAfterPartyLocation,
@@ -128,9 +128,9 @@ export default function MealTimesStep() {
   }
 
   const mealTimeFields = mealsFormState.map((meal: Meal) => (
-    <Grid key={meal.label} sx={{ pr: 6 }}>
+    <Box key={meal.label} sx={{ pr: 6 }}>
       <MealTimeEditControl {...meal} onHandleTimeChange={(newValue) => handleTimeChange(meal, newValue)} />
-    </Grid>
+    </Box>
   ));
   const mealTimeFieldsDirection = isSmallDevice ? 'column' : 'row';
 
@@ -138,9 +138,9 @@ export default function MealTimesStep() {
     <div>
       <PageTitle>{t('time_setup')}</PageTitle>
       <FormProvider {...formMethods}>
-        <Grid container direction={mealTimeFieldsDirection}>
+        <Stack direction={mealTimeFieldsDirection}>
           {mealTimeFields}
-        </Grid>
+        </Stack>
 
         <AfterPartyLocationToggleButton
           afterPartyLocationEnabled={!!afterPartyLocation}
