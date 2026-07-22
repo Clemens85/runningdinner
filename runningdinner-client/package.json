@@ -44,7 +44,7 @@
     "eslint-plugin-react-refresh": "^0.5.3",
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "globals": "^15.9.0",
+    "globals": "^17.7.0",
     "prettier": "^3.9.6",
     "typescript": "7.0.2",
     "typescript-eslint": "8.65.0",
