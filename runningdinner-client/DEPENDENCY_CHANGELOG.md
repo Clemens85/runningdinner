@@ -19,6 +19,13 @@
 | @types/node | root devDep | ^22.12.0 | ^26.1.1 | Major (types-only, safe) |
 | eslint-plugin-simple-import-sort | root devDep | ^12.1.1 | ^14.0.0 | Major bump; no config changes needed |
 | typescript | root devDep | 6.0.2 | 7.0.2 | Major bump; fixed moduleResolution: node→bundler in tsconfig.base.json |
+| vite | root devDep | 8.0.13 | 8.1.5 | Patch bump |
+| @vitejs/plugin-react | root devDep | 6.0.2 | 6.0.4 | Patch bump |
+| vitest | root devDep | 4.1.6 | 4.1.10 | Patch bump |
+| @testing-library/react | shared + webapp devDep | ^16.2.0 | ^16.3.2 | Minor bump |
+| globals | root + webapp devDep | ^15.9.0 | ^17.7.0 | Major bump; globals.node/browser API unchanged |
+| @testing-library/jest-dom | shared + webapp devDep | ^6.6.3 | ^7.0.0 | Major bump; no deprecated matchers in use, vitest import pattern unchanged |
+| jsdom | shared + webapp devDep | ^26.0.0 | ^29.1.1 | Major bump (3 versions); all tests pass. Note: jsdom v29 engine requires Node ^22.13.0, current env has v22.12.0 but tests pass. |
 
 ### Skipped / Blocked
 
