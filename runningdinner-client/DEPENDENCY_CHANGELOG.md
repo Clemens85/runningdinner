@@ -32,6 +32,11 @@
 | globals | root + webapp devDep | ^15.9.0 | ^17.7.0 | Major bump; globals.node/browser API unchanged |
 | @testing-library/jest-dom | shared + webapp devDep | ^6.6.3 | ^7.0.0 | Major bump; no deprecated matchers in use, vitest import pattern unchanged |
 | jsdom | shared + webapp devDep | ^26.0.0 | ^29.1.1 | Major bump (3 versions); all tests pass. Note: jsdom v29 engine requires Node ^22.13.0, current env has v22.12.0 but tests pass. |
+| material-ui-popup-state | webapp dep | 5.3.6 | 5.3.7 | Patch bump |
+| html-react-parser | webapp dep | 6.1.0 | 6.1.5 | Minor bump |
+| react-medium-image-zoom | webapp dep | 5.4.0 | 5.4.8 | Minor bump |
+| react-virtuoso | webapp dep | 4.17.0 | 4.18.11 | Minor bump |
+| @vis.gl/react-google-maps | webapp dep | 1.7.1 | 1.9.0 | Minor bump |
 
 ### Skipped / Blocked
 
