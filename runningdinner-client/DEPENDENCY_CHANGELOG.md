@@ -1,3 +1,19 @@
+## 2026-07-26 – TypeScript Downgrade (Linting Fix)
+
+### Updated
+
+| Package    | Location      | Old Version | New Version | Notes                                                                                                                                                                                                          |
+| ---------- | ------------- | ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| typescript | root devDep   | 7.0.2       | 6.0.3       | Downgraded: TS 7.0 is the Go-native port and ships without a JS API. `typescript-eslint` v8 requires the JS API and hard-crashes with TS 7.0, breaking all linting. Blocked until TS 7.1 ships a new JS API. |
+
+### Next Steps (Pending)
+
+- Upgrade `eslint-plugin-react-hooks` 5.2.0 → 7.1.1 (v7 adds React Compiler rules to `recommended`; need to review the ~33 new violations first)
+- After react-hooks v7: upgrade `eslint` 9.x → 10.8.0 and `@eslint/js` 9.x → 10.0.1
+- Revisit `typescript` once TS 7.1 ships a stable JS API and `typescript-eslint` adds support
+
+---
+
 ## 2026-07-22 – Dependency Update Run
 
 ### Updated
