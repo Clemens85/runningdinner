@@ -23,8 +23,8 @@ import {
 import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry } from '@runningdinner/shared';
 import { AdvancedMarker, InfoWindow, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 import { uniq } from 'lodash-es';
-import { useEffect, useState } from 'react';
 import React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGeoPosition } from '../hooks/GeoPositionHook';

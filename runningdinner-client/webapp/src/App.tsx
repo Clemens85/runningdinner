@@ -1,6 +1,6 @@
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
-import { Suspense } from 'react';
 import React from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { WIZARD_ROOT_PATH } from './common/mainnavigation/NavigationPaths';

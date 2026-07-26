@@ -2,9 +2,9 @@
 
 ### Updated
 
-| Package    | Location      | Old Version | New Version | Notes                                                                                                                                                                                                          |
-| ---------- | ------------- | ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| typescript | root devDep   | 7.0.2       | 6.0.3       | Downgraded: TS 7.0 is the Go-native port and ships without a JS API. `typescript-eslint` v8 requires the JS API and hard-crashes with TS 7.0, breaking all linting. Blocked until TS 7.1 ships a new JS API. |
+| Package    | Location    | Old Version | New Version | Notes                                                                                                                                                                                                        |
+| ---------- | ----------- | ----------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| typescript | root devDep | 7.0.2       | 6.0.3       | Downgraded: TS 7.0 is the Go-native port and ships without a JS API. `typescript-eslint` v8 requires the JS API and hard-crashes with TS 7.0, breaking all linting. Blocked until TS 7.1 ships a new JS API. |
 
 ### Next Steps (Pending)
 
