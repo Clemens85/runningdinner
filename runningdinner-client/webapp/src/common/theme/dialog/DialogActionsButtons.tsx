@@ -32,9 +32,11 @@ export function DialogActionsButtons({ okButton, cancelButton }: DialogActionsBu
 
   const renderButtonsDesktop = () => {
     return (
-      <Box sx={{
-        p: 2
-      }}>
+      <Box
+        sx={{
+          p: 2,
+        }}
+      >
         {cancelButton}
         {okButton}
       </Box>
@@ -48,13 +50,12 @@ export function DialogActionsButtons({ okButton, cancelButton }: DialogActionsBu
           direction="column"
           spacing={1}
           sx={{
-            justifyContent: "space-evenly",
-            alignItems: "center"
-          }}>
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          }}
+        >
           {okButton && <Box sx={{ width: '100%', '& button': { width: '100%' } }}>{okButton}</Box>}
-          <Box sx={{ textAlign: 'center', width: '100%' }}>
-            {cancelButton}
-          </Box>
+          <Box sx={{ textAlign: 'center', width: '100%' }}>{cancelButton}</Box>
         </Stack>
       </Box>
     );

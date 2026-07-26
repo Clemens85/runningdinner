@@ -70,10 +70,11 @@ export function LandingStart() {
           container
           spacing={4}
           sx={{
-            justifyContent: "center",
+            justifyContent: 'center',
             mt: 2,
-            mb: 4
-          }}>
+            mb: 4,
+          }}
+        >
           <Grid
             size={{
               xs: 12,
@@ -83,36 +84,40 @@ export function LandingStart() {
             <Box
               sx={{
                 my: 2,
-                display: "flex",
-                alignItems: 'center'
-              }}>
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
               <GroupIcon color="primary" sx={{ mr: 2 }} fontSize="large" />
               <Paragraph i18n="landing:teaser_workflow_team_generation" />
             </Box>
             <Box
               sx={{
                 my: 2,
-                display: "flex",
-                alignItems: 'center'
-              }}>
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
               <FastfoodIcon color="primary" sx={{ mr: 2 }} fontSize="large" />
               <Paragraph i18n="landing:teaser_workflow_team_meals" />
             </Box>
             <Box
               sx={{
                 my: 2,
-                display: "flex",
-                alignItems: 'center'
-              }}>
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
               <EventSeatIcon fontSize="large" color="primary" sx={{ mr: 2 }} />
               <Paragraph i18n="landing:teaser_workflow_team_host" />
             </Box>
             <Box
               sx={{
                 my: 2,
-                display: "flex",
-                alignItems: 'center'
-              }}>
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
               <EventSeatIcon fontSize="large" color="primary" sx={{ mr: 2 }} />
               <Paragraph i18n="landing:teaser_workflow_team_guest" />
             </Box>
@@ -120,8 +125,9 @@ export function LandingStart() {
               sx={{
                 my: 2,
                 display: 'flex',
-                alignItems: 'center'
-              }}>
+                alignItems: 'center',
+              }}
+            >
               <DirectionsRunIcon color="primary" sx={{ mr: 2 }} fontSize="large" />
               <Paragraph i18n="landing:teaser_workflow_dinner_route" />
             </Box>
@@ -129,8 +135,9 @@ export function LandingStart() {
               sx={{
                 mt: 2,
                 display: 'flex',
-                alignItems: 'center'
-              }}>
+                alignItems: 'center',
+              }}
+            >
               <LocalBarIcon color="primary" sx={{ mr: 2 }} fontSize="large" />
               <Paragraph i18n="landing:teaser_workflow_dinner_route_finish" />
             </Box>
@@ -144,24 +151,32 @@ export function LandingStart() {
             <Typography variant={'h4'} component="h4" gutterBottom>
               {t('common:example')}
             </Typography>
-            <Box sx={{
-              my: 2
-            }}>
+            <Box
+              sx={{
+                my: 2,
+              }}
+            >
               <Paragraph i18n="landing:teaser_example_appetizer" />
             </Box>
-            <Box sx={{
-              my: 2
-            }}>
+            <Box
+              sx={{
+                my: 2,
+              }}
+            >
               <Paragraph i18n="landing:teaser_example_main_course" html={true} />
             </Box>
-            <Box sx={{
-              my: 2
-            }}>
+            <Box
+              sx={{
+                my: 2,
+              }}
+            >
               <Paragraph i18n="landing:teaser_example_dessert" html={true} />
             </Box>
-            <Box sx={{
-              mt: 2
-            }}>
+            <Box
+              sx={{
+                mt: 2,
+              }}
+            >
               <Paragraph i18n="landing:teaser_example_summary" html={true} />
             </Box>
           </Grid>
@@ -177,20 +192,23 @@ export function LandingStart() {
             }}
           >
             <PageTitle>{t('for_organizers_headline')}</PageTitle>
-            <Box sx={{
-              mb: mbTeaser
-            }}>
+            <Box
+              sx={{
+                mb: mbTeaser,
+              }}
+            >
               <TeaserCard titleI18nKey={'landing:create_event_headline'}>
                 <Span i18n={'landing:create_event_description'} html={true} />
                 <Stack
                   direction={imageRowDirection}
                   spacing={imageSpacing}
                   sx={{
-                    justifyContent: "space-evenly",
+                    justifyContent: 'space-evenly',
                     alignItems: imageAlignItems,
                     py: 2,
-                    flexWrap: "wrap"
-                  }}>
+                    flexWrap: 'wrap',
+                  }}
+                >
                   <Box>
                     <Zoom>
                       <img src={wizardImg1} alt="Running Dinner Wizard with Basic Details" width={imageWidth} loading="lazy" />
@@ -207,28 +225,33 @@ export function LandingStart() {
                     </Zoom>
                   </Box>
                 </Stack>
-                <Box sx={{
-                  pt: 2
-                }}>
+                <Box
+                  sx={{
+                    pt: 2,
+                  }}
+                >
                   <PrimaryRouterButton to={`/${LANDING_CREATE_RUNNING_DINNER_PATH}`}>{t('landing:create_event_headline')}</PrimaryRouterButton>
                 </Box>
               </TeaserCard>
             </Box>
 
-            <Box sx={{
-              mb: mbTeaser
-            }}>
+            <Box
+              sx={{
+                mb: mbTeaser,
+              }}
+            >
               <TeaserCard titleI18nKey={'landing:manage_event_headline'}>
                 <Span i18n={'landing:manage_event_description'} />
                 <Stack
                   direction={imageRowDirection}
                   spacing={imageSpacing}
                   sx={{
-                    justifyContent: "space-evenly",
+                    justifyContent: 'space-evenly',
                     alignItems: imageAlignItems,
                     py: 2,
-                    flexWrap: "wrap"
-                  }}>
+                    flexWrap: 'wrap',
+                  }}
+                >
                   <Box>
                     <Zoom>
                       <img src={participantsImg} alt="Administration of Participants" width={imageWidth} loading="lazy" />
@@ -245,9 +268,11 @@ export function LandingStart() {
                     </Zoom>
                   </Box>
                 </Stack>
-                <Box sx={{
-                  pt: 2
-                }}>
+                <Box
+                  sx={{
+                    pt: 2,
+                  }}
+                >
                   <Button color={'primary'} variant={'outlined'} to={`/${LANDING_CREATE_RUNNING_DINNER_PATH}`} component={RouterLink}>
                     {t('landing:manage_event_link')}
                   </Button>
@@ -255,9 +280,11 @@ export function LandingStart() {
               </TeaserCard>
             </Box>
 
-            <Box sx={{
-              mb: mbTeaser
-            }}>
+            <Box
+              sx={{
+                mb: mbTeaser,
+              }}
+            >
               <TeaserCard titleI18nKey={'landing:manage_event_party_headline'}>
                 <Span i18n={'landing:manage_event_party_description'} html={true} />
               </TeaserCard>
@@ -272,20 +299,23 @@ export function LandingStart() {
           >
             <PageTitle>{t('for_participants_headline')}</PageTitle>
 
-            <Box sx={{
-              mb: mbTeaser
-            }}>
+            <Box
+              sx={{
+                mb: mbTeaser,
+              }}
+            >
               <TeaserCard titleI18nKey={'landing:participant_portal_headline'}>
                 <Span i18n={'landing:participant_portal_description'} />
                 <Stack
                   direction={imageRowDirection}
                   spacing={imageSpacing}
                   sx={{
-                    justifyContent: "space-evenly",
+                    justifyContent: 'space-evenly',
                     alignItems: imageAlignItems,
                     py: 2,
-                    flexWrap: "wrap"
-                  }}>
+                    flexWrap: 'wrap',
+                  }}
+                >
                   <Box>
                     <Zoom>
                       <img src={myEventsImg} alt="Participant Portal – My Events Overview" width={imageWidth} loading="lazy" />
@@ -305,20 +335,23 @@ export function LandingStart() {
               </TeaserCard>
             </Box>
 
-            <Box sx={{
-              mb: mbTeaser
-            }}>
+            <Box
+              sx={{
+                mb: mbTeaser,
+              }}
+            >
               <TeaserCard titleI18nKey={'landing:discover_public_events_headline'}>
                 <Span i18n={'landing:discover_public_events_description'} />
                 <Stack
                   direction={imageRowDirection}
                   spacing={imageSpacing}
                   sx={{
-                    justifyContent: "space-evenly",
+                    justifyContent: 'space-evenly',
                     alignItems: imageAlignItems,
                     py: 2,
-                    flexWrap: "wrap"
-                  }}>
+                    flexWrap: 'wrap',
+                  }}
+                >
                   <Box>
                     <Zoom>
                       <img src={registrationImg} alt="Dinner Registration" width={imageWidth} />
@@ -335,30 +368,38 @@ export function LandingStart() {
                     </Zoom>
                   </Box>
                 </Stack>
-                <Box sx={{
-                  pt: 2
-                }}>
+                <Box
+                  sx={{
+                    pt: 2,
+                  }}
+                >
                   <PrimaryRouterButton to={`/${RUNNING_DINNER_EVENTS_PATH}`}>{t('landing:discover_public_events_link')}</PrimaryRouterButton>
                 </Box>
               </TeaserCard>
             </Box>
 
-            <Box sx={{
-              mb: mbTeaser
-            }}>
+            <Box
+              sx={{
+                mb: mbTeaser,
+              }}
+            >
               <TeaserCard titleI18nKey={'landing:public_events_no_event_found_headline'}>
                 <Span i18n={'landing:public_events_no_event_found_description'} html={true} />
               </TeaserCard>
             </Box>
 
-            <Box sx={{
-              mb: mbTeaser
-            }}>
+            <Box
+              sx={{
+                mb: mbTeaser,
+              }}
+            >
               <TeaserCard titleI18nKey={'landing:privacy_question_headline'}>
                 <Span i18n={'landing:privacy_question_description'} html={true} />
-                <Box sx={{
-                  pt: 2
-                }}>
+                <Box
+                  sx={{
+                    pt: 2,
+                  }}
+                >
                   <Button color={'primary'} variant={'outlined'} to={`/${IMPRESSUM_PATH}`} component={RouterLink}>
                     {t('landing:privacy_more_infos_link')}
                   </Button>

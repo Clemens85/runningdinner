@@ -74,14 +74,14 @@ function MobileRow({ row, isUpdating }: RowProps) {
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography variant="body2" sx={{ fontWeight: "medium" }}>
+          <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
             #{row.rowNumber} — <Fullname firstnamePart={row.data.firstnamePart} lastname={row.data.lastname} />
           </Typography>
           <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-all' }}>
             {row.data.email}
           </Typography>
           {hasFixedPartner(row) && (
-            <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
               +&nbsp;
               <Fullname firstnamePart={row.data.teamPartnerWishPartnerFirstname} lastname={row.data.teamPartnerWishPartnerLastname} />
             </Typography>
@@ -104,7 +104,7 @@ function MobileRow({ row, isUpdating }: RowProps) {
         <Collapse in={open} timeout="auto" unmountOnExit>
           <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
             {row.validationResult.messages.map((msg, idx) => (
-              <Typography key={idx} variant="caption" color={messageColor(msg.severity)} sx={{ display: "block" }}>
+              <Typography key={idx} variant="caption" color={messageColor(msg.severity)} sx={{ display: 'block' }}>
                 {msg.field ? `[${msg.field}] ` : ''}
                 {msg.message}
               </Typography>
@@ -139,7 +139,7 @@ function DesktopRow({ row, isUpdating }: RowProps) {
         <TableCell>
           <Fullname firstnamePart={row.data.firstnamePart} lastname={row.data.lastname} />
           {hasFixedPartner(row) && (
-            <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
               +&nbsp;
               <Fullname firstnamePart={row.data.teamPartnerWishPartnerFirstname} lastname={row.data.teamPartnerWishPartnerLastname} />
             </Typography>

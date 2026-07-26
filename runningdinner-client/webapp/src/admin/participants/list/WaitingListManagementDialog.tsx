@@ -90,9 +90,11 @@ export function WaitingListManagementDialog(props: BaseRunningDinnerProps & Clos
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Box sx={{
-        mt: 3
-      }}>
+      <Box
+        sx={{
+          mt: 3,
+        }}
+      >
         <WaitingListManagementDialogContentView runningDinner={runningDinner} onClose={onClose} />
       </Box>
     </Dialog>
@@ -239,7 +241,8 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
           justifyContent: 'center',
           mt: DIALOG_SPACING_X,
           mx: DIALOG_SPACING_X,
-        }}>
+        }}
+      >
         <Grid>
           <Subtitle>{t('admin:waitinglist_assign_participants_teams')}</Subtitle>
           <Paragraph>
@@ -256,7 +259,8 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
         sx={{
           justifyContent: 'center',
           mt: DIALOG_SPACING_X,
-        }}>
+        }}
+      >
         <>
           {teamParticipantAssignments.map((tpa) => {
             return (
@@ -264,8 +268,9 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
                 <Box
                   sx={{
                     mx: DIALOG_SPACING_X,
-                    mb: DIALOG_SPACING_X
-                  }}>
+                    mb: DIALOG_SPACING_X,
+                  }}
+                >
                   <SingleTeamParticipantsAssignmentView
                     {...tpa}
                     allSelectableParticipants={allSelectableParticipants}
@@ -283,13 +288,15 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
         container
         sx={{
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Grid>
           <Box
             sx={{
               mx: DIALOG_SPACING_X,
-              mt: DIALOG_SPACING_X
-            }}>
+              mt: DIALOG_SPACING_X,
+            }}
+          >
             <PrimarySuccessButtonAsync onClick={handleAssignToExistingTeams} size={'large'} sx={{ width: '100%' }} data-testid={'waitinglist-assign-participants-teams-action'}>
               {t('admin:waitinglist_assign_participants_teams')}!
             </PrimarySuccessButtonAsync>
@@ -323,7 +330,8 @@ function NotifyTeamsAboutChangesView({ runningDinner, affectedTeams, dinnerRoute
           justifyContent: 'center',
           px: DIALOG_SPACING_X,
           mt: DIALOG_SPACING_X,
-        }}>
+        }}
+      >
         <Grid>
           <Subtitle>{t('admin:team_notify_cancellation')}</Subtitle>
           <Paragraph>{t('admin:waitinglist_notification_teams_info')}</Paragraph>
@@ -343,8 +351,8 @@ function NotifyTeamsAboutChangesView({ runningDinner, affectedTeams, dinnerRoute
             justifyContent: 'center',
             px: DIALOG_SPACING_X,
             mt: DIALOG_SPACING_X,
-
-          }}>
+          }}
+        >
           <Grid>
             <Alert severity={'warning'} data-testid={'waitinglist_notification_dinnerroute_hint'}>
               <AlertTitle>{t('common:attention')}</AlertTitle>
@@ -359,7 +367,8 @@ function NotifyTeamsAboutChangesView({ runningDinner, affectedTeams, dinnerRoute
           justifyContent: 'center',
           px: DIALOG_SPACING_X,
           mt: DIALOG_SPACING_X,
-        }}>
+        }}
+      >
         <Grid>
           <PrimarySuccessButtonAsync
             onClick={() => handleSendNotifications(true)}
@@ -433,9 +442,11 @@ function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssig
         </Subtitle>
         {renderTeamMembers()}
       </Paper>
-      <Box sx={{
-        my: 2
-      }}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <small>{t('admin:waitinglist_assign_participants_teams_select_hint')}</small>
       </Box>
       {selectableParticipantControls}
@@ -519,7 +530,8 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
           justifyContent: 'center',
           px: DIALOG_SPACING_X,
           mt: DIALOG_SPACING_X,
-        }}>
+        }}
+      >
         <Grid sx={{ px: DIALOG_SPACING_X }}>
           <Subtitle>
             <Trans i18nKey={'admin:waitinglist_generate_teams_num_participants'} values={{ numParticipants: numParticipantsAssignable }} />
@@ -537,14 +549,17 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
         sx={{
           justifyContent: 'center',
           mt: DIALOG_SPACING_X,
-        }}>
+        }}
+      >
         <Grid sx={{ px: DIALOG_SPACING_X, mb: DIALOG_SPACING_X }}>
           <Paper elevation={3} sx={{ p: DIALOG_SPACING_X }}>
             {participantsAssignableControls}
           </Paper>
-          <Box sx={{
-            my: 2
-          }}>
+          <Box
+            sx={{
+              my: 2,
+            }}
+          >
             <small>{t('admin:waitinglist_generate_teams_select_hint')}</small>
           </Box>
         </Grid>
@@ -553,7 +568,8 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
         container
         sx={{
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Grid sx={{ mt: DIALOG_SPACING_X, px: DIALOG_SPACING_X }}>
           <PrimarySuccessButtonAsync onClick={handleGenerateNewTeams} size={'large'} sx={{ width: '100%' }} data-testid={'waitinglist-teams-generation-action'}>
             {t('admin:waitinglist_generate_teams')}
@@ -570,13 +586,19 @@ function NoSimpleActionView({ numMissingParticipantsForFullTeamArrangement, rema
   const numRemainingParticipants = remainingParticipants.length;
 
   return (
-    <Grid container data-testid={'waitinglist-distribute-to-teams-view'} sx={{
-      justifyContent: 'center'
-    }}>
+    <Grid
+      container
+      data-testid={'waitinglist-distribute-to-teams-view'}
+      sx={{
+        justifyContent: 'center',
+      }}
+    >
       <Grid>
-        <Box sx={{
-          m: DIALOG_SPACING_X
-        }}>
+        <Box
+          sx={{
+            m: DIALOG_SPACING_X,
+          }}
+        >
           <Paragraph>
             <Trans i18nKey={'admin:waitinglist_no_simple_action_missing_participants_info'} values={{ numRemainingParticipants, numMissingParticipantsForFullTeamArrangement }} />
           </Paragraph>
@@ -602,13 +624,19 @@ function TeamsNotGeneratedView() {
   const { t } = useTranslation(['admin', 'common']);
 
   return (
-    <Grid container data-testid={'waitinglist-teams-not-generated-view'} sx={{
-      justifyContent: 'center'
-    }}>
+    <Grid
+      container
+      data-testid={'waitinglist-teams-not-generated-view'}
+      sx={{
+        justifyContent: 'center',
+      }}
+    >
       <Grid>
-        <Box sx={{
-          m: DIALOG_SPACING_X
-        }}>
+        <Box
+          sx={{
+            m: DIALOG_SPACING_X,
+          }}
+        >
           <Paragraph>
             <Trans i18nKey={'admin:waitinglist_teams_not_generated'} />
             <br />

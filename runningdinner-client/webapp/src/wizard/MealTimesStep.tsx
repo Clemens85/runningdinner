@@ -138,9 +138,7 @@ export default function MealTimesStep() {
     <div>
       <PageTitle>{t('time_setup')}</PageTitle>
       <FormProvider {...formMethods}>
-        <Stack direction={mealTimeFieldsDirection}>
-          {mealTimeFields}
-        </Stack>
+        <Stack direction={mealTimeFieldsDirection}>{mealTimeFields}</Stack>
 
         <AfterPartyLocationToggleButton
           afterPartyLocationEnabled={!!afterPartyLocation}

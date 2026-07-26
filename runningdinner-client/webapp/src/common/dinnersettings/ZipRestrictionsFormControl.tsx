@@ -55,8 +55,9 @@ export function ZipRestrictionsFormControl({ currentRegistrationType, currentZip
           direction={isMobileDevice ? 'column' : 'row'}
           sx={{
             gap: 1,
-            alignItems: isMobileDevice ? 'flex-start' : 'center'
-          }}>
+            alignItems: isMobileDevice ? 'flex-start' : 'center',
+          }}
+        >
           <Box>
             {hasZipRestrictions && (
               <Typography variant="body2">
@@ -126,9 +127,11 @@ function EditZipRestrictionsDialog({ onCancel, onSave, currentZipRestrictions }:
     <Dialog open={true} onClose={onCancel} aria-labelledby={title}>
       <DialogTitleCloseable onClose={onCancel}>{title}</DialogTitleCloseable>
       <DialogContent>
-        <Box sx={{
-          pt: 2
-        }}>
+        <Box
+          sx={{
+            pt: 2,
+          }}
+        >
           {!hasZipRestrictions && (
             <Alert severity="info" variant="outlined">
               <Trans i18nKey="common:zip_restrictions_add_info" />
@@ -141,9 +144,11 @@ function EditZipRestrictionsDialog({ onCancel, onSave, currentZipRestrictions }:
             </Alert>
           )}
 
-          <Box sx={{
-            my: 2
-          }}>
+          <Box
+            sx={{
+              my: 2,
+            }}
+          >
             <TextField
               helperText={t('common:zip_restrictions_input_help')}
               label={t('zip_restrictions_input_label')}

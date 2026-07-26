@@ -72,21 +72,27 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
   }, [debouncedSearchText, searchableParticipants]);
 
   return (
-    <Box component={'div'} sx={{
-      mb: 2
-    }}>
+    <Box
+      component={'div'}
+      sx={{
+        mb: 2,
+      }}
+    >
       <PageTitle>{t('common:headline_participantlist')}</PageTitle>
-      <Box sx={{
-        mt: 1
-      }}>
+      <Box
+        sx={{
+          mt: 1,
+        }}
+      >
         <Grid
           container
           direction={'row'}
           spacing={2}
           sx={{
             alignItems: 'center',
-            justifyContent: 'flex-start'
-          }}>
+            justifyContent: 'flex-start',
+          }}
+        >
           <Grid
             size={{
               xs: 12,
@@ -156,8 +162,9 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
           spacing={2}
           sx={{
             alignItems: 'center',
-            justifyContent: 'flex-start'
-          }}>
+            justifyContent: 'flex-start',
+          }}
+        >
           <Grid
             size={{
               xs: 12,

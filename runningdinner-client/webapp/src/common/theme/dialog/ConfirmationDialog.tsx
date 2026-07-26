@@ -78,14 +78,16 @@ export function ConfirmationDialog({ dialogTitle, dialogContent, buttonConfirmTe
           sx={{
             px: 2,
             pt: 1,
-            pb: 2
-          }}>
+            pb: 2,
+          }}
+        >
           <Stack
             direction={buttonFlexDirection}
             sx={{
-              justifyContent: "flex-end",
-              alignContent: "center"
-            }}>
+              justifyContent: 'flex-end',
+              alignContent: 'center',
+            }}
+          >
             <Box style={{ alignSelf: 'center' }}>{buttonCancelText && <SecondaryButton onClick={() => handleCloseInternal(false)}>{buttonCancelText}</SecondaryButton>}</Box>
             <Box style={{ alignSelf: 'center' }}>
               {danger ? (

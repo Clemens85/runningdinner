@@ -1,4 +1,4 @@
-import { Chip, Divider,Grid, LinearProgress, styled, Tooltip, Typography } from '@mui/material';
+import { Chip, Divider, Grid, LinearProgress, styled, Tooltip, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import {
   DinnerRouteDistanceUtil,

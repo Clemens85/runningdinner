@@ -191,7 +191,7 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
 
 function OptimizationProgressBar() {
   return (
-    <Box sx={{ flexDirection: "column", alignItems: "center", gap: 2 }}>
+    <Box sx={{ flexDirection: 'column', alignItems: 'center', gap: 2 }}>
       <ProgressBar showLoadingProgress={true} />
       <Typography variant="body1" color="textSecondary" align="center" sx={{ mt: 2 }}>
         {t('admin:dinner_route_optimization_running')}

@@ -20,8 +20,9 @@ export function NewsPage() {
             size={{
               xs: 12,
               lg: 10,
-              xl: 8
-            }}>
+              xl: 8,
+            }}
+          >
             <NewsCard title={t(`news:${newsItem.title}`)} content={<Trans i18nKey={`news:${newsItem.content}`} />} date={newsItem.date} />
           </Grid>
         ))}
