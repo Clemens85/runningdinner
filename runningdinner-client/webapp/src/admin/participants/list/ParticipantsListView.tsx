@@ -64,8 +64,12 @@ export default function ParticipantsListView({
         </TableContainer>
 
         {showParticipantsOnWaitingListInOwnSection && (
-          <Box mt={2} data-testid={'waitinglist-participants'}>
-            <Box mb={2}>
+          <Box data-testid={'waitinglist-participants'} sx={{
+            mt: 2
+          }}>
+            <Box sx={{
+              mb: 2
+            }}>
               <WaitingListManagementAlert runningDinner={runningDinner} teamsGenerated={participantList.teamsGenerated} />
             </Box>
             <TableContainer component={Paper}>

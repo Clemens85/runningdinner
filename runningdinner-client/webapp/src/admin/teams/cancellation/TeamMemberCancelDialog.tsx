@@ -84,7 +84,9 @@ export const TeamMemberCancelDialog = ({ adminId, team, teamMemberToCancel, isOp
 
   const renderContentForWholeTeamCancel = () => {
     return (
-      <Box mt={1}>
+      <Box sx={{
+        mt: 1
+      }}>
         <Span i18n="admin:team_member_cancel_whole_team" parameters={{ teamMemberToCancel: teamMemberToCancelFullname }} html={true} />
       </Box>
     );
@@ -93,7 +95,9 @@ export const TeamMemberCancelDialog = ({ adminId, team, teamMemberToCancel, isOp
   const renderContentForTeamMemberCancel = () => {
     const remainingTeamMemberNamesAsStr = remainingTeamMemberNames.join(', ');
     return (
-      <Box mt={1}>
+      <Box sx={{
+        mt: 1
+      }}>
         <Box>
           <Span
             html={true}

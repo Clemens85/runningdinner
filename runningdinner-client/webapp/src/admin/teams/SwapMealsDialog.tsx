@@ -70,7 +70,9 @@ function SelectTeamToSwap({ allTeams, srcTeam, includeSameMeal, onIncludeSameMea
         sx={{ minWidth: minWidth }}
         renderInput={(params) => <TextField {...params} label={t('admin:meals_swap_team_team_choose')} autoFocus={true} />}
       />
-      <Box mt={2}>
+      <Box sx={{
+        mt: 2
+      }}>
         <FormControlLabel
           control={
             <Checkbox
@@ -147,7 +149,9 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
     <Dialog open={true} onClose={handleCancel} fullWidth={true}>
       <DialogTitleCloseable onClose={handleCancel}>{dialogTitle}</DialogTitleCloseable>
       <DialogContent>
-        <Box mb={2}>
+        <Box sx={{
+          mb: 2
+        }}>
           <Paragraph>
             <Trans i18nKey="admin:meals_swap_team_description" values={{ team: getTeamNameMembers(srcTeam), meal: srcTeam.meal.label }} />
           </Paragraph>
@@ -164,7 +168,9 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
           />
         </Box>
         {selectedTeam && (
-          <Box mt={3}>
+          <Box sx={{
+            mt: 3
+          }}>
             <Paragraph>
               <Trans
                 i18nKey="admin:meals_swap_team_after_swap_src"

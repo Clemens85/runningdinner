@@ -163,7 +163,9 @@ export function EditMealsDialog({ adminId, open, dashboardAdminActivities, incom
           {t('admin:time_schedule_edit')}
         </DialogTitleCloseable>
         <DialogContent>
-          <Box pt={2}>
+          <Box sx={{
+            pt: 2
+          }}>
             {showMessagesAlreadySentInfo && (
               <Alert severity={'info'} data-testid="edit-meal-times-warning-messages-sent" sx={{ mb: 5 }}>
                 <AlertTitle>{t('attention')}</AlertTitle>
@@ -239,8 +241,16 @@ function EditableMealControl({ meal, handleTimeChange, handleMealLabelChange, ha
 
   return (
     <>
-      <Stack direction="row" alignItems={'center'} justifyContent={'space-between'} sx={{ mb: 1 }}>
-        <Stack direction="row" alignItems={'center'}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 1
+        }}>
+        <Stack direction="row" sx={{
+          alignItems: 'center'
+        }}>
           {!isEditing && <Typography>{meal.label}</Typography>}
           {isEditing && <TextField value={draft} onChange={handleChange} onKeyDown={handleKeyDown} onBlur={saveDraft} size="small" autoFocus fullWidth />}
           {!isEditing && (
@@ -288,7 +298,12 @@ function AddMealControl({ handleAddMeal, meals }: AddMealControlProps) {
   }
 
   return (
-    <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
+    <Grid
+      container
+      sx={{
+        justifyContent: "flex-end",
+        mt: 2
+      }}>
       <Grid>
         <Button color={'primary'} startIcon={<AddIcon />} onClick={onAddMeal} style={{ paddingLeft: '0' }}>
           {t('common:add')}

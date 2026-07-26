@@ -47,9 +47,11 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
 
   // const padding = 2;
   const padding = {
-    pr: 2,
-    pt: 2,
-    pb: 2,
+    sx: {
+      pr: 2,
+      pt: 2,
+      pb: 2,
+    },
   };
 
   return (
@@ -60,7 +62,13 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
       {!isClosedDinner(runningDinner) && (
         <>
           {smUpDevice && (
-            <Grid container alignItems={'center'} spacing={1}>
+            <Grid
+              container
+              spacing={1}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <Grid>
                 <SmallTitle>
                   {t('common:hidden_link_text')}&nbsp;
@@ -73,9 +81,18 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
             </Grid>
           )}
           {!smUpDevice && (
-            <Grid container alignItems={'center'}>
+            <Grid
+              container
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <Grid>
-                <Box pr={1}>
+                <Box
+                  sx={{
+                    pr: 1,
+                  }}
+                >
                   <SmallTitle i18n={'common:hidden_link_text'} />
                 </Box>
               </Grid>
@@ -89,12 +106,19 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
           )}
         </>
       )}
-      <Grid container justifyContent={'center'} alignItems={'stretch'}>
+      <Grid
+        container
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'stretch',
+        }}
+      >
         <Grid
           size={{
             xs: 12,
-            md: 4
-          }}>
+            md: 4,
+          }}
+        >
           <Box {...padding}>
             <Overview runningDinner={runningDinner} />
           </Box>
@@ -102,8 +126,9 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
         <Grid
           size={{
             xs: 12,
-            md: 4
-          }}>
+            md: 4,
+          }}
+        >
           <Box {...padding}>
             {dashboardAdminActivities && (
               <MealsList meals={meals} runningDinner={runningDinner} onRunningDinnerUpdate={handleRunningDinnerUpdate} dashboardAdminActivities={dashboardAdminActivities} />
@@ -113,28 +138,29 @@ export default function Dashboard({ runningDinner }: BaseRunningDinnerProps) {
         <Grid
           size={{
             xs: 12,
-            md: 4
-          }}>
-          <Box {...padding} pr={0}>
-            {dashboardAdminActivities && <Checklist runningDinner={runningDinner} dashboardAdminActivities={dashboardAdminActivities} />}
-          </Box>
+            md: 4,
+          }}
+        >
+          <Box sx={{ pr: 0, pt: 2, pb: 2 }}>{dashboardAdminActivities && <Checklist runningDinner={runningDinner} dashboardAdminActivities={dashboardAdminActivities} />}</Box>
         </Grid>
       </Grid>
       <Grid container>
         <Grid
           size={{
             xs: 12,
-            md: 8
-          }}>
+            md: 8,
+          }}
+        >
           <Box {...padding}>{dashboardAdminActivities && <AdminActivitiesTimeline dashboardAdminActivities={dashboardAdminActivities} />}</Box>
         </Grid>
         {!isClosedDinner(runningDinner) && (
           <Grid
             size={{
               xs: 12,
-              md: 4
-            }}>
-            <Box {...padding} pr={0}>
+              md: 4,
+            }}
+          >
+            <Box sx={{ pr: 0, pt: 2, pb: 2 }}>
               <ParticipantRegistrations runningDinner={runningDinner} />
             </Box>
           </Grid>

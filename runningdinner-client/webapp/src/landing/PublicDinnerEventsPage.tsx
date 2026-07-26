@@ -70,7 +70,9 @@ function PublicDinnerEventsListPage({ publicRunningDinners }: PublicDinnerEvents
                   <TextViewHtml text={publicRunningDinner.publicSettings.description} limit={256} />
                 </Span>
               </Box>
-              <Box pt={2}>
+              <Box sx={{
+                pt: 2
+              }}>
                 <PrimaryButton component="div">{t('common:more')}</PrimaryButton>
               </Box>
             </CardContent>

@@ -15,7 +15,12 @@ export function OpenAddressInGoogleMapsLink({ geocodingResult }: OpenAddressInGo
   }
 
   return (
-    <Box mt={1} display="flex" justifyContent="flex-end">
+    <Box
+      sx={{
+        mt: 1,
+        display: "flex",
+        justifyContent: "flex-end"
+      }}>
       <Tooltip title={t('participant_open_in_google_maps_tooltip')}>
         <a
           href={`https://www.google.com/maps?q=${geocodingResult!.lat},${geocodingResult!.lng}`}

@@ -126,7 +126,9 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
 
   return (
     <Paper elevation={3} sx={{ mb: 2 }}>
-      <Box p={2}>
+      <Box sx={{
+        p: 2
+      }}>
         <Grid container>
           <Grid size={11}>
             <Subtitle>
@@ -139,7 +141,9 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
           </Grid>
           {isReplaced && (
             <Grid size={12}>
-              <Box mt={1}>
+              <Box sx={{
+                mt: 1
+              }}>
                 <cite>
                   <Span i18n="admin:team_replaced_text" />
                 </cite>
@@ -151,11 +155,15 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
         </Grid>
 
         {isCancelled ? (
-          <Box mt={2}>
+          <Box sx={{
+            mt: 2
+          }}>
             <CancelledTeamMember />
           </Box>
         ) : (
-          <Box mt={2}>
+          <Box sx={{
+            mt: 2
+          }}>
             <Divider>
               <strong>{t('team_members')}</strong>
             </Divider>
@@ -166,7 +174,9 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
           </Box>
         )}
 
-        <Box mt={2}>
+        <Box sx={{
+          mt: 2
+        }}>
           <Divider>
             <strong>{t('admin:team_schedule')}</strong>
           </Divider>
@@ -241,10 +251,14 @@ function TeamMember({ teamMember, adminId, team, passedTeamMemberToCancel, onUpd
           <Stack spacing={0.25}>
             <Fullname {...teamMember} />
             <Stack direction="row" spacing={1}>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{
+                color: "text.secondary"
+              }}>
                 {numSeatsDisplay}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{
+                color: "text.secondary"
+              }}>
                 <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />
               </Typography>
             </Stack>
@@ -275,8 +289,12 @@ function TeamHostInfo({ team, sessionData, onOpenChangeTeamHostDialog }: TeamHos
   const hostTeamMemberName = getFullname(hostTeamMember);
 
   return (
-    <Box mt={1}>
-      <Stack direction="row" spacing={0.75} alignItems="baseline">
+    <Box sx={{
+      mt: 1
+    }}>
+      <Stack direction="row" spacing={0.75} sx={{
+        alignItems: "baseline"
+      }}>
         <Paragraph i18n="admin:teams_host" parameters={{ host: hostTeamMemberName }} html={true} sx={{ mb: 0 }} />
         <LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}>
           <Span>({t('change')})</Span>
@@ -298,7 +316,9 @@ function NoValidTeamHost({ team, numSeatsNeededForHost }: NoValidTeamHostProps) 
   }
 
   return (
-    <Grid container spacing={1} alignItems={'center'}>
+    <Grid container spacing={1} sx={{
+      alignItems: 'center'
+    }}>
       <Grid>
         <ErrorOutlineOutlinedIcon color={'secondary'} />
       </Grid>

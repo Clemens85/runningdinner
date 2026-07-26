@@ -275,7 +275,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
               }}
             >
               <Paper elevation={3}>
-                <Box p={2}>
+                <Box sx={{
+                  p: 2
+                }}>
                   <Grid container>
                     <Grid size={12}>
                       <MessageHeadline />
@@ -283,7 +285,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                     <Grid size={12}>
                       <RecipientSelection messageType={messageType} adminId={adminId} />
                       {!isProposalFetched ? (
-                        <Box mt={1}>
+                        <Box sx={{
+                          mt: 1
+                        }}>
                           <Skeleton variant="rounded" height={56} sx={{ mb: 2, mt: 1 }} />
                           <Skeleton variant="rounded" height={300} />
                         </Box>
@@ -291,7 +295,9 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                         <>
                           <MessageSubject onMessageSubjectChange={handleMessageSubjectChange} />
                           <Collapse in={autoFilled}>
-                            <Box mt={2}>
+                            <Box sx={{
+                              mt: 2
+                            }}>
                               <Alert severity="info" onClose={() => setAutoFilled(false)}>
                                 {t('admin:mails_proposal_autofilled')}
                               </Alert>
@@ -382,9 +388,13 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
                       </Grid>
                     )}
 
-                    <Grid container justifyContent="flex-end">
+                    <Grid container sx={{
+                      justifyContent: "flex-end"
+                    }}>
                       <Grid>
-                        <Box mt={3}>
+                        <Box sx={{
+                          mt: 3
+                        }}>
                           <PrimaryButton onClick={handleSubmit(handleSendMessages)} disabled={isSubmitting} size="large">
                             {t('messages_send_general')}
                           </PrimaryButton>
@@ -403,9 +413,13 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
               }}
             >
               <Grid size={12}>
-                <Box mt={0}>
+                <Box sx={{
+                  mt: 0
+                }}>
                   <Paper elevation={3}>
-                    <Box p={2}>
+                    <Box sx={{
+                      p: 2
+                    }}>
                       <MessagePreview adminId={adminId} messageType={messageType} />
                     </Box>
                   </Paper>

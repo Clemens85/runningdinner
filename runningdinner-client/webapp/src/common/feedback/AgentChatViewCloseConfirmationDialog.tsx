@@ -1,4 +1,4 @@
-import { Box, Dialog, DialogActions, DialogContent, DialogContentText, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogContentText, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { DialogTitleCloseable } from '../theme/DialogTitleCloseable';
@@ -39,22 +39,32 @@ export function AgentChatViewCloseConfirmationDialog({ open, onConfirm }: Feedba
         <DialogContentText id="feedback-close-confirmation-description">{t('common:feedback_close_confirmation_message')}</DialogContentText>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center', pb: 3, px: 3 }}>
-        <Grid container spacing={2} justifyContent="center" direction={isSmallDevice ? 'column' : 'row'}>
-          <Grid size={isSmallDevice ? 12 : 'auto'}>
-            <Box width={isSmallDevice ? '100%' : 'auto'}>
-              <PrimaryButton onClick={handleWantsEmail} fullWidth={isSmallDevice} autoFocus>
-                {t('common:feedback_close_yes_need_email')}
-              </PrimaryButton>
-            </Box>
-          </Grid>
-          <Grid size={isSmallDevice ? 12 : 'auto'}>
-            <Box width={isSmallDevice ? '100%' : 'auto'}>
-              <SecondaryButton onClick={handleNoEmailNeeded} fullWidth={isSmallDevice}>
-                {t('common:feedback_close_no_email_needed')}
-              </SecondaryButton>
-            </Box>
-          </Grid>
-        </Grid>
+        <Stack
+          direction={isSmallDevice ? 'column' : 'row'}
+          spacing={2}
+          sx={{
+            justifyContent: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              width: isSmallDevice ? '100%' : 'auto',
+            }}
+          >
+            <PrimaryButton onClick={handleWantsEmail} fullWidth={isSmallDevice} autoFocus>
+              {t('common:feedback_close_yes_need_email')}
+            </PrimaryButton>
+          </Box>
+          <Box
+            sx={{
+              width: isSmallDevice ? '100%' : 'auto',
+            }}
+          >
+            <SecondaryButton onClick={handleNoEmailNeeded} fullWidth={isSmallDevice}>
+              {t('common:feedback_close_no_email_needed')}
+            </SecondaryButton>
+          </Box>
+        </Stack>
       </DialogActions>
     </Dialog>
   );

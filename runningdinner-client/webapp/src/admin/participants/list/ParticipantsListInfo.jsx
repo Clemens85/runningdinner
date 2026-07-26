@@ -18,7 +18,9 @@ export default function ParticipantsListInfo(props) {
   }, [show]);
 
   return (
-    <Box mb={isOpen ? 3 : undefined}>
+    <Box sx={{
+      mb: isOpen ? 3 : undefined
+    }}>
       {isOpen && !hasSearchText && (
         <Alert severity={severity} variant="outlined" onClose={close} data-testid={'participant-list-info-box'}>
           {isStringNotEmpty(title) && <AlertTitle>{title}</AlertTitle>}

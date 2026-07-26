@@ -187,30 +187,51 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
       <RegistrationFormDrawer open={true} anchor="right" onClose={onCancel} ModalProps={{ keepMounted: true }}>
         <div>
           <Paper elevation={3}>
-            <Box p={3}>
+            <Box sx={{
+              p: 3
+            }}>
               <FormProvider {...formMethods}>
                 <form>
-                  <Grid container justifyContent={'space-between'} alignItems={'baseline'}>
+                  <Grid
+                    container
+                    sx={{
+                      justifyContent: 'space-between',
+                      alignItems: 'baseline'
+                    }}>
                     <Grid size={12}>
                       <Subtitle i18n={'landing:registration'} />
                     </Grid>
                   </Grid>
-                  <Box mb={3} mt={3}>
+                  <Box
+                    sx={{
+                      mb: 3,
+                      mt: 3
+                    }}>
                     <PersonalDataSection />
                   </Box>
-                  <Box mb={3}>
+                  <Box sx={{
+                    mb: 3
+                  }}>
                     <AddressSection headline={t('common:address_data')} isNumSeatsRequired={true} addressRemarksHelperText={t('landing:address_remarks_help')} />
                   </Box>
-                  <Box mb={3}>
+                  <Box sx={{
+                    mb: 3
+                  }}>
                     <MealSpecificsSection />
                   </Box>
-                  <Box mb={3}>
+                  <Box sx={{
+                    mb: 3
+                  }}>
                     {!teamPartnerWishDisabled && <TeamPartnerWishSectionRegistration invitingParticipantEmail={invitingParticipantEmail} publicDinnerId={publicDinnerId} />}
                   </Box>
-                  <Box mb={3}>
+                  <Box sx={{
+                    mb: 3
+                  }}>
                     <MiscSection miscNotesHelperText={t('landing:misc_notes_help')} />
                   </Box>
-                  <Box mb={3}>
+                  <Box sx={{
+                    mb: 3
+                  }}>
                     <FormCheckbox
                       name="dataProcessingAcknowledged"
                       useTableDisplay={true}
@@ -233,7 +254,9 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
 
                   {isSubmitting && <LinearProgress />}
 
-                  <Grid container justifyContent={'flex-end'}>
+                  <Grid container sx={{
+                    justifyContent: 'flex-end'
+                  }}>
                     <Grid>
                       <SecondaryButton onClick={onCancel}>{t('common:cancel')}</SecondaryButton>
                       <PrimaryButton
@@ -289,10 +312,14 @@ function ZipRestrictionDialogView({ publicRunningDinner }: ZipRestrictionDialogV
       <Alert severity="info" variant="outlined">
         <Trans i18nKey="landing:registration_not_possible_zip_restriction" values={{ title }} />
       </Alert>
-      <Box my={2}>
+      <Box sx={{
+        my: 2
+      }}>
         <PublicContactInfo {...publicSettings} />
       </Box>
-      <Box my={2}>
+      <Box sx={{
+        my: 2
+      }}>
         <Trans i18nKey={'common:zip_restrictions_enabled'} />
         <Grid container spacing={1} sx={{ pt: 1 }}>
           {resultingZipRestrictions.zipRestrictions.map((zipRestriction: string, index: number) => (

@@ -142,7 +142,9 @@ function DialogButtons({ sendInvitationButton, createNewParticipantButton, updat
 
   const renderButtonsDesktop = () => {
     return (
-      <Box p={2}>
+      <Box sx={{
+        p: 2
+      }}>
         {cancelButton}
         {sendInvitationButton && <SendInvitationButtonSpan>{sendInvitationButton}</SendInvitationButtonSpan>}
         {createNewParticipantButton}
@@ -153,8 +155,17 @@ function DialogButtons({ sendInvitationButton, createNewParticipantButton, updat
 
   const renderButtonsMobile = () => {
     return (
-      <Box p={1}>
-        <Grid container direction="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
+      <Box sx={{
+        p: 1
+      }}>
+        <Grid
+          container
+          direction="column"
+          spacing={1}
+          sx={{
+            justifyContent: "space-evenly",
+            alignItems: "center"
+          }}>
           {createNewParticipantButton && <GridWithCenteredFullwidthButton size={12}>{createNewParticipantButton}</GridWithCenteredFullwidthButton>}
           {sendInvitationButton && <GridWithCenteredFullwidthButton size={12}>{sendInvitationButton}</GridWithCenteredFullwidthButton>}
           {updateTeamPartnerWishButton && <GridWithCenteredFullwidthButton size={12}>{updateTeamPartnerWishButton}</GridWithCenteredFullwidthButton>}

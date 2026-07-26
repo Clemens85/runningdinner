@@ -23,14 +23,20 @@ export interface ClickHandler {
 function TryAgain({ onClick }: ClickHandler) {
   return (
     <Container maxWidth="lg">
-      <Box my={6}>
+      <Box sx={{
+        my: 6
+      }}>
         <Subtitle i18n="common:client_error_title" />
-        <Box my={2}>
+        <Box sx={{
+          my: 2
+        }}>
           <Alert severity={'error'} variant={'outlined'}>
             <AlertTitle>
               <Trans i18nKey={'common:client_error_message'} values={{ adminEmail: CONSTANTS.GLOBAL_ADMIN_EMAIL }} components={{ anchor: <LinkExtern href="" /> }} />
             </AlertTitle>
-            <Box my={1}>
+            <Box sx={{
+              my: 1
+            }}>
               <PrimaryButton onClick={onClick}>
                 <Trans i18nKey="common:client_error_action" />
               </PrimaryButton>

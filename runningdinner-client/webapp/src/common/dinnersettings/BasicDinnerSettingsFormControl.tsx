@@ -90,7 +90,9 @@ export function BasicDinnerSettingsFormControl({ registrationTypes }: BasicDinne
       <Grid container sx={{ mt: 3 }}>
         <Grid size={12}>
           <FormLabel>{t('common:event_language_label')}</FormLabel>
-          <Box my={1}>
+          <Box sx={{
+            my: 1
+          }}>
             <Controller
               name="languageCode"
               control={control}

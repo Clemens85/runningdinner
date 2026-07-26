@@ -279,7 +279,9 @@ function BasicDinnerSettingsView({ runningDinner, registrationTypes, onSettingsS
         <form>
           <Grid container>
             <Grid>
-              <Box pb={2}>
+              <Box sx={{
+                pb: 2
+              }}>
                 <Subtitle i18n="admin:settings_basics" />
               </Box>
               <BasicDinnerSettingsFormControl registrationTypes={registrationTypes} />
@@ -294,7 +296,9 @@ function BasicDinnerSettingsView({ runningDinner, registrationTypes, onSettingsS
               />
             </Grid>
           </Grid>
-          <Grid container justifyContent={'flex-end'}>
+          <Grid container sx={{
+            justifyContent: 'flex-end'
+          }}>
             <Grid sx={{ pt: 3, pb: 6 }}>
               <PrimaryButton disabled={formState.isSubmitting} size={'large'} onClick={handleSubmit(handleSubmitBasicDetailsAsync)}>
                 {t('common:save')}
@@ -386,13 +390,17 @@ function PublicDinnerSettingsView({ runningDinner, onSettingsSaved }: BaseRunnin
         <form>
           <Grid container>
             <Grid size={12}>
-              <Box pb={2}>
+              <Box sx={{
+                pb: 2
+              }}>
                 <Subtitle i18n="admin:settings_public_registration" />
               </Box>
               <PublicDinnerSettingsFormControl mediumDeviceHalfSize={false} />
             </Grid>
           </Grid>
-          <Grid container justifyContent={'flex-end'}>
+          <Grid container sx={{
+            justifyContent: 'flex-end'
+          }}>
             <Grid sx={{ pt: 3, pb: 6 }}>
               <SecondaryButton onClick={openUpdateRegistrationStateDialog}>{getUpdateRegistrationStateLabel()}...</SecondaryButton>
               <PrimaryButton disabled={formState.isSubmitting} size={'large'} onClick={handleSubmit(handleSubmitPublicSettingsAsync)} sx={{ ml: 2 }}>
@@ -515,7 +523,9 @@ function AfterPartyLocationFormView({ adminId, afterPartyLocation, onSettingsSav
       <FormProvider {...formMethods}>
         <form>
           <AfterPartyLocationFormControl />
-          <Grid container justifyContent={'flex-end'}>
+          <Grid container sx={{
+            justifyContent: 'flex-end'
+          }}>
             <Grid sx={{ pt: 3, pb: 6, justifyContent: 'flex-end' }}>
               <PrimaryButton disabled={formState.isSubmitting} size={'large'} onClick={handleSubmit(handleSubmitAfterPartyLocation)} sx={{ ml: 2 }}>
                 {t('common:save')}

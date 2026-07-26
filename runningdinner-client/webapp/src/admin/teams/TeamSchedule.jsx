@@ -79,7 +79,13 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
 
   const renderScheduleRowHeading = () => {
     return (
-      <Grid container spacing={spacing} justifyContent={'center'} alignItems={'center'}>
+      <Grid
+        container
+        spacing={spacing}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
         <GridContentRight size={{ xs, md }}>
           <Title i18n="common:host" />
         </GridContentRight>
@@ -99,7 +105,14 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
       return null;
     }
     return (
-      <Grid container spacing={spacing} justifyContent={'center'} alignItems={'center'} sx={{ mb: 1 }}>
+      <Grid
+        container
+        spacing={spacing}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          mb: 1
+        }}>
         <Grid sx={{ textAlign: 'center', mt: 1 }} size={12}>
           <Button color={'primary'} variant={'outlined'} size="medium" href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} target="_blank">
             {t('teams_show_dinnerroute')}
@@ -111,7 +124,14 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
 
   const renderScheduledMealRow = (scheduledMeal) => {
     return (
-      <Grid container spacing={spacing} justifyContent={'center'} alignItems={'center'} key={scheduledMeal.meal.id}>
+      <Grid
+        container
+        spacing={spacing}
+        key={scheduledMeal.meal.id}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
         <ScheduledMeal {...scheduledMeal} currentTeam={activeTeam} xs={xs} md={md} adminId={adminId} />
       </Grid>
     );
@@ -119,7 +139,14 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
 
   const renderTimelineRow = (index) => {
     return (
-      <Grid container spacing={spacing} justifyContent={'center'} alignItems={'center'} key={index}>
+      <Grid
+        container
+        spacing={spacing}
+        key={index}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
         <ScheduledMealTimeline xs={xs} md={md} />
       </Grid>
     );
@@ -157,7 +184,9 @@ function ScheduledMeal({ hostTeam, meal, guestTeams, currentTeam, xs, md, adminI
       const guestTeamNode = isSameEntity(guestTeam, currentTeam) ? <CurrentTeamButton team={guestTeam} /> : <MeetedTeamButton team={guestTeam} adminId={adminId} />;
       if (i > 0) {
         guestTeamNodes.push(
-          <Box key={guestTeam.id} mt={1}>
+          <Box key={guestTeam.id} sx={{
+            mt: 1
+          }}>
             {guestTeamNode}
           </Box>,
         );
@@ -240,13 +269,19 @@ function MeetedTeamButton({ team, adminId }) {
           horizontal: 'center',
         }}
       >
-        <Box p={2}>
+        <Box sx={{
+          p: 2
+        }}>
           <Title>
             <TeamNr {...team} />
           </Title>
           <Paragraph>{team.meal.label}</Paragraph>
-          <Box mt={1}>{teamMemberNodes}</Box>
-          <Box mt={1}>
+          <Box sx={{
+            mt: 1
+          }}>{teamMemberNodes}</Box>
+          <Box sx={{
+            mt: 1
+          }}>
             <LinkIntern pathname={teamPath}>
               <SmallTitle i18n="admin:team_jump_link" parameters={{ teamNumber: teamNumber }} />
             </LinkIntern>

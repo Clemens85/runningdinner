@@ -48,7 +48,9 @@ function MyEventsView({ events }: MyEventsViewProps) {
       </Box>
       <Collapse in={showAccessForm}>
         <Box sx={{ mt: 1 }}>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography variant="body2" gutterBottom sx={{
+            color: "text.secondary"
+          }}>
             {t('access_recovery_missing_event_hint')}
           </Typography>
           <AccessRecoveryForm />
@@ -63,15 +65,21 @@ function FirstUsageInfo() {
   return (
     <Box data-testid="portal-first-usage-info">
       <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+        <Typography variant="subtitle1" gutterBottom sx={{
+          fontWeight: 600
+        }}>
           {t('my_events_empty')}
         </Typography>
         <Typography variant="body2">{t('my_events_empty_intro')}</Typography>
       </Alert>
-      <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle2" gutterBottom sx={{
+        fontWeight: 600
+      }}>
         {t('my_events_empty_how_to_get_access')}
       </Typography>
-      <Typography variant="body2" color="text.secondary" gutterBottom>
+      <Typography variant="body2" gutterBottom sx={{
+        color: "text.secondary"
+      }}>
         {t('my_events_empty_how_to_hint')}
       </Typography>
       <Box sx={{ mt: 2 }}>

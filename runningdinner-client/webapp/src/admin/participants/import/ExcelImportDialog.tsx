@@ -110,7 +110,12 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
                   gap: 2,
                 }}
               >
-                <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    flex: 1
+                  }}>
                   {t('admin:import_template_info')}
                 </Typography>
                 <SecondaryButton
@@ -192,7 +197,14 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
                   control={<Checkbox checked={allowUpdateExisting} onChange={(e) => setAllowUpdateExisting(e.target.checked)} data-testid="import-update-existing-checkbox" />}
                   label={t('admin:import_update_existing_label', { count: updatableRows.length })}
                 />
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', ml: 4, mt: -0.5 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: 'block',
+                    ml: 4,
+                    mt: -0.5
+                  }}>
                   {t('admin:import_update_existing_hint')}
                 </Typography>
               </Box>
@@ -222,7 +234,12 @@ export function ExcelImportDialog({ open, onClose, onImportComplete, adminId, pa
             {t('admin:import_importing_progress')}
           </Typography>
           {importProgress && (
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 1
+              }}>
               {importProgress.current} / {importProgress.total}
             </Typography>
           )}

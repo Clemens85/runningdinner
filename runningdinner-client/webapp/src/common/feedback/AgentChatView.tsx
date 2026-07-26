@@ -161,7 +161,11 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
 
         {showChatInputField && (
           <Grid size={12}>
-            <Box mt={2} pb={1}>
+            <Box
+              sx={{
+                mt: 2,
+                pb: 1
+              }}>
               <ChatInputTextField
                 inputMessage={followUpQuestion}
                 onSendMessage={handleSendFollowUp}

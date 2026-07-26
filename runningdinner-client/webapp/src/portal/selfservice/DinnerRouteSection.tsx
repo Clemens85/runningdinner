@@ -22,7 +22,13 @@ export function DinnerRouteSection({ participantInfo, isLoading }: DinnerRouteSe
   return (
     <Card data-testid="portal-dinnerroute-section" variant="outlined">
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+            mb: 2
+          }}>
           <DirectionsIcon color="primary" />
           <Typography variant="h6">{t('participant_event_section_dinnerroute')}</Typography>
         </Stack>
@@ -32,7 +38,9 @@ export function DinnerRouteSection({ participantInfo, isLoading }: DinnerRouteSe
             <Button variant="contained" size="small" href={dinnerRouteUrl!} target="_blank" rel="noopener noreferrer" sx={{ width: { xs: '100%', sm: 'auto' } }}>
               {t('participant_event_view_dinnerroute')}
             </Button>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>
               {t('participant_event_dinnerroute_mealspecifics_hint')}
             </Typography>
           </Stack>

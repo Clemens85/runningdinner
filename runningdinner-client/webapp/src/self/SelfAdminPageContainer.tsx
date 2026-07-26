@@ -36,7 +36,9 @@ export function SelfAdminPageContainer({ children, htmlPageTitleI18n }: SelfAdmi
 
   return (
     <>
-      <Grid container justifyContent={'center'}>
+      <Grid container sx={{
+        justifyContent: 'center'
+      }}>
         <Grid
           sx={commonStyles.textAlignRight}
           size={{
@@ -45,12 +47,18 @@ export function SelfAdminPageContainer({ children, htmlPageTitleI18n }: SelfAdmi
             lg: 8,
           }}
         >
-          <Box mt={2} mb={-3}>
+          <Box
+            sx={{
+              mt: 2,
+              mb: -3
+            }}>
             <LanguageSwitch />
           </Box>
         </Grid>
       </Grid>
-      <Grid container justifyContent={'center'}>
+      <Grid container sx={{
+        justifyContent: 'center'
+      }}>
         <Grid
           size={{
             xs: 12,

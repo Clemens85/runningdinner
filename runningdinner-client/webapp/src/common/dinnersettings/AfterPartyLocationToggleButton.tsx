@@ -15,7 +15,11 @@ export function AfterPartyLocationToggleButton(props: AfterPartyLocationToggleBu
   const { afterPartyLocationEnabled, onToggleAfterPartyLocation, ...spacingProps } = props;
 
   return (
-    <Grid container justifyContent={'flex-start'} sx={spacingProps}>
+    <Grid
+      container
+      sx={[{
+        justifyContent: 'flex-start'
+      }, ...(Array.isArray(spacingProps) ? spacingProps : [spacingProps])]}>
       <Grid>
         {!afterPartyLocationEnabled && (
           <SecondaryButton color={'primary'} variant={'outlined'} onClick={() => onToggleAfterPartyLocation(true)}>

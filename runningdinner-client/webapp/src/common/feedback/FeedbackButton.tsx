@@ -39,9 +39,18 @@ export function FeedbackButtonContainerRightAligned() {
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
-    <Grid container justifyContent={'flex-end'} alignItems={'center'}>
+    <Grid
+      container
+      sx={{
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+      }}>
       <Grid>
-        <Box mt={1} mr={isMobileDevice ? 1 : 2}>
+        <Box
+          sx={{
+            mt: 1,
+            mr: isMobileDevice ? 1 : 2
+          }}>
           <FeedbackButton />
         </Box>
       </Grid>

@@ -128,7 +128,9 @@ export function ParticipantRegistrations({ runningDinner }: BaseRunningDinnerPro
             </List>
           )}
           {hasNextPage && (
-            <Box pb={2}>
+            <Box sx={{
+              pb: 2
+            }}>
               <Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage} variant={'outlined'} fullWidth color={'primary'}>
                 {t('common:show_more')}
               </Button>

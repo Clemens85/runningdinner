@@ -19,8 +19,12 @@ export function ChatMessageView({ text, isAgentMessage }: ChatMessageProps) {
   // const textParts = text.split('\n');
 
   return (
-    <Stack direction="row" justifyContent={justifyContent}>
-      <Box maxWidth="90%">
+    <Stack direction="row" sx={{
+      justifyContent: justifyContent
+    }}>
+      <Box sx={{
+        maxWidth: "90%"
+      }}>
         <Paper
           elevation={1}
           sx={{

@@ -1,7 +1,7 @@
-import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { CallbackHandler } from '@runningdinner/shared';
 
-import { commonStyles, GridWithCenteredFullwidthButton } from '../CommonStyles';
+import { commonStyles } from '../CommonStyles';
 import SecondaryButton from '../SecondaryButton';
 
 type DialogActionsButtonsProps = {
@@ -32,7 +32,11 @@ export function DialogActionsButtons({ okButton, cancelButton }: DialogActionsBu
 
   const renderButtonsDesktop = () => {
     return (
-      <Box p={2}>
+      <Box
+        sx={{
+          p: 2,
+        }}
+      >
         {cancelButton}
         {okButton}
       </Box>
@@ -42,12 +46,17 @@ export function DialogActionsButtons({ okButton, cancelButton }: DialogActionsBu
   const renderButtonsMobile = () => {
     return (
       <Box sx={{ width: '100%', p: 1 }}>
-        <Grid container direction="column" justifyContent="space-evenly" alignItems="center" spacing={1}>
-          {okButton && <GridWithCenteredFullwidthButton size={12}>{okButton}</GridWithCenteredFullwidthButton>}
-          <Grid sx={{ textAlign: 'center' }} size={12}>
-            {cancelButton}
-          </Grid>
-        </Grid>
+        <Stack
+          direction="column"
+          spacing={1}
+          sx={{
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          }}
+        >
+          {okButton && <Box sx={{ width: '100%', '& button': { width: '100%' } }}>{okButton}</Box>}
+          <Box sx={{ textAlign: 'center', width: '100%' }}>{cancelButton}</Box>
+        </Stack>
       </Box>
     );
   };

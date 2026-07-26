@@ -34,7 +34,7 @@ const PageTitle = (props) => {
 
   return (
     <>
-      <Box component={'div'} mt={mtToUse} mb={4}>
+      <Box component={'div'} sx={{ mt: mtToUse, mb: 4 }}>
         <Typography variant="h4" color={color}>
           {props.children}
         </Typography>

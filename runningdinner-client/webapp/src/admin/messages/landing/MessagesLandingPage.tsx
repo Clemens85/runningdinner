@@ -126,7 +126,16 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
 function MessageCardListView({ currentMessageType, hasTeams, onCurrentMessageTypeChanged, adminId }: MessageCardListViewProps) {
   return (
     <>
-      <Stack direction="column" justifyContent="center" alignItems="flex-start" spacing={2} useFlexGap sx={{ width: '100%', display: 'flex' }}>
+      <Stack
+        direction="column"
+        spacing={2}
+        useFlexGap
+        sx={{
+          justifyContent: "center",
+          alignItems: "flex-start",
+          width: '100%',
+          display: 'flex'
+        }}>
         <MessagesCard
           onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_PARTICIPANTS)}
           currentMessageType={MessageType.MESSAGE_TYPE_PARTICIPANTS}
@@ -171,7 +180,9 @@ function MessagesCardContent({ currentMessageType, hasTeams, adminId }: BaseMess
           {routerPathTitle}
         </Button>
         {routeEnabled === false && (
-          <Box mt={2}>
+          <Box sx={{
+            mt: 2
+          }}>
             <Span i18n="admin:messages_landing_team_arrangements_needed_hint"></Span>
           </Box>
         )}
@@ -218,10 +229,17 @@ function MessagesCard({ currentMessageType, selected, hasTeams, adminId, onClick
         {!isMobileDevice && <Box sx={{ color: selected ? 'primary.main' : 'grey.200' }}>{icon}</Box>}
 
         <Box>
-          <Typography color="text.primary" variant="h5">
+          <Typography variant="h5" sx={{
+            color: "text.primary"
+          }}>
             {title}
           </Typography>
-          <Typography color="text.secondary" variant="body1" sx={{ my: 0.5 }}>
+          <Typography
+            variant="body1"
+            sx={{
+              color: "text.secondary",
+              my: 0.5
+            }}>
             {description}
           </Typography>
 
@@ -229,15 +247,14 @@ function MessagesCard({ currentMessageType, selected, hasTeams, adminId, onClick
             color="primary"
             variant="body1"
             onClick={onClick}
-            fontWeight="bold"
             sx={{
+              fontWeight: "bold",
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               '& > svg': { transition: '0.2s' },
-              '&:hover > svg': { transform: 'translateX(2px)' },
-            }}
-          >
+              '&:hover > svg': { transform: 'translateX(2px)' }
+            }}>
             <span>{title}</span>
             <ChevronRightRoundedIcon fontSize="small" sx={{ mt: '1px', ml: '2px' }} />
           </Link>
@@ -252,7 +269,12 @@ function NoMessageTypeSelected() {
 
   return (
     <Card sx={{ p: 3, height: '50vh' }}>
-      <Grid container justifyContent={'center'} alignItems={'baseline'}>
+      <Grid
+        container
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'baseline'
+        }}>
         <Grid>
           <Typography variant="subtitle1" sx={{ px: 2, verticalAlign: 'center' }}>
             {t('admin:messages_landing_no_selection_hint')}

@@ -54,14 +54,23 @@ function MealSpecificsInfo({ vegan, vegetarian, lactose, gluten, mealSpecificsNo
   }
   return (
     <Stack direction="column" spacing={0.5}>
-      <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap alignItems="center">
+      <Stack
+        direction="row"
+        spacing={0.5}
+        useFlexGap
+        sx={{
+          flexWrap: "wrap",
+          alignItems: "center"
+        }}>
         <VeganChip enabled={vegan} />
         <VegetarianChip enabled={!vegan && vegetarian} />
         <LactoseChip enabled={lactose} />
         <GlutenChip enabled={gluten} />
       </Stack>
       {hasNote && (
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{
+          color: "text.secondary"
+        }}>
           {mealSpecificsNote}
         </Typography>
       )}
@@ -72,7 +81,13 @@ function MealSpecificsInfo({ vegan, vegetarian, lactose, gluten, mealSpecificsNo
 function TeamInfoRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 0.25, sm: 1 }} sx={{ mt: 1.5 }}>
-      <Typography variant="body2" color="text.secondary" sx={{ minWidth: { sm: 90 }, flexShrink: 0 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+          minWidth: { sm: 90 },
+          flexShrink: 0
+        }}>
         {label}:
       </Typography>
       <Box sx={{ typography: 'body2' }}>{value}</Box>
@@ -152,7 +167,13 @@ function MealDetails({ mealTime, mealLabel }: TeamSelfServiceInfo) {
 function TeamPartnerName({ teamPartnerName, fixedTeamPartner }: TeamSelfServiceInfo) {
   const { t } = useTranslation('portal');
   return (
-    <Stack direction="row" alignItems="center" spacing={0.75} flexWrap="wrap">
+    <Stack
+      direction="row"
+      spacing={0.75}
+      sx={{
+        alignItems: "center",
+        flexWrap: "wrap"
+      }}>
       <span>{teamPartnerName}</span>
       {fixedTeamPartner && <Chip label={t('participant_event_team_partner_fixed_badge')} size="small" color="info" variant="outlined" sx={{ height: 18, fontSize: '0.65rem' }} />}
     </Stack>
@@ -186,7 +207,13 @@ function TeamDetails({ info }: { info: TeamSelfServiceInfo }) {
       <TeamInfoRow
         label={t('participant_event_team_host')}
         value={
-          <Stack direction="row" alignItems="center" spacing={0.75} flexWrap="wrap">
+          <Stack
+            direction="row"
+            spacing={0.75}
+            sx={{
+              alignItems: "center",
+              flexWrap: "wrap"
+            }}>
             <TeamHostInfo {...info} />
           </Stack>
         }
@@ -209,13 +236,26 @@ function LikelyGuestMealSpecifics({ mealSpecifics }: { mealSpecifics: MealSpecif
     <>
       <Divider sx={{ my: 1.5 }} />
       <Box sx={{ borderLeft: '3px solid', borderColor: 'info.light', pl: 1.5, py: 0.5 }}>
-        <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 0.75 }}>
+        <Stack
+          direction="row"
+          spacing={0.75}
+          sx={{
+            alignItems: "center",
+            mb: 0.75
+          }}>
           <InfoOutlinedIcon sx={{ fontSize: 16, color: 'info.main', flexShrink: 0 }} />
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
             {t('participant_event_team_likely_guest_specifics_title')}
           </Typography>
         </Stack>
-        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mb: hasNote ? 0.75 : 0.5 }}>
+        <Stack
+          direction="row"
+          spacing={0.5}
+          useFlexGap
+          sx={{
+            flexWrap: "wrap",
+            mb: hasNote ? 0.75 : 0.5
+          }}>
           <VeganChip enabled={vegan} />
           <VegetarianChip enabled={!vegan && vegetarian} />
           <LactoseChip enabled={lactose} />
@@ -226,7 +266,9 @@ function LikelyGuestMealSpecifics({ mealSpecifics }: { mealSpecifics: MealSpecif
             {mealSpecificsNote}
           </Typography>
         )}
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{
+          color: "text.secondary"
+        }}>
           {t('participant_event_team_likely_guest_specifics_hint')}
         </Typography>
       </Box>
@@ -250,7 +292,13 @@ export function MyTeamSection({ participantInfo, isLoading }: MyTeamSectionProps
   return (
     <Card data-testid="portal-team-section" variant="outlined">
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+            mb: 2
+          }}>
           <GroupIcon color="primary" />
           <Typography variant="h6">{t('participant_event_section_team')}</Typography>
         </Stack>

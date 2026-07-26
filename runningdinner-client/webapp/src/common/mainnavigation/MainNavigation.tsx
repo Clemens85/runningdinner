@@ -111,9 +111,17 @@ export const MainNavigation = ({
       {!!topNotificationBar && topNotificationBar}
       <AppBarBlackWhite position="static">
         <Toolbar>
-          <Grid container justifyContent={'space-between'} alignItems={'center'} sx={{ width: '100%' }}>
+          <Grid
+            container
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%'
+            }}>
             <Grid>
-              <Grid container alignItems={'center'}>
+              <Grid container sx={{
+                alignItems: 'center'
+              }}>
                 {isMobileDevice && (
                   <Grid>
                     <MobileNavigation
@@ -125,7 +133,9 @@ export const MainNavigation = ({
                 )}
                 {!isMobileDevice && (
                   <Grid>
-                    <Grid container alignItems={'center'}>
+                    <Grid container sx={{
+                      alignItems: 'center'
+                    }}>
                       {showHomeLink && (
                         <Grid>
                           <HomeLink

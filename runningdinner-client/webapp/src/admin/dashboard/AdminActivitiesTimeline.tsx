@@ -76,7 +76,9 @@ function TimelineContentPanel({ activityDate, activityType, activityHeadline, ac
   return (
     <div className="timeline-panel" data-testid="admin-activity-container">
       <div className="timeline-heading">
-        <Grid container alignItems="center">
+        <Grid container sx={{
+          alignItems: "center"
+        }}>
           <Grid>
             <TimelineHeadlineIconContainer>{renderHeadlineIcon()}</TimelineHeadlineIconContainer>
           </Grid>
@@ -103,7 +105,9 @@ function TimelineContentPanel({ activityDate, activityType, activityHeadline, ac
             </LinkIntern>
             <br />
             {isShowMessageJobSendingFinishedInfo(relatedMessageJobOverview) && (
-              <Grid container alignItems="center">
+              <Grid container sx={{
+                alignItems: "center"
+              }}>
                 <Grid>
                   <TimelineHeadlineIconContainer>
                     <Typography variant={'caption'}>{t('messages_sending_finished')}</Typography>

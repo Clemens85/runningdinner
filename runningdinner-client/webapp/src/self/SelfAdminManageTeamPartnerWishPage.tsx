@@ -66,7 +66,9 @@ function SelfAdminManageTeamPartnerWishView({ teamPartnerWishQueryParam }: SelfA
 
   if (teamPartnerWishUpdateSucceeded) {
     return (
-      <Box my={8}>
+      <Box sx={{
+        my: 8
+      }}>
         <Alert severity={'success'}>
           <AlertTitle>{t('common:congratulation')}</AlertTitle>
           <Span i18n={'selfadmin:manage_teampartner_wish_success'} />
@@ -79,15 +81,21 @@ function SelfAdminManageTeamPartnerWishView({ teamPartnerWishQueryParam }: SelfA
     <form>
       <PageTitle>{t('selfadmin:manage_teampartner_wish_title')}</PageTitle>
       <Paragraph>{t('selfadmin:manage_teampartner_wish_help')}</Paragraph>
-      <Box mt={3}>
+      <Box sx={{
+        mt: 3
+      }}>
         <Grid container spacing={2}>
           <Grid size={12}>
             <TextField label={t('common:teampartner_wish')} variant="outlined" fullWidth value={teamPartnerWishEmail} onChange={handleTeamPartnerWishInputChange} />
           </Grid>
         </Grid>
       </Box>
-      <Box my={3}>
-        <Grid container justifyContent={'flex-end'} direction={'row'}>
+      <Box sx={{
+        my: 3
+      }}>
+        <Grid container direction={'row'} sx={{
+          justifyContent: 'flex-end'
+        }}>
           <Grid size={isSmallDevice ? 12 : undefined}>
             <PrimaryButton onClick={handleSubmit} sx={fullWidthProps} disabled={false} size={'large'}>
               {t('common:save')}

@@ -7,7 +7,9 @@ export default function MessageSubject({ onMessageSubjectChange }) {
   const { t } = useTranslation('admin');
 
   return (
-    <Box mt={1}>
+    <Box sx={{
+      mt: 1
+    }}>
       <TextInputWatchable onChange={onMessageSubjectChange} fullWidth required autoFocus variant="outlined" name="subject" label={t('mails_subject')} />
     </Box>
   );

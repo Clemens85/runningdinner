@@ -64,7 +64,12 @@ export default function MealSpecificsSection() {
           <FormCheckbox label={t('vegan')} name="vegan" />
         </Grid>
       </Grid>
-      <Grid container alignItems={'center'} sx={{ mt: 1 }}>
+      <Grid
+        container
+        sx={{
+          alignItems: 'center',
+          mt: 1
+        }}>
         <GridFlexGrow1>
           <FormTextField fullWidth variant={'filled'} disabled={/*!mealSpecificsNoteActivated*/ false} name="mealSpecificsNote" label={t('mealnotes')} />
         </GridFlexGrow1>

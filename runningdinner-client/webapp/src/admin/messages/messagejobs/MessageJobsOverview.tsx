@@ -38,22 +38,32 @@ export function MessageJobsOverview({ adminId, messageType }: MessageJobsOvervie
 
   return (
     <>
-      <Box mb={2}>
+      <Box sx={{
+        mb: 2
+      }}>
         <Subtitle i18n={protocolsSubtitle} />
       </Box>
       <Paper elevation={3}>
-        <Box p={2}>
+        <Box sx={{
+          p: 2
+        }}>
           {isArrayEmpty(messageJobs) && (
             <i>
               <Span i18n="admin:protocols_empty" />
             </i>
           )}
           {!isArrayEmpty(messageJobs) && <MessageJobsTable adminId={adminId} messageJobs={messageJobs} />}
-          <Box mt={2}>
-            <Grid container justifyContent="space-between">
+          <Box sx={{
+            mt: 2
+          }}>
+            <Grid container sx={{
+              justifyContent: "space-between"
+            }}>
               {!isArrayEmpty(messageJobs) && (
                 <Grid>
-                  <Grid container alignItems="center" spacing={1}>
+                  <Grid container spacing={1} sx={{
+                    alignItems: "center"
+                  }}>
                     <Grid>
                       <Span>Info</Span>
                     </Grid>

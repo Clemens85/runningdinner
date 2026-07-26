@@ -24,7 +24,9 @@ function MessageJobStatus({ messageJobOrTask }) {
 
 function MessageJobStatusGrid({ icon, label }) {
   return (
-    <Grid container alignItems="center">
+    <Grid container sx={{
+      alignItems: "center"
+    }}>
       <Grid>{icon}</Grid>
       <Grid>
         <Box sx={{ display: { xs: 'none', lg: 'block' } }}>{label}</Box>

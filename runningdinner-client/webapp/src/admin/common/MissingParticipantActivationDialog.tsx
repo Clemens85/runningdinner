@@ -63,7 +63,9 @@ export function MissingParticipantActivationDialog({ open, onClose, missingParti
     <Dialog open={open} onClose={handleCancel} aria-labelledby="form-dialog-title" data-testid="missing-participant-activation-dialog">
       <DialogTitleCloseable onClose={handleCancel}>{t('admin:registrations_not_yet_confirmed_old')}</DialogTitleCloseable>
       <DialogContent>
-        <Box pt={2}>
+        <Box sx={{
+          pt: 2
+        }}>
           <Paragraph>
             {t('admin:registrations_not_yet_confirmed_old_info_1')}
             <br />
@@ -78,12 +80,16 @@ export function MissingParticipantActivationDialog({ open, onClose, missingParti
         </Box>
 
         {missingParticipantActivations.map((mpa) => (
-          <Box key={mpa.id} pt={2}>
+          <Box key={mpa.id} sx={{
+            pt: 2
+          }}>
             <MissingParticipantActivationItem {...mpa} />
           </Box>
         ))}
 
-        <Box mt={3}>
+        <Box sx={{
+          mt: 3
+        }}>
           <FormCheckboxSimple
             label={t('common:show_message_not_any_longer')}
             name="disableMissingParticipantActivationDialog"

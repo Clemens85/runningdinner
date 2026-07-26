@@ -91,14 +91,14 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
             <br />
             <Trans i18nKey={'admin:dinner_route_optimize_note'} />
           </Paragraph>
-          <Box my={2}>
+          <Box sx={{ my: 2 }}>
             <FetchProgressBar {...predictOptimizationQuery} />
             {predictOptimizationQuery.data && !previewUrl && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
           </Box>
 
           {showRouteOptimizationSettings && (
             <>
-              <Box my={1}>
+              <Box sx={{ my: 1 }}>
                 <Divider>
                   {/* , color: 'primary.main'  */}
                   <Typography variant={'body1'} sx={{ fontWeight: 'bold' }}>
@@ -107,7 +107,7 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
                 </Divider>
               </Box>
 
-              <Box my={2}>
+              <Box sx={{ my: 2 }}>
                 <FormCheckbox
                   name="ignoreMealAssignments"
                   label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
@@ -116,9 +116,9 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
                 />
               </Box>
 
-              <Box mb={2} mt={3}>
+              <Box sx={{ mb: 2, mt: 3 }}>
                 <Typography variant="body1">{t('admin:dinner_route_optimize_minimum_distance')}</Typography>
-                <Box px={2}>
+                <Box sx={{ px: 2 }}>
                   <Controller
                     name="minimumDistanceInMeters"
                     control={control}
@@ -154,13 +154,13 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
                 </FormHelperText>
               </Box>
 
-              <Box mt={4}>
+              <Box sx={{ mt: 4 }}>
                 <Divider />
               </Box>
             </>
           )}
 
-          <Box mb={2} mt={3}>
+          <Box sx={{ mb: 2, mt: 3 }}>
             {!routeDistanceMetrics && <ProgressBar showLoadingProgress={true} />}
             {isPending() && <OptimizationProgressBar />}
             {errorMessage && <ErrorAlert errorMessage={errorMessage} />}
@@ -191,7 +191,7 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
 
 function OptimizationProgressBar() {
   return (
-    <Box flexDirection="column" alignItems="center" gap={2}>
+    <Box sx={{ flexDirection: 'column', alignItems: 'center', gap: 2 }}>
       <ProgressBar showLoadingProgress={true} />
       <Typography variant="body1" color="textSecondary" align="center" sx={{ mt: 2 }}>
         {t('admin:dinner_route_optimization_running')}
@@ -205,7 +205,7 @@ type ErrorAlertProps = {
 };
 function ErrorAlert({ errorMessage }: ErrorAlertProps) {
   return (
-    <Box my={2}>
+    <Box sx={{ my: 2 }}>
       <Alert severity="error" variant="outlined">
         <Span i18n={errorMessage} />
       </Alert>

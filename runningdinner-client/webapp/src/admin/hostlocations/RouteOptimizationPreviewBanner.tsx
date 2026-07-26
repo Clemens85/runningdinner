@@ -58,7 +58,14 @@ export function RouteOptimizationPreviewBanner({ optimizationId, adminId }: Rout
             </Paragraph>
           </AlertTitle>
           <Box sx={{ mt: -0.5 }}>
-            <Stack direction="row" gap={1} alignItems="center" justifyContent={'space-between'} sx={{ width: '100%' }}>
+            <Stack
+              direction="row"
+              sx={{
+                gap: 1,
+                alignItems: "center",
+                justifyContent: 'space-between',
+                width: '100%'
+              }}>
               <Box>
                 {showDistanceDiffInfo && <DistanceDiffInfoMessage optimizationResult={optimizationResult} />}
                 {!showDistanceDiffInfo && (

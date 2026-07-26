@@ -11,7 +11,9 @@ import { Span } from '../theme/typography/Tags';
 export function ContactFormView() {
   return (
     <>
-      <Box mb={2}>
+      <Box sx={{
+        mb: 2
+      }}>
         <Span>
           <Trans i18nKey={'common:feedback_text'} />
         </Span>

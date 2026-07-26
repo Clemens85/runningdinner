@@ -152,20 +152,26 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
           </Paragraph>
         </div>
       </Box>
-      <Box mt={2}>
+      <Box sx={{
+        mt: 2
+      }}>
         <FormFieldset>{t('common:schedule')}</FormFieldset>
         <List dense={true} disablePadding>
           {publicRunningDinner.meals.map((meal) => renderMealListItem(meal))}
         </List>
       </Box>
-      <Box mt={2}>
+      <Box sx={{
+        mt: 2
+      }}>
         <FormFieldset>{t('common:description')}</FormFieldset>
         <Paragraph>
           <TextViewHtml text={publicSettings.description} />
         </Paragraph>
       </Box>
       {hasAfterPartyLocation && (
-        <Box mt={2}>
+        <Box sx={{
+          mt: 2
+        }}>
           <FormFieldset>
             <AfterPartyLocationHeadline {...afterPartyLocation!} />
           </FormFieldset>
@@ -180,17 +186,23 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
         </Box>
       )}
       {isPublicContactInfoAvailable && (
-        <Box mt={2}>
+        <Box sx={{
+          mt: 2
+        }}>
           <PublicContactInfo {...publicSettings} />
         </Box>
       )}
-      <Box mt={2}>
+      <Box sx={{
+        mt: 2
+      }}>
         <FormFieldset>{t('common:registration')}</FormFieldset>
         <Paragraph i18n={'landing:dinner_event_deadline_text'} parameters={{ endOfRegistrationDate: endOfRegistrationDateStr }} />
         <ZipRestrictionsInfo {...publicRunningDinner} />
         <PaymentInfo {...publicRunningDinner} />
       </Box>
-      <Box my={2}>
+      <Box sx={{
+        my: 2
+      }}>
         {renderRegistrationNotPossibleText()}
         {!registrationButtonHidden && (
           <PrimaryButton size={'large'} onClick={openRegistrationForm} data-testid="registration-form-open-action">
@@ -201,10 +213,14 @@ export function PublicDinnerEventDetailsView({ publicRunningDinner, showRegistra
           <Grid container>
             <Grid>
               <Alert severity={'success'} variant={'outlined'}>
-                <Box mb={1}>
+                <Box sx={{
+                  mb: 1
+                }}>
                   <Trans i18nKey={'landing:currentuser_already_registered_info'} components={{ italic: <em /> }} values={{ email: getCurrentUserSubscribedToEvent()?.email }} />
                 </Box>
-                <Box mb={1}>
+                <Box sx={{
+                  mb: 1
+                }}>
                   <Trans
                     i18nKey={'landing:currentuser_already_registered_cancel'}
                     // @ts-expect-error -- type suppression

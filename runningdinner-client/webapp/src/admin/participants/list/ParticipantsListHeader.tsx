@@ -72,10 +72,27 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
   }, [debouncedSearchText, searchableParticipants]);
 
   return (
-    <Box component={'div'} mb={2}>
+    <Box
+      component={'div'}
+      sx={{
+        mb: 2,
+      }}
+    >
       <PageTitle>{t('common:headline_participantlist')}</PageTitle>
-      <Box mt={1}>
-        <Grid container direction={'row'} spacing={2} alignItems={'center'} justifyContent={'flex-start'}>
+      <Box
+        sx={{
+          mt: 1,
+        }}
+      >
+        <Grid
+          container
+          direction={'row'}
+          spacing={2}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+          }}
+        >
           <Grid
             size={{
               xs: 12,
@@ -92,13 +109,15 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
               label="Suche nach E-Mail, Name, Adresse"
               type="Search"
               fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    {' '}
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      {' '}
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
           </Grid>
@@ -137,7 +156,15 @@ export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, sh
           </Grid>
         </Grid>
 
-        <Grid container direction={'row'} spacing={2} alignItems={'center'} justifyContent={'flex-start'}>
+        <Grid
+          container
+          direction={'row'}
+          spacing={2}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+          }}
+        >
           <Grid
             size={{
               xs: 12,

@@ -1,5 +1,6 @@
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 
 import { MainNavigation } from '../common/mainnavigation/MainNavigation';
 import { useIsDeviceMinWidth } from '../common/theme/CustomMediaQueryHook';
@@ -18,29 +19,30 @@ export default function AdminMenu() {
   const donatePaddingRight = isMobileDevice || isBigTabletDevice ? 3 : 12;
 
   const { t } = useTranslation(['admin', 'common']);
+  const { adminId } = useParams<{ adminId: string }>();
 
   const showMainTitle = useMediaQuery('(min-width:1024px)');
   const mainTitle = showMainTitle ? 'Run Your Dinner Administration' : undefined;
 
   const navigationItems = [
     {
-      routePath: 'dashboard',
+      routePath: `/admin/${adminId}/dashboard`,
       title: t('admin:dashboard'),
     },
     {
-      routePath: 'participants',
+      routePath: `/admin/${adminId}/participants`,
       title: t('common:participants'),
     },
     {
-      routePath: 'teams',
+      routePath: `/admin/${adminId}/teams`,
       title: 'Teams',
     },
     {
-      routePath: 'messages/overview',
+      routePath: `/admin/${adminId}/messages/overview`,
       title: t('common:messages'),
     },
     {
-      routePath: 'settings',
+      routePath: `/admin/${adminId}/settings`,
       title: t('common:settings'),
     },
   ];

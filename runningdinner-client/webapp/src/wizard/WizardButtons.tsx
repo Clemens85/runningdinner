@@ -39,7 +39,13 @@ export default function WizardButtons({ onSubmitData }: WizardButtonsProps) {
   const lastStepBeforeSummary = nextNavigationStep && nextNavigationStep.value === SummaryNavigationStep.value;
 
   return (
-    <Grid container justifyContent="flex-end" sx={{ ...commonStyles.textAlignRight, my: 3 }}>
+    <Grid
+      container
+      sx={{
+        justifyContent: "flex-end",
+        ...commonStyles.textAlignRight,
+        my: 3
+      }}>
       <Grid size={12}>
         {previousNavigationStep && (
           <SecondaryButton onClick={handleSubmit(handlePrevious)} data-testid={'wizard-previous-action'}>

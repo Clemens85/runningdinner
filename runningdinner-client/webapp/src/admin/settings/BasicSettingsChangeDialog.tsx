@@ -28,7 +28,9 @@ export function BasicSettingsChangeDialog({ onCancel, onSave, basicSettingsChang
       <DialogContent>
         <Subtitle i18n={'landing:registration_finish_check'} />
         {settingsChangeTypeList.map((settingsChangeType) => (
-          <Box my={2} key={settingsChangeType}>
+          <Box key={settingsChangeType} sx={{
+            my: 2
+          }}>
             {settingsChangeType === SettingsChangeType.CHANGE_IN_DATE_WITH_REGISTERED_PARTICIPANTS && (
               <Alert severity="info" variant="outlined">
                 <Trans i18nKey="settings_update_date_change" ns="admin" />

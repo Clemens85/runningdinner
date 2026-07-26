@@ -28,7 +28,9 @@ export function WaitingListManagementAlert(props: WaitingListManagementAlertProp
     <>
       <Alert severity={'success'} variant="outlined">
         {t(participantsWaitingListAlertMessage)}
-        <Box mt={2}>
+        <Box sx={{
+          mt: 2
+        }}>
           <PrimaryButton onClick={open} data-testid={'open-waitinglist-view-action'}>
             {t('admin:waitinglist_management')}
           </PrimaryButton>

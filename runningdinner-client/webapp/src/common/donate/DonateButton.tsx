@@ -107,11 +107,14 @@ function TeamMessagesDonateContent({ remindMe, onRemindMeChanged }: RemindMeProp
       </Paragraph>
       <br />
       <ThanksForSupport />
-      <Box my={2}>
+      <Box sx={{
+        my: 2
+      }}>
         <i>{t('common:donate_team_messages_all_functions')}</i>
       </Box>
-
-      <Box mt={2}>
+      <Box sx={{
+        mt: 2
+      }}>
         <FormCheckboxSimple
           label={t('common:remind_me')}
           name="remindMe"

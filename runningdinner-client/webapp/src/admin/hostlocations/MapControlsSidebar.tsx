@@ -91,8 +91,18 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
       }}
     >
       <DrawerHeader>
-        <Stack direction={'row'} justifyContent="space-between" sx={{ width: '100%' }}>
-          <Stack direction={'row'} justifyContent="flex-start" alignItems={'center'}>
+        <Stack
+          direction={'row'}
+          sx={{
+            justifyContent: "space-between",
+            width: '100%'
+          }}>
+          <Stack
+            direction={'row'}
+            sx={{
+              justifyContent: "flex-start",
+              alignItems: 'center'
+            }}>
             <IconButton onClick={toggleSidebar} size="small" color="inherit">
               <ChevronLeftIcon />
             </IconButton>
@@ -104,7 +114,6 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
         </Stack>
       </DrawerHeader>
       <Divider />
-
       <Tabs
         value={activeSideBarTabIndex}
         onChange={(_, newValue) => setActiveTab(newValue)}
@@ -116,15 +125,12 @@ export function MapControlsSidebar({ open, adminId, dinnerRouteMapData, routeDis
         <Tab label={t('common:distances')} id="tab-1" />
         <Tab label={t('common:advanced')} id="tab-2" />
       </Tabs>
-
       <TabPanel value={activeSideBarTabIndex} index={TEAMS_TAB_INDEX}>
         <TeamLocationsFilterList dinnerRouteMapEntries={dinnerRouteMapEntries} />
       </TabPanel>
-
       <TabPanel value={activeSideBarTabIndex} index={DISTANCES_TAB_INDEX}>
         <RouteDistancesView routeDistancesList={routeDistancesList} />
       </TabPanel>
-
       <TabPanel value={activeSideBarTabIndex} index={ADVANCED_TAB_INDEX}>
         <NearbyHostsAnalysis adminId={adminId} />
       </TabPanel>
