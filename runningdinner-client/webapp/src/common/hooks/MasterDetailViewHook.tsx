@@ -4,8 +4,8 @@ import { CallbackHandler } from '@runningdinner/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export function useMasterDetailView() {
-  const [showDetailsView, setShowDetailsView] = useState(false);
+export function useMasterDetailView(initialShowDetailsView = false) {
+  const [showDetailsView, setShowDetailsView] = useState(initialShowDetailsView);
 
   const theme = useTheme();
 
@@ -38,8 +38,9 @@ export function BackToListButton({ onBackToList, mt, mb }: BackToListButtonProps
     <Box
       sx={{
         mt: mtToSet,
-        mb: mbToSet
-      }}>
+        mb: mbToSet,
+      }}
+    >
       <Button startIcon={<ChevronLeftIcon />} style={{ paddingLeft: 0 }} color={'inherit'} onClick={onBackToList}>
         {t('back')}
       </Button>
