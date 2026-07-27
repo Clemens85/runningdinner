@@ -51,12 +51,20 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
 
   const sentFromMessageType = searchParams.get(SENT_FROM_MESSAGE_TYPE_QUERY_PARAM);
 
+  const handleCurrentMessageTypeChanged = (messageType: MessageType) => {
+    setCurrentMessageType(messageType);
+    setShowDetailsView(true);
+  };
+
   React.useEffect(() => {
     if (isStringNotEmpty(sentFromMessageType)) {
       showSuccess(t('admin:mails_sending_submitted'));
 
       const messageType = sentFromMessageType as MessageType;
-      handleCurrentMessageTypeChanged(messageType);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time URL query param processing on mount
+      setCurrentMessageType(messageType);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowDetailsView(true);
 
       setDonatePopupOpenIfSuitable(messageType);
 
@@ -64,11 +72,6 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
       setSearchParams(searchParams);
     }
   }, [sentFromMessageType, setCurrentMessageType]);
-
-  const handleCurrentMessageTypeChanged = (messageType: MessageType) => {
-    setCurrentMessageType(messageType);
-    setShowDetailsView(true);
-  };
 
   const handleBackToListView = () => {
     setCurrentMessageType(undefined);
@@ -131,11 +134,12 @@ function MessageCardListView({ currentMessageType, hasTeams, onCurrentMessageTyp
         spacing={2}
         useFlexGap
         sx={{
-          justifyContent: "center",
-          alignItems: "flex-start",
+          justifyContent: 'center',
+          alignItems: 'flex-start',
           width: '100%',
-          display: 'flex'
-        }}>
+          display: 'flex',
+        }}
+      >
         <MessagesCard
           onClick={() => onCurrentMessageTypeChanged(MessageType.MESSAGE_TYPE_PARTICIPANTS)}
           currentMessageType={MessageType.MESSAGE_TYPE_PARTICIPANTS}
@@ -180,9 +184,11 @@ function MessagesCardContent({ currentMessageType, hasTeams, adminId }: BaseMess
           {routerPathTitle}
         </Button>
         {routeEnabled === false && (
-          <Box sx={{
-            mt: 2
-          }}>
+          <Box
+            sx={{
+              mt: 2,
+            }}
+          >
             <Span i18n="admin:messages_landing_team_arrangements_needed_hint"></Span>
           </Box>
         )}
@@ -229,17 +235,21 @@ function MessagesCard({ currentMessageType, selected, hasTeams, adminId, onClick
         {!isMobileDevice && <Box sx={{ color: selected ? 'primary.main' : 'grey.200' }}>{icon}</Box>}
 
         <Box>
-          <Typography variant="h5" sx={{
-            color: "text.primary"
-          }}>
+          <Typography
+            variant="h5"
+            sx={{
+              color: 'text.primary',
+            }}
+          >
             {title}
           </Typography>
           <Typography
             variant="body1"
             sx={{
-              color: "text.secondary",
-              my: 0.5
-            }}>
+              color: 'text.secondary',
+              my: 0.5,
+            }}
+          >
             {description}
           </Typography>
 
@@ -248,13 +258,14 @@ function MessagesCard({ currentMessageType, selected, hasTeams, adminId, onClick
             variant="body1"
             onClick={onClick}
             sx={{
-              fontWeight: "bold",
+              fontWeight: 'bold',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               '& > svg': { transition: '0.2s' },
-              '&:hover > svg': { transform: 'translateX(2px)' }
-            }}>
+              '&:hover > svg': { transform: 'translateX(2px)' },
+            }}
+          >
             <span>{title}</span>
             <ChevronRightRoundedIcon fontSize="small" sx={{ mt: '1px', ml: '2px' }} />
           </Link>
@@ -273,8 +284,9 @@ function NoMessageTypeSelected() {
         container
         sx={{
           justifyContent: 'center',
-          alignItems: 'baseline'
-        }}>
+          alignItems: 'baseline',
+        }}
+      >
         <Grid>
           <Typography variant="subtitle1" sx={{ px: 2, verticalAlign: 'center' }}>
             {t('admin:messages_landing_no_selection_hint')}

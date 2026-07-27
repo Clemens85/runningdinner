@@ -1,6 +1,6 @@
 import { parse } from 'date-fns';
 import { orderBy, startsWith } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import News_de from './NewsMessages_lang_de';
@@ -15,24 +15,16 @@ export interface NewsItem {
 export function useNewsItems() {
   const { i18n } = useTranslation();
 
-  const [newsItems, setNewsItems] = useState<Array<NewsItem>>([]);
-
-  useEffect(() => {
-    i18n.addResourceBundle('de', 'news', News_de);
-    i18n.addResourceBundle('en', 'news', News_en);
-  }, [i18n]);
-
-  useEffect(() => {
-    const fetchedNewsItems = fetchNewsItems();
-    setNewsItems(fetchedNewsItems);
-    // eslint-disable-next-line
-  }, [i18n.language]);
+  // Register bundles synchronously during render (idempotent — safe to call every render).
+  // Must happen before fetchNewsItems() is called via useMemo; a useEffect would run too late.
+  i18n.addResourceBundle('de', 'news', News_de);
+  i18n.addResourceBundle('en', 'news', News_en);
 
   function fetchNewsItems(): NewsItem[] {
-    let result = new Array<NewsItem>();
-
     const resourceBundle = i18n.getResourceBundle(i18n.language, 'news');
+    if (!resourceBundle) return [];
 
+    let result = new Array<NewsItem>();
     Object.keys(resourceBundle).forEach(function (translationKey) {
       if (startsWith(translationKey, 'news_title_')) {
         const newsDateStr = translationKey.substring(11);
@@ -46,6 +38,9 @@ export function useNewsItems() {
     result = orderBy(result, 'date', ['desc']);
     return result;
   }
+
+  // Recompute when language changes; no state needed
+  const newsItems = useMemo(() => fetchNewsItems(), [i18n.language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return newsItems;
 }

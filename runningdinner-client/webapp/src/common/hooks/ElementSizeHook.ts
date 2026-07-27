@@ -23,13 +23,12 @@ function useElementSize<T extends HTMLElement = HTMLDivElement>(): [(node: T | n
       width: ref?.offsetWidth || 0,
       height: ref?.offsetHeight || 0,
     });
-
-     
   }, [ref?.offsetHeight, ref?.offsetWidth]);
 
   useEventListener('resize', handleSize);
 
   useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: measures DOM and syncs size in layout phase
     handleSize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref?.offsetHeight, ref?.offsetWidth]);

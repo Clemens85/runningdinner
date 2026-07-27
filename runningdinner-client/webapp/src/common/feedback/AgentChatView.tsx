@@ -18,7 +18,10 @@ type AgentChatViewProps = {
 export function AgentChatView({ sentFeedback, incomingResponse, incomingError }: AgentChatViewProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([chatMessageFromFeedback(sentFeedback)]);
   const [followUpQuestion, setFollowUpQuestion] = useState<string>('');
-  const [error, setError] = useState<Error | undefined | null>();
+  const [followUpError, setFollowUpError] = useState<Error | undefined | null>();
+
+  // Combine prop error (initial response) with local follow-up errors
+  const error = incomingError ?? followUpError;
 
   // Ref for the scroll container
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -32,10 +35,6 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
   const showChatInputField = nonPendingMessages.length > 1; // Only show input field if there is at least one agent message
 
   useEffect(() => {
-    setError(incomingError);
-  }, [incomingError]);
-
-  useEffect(() => {
     if (isStringNotEmpty(incomingResponse?.answer)) {
       const newAgentMessage: ChatMessage = {
         text: incomingResponse?.answer || '',
@@ -43,6 +42,7 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
         pending: false,
         id: incomingResponse?.id || '',
       };
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- messages is accumulated chat history, not derived state
       setMessages((prevMessages) => [...filterNonPendingMessages(prevMessages), newAgentMessage]);
       // Scroll to bottom when bot reply arrives
       setTimeout(() => scrollToBottom(), 100);
@@ -109,11 +109,11 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
           }
           return [...nonPendingMessages, { text: agentAnswer.answer, isAgentMessage: true, pending: false, id: agentAnswer.id }];
         });
-        setError(null);
+        setFollowUpError(null);
         // Scroll to bottom when bot reply is received
         setTimeout(() => scrollToBottom(), 100);
-      } catch (error) {
-        setError(error as Error);
+      } catch (e) {
+        setFollowUpError(e as Error);
       }
     }
   }
@@ -164,8 +164,9 @@ export function AgentChatView({ sentFeedback, incomingResponse, incomingError }:
             <Box
               sx={{
                 mt: 2,
-                pb: 1
-              }}>
+                pb: 1,
+              }}
+            >
               <ChatInputTextField
                 inputMessage={followUpQuestion}
                 onSendMessage={handleSendFollowUp}

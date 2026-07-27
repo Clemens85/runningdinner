@@ -32,11 +32,10 @@ import {
   WaitingListAction,
   WaitingListActionAdditional,
   WaitingListActionResult,
-  WaitingListActionUI,
   WaitingListInfo,
 } from '@runningdinner/shared';
 import { cloneDeep } from 'lodash-es';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { FetchProgressBar } from '../../../common/FetchProgressBar';
@@ -104,15 +103,12 @@ export function WaitingListManagementDialog(props: BaseRunningDinnerProps & Clos
 function WaitingListManagementDialogContentView(props: CloseCallback & BaseRunningDinnerProps) {
   const findWaitingListInfoQuery = useFindWaitingListInfo(props.runningDinner.adminId, 'always');
 
-  const [currentWaitingListAction, setCurrentWaitingListAction] = React.useState<WaitingListActionUI>();
   const [teamNotificationModel, setTeamNotificationModel] = React.useState<TeamNotificationModel>();
 
-  React.useEffect(() => {
+  const currentWaitingListAction = useMemo(() => {
     const possibleActions = findWaitingListInfoQuery.data?.possibleActions;
-    if (!possibleActions) {
-      return;
-    }
-    setCurrentWaitingListAction(isArrayNotEmpty(possibleActions) ? possibleActions[0] : undefined);
+    if (!possibleActions) return undefined;
+    return isArrayNotEmpty(possibleActions) ? possibleActions[0] : undefined;
   }, [findWaitingListInfoQuery.data?.possibleActions]);
 
   if (!isQuerySucceeded(findWaitingListInfoQuery)) {
@@ -188,12 +184,6 @@ function TeamParticipantsAssignmentView(props: WaitingListInfo & SaveCallback & 
     },
   });
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
-
-  useEffect(() => {
-    const model = setupAssignParticipantsToTeamsModel(teamsWithCancelStatusOrCancelledMembers, allParticipantsOnWaitingList);
-    setTeamParticipantsAssignmentModel(model);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   function handleAddToTeam(team: Team, participant: SelectableParticipant) {
     const teamParticipantsAssignment = getTeamParticipantsAssignment(teamParticipantsAssignmentModel, team);
@@ -470,7 +460,13 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
   const numRemainingParticipants = remainingParticipants.length;
   const numParticipantsAssignable = participtantsForTeamArrangement.length;
 
-  const [participantList, setParticipantList] = useState<SelectableParticipant[]>([]);
+  const [participantList, setParticipantList] = useState<SelectableParticipant[]>(() => {
+    const initial: SelectableParticipant[] = participtantsForTeamArrangement.map((p) => ({
+      ...cloneDeep(p),
+      selected: true,
+    }));
+    return initial.concat(cloneDeep(remainingParticipants));
+  });
 
   async function handleGenerateNewTeams() {
     const participantsForTeamsGeneration = participantList.filter((p) => p.selected);
@@ -500,21 +496,8 @@ function RegenerateTeamsWithAssignableParticipantsView(props: WaitingListInfo & 
   }
 
   function getNumSelectedParticipantsParticipantsInState() {
-    const tmp = participantList.filter((p) => p.selected);
-    return tmp.length;
+    return participantList.filter((p) => p.selected).length;
   }
-
-  React.useEffect(() => {
-    let initialParticipantList = new Array<SelectableParticipant>();
-    for (let i = 0; i < participtantsForTeamArrangement.length; i++) {
-      const p = cloneDeep(participtantsForTeamArrangement[i]);
-      p.selected = true;
-      initialParticipantList.push(p);
-    }
-    initialParticipantList = initialParticipantList.concat(cloneDeep(remainingParticipants));
-    setParticipantList(initialParticipantList);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const participantsAssignableControls = participantList.map((participant) => (
     <Box key={participant.id}>

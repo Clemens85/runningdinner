@@ -169,12 +169,17 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
 
   const { data: messageProposal, isFetched: isProposalFetched } = useFindMessageProposal(adminId, messageType);
 
+  function getRecipientFormFieldName(messageType: MessageType) {
+    return messageType !== MessageType.MESSAGE_TYPE_PARTICIPANTS ? 'teamSelection' : 'participantSelection';
+  }
+
   useEffect(() => {
     // Reset all our selection values on mounting this component:
     // @ts-expect-error We get the correct field name...:
     setValue(getRecipientFormFieldName(messageType), '');
     dispatch(setupInitialMessageType({ adminId, messageType }));
     dispatch(setCustomSelectedRecipients([]));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resets derived UI flag on messageType change
     setAutoFilled(false);
   }, [dispatch, messageType, adminId, setValue]);
 
@@ -204,34 +209,7 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
     // at ~150ms and triggers its own preview API call with only partially-updated state, so the
     // first call (subject only) could resolve after the correct one and overwrite the preview.
     dispatch(applyMessageProposalToPreview({ subject: messageProposal.subject, message: messageProposal.messageTemplate }));
-    // const { additionalSections } = messageProposal;
-    // if (messageType === MessageType.MESSAGE_TYPE_DINNERROUTE) {
-    //   const hostsTemplate = additionalSections['HOSTS TEMPLATE'];
-    //   const selfTemplate = additionalSections['SELF TEMPLATE'];
-    //   if (hostsTemplate) {
-    //     // @ts-expect-error hostsTemplate only exists on DinnerRouteMessage
-    //     setValue('hostsTemplate', hostsTemplate);
-    //     updateDinnerRouteHostsPartTemplatePreviewAsync(hostsTemplate);
-    //   }
-    //   if (selfTemplate) {
-    //     // @ts-expect-error selfTemplate only exists on DinnerRouteMessage
-    //     setValue('selfTemplate', selfTemplate);
-    //     updateDinnerRouteSelfPartTemplatePreviewAsync(selfTemplate);
-    //   }
-    // } else if (messageType === MessageType.MESSAGE_TYPE_TEAMS) {
-    //   const hostTemplate = additionalSections['HOST TEMPLATE'];
-    //   const nonHostTemplate = additionalSections['NON HOST TEMPLATE'];
-    //   if (hostTemplate) {
-    //     // @ts-expect-error hostMessagePartTemplate only exists on TeamMessage
-    //     setValue('hostMessagePartTemplate', hostTemplate);
-    //     updateHostMessagePartTemplatePreviewAsync(hostTemplate);
-    //   }
-    //   if (nonHostTemplate) {
-    //     // @ts-expect-error nonHostMessagePartTemplate only exists on TeamMessage
-    //     setValue('nonHostMessagePartTemplate', nonHostTemplate);
-    //     updateNonHostMessagePartTemplatePreviewAsync(nonHostTemplate);
-    //   }
-    // }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- signals that the form was auto-filled by a proposal
     setAutoFilled(true);
   }, [messageProposal, messageType, setValue, dispatch]);
 
@@ -246,10 +224,6 @@ function MessagesView<T extends BaseMessage>({ adminId, exampleMessage, template
       showHttpErrorDefaultNotification(e as HttpError);
     }
   };
-
-  function getRecipientFormFieldName(messageType: MessageType) {
-    return messageType !== MessageType.MESSAGE_TYPE_PARTICIPANTS ? 'teamSelection' : 'participantSelection';
-  }
 
   const handleMessageContentChange = (content: string) => updateMessageContentPreviewAsync(content);
   const handleMessageSubjectChange = (subject: string) => updateMessageSubjectPreviewAsync(subject);

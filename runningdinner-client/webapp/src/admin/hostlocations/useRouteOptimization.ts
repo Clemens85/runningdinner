@@ -134,6 +134,7 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
   });
   useEffect(() => {
     if ((optimizationInstanceStatus?.status === 'FINISHED' || optimizationInstanceStatus?.status === 'TIMEOUT') && optimizationRequest) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- triggers state update via async function when polling detects completion
       fetchOptimizationPreviewOnOptimizationFinished();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

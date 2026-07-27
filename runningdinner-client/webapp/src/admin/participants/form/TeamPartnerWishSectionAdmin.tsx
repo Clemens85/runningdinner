@@ -1,5 +1,6 @@
 import { Box, Grid } from '@mui/material';
 import { BaseAdminIdProps, getFullname, isStringEmpty, ParticipantListable } from '@runningdinner/shared';
+import { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -32,9 +33,11 @@ function TeamPartnerWishEmailInvitationFormInput() {
   const { t } = useTranslation('common');
 
   return (
-    <Box sx={{
-      mt: 3
-    }}>
+    <Box
+      sx={{
+        mt: 3,
+      }}
+    >
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid
@@ -54,16 +57,20 @@ function ChildTeamPartnerWishInfo({ childTeamPartnerWish, adminId }: TeamPartner
   const { t } = useTranslation(['admin', 'common']);
 
   const { generateParticipantPath } = useAdminNavigation();
-  const childParticipantUrl = `${generateParticipantPath(adminId, childTeamPartnerWish?.id || '')}?t=${Date.now().toString()}`;
+  // eslint-disable-next-line react-hooks/purity -- Date.now() used once per mount as a stable cache-buster
+  const cacheBuster = useMemo(() => Date.now().toString(), []);
+  const childParticipantUrl = `${generateParticipantPath(adminId, childTeamPartnerWish?.id || '')}?t=${cacheBuster}`;
 
   const { watch } = useFormContext();
   const firstnamePart = watch('firstnamePart');
   const lastname = watch('lastname');
 
   return (
-    <Box sx={{
-      mt: 3
-    }}>
+    <Box
+      sx={{
+        mt: 3,
+      }}
+    >
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid size={12}>
@@ -85,13 +92,17 @@ function RootTeamPartnerWishInfo({ rootTeamPartnerWish, teamPartnerWishOriginato
   const { t } = useTranslation(['admin', 'common']);
 
   const { generateParticipantPath } = useAdminNavigation();
+  // eslint-disable-next-line react-hooks/purity -- Date.now() used once per mount as a stable cache-buster
+  const cacheBuster = useMemo(() => Date.now().toString(), []);
   const rootParticipantId = teamPartnerWishOriginatorId || '';
-  const rootParticipantUrl = `${generateParticipantPath(adminId, rootParticipantId)}?t=${Date.now().toString()}`;
+  const rootParticipantUrl = `${generateParticipantPath(adminId, rootParticipantId)}?t=${cacheBuster}`;
 
   return (
-    <Box sx={{
-      mt: 3
-    }}>
+    <Box
+      sx={{
+        mt: 3,
+      }}
+    >
       <FormFieldset>{t('common:teampartner_wish_headline')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid size={12}>

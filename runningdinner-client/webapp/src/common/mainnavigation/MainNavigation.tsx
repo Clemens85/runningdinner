@@ -67,10 +67,13 @@ export const MainNavigation = ({
   showHomeLink,
   donatePaddingRight /*, isBigDeviceMinWidth = 1250*/,
 }: MainNavigationProps & MainNavigationResponsiveProps) => {
-  const [showFeedback, setShowFeedback] = React.useState(isShowFeedbackButton());
   const [mobileDrawerNavigationOpen, setMobileDrawerNavigationOpen] = React.useState(false);
 
-  const location = useLocation();
+  // useLocation() is called so the component re-renders on navigation and showFeedback stays current
+  useLocation();
+
+  // Derived directly from location; re-evaluated on every navigation render
+  const showFeedback = isShowFeedbackButton();
 
   // const theme = useTheme();
   // let isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
@@ -80,10 +83,6 @@ export const MainNavigation = ({
   // if (isBigDeviceMinWidth > 1250 && !isBigDevice) {
   //   isMobileDevice = true;
   // }
-
-  React.useEffect(() => {
-    setShowFeedback(isShowFeedbackButton());
-  }, [location]);
 
   // const donatePaddingRight = isMobileDevice || isBigTabletDevice ? 3 : 12;
 
@@ -116,12 +115,16 @@ export const MainNavigation = ({
             sx={{
               justifyContent: 'space-between',
               alignItems: 'center',
-              width: '100%'
-            }}>
+              width: '100%',
+            }}
+          >
             <Grid>
-              <Grid container sx={{
-                alignItems: 'center'
-              }}>
+              <Grid
+                container
+                sx={{
+                  alignItems: 'center',
+                }}
+              >
                 {isMobileDevice && (
                   <Grid>
                     <MobileNavigation
@@ -133,9 +136,12 @@ export const MainNavigation = ({
                 )}
                 {!isMobileDevice && (
                   <Grid>
-                    <Grid container sx={{
-                      alignItems: 'center'
-                    }}>
+                    <Grid
+                      container
+                      sx={{
+                        alignItems: 'center',
+                      }}
+                    >
                       {showHomeLink && (
                         <Grid>
                           <HomeLink

@@ -1,6 +1,6 @@
 import { GoogleMapsContext } from '@vis.gl/react-google-maps';
 import type { Ref } from 'react';
-import { forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useLayoutEffect, useRef } from 'react';
 
 type PolylineEventProps = {
   onClick?: (e: google.maps.MapMouseEvent) => void;
@@ -26,29 +26,33 @@ function usePolyline(props: PolylineProps) {
   const { onClick, onDrag, onDragStart, onDragEnd, onMouseOver, onMouseOut, encodedPath: _encodedPath, path, ...polylineOptions } = props;
   // This is here to avoid triggering the useEffect below when the callbacks change (which happen if the user didn't memoize them)
   const callbacks = useRef<Record<string, (e: unknown) => void>>({});
-  Object.assign(callbacks.current, {
-    onClick,
-    onDrag,
-    onDragStart,
-    onDragEnd,
-    onMouseOver,
-    onMouseOut,
+  // Sync latest callbacks into the ref before paint (safe to write refs in layout effects)
+  useLayoutEffect(() => {
+    Object.assign(callbacks.current, {
+      onClick,
+      onDrag,
+      onDragStart,
+      onDragEnd,
+      onMouseOver,
+      onMouseOut,
+    });
   });
 
   // const geometryLibrary = useMapsLibrary('geometry');
 
+  // eslint-disable-next-line react-hooks/refs -- stable Google Maps Polyline object stored in a ref; this is the standard library wrapper pattern
   const polyline = useRef(new google.maps.Polyline()).current;
   // update PolylineOptions (note the dependencies aren't properly checked
   // here, we just assume that setOptions is smart enough to not waste a
   // lot of time updating values that didn't change)
-  useMemo(() => {
+  useEffect(() => {
     polyline.setOptions(polylineOptions);
   }, [polyline, polylineOptions]);
 
   const map = useContext(GoogleMapsContext)?.map;
 
   // update the path with the encodedPath
-  useMemo(() => {
+  useEffect(() => {
     // if (!encodedPath || !geometryLibrary) return;
     if (!path) {
       return;

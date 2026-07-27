@@ -12,7 +12,7 @@ import {
   useFindParticipants,
   useNumberOfParticipants,
 } from '@runningdinner/shared';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import HtmlTranslate from '../../../common/i18n/HtmlTranslate';
@@ -44,31 +44,22 @@ type ParticipantsListHeaderProps = {
 export function ParticipantsListHeader({ adminId, onParticipantSearchChanged, showMiscNotes, onShowMiscNotesChange, onImportClick }: ParticipantsListHeaderProps) {
   const { data: participantList } = useFindParticipants(adminId);
 
-  const [search, setSearch] = useState({ searchText: '', isSearching: false });
-  const [searchableParticipants, setSearchableParticipants] = useState<ParticipantListable[]>([]);
+  const [searchText, setSearchText] = useState('');
 
-  const debouncedSearchText = useDebounce(search.searchText, 400);
+  const searchableParticipants = useMemo(() => concatParticipantList(participantList), [participantList]);
+
+  const debouncedSearchText = useDebounce(searchText, 400);
 
   const { t } = useTranslation(['admin', 'common']);
 
-  React.useEffect(() => {
-    setSearchableParticipants(concatParticipantList(participantList));
-  }, [participantList]);
-
   function handleSearchTextChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const newSearchText = event.target.value;
-    setSearch({ ...search, searchText: newSearchText });
+    setSearchText(event.target.value);
   }
 
   useEffect(() => {
-    let result = searchableParticipants;
     const hasSearchText = !isStringEmpty(debouncedSearchText);
-    if (hasSearchText) {
-      setSearch({ ...search, isSearching: true });
-      result = searchParticipants(searchableParticipants, debouncedSearchText);
-      setSearch({ ...search, isSearching: false });
-    }
-    onParticipantSearchChanged({ filteredParticipants: result, hasSearchText: hasSearchText }); // eslint-disable-next-line
+    const result = hasSearchText ? searchParticipants(searchableParticipants, debouncedSearchText) : searchableParticipants;
+    onParticipantSearchChanged({ filteredParticipants: result, hasSearchText }); // eslint-disable-next-line
   }, [debouncedSearchText, searchableParticipants]);
 
   return (

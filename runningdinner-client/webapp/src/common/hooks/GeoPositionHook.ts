@@ -50,6 +50,7 @@ export const useGeoPosition = (watch = false, settings: PositionSettings = defau
 
   useEffect(() => {
     if (!navigator || !navigator.geolocation) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- error state set conditionally on mount, no async involved
       setError('Geolocation is not supported');
       return;
     }

@@ -51,6 +51,7 @@ export function ParticipantsPage({ runningDinner }: BaseRunningDinnerProps) {
 
   useEffect(() => {
     if (!selectedParticipant && selectedParticipantFromUrl) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs URL-driven selection into state which is also mutated by user clicks
       setSelectedParticipant(selectedParticipantFromUrl);
     }
   }, [selectedParticipant, selectedParticipantFromUrl, setSelectedParticipant]);

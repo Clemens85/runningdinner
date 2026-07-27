@@ -12,7 +12,7 @@ import {
   useDisclosure,
 } from '@runningdinner/shared';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -51,31 +51,30 @@ type TeamPartnerWishSectionRegistrationViewProps = {
 function TeamPartnerWishSectionRegistrationView({ invitingParticipantEmail, runningDinnerSessionData }: TeamPartnerWishSectionRegistrationViewProps) {
   const { t } = useTranslation(['common', 'landing']);
 
-  const [teamPartnerOption, setTeamPartnerOption] = useState(TeamPartnerOption.NONE);
-
   const hasEmailInvitation = isStringNotEmpty(invitingParticipantEmail);
 
-  useEffect(() => {
-    if (hasEmailInvitation) {
-      setTeamPartnerOption(TeamPartnerOption.INVITATION);
-    }
-  }, [hasEmailInvitation]);
+  const [teamPartnerOption, setTeamPartnerOption] = useState(() => (isStringNotEmpty(invitingParticipantEmail) ? TeamPartnerOption.INVITATION : TeamPartnerOption.NONE));
 
   return (
-    <Box sx={{
-      mt: 3
-    }}>
+    <Box
+      sx={{
+        mt: 3,
+      }}
+    >
       <FormFieldset>{t('landing:teampartner_wish_section_title')}</FormFieldset>
       <Grid container spacing={2}>
         <Grid
           size={{
             xs: 12,
-            md: 12
-          }}>
+            md: 12,
+          }}
+        >
           {teamPartnerOption === TeamPartnerOption.NONE && (
-            <Box sx={{
-              mb: 2
-            }}>
+            <Box
+              sx={{
+                mb: 2,
+              }}
+            >
               <Span i18n={'landing:teampartner_wish_section_subtitle'} />
             </Box>
           )}
@@ -83,8 +82,9 @@ function TeamPartnerWishSectionRegistrationView({ invitingParticipantEmail, runn
             <Box
               sx={{
                 mb: 3,
-                mt: 1
-              }}>
+                mt: 1,
+              }}
+            >
               <Alert severity={'success'} variant="outlined" data-testid={'email-invitation-info-box'}>
                 {t('landing:teampartner_wish_invitation_info', { invitingParticipantEmail: invitingParticipantEmail })}
               </Alert>
@@ -170,9 +170,12 @@ function ToggleTeamPartnerOptionsButton({
 
   return (
     <>
-      <Grid container sx={{
-        justifyContent: 'flex-start'
-      }}>
+      <Grid
+        container
+        sx={{
+          justifyContent: 'flex-start',
+        }}
+      >
         <Grid>
           {currentTeamPartnerOption === TeamPartnerOption.NONE && (
             <SecondaryButton color={'primary'} variant={'outlined'} data-testid={'add-teampartner-wish-action'} onClick={() => openDialog()}>
@@ -183,8 +186,9 @@ function ToggleTeamPartnerOptionsButton({
             <Box
               sx={{
                 mb: 1,
-                mt: 2
-              }}>
+                mt: 2,
+              }}
+            >
               <Button variant={'outlined'} onClick={() => handleToggleTeamPartnerOptionDialogClose(TeamPartnerOption.NONE)}>
                 {t('common:teampartner_wish_option_remove')}
               </Button>
@@ -216,9 +220,11 @@ function AddTeamPartnerOptionsDialog({ onCancel, handleTeamPartnerOptionChange }
       <DialogContent>
         <Grid size={12}>
           <FormControl variant="standard" component="fieldset">
-            <Box sx={{
-              mb: 1
-            }}>
+            <Box
+              sx={{
+                mb: 1,
+              }}
+            >
               <Paragraph>{t('common:teampartner_wish_options_label')}</Paragraph>
             </Box>
             <RadioGroup
@@ -227,17 +233,21 @@ function AddTeamPartnerOptionsDialog({ onCancel, handleTeamPartnerOptionChange }
               value={teamPartnerOption}
               onChange={(evt) => handleRadioChange(evt.target.value)}
             >
-              <Box sx={{
-                my: 1
-              }}>
+              <Box
+                sx={{
+                  my: 1,
+                }}
+              >
                 <FormControlLabel value={TeamPartnerOption.REGISTRATION} control={<Radio color={'primary'} />} label={t('common:teampartner_wish_options_registration')} />
                 <FormHelperText>
                   <Trans i18nKey={'common:teampartner_registration_info_1'} />
                 </FormHelperText>
               </Box>
-              <Box sx={{
-                my: 1
-              }}>
+              <Box
+                sx={{
+                  my: 1,
+                }}
+              >
                 <FormControlLabel value={TeamPartnerOption.INVITATION} control={<Radio color={'primary'} />} label={t('common:teampartner_wish_options_invitation')} />
                 <FormHelperText>{t('landing:team_partner_wish_help')}</FormHelperText>
               </Box>
@@ -259,8 +269,9 @@ function TeamPartnerRegistrationFormInput() {
         <Grid
           size={{
             xs: 12,
-            md: 6
-          }}>
+            md: 6,
+          }}
+        >
           <FormTextField
             required
             defaultValue={''}
@@ -274,8 +285,9 @@ function TeamPartnerRegistrationFormInput() {
         <Grid
           size={{
             xs: 12,
-            md: 6
-          }}>
+            md: 6,
+          }}
+        >
           <FormTextField
             required
             defaultValue={''}
@@ -288,8 +300,9 @@ function TeamPartnerRegistrationFormInput() {
         <Grid
           size={{
             xs: 12,
-            md: 6
-          }}>
+            md: 6,
+          }}
+        >
           <FormTextField
             defaultValue={''}
             variant="filled"
@@ -302,8 +315,9 @@ function TeamPartnerRegistrationFormInput() {
         <Grid
           size={{
             xs: 12,
-            md: 6
-          }}>
+            md: 6,
+          }}
+        >
           <FormTextField name="teamPartnerWishRegistrationData.mobileNumber" fullWidth variant="filled" label={t('common:teampartner_registration_mobilenumber')} />
         </Grid>
         <Grid sx={{ py: 2 }} size={12}>

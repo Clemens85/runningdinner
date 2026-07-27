@@ -7,7 +7,6 @@ import GroupIcon from '@mui/icons-material/Group';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import { Box, Container, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Button } from '@mui/material';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Zoom from 'react-medium-image-zoom';
 import { Link as RouterLink } from 'react-router-dom';
@@ -38,15 +37,11 @@ export function LandingStart() {
   const theme = useTheme();
   const isMobileDevice = useMediaQuery(theme.breakpoints.down('md'));
 
-  const [imageWidth, setImageWidth] = React.useState(250);
-
   const [columnRef, { width: columnWidth }] = useElementSize();
-  React.useEffect(() => {
-    const columnWidthMinusSpacing = columnWidth - 128;
-    const divisor = isMobileDevice ? 1 : 3;
-    const calculatedWidthPerImage = columnWidthMinusSpacing / divisor;
-    setImageWidth(calculatedWidthPerImage <= 0 ? 250 : calculatedWidthPerImage);
-  }, [columnWidth, isMobileDevice]);
+  const columnWidthMinusSpacing = columnWidth - 128;
+  const divisor = isMobileDevice ? 1 : 3;
+  const calculatedWidth = columnWidthMinusSpacing / divisor;
+  const imageWidth = calculatedWidth <= 0 ? 250 : calculatedWidth;
 
   const mbTeaser = 6;
 

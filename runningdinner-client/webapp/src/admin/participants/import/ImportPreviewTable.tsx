@@ -180,13 +180,14 @@ function DesktopRow({ row, isUpdating }: RowProps) {
 }
 
 function MealSpecificsPreview({ data }: ExcelImportRow) {
+  let participant;
   try {
-    const participant = ExcelImportMappingService.buildParticipantFromImportRow(data);
-    return <ParticipantMealBadges participant={participant} />;
+    participant = ExcelImportMappingService.buildParticipantFromImportRow(data);
   } catch (error) {
     // This can happen if the row cannot be parsed to a participant after all
     return null;
   }
+  return <ParticipantMealBadges participant={participant} />;
 }
 
 interface ImportPreviewTableProps {

@@ -14,6 +14,7 @@ export function PortalActivationPage() {
 
   useEffect(() => {
     if (!portalToken) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- error flag set once on mount based on URL param; no async involved
       setError(true);
       return;
     }
