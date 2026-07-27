@@ -1,6 +1,6 @@
 import { Box, Grid } from '@mui/material';
 import { BaseAdminIdProps, getFullname, isStringEmpty, ParticipantListable } from '@runningdinner/shared';
-import { useMemo } from 'react';
+import { useId } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -57,8 +57,7 @@ function ChildTeamPartnerWishInfo({ childTeamPartnerWish, adminId }: TeamPartner
   const { t } = useTranslation(['admin', 'common']);
 
   const { generateParticipantPath } = useAdminNavigation();
-  // eslint-disable-next-line react-hooks/purity -- Date.now() used once per mount as a stable cache-buster
-  const cacheBuster = useMemo(() => Date.now().toString(), []);
+  const cacheBuster = useId();
   const childParticipantUrl = `${generateParticipantPath(adminId, childTeamPartnerWish?.id || '')}?t=${cacheBuster}`;
 
   const { watch } = useFormContext();
@@ -92,8 +91,7 @@ function RootTeamPartnerWishInfo({ rootTeamPartnerWish, teamPartnerWishOriginato
   const { t } = useTranslation(['admin', 'common']);
 
   const { generateParticipantPath } = useAdminNavigation();
-  // eslint-disable-next-line react-hooks/purity -- Date.now() used once per mount as a stable cache-buster
-  const cacheBuster = useMemo(() => Date.now().toString(), []);
+  const cacheBuster = useId();
   const rootParticipantId = teamPartnerWishOriginatorId || '';
   const rootParticipantUrl = `${generateParticipantPath(adminId, rootParticipantId)}?t=${cacheBuster}`;
 
