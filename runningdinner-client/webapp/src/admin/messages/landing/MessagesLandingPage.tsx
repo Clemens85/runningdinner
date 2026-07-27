@@ -42,36 +42,32 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
 
   const { setDonatePopupOpenIfSuitable, showDonatePopup, closeDonatePopup } = useDonatePopup({ adminId });
 
-  const [currentMessageType, setCurrentMessageType] = React.useState<MessageType>();
+  const sentFromMessageType = searchParams.get(SENT_FROM_MESSAGE_TYPE_QUERY_PARAM);
+
+  // Initialise from the URL query param so the correct message card and detail panel open immediately,
+  // without needing a setState inside a useEffect.
+  const [currentMessageType, setCurrentMessageType] = React.useState<MessageType | undefined>(() => (sentFromMessageType as MessageType) || undefined);
 
   const teamsQuery = useFindTeams(adminId);
   const teams = teamsQuery.data || [];
 
-  const { showBackToListViewButton, setShowDetailsView, showListView, showDetailsView } = useMasterDetailView();
-
-  const sentFromMessageType = searchParams.get(SENT_FROM_MESSAGE_TYPE_QUERY_PARAM);
+  // Open the detail panel right away when arriving from a sent-message redirect.
+  const { showBackToListViewButton, setShowDetailsView, showListView, showDetailsView } = useMasterDetailView(!!sentFromMessageType);
 
   const handleCurrentMessageTypeChanged = (messageType: MessageType) => {
     setCurrentMessageType(messageType);
     setShowDetailsView(true);
   };
 
+  // Side-effects only: show toast, trigger donate popup, clean up the URL param.
   React.useEffect(() => {
     if (isStringNotEmpty(sentFromMessageType)) {
       showSuccess(t('admin:mails_sending_submitted'));
-
-      const messageType = sentFromMessageType as MessageType;
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time URL query param processing on mount
-      setCurrentMessageType(messageType);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShowDetailsView(true);
-
-      setDonatePopupOpenIfSuitable(messageType);
-
+      setDonatePopupOpenIfSuitable(sentFromMessageType as MessageType);
       searchParams.delete(SENT_FROM_MESSAGE_TYPE_QUERY_PARAM);
       setSearchParams(searchParams);
     }
-  }, [sentFromMessageType, setCurrentMessageType]);
+  }, [sentFromMessageType]);
 
   const handleBackToListView = () => {
     setCurrentMessageType(undefined);

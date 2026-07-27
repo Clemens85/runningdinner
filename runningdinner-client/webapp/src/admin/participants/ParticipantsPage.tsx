@@ -39,7 +39,7 @@ export function ParticipantsPage({ runningDinner }: BaseRunningDinnerProps) {
 
   const findParticipantsQuery = useFindParticipants(adminId, 'always');
 
-  const [selectedParticipant, setSelectedParticipant] = useState<ParticipantListable>();
+  const [userSelectedParticipant, setUserSelectedParticipant] = useState<ParticipantListable>();
   const [showMiscNotes, setShowMiscNotes] = useState(false);
 
   const selectedParticipantFromUrl = useMemo(() => {
@@ -49,12 +49,9 @@ export function ParticipantsPage({ runningDinner }: BaseRunningDinnerProps) {
     }
   }, [findParticipantsQuery.data, participantId]);
 
-  useEffect(() => {
-    if (!selectedParticipant && selectedParticipantFromUrl) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs URL-driven selection into state which is also mutated by user clicks
-      setSelectedParticipant(selectedParticipantFromUrl);
-    }
-  }, [selectedParticipant, selectedParticipantFromUrl, setSelectedParticipant]);
+  // Combine URL-driven initial selection with user-driven selection.
+  // User clicks take precedence; URL provides the default on first load.
+  const selectedParticipant = userSelectedParticipant ?? selectedParticipantFromUrl;
 
   if (!isQuerySucceeded(findParticipantsQuery)) {
     return <FetchProgressBar {...findParticipantsQuery} />;
@@ -66,7 +63,7 @@ export function ParticipantsPage({ runningDinner }: BaseRunningDinnerProps) {
   return (
     <ParticipantsView
       runningDinner={runningDinner}
-      onUpdateSelectedParticipant={setSelectedParticipant}
+      onUpdateSelectedParticipant={setUserSelectedParticipant}
       selectedParticipant={selectedParticipant}
       showMiscNotes={showMiscNotes}
       onShowMiscNotesChange={setShowMiscNotes}
