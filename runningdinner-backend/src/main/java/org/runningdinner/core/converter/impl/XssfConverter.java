@@ -40,7 +40,7 @@ public class XssfConverter extends AbstractExcelConverterHighLevel implements Fi
         ConverterWriteContext converterWriteContext)
         throws IOException {
 		XSSFSheet sheet = createNewSheet();
-        writeParticipants(sheet, participants, converterWriteContext);
+        writeParticipants(sheet, participants);
 		XSSFWorkbook workbook = sheet.getWorkbook();
 		workbook.write(outputStream);
 	}

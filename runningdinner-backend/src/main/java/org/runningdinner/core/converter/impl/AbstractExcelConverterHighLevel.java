@@ -1,8 +1,8 @@
 package org.runningdinner.core.converter.impl;
 
 import com.google.common.base.Optional;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -13,7 +13,6 @@ import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
-import org.runningdinner.core.converter.ConverterWriteContext;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.AbstractColumnConfig;
 import org.runningdinner.core.converter.config.AddressColumnConfig;
@@ -158,8 +157,7 @@ public class AbstractExcelConverterHighLevel {
 	}
 
 
-    public void writeParticipants(Sheet sheet, List<Participant> participants,
-        ConverterWriteContext converterWriteContext) {
+    public void writeParticipants(Sheet sheet, List<Participant> participants) {
 
 		createHeaderRow(sheet);
 

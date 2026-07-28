@@ -1,10 +1,9 @@
 package org.runningdinner.mail.ses;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.FailureType;
 import org.runningdinner.admin.message.job.MessageTask;
@@ -18,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class AwsSesEmailSynchronizationService {
   private void handleReject(AwsSesNotification notification) {
     AwsSesNotification.Reject reject = notification.getReject();
     if (reject == null) {
-      LOGGER.warn("Received Reject notification without reject details: {}", notification.getMail() != null ? notification.getMail().toString() : "null");
+      LOGGER.warn("Received Reject notification without reject details: {}", notification.getMail() != null ? ListUtils.emptyIfNull(notification.getMail().getDestination()) : "null");
       return;
     }
 
