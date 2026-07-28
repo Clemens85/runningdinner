@@ -74,7 +74,7 @@ function usePolyline(props: PolylineProps) {
     return () => {
       polyline.setMap(null);
     };
-  }, [map]);
+  }, [map, polyline]);
 
   // attach and re-attach event-handlers when any of the properties change
   useEffect(() => {
@@ -110,7 +110,7 @@ function usePolyline(props: PolylineProps) {
 export const Polyline = forwardRef((props: PolylineProps, ref: PolylineRef) => {
   const polyline = usePolyline(props);
 
-  useImperativeHandle(ref, () => polyline, []);
+  useImperativeHandle(ref, () => polyline, [polyline]);
 
   return null;
 });

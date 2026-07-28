@@ -42,20 +42,17 @@ function SelectTeamToSwap({ allTeams, srcTeam, includeSameMeal, onIncludeSameMea
 
   const smDownDevice = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
-  const getTeamSelectionOptions = (allTeams: Team[], srcTeam: Team, includeSameMeal: boolean) => {
-    const result = removeEntityFromList(allTeams, srcTeam)!;
-    return result
-      .filter((t) => t.status !== TeamStatus.CANCELLED)
-      .filter((t) => includeSameMeal || !isSameEntity(t.meal, srcTeam.meal))
-      .map((t) => {
-        return {
+  const teamOptions = useMemo(
+    () =>
+      removeEntityFromList(allTeams, srcTeam)!
+        .filter((t) => t.status !== TeamStatus.CANCELLED)
+        .filter((t) => includeSameMeal || !isSameEntity(t.meal, srcTeam.meal))
+        .map((t) => ({
           label: `${t.meal.label} - ${getTeamNameMembers(t)}`,
           id: t.id,
-        };
-      });
-  };
-
-  const teamOptions = useMemo(() => getTeamSelectionOptions(allTeams, srcTeam, includeSameMeal), [allTeams, srcTeam, includeSameMeal]);
+        })),
+    [allTeams, srcTeam, includeSameMeal, getTeamNameMembers],
+  );
 
   const minWidth = smDownDevice ? 250 : 400;
 
@@ -70,9 +67,11 @@ function SelectTeamToSwap({ allTeams, srcTeam, includeSameMeal, onIncludeSameMea
         sx={{ minWidth: minWidth }}
         renderInput={(params) => <TextField {...params} label={t('admin:meals_swap_team_team_choose')} autoFocus={true} />}
       />
-      <Box sx={{
-        mt: 2
-      }}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <FormControlLabel
           control={
             <Checkbox
@@ -149,9 +148,11 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
     <Dialog open={true} onClose={handleCancel} fullWidth={true}>
       <DialogTitleCloseable onClose={handleCancel}>{dialogTitle}</DialogTitleCloseable>
       <DialogContent>
-        <Box sx={{
-          mb: 2
-        }}>
+        <Box
+          sx={{
+            mb: 2,
+          }}
+        >
           <Paragraph>
             <Trans i18nKey="admin:meals_swap_team_description" values={{ team: getTeamNameMembers(srcTeam), meal: srcTeam.meal.label }} />
           </Paragraph>
@@ -168,9 +169,11 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
           />
         </Box>
         {selectedTeam && (
-          <Box sx={{
-            mt: 3
-          }}>
+          <Box
+            sx={{
+              mt: 3,
+            }}
+          >
             <Paragraph>
               <Trans
                 i18nKey="admin:meals_swap_team_after_swap_src"

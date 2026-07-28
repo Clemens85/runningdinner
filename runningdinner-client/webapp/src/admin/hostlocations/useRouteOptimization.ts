@@ -173,6 +173,7 @@ export function useRouteOptimization({ adminId }: UseRouteOptimizationProps) {
     return () => {
       clearEventSource();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- SSE setup: fetchOptimizationPreviewOnOptimizationFinished and handleEventSourceError are not stable; adding them would reconnect the EventSource on every render
   }, [currentOptimizationId, adminId, optimizationRequest]);
   // --- End of SSE EventSource --- //
 

@@ -122,6 +122,7 @@ function HostLocationsView({ dinnerRouteMapData, runningDinner }: HostLocationsV
       );
       deleteRouteOptimizationSavedQueryParam();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot effect on arrival; showSuccess and deleteRouteOptimizationSavedQueryParam are stable but adding them would require verifying all transitive deps
   }, [showRouteOptimizationSavedMessage]);
 
   return (

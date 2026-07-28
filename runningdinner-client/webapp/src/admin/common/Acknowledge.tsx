@@ -32,7 +32,7 @@ export default function Acknowledge({ runningDinner }: BaseRunningDinnerProps) {
     if (acknowedgeDinnerQuery.data) {
       dispatch(setUpdatedRunningDinner(acknowedgeDinnerQuery.data));
     }
-  }, [acknowedgeDinnerQuery.data]);
+  }, [acknowedgeDinnerQuery.data, dispatch]);
 
   return (
     <>

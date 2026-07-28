@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 import { Box, SxProps } from '@mui/system';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type TypingIndicatorProps = {
@@ -11,20 +11,14 @@ type TypingIndicatorProps = {
 export function TypingIndicator({ sx }: TypingIndicatorProps) {
   const { t } = useTranslation('common');
 
-  const labels = [
-    {
-      text: t('feedback_agent_typing_patience'),
-      durationMillis: 4000,
-    },
-    {
-      text: t('feedback_agent_typing_working'),
-      durationMillis: 4000,
-    },
-    {
-      text: t('feedback_agent_typing_preparing'),
-      durationMillis: 4000,
-    },
-  ];
+  const labels = useMemo(
+    () => [
+      { text: t('feedback_agent_typing_patience'), durationMillis: 4000 },
+      { text: t('feedback_agent_typing_working'), durationMillis: 4000 },
+      { text: t('feedback_agent_typing_preparing'), durationMillis: 4000 },
+    ],
+    [t],
+  );
 
   const [labelIndex, setLabelIndex] = useState(0);
   const label = labels[labelIndex].text;
@@ -49,13 +43,17 @@ export function TypingIndicator({ sx }: TypingIndicatorProps) {
     <Box sx={sxToUse}>
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1
-        }}>
-        <Typography variant="subtitle1" sx={{
-          color: "text.secondary"
-        }}>
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {label}
         </Typography>
         <Box sx={{ display: 'flex' }}>

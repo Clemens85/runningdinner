@@ -107,6 +107,7 @@ function ParticipantsView({
     if (selectedParticipant) {
       editParticipant(selectedParticipant);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- editParticipant is not stable; adding it would cause the effect to re-fire on every render
   }, [selectedParticipant]);
 
   function editParticipant(participant: ParticipantListable) {

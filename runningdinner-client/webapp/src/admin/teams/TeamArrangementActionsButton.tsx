@@ -86,6 +86,7 @@ export function TeamArrangementActionsButton({ adminId }: TeamArrangementActions
     if (initiallyShowDropTeamsDialog === 'true') {
       handleOpenTeamArrangementActionConfirmationDialog(TEAM_ARRANGEMENT_ACTION.DROP);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-once URL param check; handleOpenTeamArrangementActionConfirmationDialog is not stable
   }, [initiallyShowDropTeamsDialog]);
 
   const { getIssuesTranslated } = useBackendIssueHandler({

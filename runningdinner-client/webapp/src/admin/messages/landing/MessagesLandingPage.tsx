@@ -67,6 +67,7 @@ export function MessagesLandingPage({ runningDinner }: BaseRunningDinnerProps) {
       searchParams.delete(SENT_FROM_MESSAGE_TYPE_QUERY_PARAM);
       setSearchParams(searchParams);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional mount-once effect: processes URL param on arrival; listed deps are stable hooks that don't change
   }, [sentFromMessageType]);
 
   const handleBackToListView = () => {

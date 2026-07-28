@@ -100,6 +100,7 @@ export function ParticipantRegistrations({ runningDinner }: BaseRunningDinnerPro
     }
     const notActivatedRegistrationsTooOldFirstPage = filterNotActivatedRegistrationsTooOld(participantRegistrationDataPages);
     enableMissingParticipantAcivationNotification(notActivatedRegistrationsTooOldFirstPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- enableMissingParticipantAcivationNotification is not stable; adding it would break the first-page-only guard
   }, [participantRegistrationDataPages]);
 
   if (!isQuerySucceeded(findParticipantRegistrationsByAdminIdQuery)) {
