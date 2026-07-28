@@ -97,7 +97,6 @@ public class ValidatorService {
   /**
    * Performs a pre-validation whether a passed dinner-UUID is valid after all. Thus we avoid passing an invalid UUID to the database.
    * 
-   * @param adminId
    * @throws InvalidUuidException If passed uuid is not valid
    */
   public void checkAdminIdValid(final String adminId) {
@@ -140,7 +139,6 @@ public class ValidatorService {
    * Checks whether the passed string seems to be a valid european style fullname.<br>
    * This involves mainly the check of the existence of whitespaces within the passed string.
    *  
-   * @param fullname
    */
   public boolean isValidFullname(String fullname) {
 
@@ -153,7 +151,7 @@ public class ValidatorService {
 
     // Name must be at least in form of FIRSTNAME LASTNAME, but can also be something like FIRSTNAME SECONDNAME THIRDNAME von LASTNAME.
     // If one has really an even more complicated name then he has surely also other problems... ;-)
-    return nameParts != null && nameParts.length > 1 && nameParts.length <= 5;
+    return nameParts.length > 1 && nameParts.length <= 5;
 
   }
 
@@ -181,7 +179,7 @@ public class ValidatorService {
     }
    
     String messageCode = fieldError.getDefaultMessage();
-    if (StringUtils.isNotEmpty(messageCode) && StringUtils.startsWith(messageCode, "error.")) {
+    if (StringUtils.isNotEmpty(messageCode) && Strings.CS.startsWith(messageCode, "error.")) {
       String result = messages.getMessage(messageCode, null, StringUtils.EMPTY, currentLocale);
       if (StringUtils.isNotEmpty(result)) {
         return result;

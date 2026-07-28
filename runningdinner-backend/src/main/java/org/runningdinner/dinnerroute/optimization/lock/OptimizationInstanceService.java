@@ -1,7 +1,7 @@
 package org.runningdinner.dinnerroute.optimization.lock;
 
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.common.aws.S3ClientProviderService;
 import org.runningdinner.dinnerroute.optimization.data.OptimizationDataUtil;
 import org.slf4j.Logger;
@@ -121,7 +121,7 @@ public class OptimizationInstanceService {
 			return Collections.emptyList();
 		}
 		for (String key : metadata.keySet()) {
-			if (!StringUtils.startsWith(key, OptimizationInstance.REQUEST_FILE_PREFIX)) {
+			if (!Strings.CS.startsWith(key, OptimizationInstance.REQUEST_FILE_PREFIX)) {
 				continue;
 			}
 			String value = metadata.get(key);
