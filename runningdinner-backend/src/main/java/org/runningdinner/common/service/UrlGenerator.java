@@ -1,6 +1,7 @@
 
 package org.runningdinner.common.service;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.mail.formatter.FormatterUtil;
@@ -76,7 +77,7 @@ public class UrlGenerator {
     if (StringUtils.isEmpty(invitingParticipantEmail)) {
       return result;
     }
-    if (StringUtils.contains(result, "?")) {
+    if (Strings.CS.contains(result, "?")) {
       result += "&invitingParticipantEmail=";
     } else {
       result += "?invitingParticipantEmail=";
@@ -94,7 +95,7 @@ public class UrlGenerator {
     String result = replacePublicDinnerIdInUrl(publicDinnerRegistrationUrlTemplate, publicId);
     Assert.state(StringUtils.isNotBlank(callbackUrlType), "callbackUrlType must not be empty");
     
-    if (StringUtils.contains(result, "?")) {
+    if (Strings.CS.contains(result, "?")) {
       result += "&callbackUrlType=" + callbackUrlType;
     } else {
       result += "?callbackUrlType=" + callbackUrlType;

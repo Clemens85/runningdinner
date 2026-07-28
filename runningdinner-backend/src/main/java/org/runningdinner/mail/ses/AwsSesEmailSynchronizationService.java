@@ -158,7 +158,7 @@ public class AwsSesEmailSynchronizationService {
     String bounceSubType = bounce.getBounceSubType();
 
     if (Strings.CS.equals("Permanent", bounceType)) {
-      if (Strings.CS.equals("General", bounceSubType) || StringUtils.contains(bounceSubType, "Suppress")) {
+      if (Strings.CS.equals("General", bounceSubType) || Strings.CS.contains(bounceSubType, "Suppress")) {
         return FailureType.BLOCKED;
       }
       return FailureType.INVALID_EMAIL;

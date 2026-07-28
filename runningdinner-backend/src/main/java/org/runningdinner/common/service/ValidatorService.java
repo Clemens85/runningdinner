@@ -1,22 +1,15 @@
 
 package org.runningdinner.common.service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
+import com.google.common.base.CaseFormat;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
 import jakarta.validation.Path.Node;
 import jakarta.validation.Validator;
-
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
 import org.runningdinner.common.IssueList;
@@ -32,7 +25,12 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
 
-import com.google.common.base.CaseFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 @Service
 public class ValidatorService {
@@ -73,11 +71,11 @@ public class ValidatorService {
     String[] result = new String[1];
     
     String messageTemplate = violation.getMessageTemplate();
-    if (StringUtils.contains(messageTemplate, ".NotBlank") || StringUtils.contains(messageTemplate, ".NotNull")) {
+    if (Strings.CS.contains(messageTemplate, ".NotBlank") || Strings.CS.contains(messageTemplate, ".NotNull")) {
       result[0] = "NotBlank";
-    } else if (StringUtils.contains(messageTemplate, ".NotEmpty")) {
+    } else if (Strings.CS.contains(messageTemplate, ".NotEmpty")) {
       result[0] = "NotEmpty";
-    } else if (StringUtils.contains(messageTemplate, ".Email") || StringUtils.contains(messageTemplate, ".Size") || StringUtils.contains(messageTemplate, ".Length")) {
+    } else if (Strings.CS.contains(messageTemplate, ".Email") || Strings.CS.contains(messageTemplate, ".Size") || Strings.CS.contains(messageTemplate, ".Length")) {
       result[0] = "Size";
     } else {
       result[0] = violation.getMessage();
