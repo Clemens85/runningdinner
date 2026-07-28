@@ -18,14 +18,14 @@ public class DefaultIdGenerator implements IdGenerator {
 
     UUID generatedUUID = UUID.randomUUID();
     String result = generatedUUID.toString();
-    result += "-" + RandomStringUtils.randomAlphanumeric(5);
+    result += "-" + RandomStringUtils.secure().nextAlphanumeric(5);
     return result;
   }
 
   @Override
   public String generatePublicId() {
 
-    String shortUuid = RandomStringUtils.randomAlphanumeric(NUM_CHARS_FRONTEND_ID);
+    String shortUuid = RandomStringUtils.secure().nextAlphanumeric(NUM_CHARS_FRONTEND_ID);
     return shortUuid;
   }
 
