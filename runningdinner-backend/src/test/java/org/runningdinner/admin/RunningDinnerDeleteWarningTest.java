@@ -1,6 +1,7 @@
 package org.runningdinner.admin;
 
 import com.google.common.collect.Iterables;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,7 +109,7 @@ public class RunningDinnerDeleteWarningTest {
     return mailSenderInMemory
             .getMessages()
             .stream()
-            .filter(m -> StringUtils.equals(m.getSubject(), "runyourdinner: Dein Dinner wird bald gelöscht"))
+            .filter(m -> Strings.CS.equals(m.getSubject(), "runyourdinner: Dein Dinner wird bald gelöscht"))
             .filter(m -> StringUtils.contains(m.getText(), adminUrl))
             .toList();
   }

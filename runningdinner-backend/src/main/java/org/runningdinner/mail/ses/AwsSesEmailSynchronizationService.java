@@ -3,6 +3,7 @@ package org.runningdinner.mail.ses;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.FailureType;
@@ -156,12 +157,12 @@ public class AwsSesEmailSynchronizationService {
     String bounceType = bounce.getBounceType();
     String bounceSubType = bounce.getBounceSubType();
 
-    if (StringUtils.equals("Permanent", bounceType)) {
-      if (StringUtils.equals("General", bounceSubType) || StringUtils.contains(bounceSubType, "Suppress")) {
+    if (Strings.CS.equals("Permanent", bounceType)) {
+      if (Strings.CS.equals("General", bounceSubType) || StringUtils.contains(bounceSubType, "Suppress")) {
         return FailureType.BLOCKED;
       }
       return FailureType.INVALID_EMAIL;
-    } else if (StringUtils.equals("Transient", bounceType)) {
+    } else if (Strings.CS.equals("Transient", bounceType)) {
       return FailureType.BOUNCE;
     }
     return FailureType.BOUNCE;
@@ -174,7 +175,7 @@ public class AwsSesEmailSynchronizationService {
 		var result = messageService.findNonFailedEndUserMessageTasksByRecipientsStartingFrom(normalizedEmailAddresses, fromTime);
     return result
             .stream()
-            .filter(mt -> StringUtils.equals(mt.getSender(), MailProvider.AWS_SES.toString()))
+            .filter(mt -> Strings.CS.equals(mt.getSender(), MailProvider.AWS_SES.toString()))
             .toList();
   }
 
@@ -229,7 +230,7 @@ public class AwsSesEmailSynchronizationService {
 
   private static Optional<FailureType> mapComplaintToFailureType(AwsSesNotification.Complaint complaint) {
     String complaintFeedbackType = complaint.getComplaintFeedbackType();
-    if (StringUtils.equals("not-spam", complaintFeedbackType)) {
+    if (Strings.CS.equals("not-spam", complaintFeedbackType)) {
       return Optional.empty();
     }
     return Optional.of(FailureType.SPAM);

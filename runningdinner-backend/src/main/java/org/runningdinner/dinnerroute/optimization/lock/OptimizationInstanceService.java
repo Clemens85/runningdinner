@@ -1,5 +1,6 @@
 package org.runningdinner.dinnerroute.optimization.lock;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.aws.S3ClientProviderService;
 import org.runningdinner.dinnerroute.optimization.data.OptimizationDataUtil;
@@ -79,7 +80,7 @@ public class OptimizationInstanceService {
 		List<OptimizationInstance> existingInstances = getOptimizationRequestInstances(adminId);
 		OptimizationInstance foundInstance = existingInstances
 																					.stream()
-																					.filter(instance -> StringUtils.equals(instance.getOptimizationId(), optimizationId))
+																					.filter(instance -> Strings.CS.equals(instance.getOptimizationId(), optimizationId))
 																					.findFirst()
 																					.orElse(null);
 

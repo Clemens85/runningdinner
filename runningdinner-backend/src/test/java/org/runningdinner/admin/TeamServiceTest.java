@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -476,7 +476,7 @@ public class TeamServiceTest {
     List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), true);
     return teams
       .stream()
-      .filter(t -> StringUtils.equals(t.getMealClass().getLabel(), mealLabel))
+      .filter(t -> Strings.CS.equals(t.getMealClass().getLabel(), mealLabel))
       .filter(t -> !Objects.equals(t, teamToExclude))
       .findFirst()
       .orElseThrow();

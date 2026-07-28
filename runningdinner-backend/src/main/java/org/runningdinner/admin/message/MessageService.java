@@ -2,6 +2,7 @@ package org.runningdinner.admin.message;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.MailConfig;
 import org.runningdinner.admin.RunningDinnerService;
@@ -493,7 +494,7 @@ public class MessageService {
 
     MessageTask messageTask = messageTaskRepository.findByIdMandatory(messageTaskId);
 
-    Assert.state(!StringUtils.equals(messageTask.getSender(), alternativeMailProvider.toString()),
+    Assert.state(!Strings.CS.equals(messageTask.getSender(), alternativeMailProvider.toString()),
             "Original sender is already " + alternativeMailProvider + " - cannot resend with same provider");
 
     Assert.state(messageTask.getResendCount() <= 0, "MessageTask with id " + messageTaskId + " was already resent once - cannot resend again");
@@ -805,7 +806,7 @@ public class MessageService {
                   .findFirst()
                   .orElse(null);
 
-      if (parent == null || StringUtils.equalsIgnoreCase(childParticipant.getEmail(), parent.getEmail())) {
+      if (parent == null || Strings.CI.equals(childParticipant.getEmail(), parent.getEmail())) {
         childrenToRemove.add(childParticipant);
       }
     }

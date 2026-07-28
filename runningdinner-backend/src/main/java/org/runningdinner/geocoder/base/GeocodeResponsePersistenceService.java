@@ -2,7 +2,7 @@ package org.runningdinner.geocoder.base;
 
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.admin.AfterPartyLocationService;
 import org.runningdinner.geocoder.GeocodeEntityType;
 import org.runningdinner.geocoder.GeocodingResult;
@@ -28,10 +28,10 @@ public class GeocodeResponsePersistenceService {
 
 	public void persistGeocodeResponse(GeocodeResponse response) {
 		GeocodingResult geocodingResult = GeocodeResponsePersistenceService.extractSynchronizedGeocodingResult(response);
-		if (StringUtils.equals(response.entityType(), GeocodeEntityType.PARTICIPANT.toString())) {
+		if (Strings.CS.equals(response.entityType(), GeocodeEntityType.PARTICIPANT.toString())) {
 			UUID participantId = UUID.fromString(response.entityId());
 			this.participantService.updateParticipantGeocode(response.adminId(), participantId, geocodingResult);
-		} else if (StringUtils.equals(response.entityType(), GeocodeEntityType.AFTER_PARTY_LOCATION.toString())) {
+		} else if (Strings.CS.equals(response.entityType(), GeocodeEntityType.AFTER_PARTY_LOCATION.toString())) {
 			this.afterPartyLocationService.updateAfterPartyLocationGeocode(response.adminId(), geocodingResult);
 		} else {
 			throw new IllegalStateException("Unexpected entityType: " + response.entityType());

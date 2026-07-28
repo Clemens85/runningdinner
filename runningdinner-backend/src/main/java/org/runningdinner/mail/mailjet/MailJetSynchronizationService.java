@@ -4,6 +4,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.FailureType;
@@ -148,7 +149,7 @@ public class MailJetSynchronizationService {
 		var result = messageService.findNonFailedEndUserMessageTasksByRecipientsStartingFrom(normalizedEmailAddresses, fromTime);
 		return result
 						.stream()
-						.filter(mt -> StringUtils.equals(mt.getSender(), MailProvider.MAILJET.toString()))
+						.filter(mt -> Strings.CS.equals(mt.getSender(), MailProvider.MAILJET.toString()))
 						.toList();
 	}
 

@@ -3,6 +3,7 @@ package org.runningdinner.common.service;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.util.CoreUtil;
@@ -44,7 +45,7 @@ public class LocalizationProviderService {
 
 	private static Locale getLocaleFromLanguageCode(String languageCode) {
 
-	  if (StringUtils.equalsIgnoreCase("en", languageCode) || StringUtils.equalsIgnoreCase("de", languageCode)) {
+	  if (Strings.CI.equals("en", languageCode) || Strings.CI.equals("de", languageCode)) {
 	    return new Locale(StringUtils.lowerCase(languageCode));
 	  }
 	  return getDefaultLocale();

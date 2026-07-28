@@ -2,6 +2,7 @@ package org.runningdinner.participant.partnerwish;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageType;
@@ -45,13 +46,13 @@ public class TeamPartnerWishService {
         return Optional.of(TeamPartnerWish.notExisting(participant));
       }
       
-      Participant matchingParticipant = foundTeamPartnerWish.get(0);
+      Participant matchingParticipant = foundTeamPartnerWish.getFirst();
       String matchingParticipantPartnerWish = matchingParticipant.getTeamPartnerWishEmail();
       if (StringUtils.isEmpty(matchingParticipantPartnerWish)) {
         return Optional.of(TeamPartnerWish.matchingButMatchHasNoPartnerWish(participant, matchingParticipant));
       }
-      if (StringUtils.equalsIgnoreCase(participant.getTeamPartnerWishEmail(), matchingParticipant.getEmail()) && 
-          StringUtils.equalsIgnoreCase(participant.getEmail(), matchingParticipantPartnerWish)) {
+      if (Strings.CI.equals(participant.getTeamPartnerWishEmail(), matchingParticipant.getEmail()) &&
+          Strings.CI.equals(participant.getEmail(), matchingParticipantPartnerWish)) {
         return Optional.of(TeamPartnerWish.matchingWithSamePartnerWish(participant, matchingParticipant));
       }
       return Optional.of(TeamPartnerWish.matchingButMatchHasOtherPartnerWish(participant, matchingParticipant));

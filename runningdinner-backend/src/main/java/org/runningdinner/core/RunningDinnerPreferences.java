@@ -1,6 +1,7 @@
 
 package org.runningdinner.core;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerPreferencesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class RunningDinnerPreferences {
   public RunningDinnerPreference getPreference(String name) {
 
     for (RunningDinnerPreference preference : preferences) {
-      if (StringUtils.equals(preference.getPreferenceName(), name)) {
+      if (Strings.CS.equals(preference.getPreferenceName(), name)) {
         return preference;
       }
     }

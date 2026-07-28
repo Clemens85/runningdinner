@@ -1,5 +1,6 @@
 package org.runningdinner.common.aws;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class WebhookValidatorService {
 				return false; // Token is required, but not provided
 			}
 			else {
-				return StringUtils.equals(configuredWebhookToken, incomingWebhookToken);
+				return Strings.CS.equals(configuredWebhookToken, incomingWebhookToken);
 			}
 		}
 	}

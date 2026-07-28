@@ -7,6 +7,7 @@ import java.util.List;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueList;
@@ -196,7 +197,7 @@ public class ParsingConfigurationTO implements Serializable {
 
     for (ColumnMappingTO columnMapping : columnMappings) {
       String mappingValue = columnMapping.getMappingSelection() != null ? columnMapping.getMappingSelection().getValue() : StringUtils.EMPTY;
-      if (StringUtils.equals(mappingValue, mappingValueToFind)) {
+      if (Strings.CS.equals(mappingValue, mappingValueToFind)) {
         return Optional.of(columnMapping.getColumnIndex());
       }
     }

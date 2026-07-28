@@ -1,6 +1,7 @@
 package org.runningdinner.core.converter.impl;
 
 import com.google.common.base.Optional;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.ss.usermodel.Cell;
@@ -412,10 +413,10 @@ public class AbstractExcelConverterHighLevel {
 		Gender result = Gender.UNDEFINED;
 		if (!StringUtils.isEmpty(rowValue)) {
 			rowValue = rowValue.trim();
-			if (StringUtils.equalsIgnoreCase(rowValue, "m")) {
+			if (Strings.CI.equals(rowValue, "m")) {
 				result = Gender.MALE;
 			}
-			else if (StringUtils.equalsIgnoreCase(rowValue, "f") || StringUtils.equalsIgnoreCase(rowValue, "w")) {
+			else if (Strings.CI.equals(rowValue, "f") || Strings.CI.equals(rowValue, "w")) {
 				result = Gender.FEMALE;
 			}
 		}

@@ -2,6 +2,7 @@
 package org.runningdinner.participant;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.check.ValidateAdminId;
@@ -681,14 +682,14 @@ public class ParticipantService {
       if (StringUtils.isBlank(email)) {
         return false;
       }
-      return StringUtils.equalsIgnoreCase(StringUtils.trim(email), StringUtils.trim(originalEmail));
+      return Strings.CI.equals(StringUtils.trim(email), StringUtils.trim(originalEmail));
     }
 
     public boolean hasSameOriginalMobileNumber(String mobileNumber) {
       if (StringUtils.isBlank(mobileNumber)) {
         return false;
       }
-      return StringUtils.equalsIgnoreCase(StringUtils.trim(mobileNumber), StringUtils.trim(originalMobileNumber));
+      return Strings.CI.equals(StringUtils.trim(mobileNumber), StringUtils.trim(originalMobileNumber));
     }
 
     public boolean isSyncOnlyGeocodeData() {

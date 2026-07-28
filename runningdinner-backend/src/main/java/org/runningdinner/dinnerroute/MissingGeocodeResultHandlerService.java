@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.GeocodingResult.GeocodingSyncStatus;
 import org.runningdinner.geocoder.base.GeocodeResponse;
@@ -56,7 +56,7 @@ public class MissingGeocodeResultHandlerService {
 	private static GeocodeResponse findGeocodeResponse(List<GeocodeResponse> geocodesForTeamHosts, Participant teamHost) {
 		return geocodesForTeamHosts //
 						.stream() //
-    				.filter(geocodeResponse -> StringUtils.equals(geocodeResponse.entityId(), teamHost.getId().toString())) //
+    				.filter(geocodeResponse -> Strings.CS.equals(geocodeResponse.entityId(), teamHost.getId().toString())) //
     				.findFirst() //
     				.orElse(null); //		
 	}

@@ -1,7 +1,7 @@
 package org.runningdinner.admin.message.job.stats;
 
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,7 +84,7 @@ public class MessageSenderStatsServiceTest {
 
 		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
 		assertThat(allMessageTasks).hasSize(22);
-		assertThat(allMessageTasks).allMatch(mt -> StringUtils.equals(mt.getSender(), MOCK));
+		assertThat(allMessageTasks).allMatch(mt -> Strings.CS.equals(mt.getSender(), MOCK));
 
 		// Month without any sent tasks
 		MessageSenderStats statsBySender = messageSenderStatsService.getStatsBySender(now.minusMonths(2));

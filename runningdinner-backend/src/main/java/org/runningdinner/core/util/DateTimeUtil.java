@@ -1,6 +1,7 @@
 
 package org.runningdinner.core.util;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
@@ -77,6 +78,6 @@ public final class DateTimeUtil {
   
   private static boolean isEnglish(String languageCode) {
     
-    return StringUtils.equalsIgnoreCase(StringUtils.trim(languageCode), "en");
+    return Strings.CI.equals(StringUtils.trim(languageCode), "en");
   }
 }

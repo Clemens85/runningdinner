@@ -1,18 +1,7 @@
 package org.runningdinner.participant;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.RunningDinnerSessionData;
 import org.runningdinner.admin.activity.Activity;
@@ -42,6 +31,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class WaitingListService {
@@ -356,8 +356,8 @@ public class WaitingListService {
 
 		boolean hasRelevantAdminChange = activities
 																			.stream()
-																			.anyMatch(ac -> StringUtils.equals(ac.getActivityHeadline(), ActivityService.TEAM_MEMBERS_SWAPPED_HEADLINE) || 
-																											StringUtils.equals(ac.getActivityHeadline(), ActivityService.TEAM_HOST_CHANGED_BY_ADMIN_HEADLINE));
+																			.anyMatch(ac -> Strings.CS.equals(ac.getActivityHeadline(), ActivityService.TEAM_MEMBERS_SWAPPED_HEADLINE) ||
+																														  Strings.CS.equals(ac.getActivityHeadline(), ActivityService.TEAM_HOST_CHANGED_BY_ADMIN_HEADLINE));
 		return hasRelevantAdminChange;
 	}
 	

@@ -1,7 +1,7 @@
 package org.runningdinner.payment;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.payment.paypal.*;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.common.Issue;
@@ -168,11 +168,11 @@ public class PaypalPaymentService {
     }
     
     for (LinkTO link : links) {
-      if (StringUtils.equals(link.getRel(), LINK_REL_APPROVE)) {
+      if (Strings.CS.equals(link.getRel(), LINK_REL_APPROVE)) {
         registrationOrder.setApproveLink(new RegistrationOrderLink(link.getHref(), link.getRel(), link.getMethod()));
-      } else if (StringUtils.equals(link.getRel(), LINK_REL_SELF)) {
+      } else if (Strings.CS.equals(link.getRel(), LINK_REL_SELF)) {
         registrationOrder.setSelfLink(new RegistrationOrderLink(link.getHref(), link.getRel(), link.getMethod()));
-      } else if (StringUtils.equals(link.getRel(), LINK_REL_UPDATE)) {
+      } else if (Strings.CS.equals(link.getRel(), LINK_REL_UPDATE)) {
         registrationOrder.setUpdateLink(new RegistrationOrderLink(link.getHref(), link.getRel(), link.getMethod()));
       }
     }

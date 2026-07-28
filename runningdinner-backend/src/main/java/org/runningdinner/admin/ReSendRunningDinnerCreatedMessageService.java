@@ -1,5 +1,6 @@
 package org.runningdinner.admin;
 
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.admin.check.ValidateAdminId;
 import org.runningdinner.admin.message.MessageService;
@@ -33,7 +34,7 @@ public class ReSendRunningDinnerCreatedMessageService {
     }
 
     String newEmailAddress = reSendRunningDinnerCreatedMesssage.getNewEmailAddress();
-    if (StringUtils.isNotEmpty(newEmailAddress) && !StringUtils.equalsIgnoreCase(newEmailAddress, runningDinner.getEmail())) {
+    if (StringUtils.isNotEmpty(newEmailAddress) && !Strings.CI.equals(newEmailAddress, runningDinner.getEmail())) {
       runningDinner = runningDinnerService.updateRunningDinnerAdminEmail(adminId, newEmailAddress);
     }
 

@@ -15,6 +15,7 @@ import jakarta.validation.Path.Node;
 import jakarta.validation.Validator;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
@@ -267,7 +268,7 @@ public class ValidatorService {
     String[] codes = fieldError.getCodes();
     if (codes != null) {
       for (String code : codes) {
-        if (StringUtils.equalsIgnoreCase(code, codeToSearchFor)) {
+        if (Strings.CI.equals(code, codeToSearchFor)) {
           return true;
         }
       }

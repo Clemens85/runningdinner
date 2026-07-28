@@ -3,7 +3,7 @@ package org.runningdinner.dinnerroute.distance;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.rest.TeamTO;
 
@@ -51,7 +51,7 @@ public record DistanceEntry(String srcId, String destId) {
   }
   
   private static boolean isEqual(Team team, String teamIdOrTeamNumber) {
-  	return StringUtils.equals(teamIdOrTeamNumber, String.valueOf(team.getTeamNumber())) ||
-				 	 StringUtils.equals(teamIdOrTeamNumber, team.getId().toString()); 
+  	return Strings.CS.equals(teamIdOrTeamNumber, String.valueOf(team.getTeamNumber())) ||
+					 Strings.CS.equals(teamIdOrTeamNumber, team.getId().toString());
   }
 }

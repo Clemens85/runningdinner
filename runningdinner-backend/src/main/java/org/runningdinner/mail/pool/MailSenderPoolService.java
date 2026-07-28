@@ -2,7 +2,7 @@ package org.runningdinner.mail.pool;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.runningdinner.admin.message.job.stats.MessageSenderStats;
 import org.runningdinner.admin.message.job.stats.MessageSenderStatsService;
 import org.runningdinner.mail.MailSenderFactory;
@@ -57,7 +57,7 @@ public class MailSenderPoolService {
 		List<PoolableMailSender> matchingMailSenders = getMatchingMailSenders(now, numMessageTasksToSend);
 		return matchingMailSenders
 						.stream()
-						.filter(mailSender -> !StringUtils.equals(mailSender.getKey().toString(), originalProvider))
+						.filter(mailSender -> !Strings.CS.equals(mailSender.getKey().toString(), originalProvider))
 						.findFirst();
 	}
 
@@ -139,7 +139,7 @@ public class MailSenderPoolService {
 
 	public PoolableMailSender getMailSenderByKey(String sender) {
 		PoolableMailSender result = this.mailSenderPool.stream()
-						.filter(mailSender -> StringUtils.equals(mailSender.getKey().toString(), sender))
+						.filter(mailSender -> Strings.CS.equals(mailSender.getKey().toString(), sender))
 						.findFirst()
 						.orElse(null);
 

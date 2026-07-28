@@ -2,6 +2,7 @@
 package org.runningdinner.admin;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.runningdinner.admin.check.ValidateAdminId;
@@ -297,7 +298,7 @@ public class RunningDinnerService implements ApplicationContextAware {
   	RunningDinner runningDinner = findRunningDinnerByAdminId(adminId);
   	Assert.hasText(newAdminEmail, "Expected incoming newAdminEmail to be not empty for dinner " + adminId);
   	boolean publicContactMailUpdateNeeded = runningDinner.getPublicSettings() != null && 
-  	                                        StringUtils.equalsIgnoreCase(runningDinner.getPublicSettings().getPublicContactEmail(), runningDinner.getEmail());
+  	                                        Strings.CI.equals(runningDinner.getPublicSettings().getPublicContactEmail(), runningDinner.getEmail());
   	runningDinner.setEmail(newAdminEmail);
   	if (publicContactMailUpdateNeeded) {
   	  runningDinner.getPublicSettings().setPublicContactEmail(newAdminEmail);
