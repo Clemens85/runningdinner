@@ -26,10 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
@@ -139,11 +136,11 @@ public class RunningDinnerServiceRest {
     
     try {
       String url = urlGenerator.constructAdminParticipantsUrl(runningDinner.getAdminId());
-      URI uri = new URL(url).toURI();
+      URI uri = URI.create(url);
       HttpHeaders headers = new HttpHeaders();
       headers.setLocation(uri);
       return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-    } catch (MalformedURLException | URISyntaxException e) {
+    } catch (IllegalArgumentException e) {
       throw new TechnicalException(e);
     }
 

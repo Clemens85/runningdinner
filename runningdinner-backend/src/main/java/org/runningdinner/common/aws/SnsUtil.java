@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 public final class SnsUtil {
@@ -16,7 +17,7 @@ public final class SnsUtil {
 
 	public static void confirmSubscription(SnsMessage message) {
 		try {
-			URL url = new URL(message.getSubscribeUrl());
+			URL url = URI.create(message.getSubscribeUrl()).toURL();
 			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			int code = conn.getResponseCode();

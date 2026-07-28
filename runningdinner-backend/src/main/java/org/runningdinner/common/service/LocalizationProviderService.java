@@ -46,7 +46,7 @@ public class LocalizationProviderService {
 	private static Locale getLocaleFromLanguageCode(String languageCode) {
 
 	  if (Strings.CI.equals("en", languageCode) || Strings.CI.equals("de", languageCode)) {
-	    return new Locale(StringUtils.lowerCase(languageCode));
+	    return Locale.of(StringUtils.lowerCase(languageCode));
 	  }
 	  return getDefaultLocale();
 	}
