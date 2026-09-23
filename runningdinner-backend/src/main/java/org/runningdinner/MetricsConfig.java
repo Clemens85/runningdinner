@@ -4,7 +4,6 @@ import io.micrometer.cloudwatch2.CloudWatchMeterRegistry;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
-import jakarta.annotation.PostConstruct;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,12 +32,6 @@ public class MetricsConfig {
       "hikaricp.connections.pending"
   );
 
-  private final MeterRegistry meterRegistry;
-
-  public MetricsConfig(MeterRegistry meterRegistry) {
-    this.meterRegistry = meterRegistry;
-  }
-
   @Bean
   public CloudWatchAsyncClient cloudWatchAsyncClient() {
 
@@ -52,18 +45,22 @@ public class MetricsConfig {
     return registry -> registry.config().meterFilter(MeterFilter.denyUnless(id -> CLOUDWATCH_ALLOWED_METRICS.contains(id.getName())));
   }
 
-  @PostConstruct
-  public void registerHeapGauges() {
+  // Registered via a customizer (not a constructor-injected MeterRegistry) to avoid a circular
+  // dependency with the MeterRegistryPostProcessor that builds the registries in the first place.
+  @Bean
+  public MeterRegistryCustomizer<MeterRegistry> heapGauges() {
 
-    // Micrometer's built-in jvm.memory.used is broken down per memory pool with no aggregate total, so read it directly:
     MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-    Gauge.builder("jvm.heap.used", memoryMXBean, mx -> mx.getHeapMemoryUsage().getUsed())
-        .baseUnit("bytes")
-        .description("Used JVM heap memory (aggregated across all memory pools)")
-        .register(meterRegistry);
-    Gauge.builder("jvm.heap.max", memoryMXBean, mx -> mx.getHeapMemoryUsage().getMax())
-        .baseUnit("bytes")
-        .description("Max JVM heap memory")
-        .register(meterRegistry);
+    return registry -> {
+      // Micrometer's built-in jvm.memory.used is broken down per memory pool with no aggregate total, so read it directly:
+      Gauge.builder("jvm.heap.used", memoryMXBean, mx -> mx.getHeapMemoryUsage().getUsed())
+          .baseUnit("bytes")
+          .description("Used JVM heap memory (aggregated across all memory pools)")
+          .register(registry);
+      Gauge.builder("jvm.heap.max", memoryMXBean, mx -> mx.getHeapMemoryUsage().getMax())
+          .baseUnit("bytes")
+          .description("Max JVM heap memory")
+          .register(registry);
+    };
   }
 }
