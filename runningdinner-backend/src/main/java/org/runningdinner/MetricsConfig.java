@@ -4,6 +4,7 @@ import io.micrometer.cloudwatch2.CloudWatchMeterRegistry;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,9 @@ public class MetricsConfig {
   );
 
   @Bean
+  // CloudWatchAsyncClient.create() eagerly resolves the AWS region and would fail context startup
+  // wherever no AWS config exists (local dev, CI) unless export is actually enabled.
+  @ConditionalOnProperty(prefix = "management.cloudwatch.metrics.export", name = "enabled", havingValue = "true", matchIfMissing = true)
   public CloudWatchAsyncClient cloudWatchAsyncClient() {
 
     // Region/credentials are resolved through the default AWS provider chain (ECS task role, AWS_REGION env var)
