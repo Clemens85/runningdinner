@@ -172,7 +172,7 @@ export function getExampleTeamMessage(): TeamMessage {
     message:
       'Hallo {firstname} {lastname},\n' +
       '\n' +
-      'dein(e) Tempartner ist/sind:\n' +
+      'dein(e) Teampartner ist/sind:\n' +
       '\n' +
       '{partner}.\n' +
       '\n' +
