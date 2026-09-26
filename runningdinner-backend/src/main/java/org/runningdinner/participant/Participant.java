@@ -80,6 +80,12 @@ public class Participant extends RunningDinnerRelatedEntity
   @AttributeOverride(name = "mealSpecificsNote", column = @Column(name = "mealspecificsnote"))
   private MealSpecifics mealSpecifics = new MealSpecifics();
 
+  @Column(nullable = false)
+  private boolean homeAccessible;
+
+  @Column(nullable = false)
+  private boolean requiresAccessibleHome;
+
   @Column(length = 512)
   private String notes;
 
@@ -272,6 +278,32 @@ public class Participant extends RunningDinnerRelatedEntity
     this.mealSpecifics = mealSpecifics;
   }
 
+  /**
+   * True if the participant's own home can be reached step-free (elevator or no stairs)
+   */
+  public boolean isHomeAccessible() {
+
+    return homeAccessible;
+  }
+
+  public void setHomeAccessible(boolean homeAccessible) {
+
+    this.homeAccessible = homeAccessible;
+  }
+
+  /**
+   * True if the participant can only visit homes which can be reached step-free
+   */
+  public boolean isRequiresAccessibleHome() {
+
+    return requiresAccessibleHome;
+  }
+
+  public void setRequiresAccessibleHome(boolean requiresAccessibleHome) {
+
+    this.requiresAccessibleHome = requiresAccessibleHome;
+  }
+
   public String getNotes() {
 
     return notes;
@@ -417,6 +449,8 @@ public class Participant extends RunningDinnerRelatedEntity
     result.setGender(getGender());
     result.setHost(host);
     result.setMealSpecifics(getMealSpecifics().createDetachedClone());
+    result.setHomeAccessible(isHomeAccessible());
+    result.setRequiresAccessibleHome(isRequiresAccessibleHome());
     result.setMobileNumber(getMobileNumber());
     result.setName(getName().createDetachedClone());
     result.setNotes(getNotes());

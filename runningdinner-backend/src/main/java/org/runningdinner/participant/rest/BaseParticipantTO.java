@@ -80,6 +80,10 @@ public class BaseParticipantTO extends BaseTO implements MealSpecificsAware, Has
   @SafeHtml
   private String mealSpecificsNote;
 
+  private boolean homeAccessible;
+
+  private boolean requiresAccessibleHome;
+
   @NotNull
   private Gender gender;
 
@@ -116,6 +120,9 @@ public class BaseParticipantTO extends BaseTO implements MealSpecificsAware, Has
 
     this.numSeats = participant.getNumSeats();
     this.teamPartnerWishEmail = participant.getTeamPartnerWishEmail();
+
+    this.homeAccessible = participant.isHomeAccessible();
+    this.requiresAccessibleHome = participant.isRequiresAccessibleHome();
 
     this.notes = participant.getNotes();
   }
@@ -341,6 +348,22 @@ public class BaseParticipantTO extends BaseTO implements MealSpecificsAware, Has
 
   public void setNumSeats(int numSeats) {
     this.numSeats = numSeats;
+  }
+
+  public boolean isHomeAccessible() {
+    return homeAccessible;
+  }
+
+  public void setHomeAccessible(boolean homeAccessible) {
+    this.homeAccessible = homeAccessible;
+  }
+
+  public boolean isRequiresAccessibleHome() {
+    return requiresAccessibleHome;
+  }
+
+  public void setRequiresAccessibleHome(boolean requiresAccessibleHome) {
+    this.requiresAccessibleHome = requiresAccessibleHome;
   }
 
   public TeamPartnerWishRegistrationDataTO getTeamPartnerWishRegistrationData() {

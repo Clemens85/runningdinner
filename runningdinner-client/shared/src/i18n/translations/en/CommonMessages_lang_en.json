@@ -1,4 +1,8 @@
 {
+  "accessibility": "Accessibility",
+  "accessibility_help": "The information is taken into account when assigning teams and routes.",
+  "accessibility_home_accessible": "My home is accessible (elevator or step-free access)",
+  "accessibility_requires_accessible_home": "I need step-free access to the apartments I visit (elevator or step-free access)",
   "actions": "Actions",
   "activation_date": "Registration date is ",
   "add": "Add",

@@ -70,6 +70,8 @@ function newParticipant(email: string, teamPartnerWishEmail: string, teamPartner
     vegan: false,
     vegetarian: false,
     zip: '',
+    homeAccessible: false,
+    requiresAccessibleHome: false,
     teamPartnerWishEmail,
     teamPartnerWishOriginatorId,
   };

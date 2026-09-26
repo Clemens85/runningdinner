@@ -17,7 +17,14 @@ export interface ParticipantName {
   lastname: string;
 }
 
-export interface Participant extends BaseEntity, HasGeocoding, MealSpecifics, ParticipantName {
+export interface Accessibility {
+  /** The participant's own home can be reached step-free (elevator or no stairs) */
+  homeAccessible: boolean;
+  /** The participant can only visit homes which can be reached step-free */
+  requiresAccessibleHome: boolean;
+}
+
+export interface Participant extends BaseEntity, HasGeocoding, MealSpecifics, ParticipantName, Accessibility {
   participantNumber?: number;
   gender: string;
   mobileNumber: string;
@@ -120,6 +127,8 @@ const EMPTY_PARTICIPANT: Participant = {
   addressRemarks: '',
   teamPartnerWishEmail: '',
   notes: '',
+  homeAccessible: false,
+  requiresAccessibleHome: false,
 };
 
 const EXAMPLE_PARTICIPANT: Participant = {

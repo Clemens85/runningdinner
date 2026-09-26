@@ -51,6 +51,10 @@ public class RegistrationSummaryTO implements Serializable {
 
   private MealSpecifics mealSpecifics;
 
+  private boolean homeAccessible;
+
+  private boolean requiresAccessibleHome;
+
   private TeamPartnerWishInvitationState teamPartnerWishState;
   
   private TeamPartnerWishRegistrationDataTO teamPartnerWishRegistrationData;
@@ -90,6 +94,9 @@ public class RegistrationSummaryTO implements Serializable {
 
     this.mobile = participant.getMobileNumber();
 
+    this.homeAccessible = participant.isHomeAccessible();
+    this.requiresAccessibleHome = participant.isRequiresAccessibleHome();
+
     this.notes = participant.getNotes();
     this.numberOfSeats = participant.getNumSeats();
 
@@ -108,6 +115,22 @@ public class RegistrationSummaryTO implements Serializable {
 
   public void setFullname(String fullname) {
     this.fullname = fullname;
+  }
+
+  public boolean isHomeAccessible() {
+    return homeAccessible;
+  }
+
+  public void setHomeAccessible(boolean homeAccessible) {
+    this.homeAccessible = homeAccessible;
+  }
+
+  public boolean isRequiresAccessibleHome() {
+    return requiresAccessibleHome;
+  }
+
+  public void setRequiresAccessibleHome(boolean requiresAccessibleHome) {
+    this.requiresAccessibleHome = requiresAccessibleHome;
   }
 
   public String getEmail() {

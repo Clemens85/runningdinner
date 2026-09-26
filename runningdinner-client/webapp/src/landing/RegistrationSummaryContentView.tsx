@@ -27,9 +27,11 @@ export function RegistrationSummaryContentView(registrationSummary: Registration
   return (
     <>
       <Subtitle i18n={'landing:registration_finish_check'} />
-      <Box sx={{
-        mb: 2
-      }}>
+      <Box
+        sx={{
+          mb: 2,
+        }}
+      >
         <Span>{registrationSummary.fullname}</Span>
         <Span>{registrationSummary.streetWithNr}</Span>
         <Span>{registrationSummary.zipWithCity}</Span>
@@ -39,9 +41,11 @@ export function RegistrationSummaryContentView(registrationSummary: Registration
           </Span>
         )}
       </Box>
-      <Box sx={{
-        mb: 2
-      }}>
+      <Box
+        sx={{
+          mb: 2,
+        }}
+      >
         <div style={{ display: 'flex' }}>
           <MailIcon color={'primary'} />
           <Typography variant={'body1'} component="p" noWrap>
@@ -55,9 +59,11 @@ export function RegistrationSummaryContentView(registrationSummary: Registration
           </div>
         )}
       </Box>
-      <Box sx={{
-        mb: 2
-      }}>
+      <Box
+        sx={{
+          mb: 2,
+        }}
+      >
         {registrationSummary.canHost && (
           <div style={{ display: 'flex' }}>
             <DoneIcon color={'primary'} />
@@ -72,9 +78,11 @@ export function RegistrationSummaryContentView(registrationSummary: Registration
           </Span>
         )}
       </Box>
-      <Box sx={{
-        mb: 2
-      }}>
+      <Box
+        sx={{
+          mb: 2,
+        }}
+      >
         <Span>
           {t('common:gender')}: <ValueTranslate value={registrationSummary.gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />
         </Span>
@@ -106,11 +114,16 @@ export function RegistrationSummaryContentView(registrationSummary: Registration
             )}
           </Box>
         )}
+
+        {registrationSummary.homeAccessible && <Span>{t('common:accessibility_home_accessible')}</Span>}
+        {registrationSummary.requiresAccessibleHome && <Span>{t('common:accessibility_requires_accessible_home')}</Span>}
       </Box>
       {isStringNotEmpty(registrationSummary.teamPartnerWishEmail) && (
-        <Box sx={{
-          mb: 2
-        }}>
+        <Box
+          sx={{
+            mb: 2,
+          }}
+        >
           {!registrationSummary.teamPartnerWishEmail && (
             <Span noWrap={true}>
               <Trans i18nKey={'landing:teampartner_wish_summary'} components={{ italic: <em /> }} values={{ teamPartnerWish: registrationSummary.teamPartnerWishEmail }} />
@@ -133,9 +146,11 @@ export function RegistrationSummaryContentView(registrationSummary: Registration
         </Box>
       )}
       {hasTeamPartnerRegistrationData(registrationSummary.teamPartnerWishRegistrationData) && (
-        <Box sx={{
-          mb: 2
-        }}>
+        <Box
+          sx={{
+            mb: 2,
+          }}
+        >
           <Span noWrap={true}>
             <Trans
               i18nKey={'landing:teampartner_registration_summary_info'}

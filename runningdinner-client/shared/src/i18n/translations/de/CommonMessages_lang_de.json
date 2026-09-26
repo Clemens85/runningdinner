@@ -1,4 +1,8 @@
 {
+  "accessibility": "Barrierefreiheit",
+  "accessibility_help": "Die Angaben werden bei der Team- und Routen-Zuteilung berücksichtigt.",
+  "accessibility_home_accessible": "Der Zugang zu meiner Wohnung ist barrierefrei (Aufzug bzw. stufenlos erreichbar)",
+  "accessibility_requires_accessible_home": "Ich brauche einen barrierefreien Zugang zu den Wohnungen (Aufzug bzw. stufenlos erreichbar)",
   "actions": "Aktionen",
   "activation_date": "Registriert am ",
   "add": "Hinzufügen",

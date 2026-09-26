@@ -22,6 +22,7 @@ import { useCustomSnackbar } from '../../../common/theme/CustomSnackbarHook';
 import { PrimaryButton } from '../../../common/theme/PrimaryButton';
 import SecondaryButton from '../../../common/theme/SecondaryButton';
 import { DeleteParticipantDialog } from '../delete/DeleteParticipantDialog';
+import AccessibilitySection from './AccessibilitySection';
 import AddressSection from './AddressSection';
 import MealSpecificsSection from './MealSpecificsSection';
 import MiscSection from './MiscSection';
@@ -110,17 +111,20 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
 
   return (
     <Paper elevation={3}>
-      <Box sx={{
-        p: 2
-      }}>
+      <Box
+        sx={{
+          p: 2,
+        }}
+      >
         <FormProvider {...formMethods}>
           <form>
             <Grid
               container
               sx={{
                 justifyContent: 'space-between',
-                alignItems: 'baseline'
-              }}>
+                alignItems: 'baseline',
+              }}
+            >
               <Grid
                 size={{
                   xs: 12,
@@ -148,41 +152,56 @@ export default function ParticipantForm({ participant, adminId, onParticipantSav
             <Box
               sx={{
                 mb: 3,
-                mt: 3
-              }}>
+                mt: 3,
+              }}
+            >
               <PersonalDataSection isTeamPartnerWishChild={teamPartnerWishChild} />
             </Box>
             {!teamPartnerWishChild && (
               <>
-                <Box sx={{
-                  mb: 3
-                }}>
+                <Box
+                  sx={{
+                    mb: 3,
+                  }}
+                >
                   <AddressSection isNumSeatsRequired={true} />
                   <OpenAddressInGoogleMapsLink geocodingResult={participant?.geocodingResult} />
+                  <AccessibilitySection />
                 </Box>
-                <Box sx={{
-                  mb: 3
-                }}>
+                <Box
+                  sx={{
+                    mb: 3,
+                  }}
+                >
                   <MealSpecificsSection />
                 </Box>
               </>
             )}
-            <Box sx={{
-              mb: 3
-            }}>{!teamPartnerWishDisabled && <TeamPartnerWishSectionAdmin {...participant} adminId={adminId} />}</Box>
+            <Box
+              sx={{
+                mb: 3,
+              }}
+            >
+              {!teamPartnerWishDisabled && <TeamPartnerWishSectionAdmin {...participant} adminId={adminId} />}
+            </Box>
             {!teamPartnerWishChild && (
-              <Box sx={{
-                mb: 3
-              }}>
+              <Box
+                sx={{
+                  mb: 3,
+                }}
+              >
                 <MiscSection activationDate={participant?.activationDate} />
               </Box>
             )}
 
             {isSubmitting && <LinearProgress />}
 
-            <Grid container sx={{
-              justifyContent: 'flex-end'
-            }}>
+            <Grid
+              container
+              sx={{
+                justifyContent: 'flex-end',
+              }}
+            >
               <Grid>
                 {showDeleteBtn && (
                   <SecondaryButton onClick={() => setOpenDeleteDialog(true)} data-testid={'delete-participant-dialog-action'}>

@@ -24,6 +24,8 @@ export interface RegistrationSummary {
   numberOfSeats: number | undefined;
   canHost: boolean;
   mealSpecifics?: MealSpecifics;
+  homeAccessible: boolean;
+  requiresAccessibleHome: boolean;
   teamPartnerWishEmail?: string;
   teamPartnerWishState: TeamPartnerWishState;
   teamPartnerWishRegistrationData?: TeamPartnerWishRegistrationData;

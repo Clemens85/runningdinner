@@ -21,6 +21,7 @@ import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import AccessibilitySection from '../admin/participants/form/AccessibilitySection';
 import AddressSection from '../admin/participants/form/AddressSection';
 import MealSpecificsSection from '../admin/participants/form/MealSpecificsSection';
 import MiscSection from '../admin/participants/form/MiscSection';
@@ -187,17 +188,20 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
       <RegistrationFormDrawer open={true} anchor="right" onClose={onCancel} ModalProps={{ keepMounted: true }}>
         <div>
           <Paper elevation={3}>
-            <Box sx={{
-              p: 3
-            }}>
+            <Box
+              sx={{
+                p: 3,
+              }}
+            >
               <FormProvider {...formMethods}>
                 <form>
                   <Grid
                     container
                     sx={{
                       justifyContent: 'space-between',
-                      alignItems: 'baseline'
-                    }}>
+                      alignItems: 'baseline',
+                    }}
+                  >
                     <Grid size={12}>
                       <Subtitle i18n={'landing:registration'} />
                     </Grid>
@@ -205,33 +209,45 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
                   <Box
                     sx={{
                       mb: 3,
-                      mt: 3
-                    }}>
+                      mt: 3,
+                    }}
+                  >
                     <PersonalDataSection />
                   </Box>
-                  <Box sx={{
-                    mb: 3
-                  }}>
+                  <Box
+                    sx={{
+                      mb: 3,
+                    }}
+                  >
                     <AddressSection headline={t('common:address_data')} isNumSeatsRequired={true} addressRemarksHelperText={t('landing:address_remarks_help')} />
+                    <AccessibilitySection />
                   </Box>
-                  <Box sx={{
-                    mb: 3
-                  }}>
+                  <Box
+                    sx={{
+                      mb: 3,
+                    }}
+                  >
                     <MealSpecificsSection />
                   </Box>
-                  <Box sx={{
-                    mb: 3
-                  }}>
+                  <Box
+                    sx={{
+                      mb: 3,
+                    }}
+                  >
                     {!teamPartnerWishDisabled && <TeamPartnerWishSectionRegistration invitingParticipantEmail={invitingParticipantEmail} publicDinnerId={publicDinnerId} />}
                   </Box>
-                  <Box sx={{
-                    mb: 3
-                  }}>
+                  <Box
+                    sx={{
+                      mb: 3,
+                    }}
+                  >
                     <MiscSection miscNotesHelperText={t('landing:misc_notes_help')} />
                   </Box>
-                  <Box sx={{
-                    mb: 3
-                  }}>
+                  <Box
+                    sx={{
+                      mb: 3,
+                    }}
+                  >
                     <FormCheckbox
                       name="dataProcessingAcknowledged"
                       useTableDisplay={true}
@@ -254,9 +270,12 @@ function PublicDinnerEventRegistrationForm({ onCancel, onRegistrationPerformed, 
 
                   {isSubmitting && <LinearProgress />}
 
-                  <Grid container sx={{
-                    justifyContent: 'flex-end'
-                  }}>
+                  <Grid
+                    container
+                    sx={{
+                      justifyContent: 'flex-end',
+                    }}
+                  >
                     <Grid>
                       <SecondaryButton onClick={onCancel}>{t('common:cancel')}</SecondaryButton>
                       <PrimaryButton
@@ -312,14 +331,18 @@ function ZipRestrictionDialogView({ publicRunningDinner }: ZipRestrictionDialogV
       <Alert severity="info" variant="outlined">
         <Trans i18nKey="landing:registration_not_possible_zip_restriction" values={{ title }} />
       </Alert>
-      <Box sx={{
-        my: 2
-      }}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <PublicContactInfo {...publicSettings} />
       </Box>
-      <Box sx={{
-        my: 2
-      }}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Trans i18nKey={'common:zip_restrictions_enabled'} />
         <Grid container spacing={1} sx={{ pt: 1 }}>
           {resultingZipRestrictions.zipRestrictions.map((zipRestriction: string, index: number) => (

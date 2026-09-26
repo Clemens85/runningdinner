@@ -228,6 +228,8 @@ public class ParticipantService {
     if (!syncSettings.isSyncOnlyGeocodeData()) {
       childParticipant.setAddress(updatedParticipant.getAddress().createDetachedClone());
       childParticipant.setMealSpecifics(updatedParticipant.getMealSpecifics().createDetachedClone());
+      childParticipant.setHomeAccessible(updatedParticipant.isHomeAccessible());
+      childParticipant.setRequiresAccessibleHome(updatedParticipant.isRequiresAccessibleHome());
       childParticipant.setNotes(updatedParticipant.getNotes());
 
       // If child participant has same email as the parent participant before update,
@@ -429,6 +431,8 @@ public class ParticipantService {
     dest.setAge(incomingParticipant.getAgeNormalized());
 
     dest.setMealSpecifics(incomingParticipant.getMealSpecifics());
+    dest.setHomeAccessible(incomingParticipant.isHomeAccessible());
+    dest.setRequiresAccessibleHome(incomingParticipant.isRequiresAccessibleHome());
     dest.setNotes(incomingParticipant.getNotes());
     
     dest.setTeamPartnerWishEmail(incomingParticipant.getTeamPartnerWishEmail());
