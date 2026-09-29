@@ -114,6 +114,13 @@ export function canHost(participant: Participant, numSeatsNeededForHost: number)
   return participant.numSeats >= 0 && participant.numSeats >= numSeatsNeededForHost;
 }
 
+/**
+ * Participants requiring accessibility are assumed to be able to access their own home (same logic as in backend)
+ */
+export function canHostAtAccessibleLocation(participant: Participant, numSeatsNeededForHost: number) {
+  return canHost(participant, numSeatsNeededForHost) && (participant.homeAccessible || participant.requiresAccessibleHome);
+}
+
 export function isNumSeatsUnknown(participant: Participant) {
   return participant.numSeats < 0;
 }

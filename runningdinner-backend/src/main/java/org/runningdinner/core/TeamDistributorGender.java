@@ -99,6 +99,10 @@ public class TeamDistributorGender {
         
         swapTeamMember(teamCandidateClone, matchingTeamMember, unbalancedTeamClone, teamMemberOfUnbalancedTeam);
 
+        if (isAccessibilityWorsened(teamCandidate, teamCandidateClone) || isAccessibilityWorsened(unbalancedTeam, unbalancedTeamClone)) {
+          continue;
+        }
+
         int comparisionStatusTeam = 0; // Assume same host capcity distribution if we don't need to consider it
         int comparisionStatusUnbalancedTeam = 0; // Assume same host capcity distribution if we don't need to consider it
         if (configuration.isForceEqualDistributedCapacityTeams()) {
@@ -194,9 +198,19 @@ public class TeamDistributorGender {
             .collect(Collectors.toList());
   }
 
+  private boolean isAccessibilityWorsened(Team teamBefore, Team teamAfter) {
+
+    return TeamDistributorAccessibility.isAccessibilitySatisfied(teamBefore.getTeamMembers(), configuration) &&
+           !TeamDistributorAccessibility.isAccessibilitySatisfied(teamAfter.getTeamMembers(), configuration);
+  }
+
   private static boolean isGenderAspectSatisfied(Team team, RunningDinnerConfig runningDinnerConfig) {
+
+    return isGenderAspectSatisfied(team.getTeamMembersOrdered(), runningDinnerConfig);
+  }
+
+  static boolean isGenderAspectSatisfied(List<Participant> teamMembers, RunningDinnerConfig runningDinnerConfig) {
     
-    List<Participant> teamMembers = team.getTeamMembersOrdered();
     if (runningDinnerConfig.getGenderAspects() == GenderAspect.FORCE_GENDER_MIX) {
       if (teamMembers.get(0).getGender() == Gender.UNDEFINED && teamMembers.get(1).getGender() == Gender.UNDEFINED) {
         return true;

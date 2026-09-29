@@ -1,5 +1,7 @@
-import { TableCell, Button, Box } from '@mui/material';
+import { TableCell, Button, Box, Tooltip } from '@mui/material';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import { ParticipantMealBadges } from '../participants/meal/ParticipantMealBadges.tsx';
 import NumSeats from '../participants/list/NumSeats';
 import ParticipantGenderTooltip from '../../common/gender/ParticipantGenderTooltip';
@@ -8,7 +10,7 @@ import { useDrag, useDrop } from 'react-dnd';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { CancelledTeamMember } from './CancelledTeamMember';
 import { TableRowWithCursor } from '../../common/theme/CommonStyles';
-import { generateCancelledTeamMembersAsNumberArray, CONSTANTS, Fullname, isTeamPartnerWishChild } from '@runningdinner/shared';
+import { generateCancelledTeamMembersAsNumberArray, CONSTANTS, Fullname, isTeamPartnerWishChild, isHostAccessibilityMissing } from '@runningdinner/shared';
 import { TeamPartnerWishIcon } from './TeamPartnerWishIcon';
 import { styled } from '@mui/material/styles';
 
@@ -52,6 +54,7 @@ export default function TeamRow({ team, onClick, onTeamMemberSwap, onOpenChangeT
   };
 
   const isCancelled = team.status === CONSTANTS.TEAM_STATUS.CANCELLED;
+  const hostAccessibilityMissing = !isCancelled && isHostAccessibilityMissing(team, runningDinnerSessionData.numSeatsNeededForHost);
 
   return (
     <TableRowWithCursor hover onClick={() => onClick(team)} selected={selected} data-testid="team-row">
@@ -61,7 +64,12 @@ export default function TeamRow({ team, onClick, onTeamMemberSwap, onOpenChangeT
       <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{!isCancelled && teamMemberGenders}</TableCell>
       <TableCell>{meal.label}</TableCell>
       <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
-        <ChangeTeamHostButton handleOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog} hostTeamMember={hostTeamMember} isCancelled={isCancelled} />
+        <ChangeTeamHostButton
+          handleOpenChangeTeamHostDialog={handleOpenChangeTeamHostDialog}
+          hostTeamMember={hostTeamMember}
+          isCancelled={isCancelled}
+          hostAccessibilityMissing={hostAccessibilityMissing}
+        />
       </TableCell>
       <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
         <TeamPartnerWishIcon team={team} showLabelAsTooltip={true} />
@@ -70,19 +78,27 @@ export default function TeamRow({ team, onClick, onTeamMemberSwap, onOpenChangeT
   );
 }
 
-function ChangeTeamHostButton({ isCancelled, hostTeamMember, handleOpenChangeTeamHostDialog }) {
+function ChangeTeamHostButton({ isCancelled, hostTeamMember, handleOpenChangeTeamHostDialog, hostAccessibilityMissing }) {
+  const { t } = useTranslation('admin');
   if (!isCancelled) {
     return (
-      <Button
-        color="primary"
-        startIcon={<HomeRoundedIcon />}
-        disableRipple={true}
-        disableElevation={true}
-        onClick={handleOpenChangeTeamHostDialog}
-        style={{ backgroundColor: 'transparent' }}
-      >
-        <Fullname {...hostTeamMember} />
-      </Button>
+      <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
+        <Button
+          color="primary"
+          startIcon={<HomeRoundedIcon />}
+          disableRipple={true}
+          disableElevation={true}
+          onClick={handleOpenChangeTeamHostDialog}
+          style={{ backgroundColor: 'transparent' }}
+        >
+          <Fullname {...hostTeamMember} />
+        </Button>
+        {hostAccessibilityMissing && (
+          <Tooltip title={t('admin:accessibility_team_host_not_accessible')} placement="top-end">
+            <WarningAmberRoundedIcon fontSize="small" color="warning" sx={{ display: 'block' }} data-testid="team-host-accessibility-warning" />
+          </Tooltip>
+        )}
+      </Box>
     );
   }
   return null;

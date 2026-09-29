@@ -335,6 +335,10 @@ public class RunningDinnerCalculator {
 		List<Team> teams = teamDistributorHosting.calculateTeams();
 		assertUniqueTeamMembers(teams, "TeamDistributorHosting");
 
+		TeamDistributorAccessibility teamDistributorAccessibility = new TeamDistributorAccessibility(teams, runningDinnerConfig);
+		teams = teamDistributorAccessibility.calculateTeams();
+		assertUniqueTeamMembers(teams, "TeamDistributorAccessibility");
+
 		TeamDistributorGender teamDistributorGender = new TeamDistributorGender(teams, runningDinnerConfig);
 		teams = teamDistributorGender.calculateTeams();
 		assertUniqueTeamMembers(teams, "TeamDistributorGender");
@@ -366,33 +370,42 @@ public class RunningDinnerCalculator {
 
 	/**
 	 * Sets one participant in the team as the hosting participant.
-	 * This is done with some intelligence so it is firstly tried to set a participant as hosting participant if he has enough seats.<br>
+	 * This is done with some intelligence so it is firstly tried to set a participant as hosting participant if he has enough seats
+	 * (preferring participants with an accessible home).<br>
 	 * As a fallback the first participant is just taken.
 	 *
 	 */
 	public static void setHostingParticipant(Team team, RunningDinnerConfig runningDinnerConfig) {
-		Participant participantWithUnknownHostingStatus = null;
-
+		Participant host = findBestHostingParticipant(team, runningDinnerConfig);
 		for (Participant teamMember : team.getTeamMembers()) {
-			FuzzyBoolean canHost = runningDinnerConfig.canHost(teamMember);
-			if (FuzzyBoolean.TRUE == canHost) {
-				teamMember.setHost(true);
-				return;
-			}
-			if (FuzzyBoolean.UNKNOWN == canHost) {
-				participantWithUnknownHostingStatus = teamMember;
+			teamMember.setHost(teamMember.equals(host));
+		}
+	}
+
+	private static Participant findBestHostingParticipant(Team team, RunningDinnerConfig runningDinnerConfig) {
+		List<Participant> teamMembers = team.getTeamMembersOrdered();
+
+		for (Participant teamMember : teamMembers) {
+			if (teamMember.isHomeAccessible() && runningDinnerConfig.canHost(teamMember) == FuzzyBoolean.TRUE) {
+				return teamMember;
 			}
 		}
-
-		// First fallback: Take one participant with unknown hosting status:
-		if (participantWithUnknownHostingStatus != null) {
-			participantWithUnknownHostingStatus.setHost(true);
-			return;
+		for (Participant teamMember : teamMembers) {
+			if (TeamDistributorAccessibility.canHostAtAccessibleLocation(teamMember, runningDinnerConfig)) {
+				return teamMember;
+			}
 		}
-
-		// Last fallback, just pick up the first matching participant:
-		Participant firstTeamMember = team.getTeamMembers().iterator().next();
-		firstTeamMember.setHost(true);
+		for (Participant teamMember : teamMembers) {
+			if (runningDinnerConfig.canHost(teamMember) == FuzzyBoolean.TRUE) {
+				return teamMember;
+			}
+		}
+		for (Participant teamMember : teamMembers) {
+			if (runningDinnerConfig.canHost(teamMember) == FuzzyBoolean.UNKNOWN) {
+				return teamMember;
+			}
+		}
+		return teamMembers.get(0);
 	}
 
 	public interface ParticipantListRandomizer {

@@ -1,4 +1,7 @@
 {
+  "accessibility_home_accessible_short": "Home is accessible",
+  "accessibility_requires_accessible_home_short": "Needs step-free access",
+  "accessibility_team_host_not_accessible": "A team member needs step-free access, but the host does not provide an accessible home with enough seats",
   "activate_registration": "Activate registration",
   "activate_registration_confirmation_text": "Do you really want to activate the registration of your event again? By doing so new participants can sign up again.",
   "activities_none": "No activities!",

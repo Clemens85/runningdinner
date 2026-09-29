@@ -1,6 +1,8 @@
-import { Chip, Tooltip } from '@mui/material';
+import { Box, Chip, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { canHost, isNumSeatsUnknown, Participant, RunningDinnerSessionData } from '@runningdinner/shared';
+
+import { AccessibilityIndicator } from './AccessibilityIndicator';
 
 const ChipWhiteText = styled(Chip)({
   color: 'white',
@@ -12,6 +14,15 @@ export interface NumSeatsProps {
 }
 
 export default function NumSeats({ participant, runningDinnerSessionData }: NumSeatsProps) {
+  return (
+    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+      <NumSeatsChip participant={participant} runningDinnerSessionData={runningDinnerSessionData} />
+      <AccessibilityIndicator participant={participant} />
+    </Box>
+  );
+}
+
+function NumSeatsChip({ participant, runningDinnerSessionData }: NumSeatsProps) {
   const { numSeatsNeededForHost } = runningDinnerSessionData;
 
   const numSeatsUnknown = isNumSeatsUnknown(participant);

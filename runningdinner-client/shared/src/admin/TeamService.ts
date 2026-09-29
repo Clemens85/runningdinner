@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash-es';
 import { BackendConfig } from '../BackendConfig';
 import { Participant, Team, TeamArrangementList, TeamCancellationResult, TeamMeetingPlan, TeamMemberCancelInfo } from '../types';
 import { isArrayNotEmpty, isSameEntity } from '../Utils';
-import { getFullname } from './ParticipantService';
+import { canHostAtAccessibleLocation, getFullname } from './ParticipantService';
 
 export async function findTeamsAsync(adminId: string): Promise<Array<Team>> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}?filterCancelledTeams=false`);
@@ -121,6 +121,14 @@ export function hasEnoughSeats(team: Team, numSeatsNeededForHost: number) {
     }
   }
   return false;
+}
+
+export function isHostAccessibilityMissing(team: Team, numSeatsNeededForHost: number) {
+  const { teamMembers, hostTeamMember } = team;
+  if (!hostTeamMember || !teamMembers.some((teamMember) => teamMember.requiresAccessibleHome)) {
+    return false;
+  }
+  return !canHostAtAccessibleLocation(hostTeamMember, numSeatsNeededForHost);
 }
 
 export async function cancelTeamDryRunAsync(adminId: string, team: Team, replacementParticipants: Participant[]): Promise<TeamCancellationResult> {

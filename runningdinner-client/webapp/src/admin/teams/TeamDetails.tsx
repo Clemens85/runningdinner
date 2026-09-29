@@ -1,4 +1,5 @@
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import { Box, Button, Divider, Grid, Paper, Stack, Typography } from '@mui/material';
 import {
   assertDefined,
@@ -11,6 +12,7 @@ import {
   getFullname,
   getRunningDinnerMandatorySelector,
   hasEnoughSeats,
+  isHostAccessibilityMissing,
   isSameEntity,
   Meal,
   MessageSubType,
@@ -35,6 +37,7 @@ import Paragraph from '../../common/theme/typography/Paragraph';
 import { Span, Subtitle } from '../../common/theme/typography/Tags';
 import { useAdminNavigation } from '../AdminNavigationHook';
 import { ParticipantMealDetails } from '../participants/meal/ParticipantMealBadges.tsx';
+import { AccessibilityIndicator } from '../participants/list/AccessibilityIndicator';
 import { TeamCancelDialog } from './cancellation/TeamCancelDialog';
 import { TeamMemberCancelDialog, TeamMemberCancelDialogResult } from './cancellation/TeamMemberCancelDialog';
 import { CancelledTeamMember } from './CancelledTeamMember';
@@ -250,7 +253,7 @@ function TeamMember({ teamMember, adminId, team, passedTeamMemberToCancel, onUpd
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
           <Stack spacing={0.25}>
             <Fullname {...teamMember} />
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <Typography variant="caption" sx={{
                 color: "text.secondary"
               }}>
@@ -261,6 +264,7 @@ function TeamMember({ teamMember, adminId, team, passedTeamMemberToCancel, onUpd
               }}>
                 <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />
               </Typography>
+              <AccessibilityIndicator participant={teamMember} />
             </Stack>
             <ParticipantMealDetails participant={teamMember} />
           </Stack>
@@ -301,7 +305,22 @@ function TeamHostInfo({ team, sessionData, onOpenChangeTeamHostDialog }: TeamHos
         </LinkAction>
       </Stack>
       <NoValidTeamHost team={team} numSeatsNeededForHost={sessionData.numSeatsNeededForHost} />
+      <HostAccessibilityMissing team={team} numSeatsNeededForHost={sessionData.numSeatsNeededForHost} />
     </Box>
+  );
+}
+
+function HostAccessibilityMissing({ team, numSeatsNeededForHost }: NoValidTeamHostProps) {
+  const { t } = useTranslation('admin');
+  if (!isHostAccessibilityMissing(team, numSeatsNeededForHost)) {
+    return null;
+  }
+
+  return (
+    <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mt: 0.5 }}>
+      <WarningAmberRoundedIcon color="warning" fontSize="small" />
+      <Typography variant="body2">{t('admin:accessibility_team_host_not_accessible')}</Typography>
+    </Stack>
   );
 }
 
