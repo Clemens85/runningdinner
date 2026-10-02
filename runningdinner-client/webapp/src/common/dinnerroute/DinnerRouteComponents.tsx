@@ -61,6 +61,7 @@ export function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean
 interface TeamCardDetailsProps extends DinnerRouteTeam {
   isCurrentTeam: boolean;
   showAccessibleStop?: boolean;
+  showIncomingGuestNeed?: boolean;
 }
 
 export function TeamCardDetails({
@@ -69,14 +70,13 @@ export function TeamCardDetails({
   contactInfo,
   isCurrentTeam,
   showAccessibleStop = false,
+  showIncomingGuestNeed = isCurrentTeam,
   accessibleHostLocation,
   visitingTeamsNeedAccessibleAccess,
 }: TeamCardDetailsProps) {
   const { t } = useTranslation('common');
-  const incomingAccessibilityInfo =
-    isCurrentTeam && accessibleHostLocation && visitingTeamsNeedAccessibleAccess ? t('dinner_route_accessibility_incoming_guests') : '';
-  const visitedAccessibilityInfo =
-    !isCurrentTeam && showAccessibleStop && accessibleHostLocation ? t('dinner_route_accessibility_stop_available') : '';
+  const incomingAccessibilityInfo = showIncomingGuestNeed && accessibleHostLocation && visitingTeamsNeedAccessibleAccess ? t('dinner_route_accessibility_incoming_guests') : '';
+  const visitedAccessibilityInfo = !isCurrentTeam && showAccessibleStop && accessibleHostLocation ? t('dinner_route_accessibility_stop_available') : '';
 
   function renderContactInfo() {
     if (isArrayEmpty(contactInfo)) {
@@ -178,9 +178,11 @@ export function WarningAlert({ teamsWithUnresolvedGeocodings, hideCloseButton }:
   return (
     <>
       {isOpen && (
-        <Box sx={{
-          mb: 2
-        }}>
+        <Box
+          sx={{
+            mb: 2,
+          }}
+        >
           <Alert severity="warning" variant="outlined" onClose={hideCloseButton ? undefined : close}>
             {t('dinner_route_geocoding_warning')}
             <ul>
@@ -260,13 +262,16 @@ type TeamMarkerInfoWindowContentProps = {
 
 export function TeamMarkerInfoWindowContent({ team, isCurrentTeam }: TeamMarkerInfoWindowContentProps) {
   return (
-    <Box style={{ backgroundColor: '#fff', opacity: 0.75 }} sx={{
-      p: 1
-    }}>
+    <Box
+      style={{ backgroundColor: '#fff', opacity: 0.75 }}
+      sx={{
+        p: 1,
+      }}
+    >
       <Subtitle>
         {team.meal.label} - <TeamNr {...team} />
       </Subtitle>
-      <TeamCardDetails {...team} isCurrentTeam={isCurrentTeam} />
+      <TeamCardDetails {...team} isCurrentTeam={isCurrentTeam} showAccessibleStop={true} showIncomingGuestNeed={true} />
     </Box>
   );
 }
@@ -377,9 +382,12 @@ export function AfterPartyLocationMarker(afterPartyLocationMapEntry: AfterPartyL
       </AdvancedMarker>
       {open && (
         <InfoWindow anchor={marker} maxWidth={300} onCloseClick={() => setOpen(false)}>
-          <Box style={{ backgroundColor: '#fff', opacity: 0.75 }} sx={{
-            p: 1
-          }}>
+          <Box
+            style={{ backgroundColor: '#fff', opacity: 0.75 }}
+            sx={{
+              p: 1,
+            }}
+          >
             <AfterPartyLocationCard {...afterPartyLocationMapEntry} />
           </Box>
         </InfoWindow>
