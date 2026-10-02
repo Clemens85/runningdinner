@@ -1,24 +1,24 @@
 package org.runningdinner.core.dinnerplan;
 
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.util.RandomNumberGenerator;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.util.RandomNumberGenerator;
-
 public class TeamSegmentTemplateMatrix {
 
-	private Collection<MealClass> meals;
+	private final Collection<MealClass> meals;
 
-	private RandomNumberGenerator randomNumberGenerator;
+	private final RandomNumberGenerator randomNumberGenerator;
 		
-	private static List<int[][][]> matrix9List = new ArrayList<int[][][]>();
-	private static List<int[][][]> matrix12List = new ArrayList<int[][][]>();
-	private static List<int[][][]> matrix15List = new ArrayList<int[][][]>();
+	private static final List<int[][][]> matrix9List = new ArrayList<int[][][]>();
+	private static final List<int[][][]> matrix12List = new ArrayList<int[][][]>();
+	private static final List<int[][][]> matrix15List = new ArrayList<int[][][]>();
 	
-	private static List<int[][][]> matrix4List = new ArrayList<int[][][]>();
-	private static List<int[][][]> matrix6List = new ArrayList<int[][][]>();
+	private static final List<int[][][]> matrix4List = new ArrayList<int[][][]>();
+	private static final List<int[][][]> matrix6List = new ArrayList<int[][][]>();
 	
 	static {
 		
@@ -177,20 +177,14 @@ public class TeamSegmentTemplateMatrix {
 		// 9, 12, 15 (for 3 meals)
 		// 4, 6 (for 2 meals)
 
-		switch (teamSegmentSize) {
-			case 9:
-				return build9Matrix();
-			case 12:
-				return build12Matrix();
-			case 15:
-				return build15Matrix();
-			case 4:
-				return build4Matrix();
-			case 6:
-				return build6Matrix();
-			default:
-				throw new IllegalArgumentException("teamSegmentSize must be one of the following values: 9, 12, 15, 4, 6");
-		}
+		return switch (teamSegmentSize) {
+			case 9 -> build9Matrix();
+			case 12 -> build12Matrix();
+			case 15 -> build15Matrix();
+			case 4 -> build4Matrix();
+			case 6 -> build6Matrix();
+			default -> throw new IllegalArgumentException("teamSegmentSize must be one of the following values: 9, 12, 15, 4, 6");
+		};
 	}
 
 	protected int[][][] build9Matrix() {
