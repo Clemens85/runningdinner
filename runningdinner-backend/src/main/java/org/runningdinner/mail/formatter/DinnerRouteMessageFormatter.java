@@ -99,7 +99,7 @@ public class DinnerRouteMessageFormatter {
 //          self = self.replaceAll("(?m)^[\\t ]*" + FormatterUtil.MEALSPECIFICS + "[\\t ]*(?:\\r?\\n|$)", StringUtils.EMPTY);
 //          self = self.replaceAll(FormatterUtil.MEALSPECIFICS, StringUtils.EMPTY);
         }
-        self = appendAccessibilityInfo(self, getAccessibilityForIncomingGuests(parentTeam, locale));
+        self = appendAccessibilityInfo(self, getAccessibilityForIncomingGuests(parentTeam, runningDinner, locale));
         plan.append(self);
       }
       // The plan-part(s) for the host-teams:
@@ -142,13 +142,13 @@ public class DinnerRouteMessageFormatter {
 
     }
 
-  private String getAccessibilityForIncomingGuests(Team team, Locale locale) {
+  private String getAccessibilityForIncomingGuests(Team team, RunningDinner runningDinner, Locale locale) {
 
     boolean hasGuestNeedingAccessibility = team.getGuestTeams()
         .stream()
         .filter(guestTeam -> guestTeam.getStatus() != TeamStatus.CANCELLED)
         .anyMatch(TeamDistributorAccessibility::requiresAccessibleHostLocation);
-    if (!hasGuestNeedingAccessibility) {
+    if (!hasGuestNeedingAccessibility || !TeamDistributorAccessibility.hasAccessibleHostLocation(team, runningDinner.getConfiguration())) {
       return StringUtils.EMPTY;
     }
     return messageSource.getMessage("message.template.dinnerroute.accessibility.incoming", null, locale);
@@ -156,10 +156,10 @@ public class DinnerRouteMessageFormatter {
 
   private String getAccessibilityForVisitedHome(Team visitedTeam, RunningDinner runningDinner, Locale locale) {
 
-    String messageKey = TeamDistributorAccessibility.hasAccessibleHostLocation(visitedTeam, runningDinner.getConfiguration())
-        ? "message.template.dinnerroute.accessibility.available"
-        : "message.template.dinnerroute.accessibility.unavailable";
-    return messageSource.getMessage(messageKey, null, locale);
+    if (!TeamDistributorAccessibility.hasAccessibleHostLocation(visitedTeam, runningDinner.getConfiguration())) {
+      return StringUtils.EMPTY;
+    }
+    return messageSource.getMessage("message.template.dinnerroute.accessibility.available", null, locale);
   }
 
   private String appendAccessibilityInfo(String template, String accessibilityInfo) {

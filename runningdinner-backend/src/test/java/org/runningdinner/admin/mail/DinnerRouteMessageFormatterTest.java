@@ -155,7 +155,7 @@ public class DinnerRouteMessageFormatterTest {
 	}
 
 	@Test
-	public void accessibilityPlaceholderShowsIncomingNeedsAndVisitedHomeStatus() {
+	public void accessibilityInfoIsShownOnlyForAccessibleLocationsThatCanFulfillTheNeed() {
 		RunningDinner runningDinner = newMockedRunningDinner();
 		List<Team> teams = generateTeams(runningDinner);
 		Team team = teams.get(0);
@@ -163,6 +163,8 @@ public class DinnerRouteMessageFormatterTest {
 		Team incomingGuest = team.getGuestTeams().iterator().next();
 		incomingGuest.getTeamMembersOrdered().get(0).setRequiresAccessibleHome(true);
 		team.getTeamMembersOrdered().get(0).setRequiresAccessibleHome(true);
+		team.getHostTeamMember().setNumSeats(6);
+		team.getHostTeamMember().setHomeAccessible(true);
 
 		List<Team> visitedTeams = TeamRouteBuilder.generateDinnerRoute(team)
 				.stream()
@@ -180,7 +182,8 @@ public class DinnerRouteMessageFormatterTest {
 		String message = formatter.formatDinnerRouteMessage(runningDinner, team.getHostTeamMember(), team,
 				TeamRouteBuilder.generateDinnerRoute(team), messageTemplate);
 
-		assertThat(message).contains("INCOMING ACCESS NEED", "ACCESS RECORDED", "NO ACCESS RECORDED");
+		assertThat(message).contains("INCOMING ACCESS NEED", "ACCESS RECORDED");
+		assertThat(message).doesNotContain("NO ACCESS RECORDED");
 		assertThat(message).doesNotContain("{accessibility}");
 	}
 
