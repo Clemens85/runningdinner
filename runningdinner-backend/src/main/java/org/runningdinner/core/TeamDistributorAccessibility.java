@@ -192,6 +192,16 @@ public class TeamDistributorAccessibility {
     return teamMembers.stream().anyMatch(p -> canHostAtAccessibleLocation(p, configuration));
   }
 
+  public static boolean requiresAccessibleHostLocation(Team team) {
+
+    return team.getTeamMembers().stream().anyMatch(Participant::isRequiresAccessibleHome);
+  }
+
+  public static boolean hasAccessibleHostLocation(Team team, RunningDinnerConfig configuration) {
+
+    return team.getTeamMembers().stream().anyMatch(p -> p.isHost() && canHostAtAccessibleLocation(p, configuration));
+  }
+
   private record SwapCandidate(Team otherTeam, Participant memberOfTeam, Participant memberOfOtherTeam, int score) {
   }
 }
