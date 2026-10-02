@@ -43,7 +43,7 @@ public class DinnerRouteCalculator {
 		
     String mealSpecificsOfGuestTeams = dinnerRouteMessageFormatter.getMealSpecificsOfGuestTeams(currentDinnerRouteTeam, runningDinner);
     
-    return DinnerRouteTO.newInstance(team.getId(), dinnerRoute, mealSpecificsOfGuestTeams, runningDinner.getAfterPartyLocation());
+		return DinnerRouteTO.newInstance(team.getId(), dinnerRoute, mealSpecificsOfGuestTeams, runningDinner.getAfterPartyLocation(), runningDinner.getConfiguration());
 	}
 	
 	public static AllDinnerRoutesWithDistancesListTO calculateDistancesForAllDinnerRoutes(List<DinnerRouteTO> allDinnerRoutes) {

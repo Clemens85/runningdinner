@@ -59,6 +59,8 @@
   "dear_users": "Dear user",
   "details": "Details",
   "dinner_route": "Dinner-Route",
+  "dinner_route_accessibility_incoming_guests": "Visiting team needs elevator or step-free access.",
+  "dinner_route_accessibility_stop_available": "Host has indicated elevator or step-free access.",
   "dinner_route_geocoding_warning": "The presentation is not complete, as the following locations could not be resolved: ",
   "distance": "Distance",
   "distances": "Distances",

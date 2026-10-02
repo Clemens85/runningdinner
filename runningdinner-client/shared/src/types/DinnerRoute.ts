@@ -14,6 +14,8 @@ export interface DinnerRoute {
 export type DinnerRouteTeam = {
   hostTeamMember: DinnerRouteTeamHost;
   contactInfo: string[];
+  accessibleHostLocation: boolean;
+  visitingTeamsNeedAccessibleAccess: boolean;
 } & BaseTeam;
 
 export type DinnerRouteTeamHost = Omit<Participant, 'id'>;

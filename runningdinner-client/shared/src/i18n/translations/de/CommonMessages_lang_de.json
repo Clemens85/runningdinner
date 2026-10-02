@@ -59,6 +59,8 @@
   "dear_users": "Liebe Nutzerinnen und Nutzer",
   "details": "Details",
   "dinner_route": "Dinner-Route",
+  "dinner_route_accessibility_incoming_guests": "Gastteam benötigt Aufzug oder stufenlosen Zugang.",
+  "dinner_route_accessibility_stop_available": "Gastgeber hat Aufzug oder stufenlosen Zugang angegeben.",
   "dinner_route_geocoding_warning": "Die Darstellung ist nicht vollständig, da folgende Standorte nicht aufgelöst werden konnten: ",
   "distance": "Entfernung",
   "distances": "Entfernungen",

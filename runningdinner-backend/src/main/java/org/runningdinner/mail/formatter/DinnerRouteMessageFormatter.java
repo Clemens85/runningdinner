@@ -96,8 +96,6 @@ public class DinnerRouteMessageFormatter {
         if (StringUtils.isEmpty(mealSpecificsOfGuestTeams) /* && (self.endsWith("\\n") || self.endsWith("\\r")) */) {
           // TODO: Don't know why if check with new line doesnt work
           self = StringUtils.chop(self); // prevent unnecessary newline
-//          self = self.replaceAll("(?m)^[\\t ]*" + FormatterUtil.MEALSPECIFICS + "[\\t ]*(?:\\r?\\n|$)", StringUtils.EMPTY);
-//          self = self.replaceAll(FormatterUtil.MEALSPECIFICS, StringUtils.EMPTY);
         }
         self = appendAccessibilityInfo(self, getAccessibilityForIncomingGuests(parentTeam, runningDinner, locale));
         plan.append(self);
@@ -123,11 +121,10 @@ public class DinnerRouteMessageFormatter {
           mobileNumberStr = StringUtils.defaultIfEmpty(mobileNumberStr, noMobileText);
           host = host.replaceAll(FormatterUtil.MOBILENUMBER, mobileNumberStr);
         } else {
-          host = messageFormatterHelperService.generateHostCancelledMessage(dinnerRouteTeam, locale, timeFormat,
-              noTimeText);
+          host = messageFormatterHelperService.generateHostCancelledMessage(dinnerRouteTeam, locale, timeFormat, noTimeText);
         }
-              host = appendAccessibilityInfo(host, accessibilityInfo);
 
+        host = appendAccessibilityInfo(host, accessibilityInfo);
         plan.append(host);
       }
 

@@ -2,7 +2,7 @@ import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 import IcecreamIcon from '@mui/icons-material/Icecream';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import SoupKitchenIcon from '@mui/icons-material/SoupKitchen';
-import { Alert } from '@mui/material';
+import { Alert, Typography } from '@mui/material';
 import { Box, styled } from '@mui/system';
 import {
   AfterPartyLocation,
@@ -60,9 +60,24 @@ export function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean
 
 interface TeamCardDetailsProps extends DinnerRouteTeam {
   isCurrentTeam: boolean;
+  showAccessibleStop?: boolean;
 }
 
-export function TeamCardDetails({ hostTeamMember, meal, contactInfo, isCurrentTeam }: TeamCardDetailsProps) {
+export function TeamCardDetails({
+  hostTeamMember,
+  meal,
+  contactInfo,
+  isCurrentTeam,
+  showAccessibleStop = false,
+  accessibleHostLocation,
+  visitingTeamsNeedAccessibleAccess,
+}: TeamCardDetailsProps) {
+  const { t } = useTranslation('common');
+  const incomingAccessibilityInfo =
+    isCurrentTeam && accessibleHostLocation && visitingTeamsNeedAccessibleAccess ? t('dinner_route_accessibility_incoming_guests') : '';
+  const visitedAccessibilityInfo =
+    !isCurrentTeam && showAccessibleStop && accessibleHostLocation ? t('dinner_route_accessibility_stop_available') : '';
+
   function renderContactInfo() {
     if (isArrayEmpty(contactInfo)) {
       return <Span>-</Span>;
@@ -108,11 +123,33 @@ export function TeamCardDetails({ hostTeamMember, meal, contactInfo, isCurrentTe
         </Span>
       </TeamCardDetailRow>
 
-      <TeamCardDetailRowMarginBottom style={{ visibility: isCurrentTeam ? 'hidden' : 'visible' }}>
-        <SmallTitle i18n="contact" />
-        :&nbsp; {renderContactInfo()}
-      </TeamCardDetailRowMarginBottom>
+      {isCurrentTeam ? (
+        incomingAccessibilityInfo ? (
+          <AccessibilityInfo>{incomingAccessibilityInfo}</AccessibilityInfo>
+        ) : (
+          <TeamCardDetailRowMarginBottom style={{ visibility: 'hidden' }}>
+            <SmallTitle i18n="contact" />
+            :&nbsp; {renderContactInfo()}
+          </TeamCardDetailRowMarginBottom>
+        )
+      ) : (
+        <>
+          <TeamCardDetailRowMarginBottom>
+            <SmallTitle i18n="contact" />
+            :&nbsp; {renderContactInfo()}
+          </TeamCardDetailRowMarginBottom>
+          {visitedAccessibilityInfo && <AccessibilityInfo>{visitedAccessibilityInfo}</AccessibilityInfo>}
+        </>
+      )}
     </>
+  );
+}
+
+function AccessibilityInfo({ children }: { children: string }) {
+  return (
+    <Typography variant="caption" component="div" color="text.secondary" sx={{ mt: 0.25, mb: 0.5, lineHeight: 1.25 }}>
+      {children}
+    </Typography>
   );
 }
 

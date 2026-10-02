@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.AfterPartyLocation;
 import org.runningdinner.core.IdentifierUtil;
+import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.mail.formatter.FormatterUtil;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.rest.TeamTO;
@@ -29,17 +30,19 @@ public class DinnerRouteTO implements Serializable {
     
   }
 
-  protected DinnerRouteTO(Team currentTeam, List<Team> incomingTeams, String mealSpecificsOfGuestTeams, AfterPartyLocation afterPartyLocation) {
+  protected DinnerRouteTO(Team currentTeam, List<Team> incomingTeams, String mealSpecificsOfGuestTeams,
+                          AfterPartyLocation afterPartyLocation, RunningDinnerConfig configuration) {
     this.currentTeam = new TeamTO(currentTeam);
-    this.teams = mapTeams(incomingTeams);
+    this.teams = mapTeams(incomingTeams, configuration);
     this.mealSpecificsOfGuestTeams = mealSpecificsOfGuestTeams;
     this.afterPartyLocation = afterPartyLocation;
   }
 
-  public static DinnerRouteTO newInstance(UUID currentTeamId, List<Team> dinnerRouteTeams, String mealSpecificsOfGuestTeams, Optional<AfterPartyLocation> afterPartyLocation) {
+  public static DinnerRouteTO newInstance(UUID currentTeamId, List<Team> dinnerRouteTeams, String mealSpecificsOfGuestTeams,
+                                          Optional<AfterPartyLocation> afterPartyLocation, RunningDinnerConfig configuration) {
     
     Team currentTeam = IdentifierUtil.filterListForIdMandatory(dinnerRouteTeams, currentTeamId); 
-    return new DinnerRouteTO(currentTeam, dinnerRouteTeams, mealSpecificsOfGuestTeams, afterPartyLocation.orElse(null));
+    return new DinnerRouteTO(currentTeam, dinnerRouteTeams, mealSpecificsOfGuestTeams, afterPartyLocation.orElse(null), configuration);
   }
   
   public List<DinnerRouteTeamTO> getTeams() {
@@ -72,11 +75,11 @@ public class DinnerRouteTO implements Serializable {
     return result;
   }
   
-  private static List<DinnerRouteTeamTO> mapTeams(List<Team> incomingTeams) {
+  private static List<DinnerRouteTeamTO> mapTeams(List<Team> incomingTeams, RunningDinnerConfig configuration) {
     
    return incomingTeams
            .stream()
-           .map(DinnerRouteTeamTO::new)
+           .map(team -> new DinnerRouteTeamTO(team, configuration))
            .collect(Collectors.toList());
   }
   

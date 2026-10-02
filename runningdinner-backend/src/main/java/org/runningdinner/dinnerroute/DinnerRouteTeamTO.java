@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.runningdinner.admin.rest.MealTO;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.TeamDistributorAccessibility;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.HasGeocodingResult;
@@ -27,6 +29,10 @@ public class DinnerRouteTeamTO implements HasGeocodingResult {
   private DinnerRouteTeamHostTO hostTeamMember;
   
   private List<String> contactInfo = new ArrayList<>();
+
+  private boolean accessibleHostLocation;
+
+  private boolean visitingTeamsNeedAccessibleAccess;
   
   @JsonIgnore
   private Team rawTeam;
@@ -36,7 +42,7 @@ public class DinnerRouteTeamTO implements HasGeocodingResult {
     // JSON
   }
   
-  public DinnerRouteTeamTO(Team team) {
+  public DinnerRouteTeamTO(Team team, RunningDinnerConfig configuration) {
     
     this.setStatus(team.getStatus());
     this.setTeamNumber(team.getTeamNumber());
@@ -48,6 +54,11 @@ public class DinnerRouteTeamTO implements HasGeocodingResult {
     }
     
     this.setContactInfo(TeamRouteBuilder.getMobileNumbers(team));
+    this.accessibleHostLocation = TeamDistributorAccessibility.hasAccessibleHostLocation(team, configuration);
+    this.visitingTeamsNeedAccessibleAccess = team.getGuestTeams()
+      .stream()
+      .filter(guestTeam -> guestTeam.getStatus() != TeamStatus.CANCELLED)
+      .anyMatch(TeamDistributorAccessibility::requiresAccessibleHostLocation);
     
     this.rawTeam = team;
   }
@@ -107,7 +118,15 @@ public class DinnerRouteTeamTO implements HasGeocodingResult {
 		this.contactInfo = contactInfo;
 	}
 
-	@Override 
+  public boolean isAccessibleHostLocation() {
+    return accessibleHostLocation;
+  }
+
+  public boolean isVisitingTeamsNeedAccessibleAccess() {
+    return visitingTeamsNeedAccessibleAccess;
+  }
+
+  @Override
   public String toString() {
 
     return MoreObjects.toStringHelper(this)

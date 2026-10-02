@@ -18,6 +18,7 @@ export default function DinnerRouteView({ dinnerRoute, meals }: DinnerRouteProps
   const { mealSpecificsOfGuestTeams, teams, afterPartyLocation } = dinnerRoute;
 
   const mealTypeMappings = DinnerRouteMapCalculator.buildMealTypeMappings(meals);
+  const currentTeamRequiresAccessibility = dinnerRoute.currentTeam.teamMembers.some((member) => member.requiresAccessibleHome);
 
   const teamCardNodes = teams.map((team) => (
     <Grid
@@ -27,7 +28,12 @@ export default function DinnerRouteView({ dinnerRoute, meals }: DinnerRouteProps
         md: 4,
       }}
     >
-      <TeamCard dinnerRouteTeam={team} isCurrentTeam={team.teamNumber === dinnerRoute.currentTeam.teamNumber} mealType={mealTypeMappings[team.meal.id || '']} />
+      <TeamCard
+        dinnerRouteTeam={team}
+        isCurrentTeam={team.teamNumber === dinnerRoute.currentTeam.teamNumber}
+        currentTeamRequiresAccessibility={currentTeamRequiresAccessibility}
+        mealType={mealTypeMappings[team.meal.id || '']}
+      />
     </Grid>
   ));
 
@@ -66,9 +72,10 @@ interface TeamCardProps {
   dinnerRouteTeam: DinnerRouteTeam;
   mealType: MealType;
   isCurrentTeam: boolean;
+  currentTeamRequiresAccessibility: boolean;
 }
 
-function TeamCard({ dinnerRouteTeam, mealType, isCurrentTeam }: TeamCardProps) {
+function TeamCard({ dinnerRouteTeam, mealType, isCurrentTeam, currentTeamRequiresAccessibility }: TeamCardProps) {
   const { t } = useTranslation(['common']);
   const isCancelled = dinnerRouteTeam.status === TeamStatus.CANCELLED;
 
@@ -93,7 +100,13 @@ function TeamCard({ dinnerRouteTeam, mealType, isCurrentTeam }: TeamCardProps) {
       </PageTitle>
       <Paper elevation={3} sx={{ p: 2 }}>
         {isCancelled && <Subtitle i18n={'cancelled'} color="error" />}
-        {!isCancelled && <TeamCardDetails {...dinnerRouteTeam} isCurrentTeam={isCurrentTeam} />}
+        {!isCancelled && (
+          <TeamCardDetails
+            {...dinnerRouteTeam}
+            isCurrentTeam={isCurrentTeam}
+            showAccessibleStop={currentTeamRequiresAccessibility}
+          />
+        )}
       </Paper>
     </>
   );
