@@ -347,6 +347,35 @@ public class MessageServiceTest {
   }
 
   @Test
+  public void accessibilityRequirementIsIncludedOnlyInPartnerContactDetails() {
+    teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
+
+    Team team = getTeamMeetingPlanOfFirstTeam().getTeam();
+    Participant accessibilityAwarePartner = team.getTeamMembersOrdered().get(0);
+    accessibilityAwarePartner.setRequiresAccessibleHome(true);
+    participantRepository.save(accessibilityAwarePartner);
+
+    TeamMessage teamMessage = new TeamMessage();
+    teamMessage.setMessage("Partner: {partner}\n{host}");
+    teamMessage.setSubject("Subject");
+    teamMessage.setHostMessagePartTemplate("Host: {partner}");
+    teamMessage.setNonHostMessagePartTemplate("Host: {partner}");
+    teamMessage.setTeamSelection(TeamSelection.CUSTOM_SELECTION);
+    teamMessage.setCustomSelectedTeamIds(Collections.singletonList(team.getId()));
+
+    String accessibilityNote = "Benötigt bei den besuchten Wohnungen einen Aufzug oder stufenlosen Zugang.";
+    List<String> messages = messageService.getTeamPreview(runningDinner.getAdminId(), teamMessage)
+      .stream()
+      .map(PreviewMessage::getMessage)
+      .toList();
+
+    assertThat(messages).filteredOn(message -> message.contains(accessibilityNote)).hasSize(1);
+    String messageWithAccessibilityNote = messages.stream().filter(message -> message.contains(accessibilityNote)).findFirst().orElseThrow();
+    assertThat(StringUtils.countMatches(messageWithAccessibilityNote, accessibilityNote)).isEqualTo(1);
+    assertThat(messageWithAccessibilityNote.substring(messageWithAccessibilityNote.lastIndexOf("Host: "))).doesNotContain(accessibilityNote);
+  }
+
+  @Test
   public void testMealSpecificsNoteIsNotDuplicatedForRootParticipant() {
     teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
 

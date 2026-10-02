@@ -94,6 +94,10 @@ public class TeamArrangementMessageFormatter {
       }
       partnerInfo.append(partnerMail).append(FormatterUtil.NEWLINE)
                  .append(partnerMobile);
+      if (partner.isRequiresAccessibleHome()) {
+        String accessibilityNote = messageSource.getMessage("message.template.team.partner.accessibility", null, locale);
+        partnerInfo.append(FormatterUtil.NEWLINE).append(accessibilityNote);
+      }
     }
 
     theMessage = theMessage.replaceFirst(FormatterUtil.PARTNER, partnerInfo.toString());
