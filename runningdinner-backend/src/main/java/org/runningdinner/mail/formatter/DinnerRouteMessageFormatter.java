@@ -6,6 +6,7 @@ import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.MealSpecifics;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.TeamDistributorAccessibility;
 import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
@@ -95,18 +96,25 @@ public class DinnerRouteMessageFormatter {
         if (StringUtils.isEmpty(mealSpecificsOfGuestTeams) /* && (self.endsWith("\\n") || self.endsWith("\\r")) */) {
           // TODO: Don't know why if check with new line doesnt work
           self = StringUtils.chop(self); // prevent unnecessary newline
+//          self = self.replaceAll("(?m)^[\\t ]*" + FormatterUtil.MEALSPECIFICS + "[\\t ]*(?:\\r?\\n|$)", StringUtils.EMPTY);
+//          self = self.replaceAll(FormatterUtil.MEALSPECIFICS, StringUtils.EMPTY);
         }
+        self = appendAccessibilityInfo(self, getAccessibilityForIncomingGuests(parentTeam, locale));
         plan.append(self);
       }
       // The plan-part(s) for the host-teams:
       else {
         String host = hostsTemplate;
+        String accessibilityInfo = StringUtils.EMPTY;
         if (dinnerRouteTeam.getStatus() != TeamStatus.CANCELLED) {
           host = host.replaceAll(FormatterUtil.FIRSTNAME, hostTeamMember.getName().getFirstnamePart());
           host = host.replaceAll(FormatterUtil.LASTNAME, hostTeamMember.getName().getLastname());
           host = host.replaceAll(FormatterUtil.MEAL, mealLabel);
           host = host.replaceAll(FormatterUtil.MEALTIME,
               FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText));
+          accessibilityInfo = TeamDistributorAccessibility.requiresAccessibleHostLocation(parentTeam)
+              ? getAccessibilityForVisitedHome(dinnerRouteTeam, runningDinner, locale)
+              : StringUtils.EMPTY;
 
           String address = FormatterUtil.generateAddressString(hostTeamMember);
           host = host.replaceFirst(FormatterUtil.HOSTADDRESS, address);
@@ -118,6 +126,7 @@ public class DinnerRouteMessageFormatter {
           host = messageFormatterHelperService.generateHostCancelledMessage(dinnerRouteTeam, locale, timeFormat,
               noTimeText);
         }
+              host = appendAccessibilityInfo(host, accessibilityInfo);
 
         plan.append(host);
       }
@@ -132,6 +141,35 @@ public class DinnerRouteMessageFormatter {
     return theMessage;
 
     }
+
+  private String getAccessibilityForIncomingGuests(Team team, Locale locale) {
+
+    boolean hasGuestNeedingAccessibility = team.getGuestTeams()
+        .stream()
+        .filter(guestTeam -> guestTeam.getStatus() != TeamStatus.CANCELLED)
+        .anyMatch(TeamDistributorAccessibility::requiresAccessibleHostLocation);
+    if (!hasGuestNeedingAccessibility) {
+      return StringUtils.EMPTY;
+    }
+    return messageSource.getMessage("message.template.dinnerroute.accessibility.incoming", null, locale);
+  }
+
+  private String getAccessibilityForVisitedHome(Team visitedTeam, RunningDinner runningDinner, Locale locale) {
+
+    String messageKey = TeamDistributorAccessibility.hasAccessibleHostLocation(visitedTeam, runningDinner.getConfiguration())
+        ? "message.template.dinnerroute.accessibility.available"
+        : "message.template.dinnerroute.accessibility.unavailable";
+    return messageSource.getMessage(messageKey, null, locale);
+  }
+
+  private String appendAccessibilityInfo(String template, String accessibilityInfo) {
+
+    if (StringUtils.isEmpty(accessibilityInfo)) {
+      return template;
+    }
+    String separator = template.endsWith("\n") || template.endsWith("\r") ? StringUtils.EMPTY : FormatterUtil.NEWLINE;
+    return template + separator + accessibilityInfo;
+  }
 
   public String getMealSpecificsOfGuestTeams(Team parentTeam, RunningDinner runningDinner) {
     List<MealSpecifics> allGuestMealspecifics = parentTeam.getMealSpecificsOfGuestTeams();

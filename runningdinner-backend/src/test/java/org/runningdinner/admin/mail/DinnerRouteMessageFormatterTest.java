@@ -78,8 +78,13 @@ public class DinnerRouteMessageFormatterTest {
 
     Mockito.when(urlGenerator.constructPrivateDinnerRouteUrl(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn("SelfAdminId");
-    Mockito.when(messageSource.getMessage(Mockito.any(), Mockito.any(), Mockito.any()))
-        .thenReturn("N/A");
+		Mockito.when(messageSource.getMessage(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenAnswer(invocation -> switch (invocation.getArgument(0, String.class)) {
+					case "message.template.dinnerroute.accessibility.incoming" -> "INCOMING ACCESS NEED";
+					case "message.template.dinnerroute.accessibility.available" -> "ACCESS RECORDED";
+					case "message.template.dinnerroute.accessibility.unavailable" -> "NO ACCESS RECORDED";
+					default -> "N/A";
+				});
 
     this.afterPartyLocationService = new AfterPartyLocationService(runningDinnerService, geocodeRequestEventPublisher, localizationProviderService, messageSource);
 
@@ -147,6 +152,51 @@ public class DinnerRouteMessageFormatterTest {
 		String dinnerRouteMessage = formatter.formatDinnerRouteMessage(runningDinner, team.getHostTeamMember(), team, dinnerRoute, dinnerRouteMessageTemplate);
 		assertThat(dinnerRouteMessage).contains("Kontakt: 123456789");
 		assertThat(dinnerRouteMessage).contains("Kontakt: N/A"); // The other team in dinner-route have no mobile numbers setup, hence we get this one always also
+	}
+
+	@Test
+	public void accessibilityPlaceholderShowsIncomingNeedsAndVisitedHomeStatus() {
+		RunningDinner runningDinner = newMockedRunningDinner();
+		List<Team> teams = generateTeams(runningDinner);
+		Team team = teams.get(0);
+
+		Team incomingGuest = team.getGuestTeams().iterator().next();
+		incomingGuest.getTeamMembersOrdered().get(0).setRequiresAccessibleHome(true);
+		team.getTeamMembersOrdered().get(0).setRequiresAccessibleHome(true);
+
+		List<Team> visitedTeams = TeamRouteBuilder.generateDinnerRoute(team)
+				.stream()
+				.filter(routeTeam -> !routeTeam.equals(team))
+				.toList();
+		Participant accessibleHost = visitedTeams.get(0).getHostTeamMember();
+		accessibleHost.setNumSeats(6);
+		accessibleHost.setHomeAccessible(true);
+		Participant inaccessibleHost = visitedTeams.get(1).getHostTeamMember();
+		inaccessibleHost.setNumSeats(6);
+
+		DinnerRouteMessage messageTemplate = newDinnerRouteMessage();
+		messageTemplate.setSelfTemplate("Own meal");
+		messageTemplate.setHostsTemplate("Visited home: {firstname}");
+		String message = formatter.formatDinnerRouteMessage(runningDinner, team.getHostTeamMember(), team,
+				TeamRouteBuilder.generateDinnerRoute(team), messageTemplate);
+
+		assertThat(message).contains("INCOMING ACCESS NEED", "ACCESS RECORDED", "NO ACCESS RECORDED");
+		assertThat(message).doesNotContain("{accessibility}");
+	}
+
+	@Test
+	public void accessibilityPlaceholderIsRemovedWhenNoAccessNeedsExist() {
+		RunningDinner runningDinner = newMockedRunningDinner();
+		List<Team> teams = generateTeams(runningDinner);
+		Team team = teams.get(0);
+
+		DinnerRouteMessage messageTemplate = newDinnerRouteMessage();
+		messageTemplate.setSelfTemplate("Meal");
+		messageTemplate.setHostsTemplate("Host");
+		String message = formatter.formatDinnerRouteMessage(runningDinner, team.getHostTeamMember(), team,
+				TeamRouteBuilder.generateDinnerRoute(team), messageTemplate);
+
+		assertThat(message).doesNotContain("{accessibility}", "INCOMING ACCESS NEED", "ACCESS RECORDED", "NO ACCESS RECORDED");
 	}
 	
 	private void setMobileNumber(Team team, String mobileNumber, boolean setToHostingTeamMember) {
