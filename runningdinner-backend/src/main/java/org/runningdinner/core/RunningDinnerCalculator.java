@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,14 +95,13 @@ public class RunningDinnerCalculator {
 	private static List<Participant> getParticipantsFromExistingTeams(List<Participant> allParticipantsToUse, List<TeamTO> existingTeamInfosToRestore) {
 		
 		Set<Participant> allParticipantsAsSet = new HashSet<>(allParticipantsToUse);
-		
-		Set<Participant> result = existingTeamInfosToRestore
-									.stream()
-									.map(existingTeam -> findTeamMembersInGivenParticipants(existingTeam, allParticipantsAsSet))
-									.flatMap(Set::stream)
-									.collect(Collectors.toSet());
 
-		return new ArrayList<>(result);
+		return existingTeamInfosToRestore
+						.stream()
+						.map(existingTeam -> findTeamMembersInGivenParticipants(existingTeam, allParticipantsAsSet))
+						.flatMap(Set::stream)
+						.distinct()
+						.collect(Collectors.toList());
 	}
 	
 	private static Set<Participant> findTeamMembersInGivenParticipants(TeamTO existingTeam, Set<Participant> givenParticipants) {
@@ -157,7 +157,7 @@ public class RunningDinnerCalculator {
 	 * 
 	 * @param allParticipants All participants that were given in for building a running dinner
 	 * @param generatedTeamsResult Is enriched with all participants that cannot be assigend to teams (if any).
-	 * @throws NoPossibleRunningDinnerException 
+	 * @throws NoPossibleRunningDinnerException If there are too few participants for building at least one valid team (e.g. teamSize is 2 and only one participant was passed in)
 	 * @throws IllegalArgumentException If there occurs computation errors when splitting the list (should never happen actually)
 	 */
 	private List<Participant> splitRegularAndIrregularParticipants(final List<Participant> allParticipants,
@@ -196,9 +196,9 @@ public class RunningDinnerCalculator {
 		int numIrregularParticipants = 0;
 
 		// This is the number of teams that cannot be correctly assigned to a dinner execution plan without violating the rules:
-		int numRemaindingTeams = teamCombinationInfo.getNumRemaindingTeams();
-		if (numRemaindingTeams > 0) {
-			int numRemaindingParticipants = numRemaindingTeams * runningDinnerConfig.getTeamSize();
+		int numRemainingTeams = teamCombinationInfo.getNumRemaindingTeams();
+		if (numRemainingTeams > 0) {
+			int numRemaindingParticipants = numRemainingTeams * runningDinnerConfig.getTeamSize();
 			numIrregularParticipants = numRemaindingParticipants;
 		}
 
@@ -228,7 +228,7 @@ public class RunningDinnerCalculator {
 		final Collection<MealClass> mealClasses = runningDinnerConfig.getMealClasses();
 
 		if (CollectionUtils.isEmpty(existingTeamsToKeep)) {
-			assignRandomMealClasses(generatedTeams.getRegularTeams(), mealClasses);
+			assignRandomMealClasses(generatedTeams.getRegularTeams(), mealClasses, runningDinnerConfig);
 			return;
 		}
 
@@ -261,7 +261,7 @@ public class RunningDinnerCalculator {
 		}
 
 		// regularTeamsListCopy should now contain only the new teams that did not exist before:
-		assignRandomMealClasses(regularTeamsListCopy, mealClasses);
+		assignRandomMealClasses(regularTeamsListCopy, mealClasses, runningDinnerConfig);
 	}
 
 	private void ensureSameTeamMembers(Team currentTeam, TeamTO originalTeam, Set<Participant> allParticipantsOfGeneratedTeams) {
@@ -280,7 +280,7 @@ public class RunningDinnerCalculator {
 																																														 " but contained " + currentTeam.getTeamMembersOrdered());
 	}
     
-	private void assignRandomMealClasses(final List<Team> regularTeams, final Collection<MealClass> mealClasses)
+	private void assignRandomMealClasses(final List<Team> regularTeams, final Collection<MealClass> mealClasses, final RunningDinnerConfig runningDinnerConfig)
 			throws NoPossibleRunningDinnerException {
 
 		int numTeams = regularTeams.size();
@@ -291,20 +291,21 @@ public class RunningDinnerCalculator {
 					"Size of passed teams (" + numTeams + ") doesn't match expected size (" + numMealClasses + " x N)");
 		}
 
-		if (numMealClasses == 0) {
-			throw new NoPossibleRunningDinnerException("Need at least one mealClass for assigning mealClasses to teams");
+		Collections.shuffle(regularTeams); // Randomize List
+
+		if (regularTeams.stream().anyMatch(TeamDistributorAccessibility::requiresAccessibleHostLocation)) {
+			assignMealClassesWithAccessibleHostLocationsSpread(regularTeams, mealClasses, runningDinnerConfig);
+			return;
 		}
 
-		int segmentionSize = numTeams / numMealClasses;
-
-		Collections.shuffle(regularTeams); // Randomize List
+		int mealClassSegmentSize = numTeams / numMealClasses;
 
 		// Now, with the randomized list, we iterate this list, and assign one mealClass
 		// to the current iterating list-segment
 		// (e.g.: // [0..8] => APPETIZER, [9..17] => MAINCOURSE, [18..26] => DESSERT)
-		// for 18 teams and a segmentionSize of 3:
+		// for 18 teams and a mealClassSegmentSize of 3:
 		int startIndex = 0;
-		int endIndex = segmentionSize;
+		int endIndex = mealClassSegmentSize;
 		for (MealClass mealClassToAssign : mealClasses) {
 			for (int teamIndex = startIndex; teamIndex < endIndex; teamIndex++) {
 				Team team = regularTeams.get(teamIndex);
@@ -312,12 +313,38 @@ public class RunningDinnerCalculator {
 			}
 
 			startIndex = endIndex;
-			endIndex = endIndex + segmentionSize;
+			endIndex = endIndex + mealClassSegmentSize;
 		}
 
 		// Sort list by teamNumber as the list is currently passed in already sorted by
 		// teamNumber
 		Collections.sort(regularTeams);
+	}
+
+	/**
+	 * Assigns the meals round-robin to the (shuffled) teams, starting with teams requiring accessibility followed by teams with an accessible host location.
+	 * This spreads both evenly over all meals, which is a precondition for being able to build dinner routes satisfying the accessibility needs.
+	 */
+	private static void assignMealClassesWithAccessibleHostLocationsSpread(List<Team> shuffledTeams, Collection<MealClass> mealClasses, RunningDinnerConfig runningDinnerConfig) {
+		List<Team> orderedTeams = new ArrayList<>(shuffledTeams);
+		// Stable sort keeps the random order within each group:
+		orderedTeams.sort(Comparator.comparingInt(team -> {
+			if (TeamDistributorAccessibility.requiresAccessibleHostLocation(team)) {
+				return 0;
+			}
+			return TeamDistributorAccessibility.hasAccessibleHostLocation(team, runningDinnerConfig) ? 1 : 2;
+		}));
+
+		List<MealClass> shuffledMealClasses = new ArrayList<>(mealClasses);
+		Collections.shuffle(shuffledMealClasses);
+
+		// orderedTeams has order [teams requiring accessibility, teams with accessible host location, other teams]
+		for (int i = 0; i < orderedTeams.size(); i++) {
+			// i % shuffledMealClasses.size() ensures that the meal classes are assigned round-robin to the teams, which spreads both evenly over all meals
+			MealClass mealClass = shuffledMealClasses.get(i % shuffledMealClasses.size());
+			orderedTeams.get(i).setMealClass(mealClass);
+		}
+		Collections.sort(shuffledTeams);
 	}
 
 	protected List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig,
@@ -405,7 +432,7 @@ public class RunningDinnerCalculator {
 				return teamMember;
 			}
 		}
-		return teamMembers.get(0);
+		return teamMembers.getFirst();
 	}
 
 	public interface ParticipantListRandomizer {
