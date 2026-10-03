@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Button, Grid, Paper, Popover } from '@mui/material';
+import { Box, Button, Grid, Paper, Popover, Tooltip, Typography } from '@mui/material';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import { orderBy } from 'lodash-es';
 import Paragraph from '../../common/theme/typography/Paragraph';
 import { SmallTitle, Span, Title } from '../../common/theme/typography/Tags';
@@ -7,7 +9,7 @@ import { PrimaryButton } from '../../common/theme/PrimaryButton';
 import { useTranslation } from 'react-i18next';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import LinkIntern from '../../common/theme/LinkIntern';
-import { Fullname, isSameEntity, Time, CONSTANTS, TeamNr, getAsHttpErrorOrDefault } from '@runningdinner/shared';
+import { Fullname, isSameEntity, Time, CONSTANTS, TeamNr, getAsHttpErrorOrDefault, canHostAtAccessibleLocation } from '@runningdinner/shared';
 import { useAdminNavigation } from '../AdminNavigationHook';
 import { GENERIC_HTTP_ERROR } from '@runningdinner/shared/src/redux';
 import { ProgressBar } from '../../common/ProgressBar';
@@ -57,16 +59,16 @@ const buildScheduledMealsWithTeams = (teamMeetingPlan) => {
   return result;
 };
 
-export default function TeamSchedule({ adminId, isTeamMeetingPlanLoading, teamMeetingPlanResult, teamMeetingPlanError }) {
+export default function TeamSchedule({ adminId, isTeamMeetingPlanLoading, teamMeetingPlanResult, teamMeetingPlanError, numSeatsNeededForHost }) {
   if (isTeamMeetingPlanLoading || teamMeetingPlanError) {
     const httpFetchError = teamMeetingPlanError ? getAsHttpErrorOrDefault(teamMeetingPlanError, GENERIC_HTTP_ERROR) : undefined;
     return <ProgressBar showLoadingProgress={isTeamMeetingPlanLoading} fetchError={httpFetchError} />;
   } else {
-    return <TeamScheduleView teamMeetingPlan={teamMeetingPlanResult} adminId={adminId} />;
+    return <TeamScheduleView teamMeetingPlan={teamMeetingPlanResult} adminId={adminId} numSeatsNeededForHost={numSeatsNeededForHost} />;
   }
 }
 
-function TeamScheduleView({ teamMeetingPlan, adminId }) {
+function TeamScheduleView({ teamMeetingPlan, adminId, numSeatsNeededForHost }) {
   const { t } = useTranslation('admin');
   const { generateTeamDinnerRoutePath } = useAdminNavigation();
 
@@ -84,8 +86,9 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
         spacing={spacing}
         sx={{
           justifyContent: 'center',
-          alignItems: 'center'
-        }}>
+          alignItems: 'center',
+        }}
+      >
         <GridContentRight size={{ xs, md }}>
           <Title i18n="common:host" />
         </GridContentRight>
@@ -111,8 +114,9 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
         sx={{
           justifyContent: 'center',
           alignItems: 'center',
-          mb: 1
-        }}>
+          mb: 1,
+        }}
+      >
         <Grid sx={{ textAlign: 'center', mt: 1 }} size={12}>
           <Button color={'primary'} variant={'outlined'} size="medium" href={generateTeamDinnerRoutePath(adminId, activeTeam.id)} target="_blank">
             {t('teams_show_dinnerroute')}
@@ -130,9 +134,10 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
         key={scheduledMeal.meal.id}
         sx={{
           justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-        <ScheduledMeal {...scheduledMeal} currentTeam={activeTeam} xs={xs} md={md} adminId={adminId} />
+          alignItems: 'center',
+        }}
+      >
+        <ScheduledMeal {...scheduledMeal} currentTeam={activeTeam} xs={xs} md={md} adminId={adminId} numSeatsNeededForHost={numSeatsNeededForHost} />
       </Grid>
     );
   };
@@ -145,8 +150,9 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
         key={index}
         sx={{
           justifyContent: 'center',
-          alignItems: 'center'
-        }}>
+          alignItems: 'center',
+        }}
+      >
         <ScheduledMealTimeline xs={xs} md={md} />
       </Grid>
     );
@@ -170,12 +176,15 @@ function TeamScheduleView({ teamMeetingPlan, adminId }) {
   );
 }
 
-function ScheduledMeal({ hostTeam, meal, guestTeams, currentTeam, xs, md, adminId }) {
+function ScheduledMeal({ hostTeam, meal, guestTeams, currentTeam, xs, md, adminId, numSeatsNeededForHost }) {
+  const { t } = useTranslation('admin');
   const activeMeal = currentTeam.meal;
   const highlightMeal = isSameEntity(activeMeal, meal);
   const highlightHostTeam = isSameEntity(currentTeam, hostTeam);
 
   const hostTeamIsCancelled = hostTeam.status === CONSTANTS.TEAM_STATUS.CANCELLED;
+  const needsAccessibility = currentTeam.status !== CONSTANTS.TEAM_STATUS.CANCELLED && currentTeam.teamMembers.some((member) => member.requiresAccessibleHome);
+  const accessAvailable = !!hostTeam.hostTeamMember && canHostAtAccessibleLocation(hostTeam.hostTeamMember, numSeatsNeededForHost);
 
   const renderGuestTems = () => {
     const guestTeamNodes = [];
@@ -184,9 +193,12 @@ function ScheduledMeal({ hostTeam, meal, guestTeams, currentTeam, xs, md, adminI
       const guestTeamNode = isSameEntity(guestTeam, currentTeam) ? <CurrentTeamButton team={guestTeam} /> : <MeetedTeamButton team={guestTeam} adminId={adminId} />;
       if (i > 0) {
         guestTeamNodes.push(
-          <Box key={guestTeam.id} sx={{
-            mt: 1
-          }}>
+          <Box
+            key={guestTeam.id}
+            sx={{
+              mt: 1,
+            }}
+          >
             {guestTeamNode}
           </Box>,
         );
@@ -208,7 +220,42 @@ function ScheduledMeal({ hostTeam, meal, guestTeams, currentTeam, xs, md, adminI
 
   return (
     <>
-      <GridContentRight size={{ xs, md }}>{highlightHostTeam ? <CurrentTeamButton team={hostTeam} /> : <MeetedTeamButton team={hostTeam} adminId={adminId} />}</GridContentRight>
+      <GridContentRight size={{ xs, md }} sx={{ display: 'grid', gridTemplateRows: '1fr auto 1fr' }}>
+        <Box aria-hidden="true" />
+        <Box>{highlightHostTeam ? <CurrentTeamButton team={hostTeam} /> : <MeetedTeamButton team={hostTeam} adminId={adminId} />}</Box>
+        {needsAccessibility && !hostTeamIsCancelled && (
+          <Box sx={{ mt: 0.5 }}>
+            <Tooltip title={t(accessAvailable ? 'accessibility_route_stop_fulfilled' : 'accessibility_route_stop_unfulfilled')}>
+              <Typography
+                component="span"
+                variant="caption"
+                tabIndex={0}
+                aria-label={t(accessAvailable ? 'accessibility_route_stop_fulfilled' : 'accessibility_route_stop_unfulfilled')}
+                sx={{
+                  display: { xs: 'inline-flex', md: 'inline-block' },
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  maxWidth: '100%',
+                  lineHeight: 1.3,
+                  color: accessAvailable ? 'success.main' : 'warning.main',
+                }}
+              >
+                {accessAvailable ? (
+                  <CheckCircleOutlineIcon sx={{ fontSize: 16, verticalAlign: 'text-bottom', mr: { xs: 0, md: 0.25 } }} />
+                ) : (
+                  <WarningAmberRoundedIcon sx={{ fontSize: 16, verticalAlign: 'text-bottom', mr: { xs: 0, md: 0.25 } }} />
+                )}
+                <Box component="span" sx={{ display: { xs: 'block', md: 'none' }, mt: 0.25, textAlign: 'center' }}>
+                  {t(accessAvailable ? 'accessibility_route_stop_fulfilled_short' : 'accessibility_route_stop_unfulfilled_short')}
+                </Box>
+                <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+                  {t(accessAvailable ? 'accessibility_route_stop_fulfilled' : 'accessibility_route_stop_unfulfilled')}
+                </Box>
+              </Typography>
+            </Tooltip>
+          </Box>
+        )}
+      </GridContentRight>
       <Grid
         size={{
           xs: xs,
@@ -269,19 +316,27 @@ function MeetedTeamButton({ team, adminId }) {
           horizontal: 'center',
         }}
       >
-        <Box sx={{
-          p: 2
-        }}>
+        <Box
+          sx={{
+            p: 2,
+          }}
+        >
           <Title>
             <TeamNr {...team} />
           </Title>
           <Paragraph>{team.meal.label}</Paragraph>
-          <Box sx={{
-            mt: 1
-          }}>{teamMemberNodes}</Box>
-          <Box sx={{
-            mt: 1
-          }}>
+          <Box
+            sx={{
+              mt: 1,
+            }}
+          >
+            {teamMemberNodes}
+          </Box>
+          <Box
+            sx={{
+              mt: 1,
+            }}
+          >
             <LinkIntern pathname={teamPath}>
               <SmallTitle i18n="admin:team_jump_link" parameters={{ teamNumber: teamNumber }} />
             </LinkIntern>

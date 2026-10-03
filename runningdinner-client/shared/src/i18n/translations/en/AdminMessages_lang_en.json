@@ -1,4 +1,8 @@
 {
+  "accessibility_route_stop_fulfilled": "Step-free access accounted for",
+  "accessibility_route_stop_unfulfilled": "Step-free access not assured",
+  "accessibility_route_stop_fulfilled_short": "Access OK",
+  "accessibility_route_stop_unfulfilled_short": "Access unclear",
   "accessibility_home_accessible_short": "Home is accessible",
   "accessibility_requires_accessible_home_short": "Needs step-free access",
   "accessibility_team_host_not_accessible": "A team member needs step-free access, but the host does not provide an accessible home with enough seats",

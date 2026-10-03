@@ -1,4 +1,8 @@
 {
+  "accessibility_route_stop_fulfilled": "Barrierefreier Zugang berücksichtigt",
+  "accessibility_route_stop_unfulfilled": "Barrierefreier Zugang nicht sichergestellt",
+  "accessibility_route_stop_fulfilled_short": "Zugang OK",
+  "accessibility_route_stop_unfulfilled_short": "Zugang unklar",
   "accessibility_home_accessible_short": "Wohnung ist barrierefrei",
   "accessibility_requires_accessible_home_short": "Benötigt barrierefreien Zugang",
   "accessibility_team_host_not_accessible": "Ein Teammitglied benötigt barrierefreien Zugang, der Gastgeber bietet jedoch keine barrierefreie Wohnung mit ausreichend Plätzen",

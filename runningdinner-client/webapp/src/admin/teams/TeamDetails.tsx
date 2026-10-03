@@ -36,8 +36,8 @@ import LinkAction from '../../common/theme/LinkAction';
 import Paragraph from '../../common/theme/typography/Paragraph';
 import { Span, Subtitle } from '../../common/theme/typography/Tags';
 import { useAdminNavigation } from '../AdminNavigationHook';
-import { ParticipantMealDetails } from '../participants/meal/ParticipantMealBadges.tsx';
 import { AccessibilityIndicator } from '../participants/list/AccessibilityIndicator';
+import { ParticipantMealDetails } from '../participants/meal/ParticipantMealBadges.tsx';
 import { TeamCancelDialog } from './cancellation/TeamCancelDialog';
 import { TeamMemberCancelDialog, TeamMemberCancelDialogResult } from './cancellation/TeamMemberCancelDialog';
 import { CancelledTeamMember } from './CancelledTeamMember';
@@ -129,9 +129,11 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
 
   return (
     <Paper elevation={3} sx={{ mb: 2 }}>
-      <Box sx={{
-        p: 2
-      }}>
+      <Box
+        sx={{
+          p: 2,
+        }}
+      >
         <Grid container>
           <Grid size={11}>
             <Subtitle>
@@ -144,9 +146,11 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
           </Grid>
           {isReplaced && (
             <Grid size={12}>
-              <Box sx={{
-                mt: 1
-              }}>
+              <Box
+                sx={{
+                  mt: 1,
+                }}
+              >
                 <cite>
                   <Span i18n="admin:team_replaced_text" />
                 </cite>
@@ -158,15 +162,19 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
         </Grid>
 
         {isCancelled ? (
-          <Box sx={{
-            mt: 2
-          }}>
+          <Box
+            sx={{
+              mt: 2,
+            }}
+          >
             <CancelledTeamMember />
           </Box>
         ) : (
-          <Box sx={{
-            mt: 2
-          }}>
+          <Box
+            sx={{
+              mt: 2,
+            }}
+          >
             <Divider>
               <strong>{t('team_members')}</strong>
             </Divider>
@@ -177,9 +185,11 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
           </Box>
         )}
 
-        <Box sx={{
-          mt: 2
-        }}>
+        <Box
+          sx={{
+            mt: 2,
+          }}
+        >
           <Divider>
             <strong>{t('admin:team_schedule')}</strong>
           </Divider>
@@ -190,6 +200,7 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
                 teamMeetingPlanError={findTeamMeetingPlanQuery.error}
                 teamMeetingPlanResult={findTeamMeetingPlanQuery.data}
                 adminId={adminId}
+                numSeatsNeededForHost={sessionData.numSeatsNeededForHost}
               />
             </Grid>
           </Grid>
@@ -254,14 +265,20 @@ function TeamMember({ teamMember, adminId, team, passedTeamMemberToCancel, onUpd
           <Stack spacing={0.25}>
             <Fullname {...teamMember} />
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              <Typography variant="caption" sx={{
-                color: "text.secondary"
-              }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {numSeatsDisplay}
               </Typography>
-              <Typography variant="caption" sx={{
-                color: "text.secondary"
-              }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 <ValueTranslate value={gender} ns="common" prefix="gender" valueMapping={{ undefined: 'unknown' }} />
               </Typography>
               <AccessibilityIndicator participant={teamMember} />
@@ -293,12 +310,18 @@ function TeamHostInfo({ team, sessionData, onOpenChangeTeamHostDialog }: TeamHos
   const hostTeamMemberName = getFullname(hostTeamMember);
 
   return (
-    <Box sx={{
-      mt: 1
-    }}>
-      <Stack direction="row" spacing={0.75} sx={{
-        alignItems: "baseline"
-      }}>
+    <Box
+      sx={{
+        mt: 1,
+      }}
+    >
+      <Stack
+        direction="row"
+        spacing={0.75}
+        sx={{
+          alignItems: 'baseline',
+        }}
+      >
         <Paragraph i18n="admin:teams_host" parameters={{ host: hostTeamMemberName }} html={true} sx={{ mb: 0 }} />
         <LinkAction onClick={() => onOpenChangeTeamHostDialog(team)}>
           <Span>({t('change')})</Span>
@@ -335,9 +358,13 @@ function NoValidTeamHost({ team, numSeatsNeededForHost }: NoValidTeamHostProps) 
   }
 
   return (
-    <Grid container spacing={1} sx={{
-      alignItems: 'center'
-    }}>
+    <Grid
+      container
+      spacing={1}
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <Grid>
         <ErrorOutlineOutlinedIcon color={'secondary'} />
       </Grid>
