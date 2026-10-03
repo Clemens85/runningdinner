@@ -192,7 +192,9 @@ public class AbstractExcelConverterHighLevel {
 			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getMealSpecifics().getMealSpecificsNote()));
 			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getNotes()));
 			writeStringToCell(row, cellIndex++, StringUtils.trimToEmpty(p.getTeamPartnerWishEmail()));
-			writeStringToCell(row, cellIndex, registeredByFullname(p, participantsById));
+			writeStringToCell(row, cellIndex++, registeredByFullname(p, participantsById));
+			writeStringToCell(row, cellIndex++, p.isHomeAccessible() ? "ja" : "");
+			writeStringToCell(row, cellIndex, p.isRequiresAccessibleHome() ? "ja" : "");
 		}
 	}
 
@@ -229,7 +231,9 @@ public class AbstractExcelConverterHighLevel {
 		writeStringToCell(row, cellIndex++, "Essenswünsche (Notiz)");
 		writeStringToCell(row, cellIndex++, "Sonstige Anmerkungen");
 		writeStringToCell(row, cellIndex++, "Teamwunsch E-Mail (Einladung)");
-		writeStringToCell(row, cellIndex, "Angemeldet durch");
+		writeStringToCell(row, cellIndex++, "Angemeldet durch");
+		writeStringToCell(row, cellIndex++, "Wohnung barrierefrei");
+		writeStringToCell(row, cellIndex, "Benötigt barrierefreien Zugang");
 	}
 
 	private String registeredByFullname(Participant p, Map<UUID, Participant> participantsById) {

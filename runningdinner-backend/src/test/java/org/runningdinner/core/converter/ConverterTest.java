@@ -13,6 +13,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.runningdinner.core.ParticipantGenerator;
+import org.runningdinner.core.converter.impl.AbstractExcelConverterHighLevel;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.GeneratedTeamsResult;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
@@ -44,6 +47,27 @@ public class ConverterTest {
 	public static final String STANDARD_GENDER_XLS_FILE = "/excelimport/standard_gender.xls";
 
 	private InputStream inputStream;
+
+	@Test
+	public void exportIncludesAccessibilityColumns() throws IOException {
+		Participant accessibleParticipant = ParticipantGenerator.generateParticipant(1);
+		accessibleParticipant.setHomeAccessible(true);
+		accessibleParticipant.setRequiresAccessibleHome(true);
+		Participant regularParticipant = ParticipantGenerator.generateParticipant(2);
+
+		try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+			var sheet = workbook.createSheet("Participants");
+			new AbstractExcelConverterHighLevel(null).writeParticipants(sheet, List.of(accessibleParticipant, regularParticipant));
+
+			assertEquals("Angemeldet durch", sheet.getRow(0).getCell(19).getStringCellValue());
+			assertEquals("Wohnung barrierefrei", sheet.getRow(0).getCell(20).getStringCellValue());
+			assertEquals("Benötigt barrierefreien Zugang", sheet.getRow(0).getCell(21).getStringCellValue());
+			assertEquals("ja", sheet.getRow(1).getCell(20).getStringCellValue());
+			assertEquals("ja", sheet.getRow(1).getCell(21).getStringCellValue());
+			assertEquals("", sheet.getRow(2).getCell(20).getStringCellValue());
+			assertEquals("", sheet.getRow(2).getCell(21).getStringCellValue());
+		}
+	}
 
 	@Test
 	public void testFileTypeRecognition() throws IOException, ConversionException {

@@ -74,7 +74,8 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         try {
-          const participant = ExcelImportMappingService.buildParticipantFromImportRow(row.data);
+          const existingParticipant = row.existingParticipantId ? existingParticipants.find((participant) => participant.id === row.existingParticipantId) : undefined;
+          const participant = ExcelImportMappingService.buildParticipantFromImportRow(row.data, existingParticipant);
           // If this row targets an existing participant, set its id so saveParticipantAsync
           // issues a PUT. Also clear teamPartnerWishRegistrationData — on update we only
           // update the root participant and leave the child record untouched.
@@ -103,7 +104,7 @@ export function useParticipantImport(adminId: string, existingParticipants: Part
       setImportResult(result);
       setStep('done');
     },
-    [adminId, getIssuesTranslated, t],
+    [adminId, existingParticipants, getIssuesTranslated, t],
   );
 
   const handleConfirmImport = React.useCallback(async () => {

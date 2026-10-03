@@ -50,7 +50,10 @@ export class ExcelImportMappingService {
    * determines whether they form a valid linked wish (email mode) or an unresolved
    * name-only wish (TeamPartnerWishRegistrationData mode).
    */
-  static buildParticipantFromImportRow(row: ExcelImportRowData): ParticipantFormModel {
+  static buildParticipantFromImportRow(
+    row: ExcelImportRowData,
+    existingAccessibility?: Pick<ParticipantFormModel, 'homeAccessible' | 'requiresAccessibleHome'>,
+  ): ParticipantFormModel {
     const base = newEmptyParticipantInstance();
 
     const participant: ParticipantFormModel = {
@@ -71,6 +74,8 @@ export class ExcelImportMappingService {
       vegan: parseBoolColumn(row.vegan),
       lactose: parseBoolColumn(row.lactose),
       gluten: parseBoolColumn(row.gluten),
+      homeAccessible: row.homeAccessible === undefined ? (existingAccessibility?.homeAccessible ?? false) : parseBoolColumn(row.homeAccessible),
+      requiresAccessibleHome: row.requiresAccessibleHome === undefined ? (existingAccessibility?.requiresAccessibleHome ?? false) : parseBoolColumn(row.requiresAccessibleHome),
       mealSpecificsNote: row.mealSpecificsNote.trim(),
       notes: row.notes.trim(),
       teamPartnerWishEmail: row.teamPartnerWishEmail.trim().toLowerCase(),

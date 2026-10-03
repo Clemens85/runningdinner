@@ -56,6 +56,8 @@ const COL_MAP: Array<keyof ExcelImportRowData> = [
   'teamPartnerWishPartnerLastname', // 20 U  Fester Teampartner: Nachname (Option 2)
   'teamPartnerWishPartnerEmail', // 21 V  Fester Teampartner: E-Mail (Option 2)
   'teamPartnerWishPartnerMobileNumber', // 22 W  Fester Teampartner: Handy-Nr (Option 2)
+  'homeAccessible', // 23 X
+  'requiresAccessibleHome', // 24 Y
 ];
 
 /** Template column headers (German) in fixed order */
@@ -83,6 +85,8 @@ const TEMPLATE_HEADERS = [
   'Fester Teampartner: Nachname',
   'Fester Teampartner: E-Mail',
   'Fester Teampartner: Handy-Nr',
+  'Wohnung barrierefrei',
+  'Benötigt barrierefreien Zugang',
 ];
 
 const TEMPLATE_INSTRUCTIONS: Array<[string, string, string, string]> = [
@@ -129,6 +133,13 @@ const TEMPLATE_INSTRUCTIONS: Array<[string, string, string, string]> = [
     'Option 2 – Feste Partnerregistrierung: E-Mail-Adresse des Partners (optional). Wird für die Partnerregistrierung hinterlegt, nicht zur Zuordnung anderer Teilnehmer verwendet.',
   ],
   ['Fester Teampartner: Handy-Nr', 'teamPartnerWishPartnerMobileNumber', 'Nein', 'Option 2 – Feste Partnerregistrierung: Handynummer des Partners (optional).'],
+  ['Wohnung barrierefrei', 'homeAccessible', 'Nein', 'ja / yes / 1 / true / x = Zugang zur Wohnung per Aufzug oder stufenlos; sonst leer lassen'],
+  [
+    'Benötigt barrierefreien Zugang',
+    'requiresAccessibleHome',
+    'Nein',
+    'ja / yes / 1 / true / x = benötigt bei besuchten Wohnungen einen Aufzug oder stufenlosen Zugang; sonst leer lassen',
+  ],
 ];
 
 function getCellString(row: unknown[], index: number): string {
@@ -137,11 +148,14 @@ function getCellString(row: unknown[], index: number): string {
   return String(val).trim();
 }
 
-function mapRowToImportData(row: unknown[]): ExcelImportRowData {
+function mapRowToImportData(row: unknown[], columnIndices: number[]): ExcelImportRowData {
   const result: Partial<ExcelImportRowData> = {};
   for (let i = 0; i < COL_MAP.length; i++) {
     const field = COL_MAP[i];
-    (result as Record<string, string>)[field] = getCellString(row, i);
+    if ((field === 'homeAccessible' || field === 'requiresAccessibleHome') && columnIndices[i] < 0) {
+      continue;
+    }
+    (result as Record<string, string>)[field] = getCellString(row, columnIndices[i]);
   }
   return result as ExcelImportRowData;
 }
@@ -172,6 +186,9 @@ export async function parseExcelFile(file: File): Promise<ExcelImportRowData[]> 
     throw new ImportError('The Excel file contains no readable sheet.', 'NO_DATA_ROWS');
   }
   const raw: unknown[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+  const headers = (raw[0] ?? []).map((value) => String(value).trim());
+  const hasNamedHeaders = TEMPLATE_HEADERS.slice(0, 3).every((header) => headers.includes(header));
+  const columnIndices = COL_MAP.map((_, index) => (hasNamedHeaders ? headers.indexOf(TEMPLATE_HEADERS[index]) : index < headers.length ? index : -1));
 
   // raw[0] is header row — skip it
   const dataRows = raw.slice(1).filter((row) => {
@@ -183,12 +200,12 @@ export async function parseExcelFile(file: File): Promise<ExcelImportRowData[]> 
     throw new ImportError('The Excel file contains no data rows.', 'NO_DATA_ROWS');
   }
 
-  return dataRows.map(mapRowToImportData);
+  return dataRows.map((row) => mapRowToImportData(row, columnIndices));
 }
 
 /**
  * Generates and downloads a two-sheet Excel template:
- * - "Vorlage": header row only, all 21 columns
+ * - "Vorlage": header row only, all supported columns
  * - "Hinweise": one row per column explaining field, mandatory status, accepted values
  */
 export async function generateImportTemplate(): Promise<void> {

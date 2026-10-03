@@ -30,6 +30,8 @@ export interface ExcelImportRowData {
   vegan: string;
   lactose: string;
   gluten: string;
+  homeAccessible?: string;
+  requiresAccessibleHome?: string;
   mealSpecificsNote: string;
   // Option 1: Team partner wish by invitation email — points to an existing or incoming participant
   teamPartnerWishEmail: string;

@@ -5,6 +5,7 @@ import { ExcelImportMappingService, ExcelImportRow, ExcelImportRowStatus, ExcelI
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { AccessibilityIndicator } from '../list/AccessibilityIndicator';
 import { ParticipantMealBadges } from '../meal/ParticipantMealBadges';
 
 function formatSeats(numSeats: string): string {
@@ -80,6 +81,7 @@ function MobileRow({ row, isUpdating }: RowProps) {
           <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-all' }}>
             {row.data.email}
           </Typography>
+          <AccessibilityPreview {...row} />
           {hasFixedPartner(row) && (
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
               +&nbsp;
@@ -147,7 +149,12 @@ function DesktopRow({ row, isUpdating }: RowProps) {
         </TableCell>
         <TableCell sx={{ display: { md: 'none', lg: 'table-cell' } }}>{fullAddress}</TableCell>
         <TableCell>{row.data.email}</TableCell>
-        <TableCell align="center">{formatSeats(row.data.numSeats)}</TableCell>
+        <TableCell align="center">
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+            {formatSeats(row.data.numSeats)}
+            <AccessibilityPreview {...row} />
+          </Box>
+        </TableCell>
         <TableCell sx={{ display: { md: 'none', lg: 'table-cell' } }}>
           <MealSpecificsPreview {...row} />
         </TableCell>
@@ -188,6 +195,11 @@ function MealSpecificsPreview({ data }: ExcelImportRow) {
     return null;
   }
   return <ParticipantMealBadges participant={participant} />;
+}
+
+function AccessibilityPreview({ data }: ExcelImportRow) {
+  const participant = ExcelImportMappingService.buildParticipantFromImportRow(data);
+  return <AccessibilityIndicator participant={participant} />;
 }
 
 interface ImportPreviewTableProps {
