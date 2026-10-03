@@ -14,6 +14,7 @@ import org.runningdinner.frontend.FrontendRunningDinnerService;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
 import org.runningdinner.mail.mock.MailSenderMockInMemory;
 import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantRepository;
 import org.runningdinner.participant.ParticipantService;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
@@ -59,6 +60,9 @@ class ParticipantPortalServiceTest {
 
   @Autowired
   private ParticipantService participantService;
+
+  @Autowired
+  private ParticipantRepository participantRepository;
 
   @Autowired
   private PortalMessageReadReceiptRepository readReceiptRepository;
@@ -299,6 +303,42 @@ class ParticipantPortalServiceTest {
     assertThat(teamInfo.getTeamPartnerName()).isNotBlank();
     assertThat(teamInfo.getManageTeamHostingUrl()).isNotBlank();
     assertThat(result.getDinnerRouteUrl()).isNull(); // not yet sent
+  }
+
+  @Test
+  void resolveParticipantSelfServiceInfo_accessibilityDependsOnViewerAndPartnerCapacity() {
+    RunningDinner dinner = testHelperService.createClosedRunningDinnerWithParticipants(DINNER_DATE, 18);
+    teamService.createTeamAndVisitationPlans(dinner.getAdminId());
+    sendTeamMessages(dinner);
+
+    Participant viewer = participantService.findParticipants(dinner.getAdminId(), true).getFirst();
+    var team = teamService.findTeamByParticipantId(dinner.getAdminId(), viewer.getId()).orElseThrow();
+    Participant partner = team.getTeamMembersExcluding(viewer).iterator().next();
+    viewer.setRequiresAccessibleHome(true);
+    partner.setRequiresAccessibleHome(false);
+    partner.setHomeAccessible(true);
+    partner.setNumSeats(dinner.getConfiguration().getTeamSize() * dinner.getConfiguration().getNumberOfMealClasses());
+    participantRepository.saveAll(List.of(viewer, partner));
+
+    String viewerToken = participantPortalService.getOrCreatePortalToken(viewer.getEmail());
+    TeamSelfServiceInfo viewerInfo = participantPortalService.resolveParticipantSelfServiceInfo(
+        dinner.getSelfAdministrationId(), viewer.getId(), viewerToken).getTeamSelfServiceInfo();
+    assertThat(viewerInfo.isSelfRequiresAccessibleHome()).isTrue();
+    assertThat(viewerInfo.isTeamPartnerCanHostAccessibly()).isTrue();
+    assertThat(viewerInfo.isTeamPartnerRequiresAccessibleHome()).isFalse();
+
+    String partnerToken = participantPortalService.getOrCreatePortalToken(partner.getEmail());
+    TeamSelfServiceInfo partnerInfo = participantPortalService.resolveParticipantSelfServiceInfo(
+        dinner.getSelfAdministrationId(), partner.getId(), partnerToken).getTeamSelfServiceInfo();
+    assertThat(partnerInfo.isSelfRequiresAccessibleHome()).isFalse();
+    assertThat(partnerInfo.isTeamPartnerRequiresAccessibleHome()).isTrue();
+
+    partner = participantService.findParticipantById(dinner.getAdminId(), partner.getId());
+    partner.setNumSeats(0);
+    participantRepository.save(partner);
+    TeamSelfServiceInfo insufficientCapacityInfo = participantPortalService.resolveParticipantSelfServiceInfo(
+        dinner.getSelfAdministrationId(), viewer.getId(), viewerToken).getTeamSelfServiceInfo();
+    assertThat(insufficientCapacityInfo.isTeamPartnerCanHostAccessibly()).isFalse();
   }
 
   @Test

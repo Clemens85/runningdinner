@@ -52,6 +52,12 @@ public class TeamSelfServiceInfo {
 
   private boolean teamPartnerCancelled;
 
+  private boolean selfRequiresAccessibleHome;
+
+  private boolean teamPartnerCanHostAccessibly;
+
+  private boolean teamPartnerRequiresAccessibleHome;
+
   /**
    * Aggregated (union) dietary restrictions of all likely guest teams.
    * Available once dinner routes are internally constructed, even before route mails are sent.
@@ -145,6 +151,30 @@ public class TeamSelfServiceInfo {
 
   public boolean isTeamPartnerCancelled() {
     return teamPartnerCancelled;
+  }
+
+  public boolean isSelfRequiresAccessibleHome() {
+    return selfRequiresAccessibleHome;
+  }
+
+  public void setSelfRequiresAccessibleHome(boolean selfRequiresAccessibleHome) {
+    this.selfRequiresAccessibleHome = selfRequiresAccessibleHome;
+  }
+
+  public boolean isTeamPartnerCanHostAccessibly() {
+    return teamPartnerCanHostAccessibly;
+  }
+
+  public void setTeamPartnerCanHostAccessibly(boolean teamPartnerCanHostAccessibly) {
+    this.teamPartnerCanHostAccessibly = teamPartnerCanHostAccessibly;
+  }
+
+  public boolean isTeamPartnerRequiresAccessibleHome() {
+    return teamPartnerRequiresAccessibleHome;
+  }
+
+  public void setTeamPartnerRequiresAccessibleHome(boolean teamPartnerRequiresAccessibleHome) {
+    this.teamPartnerRequiresAccessibleHome = teamPartnerRequiresAccessibleHome;
   }
 
   public void setTeamPartnerCancelled(boolean teamPartnerCancelled) {

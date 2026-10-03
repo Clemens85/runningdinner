@@ -1,4 +1,7 @@
 const PortalMessages_en: any = {
+  participant_event_team_partner_access_available: 'Your partner can host with step-free access.',
+  participant_event_team_partner_access_unconfirmed: 'Step-free access at your partner’s home is not assured.',
+  participant_event_team_partner_access_required: 'Your partner needs an elevator or step-free access.',
   // Navigation
   my_events: 'My Events',
 

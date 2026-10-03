@@ -52,6 +52,9 @@ export interface TeamSelfServiceInfo {
   teamPartnerMealSpecifics: MealSpecifics | null;
 
   teamPartnerCancelled: boolean;
+  selfRequiresAccessibleHome: boolean;
+  teamPartnerCanHostAccessibly: boolean;
+  teamPartnerRequiresAccessibleHome: boolean;
 
   /**
    * Aggregated (union) dietary restrictions of all likely guest teams.

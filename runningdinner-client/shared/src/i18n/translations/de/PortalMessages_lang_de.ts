@@ -1,4 +1,7 @@
 const PortalMessages_de: any = {
+  participant_event_team_partner_access_available: 'Dein Partner kann mit barrierefreiem Zugang Gastgeber sein.',
+  participant_event_team_partner_access_unconfirmed: 'Barrierefreier Zugang beim Partner ist nicht sichergestellt.',
+  participant_event_team_partner_access_required: 'Dein Partner benötigt einen Aufzug oder stufenlosen Zugang.',
   // Navigation
   my_events: 'Meine Events',
 

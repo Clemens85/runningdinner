@@ -136,6 +136,28 @@ function TeamPartnerMealSpecifics({ mealSpecifics }: { mealSpecifics: MealSpecif
   );
 }
 
+function TeamPartnerAccessibility({ selfIsHost, selfRequiresAccessibleHome, teamPartnerCanHostAccessibly, teamPartnerRequiresAccessibleHome }: TeamSelfServiceInfo) {
+  const { t } = useTranslation('portal');
+  const showPartnerHostingAccess = selfRequiresAccessibleHome && (!selfIsHost || teamPartnerCanHostAccessibly);
+  if (!showPartnerHostingAccess && !teamPartnerRequiresAccessibleHome) {
+    return null;
+  }
+  return (
+    <Box sx={{ mt: 0.5 }}>
+      {showPartnerHostingAccess && (
+        <Typography variant="caption" component="div" color="text.secondary">
+          {t(teamPartnerCanHostAccessibly ? 'participant_event_team_partner_access_available' : 'participant_event_team_partner_access_unconfirmed')}
+        </Typography>
+      )}
+      {teamPartnerRequiresAccessibleHome && (
+        <Typography variant="caption" component="div" color="text.secondary">
+          {t('participant_event_team_partner_access_required')}
+        </Typography>
+      )}
+    </Box>
+  );
+}
+
 function TeamHostInfo({ selfIsHost, hostName }: TeamSelfServiceInfo) {
   const { t } = useTranslation('portal');
   return (
@@ -200,6 +222,7 @@ function TeamDetails({ info }: { info: TeamSelfServiceInfo }) {
               <TeamPartnerEmailLink {...info} />
               <TeamPartnerMobileNumberLink {...info} />
               {info.teamPartnerMealSpecifics && <TeamPartnerMealSpecifics mealSpecifics={info.teamPartnerMealSpecifics} />}
+              <TeamPartnerAccessibility {...info} />
             </Stack>
           }
         />

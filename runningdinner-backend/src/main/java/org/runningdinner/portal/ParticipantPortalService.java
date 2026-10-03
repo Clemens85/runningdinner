@@ -14,6 +14,7 @@ import org.runningdinner.common.service.LocalizationProviderService;
 import org.runningdinner.common.service.UrlGenerator;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.TeamDistributorAccessibility;
 import org.runningdinner.core.util.LogSanitizer;
 import org.runningdinner.mail.MailService;
 import org.runningdinner.mail.PortalTokenProvider;
@@ -427,6 +428,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
     result.setMealTime(mealTime);
     result.setHostName(hostName);
     result.setSelfIsHost(selfIsHost);
+    result.setSelfRequiresAccessibleHome(viewingParticipant.isRequiresAccessibleHome());
 
     if (teamPartner == null) {
       result.setTeamPartnerCancelled(true);
@@ -448,6 +450,8 @@ public class ParticipantPortalService implements PortalTokenProvider {
     result.setTeamPartnerEmail(teamPartnerEmail);
     result.setTeamPartnerMobileNumber(teamPartnerMobileNumber);
     result.setFixedTeamPartner(fixedTeamPartner);
+    result.setTeamPartnerRequiresAccessibleHome(teamPartner.isRequiresAccessibleHome());
+    result.setTeamPartnerCanHostAccessibly(TeamDistributorAccessibility.canHostAtAccessibleLocation(teamPartner, runningDinner.getConfiguration()));
     if (!fixedTeamPartner) {
       result.setTeamPartnerMealSpecifics(teamPartner.getMealSpecifics().createDetachedClone());
     }
