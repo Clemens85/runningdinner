@@ -2,7 +2,7 @@ import AccessibleIcon from '@mui/icons-material/Accessible';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box, Collapse, Divider, FormHelperText, Stack, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -14,13 +14,14 @@ export default function AccessibilitySection() {
 
   const hasAccessibilityData = !!watch('homeAccessible') || !!watch('requiresAccessibleHome');
   const [open, setOpen] = useState(hasAccessibilityData);
+  const [previousHasAccessibilityData, setPreviousHasAccessibilityData] = useState(hasAccessibilityData);
 
-  // Participant data is typically loaded into the form after mount
-  useEffect(() => {
+  if (hasAccessibilityData !== previousHasAccessibilityData) {
+    setPreviousHasAccessibilityData(hasAccessibilityData);
     if (hasAccessibilityData) {
       setOpen(true);
     }
-  }, [hasAccessibilityData]);
+  }
 
   return (
     <Box sx={{ my: 3 }}>
