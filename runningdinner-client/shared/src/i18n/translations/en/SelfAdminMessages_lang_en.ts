@@ -14,6 +14,10 @@ const SelfAdminMessages_en: any = {
 
   change_team_host_button: 'Save as new host',
 
+  change_team_host_accessibility_title: 'Accessibility notice',
+  change_team_host_accessibility_text:
+    'No elevator or step-free access is indicated for the home of {{ newTeamHost }}. Visiting teams that need step-free access may no longer be able to reach your home. Save anyway?',
+
   manage_teampartner_wish_title: 'Manage Team Partner Wish',
   manage_teampartner_wish_help: 'Here you can confirm and/or change your wished team partner.',
   manage_teampartner_wish_success: 'Successfully saved the change of your wished team partner!',

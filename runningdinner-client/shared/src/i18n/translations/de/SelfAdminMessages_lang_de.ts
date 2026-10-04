@@ -14,6 +14,10 @@ const SelfAdminMessages_de: any = {
 
   change_team_host_button: 'Als neuen Gastgeber speichern',
 
+  change_team_host_accessibility_title: 'Barrierefreiheit beachten',
+  change_team_host_accessibility_text:
+    'Für die Wohnung von {{ newTeamHost }} ist kein Aufzug oder stufenloser Zugang angegeben. Gastteams, die auf barrierefreien Zugang angewiesen sind, könnten dadurch eure Wohnung nicht mehr erreichen. Trotzdem speichern?',
+
   manage_teampartner_wish_title: 'Wunschpartner verwalten',
   manage_teampartner_wish_help: 'Hier kannst du deinen Wunschpartner (nachträglich) bestätigen oder ändern.',
   manage_teampartner_wish_success: 'Änderung deines Wunschpartners erfolgreich gespeichert!',

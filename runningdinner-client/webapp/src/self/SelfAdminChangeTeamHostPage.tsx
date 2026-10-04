@@ -31,6 +31,7 @@ import FormTextField from '../common/input/FormTextField';
 import { useNotificationHttpError } from '../common/NotificationHttpErrorHook';
 import { commonStyles } from '../common/theme/CommonStyles';
 import { useCustomSnackbar } from '../common/theme/CustomSnackbarHook';
+import { ConfirmationDialog } from '../common/theme/dialog/ConfirmationDialog';
 import { PrimaryButton } from '../common/theme/PrimaryButton';
 import Paragraph from '../common/theme/typography/Paragraph';
 import { PageTitle } from '../common/theme/typography/Tags';
@@ -38,6 +39,11 @@ import { PageTitle } from '../common/theme/typography/Tags';
 const NewSelectedHostText = styled('strong')(({ theme }) => ({
   color: theme.palette.secondary.main,
 }));
+
+// Participants needing accessibility can always access their own home
+function hasAccessibleLocation(participant: Participant) {
+  return !!participant.homeAccessible || !!participant.requiresAccessibleHome;
+}
 
 export default function SelfAdminChangeTeamHostPage() {
   const urlParams = useParams<Record<string, string>>();
@@ -78,6 +84,7 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
 
   const [newHostTeamMember, setNewHostTeamMember] = useState<Participant>(team.hostTeamMember);
   const [currentTeam, setCurrentTeam] = useState<Team>(team);
+  const [pendingValues, setPendingValues] = useState<SelfAdminChangeTeamHostViewModel | null>(null);
 
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down('lg'));
@@ -110,6 +117,22 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
       setCurrentTeam(updatedTeam);
     } catch (e) {
       showHttpErrorDefaultNotification(e as HttpError, { showGenericMesssageOnValidationError: true });
+    }
+  }
+
+  async function handleSave(values: SelfAdminChangeTeamHostViewModel) {
+    if (hasAccessibleLocation(currentTeam.hostTeamMember) && !hasAccessibleLocation(newHostTeamMember)) {
+      setPendingValues(values);
+      return;
+    }
+    await updateTeamHost(values);
+  }
+
+  async function handleAccessibilityConfirmationClose(confirmed: boolean) {
+    const values = pendingValues;
+    setPendingValues(null);
+    if (confirmed && values) {
+      await updateTeamHost(values);
     }
   }
 
@@ -193,12 +216,21 @@ function SelfAdminChangeTeamHostView({ team }: SelfAdminChangeTeamHostViewProps)
             justifyContent: 'flex-end'
           }}>
             <Grid size={isSmallDevice ? 12 : undefined}>
-              <PrimaryButton onClick={handleSubmit(updateTeamHost)} sx={fullWidthProps} disabled={isSubmitting || !isTeamHostChanged()} size={'large'}>
+              <PrimaryButton onClick={handleSubmit(handleSave)} sx={fullWidthProps} disabled={isSubmitting || !isTeamHostChanged()} size={'large'}>
                 {t('common:save')}
               </PrimaryButton>
             </Grid>
           </Grid>
         </Box>
+        {pendingValues && (
+          <ConfirmationDialog
+            dialogTitle={t('selfadmin:change_team_host_accessibility_title')}
+            dialogContent={t('selfadmin:change_team_host_accessibility_text', { newTeamHost: getFullname(newHostTeamMember) })}
+            buttonConfirmText={t('common:save')}
+            buttonCancelText={t('common:cancel')}
+            onClose={handleAccessibilityConfirmationClose}
+          />
+        )}
       </form>
     </FormProvider>
   );
