@@ -17,6 +17,8 @@ public record TeamReference(@JsonProperty int teamNumber,
 														@JsonProperty TeamStatus status,
 														@JsonProperty GeocodingResult geocodingResult,
 														@JsonProperty int clusterNumber,
+														@JsonProperty boolean homeAccessible,
+														@JsonProperty boolean requiresAccessibleHome,
 														@JsonProperty List<TeamReference> teamsOnRoute) implements HasGeocodingResult {
 
 	@JsonIgnore
@@ -30,6 +32,8 @@ public record TeamReference(@JsonProperty int teamNumber,
 			src.status(),
 			geocodingResultToSet,
 			src.clusterNumber(),
+			src.homeAccessible(),
+			src.requiresAccessibleHome(),
 			src.teamsOnRoute()
 		);
 	}
@@ -45,6 +49,8 @@ public record TeamReference(@JsonProperty int teamNumber,
 			src.status(),
 			src.geocodingResult(),
 			src.clusterNumber(),
+			src.homeAccessible(),
+			src.requiresAccessibleHome(),
 			teamsOnRoute
 		);
 	}

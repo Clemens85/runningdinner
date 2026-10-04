@@ -8,6 +8,7 @@ import org.runningdinner.dinnerroute.DinnerRouteService;
 import org.runningdinner.dinnerroute.DinnerRouteTeamTO;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationUtil;
 import org.runningdinner.geocoder.GeocodingResult;
+import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamService;
 import org.springframework.stereotype.Service;
@@ -125,6 +126,10 @@ public class TeamReferenceService {
 
 		GeocodingResult geocodingResult = currentTeam.getGeocodingResult();
 
+		Participant hostTeamMember = currentTeam.getHostTeamMember();
+		boolean isHomeAccessible = hostTeamMember != null && hostTeamMember.isHomeAccessible();
+		boolean requiresAccessibleHome = hostTeamMember != null && hostTeamMember.isRequiresAccessibleHome();
+
 		int clusterNumber = findTeamClusterNumber(dinnerRouteList, currentTeam);
 
 		return new TeamReference(
@@ -134,6 +139,8 @@ public class TeamReferenceService {
 						currentTeam.getStatus(),
 						geocodingResult,
 						clusterNumber,
+						isHomeAccessible,
+						requiresAccessibleHome,
 						teamsOnRoute
 		);
 	}
