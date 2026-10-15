@@ -4,10 +4,14 @@ import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.runningdinner.MailConfig;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
+import org.runningdinner.core.TeamDistributorAccessibility;
+import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.DinnerRouteService;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
 import org.runningdinner.dinnerroute.optimization.data.DinnerRouteOptimizationRequest;
@@ -19,6 +23,8 @@ import org.runningdinner.event.publisher.EventPublisher;
 import org.runningdinner.feedback.FeedbackService;
 import org.runningdinner.mail.formatter.DinnerRouteMessageFormatter;
 import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantRepository;
+import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamRepository;
 import org.runningdinner.participant.TeamService;
 import org.runningdinner.test.util.ApplicationTest;
@@ -26,11 +32,17 @@ import org.runningdinner.test.util.TestHelperService;
 import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 @ExtendWith(SpringExtension.class)
 @ApplicationTest
@@ -56,6 +68,9 @@ public class DinnerRouteOptimizationServiceTest {
 
 	@Autowired
 	private TeamRepository teamRepository;
+
+	@Autowired
+	private ParticipantRepository participantRepository;
 
 	@Autowired
 	private TeamNeighbourClusterCalculationService teamNeighbourClusterCalculationService;
@@ -84,7 +99,7 @@ public class DinnerRouteOptimizationServiceTest {
 	@BeforeEach
 	public void setUp() {
 
-		optimizationDataProviderInMemory = new TestOptimizationDataProvider();
+		optimizationDataProviderInMemory = spy(new TestOptimizationDataProvider());
 
 		this.routeOptimizationService = new DinnerRouteOptimizationService(
 			runningDinnerService,
@@ -133,6 +148,45 @@ public class DinnerRouteOptimizationServiceTest {
 		List<List<TeamReference>> teamsOnRouteList = request.getDinnerRoutes().stream().map(TeamReference::teamsOnRoute).toList();
 		assertThat(teamsOnRouteList).allMatch(singleList -> singleList.size() == 2);
 
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { false, true })
+	@Transactional
+	public void previewMatchesAppliedAccessibilityRepair(boolean ignoreMealAssignments) throws Exception {
+
+		String adminId = runningDinner.getAdminId();
+		teamService.createTeamAndVisitationPlans(adminId);
+		List<Team> teams = teamService.findTeamArrangements(adminId, false);
+		Team requiringTeam = teams.getFirst();
+		Set<Team> inaccessibleHosts = Set.copyOf(requiringTeam.getHostTeams());
+		for (Team team : teams) {
+			team.getTeamMembers().forEach(member -> member.setRequiresAccessibleHome(false));
+			Participant host = team.getHostTeamMember();
+			host.setNumSeats(6);
+			host.setHomeAccessible(!inaccessibleHosts.contains(team));
+			participantRepository.saveAll(team.getTeamMembers());
+		}
+		requiringTeam.getHostTeamMember().setRequiresAccessibleHome(true);
+		participantRepository.save(requiringTeam.getHostTeamMember());
+		assertThat(inaccessibleHosts).hasSize(2);
+
+		DinnerRouteOptimizationRequest request = routeOptimizationService.publishOptimizationEvent(adminId,
+				new RouteOptimizationSettings(-1d, -1d, ignoreMealAssignments, 0));
+		doReturn(objectMapper.writeValueAsString(request)).when(optimizationDataProviderInMemory).readResponseData(adminId, request.getOptimizationId());
+
+		var preview = routeOptimizationService.previewOptimizedDinnerRoutes(adminId, request.getOptimizationId());
+		var applied = routeOptimizationService.applyOptimizedDinnerRoutes(adminId, request.getOptimizationId());
+
+		assertThat(routeNumbers(applied.getDinnerRoutes())).isEqualTo(routeNumbers(preview.optimizedDinnerRouteList().getDinnerRoutes()));
+		assertThat(requiringTeam.getHostTeams()).allMatch(host -> TeamDistributorAccessibility.hasAccessibleHostLocation(host, runningDinner.getConfiguration()));
+		routeOptimizationService.validateOptimizedRoutes(applied.getDinnerRoutes(), runningDinner, teams);
+	}
+
+	private static Map<Integer, List<Integer>> routeNumbers(List<DinnerRouteTO> routes) {
+
+		return routes.stream().collect(Collectors.toMap(route -> route.getCurrentTeam().getTeamNumber(),
+				route -> route.getTeams().stream().map(team -> team.getTeamNumber()).sorted().toList()));
 	}
 
 	// TODO: Add Test for imputation of missing geocodes

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.runningdinner.core.test.helper.Configurations;
@@ -179,6 +181,39 @@ public class TeamDistributorAccessibilityTest {
       assertAllTeamsSatisfied(teams);
       teams.forEach(this::assertHostProvidesAccessibilityIfNeeded);
     }
+  }
+
+  @Test
+  public void mealAssignmentSpreadsAccessibilityEvenly() throws NoPossibleRunningDinnerException {
+
+    RunningDinnerConfig config = Configurations.standardConfig;
+    for (int run = 0; run < 50; run++) {
+      List<Team> teams = new ArrayList<>();
+      int teamNumber = 0;
+      for (int i = 0; i < 3; i++) {
+        teams.add(newHostedTeam(++teamNumber, newParticipant(HOST, false, true)));
+        teams.add(newHostedTeam(++teamNumber, newParticipant(HOST, true, false)));
+        teams.add(newHostedTeam(++teamNumber, newParticipant(HOST, false, false)));
+      }
+      GeneratedTeamsResult generatedTeamsResult = new GeneratedTeamsResult();
+      generatedTeamsResult.setRegularTeams(teams);
+
+      new RunningDinnerCalculator().assignRandomMealClasses(generatedTeamsResult, config, Collections.emptyList());
+
+      Map<MealClass, List<Team>> teamsByMeal = teams.stream().collect(Collectors.groupingBy(Team::getMealClass));
+      assertThat(teamsByMeal).hasSize(3);
+      for (List<Team> teamsOfMeal : teamsByMeal.values()) {
+        assertThat(teamsOfMeal).hasSize(3);
+        assertThat(teamsOfMeal).filteredOn(TeamDistributorAccessibility::requiresAccessibleHostLocation).hasSize(1);
+        assertThat(teamsOfMeal).filteredOn(t -> TeamDistributorAccessibility.hasAccessibleHostLocation(t, config)).hasSize(2);
+      }
+    }
+  }
+
+  private Team newHostedTeam(int teamNumber, Participant host) {
+
+    host.setHost(true);
+    return newTeam(teamNumber, host, newParticipant(NO_HOST, false, false));
   }
 
   private List<Team> generateTeams(RunningDinnerConfig config, List<Participant> participants) throws NoPossibleRunningDinnerException {

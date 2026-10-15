@@ -2,6 +2,8 @@ package org.runningdinner.dinnerroute.optimization.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import org.jetbrains.annotations.NotNull;
 import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.geocoder.HasGeocodingResult;
@@ -17,8 +19,8 @@ public record TeamReference(@JsonProperty int teamNumber,
 														@JsonProperty TeamStatus status,
 														@JsonProperty GeocodingResult geocodingResult,
 														@JsonProperty int clusterNumber,
-														@JsonProperty boolean homeAccessible,
-														@JsonProperty boolean requiresAccessibleHome,
+														@JsonProperty @JsonSetter(nulls = Nulls.AS_EMPTY) boolean homeAccessible,
+														@JsonProperty @JsonSetter(nulls = Nulls.AS_EMPTY) boolean requiresAccessibleHome,
 														@JsonProperty List<TeamReference> teamsOnRoute) implements HasGeocodingResult {
 
 	@JsonIgnore

@@ -11,6 +11,7 @@ import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.TeamCombinationInfo;
+import org.runningdinner.core.dinnerplan.AccessibilityRouteOptimizer;
 import org.runningdinner.dinnerroute.AllDinnerRoutesWithDistancesListTO;
 import org.runningdinner.dinnerroute.DinnerRouteCalculator;
 import org.runningdinner.dinnerroute.DinnerRouteListTO;
@@ -211,6 +212,8 @@ public class DinnerRouteOptimizationService {
 															.forEach(existingTeam::addHostTeam);
 			}
 		}
+
+		AccessibilityRouteOptimizer.repairRoutes(teams, runningDinner.getConfiguration(), optimizationId.hashCode());
 
 		return response.getOptimizationSettings();
 	}

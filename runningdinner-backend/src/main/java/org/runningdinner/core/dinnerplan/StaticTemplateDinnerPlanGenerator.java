@@ -1,5 +1,12 @@
 package org.runningdinner.core.dinnerplan;
 
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
+import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.TeamCombinationInfo;
+import org.runningdinner.core.util.CoreUtil;
+import org.runningdinner.participant.Team;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,13 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
-
-import org.runningdinner.core.MealClass;
-import org.runningdinner.core.NoPossibleRunningDinnerException;
-import org.runningdinner.core.RunningDinnerConfig;
-import org.runningdinner.core.TeamCombinationInfo;
-import org.runningdinner.core.util.CoreUtil;
-import org.runningdinner.participant.Team;
 
 public final class StaticTemplateDinnerPlanGenerator {
 	
@@ -35,6 +35,8 @@ public final class StaticTemplateDinnerPlanGenerator {
 
 		final Map<MealClass, Queue<Team>> teamsByMealMapping = getTeamsByMealMapping(teams);
 
+		final DinnerRouteDraft routeDraft = new DinnerRouteDraft();
+
 		for (Entry<Integer, Integer> teamSizeFactorizationEntry : teamSizeFactorizations.entrySet()) {
 			Integer teamSegmentSize = teamSizeFactorizationEntry.getKey();
 			Integer numSegments = teamSizeFactorizationEntry.getValue();
@@ -45,10 +47,15 @@ public final class StaticTemplateDinnerPlanGenerator {
 
 			for (int i = 0; i < numSegments; i++) {
 				int[][][] matrix = templateMatrix.getTemplateMatrix(teamSegmentSize);
-				buildVisitationPlansForTeamSegmentMatrix(matrix, teamsByMealMapping);
+				addTeamSegmentMatrix(matrix, teamsByMealMapping, routeDraft);
 			}
-
 		}
+
+		CoreUtil.assertHasSize(routeDraft.slots(), teams.size(),
+				"Expected all " + teams.size() + " teams to be placed into the template matrices, but placed " + routeDraft.size());
+
+		new AccessibilityRouteOptimizer(routeDraft, runningDinnerConfig).optimize();
+		routeDraft.applyVisits();
 	}
 	
 
@@ -56,26 +63,24 @@ public final class StaticTemplateDinnerPlanGenerator {
 	 * Gets a mapping for each meal with the teams that have to cook it. E.g.:<br>
 	 * APPETIZER => Team1, Team2<br>
 	 * MAINCOURSE => Team3, Team4
-	 * 
-	 * @param teams
-	 * @return
+	 *
 	 */
-	protected static Map<MealClass, Queue<Team>> getTeamsByMealMapping(List<Team> teams) {
+	private static Map<MealClass, Queue<Team>> getTeamsByMealMapping(List<Team> teams) {
 		Map<MealClass, Queue<Team>> result = new HashMap<MealClass, Queue<Team>>();
 		for (Team team : teams) {
 			MealClass mealClass = team.getMealClass();
 			CoreUtil.assertNotNull(mealClass, "Team must have an assigned MealClass, but was null");
-			Queue<Team> mappedTeamList = result.get(mealClass);
-			if (mappedTeamList == null) {
-				mappedTeamList = new ArrayDeque<Team>();
-				result.put(mealClass, mappedTeamList);
-			}
+			Queue<Team> mappedTeamList = result.computeIfAbsent(mealClass, k -> new ArrayDeque<Team>());
 			mappedTeamList.add(team);
 		}
 		return result;
 	}
 
-	protected static void buildVisitationPlansForTeamSegmentMatrix(int[][][] matrix, Map<MealClass, Queue<Team>> teamsByMealMapping) {
+	/**
+	 * Places the teams into the slots of the passed matrix and collects the visits (guest slot -> host slot) of this matrix.
+	 * The slots of each matrix are appended to the passed slot arrangement.
+	 */
+	private static void addTeamSegmentMatrix(int[][][] matrix, Map<MealClass, Queue<Team>> teamsByMealMapping, DinnerRouteDraft routeDraft) {
 
 		List<MealClass> mealClasses = new ArrayList<MealClass>(teamsByMealMapping.keySet());
 		CoreUtil.assertHasSize(mealClasses, matrix.length, "Expected number of mealclasses (" + mealClasses.size()
@@ -91,7 +96,7 @@ public final class StaticTemplateDinnerPlanGenerator {
 		}
 
 		// Now map each number in the matrix to a team:
-		Map<Integer, Team> teamToMatrixNumberMapping = new HashMap<Integer, Team>();
+		Map<Integer, DinnerRouteDraft.Slot> matrixNumberToSlot = new HashMap<>();
 		for (int i = 0; i < matrix.length; i++) {
 
 			int[][] mealRow = matrix[i];
@@ -107,33 +112,32 @@ public final class StaticTemplateDinnerPlanGenerator {
 							+ mealClassOfHoster + ", Matrix was: " + Arrays.deepToString(matrix));
 				}
 
-				teamToMatrixNumberMapping.put(hosterNumber, team);
+				matrixNumberToSlot.put(hosterNumber, routeDraft.addSlot(team, mealClassOfHoster));
 			}
 		}
 
 		// Check consistency:
 		int blockSize = matrix.length;
 		int hostingTeamsSizeInBlock = matrix[0].length;
-		CoreUtil.assertHasSize(teamToMatrixNumberMapping.keySet(), blockSize * hostingTeamsSizeInBlock, "There should have been taken "
-				+ (blockSize * hostingTeamsSizeInBlock) + " teams, but it had been actually " + teamToMatrixNumberMapping.keySet().size());
+		CoreUtil.assertHasSize(matrixNumberToSlot.keySet(), blockSize * hostingTeamsSizeInBlock, "There should have been taken "
+				+ (blockSize * hostingTeamsSizeInBlock) + " teams, but it had been actually " + matrixNumberToSlot.size());
 
-		// Now we can finally build up the visitation plans as we know the team behind each number in matrix:
+		// Now we can collect the visits as we know the slot behind each number in matrix:
 		for (int i = 0; i < matrix.length; i++) {
 			int[][] hostingTeamToGuestTeamMappings = matrix[i];
 
 			for (int j = 0; j < hostingTeamToGuestTeamMappings.length; j++) {
 
 				int[] hostingTeamToGuestTeamMapping = hostingTeamToGuestTeamMappings[j];
-				int hostingTeamNumber = hostingTeamToGuestTeamMapping[0];
-				Team hostingTeam = teamToMatrixNumberMapping.get(hostingTeamNumber);
+				DinnerRouteDraft.Slot hostingSlot = matrixNumberToSlot.get(hostingTeamToGuestTeamMapping[0]);
 
 				for (int k = 1; k < hostingTeamToGuestTeamMapping.length; k++) {
-					int guestTeamNumber = hostingTeamToGuestTeamMapping[k];
-					Team guestTeam = teamToMatrixNumberMapping.get(guestTeamNumber);
-					guestTeam.addHostTeam(hostingTeam);
+					DinnerRouteDraft.Slot guestSlot = matrixNumberToSlot.get(hostingTeamToGuestTeamMapping[k]);
+					routeDraft.addVisit(guestSlot, hostingSlot);
 				}
 			}
 		}
+
 	}
 
 }
