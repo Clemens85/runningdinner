@@ -1,4 +1,10 @@
 const NewsMessages_de: any = {
+  news_title_20261016: 'Barrierefreiheit bei Teams und Routen',
+  news_content_20261016:
+    'Teilnehmer können bei der Anmeldung nun angeben, ob ihre Wohnung per Aufzug oder stufenlos erreichbar ist und ob sie selbst barrierefreien Zugang benötigen. ' +
+    'Diese Angaben werden bei der Team-Einteilung, der Routenplanung und der Routenoptimierung soweit möglich berücksichtigt. ' +
+    'Passende Hinweise in der Verwaltung, den Dinner-Routen und den Nachrichten helfen dabei, den benötigten Zugang im Blick zu behalten.',
+
   news_title_20260717: 'Neues Teilnehmer-Portal',
   news_content_20260717:
     'Ab sofort steht ein neues Teilnehmer-Portal mit hilfreichen Funktionen bereit! ' +

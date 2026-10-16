@@ -1,4 +1,10 @@
 const NewsMessages_en: any = {
+  news_title_20261016: 'Accessibility in Team and Route Planning',
+  news_content_20261016:
+    'Participants can now indicate during registration whether their home has elevator or step-free access and whether they need step-free access themselves. ' +
+    'These details are taken into account wherever possible when assigning teams, planning dinner routes and optimizing distances. ' +
+    'Relevant notices in event administration, dinner routes and messages help keep accessibility needs in view.',
+
   news_title_20260717: 'New Participant Portal',
   news_content_20260717:
     'A new participant portal with helpful features is now available! ' +
