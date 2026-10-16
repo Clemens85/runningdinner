@@ -3,6 +3,7 @@ package org.runningdinner.dinnerroute.optimization.data;
 public record RouteOptimizationSettings(Double currentSumDistanceInMeters,
 																				Double currentAverageDistanceInMeters,
 																				Boolean ignoreMealAssignments,
-																				Integer minimumDistanceInMeters) {
+																				Integer minimumDistanceInMeters,
+																				boolean ignoreAccessibilityRequirements) {
 
 }

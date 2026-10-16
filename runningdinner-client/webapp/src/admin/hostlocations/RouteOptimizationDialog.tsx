@@ -39,7 +39,8 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
 
   const minimumDistanceInMeters = watch('minimumDistanceInMeters');
 
-  const optimizationImpact = predictOptimizationQuery.data;
+  const optimizationImpact = predictOptimizationQuery.data?.impact;
+  const hasAccessibilityRequirements = !!predictOptimizationQuery.data?.hasAccessibilityRequirements;
   const showRouteOptimizationSettings = !!optimizationImpact && optimizationImpact !== 'LOW' && optimizationImpact !== 'NONE';
 
   useEffect(() => {
@@ -56,11 +57,12 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
       currentSumDistanceInMeters: routeDistanceMetrics?.sumDistanceInMeters || -1,
       ignoreMealAssignments: formData.ignoreMealAssignments,
       minimumDistanceInMeters: formData.minimumDistanceInMeters,
+      ignoreAccessibilityRequirements: hasAccessibilityRequirements && formData.ignoreAccessibilityRequirements,
     };
     triggerCalculateOptimization(calculateRequest);
   }
 
-  const okButtonDisabled = isPending() || !routeDistanceMetrics || isStringNotEmpty(previewUrl) || predictOptimizationQuery.data === 'NONE';
+  const okButtonDisabled = isPending() || !routeDistanceMetrics || isStringNotEmpty(previewUrl) || !optimizationImpact || optimizationImpact === 'NONE';
 
   function handleClose() {
     resetAll();
@@ -93,10 +95,16 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
           </Paragraph>
           <Box sx={{ my: 2 }}>
             <FetchProgressBar {...predictOptimizationQuery} />
-            {predictOptimizationQuery.data && !previewUrl && <OptimizationImpactInfo optimizationImpact={predictOptimizationQuery.data} />}
+            {optimizationImpact && !previewUrl && <OptimizationImpactInfo optimizationImpact={optimizationImpact} />}
           </Box>
 
-          {showRouteOptimizationSettings && (
+          {hasAccessibilityRequirements && !previewUrl && (
+            <Box sx={{ my: 2 }}>
+              <Alert severity="info">{t('admin:dinner_route_optimize_accessibility_notice')}</Alert>
+            </Box>
+          )}
+
+          {(showRouteOptimizationSettings || hasAccessibilityRequirements) && (
             <>
               <Box sx={{ my: 1 }}>
                 <Divider>
@@ -107,52 +115,67 @@ export function RouteOptimizationDialog({ isOpen, onClose, adminId, routeDistanc
                 </Divider>
               </Box>
 
-              <Box sx={{ my: 2 }}>
-                <FormCheckbox
-                  name="ignoreMealAssignments"
-                  label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
-                  disabled={isPending() || isStringNotEmpty(previewUrl)}
-                  helperText={<Trans i18nKey={'admin:dinner_route_optimize_ignore_meal_assignments_help'} />}
-                />
-              </Box>
-
-              <Box sx={{ mb: 2, mt: 3 }}>
-                <Typography variant="body1">{t('admin:dinner_route_optimize_minimum_distance')}</Typography>
-                <Box sx={{ px: 2 }}>
-                  <Controller
-                    name="minimumDistanceInMeters"
-                    control={control}
-                    render={({ field }) => (
-                      <Slider
-                        {...field}
-                        aria-label={t('common:distance')}
-                        disabled={isPending() || isStringNotEmpty(previewUrl)}
-                        getAriaValueText={() => `${field.value} m`}
-                        step={50}
-                        marks={[
-                          { value: 0, label: '0 m' },
-                          { value: 100, label: '100 m' },
-                          { value: 250, label: '250 m' },
-                          { value: 500, label: '500 m' },
-                        ]}
-                        min={0}
-                        valueLabelDisplay="auto"
-                        max={500}
-                      />
-                    )}
+              {hasAccessibilityRequirements && (
+                <Box sx={{ my: 2 }}>
+                  <FormCheckbox
+                    name="ignoreAccessibilityRequirements"
+                    label={t('admin:dinner_route_optimize_ignore_accessibility')}
+                    disabled={isPending() || isStringNotEmpty(previewUrl)}
+                    helperText={t('admin:dinner_route_optimize_ignore_accessibility_help')}
                   />
                 </Box>
-                <FormHelperText>
-                  <Trans i18nKey={'admin:dinner_route_optimize_minimum_distance_help_1'} />
-                  <br />
-                  <Trans i18nKey={'admin:dinner_route_optimize_minimum_distance_help_2'} />
-                  <br />
-                  <Trans
-                    i18nKey={'admin:dinner_route_optimize_minimum_distance_current'}
-                    values={{ distance: minimumDistanceInMeters === 0 ? zero_minimum_distance_label : `${minimumDistanceInMeters} m` }}
-                  />
-                </FormHelperText>
-              </Box>
+              )}
+
+              {showRouteOptimizationSettings && (
+                <>
+                  <Box sx={{ my: 2 }}>
+                    <FormCheckbox
+                      name="ignoreMealAssignments"
+                      label={t('admin:dinner_route_optimize_ignore_meal_assignments')}
+                      disabled={isPending() || isStringNotEmpty(previewUrl)}
+                      helperText={<Trans i18nKey={'admin:dinner_route_optimize_ignore_meal_assignments_help'} />}
+                    />
+                  </Box>
+
+                  <Box sx={{ mb: 2, mt: 3 }}>
+                    <Typography variant="body1">{t('admin:dinner_route_optimize_minimum_distance')}</Typography>
+                    <Box sx={{ px: 2 }}>
+                      <Controller
+                        name="minimumDistanceInMeters"
+                        control={control}
+                        render={({ field }) => (
+                          <Slider
+                            {...field}
+                            aria-label={t('common:distance')}
+                            disabled={isPending() || isStringNotEmpty(previewUrl)}
+                            getAriaValueText={() => `${field.value} m`}
+                            step={50}
+                            marks={[
+                              { value: 0, label: '0 m' },
+                              { value: 100, label: '100 m' },
+                              { value: 250, label: '250 m' },
+                              { value: 500, label: '500 m' },
+                            ]}
+                            min={0}
+                            valueLabelDisplay="auto"
+                            max={500}
+                          />
+                        )}
+                      />
+                    </Box>
+                    <FormHelperText>
+                      <Trans i18nKey={'admin:dinner_route_optimize_minimum_distance_help_1'} />
+                      <br />
+                      <Trans i18nKey={'admin:dinner_route_optimize_minimum_distance_help_2'} />
+                      <br />
+                      <Trans
+                        i18nKey={'admin:dinner_route_optimize_minimum_distance_current'}
+                        values={{ distance: minimumDistanceInMeters === 0 ? zero_minimum_distance_label : `${minimumDistanceInMeters} m` }}
+                      />
+                    </FormHelperText>
+                  </Box>
+                </>
+              )}
 
               <Box sx={{ mt: 4 }}>
                 <Divider />

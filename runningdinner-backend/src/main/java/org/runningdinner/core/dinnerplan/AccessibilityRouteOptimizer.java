@@ -36,6 +36,8 @@ public final class AccessibilityRouteOptimizer {
 
   private final Random random;
 
+  private final DinnerRouteDistanceScore distanceScore;
+
   private final List<List<DinnerRouteDraft.Visit>> visitsBySlot;
 
   private final Map<Team, Boolean> requiresAccessibility = new HashMap<>();
@@ -47,13 +49,14 @@ public final class AccessibilityRouteOptimizer {
    */
   AccessibilityRouteOptimizer(DinnerRouteDraft routeDraft, RunningDinnerConfig configuration) {
 
-    this(routeDraft, configuration, new Random());
+    this(routeDraft, configuration, new Random(), false);
   }
 
-  private AccessibilityRouteOptimizer(DinnerRouteDraft routeDraft, RunningDinnerConfig configuration, Random random) {
+  private AccessibilityRouteOptimizer(DinnerRouteDraft routeDraft, RunningDinnerConfig configuration, Random random, boolean considerDistance) {
 
     this.routeDraft = routeDraft;
     this.random = random;
+    this.distanceScore = considerDistance ? new DinnerRouteDistanceScore(routeDraft, configuration) : null;
 
     this.visitsBySlot = new ArrayList<>(routeDraft.size());
     for (int i = 0; i < routeDraft.size(); i++) {
@@ -92,13 +95,13 @@ public final class AccessibilityRouteOptimizer {
       }
     }
 
-    AccessibilityRouteOptimizer optimizer = new AccessibilityRouteOptimizer(draft, configuration, new Random(seed));
-    int initialViolations = optimizer.countViolations();
-    if (initialViolations == 0) {
+    AccessibilityRouteOptimizer optimizer = new AccessibilityRouteOptimizer(draft, configuration, new Random(seed), true);
+    Score initialScore = optimizer.score();
+    if (initialScore.violations() == 0) {
       return;
     }
     optimizer.optimize();
-    if (optimizer.countViolations() < initialViolations) {
+    if (optimizer.score().isBetterThan(initialScore)) {
       teams.forEach(Team::removeAllTeamReferences);
       draft.applyVisits();
     }
@@ -116,14 +119,14 @@ public final class AccessibilityRouteOptimizer {
     }
     hillClimb();
     List<Team> bestArrangement = currentArrangement();
-    int bestViolations = countViolations();
+    Score bestScore = score();
 
-    for (int restart = 0; restart < MAX_RESTARTS && bestViolations > 0; restart++) {
+    for (int restart = 0; restart < MAX_RESTARTS && bestScore.violations() > 0; restart++) {
       shuffleWithinMeals();
       hillClimb();
-      int violations = countViolations();
-      if (violations < bestViolations) {
-        bestViolations = violations;
+      Score candidate = score();
+      if (candidate.isBetterThan(bestScore)) {
+        bestScore = candidate;
         bestArrangement = currentArrangement();
       }
     }
@@ -131,11 +134,15 @@ public final class AccessibilityRouteOptimizer {
     for (int i = 0; i < bestArrangement.size(); i++) {
       routeDraft.slots().get(i).setTeam(bestArrangement.get(i));
     }
-    LOGGER.info("Optimized dinner routes for accessibility: {} violations before, {} violations after", initialViolations, bestViolations);
+    LOGGER.info("Optimized dinner routes for accessibility: {} violations before, {} violations after", initialViolations, bestScore.violations());
   }
 
   private void hillClimb() {
 
+    if (distanceScore != null) {
+      hillClimbWithDistances();
+      return;
+    }
     boolean improved = true;
     while (improved && countViolations() > 0) {
       improved = false;
@@ -156,6 +163,51 @@ public final class AccessibilityRouteOptimizer {
           }
         }
       }
+    }
+  }
+
+  private void hillClimbWithDistances() {
+
+    List<DinnerRouteDraft.Slot> slots = routeDraft.slots();
+    while (true) {
+      Score current = score();
+      Score best = current;
+      DinnerRouteDraft.Slot bestFirst = null;
+      DinnerRouteDraft.Slot bestSecond = null;
+      for (int first = 0; first < slots.size(); first++) {
+        for (int second = first + 1; second < slots.size(); second++) {
+          DinnerRouteDraft.Slot firstSlot = slots.get(first);
+          DinnerRouteDraft.Slot secondSlot = slots.get(second);
+          if (!Objects.equals(firstSlot.meal(), secondSlot.meal())) {
+            continue;
+          }
+          int before = countViolationsAround(first, second);
+          firstSlot.swapTeamWith(secondSlot);
+          Score candidate = new Score(current.violations() - before + countViolationsAround(first, second), distanceScore.totalDistance());
+          firstSlot.swapTeamWith(secondSlot);
+          if (candidate.isBetterThan(best)) {
+            best = candidate;
+            bestFirst = firstSlot;
+            bestSecond = secondSlot;
+          }
+        }
+      }
+      if (bestFirst == null) {
+        return;
+      }
+      bestFirst.swapTeamWith(bestSecond);
+    }
+  }
+
+  private Score score() {
+
+    return new Score(countViolations(), distanceScore == null ? 0 : distanceScore.totalDistance());
+  }
+
+  private record Score(int violations, double distance) {
+
+    boolean isBetterThan(Score other) {
+      return violations < other.violations || (violations == other.violations && distance < other.distance - 0.01);
     }
   }
 

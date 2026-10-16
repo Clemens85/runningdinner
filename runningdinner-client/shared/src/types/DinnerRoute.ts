@@ -141,3 +141,8 @@ export function isDinnerRouteTeam(item: DinnerRouteTeam | AfterPartyLocation): i
 }
 
 export type OptimizationImpact = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
+
+export type OptimizationImpactPrediction = {
+  impact: OptimizationImpact;
+  hasAccessibilityRequirements: boolean;
+};

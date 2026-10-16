@@ -213,15 +213,20 @@ public class DinnerRouteOptimizationService {
 			}
 		}
 
-		AccessibilityRouteOptimizer.repairRoutes(teams, runningDinner.getConfiguration(), optimizationId.hashCode());
+		if (!response.getOptimizationSettings().ignoreAccessibilityRequirements()) {
+			AccessibilityRouteOptimizer.repairRoutes(teams, runningDinner.getConfiguration(), optimizationId.hashCode());
+		}
 
 		return response.getOptimizationSettings();
 	}
 
-	public OptimizationImpact predictOptimizationImpact(@ValidateAdminId String adminId) throws NoPossibleRunningDinnerException {
+	public OptimizationImpactTO predictOptimizationImpact(@ValidateAdminId String adminId) throws NoPossibleRunningDinnerException {
 		RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
 		TeamReferenceResultList teamReferenceResultList = teamReferenceService.findTeamReferences(runningDinner, true);
 		List<TeamReference> teamReferences = teamReferenceResultList.teamReferences();
+		boolean hasAccessibilityRequirements = teamReferenceResultList.dinnerRouteList().getDinnerRoutes().stream()
+				.flatMap(route -> route.getCurrentTeam().getTeamMembers().stream())
+				.anyMatch(participant -> participant.isRequiresAccessibleHome());
 
 		int totalNumberOfTeams = teamReferences.size();
 		var teamCombinationInfo = TeamCombinationInfo.newInstance(runningDinner.getConfiguration(), totalNumberOfTeams);
@@ -230,12 +235,12 @@ public class DinnerRouteOptimizationService {
 		int sumTeamClusters = teamClusterSizes.stream().mapToInt(Integer::intValue).sum();
 
 		if (!DinnerRouteOptimizationUtil.hasEnoughValidGeocodingResults(teamReferences)) {
-			return OptimizationImpact.NONE;
+			return new OptimizationImpactTO(OptimizationImpact.NONE, hasAccessibilityRequirements);
 		}
 		if (sumTeamClusters == 1) {
-			return OptimizationImpact.LOW;
+			return new OptimizationImpactTO(OptimizationImpact.LOW, hasAccessibilityRequirements);
 		}
-		return sumTeamClusters < 3 ? OptimizationImpact.MEDIUM : OptimizationImpact.HIGH;
+		return new OptimizationImpactTO(sumTeamClusters < 3 ? OptimizationImpact.MEDIUM : OptimizationImpact.HIGH, hasAccessibilityRequirements);
 	}
 
 	private void publishRequest(DinnerRouteOptimizationRequest finalRequest) throws TooManyOptimizationRequestsException {

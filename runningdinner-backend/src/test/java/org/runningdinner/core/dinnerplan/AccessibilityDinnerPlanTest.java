@@ -1,6 +1,7 @@
 package org.runningdinner.core.dinnerplan;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,8 @@ import org.runningdinner.core.RunningDinnerCalculator;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.TeamDistributorAccessibility;
 import org.runningdinner.core.test.helper.Configurations;
+import org.runningdinner.dinnerroute.distance.DistanceCalculator;
+import org.runningdinner.geocoder.GeocodingResult;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
 import org.runningdinner.participant.TeamStatus;
@@ -156,6 +159,105 @@ public class AccessibilityDinnerPlanTest {
 
     assertThat(hostNumbers(teams)).isEqualTo(originalRoutes);
     assertThat(countViolations(teams)).isEqualTo(2);
+  }
+
+  @Test
+  public void prefersLocalRepairOverEquallyAccessibleDistantRepair() throws NoPossibleRunningDinnerException {
+
+    List<Team> teams = new ArrayList<>();
+    for (int neighborhood = 0; neighborhood < 3; neighborhood++) {
+      List<Team> localTeams = newTeamsPerMeal(0, 0, 3);
+      StaticTemplateDinnerPlanGenerator.generateDinnerExecutionPlan(localTeams, CONFIG);
+      for (Team team : localTeams) {
+        team.getHostTeamMember().setHomeAccessible(true);
+        team.getHostTeamMember().setGeocodingResult(GeocodingResult.newInstance(48 + neighborhood * 0.3, 9,
+                GeocodingResult.GeocodingResultType.EXACT));
+      }
+      teams.addAll(localTeams);
+    }
+    Team requiringTeam = teams.get(18);
+    requiringTeam.getHostTeamMember().setRequiresAccessibleHome(true);
+    requiringTeam.getHostTeams().forEach(host -> host.getHostTeamMember().setHomeAccessible(false));
+    Map<Team, List<Team>> originalHosts = teams.stream().collect(Collectors.toMap(team -> team, team -> new ArrayList<>(team.getHostTeams())));
+
+    DinnerRouteDraft naiveDraft = draftOf(teams);
+    DinnerRouteDistanceScore naiveDistance = new DinnerRouteDistanceScore(naiveDraft, CONFIG);
+    new AccessibilityRouteOptimizer(naiveDraft, CONFIG).optimize();
+    assertThat(naiveDistance.totalDistance()).isGreaterThan(10_000);
+
+    AccessibilityRouteOptimizer.repairRoutes(teams, CONFIG, 42L);
+
+    assertThat(countViolations(teams)).isZero();
+    assertValidDinnerRoutes(teams);
+    assertThat(new DinnerRouteDistanceScore(draftOf(teams), CONFIG).totalDistance()).isCloseTo(0, within(0.01));
+    Map<Team, List<Integer>> repairedRoutes = hostNumbers(teams);
+
+    teams.forEach(Team::removeAllTeamReferences);
+    originalHosts.forEach((team, hosts) -> hosts.forEach(team::addHostTeam));
+    Collections.reverse(teams);
+    AccessibilityRouteOptimizer.repairRoutes(teams, CONFIG, 42L);
+    assertThat(hostNumbers(teams)).isEqualTo(repairedRoutes);
+  }
+
+  @Test
+  public void shortensRoutesWithoutWorseningImpossibleAccessibilityRequirements() throws NoPossibleRunningDinnerException {
+
+    List<Team> teams = new ArrayList<>();
+    for (int neighborhood = 0; neighborhood < 2; neighborhood++) {
+      List<Team> localTeams = newTeamsPerMeal(0, 0, 3);
+      StaticTemplateDinnerPlanGenerator.generateDinnerExecutionPlan(localTeams, CONFIG);
+      for (Team team : localTeams) {
+        team.getHostTeamMember().setGeocodingResult(GeocodingResult.newInstance(48 + neighborhood * 0.3, 9,
+                GeocodingResult.GeocodingResultType.EXACT));
+      }
+      teams.addAll(localTeams);
+    }
+    DinnerRouteDraft disruptedDraft = draftOf(teams);
+    disruptedDraft.slots().get(0).swapTeamWith(disruptedDraft.slots().get(9));
+    teams.forEach(Team::removeAllTeamReferences);
+    disruptedDraft.applyVisits();
+    teams.get(1).getTeamMembers().forEach(member -> member.setRequiresAccessibleHome(!member.isHost()));
+    assertThat(countViolations(teams)).isEqualTo(2);
+    assertThat(new DinnerRouteDistanceScore(draftOf(teams), CONFIG).totalDistance()).isGreaterThan(10_000);
+
+    AccessibilityRouteOptimizer.repairRoutes(teams, CONFIG, 42L);
+
+    assertThat(countViolations(teams)).isEqualTo(2);
+    assertValidDinnerRoutes(teams);
+    assertThat(new DinnerRouteDistanceScore(draftOf(teams), CONFIG).totalDistance()).isCloseTo(0, within(0.01));
+  }
+
+  @Test
+  public void scoresJourneysBetweenConsecutiveMealsRatherThanGuestToEveryHost() {
+
+    List<Team> teams = new ArrayList<>();
+    for (MealClass meal : CONFIG.getMealClasses()) {
+      Team team = newTeam(meal, false, true);
+      team.getHostTeamMember().setGeocodingResult(GeocodingResult.newInstance(48 + teams.size() * 0.1, 9,
+              GeocodingResult.GeocodingResultType.EXACT));
+      teams.add(team);
+    }
+    teams.getFirst().addHostTeam(teams.get(1));
+    teams.getFirst().addHostTeam(teams.get(2));
+    double expected = DistanceCalculator.calculateDistanceVincentyInMeters(teams.get(0), teams.get(1))
+            + DistanceCalculator.calculateDistanceVincentyInMeters(teams.get(1), teams.get(2));
+    Collections.reverse(teams);
+
+    assertThat(new DinnerRouteDistanceScore(draftOf(teams), CONFIG).totalDistance()).isCloseTo(expected, within(0.01));
+
+    teams.getFirst().getHostTeamMember().setGeocodingResult(new GeocodingResult());
+    assertThat(new DinnerRouteDistanceScore(draftOf(teams), CONFIG).totalDistance()).isZero();
+  }
+
+  private static DinnerRouteDraft draftOf(List<Team> teams) {
+
+    DinnerRouteDraft draft = new DinnerRouteDraft();
+    Map<Team, DinnerRouteDraft.Slot> slots = teams.stream()
+            .collect(Collectors.toMap(team -> team, team -> draft.addSlot(team, team.getMealClass())));
+    for (Team team : teams) {
+      team.getHostTeams().forEach(host -> draft.addVisit(slots.get(team), slots.get(host)));
+    }
+    return draft;
   }
 
   private static Map<Team, List<Integer>> hostNumbers(List<Team> teams) {

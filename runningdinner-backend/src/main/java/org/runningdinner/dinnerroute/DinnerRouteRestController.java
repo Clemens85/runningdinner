@@ -7,7 +7,7 @@ import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationS
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterListTO;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationResult;
 import org.runningdinner.dinnerroute.optimization.DinnerRouteOptimizationService;
-import org.runningdinner.dinnerroute.optimization.OptimizationImpact;
+import org.runningdinner.dinnerroute.optimization.OptimizationImpactTO;
 import org.runningdinner.dinnerroute.optimization.TooManyOptimizationRequestsException;
 import org.runningdinner.dinnerroute.optimization.data.RouteOptimizationSettings;
 import org.runningdinner.dinnerroute.optimization.lock.OptimizationInstance;
@@ -98,7 +98,7 @@ public class DinnerRouteRestController {
 	}
   
   @GetMapping("/runningdinner/{adminId}/optimization/predict")
-  public OptimizationImpact predictOptimizationImpact(@PathVariable("adminId") String adminId) throws NoPossibleRunningDinnerException {
+  public OptimizationImpactTO predictOptimizationImpact(@PathVariable("adminId") String adminId) throws NoPossibleRunningDinnerException {
 		return dinnerRouteOptimizationService.predictOptimizationImpact(adminId);
   }
 }

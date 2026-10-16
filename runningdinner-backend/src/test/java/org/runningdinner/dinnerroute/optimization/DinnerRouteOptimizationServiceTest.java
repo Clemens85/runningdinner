@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.runningdinner.MailConfig;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.core.RegistrationType;
@@ -122,7 +122,7 @@ public class DinnerRouteOptimizationServiceTest {
 
 		teamService.createTeamAndVisitationPlans(runningDinner.getAdminId());
 
-		DinnerRouteOptimizationRequest request = routeOptimizationService.publishOptimizationEvent(runningDinner.getAdminId(), new RouteOptimizationSettings(-1d, -1d, false, 0));
+		DinnerRouteOptimizationRequest request = routeOptimizationService.publishOptimizationEvent(runningDinner.getAdminId(), new RouteOptimizationSettings(-1d, -1d, false, 0, false));
 
 		// Assert event is published
 		assertThat(this.optimizationDataProviderInMemory.getRequestData()).isNotBlank();
@@ -143,6 +143,7 @@ public class DinnerRouteOptimizationServiceTest {
 		assertThat(request.getOptimizationSettings().currentSumDistanceInMeters()).isEqualTo(-1d);
 		assertThat(request.getOptimizationSettings().ignoreMealAssignments()).isFalse();
 		assertThat(request.getOptimizationSettings().minimumDistanceInMeters()).isEqualTo(0);
+		assertThat(request.getOptimizationSettings().ignoreAccessibilityRequirements()).isFalse();
 
 		assertThat(request.getDinnerRoutes()).hasSize(9);
 		List<List<TeamReference>> teamsOnRouteList = request.getDinnerRoutes().stream().map(TeamReference::teamsOnRoute).toList();
@@ -151,9 +152,9 @@ public class DinnerRouteOptimizationServiceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(booleans = { false, true })
+	@CsvSource({ "false, false", "true, false", "false, true", "true, true" })
 	@Transactional
-	public void previewMatchesAppliedAccessibilityRepair(boolean ignoreMealAssignments) throws Exception {
+	public void previewMatchesAppliedAccessibilityRepair(boolean ignoreMealAssignments, boolean ignoreAccessibilityRequirements) throws Exception {
 
 		String adminId = runningDinner.getAdminId();
 		teamService.createTeamAndVisitationPlans(adminId);
@@ -170,17 +171,55 @@ public class DinnerRouteOptimizationServiceTest {
 		requiringTeam.getHostTeamMember().setRequiresAccessibleHome(true);
 		participantRepository.save(requiringTeam.getHostTeamMember());
 		assertThat(inaccessibleHosts).hasSize(2);
+		Map<Integer, List<Integer>> originalRoutes = routeNumbers(dinnerRouteService.findAllDinnerRoutes(adminId).getDinnerRoutes());
 
 		DinnerRouteOptimizationRequest request = routeOptimizationService.publishOptimizationEvent(adminId,
-				new RouteOptimizationSettings(-1d, -1d, ignoreMealAssignments, 0));
+				new RouteOptimizationSettings(-1d, -1d, ignoreMealAssignments, 0, ignoreAccessibilityRequirements));
 		doReturn(objectMapper.writeValueAsString(request)).when(optimizationDataProviderInMemory).readResponseData(adminId, request.getOptimizationId());
 
 		var preview = routeOptimizationService.previewOptimizedDinnerRoutes(adminId, request.getOptimizationId());
 		var applied = routeOptimizationService.applyOptimizedDinnerRoutes(adminId, request.getOptimizationId());
 
 		assertThat(routeNumbers(applied.getDinnerRoutes())).isEqualTo(routeNumbers(preview.optimizedDinnerRouteList().getDinnerRoutes()));
-		assertThat(requiringTeam.getHostTeams()).allMatch(host -> TeamDistributorAccessibility.hasAccessibleHostLocation(host, runningDinner.getConfiguration()));
+		if (ignoreAccessibilityRequirements) {
+			assertThat(routeNumbers(applied.getDinnerRoutes())).isEqualTo(originalRoutes);
+			assertThat(requiringTeam.getHostTeams()).containsExactlyInAnyOrderElementsOf(inaccessibleHosts);
+		} else {
+			assertThat(requiringTeam.getHostTeams()).allMatch(host -> TeamDistributorAccessibility.hasAccessibleHostLocation(host, runningDinner.getConfiguration()));
+		}
 		routeOptimizationService.validateOptimizedRoutes(applied.getDinnerRoutes(), runningDinner, teams);
+	}
+
+	@Test
+	@Transactional
+	public void predictionIncludesAccessibilityNeedsOfNonHostingTeamMembers() throws Exception {
+
+		String adminId = runningDinner.getAdminId();
+		teamService.createTeamAndVisitationPlans(adminId);
+		List<Team> teams = teamService.findTeamArrangements(adminId, false);
+		for (Team team : teams) {
+			team.getTeamMembers().forEach(member -> member.setRequiresAccessibleHome(false));
+			participantRepository.saveAll(team.getTeamMembers());
+		}
+		OptimizationImpactTO prediction = routeOptimizationService.predictOptimizationImpact(adminId);
+		assertThat(prediction.hasAccessibilityRequirements()).isFalse();
+		assertThat(prediction.impact()).isNotNull();
+
+		Participant partner = teams.getFirst().getTeamMembers().stream().filter(member -> !member.isHost()).findFirst().orElseThrow();
+		partner.setRequiresAccessibleHome(true);
+		participantRepository.save(partner);
+
+		assertThat(routeOptimizationService.predictOptimizationImpact(adminId).hasAccessibilityRequirements()).isTrue();
+	}
+
+	@Test
+	public void olderSettingsKeepAccessibilityRepairEnabled() throws Exception {
+
+		RouteOptimizationSettings settings = objectMapper.readValue(
+				"{\"currentSumDistanceInMeters\":-1,\"currentAverageDistanceInMeters\":-1,\"ignoreMealAssignments\":false,\"minimumDistanceInMeters\":0}",
+				RouteOptimizationSettings.class);
+
+		assertThat(settings.ignoreAccessibilityRequirements()).isFalse();
 	}
 
 	private static Map<Integer, List<Integer>> routeNumbers(List<DinnerRouteTO> routes) {

@@ -9,7 +9,7 @@ import {
   DinnerRouteOptimizationResult,
   DinnerRouteOptimizationStatus,
   DinnerRouteWithDistancesList,
-  OptimizationImpact,
+  OptimizationImpactPrediction,
   TeamNeighbourCluster,
   TeamNeighbourClusterList,
 } from '../../types';
@@ -73,8 +73,8 @@ export async function saveOptimizedDinnerRoutes(adminId: string, optimizationId:
   await axios.put(url);
 }
 
-export async function predictOptimizationImpact(adminId: string): Promise<OptimizationImpact> {
+export async function predictOptimizationImpact(adminId: string): Promise<OptimizationImpactPrediction> {
   const url = BackendConfig.buildUrl(`/dinnerrouteservice/v1/runningdinner/${adminId}/optimization/predict`);
-  const response = await axios.get<OptimizationImpact>(url);
+  const response = await axios.get<OptimizationImpactPrediction>(url);
   return response.data;
 }
