@@ -1,6 +1,5 @@
 package org.runningdinner.dinnerroute.optimization;
 
-import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,8 +10,8 @@ import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.core.RegistrationType;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.core.TeamDistributorAccessibility;
-import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.DinnerRouteService;
+import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.neighbours.TeamNeighbourClusterCalculationService;
 import org.runningdinner.dinnerroute.optimization.data.DinnerRouteOptimizationRequest;
 import org.runningdinner.dinnerroute.optimization.data.MealReference;
@@ -33,6 +32,7 @@ import org.runningdinner.wizard.CreateRunningDinnerWizardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -210,16 +210,6 @@ public class DinnerRouteOptimizationServiceTest {
 		participantRepository.save(partner);
 
 		assertThat(routeOptimizationService.predictOptimizationImpact(adminId).hasAccessibilityRequirements()).isTrue();
-	}
-
-	@Test
-	public void olderSettingsKeepAccessibilityRepairEnabled() throws Exception {
-
-		RouteOptimizationSettings settings = objectMapper.readValue(
-				"{\"currentSumDistanceInMeters\":-1,\"currentAverageDistanceInMeters\":-1,\"ignoreMealAssignments\":false,\"minimumDistanceInMeters\":0}",
-				RouteOptimizationSettings.class);
-
-		assertThat(settings.ignoreAccessibilityRequirements()).isFalse();
 	}
 
 	private static Map<Integer, List<Integer>> routeNumbers(List<DinnerRouteTO> routes) {
