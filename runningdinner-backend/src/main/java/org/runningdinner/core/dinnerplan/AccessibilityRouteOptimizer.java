@@ -171,7 +171,7 @@ public final class AccessibilityRouteOptimizer {
     List<DinnerRouteDraft.Slot> slots = routeDraft.slots();
     while (true) {
       Score current = score();
-      Score best = current;
+      Score best = null;
       DinnerRouteDraft.Slot bestFirst = null;
       DinnerRouteDraft.Slot bestSecond = null;
       for (int first = 0; first < slots.size(); first++) {
@@ -185,7 +185,9 @@ public final class AccessibilityRouteOptimizer {
           firstSlot.swapTeamWith(secondSlot);
           Score candidate = new Score(current.violations() - before + countViolationsAround(first, second), distanceScore.totalDistance());
           firstSlot.swapTeamWith(secondSlot);
-          if (candidate.isBetterThan(best)) {
+          // Among all violation-improving swaps, the shortest routes win. Preferring the largest violation reduction instead
+          // could pick a far-away swap that fixes several violations at once, from which the distance can never be recovered.
+          if (candidate.isBetterThan(current) && (best == null || candidate.hasShorterRoutesThan(best))) {
             best = candidate;
             bestFirst = firstSlot;
             bestSecond = secondSlot;
@@ -208,6 +210,10 @@ public final class AccessibilityRouteOptimizer {
 
     boolean isBetterThan(Score other) {
       return violations < other.violations || (violations == other.violations && distance < other.distance - 0.01);
+    }
+
+    boolean hasShorterRoutesThan(Score other) {
+      return distance < other.distance - 0.01 || (Math.abs(distance - other.distance) <= 0.01 && violations < other.violations);
     }
   }
 
