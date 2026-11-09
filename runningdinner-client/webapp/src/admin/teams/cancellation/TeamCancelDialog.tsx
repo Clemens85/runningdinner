@@ -21,7 +21,6 @@ import {
   RunningDinner,
   Team,
   TeamCancellationResult,
-  TeamLabelFormat,
   useBackendIssueHandler,
   useFindParticipants,
   useNumberOfAssignableParticipantsToReplaceTeam,
