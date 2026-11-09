@@ -4,7 +4,6 @@ import {
   BaseAdminIdProps,
   findEntityById,
   getFullnameList,
-  getTruncatedText,
   HttpError,
   isSameEntity,
   removeEntityFromList,
