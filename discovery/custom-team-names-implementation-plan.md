@@ -77,7 +77,7 @@ Non-goals (explicitly ignored for now): behaviour when swapping *individual team
 - [ ] Optionally add the name to existing admin-facing activity messages (`Team 3 (Die Gourmets)`).
 
 ### 5.4 Backend – mails & links (D1, D4)
-- [ ] `FormatterUtil`: constants `TEAMNAME = "\\{teamname\\}"`, `MANAGE_TEAMNAME_LINK = "\\{managenamelink\\}"`; helper returns HTML-escaped name or `""`; always replace with `Matcher.quoteReplacement`.
+- [x] (replaced by meal suffix, see 5a) `FormatterUtil`: constants `TEAMNAME = "\\{teamname\\}"`, `MANAGE_TEAMNAME_LINK = "\\{managenamelink\\}"`; helper returns HTML-escaped name or `""`; always replace with `Matcher.quoteReplacement`.
 - [ ] `DinnerRouteMessageFormatter`: `{teamname}` in main message and `selfTemplate` (own team), `hostsTemplate` (visited team; not in the cancelled branch).
 - [ ] `TeamArrangementMessageFormatter` (TEAM mail): `{teamname}` and `{managenamelink}` (anchor HTML like `managehostlink`).
 - [ ] `UrlGenerator.constructManageTeamNameUrl(selfAdminId, teamId, participantId)` + property `dinner.team.managename.url=${dinner.self.url}/teamname/{participantId}/{teamId}` in `application.properties` (+ test/other profile properties if the host URL is repeated there).
@@ -136,8 +136,9 @@ E2E (Cypress): admin sets name → visible in team details; participant opens li
 - Backend: property `dinner.team.managename.url` + `UrlGenerator.constructManageTeamNameUrl`, placeholder `{managenamelink}` in `TeamArrangementMessageFormatter` (TEAM mail), `SelfAdminService.updateTeamName`/`findTeamNameInfo` (membership check via `buildSelfAdminContext`; blocked with `IssueKeys.TEAM_NAME_CHANGE_NOT_ALLOWED_ROUTES_SENT` once `ActivityService.isDinnerRouteMailsSent`; admins unrestricted), `GET`/`PUT /rest/self/v1/{selfAdminId}/{participantId}/{teamId}/teamname`, `TeamSelfServiceInfo.teamName/manageTeamNameUrl/teamNameChangeAllowed`. Full backend suite green (360 tests).
 - Frontend: route `:selfAdminId/teamname/:participantId/:teamId` → `SelfAdminChangeTeamNamePage` (reuses `TeamNameForm`), portal `MyTeamSection` shows the team name and a "set/change team name" button (hidden when final), `{managenamelink}` placeholder button + help text + default TEAM mail sentence.
 
+**Decided against a `{teamname}` placeholder** (removing the whole line if there is no name breaks templates that put it next to other information). Instead: in dinner route mails the custom team name is appended **hard-coded in parentheses to the meal of each visited team** (`FormatterUtil.generateMealLabelWithTeamName`, e.g. `Hauptgang (Die Gourmets)`, HTML-escaped); teams without a name are unchanged. The own team's meal block (`selfTemplate`) is not changed.
+
 **Open (next):**
-- Step 5 rest: `{teamname}` placeholder in dinner route mails (`selfTemplate`, `hostsTemplate`, main message) and TEAM mail.
 - Step 6: e2e, news entry, re-creation hint, docs.
 
 ## 6. Suggested implementation order (small, shippable steps)

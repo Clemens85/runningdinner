@@ -107,7 +107,8 @@ public class DinnerRouteMessageFormatter {
         if (dinnerRouteTeam.getStatus() != TeamStatus.CANCELLED) {
           host = host.replaceAll(FormatterUtil.FIRSTNAME, hostTeamMember.getName().getFirstnamePart());
           host = host.replaceAll(FormatterUtil.LASTNAME, hostTeamMember.getName().getLastname());
-          host = host.replaceAll(FormatterUtil.MEAL, mealLabel);
+          // The custom team name (if any) is appended to the meal of the visited team
+          host = host.replaceAll(FormatterUtil.MEAL, Matcher.quoteReplacement(FormatterUtil.generateMealLabelWithTeamName(dinnerRouteTeam)));
           host = host.replaceAll(FormatterUtil.MEALTIME,
               FormatterUtil.getFormattedTime(mealTime, timeFormat, noTimeText));
           accessibilityInfo = TeamDistributorAccessibility.requiresAccessibleHostLocation(parentTeam)

@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.participant.Participant;
 import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamNameUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,6 +128,18 @@ public class FormatterUtil {
     return result;
   }
   
+  /**
+   * @return The meal label of the passed team, followed by the HTML escaped custom team name in parentheses if the team has one (e.g. "Hauptgang (Die Gourmets)")
+   */
+  public static String generateMealLabelWithTeamName(Team team) {
+
+    String mealLabel = team.getMealClass().getLabel();
+    if (!team.hasTeamName()) {
+      return mealLabel;
+    }
+    return mealLabel + " (" + TeamNameUtil.getTeamNameHtmlEscaped(team) + ")";
+  }
+
   public static String generateAddressString(Participant participant) {
     
     String result = participant.getAddress().getStreetWithNr() + FormatterUtil.NEWLINE + participant.getAddress().getZipWithCity();
