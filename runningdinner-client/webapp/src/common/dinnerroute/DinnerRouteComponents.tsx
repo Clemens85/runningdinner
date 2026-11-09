@@ -47,7 +47,7 @@ export const TeamCardDetailRowMarginBottom = styled('div')({
 /**
  * Dinner routes are displayed with limited space (cards, map info windows), so long custom team names are shortened there
  */
-export const DINNER_ROUTE_TEAM_NAME_MAX_LENGTH = 14;
+export const DINNER_ROUTE_TEAM_NAME_MAX_LENGTH = 32;
 
 type TeamLabelWithMealProps = {
   team: DinnerRouteTeam;
@@ -353,7 +353,9 @@ export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, 
   const zIndexUnselected = zIndex + 1;
   const teamNumberLabel = team.teamNumber < 100 ? `#${team.teamNumber}` : `${team.teamNumber}`;
   // The tooltip has enough room for the complete name
-  const markerTitle = [getTeamLabel(team, { format: TeamLabelFormat.NAME_OR_NUMBER }), `${team.meal.label} (${getFullname(team.hostTeamMember)})`].filter(isStringNotEmpty).join(' - ');
+  const markerTitle = [getTeamLabel(team, { format: TeamLabelFormat.NAME_OR_NUMBER }), `${team.meal.label} (${getFullname(team.hostTeamMember)})`]
+    .filter(isStringNotEmpty)
+    .join(' - ');
 
   return (
     <>
