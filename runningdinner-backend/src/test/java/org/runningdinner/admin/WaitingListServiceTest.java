@@ -167,6 +167,26 @@ public class WaitingListServiceTest {
     assertActivityTypeContained(ActivityType.WAITINGLIST_TEAMS_GENERATED);
   }
 
+  @Test
+  public void generateNewTeamsKeepsTeamNamesOfExistingTeams() {
+
+    setupRunningDinnerWithParticipants(18);
+    addParticipants(6, 18);
+
+    List<Team> teamsBeforeGeneration = teamService.findTeamArrangements(adminId, true);
+    teamService.updateTeamName(adminId, teamsBeforeGeneration.get(0).getId(), "Die Gourmets");
+    teamService.updateTeamName(adminId, teamsBeforeGeneration.get(4).getId(), "Käse & Wein");
+
+    List<ParticipantTO> participantsForNewTeams = waitingListService.findWaitingListData(adminId).getParticiptantsForTeamArrangement();
+    waitingListService.generateNewTeams(adminId, participantsForNewTeams);
+
+    List<Team> allTeams = teamService.findTeamArrangements(adminId, true);
+    assertThat(allTeams).hasSize(12);
+    assertThat(allTeams.get(0).getTeamName()).isEqualTo("Die Gourmets");
+    assertThat(allTeams.get(4).getTeamName()).isEqualTo("Käse & Wein");
+    assertThat(allTeams.stream().filter(Team::hasTeamName)).hasSize(2);
+  }
+
   private static void checkTeamsAtIndexAreSame(List<Team> teamsAfterGeneration, 
                                                List<Team> teamsBeforeGeneration,
                                                int index) {

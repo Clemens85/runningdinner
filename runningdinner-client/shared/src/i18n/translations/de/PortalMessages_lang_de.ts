@@ -67,6 +67,10 @@ const PortalMessages_de: any = {
   participant_event_team_partner_fixed_badge: 'Fester Team-Partner',
   participant_event_team_partner_cancelled: 'Dein Team-Partner hat seine Teilnahme abgesagt.',
   participant_event_manage_team_hosting: 'Gastgeber verwalten',
+  participant_event_team_name: 'Teamname',
+  participant_event_team_name_not_set: 'Noch kein Teamname vergeben',
+  participant_event_set_team_name: 'Teamnamen festlegen',
+  participant_event_change_team_name: 'Teamnamen ändern',
 
   // ParticipantSelfServicePage — Wahrscheinliche Essenswünsche der Gäste
   participant_event_team_likely_guest_specifics_title: 'Voraussichtliche Essenswünsche eurer Gäste',

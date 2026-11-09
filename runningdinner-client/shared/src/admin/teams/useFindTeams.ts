@@ -29,8 +29,17 @@ export function useUpdateFindTeamsQueryData(adminId: string) {
     return allTeams;
   }
 
+  /**
+   * Meeting plans and dinner routes contain (copies of) other teams, so they must be reloaded when a team's data (e.g. its name) changed
+   */
+  function invalidateTeamDependentQueries() {
+    queryClient.invalidateQueries({ queryKey: ['findTeamMeetingPlan', adminId] });
+    queryClient.invalidateQueries({ queryKey: ['findDinnerRouteByAdminIdAndTeamId', adminId] });
+  }
+
   return {
     updateTeams,
     exchangeTeams,
+    invalidateTeamDependentQueries,
   };
 }

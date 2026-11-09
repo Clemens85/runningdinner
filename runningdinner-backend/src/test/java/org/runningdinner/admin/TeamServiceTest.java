@@ -472,6 +472,67 @@ public class TeamServiceTest {
     assertThat(updatedTeam.getTeamMembers()).isEqualTo(originalVorspeiseTeamMembers);
   }
 
+  @Test
+  public void swapMealsSwapsTeamNames() {
+
+    Team teamWithVorspeise = findTeamWithMeal("Vorspeise", null);
+    Team teamWithHauptspeise = findTeamWithMeal("Hauptspeise", teamWithVorspeise);
+    teamService.updateTeamName(runningDinner.getAdminId(), teamWithVorspeise.getId(), "Vorspeisen-Profis");
+
+    teamService.swapMeals(runningDinner.getAdminId(), teamWithVorspeise.getId(), teamWithHauptspeise.getId());
+
+    Team vorspeiseTeamAfterSwap = teamService.findTeamById(runningDinner.getAdminId(), teamWithVorspeise.getId());
+    Team hauptspeiseTeamAfterSwap = teamService.findTeamById(runningDinner.getAdminId(), teamWithHauptspeise.getId());
+    assertThat(vorspeiseTeamAfterSwap.getTeamName()).isNull();
+    assertThat(hauptspeiseTeamAfterSwap.getTeamName()).isEqualTo("Vorspeisen-Profis");
+  }
+
+  @Test
+  public void updateTeamName() {
+
+    Team team = findFirstTeam();
+    assertThat(team.getTeamName()).isNull();
+
+    Team updatedTeam = teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "  Die   Gourmets ");
+    assertThat(updatedTeam.getTeamName()).isEqualTo("Die Gourmets");
+    assertThat(teamService.findTeamById(runningDinner.getAdminId(), team.getId()).getTeamName()).isEqualTo("Die Gourmets");
+
+    teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "  ");
+    assertThat(teamService.findTeamById(runningDinner.getAdminId(), team.getId()).getTeamName()).isNull();
+  }
+
+  @Test
+  public void updateTeamNameCreatesActivity() {
+
+    Team team = findFirstTeam();
+    teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "Tom & Jerry");
+    teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "Tom & Jerry"); // unchanged => no further activity
+
+    List<Activity> activities = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.CUSTOM_ADMIN_CHANGE)
+      .stream()
+      .filter(a -> a.getActivityMessage().contains("Teamnamen"))
+      .toList();
+    assertThat(activities).hasSize(1);
+    assertThat(activities.get(0).getActivityMessage()).contains("Team " + team.getTeamNumber());
+
+    teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), null); // removing a name is also just a change
+    activities = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.CUSTOM_ADMIN_CHANGE)
+      .stream()
+      .filter(a -> a.getActivityMessage().contains("Teamnamen"))
+      .toList();
+    assertThat(activities).hasSize(2);
+  }
+
+  @Test
+  public void updateTeamNameInvalid() {
+
+    Team team = findFirstTeam();
+    teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "Valid");
+
+    assertThrows(ValidationException.class, () -> teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "<b>Invalid</b>"));
+    assertThat(teamService.findTeamById(runningDinner.getAdminId(), team.getId()).getTeamName()).isEqualTo("Valid");
+  }
+
   private Team findTeamWithMeal(String mealLabel, Team teamToExclude) {
     List<Team> teams = teamService.findTeamArrangements(runningDinner.getAdminId(), true);
     return teams

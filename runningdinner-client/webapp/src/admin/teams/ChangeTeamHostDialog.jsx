@@ -3,7 +3,7 @@ import { Dialog, DialogContent, FormControl, MenuItem, Box, Select } from '@mui/
 import { DialogTitleCloseable } from '../../common/theme/DialogTitleCloseable';
 import React, { useState } from 'react';
 import Paragraph from '../../common/theme/typography/Paragraph';
-import { findEntityById, getFullname, isTeamPartnerWishRegistration, updateTeamHostAsync } from '@runningdinner/shared';
+import { findEntityById, getFullname, isTeamPartnerWishRegistration, TeamLabel, updateTeamHostAsync } from '@runningdinner/shared';
 import DialogActionsPanel from '../../common/theme/DialogActionsPanel';
 import { Subtitle } from '../../common/theme/typography/Tags';
 import { useCustomSnackbar } from '../../common/theme/CustomSnackbarHook';
@@ -14,7 +14,7 @@ export const ChangeTeamHostDialog = ({ adminId, team, isOpen, onClose, onTeamHos
   const [selectedHostTeamMember, setSelectedHostTeamMember] = useState(team.hostTeamMember);
   const { showSuccess } = useCustomSnackbar();
 
-  const { teamNumber, teamMembers } = team;
+  const { teamMembers } = team;
 
   const saveTeamHostAsync = async () => {
     const updatedTeam = await updateTeamHostAsync(adminId, team, selectedHostTeamMember);
@@ -41,7 +41,9 @@ export const ChangeTeamHostDialog = ({ adminId, team, isOpen, onClose, onTeamHos
       <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title" maxWidth={'sm'} fullWidth={true}>
         <DialogTitleCloseable onClose={onClose}>{t('teams_host_change')}</DialogTitleCloseable>
         <DialogContent>
-          <Subtitle i18n="admin:team" parameters={{ teamNumber }} />
+          <Subtitle>
+            <TeamLabel team={team} />
+          </Subtitle>
           <Box sx={{
             mt: 2
           }}>
@@ -59,7 +61,9 @@ export const ChangeTeamHostDialog = ({ adminId, team, isOpen, onClose, onTeamHos
     <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title" maxWidth={'sm'} fullWidth={true}>
       <DialogTitleCloseable onClose={onClose}>{t('teams_host_change')}</DialogTitleCloseable>
       <DialogContent>
-        <Subtitle i18n="admin:team" parameters={{ teamNumber }} />
+        <Subtitle>
+          <TeamLabel team={team} />
+        </Subtitle>
         <FormControl variant="standard" fullWidth>
           <Select variant="outlined" name="teamHost" onChange={handleTeamHostChange} value={selectedHostTeamMember.id}>
             {hostsToSelect}

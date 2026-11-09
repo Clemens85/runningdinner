@@ -1,5 +1,17 @@
 import { Participant, TeamPartnerOption } from './Participant';
 import { hasAllTeamMembersSameTeamPartnerWish, Team, TeamStatus } from './Team';
+import { getCustomTeamName, hasCustomTeamName } from './TeamName';
+
+it('getCustomTeamName / hasCustomTeamName', () => {
+  expect(getCustomTeamName(undefined)).toBe('');
+  expect(getCustomTeamName(null)).toBe('');
+  expect(getCustomTeamName({})).toBe('');
+  expect(getCustomTeamName({ teamName: '   ' })).toBe('');
+  expect(getCustomTeamName({ teamName: ' Die Gourmets ' })).toBe('Die Gourmets');
+
+  expect(hasCustomTeamName({ teamName: '' })).toBe(false);
+  expect(hasCustomTeamName({ teamName: 'A' })).toBe(true);
+});
 
 it('hasAllTeamMembersSameTeamPartnerWish for team partner wish emails', () => {
   const p1 = newParticipant('max@muster.de', 'maria@muster.de');

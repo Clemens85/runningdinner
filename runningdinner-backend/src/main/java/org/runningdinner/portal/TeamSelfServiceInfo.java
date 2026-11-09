@@ -32,6 +32,15 @@ public class TeamSelfServiceInfo {
   /** Full URL to the self-service page where the participant can manage team hosting. */
   private String manageTeamHostingUrl;
 
+  /** Custom name of the team, null if there is none. */
+  private String teamName;
+
+  /** Full URL to the self-service page where the participant can change the team name. */
+  private String manageTeamNameUrl;
+
+  /** False as soon as the dinner route mails were sent (team name is then final). */
+  private boolean teamNameChangeAllowed;
+
   /** True when the viewing participant is themselves the proposed host of this team. */
   private boolean selfIsHost;
 
@@ -115,6 +124,30 @@ public class TeamSelfServiceInfo {
 
   public void setHostName(String hostName) {
     this.hostName = hostName;
+  }
+
+  public String getTeamName() {
+    return teamName;
+  }
+
+  public void setTeamName(String teamName) {
+    this.teamName = teamName;
+  }
+
+  public String getManageTeamNameUrl() {
+    return manageTeamNameUrl;
+  }
+
+  public void setManageTeamNameUrl(String manageTeamNameUrl) {
+    this.manageTeamNameUrl = manageTeamNameUrl;
+  }
+
+  public boolean isTeamNameChangeAllowed() {
+    return teamNameChangeAllowed;
+  }
+
+  public void setTeamNameChangeAllowed(boolean teamNameChangeAllowed) {
+    this.teamNameChangeAllowed = teamNameChangeAllowed;
   }
 
   public String getManageTeamHostingUrl() {

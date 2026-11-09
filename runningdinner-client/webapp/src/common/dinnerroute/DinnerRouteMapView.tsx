@@ -29,6 +29,7 @@ export function DinnerRouteMapView({ dinnerRoute, meals }: DinnerRouteMapViewPro
   return <MapView dinnerRouteMapData={dinnerRouteMapData} dinnerRoute={dinnerRoute} />;
 }
 
+
 type MapViewProps = {
   dinnerRouteMapData: DinnerRouteMapData;
   dinnerRoute: DinnerRoute;

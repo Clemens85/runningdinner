@@ -14,6 +14,7 @@ function renderTeam(accessibility = {}) {
     hostName: 'Sam Example', manageTeamHostingUrl: '/hosting', selfIsHost: false, fixedTeamPartner: false,
     teamPartnerMealSpecifics: null, likelyGuestMealSpecifics: null, teamPartnerCancelled: false,
     selfRequiresAccessibleHome: false, teamPartnerCanHostAccessibly: false, teamPartnerRequiresAccessibleHome: false,
+    teamName: null, manageTeamNameUrl: '/teamname', teamNameChangeAllowed: true,
     ...accessibility,
   };
   render(<MyTeamSection participantInfo={{ teamSelfServiceInfo: info }} isLoading={false} />);
@@ -58,5 +59,27 @@ describe('Portal team accessibility', () => {
     renderTeam({ teamPartnerCancelled: true, selfRequiresAccessibleHome: true, teamPartnerRequiresAccessibleHome: true });
     expect(screen.queryByText('participant_event_team_partner_access_unconfirmed')).not.toBeInTheDocument();
     expect(screen.queryByText('participant_event_team_partner_access_required')).not.toBeInTheDocument();
+  });
+});
+describe('Portal team name', () => {
+  it('offers to set a team name when there is none', () => {
+    renderTeam();
+    expect(screen.getByText('participant_event_team_name_not_set')).toBeInTheDocument();
+    const link = screen.getByTestId('portal-manage-team-name');
+    expect(link).toHaveTextContent('participant_event_set_team_name');
+    expect(link).toHaveAttribute('href', '/teamname');
+  });
+
+  it('shows the team name and offers to change it', () => {
+    renderTeam({ teamName: 'Die Gourmets' });
+    expect(screen.getByText('Die Gourmets')).toBeInTheDocument();
+    expect(screen.queryByText('participant_event_team_name_not_set')).not.toBeInTheDocument();
+    expect(screen.getByTestId('portal-manage-team-name')).toHaveTextContent('participant_event_change_team_name');
+  });
+
+  it('hides the change link when the team name is final', () => {
+    renderTeam({ teamName: 'Die Gourmets', teamNameChangeAllowed: false });
+    expect(screen.getByText('Die Gourmets')).toBeInTheDocument();
+    expect(screen.queryByTestId('portal-manage-team-name')).not.toBeInTheDocument();
   });
 });

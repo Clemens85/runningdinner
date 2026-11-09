@@ -21,10 +21,11 @@ import {
   RunningDinner,
   Team,
   TeamCancellationResult,
+  TeamLabelFormat,
   useBackendIssueHandler,
   useFindParticipants,
   useNumberOfAssignableParticipantsToReplaceTeam,
-  useTeamName,
+  useTeamLabel,
 } from '@runningdinner/shared';
 import { cloneDeep } from 'lodash-es';
 import { take } from 'lodash-es';
@@ -57,6 +58,8 @@ interface SelectableParticipant extends Participant {
   selected?: boolean;
 }
 
+const MAX_TEAM_LABEL_LENGTH = 16;
+
 export const TeamCancelDialog = ({ runningDinner, teamToCancel, isOpen, onClose }: TeamCancelDialogProps) => {
   const { t } = useTranslation(['admin', 'common']);
 
@@ -72,7 +75,7 @@ export const TeamCancelDialog = ({ runningDinner, teamToCancel, isOpen, onClose 
   });
   const { showHttpErrorDefaultNotification } = useNotificationHttpError(getIssuesTranslated);
 
-  const { getTeamName } = useTeamName();
+  const { getTeamLabel } = useTeamLabel();
 
   if (!isOpen) {
     return null;
@@ -82,7 +85,9 @@ export const TeamCancelDialog = ({ runningDinner, teamToCancel, isOpen, onClose 
     try {
       const teamCancellationResult = await cancelTeamAsync(adminId, teamToCancel, teamCancelPreviewData.replacementParticipants);
       const cancelledOrReplacedTeam = teamCancellationResult.team;
-      const cancelledOrReplacedTeamName = getTeamName(cancelledOrReplacedTeam);
+      const cancelledOrReplacedTeamName = getTeamLabel(cancelledOrReplacedTeam, {
+        maxNameLength: MAX_TEAM_LABEL_LENGTH,
+      });
       if (cancelledOrReplacedTeam.status === CONSTANTS.TEAM_STATUS.REPLACED) {
         showSuccess(t('admin:team_cancel_replace_team_members_success', { cancelledOrReplacedTeam: cancelledOrReplacedTeamName }));
       } else {
@@ -153,7 +158,8 @@ interface TeamCancelOverviewProps {
 
 function TeamCancelOverview({ runningDinner, team, onCancelDialog, onShowPreview, onReplacementParticipantSelectionChange }: TeamCancelOverviewProps) {
   const { t } = useTranslation(['admin', 'common']);
-  const { teamName } = useTeamName(team);
+  const { getTeamLabel } = useTeamLabel();
+  const teamLabel = getTeamLabel(team, { maxNameLength: MAX_TEAM_LABEL_LENGTH });
   const okLabel = t('common:next') + ' ...';
   const { adminId } = runningDinner;
 
@@ -165,14 +171,16 @@ function TeamCancelOverview({ runningDinner, team, onCancelDialog, onShowPreview
 
   return (
     <Dialog open={true} onClose={onCancelDialog} aria-labelledby="form-dialog-title" maxWidth={'sm'} fullWidth={true} data-testid={'team-cancel-dialog-overview'}>
-      <DialogTitleCloseable onClose={onCancelDialog}>{t('team_member_cancel', { teamMemberToCancel: teamName })}</DialogTitleCloseable>
+      <DialogTitleCloseable onClose={onCancelDialog}>{t('team_member_cancel', { teamMemberToCancel: teamLabel })}</DialogTitleCloseable>
       <DialogContent>
         <Box>
           <Span i18n="admin:team_cancel_info_text" />
         </Box>
-        <Box sx={{
-          mt: 3
-        }}>
+        <Box
+          sx={{
+            mt: 3,
+          }}
+        >
           <TeamCancelOverviewContent
             team={team}
             runningDinner={runningDinner}
@@ -195,6 +203,7 @@ interface TeamCancelOverviewContentProps {
 
 function TeamCancelOverviewContent({ team, runningDinner, notAssignedParticipants = [], onReplacementParticipantSelectionChange }: TeamCancelOverviewContentProps) {
   const { t } = useTranslation(['admin', 'common']);
+  const { getTeamLabel } = useTeamLabel();
   const { numberOfMissingParticipantsToReplaceTeam, hasEnoughNotAssignedParticipantsToReplaceTeam } = useNumberOfAssignableParticipantsToReplaceTeam(
     runningDinner,
     team,
@@ -218,7 +227,7 @@ function TeamCancelOverviewContent({ team, runningDinner, notAssignedParticipant
   };
 
   const renderEnoughParticipantsInfo = () => {
-    const teamName = t('admin:team', { teamNumber: team.teamNumber });
+    const teamLabel = getTeamLabel(team, { maxNameLength: MAX_TEAM_LABEL_LENGTH });
     const { teamSize } = runningDinner.options;
 
     let numNeededParticipants = teamSize;
@@ -229,7 +238,7 @@ function TeamCancelOverviewContent({ team, runningDinner, notAssignedParticipant
     return (
       <Alert severity="success" variant="outlined">
         <AlertTitle>{t('admin:team_cancel_info_headline_sufficient_participants')}</AlertTitle>
-        <Span i18n="admin:team_cancel_info_text_sufficient_participants" parameters={{ teamSize: numNeededParticipants, teamName: teamName }} html={true} />
+        <Span i18n="admin:team_cancel_info_text_sufficient_participants" parameters={{ teamSize: numNeededParticipants, teamName: teamLabel }} html={true} />
       </Alert>
     );
   };
@@ -249,9 +258,13 @@ function TeamCancelOverviewContent({ team, runningDinner, notAssignedParticipant
     <>
       {hasEnoughNotAssignedParticipantsToReplaceTeam && renderEnoughParticipantsInfo()}
       {!hasEnoughNotAssignedParticipantsToReplaceTeam && renderTooFewParticipantsAlert()}
-      <Box sx={{
-        mt: 1
-      }}>{selectableParticipantsToReplace}</Box>
+      <Box
+        sx={{
+          mt: 1,
+        }}
+      >
+        {selectableParticipantsToReplace}
+      </Box>
     </>
   );
 }
@@ -268,11 +281,12 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
   const { teamCancellationPreviewResult, replacementParticipants } = teamCancelPreviewData;
   const { team, removedParticipants, dinnerRouteMessagesSent, affectedHostTeams, affectedGuestTeams } = teamCancellationPreviewResult!;
   const { teamNumber } = team;
-  const { teamName, getTeamName } = useTeamName(team);
+  const { getTeamLabel } = useTeamLabel();
+  const teamLabel = getTeamLabel(team, { maxNameLength: MAX_TEAM_LABEL_LENGTH });
 
   const isReplacement = team.status === CONSTANTS.TEAM_STATUS.REPLACED;
 
-  const headline = isReplacement ? t('team_cancel_replace_headline', { teamNumber: teamNumber }) : t('team_cancel_complete_headline', { teamNumber: teamNumber });
+  const headline = isReplacement ? t('team_cancel_replace_headline', { teamNumber: teamLabel }) : t('team_cancel_complete_headline', { teamNumber: teamLabel });
 
   const renderParticipantList = (participants: Participant[]) => {
     const participantNodes = participants.map((participant) => {
@@ -293,22 +307,20 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
 
   const renderReplacementInfo = () => {
     return (
-      <Box sx={{
-        mb: 1
-      }}>
+      <Box
+        sx={{
+          mb: 1,
+        }}
+      >
         <Grid container>
           <Grid size={6}>
-            <SmallTitle i18n="admin:team_cancel_remove_text" parameters={{ teamName: teamName }} />
+            <SmallTitle i18n="admin:team_cancel_remove_text" parameters={{ teamName: teamLabel }} />
           </Grid>
           <Grid size={6}>
             <SmallTitle i18n="admin:team_cancel_replaced_by_text" />
           </Grid>
-          <Grid size={6}>
-            {renderParticipantList(removedParticipants)}
-          </Grid>
-          <Grid size={6}>
-            {renderParticipantList(replacementParticipants)}
-          </Grid>
+          <Grid size={6}>{renderParticipantList(removedParticipants)}</Grid>
+          <Grid size={6}>{renderParticipantList(replacementParticipants)}</Grid>
         </Grid>
       </Box>
     );
@@ -316,11 +328,11 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
 
   const renderAffectedTeamsList = (teams: Team[]) => {
     const teamNodes = teams.map((team) => {
-      const teamName = getTeamName(team);
+      const affectedTeamLabel = getTeamLabel(team, { maxNameLength: MAX_TEAM_LABEL_LENGTH });
       const teamMembers = getFullnameList(team.teamMembers);
       return (
         <ListItem key={team.id}>
-          <ListItemText primary={teamName} secondary={teamMembers} />
+          <ListItemText primary={affectedTeamLabel} secondary={teamMembers} />
         </ListItem>
       );
     });
@@ -343,16 +355,14 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
         <Grid size={6}>
           <SmallTitle i18n="admin:affected_guest_teams" />
         </Grid>
-        <Grid size={6}>
-          {renderAffectedTeamsList(affectedHostTeams)}
-        </Grid>
-        <Grid size={6}>
-          {renderAffectedTeamsList(affectedGuestTeams)}
-        </Grid>
+        <Grid size={6}>{renderAffectedTeamsList(affectedHostTeams)}</Grid>
+        <Grid size={6}>{renderAffectedTeamsList(affectedGuestTeams)}</Grid>
         {showNotificationHint && (
-          <Box sx={{
-            mt: 2
-          }}>
+          <Box
+            sx={{
+              mt: 2,
+            }}
+          >
             <SmallTitle i18n="admin:attention" />
             {dinnerRouteMessagesSent && (
               <em>
@@ -361,7 +371,7 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
             )}
             {cancelledButNoDinnerRouteMessagesSent && (
               <em>
-                <Span i18n="admin:team_cancel_hint_notify_teams" parameters={{ teamName: teamName }} />
+                <Span i18n="admin:team_cancel_hint_notify_teams" parameters={{ teamName: teamLabel }} />
               </em>
             )}
           </Box>
@@ -386,9 +396,13 @@ function TeamCancelPreview({ teamCancelPreviewData, onPerformCancellation, onCan
           {!isReplacement && <Paragraph i18n="admin:team_cancel_complete_message" parameters={{ teamNumber: teamNumber, meal: team.meal.label }} html={true} />}
           {isReplacement && renderReplacementInfo()}
         </Box>
-        <Box sx={{
-          mt: 2
-        }}>{renderAffectedTeamsInfo()}</Box>
+        <Box
+          sx={{
+            mt: 2,
+          }}
+        >
+          {renderAffectedTeamsInfo()}
+        </Box>
       </DialogContent>
       <DialogActionsPanel onOk={handleOk} onCancel={onCancelDialog} okLabel={okLabel} cancelLabel={t('common:cancel')} danger={true} />
     </Dialog>

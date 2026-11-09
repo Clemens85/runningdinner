@@ -117,6 +117,10 @@ public class TeamArrangementMessageFormatter {
     final String manageHostLinkHtml = "<a href='" + manageHostLink + "' target='_blank' rel='noopener noreferrer'>" + manageHostLink + "</a>";
     theMessage = theMessage.replaceAll(FormatterUtil.MANGE_HOST_LINK, Matcher.quoteReplacement(manageHostLinkHtml));
 
+    final String manageTeamNameLink = urlGenerator.constructManageTeamNameUrl(runningDinner.getSelfAdministrationId(), parentTeam.getId(), teamMember.getId());
+    final String manageTeamNameLinkHtml = "<a href='" + manageTeamNameLink + "' target='_blank' rel='noopener noreferrer'>" + manageTeamNameLink + "</a>";
+    theMessage = theMessage.replaceAll(FormatterUtil.MANAGE_TEAMNAME_LINK, Matcher.quoteReplacement(manageTeamNameLinkHtml));
+
     return theMessage;
   }
 

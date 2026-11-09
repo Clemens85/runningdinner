@@ -152,6 +152,47 @@ public class TeamService {
     return team;
   }
   
+  /**
+   * Sets or clears (null/blank) the custom name of a team. Contains no permission checks beyond the admin-ID, callers (e.g. self service) must apply their own rules.
+   *
+   * @param executingParticipant The participant who changes the name (self service) or null if the name is changed by an admin
+   * @return The updated team
+   * @throws ValidationException If the passed name contains invalid characters or is too long
+   */
+  @Transactional
+  public Team updateTeamName(@ValidateAdminId String adminId, UUID teamId, String rawTeamName, Participant executingParticipant) {
+
+    String newTeamName = TeamNameUtil.normalizeAndValidate(rawTeamName);
+    Team team = findTeamByIdWithTeamMembers(adminId, teamId);
+    String previousTeamName = team.getTeamName();
+    if (Objects.equals(previousTeamName, newTeamName)) {
+      return team;
+    }
+
+    team.setTeamName(newTeamName);
+    Team result = teamRepository.save(team);
+
+    RunningDinner runningDinner = runningDinnerService.findRunningDinnerByAdminId(adminId);
+    emitTeamNameChangedEvent(result, runningDinner, executingParticipant);
+    return result;
+  }
+
+  @Transactional
+  public Team updateTeamName(@ValidateAdminId String adminId, UUID teamId, String rawTeamName) {
+
+    return updateTeamName(adminId, teamId, rawTeamName, null);
+  }
+
+  protected void emitTeamNameChangedEvent(Team team, RunningDinner runningDinner, Participant executingParticipant) {
+
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+      @Override
+      public void afterCommit() {
+        eventPublisher.notifyTeamNameChangedEvent(team, runningDinner, executingParticipant);
+      }
+    });
+  }
+
   public Team findTeamByIdWithTeamMembers(@ValidateAdminId String adminId, UUID teamId) {
 
     Team team = teamRepository.findWithTeamMembersAndMealClassDistinctByIdAndAdminId(teamId, adminId);
@@ -443,12 +484,18 @@ public class TeamService {
 
     Set<Participant> teamMembersFirst = firstTeam.getTeamMembers();
     Set<Participant> teamMembersSecond = secondTeam.getTeamMembers();
+    String teamNameFirst = firstTeam.getTeamName();
+    String teamNameSecond = secondTeam.getTeamName();
 
     firstTeam.removeAllTeamMembers();
     secondTeam.removeAllTeamMembers();
 
     firstTeam.setTeamMembers(teamMembersSecond);
     secondTeam.setTeamMembers(teamMembersFirst);
+
+    // A custom team name belongs to the people and not to the meal => swap it together with the members
+    firstTeam.setTeamName(teamNameSecond);
+    secondTeam.setTeamName(teamNameFirst);
 
     ArrayList<Team> result = new ArrayList<>(teamRepository.saveAll(List.of(firstTeam, secondTeam)));
 

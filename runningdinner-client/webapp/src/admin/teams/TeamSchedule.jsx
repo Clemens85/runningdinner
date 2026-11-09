@@ -9,7 +9,7 @@ import { PrimaryButton } from '../../common/theme/PrimaryButton';
 import { useTranslation } from 'react-i18next';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import LinkIntern from '../../common/theme/LinkIntern';
-import { Fullname, isSameEntity, Time, CONSTANTS, TeamNr, getAsHttpErrorOrDefault, canHostAtAccessibleLocation } from '@runningdinner/shared';
+import { Fullname, isSameEntity, Time, CONSTANTS, TeamLabel, TeamLabelFormat, getAsHttpErrorOrDefault, canHostAtAccessibleLocation } from '@runningdinner/shared';
 import { useAdminNavigation } from '../AdminNavigationHook';
 import { GENERIC_HTTP_ERROR } from '@runningdinner/shared/src/redux';
 import { ProgressBar } from '../../common/ProgressBar';
@@ -297,12 +297,12 @@ function MeetedTeamButton({ team, adminId }) {
     <>
       {!isCancelled && (
         <Button variant="outlined" size="medium" {...bindTrigger(popupState)}>
-          <TeamNr {...team} />
+          <TeamLabel team={team} format={TeamLabelFormat.NUMBER_ONLY} />
         </Button>
       )}
       {isCancelled && (
         <Button variant="contained" color="secondary" size="medium" {...bindTrigger(popupState)}>
-          <TeamNr {...team} />
+          <TeamLabel team={team} format={TeamLabelFormat.NUMBER_ONLY} />
         </Button>
       )}
       <Popover
@@ -322,7 +322,7 @@ function MeetedTeamButton({ team, adminId }) {
           }}
         >
           <Title>
-            <TeamNr {...team} />
+            <TeamLabel team={team} />
           </Title>
           <Paragraph>{team.meal.label}</Paragraph>
           <Box
@@ -353,11 +353,11 @@ function CurrentTeamButton({ team }) {
     <>
       {isCancelled ? (
         <Button variant="contained" color="secondary" size="medium" sx={commonStyles.defaultCursor} disableRipple={true} disableElevation={true}>
-          <TeamNr {...team} />
+          <TeamLabel team={team} format={TeamLabelFormat.NUMBER_ONLY} />
         </Button>
       ) : (
         <PrimaryButton variant="contained" sx={commonStyles.defaultCursor} disableRipple={true} disableElevation={true}>
-          <TeamNr {...team} />
+          <TeamLabel team={team} format={TeamLabelFormat.NUMBER_ONLY} />
         </PrimaryButton>
       )}
     </>

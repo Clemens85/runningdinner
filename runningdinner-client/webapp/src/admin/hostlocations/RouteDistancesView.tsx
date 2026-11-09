@@ -7,13 +7,15 @@ import {
   DinnerRouteTeamWithDistance,
   DinnerRouteWithDistancesList,
   isDefined,
+  TeamLabel,
+  TeamLabelFormat,
   TeamStatus,
   useDinnerRouteOverviewContext,
 } from '@runningdinner/shared';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getTeamLabel } from '../../common/dinnerroute';
+import { TeamLabelWithMeal } from '../../common/dinnerroute';
 import { CancelledTeamMember } from '../teams/CancelledTeamMember';
 import { useZoomToMarker } from './useZoomToMarker';
 
@@ -86,19 +88,19 @@ export function RouteDistancesView({ routeDistancesList }: RouteDistancesViewPro
                     <Tooltip
                       title={
                         <>
-                          {getTeamLabel(team, true)}
+                          <TeamLabelWithMeal team={team} includeHostFullname={true} />
                           <br />
                           &#8960; {DinnerRouteDistanceUtil.getDistancePrettyFormatted(routeDistance.averageDistanceInMeters)}
                         </>
                       }
                       placement="top-end"
                     >
-                      <Chip label={`Team ${team.teamNumber}`} color={'primary'} variant={'filled'} onClick={() => handleClick(team)} />
+                      <Chip label={<TeamLabel team={team} format={TeamLabelFormat.NUMBER_ONLY} />} color={'primary'} variant={'filled'} onClick={() => handleClick(team)} />
                     </Tooltip>
                   )}
                   {team.status !== TeamStatus.CANCELLED && !team.currentTeam && (
-                    <Tooltip title={getTeamLabel(team, true)} placement="top-end">
-                      <Chip label={`Team ${team.teamNumber}`} color={'default'} variant={'outlined'} />
+                    <Tooltip title={<TeamLabelWithMeal team={team} includeHostFullname={true} />} placement="top-end">
+                      <Chip label={<TeamLabel team={team} format={TeamLabelFormat.NUMBER_ONLY} />} color={'default'} variant={'outlined'} />
                     </Tooltip>
                   )}
                 </Grid>

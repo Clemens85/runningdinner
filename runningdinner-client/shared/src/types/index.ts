@@ -12,3 +12,4 @@ export * from './RouteOptimizationSettings';
 export * from './RunningDinner';
 export * from './SelfAdmin';
 export * from './Team';
+export * from './TeamName';

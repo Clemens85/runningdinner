@@ -11,6 +11,7 @@ import { Span } from '../common/theme/typography/Tags';
 import { SelfAdminPageContainer } from './SelfAdminPageContainer';
 
 const SelfAdminChangeTeamHostPage = React.lazy(() => import('./SelfAdminChangeTeamHostPage'));
+const SelfAdminChangeTeamNamePage = React.lazy(() => import('./SelfAdminChangeTeamNamePage'));
 const SelfAdminDinnerRoutePage = React.lazy(() => import('./SelfAdminDinnerRoutePage'));
 const SelfAdminManageTeamPartnerWishPage = React.lazy(() => import('./SelfAdminManageTeamPartnerWishPage'));
 
@@ -23,6 +24,16 @@ export function SelfAdminRoute() {
           <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
             <SelfAdminPageContainer htmlPageTitleI18n="host_manage_title">
               <SelfAdminChangeTeamHostPage />
+            </SelfAdminPageContainer>
+          </Suspense>
+        }
+      />
+      <Route
+        path={`:selfAdminId/teamname/:participantId/:teamId`}
+        element={
+          <Suspense fallback={<ProgressBar showLoadingProgress={true} />}>
+            <SelfAdminPageContainer htmlPageTitleI18n="team_name_manage_title">
+              <SelfAdminChangeTeamNamePage />
             </SelfAdminPageContainer>
           </Suspense>
         }

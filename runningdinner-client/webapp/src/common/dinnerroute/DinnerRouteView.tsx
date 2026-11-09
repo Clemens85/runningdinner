@@ -1,12 +1,23 @@
 import { Box, Grid, Paper, Typography } from '@mui/material';
-import { DinnerRoute, DinnerRouteMapCalculator, DinnerRouteTeam, isAfterPartyLocationDefined, isStringNotEmpty, Meal, MealType, TeamStatus } from '@runningdinner/shared';
+import {
+  DinnerRoute,
+  DinnerRouteMapCalculator,
+  DinnerRouteTeam,
+  isAfterPartyLocationDefined,
+  isStringNotEmpty,
+  Meal,
+  MealType,
+  TeamLabel,
+  TeamLabelFormat,
+  TeamStatus,
+} from '@runningdinner/shared';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useTranslation } from 'react-i18next';
 
 import { GOOGLE_MAPS_KEY } from '../maps';
 import { TextViewHtml } from '../TextViewHtml';
 import { PageTitle, Subtitle } from '../theme/typography/Tags';
-import { AfterPartyLocationCard, getMealTypeIcon, TeamCardDetails } from './DinnerRouteComponents';
+import { AfterPartyLocationCard, DINNER_ROUTE_TEAM_NAME_MAX_LENGTH, getMealTypeIcon, TeamCardDetails } from './DinnerRouteComponents';
 import { DinnerRouteMapView } from './DinnerRouteMapView';
 
 export interface DinnerRouteProps {
@@ -88,6 +99,8 @@ function TeamCard({ dinnerRouteTeam, mealType, isCurrentTeam, currentTeamRequire
     <>
       <PageTitle color={teamTitleColor}>
         {getMealTypeIcon(mealType, 24)} {dinnerRouteTeam.meal.label}
+        {' - '}
+        <TeamLabel team={dinnerRouteTeam} format={TeamLabelFormat.NAME_OR_NUMBER} maxNameLength={DINNER_ROUTE_TEAM_NAME_MAX_LENGTH} />
         {isCurrentTeam && (
           <Box
             component={'span'}

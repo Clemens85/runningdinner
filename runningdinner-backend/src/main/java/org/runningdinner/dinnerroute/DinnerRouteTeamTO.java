@@ -22,6 +22,8 @@ public class DinnerRouteTeamTO implements HasGeocodingResult {
 
   private int teamNumber;
 
+  private String teamName;
+
   private TeamStatus status;
 
   private MealTO meal;
@@ -46,6 +48,7 @@ public class DinnerRouteTeamTO implements HasGeocodingResult {
     
     this.setStatus(team.getStatus());
     this.setTeamNumber(team.getTeamNumber());
+    this.setTeamName(team.getTeamName());
     this.setMeal(new MealTO(team.getMealClass()));
     
     Participant hostTeamMemberTmp = team.getHostTeamMember();
@@ -66,6 +69,16 @@ public class DinnerRouteTeamTO implements HasGeocodingResult {
   public int getTeamNumber() {
 
     return teamNumber;
+  }
+
+  public String getTeamName() {
+
+    return teamName;
+  }
+
+  public void setTeamName(String teamName) {
+
+    this.teamName = teamName;
   }
 
   public void setTeamNumber(int teamNumber) {

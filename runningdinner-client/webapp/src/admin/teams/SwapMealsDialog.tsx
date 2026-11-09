@@ -4,6 +4,7 @@ import {
   BaseAdminIdProps,
   findEntityById,
   getFullnameList,
+  getTruncatedText,
   HttpError,
   isSameEntity,
   removeEntityFromList,
@@ -13,7 +14,7 @@ import {
   TeamStatus,
   useBackendIssueHandler,
   useFindTeams,
-  useTeamName,
+  useTeamLabel,
   useTeamNameMembers,
 } from '@runningdinner/shared';
 import { useMemo, useState } from 'react';
@@ -96,7 +97,7 @@ interface SwapMealsDialogProps extends BaseAdminIdProps {
 
 export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogProps) {
   const { t } = useTranslation(['admin', 'common']);
-  const { getTeamName } = useTeamName();
+  const { getTeamLabel } = useTeamLabel();
   const { getTeamNameMembers } = useTeamNameMembers();
 
   const { data: allTeams } = useFindTeams(adminId);
@@ -142,7 +143,7 @@ export function SwapMealsDialog({ srcTeam, adminId, onClose }: SwapMealsDialogPr
     </PrimarySuccessButtonAsync>
   );
 
-  const dialogTitle = smDownDevice ? t('admin:meals_swap') : t('admin:meals_swap_team', { team: getTeamName(srcTeam) });
+  const dialogTitle = smDownDevice ? t('admin:meals_swap') : t('admin:meals_swap_team', { team: getTeamLabel(srcTeam, { maxNameLength: 16 }) });
 
   return (
     <Dialog open={true} onClose={handleCancel} fullWidth={true}>

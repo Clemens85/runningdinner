@@ -1,14 +1,14 @@
+import { useTeamLabel } from '../../TeamLabel';
 import { Team } from '../../types';
 import { getFullnameList } from '../ParticipantService';
-import { useTeamName } from './TeamNameHook';
 
 export function useTeamNameMembers(team?: Team) {
-  const { getTeamName } = useTeamName();
+  const { getTeamLabel } = useTeamLabel();
 
   function getTeamNameMembers(team: Team): string {
-    const teamName = getTeamName(team);
+    const teamLabel = getTeamLabel(team);
     const teamMembers = getFullnameList(team.teamMembers);
-    return `${teamName} (${teamMembers})`;
+    return `${teamLabel} (${teamMembers})`;
   }
 
   const teamNameMembers = team ? getTeamNameMembers(team) : undefined;

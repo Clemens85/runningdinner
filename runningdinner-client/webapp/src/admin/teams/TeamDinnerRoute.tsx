@@ -1,4 +1,10 @@
-import { assertDefined, getRunningDinnerMandatorySelector, isQuerySucceeded, useAdminSelector, useFindDinnerRouteByAdminIdAndTeamId } from '@runningdinner/shared';
+import {
+  assertDefined,
+  getRunningDinnerMandatorySelector,
+  isQuerySucceeded,
+  useAdminSelector,
+  useFindDinnerRouteByAdminIdAndTeamId,
+} from '@runningdinner/shared';
 import { useParams } from 'react-router-dom';
 
 import DinnerRouteView from '../../common/dinnerroute/DinnerRouteView';

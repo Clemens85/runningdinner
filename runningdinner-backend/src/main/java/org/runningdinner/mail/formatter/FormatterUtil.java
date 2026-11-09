@@ -51,6 +51,7 @@ public class FormatterUtil {
   public static final String PARTNER_MESSAGE = "\\{partnermessage\\}";
   public static final String ARRANGEMENT = "\\{arrangement\\}";
   public static final String MANGE_HOST_LINK = "\\{managehostlink\\}";
+  public static final String MANAGE_TEAMNAME_LINK = "\\{managenamelink\\}";
 
   public static final String ROUTE = "\\{route\\}";
   public static final String ROUTELINK = "\\{routelink\\}";

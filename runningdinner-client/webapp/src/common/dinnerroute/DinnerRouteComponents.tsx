@@ -16,9 +16,11 @@ import {
   isDarkColor,
   isStringNotEmpty,
   MealType,
-  TeamNr,
+  TeamLabel,
+  TeamLabelFormat,
   Time,
   useDisclosure,
+  useTeamLabel,
 } from '@runningdinner/shared';
 import { AfterPartyLocationMapEntry, DinnerRouteTeamMapEntry } from '@runningdinner/shared';
 import { AdvancedMarker, InfoWindow, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
@@ -42,20 +44,34 @@ export const TeamCardDetailRowMarginBottom = styled('div')({
   mb: 1,
 });
 
-export function getTeamLabel(team: DinnerRouteTeam, includeHostFullname: boolean) {
-  if (includeHostFullname && team.hostTeamMember) {
-    return (
-      <>
-        Team #{team.teamNumber} ({team.meal.label}) - <Fullname {...team.hostTeamMember} />
-      </>
-    );
-  } else {
-    return (
-      <>
-        Team #{team.teamNumber} ({team.meal.label})
-      </>
-    );
-  }
+/**
+ * Dinner routes are displayed with limited space (cards, map info windows), so long custom team names are shortened there
+ */
+export const DINNER_ROUTE_TEAM_NAME_MAX_LENGTH = 14;
+
+type TeamLabelWithMealProps = {
+  team: DinnerRouteTeam;
+  includeHostFullname?: boolean;
+  format?: TeamLabelFormat;
+  /** Shortens a long custom team name for places with limited space, see {@link TeamLabelOptions} */
+  maxNameLength?: number;
+};
+
+/**
+ * Team label (e.g. "Team 3 (Vorspeise) - Max Muster") for lists in the admin area
+ */
+export function TeamLabelWithMeal({ team, includeHostFullname = false, format = TeamLabelFormat.NUMBER_AND_NAME, maxNameLength }: TeamLabelWithMealProps) {
+  return (
+    <>
+      <TeamLabel team={team} format={format} maxNameLength={maxNameLength} /> ({team.meal.label})
+      {includeHostFullname && team.hostTeamMember && (
+        <>
+          {' '}
+          - <Fullname {...team.hostTeamMember} />
+        </>
+      )}
+    </>
+  );
 }
 
 interface TeamCardDetailsProps extends DinnerRouteTeam {
@@ -187,7 +203,9 @@ export function WarningAlert({ teamsWithUnresolvedGeocodings, hideCloseButton }:
             {t('dinner_route_geocoding_warning')}
             <ul>
               {teamsWithUnresolvedGeocodings.map((team) => (
-                <li key={team.teamNumber}>{getTeamLabel(team, true)}</li>
+                <li key={team.teamNumber}>
+                  <TeamLabelWithMeal team={team} includeHostFullname={true} format={TeamLabelFormat.NAME_OR_NUMBER} maxNameLength={DINNER_ROUTE_TEAM_NAME_MAX_LENGTH} />
+                </li>
               ))}
             </ul>
           </Alert>
@@ -269,7 +287,7 @@ export function TeamMarkerInfoWindowContent({ team, isCurrentTeam }: TeamMarkerI
       }}
     >
       <Subtitle>
-        {team.meal.label} - <TeamNr {...team} />
+        {team.meal.label} - <TeamLabel team={team} format={TeamLabelFormat.NAME_OR_NUMBER} maxNameLength={DINNER_ROUTE_TEAM_NAME_MAX_LENGTH} />
       </Subtitle>
       <TeamCardDetails {...team} isCurrentTeam={isCurrentTeam} showAccessibleStop={true} showIncomingGuestNeed={true} />
     </Box>
@@ -324,6 +342,7 @@ export function getAfterPartyLocationIcon(fontSize: number = 16) {
 export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, isSelected, zIndex = 1 }: TeamHostMarkerProps) {
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [open, setOpen] = useState(false);
+  const { getTeamLabel } = useTeamLabel();
 
   // const glyphColor = isDarkColor(team.color) ? '#fff' : '#000';
 
@@ -333,12 +352,14 @@ export function TeamHostMarker({ team, isCurrentTeam, useSecondaryClusterColor, 
 
   const zIndexUnselected = zIndex + 1;
   const teamNumberLabel = team.teamNumber < 100 ? `#${team.teamNumber}` : `${team.teamNumber}`;
+  // The tooltip has enough room for the complete name
+  const markerTitle = [getTeamLabel(team, { format: TeamLabelFormat.NAME_OR_NUMBER }), `${team.meal.label} (${getFullname(team.hostTeamMember)})`].filter(isStringNotEmpty).join(' - ');
 
   return (
     <>
       <AdvancedMarker
         ref={markerRef}
-        title={`Team ${team.teamNumber} - ${team.meal.label} (${getFullname(team.hostTeamMember)})`}
+        title={markerTitle}
         onClick={() => setOpen(!open)}
         zIndex={isSelected ? zIndexUnselected + 1000 : zIndexUnselected}
         position={{ lat: team.position.lat!, lng: team.position.lng! }}

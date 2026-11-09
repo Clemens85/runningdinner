@@ -12,7 +12,7 @@ export * from './HttpInterceptorConfig';
 export * from './issue';
 export * from './masterdata';
 export * from './redux';
-export * from './TeamNr';
+export * from './TeamLabel';
 export * from './types';
 export * from './Utils';
 export * from './wizard';

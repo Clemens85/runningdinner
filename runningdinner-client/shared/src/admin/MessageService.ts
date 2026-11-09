@@ -183,7 +183,9 @@ export function getExampleTeamMessage(): TeamMessage {
       '\n' +
       '{host}\n' +
       '\n' +
-      'Alternativ kann jeder von euch die Gastgebereinteilung bis zur endgültigen Festlegung der Dinnerrouten unter folgendem Link selbst ändern: {managehostlink}\nSprecht euch hierfür jedoch bitte untereinander ab!',
+      'Alternativ kann jeder von euch die Gastgebereinteilung bis zur endgültigen Festlegung der Dinnerrouten unter folgendem Link selbst ändern: {managehostlink}\nSprecht euch hierfür jedoch bitte untereinander ab!\n' +
+      '\n' +
+      'Außerdem könnt ihr euch bis zum Versand der Dinnerrouten einen eigenen Teamnamen geben. Den Namen könnt ihr unter folgendem Link festlegen: {managenamelink}',
     hostMessagePartTemplate:
       'Es wird vorgeschlagen, dass du als Gastgeber fungierst. Wenn dies nicht in Ordnung ist, dann sprecht euch bitte ab und gebt uns Rückmeldung wer als neuer Gastgeber fungieren soll.',
     nonHostMessagePartTemplate: 'Als Gastgeber wurde {partner} vorgeschlagen.',
