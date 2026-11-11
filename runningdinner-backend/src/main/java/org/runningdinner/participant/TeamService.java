@@ -706,6 +706,8 @@ public class TeamService {
       team.setTeamMembers(new HashSet<>());
       team.setStatus(TeamStatus.CANCELLED);
     }
+    // A custom team name belongs to the people of the team: the new team members (now or when refilling the team later) shall not inherit it
+    team.setTeamName(null);
 
     if (teamCancellation.isDryRun()) {
       result.setTeam(team);

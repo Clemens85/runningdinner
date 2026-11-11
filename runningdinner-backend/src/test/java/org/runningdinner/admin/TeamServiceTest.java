@@ -84,6 +84,7 @@ public class TeamServiceTest {
   public void testCancelTeamWithoutReplacement() {
 
     Team team = findFirstTeam();
+    teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "Die Gourmets");
     assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
     Set<Participant> oldTeamMembers = team.getTeamMembers();
 
@@ -96,6 +97,7 @@ public class TeamServiceTest {
 
     assertThat(team.getStatus()).isSameAs(TeamStatus.CANCELLED);
     assertThat(team.getTeamMembers()).isEmpty();
+    assertThat(team.getTeamName()).isNull();
 
     assertParticipantsAreDeleted(oldTeamMembers);
 
@@ -111,6 +113,7 @@ public class TeamServiceTest {
     Participant secondAddedParticipant = testHelperService.addParticipant(twoAdditionalParticipants.get(1), runningDinner); 
 
     Team team = findFirstTeam();
+    teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "Die Gourmets");
     assertThat(team.getStatus()).isSameAs(TeamStatus.OK);
     Set<Participant> oldTeamMembers = team.getTeamMembers();
 
@@ -126,6 +129,7 @@ public class TeamServiceTest {
     team = findFirstTeam();
 
     assertThat(team.getStatus()).isSameAs(TeamStatus.REPLACED);
+    assertThat(team.getTeamName()).isNull(); // the new team members must not inherit the name of the replaced team
     assertThat(team.getTeamMembers()).hasSize(2);
     assertThat(team.getTeamMembers()).containsExactlyInAnyOrder(firstAddedParticipant, secondAddedParticipant);
     assertThat(team.getHostTeamMember()).isEqualTo(secondAddedParticipant);
@@ -485,6 +489,17 @@ public class TeamServiceTest {
     Team hauptspeiseTeamAfterSwap = teamService.findTeamById(runningDinner.getAdminId(), teamWithHauptspeise.getId());
     assertThat(vorspeiseTeamAfterSwap.getTeamName()).isNull();
     assertThat(hauptspeiseTeamAfterSwap.getTeamName()).isEqualTo("Vorspeisen-Profis");
+  }
+
+  @Test
+  public void cancelOfSingleTeamMemberKeepsTeamName() {
+
+    Team team = findFirstTeam();
+    teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "Die Gourmets");
+
+    teamService.cancelTeamMember(runningDinner.getAdminId(), team.getId(), pickRandomTeamMember(team).getId());
+
+    assertThat(teamService.findTeamById(runningDinner.getAdminId(), team.getId()).getTeamName()).isEqualTo("Die Gourmets");
   }
 
   @Test
