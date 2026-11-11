@@ -1,1 +1,1 @@
-ALTER TABLE runningdinner.team ADD COLUMN teamName varchar(64);
+ALTER TABLE runningdinner.team ADD COLUMN teamName varchar(32);
