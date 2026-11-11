@@ -139,7 +139,8 @@ E2E (Cypress): admin sets name → visible in team details; participant opens li
 **Decided against a `{teamname}` placeholder** (removing the whole line if there is no name breaks templates that put it next to other information). Instead: in dinner route mails the custom team name is appended **hard-coded in parentheses to the meal of each visited team** (`FormatterUtil.generateMealLabelWithTeamName`, e.g. `Hauptgang (Die Gourmets)`, HTML-escaped); teams without a name are unchanged. The own team's meal block (`selfTemplate`) is not changed.
 
 **Open (next):**
-- Step 6: e2e, news entry, re-creation hint, docs.
+- Step 6: e2e, news entry, docs.
+- Done meanwhile: names are reset when a team is cancelled (with or without replacement); the re-create/drop teams confirmation shows a brief hint when at least one team has a name; names are stable through route optimization and swap with the members on meal swap.
 
 ## 6. Suggested implementation order (small, shippable steps)
 
