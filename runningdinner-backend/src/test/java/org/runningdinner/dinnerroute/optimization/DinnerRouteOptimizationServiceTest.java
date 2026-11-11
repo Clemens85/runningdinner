@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -188,6 +189,40 @@ public class DinnerRouteOptimizationServiceTest {
 			assertThat(requiringTeam.getHostTeams()).allMatch(host -> TeamDistributorAccessibility.hasAccessibleHostLocation(host, runningDinner.getConfiguration()));
 		}
 		routeOptimizationService.validateOptimizedRoutes(applied.getDinnerRoutes(), runningDinner, teams);
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "false", "true" })
+	@Transactional
+	public void customTeamNamesAreKeptByPreviewAndApply(boolean ignoreMealAssignments) throws Exception {
+
+		String adminId = runningDinner.getAdminId();
+		teamService.createTeamAndVisitationPlans(adminId);
+		List<Team> teams = teamService.findTeamArrangements(adminId, false);
+		Map<Integer, String> teamNamesByNumber = new HashMap<>();
+		for (Team team : teams.subList(0, 3)) {
+			teamService.updateTeamName(adminId, team.getId(), "Name " + team.getTeamNumber());
+			teamNamesByNumber.put(team.getTeamNumber(), "Name " + team.getTeamNumber());
+		}
+
+		// The optimization request contains no team names, so they must neither be needed for nor lost by applying the response
+		DinnerRouteOptimizationRequest request = routeOptimizationService.publishOptimizationEvent(adminId,
+				new RouteOptimizationSettings(-1d, -1d, ignoreMealAssignments, 0, true));
+		doReturn(objectMapper.writeValueAsString(request)).when(optimizationDataProviderInMemory).readResponseData(adminId, request.getOptimizationId());
+
+		var preview = routeOptimizationService.previewOptimizedDinnerRoutes(adminId, request.getOptimizationId());
+		var applied = routeOptimizationService.applyOptimizedDinnerRoutes(adminId, request.getOptimizationId());
+
+		for (var dinnerRouteList : List.of(preview.optimizedDinnerRouteList().getDinnerRoutes(), applied.getDinnerRoutes())) {
+			for (var dinnerRoute : dinnerRouteList) {
+				for (var routeTeam : dinnerRoute.getTeams()) {
+					assertThat(routeTeam.getTeamName()).isEqualTo(teamNamesByNumber.get(routeTeam.getTeamNumber()));
+				}
+			}
+		}
+		for (Team team : teamService.findTeamArrangements(adminId, false)) {
+			assertThat(team.getTeamName()).isEqualTo(teamNamesByNumber.get(team.getTeamNumber()));
+		}
 	}
 
 	@Test

@@ -23,7 +23,7 @@ import {
   SelectableParticipant,
   setupAssignParticipantsToTeamsModel,
   Team,
-  TeamNr,
+  TeamLabel,
   TeamParticipantsAssignment,
   TeamParticipantsAssignmentModel,
   useBackendIssueHandler,
@@ -428,7 +428,7 @@ function SingleTeamParticipantsAssignmentView(props: SingleTeamParticipantsAssig
     <div data-testid={'waitinglist-team-for-assignment'}>
       <Paper elevation={3} sx={{ p: DIALOG_SPACING_X }}>
         <Subtitle>
-          <TeamNr {...team} />
+          <TeamLabel team={team} />
         </Subtitle>
         {renderTeamMembers()}
       </Paper>

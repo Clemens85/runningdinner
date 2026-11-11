@@ -89,6 +89,15 @@ public class TeamServiceRest {
     return new TeamArrangementListTO(TeamTO.convertTeamList(updatedTeams), adminId);
   }
 
+  @PutMapping("/runningdinner/{adminId}/team/{teamId}/name")
+  public TeamTO updateTeamName(@PathVariable String adminId,
+                               @PathVariable UUID teamId,
+                               @RequestBody @Valid TeamNameUpdateTO teamNameUpdate) {
+
+    Team updatedTeam = teamService.updateTeamName(adminId, teamId, teamNameUpdate.getTeamName());
+    return new TeamTO(updatedTeam);
+  }
+
   @PutMapping("/runningdinner/{adminId}/teammembers/swap/{firstParticipantId}/{secondParticipantId}")
   public TeamArrangementListTO swapTeamMembers(@PathVariable String adminId,
       @PathVariable UUID firstParticipantId,

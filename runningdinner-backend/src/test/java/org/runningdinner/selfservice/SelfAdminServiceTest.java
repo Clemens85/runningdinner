@@ -17,7 +17,12 @@ import org.runningdinner.admin.activity.ActivityType;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
 import org.runningdinner.admin.message.job.MessageTask;
+import org.runningdinner.admin.message.dinnerroute.DinnerRouteMessage;
 import org.runningdinner.admin.message.job.MessageType;
+import org.runningdinner.admin.message.team.TeamMessage;
+import org.runningdinner.admin.message.team.TeamSelection;
+import org.runningdinner.common.IssueKeys;
+import org.runningdinner.common.exception.ValidationException;
 import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.RunningDinner;
 import org.runningdinner.initialization.CreateRunningDinnerInitializationService;
@@ -105,6 +110,94 @@ public class SelfAdminServiceTest {
     assertThat(messageTasks.get(0).getMessage().getContent()).contains("MyComment");
   }
   
+  @Test
+  public void testUpdateTeamName() {
+
+    Team updatedTeam = selfAdminService.updateTeamName(runningDinner.getSelfAdministrationId(), executingParticipant.getId(), team.getId(), "  Die   Gourmets ");
+    assertThat(updatedTeam.getTeamName()).isEqualTo("Die Gourmets");
+
+    SelfAdminTeamNameInfoTO info = selfAdminService.findTeamNameInfo(runningDinner.getSelfAdministrationId(), executingParticipant.getId(), team.getId());
+    assertThat(info.getTeamName()).isEqualTo("Die Gourmets");
+    assertThat(info.isTeamNameChangeAllowed()).isTrue();
+
+    List<Activity> activities = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.PARTICIPANT_CHANGED_TEAMNAME);
+    assertThat(activities).hasSize(1);
+    assertThat(activities.get(0).getActivityMessage()).contains("Team " + team.getTeamNumber());
+
+    selfAdminService.updateTeamName(runningDinner.getSelfAdministrationId(), executingParticipant.getId(), team.getId(), "");
+    assertThat(teamService.findTeamById(runningDinner.getAdminId(), team.getId()).getTeamName()).isNull();
+  }
+
+  @Test
+  public void testUpdateTeamNameInvalid() {
+
+    ValidationException e = Assertions.assertThrows(ValidationException.class,
+        () -> selfAdminService.updateTeamName(runningDinner.getSelfAdministrationId(), executingParticipant.getId(), team.getId(), "<b>Bad</b>"));
+    assertThat(e.getIssues().getIssues().get(0).getField()).isEqualTo("teamName");
+  }
+
+  @Test
+  public void testUpdateTeamNameBlockedAfterDinnerRouteMailsSent() {
+
+    sendDinnerRouteMessages();
+
+    ValidationException e = Assertions.assertThrows(ValidationException.class,
+        () -> selfAdminService.updateTeamName(runningDinner.getSelfAdministrationId(), executingParticipant.getId(), team.getId(), "Too Late"));
+    assertThat(e.getIssues().getIssues().get(0).getMessage()).isEqualTo(IssueKeys.TEAM_NAME_CHANGE_NOT_ALLOWED_ROUTES_SENT);
+
+    SelfAdminTeamNameInfoTO info = selfAdminService.findTeamNameInfo(runningDinner.getSelfAdministrationId(), executingParticipant.getId(), team.getId());
+    assertThat(info.isTeamNameChangeAllowed()).isFalse();
+    assertThat(teamService.findTeamById(runningDinner.getAdminId(), team.getId()).getTeamName()).isNull();
+
+    // Admins are not restricted
+    Team updatedByAdmin = teamService.updateTeamName(runningDinner.getAdminId(), team.getId(), "Admin Choice");
+    assertThat(updatedByAdmin.getTeamName()).isEqualTo("Admin Choice");
+  }
+
+  @Test
+  public void testUpdateTeamNameNotAllowedForParticipantOfOtherTeam() {
+
+    TeamMeetingPlan teamMeetingPlan = teamService.findTeamMeetingPlan(runningDinner.getAdminId(), team.getId());
+    Team otherTeam = teamMeetingPlan.getGuestTeams().get(0);
+
+    Assertions.assertThrows(IllegalArgumentException.class,
+        () -> selfAdminService.updateTeamName(runningDinner.getSelfAdministrationId(), executingParticipant.getId(), otherTeam.getId(), "Hijacked"));
+    assertThat(teamService.findTeamById(runningDinner.getAdminId(), otherTeam.getId()).getTeamName()).isNull();
+  }
+
+  @Test
+  public void testTeamMessageContainsManageTeamNameLink() {
+
+    TeamMessage msg = new TeamMessage();
+    msg.setSubject("Subject");
+    msg.setMessage("Name link: {managenamelink}");
+    msg.setHostMessagePartTemplate("Host part");
+    msg.setNonHostMessagePartTemplate("NonHost part");
+    msg.setTeamSelection(TeamSelection.ALL);
+    MessageJob messageJob = messageService.sendTeamMessages(runningDinner.getAdminId(), msg);
+    testHelperService.awaitMessageJobFinished(messageJob);
+
+    List<MessageTask> messageTasks = messageService.findMessageTasks(runningDinner.getAdminId(), messageJob.getId());
+    assertThat(messageTasks).isNotEmpty();
+    for (MessageTask messageTask : messageTasks) {
+      assertThat(messageTask.getMessage().getContent())
+        .contains("/teamname/")
+        .doesNotContain("{managenamelink}");
+    }
+  }
+
+  private void sendDinnerRouteMessages() {
+
+    DinnerRouteMessage msg = new DinnerRouteMessage();
+    msg.setMessage("{route}");
+    msg.setSubject("Dinner Route");
+    msg.setHostsTemplate("Hosts");
+    msg.setSelfTemplate("Self");
+    msg.setTeamSelection(TeamSelection.ALL);
+    MessageJob messageJob = messageService.sendDinnerRouteMessages(runningDinner.getAdminId(), msg);
+    testHelperService.awaitMessageJobFinished(messageJob);
+  }
+
   @Test
   public void testFindTeamNotAllowedForDifferentTeam() {
     

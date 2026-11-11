@@ -3,7 +3,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import { Alert, Box, Button, Card, CardContent, Chip, Divider, Stack, Typography } from '@mui/material';
-import { isStringEmpty, isStringNotEmpty, MealSpecifics, PortalParticipantInfo, TeamSelfServiceInfo, Time } from '@runningdinner/shared';
+import { getCustomTeamName, hasCustomTeamName, isStringEmpty, isStringNotEmpty, MealSpecifics, PortalParticipantInfo, TeamSelfServiceInfo, Time } from '@runningdinner/shared';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -228,6 +228,10 @@ function TeamDetails({ info }: { info: TeamSelfServiceInfo }) {
         />
       )}
       <TeamInfoRow
+        label={t('participant_event_team_name')}
+        value={hasCustomTeamName(info) ? getCustomTeamName(info) : <Typography variant="body2" sx={{ color: 'text.secondary' }}>{t('participant_event_team_name_not_set')}</Typography>}
+      />
+      <TeamInfoRow
         label={t('participant_event_team_host')}
         value={
           <Stack
@@ -335,19 +339,35 @@ export function MyTeamSection({ participantInfo, isLoading }: MyTeamSectionProps
         {teamSelfServiceInfo && (
           <div data-testid="portal-team-details">
             <TeamDetails info={teamSelfServiceInfo} />
-            {/* Hide "Manage hosting" for fixed partners — they share a home, no host decision needed */}
-            {!teamSelfServiceInfo.fixedTeamPartner && !teamSelfServiceInfo.teamPartnerCancelled && (
-              <Button
-                variant="outlined"
-                size="small"
-                href={teamSelfServiceInfo.manageTeamHostingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ width: { xs: '100%', sm: 'auto' } }}
-              >
-                {t('participant_event_manage_team_hosting')}
-              </Button>
-            )}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+              {/* Hide "Manage hosting" for fixed partners — they share a home, no host decision needed */}
+              {!teamSelfServiceInfo.fixedTeamPartner && !teamSelfServiceInfo.teamPartnerCancelled && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  href={teamSelfServiceInfo.manageTeamHostingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ width: { xs: '100%', sm: 'auto' } }}
+                >
+                  {t('participant_event_manage_team_hosting')}
+                </Button>
+              )}
+              {/* The team name is final as soon as the dinner routes were sent */}
+              {teamSelfServiceInfo.teamNameChangeAllowed && (
+                <Button
+                  data-testid="portal-manage-team-name"
+                  variant="outlined"
+                  size="small"
+                  href={teamSelfServiceInfo.manageTeamNameUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ width: { xs: '100%', sm: 'auto' } }}
+                >
+                  {t(hasCustomTeamName(teamSelfServiceInfo) ? 'participant_event_change_team_name' : 'participant_event_set_team_name')}
+                </Button>
+              )}
+            </Stack>
           </div>
         )}
       </CardContent>

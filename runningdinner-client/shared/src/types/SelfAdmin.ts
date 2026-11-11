@@ -15,6 +15,12 @@ export interface SelfAdminTeamParams extends SelfAdminBaseParams {
   teamId: string;
 }
 
+export interface SelfAdminTeamNameInfo {
+  teamName?: string;
+  /** False as soon as the dinner route mails were sent (team name is then final) */
+  teamNameChangeAllowed: boolean;
+}
+
 export interface SelfAdminUpdateTeamHostRequest {
   teamId: string;
   participantId: string;

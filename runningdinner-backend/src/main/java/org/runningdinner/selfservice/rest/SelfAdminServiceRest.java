@@ -6,10 +6,12 @@ import jakarta.validation.Valid;
 
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.participant.Team;
+import org.runningdinner.participant.rest.TeamNameUpdateTO;
 import org.runningdinner.participant.rest.TeamTO;
 import org.runningdinner.selfservice.ChangeTeamHost;
 import org.runningdinner.selfservice.SelfAdminService;
 import org.runningdinner.selfservice.SelfAdminSessionDataTO;
+import org.runningdinner.selfservice.SelfAdminTeamNameInfoTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -46,6 +48,24 @@ public class SelfAdminServiceRest {
     return new TeamTO(resultingTeam);
   }
   
+  @GetMapping("/{participantId}/{teamId}/teamname")
+  public SelfAdminTeamNameInfoTO findTeamNameInfo(@PathVariable UUID selfAdministrationId,
+                                                  @PathVariable UUID participantId,
+                                                  @PathVariable UUID teamId) {
+
+    return selfAdminService.findTeamNameInfo(selfAdministrationId, participantId, teamId);
+  }
+
+  @PutMapping(value = "/{participantId}/{teamId}/teamname", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public SelfAdminTeamNameInfoTO updateTeamName(@PathVariable UUID selfAdministrationId,
+                                                @PathVariable UUID participantId,
+                                                @PathVariable UUID teamId,
+                                                @RequestBody @Valid TeamNameUpdateTO teamNameUpdate) {
+
+    selfAdminService.updateTeamName(selfAdministrationId, participantId, teamId, teamNameUpdate.getTeamName());
+    return selfAdminService.findTeamNameInfo(selfAdministrationId, participantId, teamId);
+  }
+
   @GetMapping("/{participantId}/{teamId}/dinnerroute")
   public DinnerRouteTO findDinnerRoute(@PathVariable UUID selfAdministrationId, 
                                        @PathVariable UUID participantId,

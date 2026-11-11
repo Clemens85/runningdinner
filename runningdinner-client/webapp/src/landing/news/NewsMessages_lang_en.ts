@@ -1,4 +1,10 @@
 const NewsMessages_en: any = {
+  news_title_20261111: 'Custom Team Names',
+  news_content_20261111:
+    'Teams can now be given a name of their own. ' +
+    'As organizer you can set the team name in the team details, and participants can set it themselves via a link in the team mail or in the participant portal. ' +
+    'The name is shown in event administration and in the dinner routes.',
+
   news_title_20261016: 'Accessibility in Team and Route Planning',
   news_content_20261016:
     'Participants can now indicate during registration whether their home has elevator or step-free access and whether they need step-free access themselves. ' +

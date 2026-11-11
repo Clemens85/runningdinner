@@ -202,6 +202,42 @@ public class DinnerRouteMessageFormatterTest {
 		assertThat(message).doesNotContain("{accessibility}", "INCOMING ACCESS NEED", "ACCESS RECORDED", "NO ACCESS RECORDED");
 	}
 	
+	@Test
+	public void customTeamNameIsAppendedToMealOfVisitedTeams() {
+		RunningDinner runningDinner = newMockedRunningDinner();
+		List<Team> teams = generateTeams(runningDinner);
+		Team team = teams.get(0);
+		List<Team> dinnerRoute = TeamRouteBuilder.generateDinnerRoute(team);
+		Team namedHostTeam = findOtherHostingTeamInDinnerRoute(dinnerRoute, team);
+		namedHostTeam.setTeamName("Tom & Jerry");
+		String namedMealLabel = namedHostTeam.getMealClass().getLabel();
+
+		DinnerRouteMessage messageTemplate = newDinnerRouteMessage();
+		messageTemplate.setHostsTemplate("{meal}\nKontakt: {mobilenumber}");
+		String message = formatter.formatDinnerRouteMessage(runningDinner, team.getHostTeamMember(), team, dinnerRoute, messageTemplate);
+
+		assertThat(message).contains(namedMealLabel + " (Tom &amp; Jerry)\nKontakt");
+		for (Team hostTeam : dinnerRoute) {
+			if (!hostTeam.equals(team) && !hostTeam.equals(namedHostTeam)) {
+				assertThat(message).contains(hostTeam.getMealClass().getLabel() + "\nKontakt"); // no name => meal label unchanged
+			}
+		}
+	}
+
+	@Test
+	public void customTeamNameIsNotAppendedToOwnMeal() {
+		RunningDinner runningDinner = newMockedRunningDinner();
+		List<Team> teams = generateTeams(runningDinner);
+		Team team = teams.get(0);
+		team.setTeamName("Own Team");
+
+		DinnerRouteMessage messageTemplate = newDinnerRouteMessage();
+		messageTemplate.setSelfTemplate("{meal} bei EUCH\n");
+		String message = formatter.formatDinnerRouteMessage(runningDinner, team.getHostTeamMember(), team, TeamRouteBuilder.generateDinnerRoute(team), messageTemplate);
+
+		assertThat(message).doesNotContain("Own Team");
+	}
+
 	private void setMobileNumber(Team team, String mobileNumber, boolean setToHostingTeamMember) {
 		
 		List<Participant> teamMembers = team.getTeamMembersOrdered();

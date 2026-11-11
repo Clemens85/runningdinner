@@ -18,6 +18,17 @@ const SelfAdminMessages_en: any = {
   change_team_host_accessibility_text:
     'No elevator or step-free access is indicated for the home of {{ newTeamHost }}. Visiting teams that need step-free access may no longer be able to reach your home. Save anyway?',
 
+  change_team_name_title: 'Manage team name',
+  change_team_name_help:
+    'Here you can give your team a name. The name applies to all members of your team and is visible to all teams in the dinner routes. ' +
+    'The change becomes active immediately after saving and can be changed until the dinner routes have been sent.',
+  change_team_name_not_allowed: 'The team name cannot be changed anymore because the dinner routes have already been sent.',
+  change_team_name_success_text: 'The team name has been saved and now applies to all members of your team. You can now close this window.',
+  change_team_name_current: 'Current team name',
+  change_team_name_loading_error_text: 'The team name data could not be loaded. Please check the URL and try again later.',
+  change_team_name_loading_error_title: 'Error loading data',
+  team_name_manage_title: 'Run Your Dinner - Manage team name',
+
   manage_teampartner_wish_title: 'Manage Team Partner Wish',
   manage_teampartner_wish_help: 'Here you can confirm and/or change your wished team partner.',
   manage_teampartner_wish_success: 'Successfully saved the change of your wished team partner!',

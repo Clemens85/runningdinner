@@ -19,6 +19,13 @@ export function useUpdateFindTeamsQueryData(adminId: string) {
     queryClient.setQueryData(['findTeams', adminId], updatedTeams);
   }
 
+  /**
+   * Reads the teams from the cache without triggering a request
+   */
+  function getCachedTeams(): Team[] {
+    return queryClient.getQueryData<Team[]>(['findTeams', adminId]) || [];
+  }
+
   function exchangeTeams(teams: Team[]) {
     let allTeams = queryClient.getQueryData<Team[]>(['findTeams', adminId]);
     for (let i = 0; i < teams.length; i++) {
@@ -29,8 +36,18 @@ export function useUpdateFindTeamsQueryData(adminId: string) {
     return allTeams;
   }
 
+  /**
+   * Meeting plans and dinner routes contain (copies of) other teams, so they must be reloaded when a team's data (e.g. its name) changed
+   */
+  function invalidateTeamDependentQueries() {
+    queryClient.invalidateQueries({ queryKey: ['findTeamMeetingPlan', adminId] });
+    queryClient.invalidateQueries({ queryKey: ['findDinnerRouteByAdminIdAndTeamId', adminId] });
+  }
+
   return {
     updateTeams,
     exchangeTeams,
+    getCachedTeams,
+    invalidateTeamDependentQueries,
   };
 }
