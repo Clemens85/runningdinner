@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +57,7 @@ public class ActivityService {
               ActivityType.CUSTOM_ADMIN_CHANGE,
               ActivityType.MEAL_TIMES_UPDATED,
               ActivityType.PARTICIPANT_CHANGED_TEAMHOST,
+              ActivityType.PARTICIPANT_CHANGED_TEAMNAME,
               ActivityType.WAITINGLIST_PARTICIPANTS_ASSIGNED,
               ActivityType.WAITINGLIST_TEAMS_GENERATED,
               ActivityType.DINNER_ROUTES_OPTIMIZED
@@ -86,6 +89,10 @@ public class ActivityService {
   private static final String TEAMS_HOST_CHANGED_DINNER_MESSAGE_TEMPLATE = "Du hast für Team {teamNumber} den Gastgeber auf {participantName} geändert.";
   
   private static final String TEAMS_HOST_CHANGED_BY_PARTICIPANT_DINNER_MESSAGE_TEMPLATE = "<strong>{originator}</strong> hat für Team {teamNumber} den Gastgeber auf {participantName} geändert.";
+
+  private static final String TEAM_NAME_CHANGED_MESSAGE_TEMPLATE = "Du hast für Team {teamNumber} den Teamnamen geändert.";
+
+  private static final String TEAM_NAME_CHANGED_BY_PARTICIPANT_MESSAGE_TEMPLATE = "<strong>{originator}</strong> hat für Team {teamNumber} den Teamnamen geändert.";
   
   private static final String TEAM_CANCELLED_NO_REPLACEMENT_MESSAGE_TEMPLATE = "Folgende Teilnehmer sind abgesprungen und wurden nicht ersetzt:<br>{participantName}";
   
@@ -362,6 +369,28 @@ public class ActivityService {
   }
   
   @Transactional
+  public Activity createActivityForTeamNameChanged(Team team, RunningDinner runningDinner, Participant executingParticipant) {
+
+    boolean changedByParticipant = executingParticipant != null;
+    Activity result;
+    if (changedByParticipant) {
+      result = new Activity(LocalDateTime.now(), ActivityType.PARTICIPANT_CHANGED_TEAMNAME, executingParticipant.getEmail(), runningDinner);
+      result.setRelatedEntityId(executingParticipant.getId());
+      result.setRelatedEntityType(RelatedEntityType.PARTICIPANT);
+    } else {
+      result = new Activity(LocalDateTime.now(), ActivityType.CUSTOM_ADMIN_CHANGE, runningDinner.getEmail(), runningDinner);
+    }
+
+    String template = changedByParticipant ? TEAM_NAME_CHANGED_BY_PARTICIPANT_MESSAGE_TEMPLATE : TEAM_NAME_CHANGED_MESSAGE_TEMPLATE;
+    String activityMessage = replaceTeamNumber(template, team);
+    activityMessage = activityMessage.replaceAll("\\{originator\\}", Matcher.quoteReplacement(HtmlUtils.htmlEscape(result.getOriginator())));
+    result.setActivityMessage(activityMessage);
+    result.setActivityHeadline(changedByParticipant ? "Teamname durch Teilnehmer geändert" : "Teamname geändert");
+
+    return activityRepository.save(result);
+  }
+
+  @Transactional
   public Activity createActivityForCancelledRunningDinner(RunningDinner runningDinner) {
 
     LocalDateTime activityDate = LocalDateTime.now();
@@ -425,6 +454,14 @@ public class ActivityService {
     return result;
   }
   
+  /**
+   * @return true if the dinner route mails were sent at least once (which means that the teams and their names are final)
+   */
+  public boolean isDinnerRouteMailsSent(@ValidateAdminId String adminId) {
+
+    return !findActivitiesByTypes(adminId, ActivityType.DINNERROUTE_MAIL_SENT).isEmpty();
+  }
+
   public List<Activity> findActivitiesByTypes(@ValidateAdminId String adminId, ActivityType ... activityTypes) {
 
     return activityRepository.findAllByActivityTypeInAndAdminIdOrderByActivityDateDesc(Arrays.asList(activityTypes), adminId);

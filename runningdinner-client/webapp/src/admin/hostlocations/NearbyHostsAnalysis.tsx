@@ -10,6 +10,8 @@ import {
   isStringNotEmpty,
   MealFilterOption,
   Team,
+  TeamLabel,
+  TeamLabelFormat,
   TeamNeighbourCluster,
   Time,
   useDinnerRouteOverviewContext,
@@ -33,9 +35,10 @@ function TeamNeighbourClustersLoadingView() {
     <Grid
       container
       sx={{
-        alignItems: "center",
-        my: 2
-      }}>
+        alignItems: 'center',
+        my: 2,
+      }}
+    >
       <Grid>
         <CircularProgress size={20} />
       </Grid>
@@ -93,9 +96,10 @@ function SingleTeamNeighbourClusterView({ a, b, distance }: TeamNeighbourCluster
     <Grid
       container
       sx={{
-        justifyContent: "space-between",
-        alignItems: 'center'
-      }}>
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
       <Grid>
         <TeamNeighbourClusterItem {...a} />
       </Grid>
@@ -131,7 +135,7 @@ function TeamNeighbourClusterItem(team: Team) {
   return (
     <Box onClick={handleClick} sx={{ color: teamColor, margin: '0 auto', border: '2px solid', borderRadius: '8px', borderColor: teamColor, padding: '4px', cursor: 'pointer' }}>
       <Span>
-        Team #{team.teamNumber}{' '}
+        <TeamLabel team={team} format={TeamLabelFormat.NUMBER_ONLY} />{' '}
         {!isMobileDevice && (
           <>
             {t('common:at_time')} <Time date={team.meal.time} />
@@ -157,9 +161,11 @@ export function NearbyHostsAnalysis({ adminId }: BaseAdminIdProps) {
   return (
     <Box>
       <SmallTitle>{t('admin:dinner_route_hosts_near_distance')}</SmallTitle>
-      <Box sx={{
-        px: 2
-      }}>
+      <Box
+        sx={{
+          px: 2,
+        }}
+      >
         <Slider
           aria-label={t('common:distance')}
           value={distanceRange}

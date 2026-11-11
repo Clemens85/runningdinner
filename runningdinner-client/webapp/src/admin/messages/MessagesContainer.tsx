@@ -53,7 +53,7 @@ import { RecipientSelection } from './RecipientSelection';
 
 export function TeamMessages({ runningDinner }: BaseRunningDinnerProps) {
   const { adminId } = runningDinner;
-  const templates = createMessageTemplates(['{firstname}', '{lastname}', '{partner}', '{meal}', '{mealtime}', '{mealspecifics}', '{host}', '{managehostlink}'], runningDinner);
+  const templates = createMessageTemplates(['{firstname}', '{lastname}', '{partner}', '{meal}', '{mealtime}', '{mealspecifics}', '{host}', '{managehostlink}', '{managenamelink}'], runningDinner);
 
   const dispatch = useAdminDispatch();
   useEffect(() => {

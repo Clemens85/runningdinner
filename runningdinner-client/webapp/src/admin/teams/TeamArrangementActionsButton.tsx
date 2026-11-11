@@ -6,6 +6,7 @@ import {
   dropTeamArrangementsAsync,
   filterActivitiesByType,
   findAdminActivitiesByAdminIdAndTypesAsync,
+  hasCustomTeamName,
   HttpError,
   reCreateTeamArrangementsAsync,
   useBackendIssueHandler,
@@ -30,6 +31,7 @@ export type TeamArrangementActionsButtonProps = BaseAdminIdProps;
 interface TeamArrangementActionConfirmationData {
   showTeamArrangementMailsSentWarning?: boolean;
   showDinnerRouteMailsSentWarning?: boolean;
+  showTeamNamesLostHint?: boolean;
   message: string;
 }
 
@@ -43,7 +45,7 @@ export function TeamArrangementActionsButton({ adminId }: TeamArrangementActions
 
   const query = useUrlQuery();
 
-  const { updateTeams } = useUpdateFindTeamsQueryData(adminId);
+  const { updateTeams, getCachedTeams } = useUpdateFindTeamsQueryData(adminId);
 
   const { showSuccess } = useCustomSnackbar();
 
@@ -72,6 +74,7 @@ export function TeamArrangementActionsButton({ adminId }: TeamArrangementActions
     const teamArrangementActionConfirmationData = {
       showTeamArrangementMailsSentWarning: filterActivitiesByType(activities, ActivityType.TEAMARRANGEMENT_MAIL_SENT).length > 0,
       showDinnerRouteMailsSentWarning: filterActivitiesByType(activities, ActivityType.DINNERROUTE_MAIL_SENT).length > 0,
+      showTeamNamesLostHint: getCachedTeams().some((team) => hasCustomTeamName(team)),
       message: 'admin:teams_reset_confirmation',
     };
     if (action === TEAM_ARRANGEMENT_ACTION.REGENERATE) {
@@ -126,12 +129,13 @@ export function TeamArrangementActionsButton({ adminId }: TeamArrangementActions
     }
   }
 
-  function renderConfirmationDialogContent({ showDinnerRouteMailsSentWarning, showTeamArrangementMailsSentWarning, message }: TeamArrangementActionConfirmationData) {
+  function renderConfirmationDialogContent({ showDinnerRouteMailsSentWarning, showTeamArrangementMailsSentWarning, showTeamNamesLostHint, message }: TeamArrangementActionConfirmationData) {
     return (
       <>
         <Paragraph i18n={message} />
         <br />
         <Paragraph html={true} i18n={'admin:teams_reset_hint_team_partner_wish'} />
+        {showTeamNamesLostHint && <Paragraph html={true} i18n={'admin:teams_reset_hint_team_names_lost'} />}
         {showTeamArrangementMailsSentWarning && (
           <Box sx={{
             my: 2

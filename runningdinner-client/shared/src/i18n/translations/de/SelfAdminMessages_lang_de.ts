@@ -18,6 +18,17 @@ const SelfAdminMessages_de: any = {
   change_team_host_accessibility_text:
     'Für die Wohnung von {{ newTeamHost }} ist kein Aufzug oder stufenloser Zugang angegeben. Gastteams, die auf barrierefreien Zugang angewiesen sind, könnten dadurch eure Wohnung nicht mehr erreichen. Trotzdem speichern?',
 
+  change_team_name_title: 'Teamname verwalten',
+  change_team_name_help:
+    'Hier kannst du eurem Team einen Namen geben. Der Name gilt für alle Mitglieder deines Teams und ist für alle Teams in den Dinner-Routen sichtbar. ' +
+    'Die Änderung wird sofort aktiv nachdem du sie gespeichert hast und kann bis zum Versand der Dinner-Routen geändert werden.',
+  change_team_name_not_allowed: 'Der Teamname kann nicht mehr geändert werden, da die Dinner-Routen bereits versandt wurden.',
+  change_team_name_success_text: 'Der Teamname wurde gespeichert und gilt ab sofort für alle Mitglieder deines Teams. Du kannst dieses Fenster nun schließen.',
+  change_team_name_current: 'Aktueller Teamname',
+  change_team_name_loading_error_text: 'Die Daten zur Teamnamen-Verwaltung konnten nicht geladen werden. Bitte überprüfe die URL und versuche es ggfalls. später erneut.',
+  change_team_name_loading_error_title: 'Fehler beim Laden der Daten',
+  team_name_manage_title: 'Run Your Dinner - Teamname verwalten',
+
   manage_teampartner_wish_title: 'Wunschpartner verwalten',
   manage_teampartner_wish_help: 'Hier kannst du deinen Wunschpartner (nachträglich) bestätigen oder ändern.',
   manage_teampartner_wish_success: 'Änderung deines Wunschpartners erfolgreich gespeichert!',

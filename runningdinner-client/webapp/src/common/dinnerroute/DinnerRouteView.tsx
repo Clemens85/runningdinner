@@ -1,12 +1,23 @@
-import { Box, Grid, Paper, Typography } from '@mui/material';
-import { DinnerRoute, DinnerRouteMapCalculator, DinnerRouteTeam, isAfterPartyLocationDefined, isStringNotEmpty, Meal, MealType, TeamStatus } from '@runningdinner/shared';
+import { Box, Chip, Divider, Grid, Paper, Stack, Typography } from '@mui/material';
+import {
+  DinnerRoute,
+  DinnerRouteMapCalculator,
+  DinnerRouteTeam,
+  isAfterPartyLocationDefined,
+  isStringNotEmpty,
+  Meal,
+  MealType,
+  TeamLabel,
+  TeamLabelFormat,
+  TeamStatus,
+} from '@runningdinner/shared';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useTranslation } from 'react-i18next';
 
 import { GOOGLE_MAPS_KEY } from '../maps';
 import { TextViewHtml } from '../TextViewHtml';
-import { PageTitle, Subtitle } from '../theme/typography/Tags';
-import { AfterPartyLocationCard, getMealTypeIcon, TeamCardDetails } from './DinnerRouteComponents';
+import { Subtitle } from '../theme/typography/Tags';
+import { AfterPartyLocationCard, DINNER_ROUTE_TEAM_NAME_MAX_LENGTH, getMealTypeIcon, TeamCardDetails } from './DinnerRouteComponents';
 import { DinnerRouteMapView } from './DinnerRouteMapView';
 
 export interface DinnerRouteProps {
@@ -76,35 +87,47 @@ interface TeamCardProps {
 }
 
 function TeamCard({ dinnerRouteTeam, mealType, isCurrentTeam, currentTeamRequiresAccessibility }: TeamCardProps) {
-  const { t } = useTranslation(['common']);
   const isCancelled = dinnerRouteTeam.status === TeamStatus.CANCELLED;
-
-  let teamTitleColor = isCurrentTeam ? 'primary' : 'textSecondary';
-  if (isCancelled) {
-    teamTitleColor = 'error';
-  }
 
   return (
     <>
-      <PageTitle color={teamTitleColor}>
-        {getMealTypeIcon(mealType, 24)} {dinnerRouteTeam.meal.label}
-        {isCurrentTeam && (
-          <Box
-            component={'span'}
-            sx={{
-              pl: 1,
-            }}
-          >
-            <Typography variant={'body2'} component={'span'}>
-              {t('common:with_you')}
-            </Typography>
-          </Box>
-        )}
-      </PageTitle>
+      <TeamCardTitle dinnerRouteTeam={dinnerRouteTeam} mealType={mealType} isCurrentTeam={isCurrentTeam} />
       <Paper elevation={3} sx={{ p: 2 }}>
         {isCancelled && <Subtitle i18n={'cancelled'} color="error" />}
         {!isCancelled && <TeamCardDetails {...dinnerRouteTeam} isCurrentTeam={isCurrentTeam} showAccessibleStop={currentTeamRequiresAccessibility} />}
       </Paper>
     </>
+  );
+}
+
+type TeamCardTitleProps = Pick<TeamCardProps, 'dinnerRouteTeam' | 'mealType' | 'isCurrentTeam'>;
+
+/**
+ * The meal (with an indicator for the own team) is the headline, the team name (or number) is displayed in a separate line below it.
+ * Both lines never wrap (long texts are shortened with an ellipsis), so that the cards look the same on mobile and desktop devices.
+ */
+function TeamCardTitle({ dinnerRouteTeam, mealType, isCurrentTeam }: TeamCardTitleProps) {
+  const { t } = useTranslation(['common']);
+  const isCancelled = dinnerRouteTeam.status === TeamStatus.CANCELLED;
+
+  let color = isCurrentTeam ? 'primary.main' : 'text.secondary';
+  if (isCancelled) {
+    color = 'error.main';
+  }
+
+  return (
+    <Box sx={{ mt: 2, mb: 2 }}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', color, minWidth: 0 }}>
+        <Box sx={{ display: 'inline-flex', flexShrink: 0 }}>{getMealTypeIcon(mealType, 24)}</Box>
+        <Typography variant="h5" component="h2" noWrap sx={{ minWidth: 0, color: 'inherit' }} title={dinnerRouteTeam.meal.label}>
+          {dinnerRouteTeam.meal.label}
+        </Typography>
+        {isCurrentTeam && <Chip label={t('common:with_you')} size="small" color="primary" variant="outlined" sx={{ flexShrink: 0 }} />}
+      </Stack>
+      <Typography variant="h6" component="p" noWrap sx={{ color: isCancelled ? 'error.main' : 'text.primary', fontWeight: 500, mt: 0.5 }}>
+        <TeamLabel team={dinnerRouteTeam} format={TeamLabelFormat.NUMBER_AND_NAME} maxNameLength={DINNER_ROUTE_TEAM_NAME_MAX_LENGTH} />
+      </Typography>
+      <Divider sx={{ mt: 1 }} />
+    </Box>
   );
 }

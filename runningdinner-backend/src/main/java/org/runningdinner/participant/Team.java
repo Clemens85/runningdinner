@@ -2,6 +2,7 @@
 package org.runningdinner.participant;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
@@ -50,6 +51,12 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
 
   @Column(nullable = false)
   protected int teamNumber;
+
+  /**
+   * Optional custom name of the team. Null if the team has no custom name (see {@link TeamNameUtil}).
+   */
+  @Column(length = TeamNameUtil.MAX_LENGTH)
+  protected String teamName;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "teamId")
   @BatchSize(size = 30)
@@ -180,6 +187,24 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
   public int getTeamNumber() {
 
     return teamNumber;
+  }
+
+  public String getTeamName() {
+
+    return teamName;
+  }
+
+  public boolean hasTeamName() {
+
+    return StringUtils.isNotBlank(teamName);
+  }
+
+  /**
+   * Sets the custom name. Callers must pass an already validated name ({@link TeamNameUtil#normalizeAndValidate(String)}).
+   */
+  public void setTeamName(String teamName) {
+
+    this.teamName = teamName;
   }
 
   public TeamStatus getStatus() {
@@ -420,6 +445,7 @@ public class Team extends RunningDinnerRelatedEntity implements Comparable<Team>
     Team result = new Team(getTeamNumber());
 
     result.setStatus(status);
+    result.setTeamName(teamName);
     result.setMealClass(mealClass != null ? mealClass.createDetachedClone() : null);
 
     result.setTeamMembers(

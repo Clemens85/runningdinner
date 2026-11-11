@@ -302,6 +302,8 @@ class ParticipantPortalServiceTest {
     assertThat(teamInfo.getHostName()).isNotBlank();
     assertThat(teamInfo.getTeamPartnerName()).isNotBlank();
     assertThat(teamInfo.getManageTeamHostingUrl()).isNotBlank();
+    assertThat(teamInfo.getManageTeamNameUrl()).contains("/teamname/" + first.getId() + "/" + first.getTeamId());
+    assertThat(teamInfo.isTeamNameChangeAllowed()).isTrue();
     assertThat(result.getDinnerRouteUrl()).isNull(); // not yet sent
   }
 
@@ -357,6 +359,7 @@ class ParticipantPortalServiceTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getDinnerRouteUrl()).isNotBlank();
+    assertThat(result.getTeamSelfServiceInfo().isTeamNameChangeAllowed()).isFalse();
   }
 
   // ─── resolveParticipantMessages / markMessageAsRead ─────────────────────

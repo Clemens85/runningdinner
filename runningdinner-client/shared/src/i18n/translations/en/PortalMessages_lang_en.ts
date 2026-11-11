@@ -67,6 +67,10 @@ const PortalMessages_en: any = {
   participant_event_team_partner_fixed_badge: 'Fixed Team Partner',
   participant_event_team_partner_cancelled: 'Your team partner has cancelled their participation.',
   participant_event_manage_team_hosting: 'Manage Team Hosting',
+  participant_event_team_name: 'Team name',
+  participant_event_team_name_not_set: 'No team name yet',
+  participant_event_set_team_name: 'Set team name',
+  participant_event_change_team_name: 'Change team name',
 
   // ParticipantSelfServicePage — Likely guest dietary restrictions
   participant_event_team_likely_guest_specifics_title: 'Likely dietary restrictions of your guests',

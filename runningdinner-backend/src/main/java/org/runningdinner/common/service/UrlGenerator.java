@@ -36,6 +36,9 @@ public class UrlGenerator {
   @Value("${dinner.team.managehost.url}")
   private String teamManageHostUrlTemplate;
 
+  @Value("${dinner.team.managename.url}")
+  private String teamManageNameUrlTemplate;
+
   @Value("${dinner.teampartnerwish.confirmation.url}")
   private String teamPartnerWishConfirmationUrlTemplate;
   
@@ -173,6 +176,13 @@ public class UrlGenerator {
     return internalConstructPrivateTeamUrl(result, teamId, participantId);
   }
   
+  public String constructManageTeamNameUrl(UUID selfAdministrationId, UUID teamId, UUID participantId) {
+
+    Assert.hasText(teamManageNameUrlTemplate, "Team Manage Name URL Template is not configured!");
+    String result = internalConstructSelfAdministrationUrl(teamManageNameUrlTemplate, selfAdministrationId);
+    return internalConstructPrivateTeamUrl(result, teamId, participantId);
+  }
+
   public String constructTeamPartnerWishConfirmationUrl(UUID selfAdministrationId, Participant participant, String teamPartnerEmailToConfirm) {
     
     Assert.hasText(teamPartnerWishConfirmationUrlTemplate, "Team Partner Wish Confirmation URL Template is not configured!");

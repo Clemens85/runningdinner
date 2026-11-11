@@ -12,6 +12,7 @@ import org.runningdinner.event.RunningDinnerSettingsUpdatedEvent;
 import org.runningdinner.event.TeamArrangementsDroppedEvent;
 import org.runningdinner.event.TeamCancelledEvent;
 import org.runningdinner.event.TeamMembersSwappedEvent;
+import org.runningdinner.event.TeamNameChangedEvent;
 import org.runningdinner.event.TeamsArrangedEvent;
 import org.runningdinner.event.TeamsHostChangedEvent;
 import org.runningdinner.event.DinnerRoutesOptimizedEvent;
@@ -88,6 +89,11 @@ public class EventPublisher implements ApplicationEventPublisherAware {
     applicationEventPublisher.publishEvent(new TeamsHostChangedEvent(this, teams, runningDinner, executingParticipant, comment));
   }
   
+  public void notifyTeamNameChangedEvent(Team team, RunningDinner runningDinner, Participant executingParticipant) {
+
+    applicationEventPublisher.publishEvent(new TeamNameChangedEvent(this, team, runningDinner, executingParticipant));
+  }
+
   public void notifyMealsUpdatedEvent(RunningDinner runningDinner) {
     applicationEventPublisher.publishEvent(new MealsUpdatedEvent(this, runningDinner));
   }

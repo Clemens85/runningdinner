@@ -65,6 +65,12 @@ export async function updateTeamHostAsync(adminId: string, team: Team, newHostin
   }
 }
 
+export async function updateTeamNameAsync(adminId: string, teamId: string, teamName: string): Promise<Team> {
+  const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/team/${teamId}/name`);
+  const response = await axios.put<Team>(url, { teamName });
+  return response.data;
+}
+
 export async function findTeamMeetingPlanAsync(adminId: string, teamId: string): Promise<TeamMeetingPlan> {
   const url = BackendConfig.buildUrl(`/teamservice/v1/runningdinner/${adminId}/team/${teamId}/meetingplan`);
   const response = await axios.get(url);

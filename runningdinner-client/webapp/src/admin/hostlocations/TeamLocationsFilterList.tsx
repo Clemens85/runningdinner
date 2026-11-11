@@ -9,7 +9,7 @@ import {
 } from '@runningdinner/shared';
 import { useTranslation } from 'react-i18next';
 
-import { getTeamLabel } from '../../common/dinnerroute';
+import { TeamLabelWithMeal } from '../../common/dinnerroute';
 import { useIsBigDevice } from '../../common/theme/CustomMediaQueryHook';
 import { Span } from '../../common/theme/typography/Tags';
 import { useZoomToMarker } from './useZoomToMarker';
@@ -17,6 +17,9 @@ import { useZoomToMarker } from './useZoomToMarker';
 type FilterTeamCheckboxProps = {
   team: DinnerRouteTeamMapEntry;
 };
+
+// The filter list has only limited space, so long custom team names are shortened
+const TEAM_NAME_MAX_LENGTH_IN_FILTER = 12;
 
 function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
   const { t } = useTranslation('admin');
@@ -47,7 +50,11 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
   return (
     <>
       <Box sx={{ mb: '-12px' }}>
-        <FormControlLabel sx={{ color: team.color }} label={getTeamLabel(team, isBigDevice)} control={<Checkbox color="primary" onChange={handleChange} checked={selected} />} />
+        <FormControlLabel
+          sx={{ color: team.color }}
+          label={<TeamLabelWithMeal team={team} includeHostFullname={isBigDevice} maxNameLength={TEAM_NAME_MAX_LENGTH_IN_FILTER} />}
+          control={<Checkbox color="primary" onChange={handleChange} checked={selected} />}
+        />
       </Box>
 
       {isBigDevice && (
@@ -55,7 +62,7 @@ function FilterTeamCheckbox({ team }: FilterTeamCheckboxProps) {
           {hostTeams.map((hostTeam) => (
             <Box key={hostTeam.teamNumber}>
               <small>
-                {t('admin:dinner_route_filter_team_guest_info_prefix')} {getTeamLabel(hostTeam, false)}
+                {t('admin:dinner_route_filter_team_guest_info_prefix')} <TeamLabelWithMeal team={hostTeam} maxNameLength={TEAM_NAME_MAX_LENGTH_IN_FILTER} />
               </small>
             </Box>
           ))}
@@ -136,9 +143,11 @@ export function TeamLocationsFilterList({ dinnerRouteMapEntries }: TeamLocations
 
   return (
     <Box>
-      <Box sx={{
-        pb: 1
-      }}>
+      <Box
+        sx={{
+          pb: 1,
+        }}
+      >
         <Span i18n="admin:hostlocations_team_filter" />
       </Box>
       {dinnerRouteMapEntries.map((team) => (

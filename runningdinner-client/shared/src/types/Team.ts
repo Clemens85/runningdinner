@@ -12,6 +12,7 @@ export enum TeamStatus {
 
 export type BaseTeam = {
   teamNumber: number;
+  teamName?: string;
   status: TeamStatus;
   meal: Meal;
 };

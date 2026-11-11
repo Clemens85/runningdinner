@@ -1,4 +1,10 @@
 const NewsMessages_de: any = {
+  news_title_20261111: 'Eigene Teamnamen',
+  news_content_20261111:
+    'Teams können nun einen eigenen Namen bekommen. ' +
+    'Als Organisator kannst du den Teamnamen in den Team-Details festlegen, die Teilnehmer können ihn über einen Link in der Team-Mail oder im Teilnehmer-Portal selbst vergeben. ' +
+    'Der Name erscheint in der Verwaltung und in den Dinner-Routen.',
+
   news_title_20261016: 'Barrierefreiheit bei Teams und Routen',
   news_content_20261016:
     'Teilnehmer können bei der Anmeldung nun angeben, ob ihre Wohnung per Aufzug oder stufenlos erreichbar ist und ob sie selbst barrierefreien Zugang benötigen. ' +

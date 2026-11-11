@@ -21,11 +21,12 @@ import {
   RunningDinnerSessionData,
   Team,
   TeamArrangementList,
-  TeamNr,
+  TeamLabel,
   Time,
   useAdminSelector,
   useDisclosure,
   useFindTeamMeetingPlan,
+  useUpdateFindTeamsQueryData,
   ValueTranslate,
 } from '@runningdinner/shared';
 import { concat } from 'lodash-es';
@@ -41,6 +42,7 @@ import { ParticipantMealDetails } from '../participants/meal/ParticipantMealBadg
 import { TeamCancelDialog } from './cancellation/TeamCancelDialog';
 import { TeamMemberCancelDialog, TeamMemberCancelDialogResult } from './cancellation/TeamMemberCancelDialog';
 import { CancelledTeamMember } from './CancelledTeamMember';
+import { EditTeamNameDialog } from './EditTeamNameDialog';
 import { SwapMealsDialog } from './SwapMealsDialog';
 import { TeamPartnerWishIcon } from './TeamPartnerWishIcon';
 import TeamSchedule from './TeamSchedule';
@@ -70,6 +72,8 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
 
   const { isOpen: isSwapMealsDialogOpen, close: closeSwapMealsDialog, open: openSwapMealsDialog } = useDisclosure(false);
 
+  const { isOpen: isEditTeamNameDialogOpen, close: closeEditTeamNameDialog, open: openEditTeamNameDialog } = useDisclosure(false);
+  const { invalidateTeamDependentQueries } = useUpdateFindTeamsQueryData(adminId);
   const findTeamMeetingPlanQuery = useFindTeamMeetingPlan(adminId, id || '');
 
   let teamMemberNodes = teamMembers.map((participant) => (
@@ -111,6 +115,11 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
     }
   }
 
+  function handleTeamNameChanged(updatedTeam: Team) {
+    onUpdateTeamState(updatedTeam);
+    invalidateTeamDependentQueries();
+  }
+
   function handleNotifyAffectedTeamsCancellation() {
     const teamMeetingPlan = findTeamMeetingPlanQuery.data;
     assertDefined(teamMeetingPlan);
@@ -120,6 +129,7 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
 
   let actionMenuItems = [
     { label: t('admin:team_message'), onClick: handleOpenSingleTeamMessage },
+    { label: t('admin:team_name_edit'), onClick: openEditTeamNameDialog },
     { label: `${t('admin:meals_swap')}...`, onClick: handleOpenSwapMealsDialog },
     { label: t('admin:team_cancel'), onClick: openTeamCancelDialog },
   ];
@@ -137,7 +147,7 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
         <Grid container>
           <Grid size={11}>
             <Subtitle>
-              <TeamNr {...team} />
+              <TeamLabel team={team} />
             </Subtitle>
             <MealAtTime {...meal} />
           </Grid>
@@ -208,6 +218,7 @@ export default function TeamDetails({ team, teamMemberIdToCancel, onOpenChangeTe
       </Box>
       {isTeamCancelDialogOpen && <TeamCancelDialog isOpen={isTeamCancelDialogOpen} onClose={handleCloseTeamCancelDialog} teamToCancel={team} runningDinner={runningDinner} />}
       {isSwapMealsDialogOpen && <SwapMealsDialog onClose={handleCloseSwapMealsDialog} srcTeam={team} adminId={runningDinner.adminId} />}
+      {isEditTeamNameDialogOpen && <EditTeamNameDialog adminId={adminId} team={team} onClose={closeEditTeamNameDialog} onTeamNameChanged={handleTeamNameChanged} />}
     </Paper>
   );
 }

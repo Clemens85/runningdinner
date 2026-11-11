@@ -15,7 +15,6 @@ export * from './RunningDinnerService';
 export * from './SettingsService';
 export * from './SupportApi';
 export * from './teams/NumberOfAssignableParticipantsToReplaceTeamHook';
-export * from './teams/TeamNameHook';
 export * from './teams/TeamNameMembersHook';
 export * from './teams/TeamsNotExistingHook';
 export * from './teams/useFindDinnerRouteByAdminIdAndTeamId';

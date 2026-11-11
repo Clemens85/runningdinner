@@ -3,6 +3,7 @@ package org.runningdinner.selfservice;
 import com.google.common.base.MoreObjects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.runningdinner.admin.RunningDinnerService;
+import org.runningdinner.admin.activity.ActivityService;
 import org.runningdinner.admin.rest.MealTO;
 import org.runningdinner.common.Issue;
 import org.runningdinner.common.IssueKeys;
@@ -14,7 +15,11 @@ import org.runningdinner.dinnerroute.DinnerRouteService;
 import org.runningdinner.dinnerroute.DinnerRouteTO;
 import org.runningdinner.dinnerroute.DinnerRouteTeamTO;
 import org.runningdinner.event.publisher.EventPublisher;
-import org.runningdinner.participant.*;
+import org.runningdinner.participant.Participant;
+import org.runningdinner.participant.ParticipantService;
+import org.runningdinner.participant.Team;
+import org.runningdinner.participant.TeamService;
+import org.runningdinner.participant.TeamStatus;
 import org.runningdinner.participant.rest.ParticipantInputDataTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +30,11 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class SelfAdminService {
@@ -46,13 +55,16 @@ public class SelfAdminService {
   
   @Autowired
   private EventPublisher eventPublisher;
+
+  @Autowired
+  private ActivityService activityService;
   
   @Transactional
   public Team changeTeamHost(UUID selfAdministrationId, ChangeTeamHost changeTeamHost) {
     
     SelfAdminContext selfAdminContext = buildSelfAdminContext(selfAdministrationId, changeTeamHost.getParticipantId(), changeTeamHost.getTeamId());
-    final Team team = selfAdminContext.getTeam();
-    final RunningDinner runningDinner = selfAdminContext.getRunningDinner();
+    final Team team = selfAdminContext.team();
+    final RunningDinner runningDinner = selfAdminContext.runningDinner();
     
     UUID newHostingTeamMemberId = changeTeamHost.getNewHostingTeamMemberId();
     
@@ -68,10 +80,38 @@ public class SelfAdminService {
     List<Team> resultingTeams = teamService.updateTeamHosters(runningDinner, teamHostMapping);
     Assert.state(resultingTeams.size() == 1, "Expected exactly one team but found " + resultingTeams);
 
-    emitTeamsHostChangedByParticipantEvent(resultingTeams, runningDinner, selfAdminContext.getExecutingParticipant(), changeTeamHost.getComment());
+    emitTeamsHostChangedByParticipantEvent(resultingTeams, runningDinner, selfAdminContext.executingParticipant(), changeTeamHost.getComment());
     return resultingTeams.get(0);
   }
   
+  /**
+   * Participants can change the team name until the dinner route mails were sent. Admins are not restricted.
+   */
+  @Transactional
+  public Team updateTeamName(UUID selfAdministrationId, UUID participantId, UUID teamId, String rawTeamName) {
+
+    SelfAdminContext selfAdminContext = buildSelfAdminContext(selfAdministrationId, participantId, teamId);
+    final Team team = selfAdminContext.team();
+    final RunningDinner runningDinner = selfAdminContext.runningDinner();
+
+    if (team.getStatus() == TeamStatus.CANCELLED || !isTeamNameChangeAllowed(runningDinner)) {
+      throw new ValidationException(new IssueList(new Issue(IssueKeys.TEAM_NAME_CHANGE_NOT_ALLOWED_ROUTES_SENT, IssueType.VALIDATION)));
+    }
+
+    return teamService.updateTeamName(runningDinner.getAdminId(), teamId, rawTeamName, selfAdminContext.executingParticipant());
+  }
+
+  public SelfAdminTeamNameInfoTO findTeamNameInfo(UUID selfAdministrationId, UUID participantId, UUID teamId) {
+    SelfAdminContext selfAdminContext = buildSelfAdminContext(selfAdministrationId, participantId, teamId);
+    Team team = selfAdminContext.team();
+    boolean changeAllowed = team.getStatus() != TeamStatus.CANCELLED && isTeamNameChangeAllowed(selfAdminContext.runningDinner());
+    return new SelfAdminTeamNameInfoTO(team.getTeamName(), changeAllowed);
+  }
+
+  private boolean isTeamNameChangeAllowed(RunningDinner runningDinner) {
+    return !activityService.isDinnerRouteMailsSent(runningDinner.getAdminId());
+  }
+
   @Transactional
   public void updateTeamPartnerWish(UUID selfAdministrationId, UUID participantId, String email) {
 
@@ -114,7 +154,7 @@ public class SelfAdminService {
   public Team findTeam(UUID selfAdministrationId, UUID participantId, UUID teamId) {
 
     SelfAdminContext selfAdminContext = buildSelfAdminContext(selfAdministrationId, participantId, teamId);
-    return selfAdminContext.getTeam();
+    return selfAdminContext.team();
   }
   
   public SelfAdminSessionDataTO findSelfAdminSessionData(UUID selfAdministrationId, UUID participantId) {
@@ -144,46 +184,19 @@ public class SelfAdminService {
     
     return new SelfAdminContext(runningDinner, executingParticipant, team);
   }
-  
-  private static class SelfAdminContext {
-    
-    private final RunningDinner runningDinner;
-    
-    private final Participant executingParticipant;
-    
-    private final Team team;
 
-    public SelfAdminContext(RunningDinner runningDinner, Participant executingParticipant, Team team) {
-      this.runningDinner = runningDinner;
-      this.executingParticipant = executingParticipant;
-      this.team = team;
-    }
-
-    public RunningDinner getRunningDinner() {
-    
-      return runningDinner;
-    }
-    
-    public Participant getExecutingParticipant() {
-    
-      return executingParticipant;
-    }
-
-    public Team getTeam() {
-    
-      return team;
-    }
+  private record SelfAdminContext(RunningDinner runningDinner, Participant executingParticipant, Team team) {
 
     @Override
-    public String toString() {
-      return MoreObjects
-              .toStringHelper(this)
-              .addValue(runningDinner)
-              .addValue(executingParticipant)
-              .addValue(team)
-              .toString();
-    }
-    
+      public String toString() {
+        return MoreObjects
+                .toStringHelper(this)
+                .addValue(runningDinner)
+                .addValue(executingParticipant)
+                .addValue(team)
+                .toString();
+      }
+
   }
 
 }

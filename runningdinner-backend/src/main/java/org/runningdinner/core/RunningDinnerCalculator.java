@@ -251,6 +251,7 @@ public class RunningDinnerCalculator {
 			Team team = findTeamWithTeamNumber(regularTeamsListCopy, existingTeam.getTeamNumber());
 			MealClass mealClassToAssign = IdentifierUtil.filterListForIdMandatory(mealClasses, existingTeam.getMeal().getId());
 			team.setMealClass(mealClassToAssign);
+			team.setTeamName(existingTeam.getTeamName());
 
 			ensureSameTeamMembers(team, existingTeam, allParticipantsOfGeneratedTeams);
 

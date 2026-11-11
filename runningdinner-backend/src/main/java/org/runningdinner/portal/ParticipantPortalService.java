@@ -387,11 +387,7 @@ public class ParticipantPortalService implements PortalTokenProvider {
    */
   private String resolveDinnerRouteUrl(RunningDinner runningDinner, Team team, UUID selfAdminId, UUID participantId) {
 
-    boolean dinnerRouteMailsSent = activityService.findActivitiesByTypes(runningDinner.getAdminId(), ActivityType.DINNERROUTE_MAIL_SENT)
-        .stream()
-        .findAny()
-        .isPresent();
-    if (!dinnerRouteMailsSent) {
+    if (!activityService.isDinnerRouteMailsSent(runningDinner.getAdminId())) {
       return null;
     }
     return urlGenerator.constructPrivateDinnerRouteUrl(selfAdminId, team.getId(), participantId);
@@ -429,6 +425,9 @@ public class ParticipantPortalService implements PortalTokenProvider {
     result.setHostName(hostName);
     result.setSelfIsHost(selfIsHost);
     result.setSelfRequiresAccessibleHome(viewingParticipant.isRequiresAccessibleHome());
+    result.setTeamName(team.getTeamName());
+    result.setTeamNameChangeAllowed(!dinnerRouteMailsSent);
+    result.setManageTeamNameUrl(urlGenerator.constructManageTeamNameUrl(selfAdminId, team.getId(), participantId));
 
     if (teamPartner == null) {
       result.setTeamPartnerCancelled(true);

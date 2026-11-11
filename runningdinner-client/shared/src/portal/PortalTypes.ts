@@ -41,6 +41,12 @@ export interface TeamSelfServiceInfo {
   hostName: string;
   /** Full URL to the self-service page for managing team hosting. */
   manageTeamHostingUrl: string;
+  /** Custom name of the team, null/empty when there is none. */
+  teamName?: string | null;
+  /** Full URL to the self-service page for changing the team name. */
+  manageTeamNameUrl: string;
+  /** False as soon as the dinner route mails were sent (team name is then final). */
+  teamNameChangeAllowed: boolean;
   /** True when the viewing participant is themselves the proposed host of this team. */
   selfIsHost: boolean;
   /** True when the partner was co-registered alongside the viewer (fixed-partner-registration). */

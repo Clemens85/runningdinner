@@ -1,4 +1,4 @@
-import { TableCell, Button, Box, Tooltip } from '@mui/material';
+import { TableCell, Button, Box, Tooltip, Typography } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
@@ -10,7 +10,15 @@ import { useDrag, useDrop } from 'react-dnd';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { CancelledTeamMember } from './CancelledTeamMember';
 import { TableRowWithCursor } from '../../common/theme/CommonStyles';
-import { generateCancelledTeamMembersAsNumberArray, CONSTANTS, Fullname, isTeamPartnerWishChild, isHostAccessibilityMissing } from '@runningdinner/shared';
+import {
+  generateCancelledTeamMembersAsNumberArray,
+  CONSTANTS,
+  Fullname,
+  isTeamPartnerWishChild,
+  isHostAccessibilityMissing,
+  hasCustomTeamName,
+  getCustomTeamName,
+} from '@runningdinner/shared';
 import { TeamPartnerWishIcon } from './TeamPartnerWishIcon';
 import { styled } from '@mui/material/styles';
 
@@ -59,7 +67,14 @@ export default function TeamRow({ team, onClick, onTeamMemberSwap, onOpenChangeT
   return (
     <TableRowWithCursor hover onClick={() => onClick(team)} selected={selected} data-testid="team-row">
       <TableCell>{teamNumber}</TableCell>
-      <TableCell>{isCancelled ? <CancelledTeamMember /> : teamMemberNames}</TableCell>
+      <TableCell>
+        {hasCustomTeamName(team) && (
+          <Typography variant="caption" component="div" sx={{ fontStyle: 'italic', color: 'text.secondary' }} data-testid="team-row-team-name">
+            {getCustomTeamName(team)}
+          </Typography>
+        )}
+        {isCancelled ? <CancelledTeamMember /> : teamMemberNames}
+      </TableCell>
       <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{!isCancelled && teamMemberSeats}</TableCell>
       <TableCell sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>{!isCancelled && teamMemberGenders}</TableCell>
       <TableCell>{meal.label}</TableCell>
