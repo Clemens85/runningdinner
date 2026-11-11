@@ -18,7 +18,7 @@ import org.springframework.web.util.HtmlUtils;
  */
 public final class TeamNameUtil {
 
-  public static final int MAX_LENGTH = 48;
+  public static final int MAX_LENGTH = 32;
 
   private static final Pattern VALID_TEAM_NAME = Pattern.compile("^[\\p{L}\\p{M}\\p{N}][\\p{L}\\p{M}\\p{N} _!?.'/&\\-]*$");
 

@@ -24,7 +24,7 @@ Non-goals (explicitly ignored for now): behaviour when swapping *individual team
 | D2 | Editing is **blocked after dinner route mails were sent** (`DINNERROUTE_MAIL_SENT` activity exists – same check used in `ParticipantPortalService`). Enforced in backend; UI hides/disables the action and shows an info text. **Confirmed:** the block applies to the participant self-service only; the admin can still edit (e.g. to remove an inappropriate name) – the name is then only reflected in the live dinner route views, not in already sent mails. |
 | D3 | **Activity-log entry** for every name change (by admin or participant). |
 | D4 | **Self-service link** for team-name change, analogous to host change: new URL template, new placeholder `{managenamelink}` for the TEAM mail, new route/page in webapp `self/`, and button in the portal `MyTeamSection` that links to the page (like `manageTeamHostingUrl`). No inline editing in the portal. |
-| D5 | **Validation**: max **48** chars; allowed: letters of any language (incl. umlauts/accents, via Unicode `\p{L}` + combining marks `\p{M}`), digits (`\p{N}`), space, and `! ? _ - . ' / &` (**confirmed**). No emojis, no other special chars/HTML (`<`, `>`, `"`, `\`, `%`, `$`, … rejected). Trimmed, inner whitespace collapsed, Unicode-NFC normalized, blank → no name. Validated only in the backend (the client shows the returned field issue). `'` is included because of names like "Hugo's Helden"; the character set is a single constant so it is easy to extend. Note: `&` and `'` are HTML-significant → output escaping in mails/activity messages is mandatory (see 7). |
+| D5 | **Validation**: max **32** chars; allowed: letters of any language (incl. umlauts/accents, via Unicode `\p{L}` + combining marks `\p{M}`), digits (`\p{N}`), space, and `! ? _ - . ' / &` (**confirmed**). No emojis, no other special chars/HTML (`<`, `>`, `"`, `\`, `%`, `$`, … rejected). Trimmed, inner whitespace collapsed, Unicode-NFC normalized, blank → no name. Validated only in the backend (the client shows the returned field issue). `'` is included because of names like "Hugo's Helden"; the character set is a single constant so it is easy to extend. Note: `&` and `'` are HTML-significant → output escaping in mails/activity messages is mandatory (see 7). |
 | D6 | **Admin team list** keeps showing only the number. The name is shown in team details (header), team schedule/meeting plan, dinner route views and dialogs; in the list at most as tooltip on the number cell (see 4.7). |
 
 ## 3. Key findings from codebase analysis
@@ -48,8 +48,8 @@ Non-goals (explicitly ignored for now): behaviour when swapping *individual team
 
 ## 4. Design
 
-1. **Storage**: nullable `teamName varchar(48)` on `Team` (null == no custom name). No uniqueness constraint.
-2. **Single normalization/validation point (backend)**: `TeamNameValidator`/util (`normalize(String) → String|null`, `isValid`) using Java `Pattern` `^[\p{L}\p{M}\p{N}][\p{L}\p{M}\p{N} _!?.'/&-]{0,47}$` (first char must be a letter/digit, so names can't start with punctuation; the character class is built from one constant) after trim/collapse/NFC. Used by `TeamService.updateTeamName`; Invalid input → `ValidationException` with new `IssueKeys` entry (translated in frontend). **No client-side validation** (project strategy: validate only in the backend): the issue carries the field name `teamName`, so `applyValidationIssuesToForm` shows the translated message (`team_name_invalid`) at the form field.
+1. **Storage**: nullable `teamName varchar(32)` on `Team` (null == no custom name). No uniqueness constraint.
+2. **Single normalization/validation point (backend)**: `TeamNameValidator`/util (`normalize(String) → String|null`, `isValid`) using Java `Pattern` `^[\p{L}\p{M}\p{N}][\p{L}\p{M}\p{N} _!?.'/&-]{0,31}$` (first char must be a letter/digit, so names can't start with punctuation; the character class is built from one constant) after trim/collapse/NFC. Used by `TeamService.updateTeamName`; Invalid input → `ValidationException` with new `IssueKeys` entry (translated in frontend). **No client-side validation** (project strategy: validate only in the backend): the issue carries the field name `teamName`, so `applyValidationIssuesToForm` shows the translated message (`team_name_invalid`) at the form field.
 3. **Single label source**: backend `Team#getTeamName()` + `FormatterUtil` helper (escaped name or `""`); frontend one helper `getTeamLabel(team, { fallbackToNumber })` used by `TeamNr`/`useTeamName`.
 4. **Who may edit**: admin via adminId (`@ValidateAdminId`); participant via selfAdminId + participantId + teamId (membership check as in `SelfAdminService.buildSelfAdminContext`), not cancelled, and only while no `DINNERROUTE_MAIL_SENT` activity exists (D2). Last write wins.
 5. **Meal swap** swaps `teamName` with the members; **waiting-list restore** copies `teamName`.
@@ -57,7 +57,7 @@ Non-goals (explicitly ignored for now): behaviour when swapping *individual team
 ## 5. Work breakdown
 
 ### 5.1 Backend – persistence & domain
-- [ ] Flyway `V2.13__AddTeamName.sql`: `ALTER TABLE runningdinner.team ADD COLUMN teamName varchar(64);` (still 64 in the script created so far; to be adapted to 48 by the project owner)
+- [ ] Flyway `V2.13__AddTeamName.sql`: `ALTER TABLE runningdinner.team ADD COLUMN teamName varchar(64);` (still 64 in the script created so far; to be adapted to 32 by the project owner)
 - [ ] `Team`: field `teamName`, getter, setter (`TeamAccessor` if required), `hasTeamName()`.
 - [ ] `TeamNameUtil`/validator (design point 2) incl. unit tests with example table.
 - [ ] `TeamService.swapMeals`: swap the two names.
@@ -92,7 +92,7 @@ Non-goals (explicitly ignored for now): behaviour when swapping *individual team
 - [x] ~~Client validation helper~~ dropped: validation only in backend (see design point 2); client only has `hasCustomTeamName`/`getCustomTeamName` for display.
 - [ ] `getTeamLabel` helper (+ `Team.spec.ts` tests); update `TeamNr.jsx` / `TeamNameHook.js`.
 - [ ] Services/hooks: `updateTeamNameAsync` (admin, `TeamService.ts`), `updateSelfTeamName` (`SelfAdminService.ts`), mutation hooks invalidating team list, meeting plan, dinner route and self-service-info queries.
-- [ ] i18n de/en: labels, help text (allowed characters, 48 chars), success message, error messages (invalid chars, routes already sent), self-admin page texts (`SelfAdminMessages_lang_*.ts`).
+- [ ] i18n de/en: labels, help text (allowed characters, 32 chars), success message, error messages (invalid chars, routes already sent), self-admin page texts (`SelfAdminMessages_lang_*.ts`).
 
 ### 5.7 Frontend `webapp` – admin (D6)
 - [ ] `TeamRow.jsx`: unchanged columns (number only); name as `Tooltip` on the number cell (and possibly caption under the number on wide screens – check visually, no new column).
@@ -109,7 +109,7 @@ Non-goals (explicitly ignored for now): behaviour when swapping *individual team
 
 ### 5.9 Tests
 Backend:
-- [ ] Validator table tests (umlauts, `ß`, accents, Cyrillic/Greek/etc. letters, digits, `! ? _ - . ' / &`, 48 vs 49 chars, emoji, `<script>`, `"`/`<`/`>`/`\`/`$`, leading punctuation, only spaces, leading/trailing/multiple spaces, NFD vs NFC).
+- [ ] Validator table tests (umlauts, `ß`, accents, Cyrillic/Greek/etc. letters, digits, `! ? _ - . ' / &`, 32 vs 33 chars, emoji, `<script>`, `"`/`<`/`>`/`\`/`$`, leading punctuation, only spaces, leading/trailing/multiple spaces, NFD vs NFC).
 - [ ] `TeamServiceTest`: update name (trim/clear), invalid rejected, `swapMeals` swaps names (extend `swapMeals` test at ~line 450), `WaitingListServiceTest` keeps names.
 - [ ] Self-service: member can update; non-member / other dinner / cancelled → rejected; **blocked after `DINNERROUTE_MAIL_SENT`**; admin path not blocked (D2 assumption).
 - [ ] Activity entry created for admin + participant change.

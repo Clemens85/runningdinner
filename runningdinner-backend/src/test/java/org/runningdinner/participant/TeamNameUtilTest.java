@@ -55,7 +55,7 @@ public class TeamNameUtilTest {
 
   @Test
   public void lengthLimit() {
-    assertThat(TeamNameUtil.normalizeAndValidate("a".repeat(TeamNameUtil.MAX_LENGTH))).hasSize(48);
+    assertThat(TeamNameUtil.normalizeAndValidate("a".repeat(TeamNameUtil.MAX_LENGTH))).hasSize(TeamNameUtil.MAX_LENGTH);
     assertThrows(ValidationException.class, () -> TeamNameUtil.normalizeAndValidate("a".repeat(TeamNameUtil.MAX_LENGTH + 1)));
   }
 
