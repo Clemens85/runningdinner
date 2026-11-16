@@ -81,6 +81,7 @@ public class MessageSenderStatsServiceTest {
 		assertThat(this.messageTaskRepository.count()).isZero();
 
 		testHelperService.sendMessagesToAllParticipants(runningDinner);
+		testMessageTaskHelperService.awaitAllMessageTasksSent();
 
 		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
 		assertThat(allMessageTasks).hasSize(22);
@@ -128,6 +129,7 @@ public class MessageSenderStatsServiceTest {
 		assertThat(this.messageTaskRepository.count()).isZero();
 
 		testHelperService.sendMessagesToAllParticipants(runningDinner);
+		testMessageTaskHelperService.awaitAllMessageTasksSent();
 
 		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
 
@@ -152,6 +154,7 @@ public class MessageSenderStatsServiceTest {
 		assertThat(this.messageTaskRepository.count()).isZero();
 
 		testHelperService.sendMessagesToAllParticipants(runningDinner);
+		testMessageTaskHelperService.awaitAllMessageTasksSent();
 		List<MessageTask> allMessageTasks = messageTaskRepository.findAll();
 
 		var messageTasksMailJet = List.of(allMessageTasks.get(0), allMessageTasks.get(1), allMessageTasks.get(2), allMessageTasks.get(3));
