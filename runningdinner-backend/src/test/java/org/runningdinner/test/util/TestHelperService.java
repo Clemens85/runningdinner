@@ -6,6 +6,7 @@ import org.awaitility.Awaitility;
 import org.runningdinner.admin.RunningDinnerService;
 import org.runningdinner.admin.message.MessageService;
 import org.runningdinner.admin.message.job.MessageJob;
+import org.runningdinner.admin.message.job.MessageType;
 import org.runningdinner.admin.message.job.SendingStatus;
 import org.runningdinner.admin.message.participant.ParticipantMessage;
 import org.runningdinner.admin.message.participant.ParticipantSelection;
@@ -105,6 +106,7 @@ public class TestHelperService {
                                                                     CreateRunningDinnerInitializationService.DEFAULT_DINNER_CREATION_ADDRESS, RunningDinnerType.STANDARD, null);
     
     if (!autoAcknowledge) {
+      awaitRunningDinnerCreatedMessageSent(result);
       return result;
     }
     return acknowledgeRunningDinner(result);
@@ -241,6 +243,20 @@ public class TestHelperService {
       .until(messageJobIsFinished(messageJob));
   }
   
+  /**
+   * The "dinner created" mail is sent asynchronously and would otherwise land in the mock mail sender at an arbitrary later point in time.<br>
+   * The message job is created synchronously (if at all), hence no job means that there is nothing to wait for.
+   */
+  private void awaitRunningDinnerCreatedMessageSent(RunningDinner runningDinner) {
+    Awaitility
+      .await()
+      .atMost(MAX_AWAIT_SECONDS, TimeUnit.SECONDS)
+      .until(() -> {
+        List<MessageJob> messageJobs = messageService.findMessageJobs(runningDinner.getAdminId(), MessageType.NEW_RUNNING_DINNER);
+        return messageJobs.stream().allMatch(job -> job.getSendingStatus() == SendingStatus.SENDING_FINISHED);
+      });
+  }
+
   private Callable<Boolean> messageJobIsFinished(MessageJob incomingMessageJob) {
     return () -> {
 			MessageJob messageJob = messageService.findMessageJob(incomingMessageJob.getAdminId(), incomingMessageJob.getId());
@@ -250,6 +266,7 @@ public class TestHelperService {
   
   private RunningDinner acknowledgeRunningDinner(RunningDinner runningDinner) {
     
+    awaitRunningDinnerCreatedMessageSent(runningDinner);
     return runningDinnerService.acknowledgeRunningDinner(runningDinner.getAdminId(), runningDinner.getObjectId(), LocalDateTime.now());
   }
   
