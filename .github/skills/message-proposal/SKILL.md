@@ -1,9 +1,8 @@
 ---
-name: "Message Proposal"
-agent: "agent" # ask | agent | plan | <custom agent name>
-model: "Claude Sonnet 4.6 (copilot)" # optional: pin a model
+name: message-proposal
+description: Message Proposal
+disable-model-invocation: true
 ---
-
 For each event an own services stores some message proposals per each type on AWS S3.
 The path to access look like generated/message/**TYPE**/**ADMINID\_**.md.
 The types are derived from MessageType enum (PARTICIPANT, DINNER_ROUTE, ...).
