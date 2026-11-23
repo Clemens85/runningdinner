@@ -78,6 +78,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
+          pull: true
           context: .
           tags: ${{ env.DOCKER_IMAGE_TAGS }}
 
